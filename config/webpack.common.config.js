@@ -43,7 +43,7 @@ const config = {
                 //exclude: /node_modules/
             },
             {
-                test: /\.svg|.png|.jpg$/,
+                test: /\.svg|.png|.jpg|.gif|.eot|.ttf|.woff$/,
                 loader: 'url-loader',
                 exclude: /node_modules/
             }

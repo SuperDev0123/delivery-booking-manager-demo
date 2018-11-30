@@ -1,37 +1,37 @@
-// IMPORT PACKAGE REFERENCES
-
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
-// COMPONENT
+import logo from '../../public/images/logo-2.png';
 
 export const Header = () => (
-    <nav className="navbar navbar-expand-lg navbar-light alert-dark">
-        <a className="navbar-brand" href="/">
-            <i className="fab fa-react fa-2x" style={{color: 'dodgerblue'}}></i>
-        </a>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu">
-            <span className="navbar-toggler-icon"></span>
-        </button>
+    <header>
+        <nav className="navbar navbar-expand bg-nav pl-md-5 ml-md-0">
+            <a href="/" className="navbar-brand mr-sm-0">
+                <img src={logo} className="head-logo" alt="logo" />
+            </a>
 
-        <div className="collapse navbar-collapse" id="menu">
-            <ul className="navbar-nav mr-auto">
-                <li className="nav-item">
-                    <div className="nav-link">
-                        <NavLink to='/' activeClassName='menu selected' exact={true}>HOME</NavLink>
+            <ul className="navbar-nav flex-row ml-auto d-md-flex">
+                <li className="nav-item dropdown show">
+                    <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i className="fa fa-user" aria-hidden="true"></i>
+                    </a>
+                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                        <a className="dropdown-item cut-user-name">
+                            <i>Logged in as</i>
+                        </a>
+                        <div className="dropdown-divider"></div>
+                        <a className="dropdown-item" href="/share">Upload Files</a>
+                        <div className="dropdown-divider"></div>
+                        <a className="dropdown-item" href="/booking">Booking</a>
+                        <div className="dropdown-divider"></div>
+                        <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                        <div className="dropdown-divider"></div>
+                        <a className="dropdown-item">Logout</a>
                     </div>
                 </li>
                 <li className="nav-item">
-                    <div className="nav-link">
-                        <NavLink to='/zipcodes' activeClassName='menu selected'>ZIP CODES</NavLink>
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <div className="nav-link">
-                        <NavLink to='/about' activeClassName='menu selected'>ABOUT</NavLink>
-                    </div>
+                    <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
                 </li>
             </ul>
-        </div>
-    </nav>
+        </nav>
+    </header>
 );

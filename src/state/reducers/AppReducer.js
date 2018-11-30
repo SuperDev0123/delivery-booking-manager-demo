@@ -1,15 +1,9 @@
-// IMPORT PACKAGE REFERENCES
-
 import { combineReducers } from 'redux';
 
-
-// IMPORT REDUCERS
-
-import { FetchZipCodesReducer } from '../reducers/FetchZipCodesReducer';
-
-
-// EXPORT APP REDUCER
+import { FetchZipCodesReducer } from './FetchZipCodesReducer';
+import { AuthReducer } from './authReducer';
 
 export const AppReducer = combineReducers({
-    zipCodes: FetchZipCodesReducer
+    zipCodes: FetchZipCodesReducer,
+    auth: AuthReducer
 });
