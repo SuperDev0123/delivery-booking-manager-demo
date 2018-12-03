@@ -228,7 +228,6 @@ div.popup i
 
 /* The actual popup */
 .popup .popuptext {
-    visibility: hidden;
     width: 120px;
     background-color: #f4f5f6;
     color: black;
@@ -336,5 +335,9 @@ div.borderB, div.borderT {
 }
 
 div.borderB {
+    border-bottom: none !important;
+}
+
+.nav-tabs {
     border-bottom: none !important;
 }

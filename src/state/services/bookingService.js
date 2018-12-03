@@ -15,3 +15,16 @@ export const getBookings = () => {
             .then(({ data }) => dispatch(setBookings(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
 };
+
+export const simpleSearch = (keyword) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/?searchType=` + '1&keyword=' + keyword,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setBookings(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};

@@ -1,24 +1,39 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { getBookings } from '../state/services/bookingService';
+import { getBookings, simpleSearch } from '../state/services/bookingService';
 
-class AllBookingsPage extends Component {
+class AllBookingsPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            bookings: []
+            bookings: [],
+            filtered_bookings: [],
+            simpleSearchKeyword: '',
+            showSimpleSearchBox: false
         };
+
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
 
     static propTypes = {
         getBookings: PropTypes.func.isRequired,
+        simpleSearch: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         this.props.getBookings();
+    }
+
+    componentWillMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
     componentWillReceiveProps(newProps) {
@@ -26,12 +41,37 @@ class AllBookingsPage extends Component {
         this.setState({ bookings });
     }
 
-    simpleFind() {
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
 
+    onClickSimpleSearch() {
+        this.setState({showSimpleSearchBox: true});
+    }
+
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target))
+            this.setState({showSimpleSearchBox: false});
+    }
+
+    onInputChange(e) {
+        this.setState({simpleSearchKeyword: e.target.value});
+    }
+
+    onSimpleSearch(e) {
+        const { simpleSearchKeyword } = this.state;
+
+        e.preventDefault();
+        this.props.simpleSearch(simpleSearchKeyword);
+    }
+
+    onClickGetAll(e) {
+        e.preventDefault();
+        this.props.getBookings();
     }
 
     render() {
-        const { bookings } = this.state;
+        const { bookings, showSimpleSearchBox, simpleSearchKeyword } = this.state;
         let bookingList = bookings.map((booking, index) => {
             return (
                 <tr key={index}>
@@ -86,13 +126,20 @@ class AllBookingsPage extends Component {
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
                         <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
-                        <div className="popup" onClick={() => this.simpleFind()}>
+                        <div className="popup" onClick={() => this.onClickSimpleSearch()}>
                             <i className="icon-search3" aria-hidden="true"></i>
-                            <form id="srch" action="" method="get">
-                                <input className="popuptext" id="myPopup" type="text" placeholder="Search.." name="search" />
-                            </form>
+                            {
+                                showSimpleSearchBox &&
+                                <div ref={this.setWrapperRef}>
+                                    <form onSubmit={(e) => this.onSimpleSearch(e)}>
+                                        <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
+                                    </form>
+                                </div>
+                            }
                         </div>
-                        <a href="/allbookings/"><i className="icon icon-th-list" aria-hidden="true"></i></a>
+                        <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
+                            <i className="icon icon-th-list" aria-hidden="true"></i>
+                        </div>
                         <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                         <a href="">?</a>
@@ -194,12 +241,14 @@ class AllBookingsPage extends Component {
 const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
+        filtered_bookings: state.booking.filtered_bookings,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getBookings: () => dispatch(getBookings()),
+        simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
     };
 };
 
