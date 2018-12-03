@@ -1,6 +1,7 @@
 import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER } from '../constants/authConstants';
 
 export function setToken(token) {
+    localStorage.setItem('token', token);
     return {
         type: SET_TOKEN,
         token
@@ -16,9 +17,11 @@ export function failedGetToken(error) {
 }
 
 export function setUser(username) {
+    localStorage.setItem('isLoggedIn', 'true');
     return {
         type: SET_USER,
-        username
+        username,
+        isLoggedIn: 'true'
     };
 }
 

@@ -47,7 +47,7 @@ body {
 }
 
 a {
-  color: #fff;
+  color: #fff !important;
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
   transition: 0.5s;
@@ -204,7 +204,7 @@ h1, h2, h3, h4, h5, h6, figure {
   font-weight: 700;
 }
 .qbootstrap-nav ul li a:hover, .qbootstrap-nav ul li a:focus, .qbootstrap-nav ul li a.active {
-  color: #048fc2;
+  color: #048fc2 !important;
 }
 .qbootstrap-nav ul li.has-dropdown {
   position: relative;

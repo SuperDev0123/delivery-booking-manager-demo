@@ -1,0 +1,2 @@
+export const SET_BOOKINGS = 'SET_BOOKINGS';
+export const FAILED_GET_BOOKINGS = 'FAILED_GET_BOOKINGS';

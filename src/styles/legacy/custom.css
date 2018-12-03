@@ -1,11 +1,10 @@
 @font-face {
     font-family: 'Helvetica Neue Bold';
-    src: url('fonts/helvetica/HelveticaNeue-BoldExt.eot');
-    src: url('fonts/helvetica/HelveticaNeue-BoldExt.eot?#iefix') format('embedded-opentype'),
-        url('fonts/helvetica/HelveticaNeue-BoldExt.woff2') format('woff2'),
-        url('fonts/helvetica/HelveticaNeue-BoldExt.woff') format('woff'),
-        url('fonts/helvetica/HelveticaNeue-BoldExt.ttf') format('truetype'),
-        url('fonts/helvetica/HelveticaNeue-BoldExt.svg#HelveticaNeue-BoldExt') format('svg');
+    src: url('../fonts/helvetica/HelveticaNeue-BoldExt.eot');
+    src: url('../fonts/helvetica/HelveticaNeue-BoldExt.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/helvetica/HelveticaNeue-BoldExt.woff') format('woff'),
+        url('../fonts/helvetica/HelveticaNeue-BoldExt.ttf') format('truetype'),
+        url('../fonts/helvetica/HelveticaNeue-BoldExt.svg#HelveticaNeue-BoldExt') format('svg');
     font-weight: bold;
     font-style: normal;
 }
@@ -13,12 +12,11 @@
 
 @font-face {
     font-family: 'Helvetica Neue Light';
-    src: url('fonts/helvetica/HelveticaNeue-LightExt.eot');
-    src: url('fonts/helvetica/HelveticaNeue-LightExt.eot?#iefix') format('embedded-opentype'),
-        url('fonts/helvetica/HelveticaNeue-LightExt.woff2') format('woff2'),
-        url('fonts/helvetica/HelveticaNeue-LightExt.woff') format('woff'),
-        url('fonts/helvetica/HelveticaNeue-LightExt.ttf') format('truetype'),
-        url('fonts/helvetica/HelveticaNeue-LightExt.svg#HelveticaNeue-LightExt') format('svg');
+    src: url('../fonts/helvetica/HelveticaNeue-LightExt.eot');
+    src: url('../fonts/helvetica/HelveticaNeue-LightExt.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/helvetica/HelveticaNeue-LightExt.woff') format('woff'),
+        url('../fonts/helvetica/HelveticaNeue-LightExt.ttf') format('truetype'),
+        url('../fonts/helvetica/HelveticaNeue-LightExt.svg#HelveticaNeue-LightExt') format('svg');
     font-weight: 300;
     font-style: normal;
 }
@@ -26,12 +24,11 @@
 
 @font-face {
     font-family: 'Helvetica Neue Medium';
-    src: url('fonts/helvetica/HelveticaNeue-Medium.eot');
-    src: url('fonts/helvetica/HelveticaNeue-Medium.eot?#iefix') format('embedded-opentype'),
-        url('fonts/helvetica/HelveticaNeue-Medium.woff2') format('woff2'),
-        url('fonts/helvetica/HelveticaNeue-Medium.woff') format('woff'),
-        url('fonts/helvetica/HelveticaNeue-Medium.ttf') format('truetype'),
-        url('fonts/helvetica/HelveticaNeue-Medium.svg#HelveticaNeue-Medium') format('svg');
+    src: url('../fonts/helvetica/HelveticaNeue-Medium.eot');
+    src: url('../fonts/helvetica/HelveticaNeue-Medium.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/helvetica/HelveticaNeue-Medium.woff') format('woff'),
+        url('../fonts/helvetica/HelveticaNeue-Medium.ttf') format('truetype'),
+        url('../fonts/helvetica/HelveticaNeue-Medium.svg#HelveticaNeue-Medium') format('svg');
     font-weight: 500;
     font-style: normal;
 }
@@ -39,12 +36,11 @@
 
 @font-face {
     font-family: 'Helvetica Neue Roman';
-    src: url('fonts/helvetica/HelveticaNeue-Roman.eot');
-    src: url('fonts/helvetica/HelveticaNeue-Roman.eot?#iefix') format('embedded-opentype'),
-        url('fonts/helvetica/HelveticaNeue-Roman.woff2') format('woff2'),
-        url('fonts/helvetica/HelveticaNeue-Roman.woff') format('woff'),
-        url('fonts/helvetica/HelveticaNeue-Roman.ttf') format('truetype'),
-        url('fonts/helvetica/HelveticaNeue-Roman.svg#HelveticaNeue-Roman') format('svg');
+    src: url('../fonts/helvetica/HelveticaNeue-Roman.eot');
+    src: url('../fonts/helvetica/HelveticaNeue-Roman.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/helvetica/HelveticaNeue-Roman.woff') format('woff'),
+        url('../fonts/helvetica/HelveticaNeue-Roman.ttf') format('truetype'),
+        url('../fonts/helvetica/HelveticaNeue-Roman.svg#HelveticaNeue-Roman') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -75,7 +71,7 @@
 
 #headr{
 	background-color: #048abb;
-	margin-bottom: 15px;
+	margin-bottom: 0;
 }
 
 .top *
@@ -95,7 +91,7 @@
 {
 	font-size: 12px;
 	font-family: Helvetica,sans-serif;
-	color: #048fc2;
+	color: #048fc2 !important;
 }
 
 .tab-content tbody th, td
@@ -146,7 +142,7 @@ ul#datesection li a
 }
 .text-right
 {
-	padding-right: 70px;
+	padding-right: 70px !important;
 }
 div#msection
 {
@@ -278,4 +274,67 @@ div.popup i
 input#myPopup[type=text]:focus
 {
 	visibility: visible;
+}
+
+h1, h2, h3, h4, h5 {
+    margin-top: 0 !important;
+}
+
+#icn {
+    margin-top: 10px;
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+.navbar-brand {
+    padding-top: .3125rem !important;
+    padding-bottom: .3125rem !important;
+    height: auto !important;
+}
+
+.navbar-nav > li > a {
+    padding: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.dropdown-menu a {
+    color: black !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    padding-bottom: 5px !important;
+    padding-top: 10px !important;
+    font-size: 16px;
+}
+
+.container {
+}
+
+#header > table {
+    margin-top: 20px;
+    height: 50px !important;
+}
+
+a.login {
+    color: black !important;
+    border: 1px solid;
+}
+
+.form-control {
+    box-shadow: none !important;
+}
+
+span.input-group-addon {
+    border: none !important;
+    padding: 0 !important;
+    padding-left: 10px !important;
+}
+
+div.borderB, div.borderT {
+    padding: 10px !important;
+}
+
+div.borderB {
+    border-bottom: none !important;
 }

@@ -1,9 +1,9 @@
 import { combineReducers } from 'redux';
 
-import { FetchZipCodesReducer } from './FetchZipCodesReducer';
 import { AuthReducer } from './authReducer';
+import { BookingReducer } from './bookingReducer';
 
 export const AppReducer = combineReducers({
-    zipCodes: FetchZipCodesReducer,
-    auth: AuthReducer
+    auth: AuthReducer,
+    booking: BookingReducer,
 });

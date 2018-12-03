@@ -1,11 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import img1 from '../public/images/1.png';
 import img2 from '../public/images/2.png';
 import img3 from '../public/images/3.png';
 
+import { getUser } from '../state/services/authService';
+
 class HomePage extends Component {
+    static propTypes = {
+        getUser: PropTypes.func.isRequired,
+    };
+
+    componentDidMount() {
+        const token = localStorage.getItem('token');
+
+        if (token)
+            this.props.getUser(token);
+    }
+
     render() {
         return (
             <section className="theme-bg">
@@ -54,14 +68,14 @@ class HomePage extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        user: state.aa
+        username: state.auth.username
     };
 };
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getUser: (token) => dispatch(getUser(token)),
+    };
+};
 
-//     };
-// };
-
-export default connect(mapStateToProps)(HomePage);
+export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
