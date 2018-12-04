@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import DropzoneComponent from 'react-dropzone-component';
 
 import { getWarehouses } from '../state/services/warehouseService';
 
@@ -9,7 +10,26 @@ class UploadPage extends Component {
         super(props);
 
         this.state = {
+            warehouses: [],
+            warehouse_id: '',
         };
+
+        this.djsConfig = {
+            addRemoveLinks: true,
+            acceptedFiles: 'image/jpeg,image/png,image/gif',
+            autoProcessQueue: false,
+            params: {
+                filename: 'file',
+            }
+        };
+
+        this.componentConfig = {
+            iconFiletypes: ['.xlsx', '.png', '.css'],
+            showFiletypeIcon: true,
+            postUrl: 'http://localhost:8000/api/share/upload/filename',
+        };
+
+        this.dropzone = null;
     }
 
     static propTypes = {
@@ -27,8 +47,26 @@ class UploadPage extends Component {
             this.setState({warehouses});
     }
 
+    handleFileAdded(file) {
+        console.log('Added file: ', file);
+    }
+
+    handleFileSending(data, xhr, formData) {
+        formData.append('warehouse_id', this.state.warehouse_id);
+    }
+
+    handlePost(e) {
+        e.preventDefault();
+        this.dropzone.processQueue();
+    }
+
+    onSelectChange(e) {
+        this.setState({ warehouse_id: e.target.value });
+        this.djsConfig['params'] = {'warehouse_id': e.target.value};
+    }
+
     render() {
-        const { warehouses } = this.state;
+        const { warehouses, warehouse_id } = this.state;
         let warehouses_list = [];
         if (warehouses)
             warehouses_list = warehouses.map((warehouse, index) => {
@@ -37,15 +75,25 @@ class UploadPage extends Component {
                 );
             });
 
+        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
+        const config = this.componentConfig;
+        const djsConfig = this.djsConfig;
+        const eventHandlers = {
+            init: dz => this.dropzone = dz,
+            addedfile: this.handleFileAdded.bind(this),
+            sending: this.handleFileSending.bind(this),
+        };
+
         return (
             <div className="container h-100vh">
                 <div className="row justify-content-md-center mt-5 mb-5">
                     <div className="col-12">
-                        <form onSubmit={() => this.onUpload()} className="dropzone" id="uploadDropzone">
-                            <select id="warehouse" required>
+                        <form onSubmit={(e) => this.handlePost(e)}>
+                            <select id="warehouse" required onChange={(e) => this.onSelectChange(e)} value={warehouse_id}>
                                 <option value="">Select a warehouse</option>
                                 { warehouses_list }
                             </select>
+                            <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
                             <button id="submit-upload" type="submit">upload</button>
                         </form>
                     </div>
