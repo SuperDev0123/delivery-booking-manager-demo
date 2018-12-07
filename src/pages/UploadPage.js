@@ -29,7 +29,7 @@ class UploadPage extends Component {
         this.componentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: 'http://localhost:8000/api/share/upload/filename',
+            postUrl: 'http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/api/share/upload/filename',
         };
 
         this.dropzone = null;
@@ -70,7 +70,7 @@ class UploadPage extends Component {
         let that = this;
 
         axios({
-            url: 'http://localhost:8000/api/share/upload-status/',
+            url: 'http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/api/share/upload-status/',
             method: 'get',
             params: { filename: this.state.uploadedFileName.substring(this.state.uploadedFileName.indexOf('_') + 1) },
             headers: {
