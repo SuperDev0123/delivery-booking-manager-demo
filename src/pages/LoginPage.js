@@ -21,7 +21,9 @@ class LoginPage extends Component {
     };
 
     componentWillReceiveProps(newProps) {
-        const { token, username } = newProps;
+        const { token, username, errorMessage } = newProps;
+
+        this.setState({ errorMessage });
 
         if (token)
             this.props.getUser(token);
@@ -41,6 +43,8 @@ class LoginPage extends Component {
     }
 
     render() {
+        const { errorMessage } = this.state;
+
         return (
             <section>
                 <div className="container h-100vh">
@@ -48,7 +52,7 @@ class LoginPage extends Component {
                         <div className=" col-md-4 col-sm-12 theme-bg rounded-left">
                       
                             <form onSubmit={(e) => this.onSubmit(e)} className="form-signin text-center">
-                                <h1 className="h5 mb-5 mt-5 font-weight-normal text-white">Welcome to Deliver-Me </h1>  
+                                <h1 className="h4 mb-5 mt-5 font-weight-normal">Welcome to Deliver-Me </h1>  
                                 <div className="input-group input-group-text bg-white borderB">
                                     <span className="input-group-addon bg-white">
                                         <i className="fa fa-envelope text-lightgray"></i>
@@ -61,6 +65,10 @@ class LoginPage extends Component {
                                     </span>
                                     <input name="password" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="Password" value={this.state.password} onChange={(e) => this.onInputChange(e)} />
                                 </div>
+                                {
+                                    errorMessage &&
+                                        <p className="error-message">{ errorMessage }</p>
+                                }
                                 <button className="btn btn-lg btn-info mt-md-2 btn-block">Sign in</button>
                                 <p className="mt-5 mb-0"><a href="#" className="text-offlight">Forgot your password?</a></p>
                             </form>
@@ -83,7 +91,8 @@ class LoginPage extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
-        username: state.auth.username
+        username: state.auth.username,
+        errorMessage: state.auth.errorMessage,
     };
 };
 
