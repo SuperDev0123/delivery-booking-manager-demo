@@ -1,8 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import { getBookings, simpleSearch } from '../state/services/bookingService';
+import { getWarehouses } from '../state/services/warehouseService';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -11,8 +15,18 @@ class AllBookingsPage extends React.Component {
         this.state = {
             bookings: [],
             filtered_bookings: [],
+            warehouses: [],
+            selectedWarehouseId: '',
             simpleSearchKeyword: '',
-            showSimpleSearchBox: false
+            showSimpleSearchBox: false,
+            hasFilter: false,
+            errors2CorrectCnt: 0,
+            missingLabelCnt: 0,
+            toProcessCnt: 0,
+            closedCnt: 0,
+            startDate: '',
+            endDate: '',
+            orFilter: false,
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -22,10 +36,14 @@ class AllBookingsPage extends React.Component {
     static propTypes = {
         getBookings: PropTypes.func.isRequired,
         simpleSearch: PropTypes.func.isRequired,
+        getWarehouses: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         this.props.getBookings();
+        this.props.getWarehouses();
+
+        this.setState({ endDate: moment().toDate() });
     }
 
     componentWillMount() {
@@ -37,8 +55,21 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings } = newProps;
-        this.setState({ bookings });
+        const { bookings, warehouses } = newProps;
+        let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (bookings[i].error_details.length > 0)
+                errors2CorrectCnt++;
+            if (bookings[i].consignment_label_link.length === 0)
+                missingLabelCnt++;
+            if (bookings[i].b_status === 'booked')
+                toProcessCnt++;
+            if (bookings[i].b_status === 'closed')
+                closedCnt++;
+        }
+
+        this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses });
     }
 
     setWrapperRef(node) {
@@ -70,9 +101,93 @@ class AllBookingsPage extends React.Component {
         this.props.getBookings();
     }
 
+    onSelectChange(e) {
+        this.setState({ selectedWarehouseId: e.target.value }, () => this.applyFilter(5));
+    }
+
+    onDateChange(num, date) {
+        if (num === 0)
+            this.setState({ startDate: date }, () => this.applyFilter(6));
+        else if (num === 1)
+            this.setState({ endDate: date }, () => this.applyFilter(6));
+    }
+
+    applyFilter(num) {
+        const { bookings, selectedWarehouseId, startDate, endDate, orFilter } = this.state;
+        let newFilteredBookings = [];
+
+        if (num === 6)
+            if (startDate.length === 0 || endDate.length === 0)
+                num = -1;
+        
+        for (let i = 0; i < bookings.length; i++) {
+            if (num === 0)
+                if (bookings[i].error_details.length > 0)
+                    newFilteredBookings.push(bookings[i]);
+
+            if (num === 1)
+                if (bookings[i].consignment_label_link.length === 0)
+                    newFilteredBookings.push(bookings[i]);
+
+            if (num === 3)
+                if (bookings[i].b_status === 'booked')
+                    newFilteredBookings.push(bookings[i]);
+
+            if (num === 4)
+                if (bookings[i].b_status === 'closed')
+                    newFilteredBookings.push(bookings[i]);
+        }
+
+        if (orFilter && startDate.length !== 0 && endDate.length !== 0) {
+            let temp = [];
+
+            for (let i = 0; i < bookings.length; i++) {                
+                if (bookings[i].b_clientPU_Warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
+                    temp.push(bookings[i]);
+            }
+            for (let i = 0; i < temp.length; i++) {
+                if (moment(temp[i].b_dateBookedDate) < moment(endDate) && 
+                    moment(temp[i].b_dateBookedDate) > moment(startDate))
+                    newFilteredBookings.push(temp[i]);
+            }
+        } else {
+            for (let i = 0; i < bookings.length; i++) {
+                if (num === 5) // Warehouse filter
+                    if (bookings[i].b_clientPU_Warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
+                        newFilteredBookings.push(bookings[i]);
+
+                if (num === 6)
+                    if (moment(bookings[i].b_dateBookedDate) < moment(endDate) && 
+                        moment(bookings[i].b_dateBookedDate) > moment(startDate))
+                        newFilteredBookings.push(bookings[i]);
+            }
+        }
+        console.log('@2 - ', num);
+
+        this.setState({filtered_bookings: newFilteredBookings, hasFilter: true});
+
+        if (num > 4)
+            this.setState({orFilter: true});
+        else
+            this.setState({orFilter: false});
+    }
+
     render() {
-        const { bookings, showSimpleSearchBox, simpleSearchKeyword } = this.state;
-        let bookingList = bookings.map((booking, index) => {
+        const { bookings, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate } = this.state;
+        let list, warehouses_list;
+        
+        if (hasFilter)
+            list = filtered_bookings;
+        else
+            list = bookings;
+
+        warehouses_list = warehouses.map((warehouse, index) => {
+            return (
+                <option key={index} value={warehouse.pk_id_client_warehouse}>{warehouse.warehousename}</option>
+            );
+        });
+
+        let bookingList = list.map((booking, index) => {
             return (
                 <tr key={index}>
                     <th scope="row">{booking.id}</th>
@@ -150,15 +265,33 @@ class AllBookingsPage extends React.Component {
                         <div className="row1">
                             <div className="col-md-12 col-sm-12 col-lg-12 col-xs-12">
                                 <div className="tab-content">
-                                    <div id="header" className="tab-pane fade in active">
-                                        <table style={{width: '100%'}}>
-                                            <tbody>
-                                                <tr>
-                                                    <td> <h3>Header</h3> </td>
-                                                    <td align="right"> <h3>Count : 4</h3> </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div id="all_booking" className="tab-pane fade in active">
+                                        <p>Date</p>
+                                        <div id="line1"></div>
+                                        <ul className="filter-conditions">
+                                            <li><a onClick={() => this.applyFilter(0)}>( {errors2CorrectCnt} ) Errors to Correct</a></li>
+                                            <li><a onClick={() => this.applyFilter(1)}>( {missingLabelCnt} ) Missing Labels</a></li>
+                                            <li><a >( 50 ) To Manifest</a></li>
+                                            <li><a onClick={() => this.applyFilter(3)}>( {toProcessCnt} ) To Process</a></li>
+                                            <li><a onClick={() => this.applyFilter(4)}>( {closedCnt} ) Closed</a></li>
+                                        </ul>
+                                        <div className="filter-conditions2">
+                                            <label className="right-10px">Warehouses:</label>
+                                            <select id="warehouse" required onChange={(e) => this.onSelectChange(e)} value={selectedWarehouseId}>
+                                                <option value="all">All</option>
+                                                { warehouses_list }
+                                            </select>
+                                            <label className="left-15px right-10px">Start Date:</label>
+                                            <DatePicker
+                                                selected={startDate}
+                                                onChange={(e) => this.onDateChange(0, e)}
+                                            />
+                                            <label className="left-15px right-10px">End Date:</label>
+                                            <DatePicker
+                                                selected={endDate}
+                                                onChange={(e) => this.onDateChange(1, e)}
+                                            />
+                                        </div>
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
@@ -242,6 +375,7 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         filtered_bookings: state.booking.filtered_bookings,
+        warehouses: state.warehouse.warehouses,
     };
 };
 
@@ -249,6 +383,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getBookings: () => dispatch(getBookings()),
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
+        getWarehouses: () => dispatch(getWarehouses()),
     };
 };
 

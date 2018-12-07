@@ -362,3 +362,60 @@ div.borderB {
     background-color: lightblue;
     cursor: pointer;
 }
+
+.form-signin > .h4 {
+    color: black !important;
+}
+
+.error-message {
+    color: red;
+    text-align: left;
+}
+
+.filter-conditions a {
+    color: #337ab7 !important;
+    display: block;
+    padding: 0px !important;
+    font-weight: normal !important;
+    cursor: pointer;
+}
+
+.filter-conditions li {
+    font-size: 12px !important;
+}
+
+.filter-conditions ul {
+    margin-bottom: 10px !important;
+}
+
+#all_booking {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#all_booking > p {
+    color: #828282 !important;
+}
+
+.table-responsive {
+    margin-top: 10px;
+}
+
+.filter-conditions2 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.filter-conditions2 > select {
+    width: 150px;
+    height: 30px;
+}
+
+.left-15px {
+    margin-left: 15px;
+}
+
+.right-10px {
+    margin-right: 10px;
+}
