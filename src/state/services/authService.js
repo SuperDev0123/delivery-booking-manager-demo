@@ -16,7 +16,10 @@ export const getToken = (username, password) => {
 export const getUser = (token) => {
     const options = {
         method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': 'JWT ' + token 
+        },
         url: `${HTTP_PROTOCOL}://${API_HOST}/auth/user/`,
     };
     return dispatch =>
