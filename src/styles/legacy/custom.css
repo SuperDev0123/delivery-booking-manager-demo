@@ -412,10 +412,73 @@ div.borderB {
     height: 30px;
 }
 
+.booking-status {
+    height: 50px;
+}
+
+.booking-status a > i {
+    font-size: 16px;
+}
+
+.booking-status > div {
+    margin-top: 15px;
+}
+
+.booking-status a {
+    padding-top: 18px;
+    padding-bottom: 17px;
+    padding-right: 4px;
+    padding-left: 4px;
+    text-decoration: none !important;
+}
+
+.booking-status .warning > i {
+    color: #ff5309;
+}
+
+.dark-blue {
+    background-color: #0995a5 !important;
+}
+
+.tootipitem .tooltip-inner {
+  background-color: #333;
+  color: #333;
+  border: 1px solid #062e56;
+}
+
+.tootipitem .tooltip-arrow {
+  border-top: 5px solid #062e56;
+}
+
+
+
 .left-15px {
     margin-left: 15px;
 }
 
 .right-10px {
     margin-right: 10px;
+}
+.no-padding {
+    padding: 0px !important;
+}
+
+.disp-inline-block {
+    display: inline-block;
+}
+
+.bc-red {
+    background-color: red;
+}
+
+.c-red {
+    color: red;
+}
+
+.bc-green {
+    background-color: green;
+}
+
+.transparent {
+    visibility: hidden;
 }

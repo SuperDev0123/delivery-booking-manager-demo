@@ -5,7 +5,8 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { getBookings, simpleSearch } from '../state/services/bookingService';
+import TooltipItem from '../components/Tooltip/TooltipComponent';
+import { getBookings, simpleSearch, updateBooking } from '../state/services/bookingService';
 import { getWarehouses } from '../state/services/warehouseService';
 
 class AllBookingsPage extends React.Component {
@@ -27,6 +28,7 @@ class AllBookingsPage extends React.Component {
             startDate: '',
             endDate: '',
             orFilter: false,
+            printerFlag: false,
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -37,6 +39,7 @@ class AllBookingsPage extends React.Component {
         getBookings: PropTypes.func.isRequired,
         simpleSearch: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
+        updateBooking: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -55,7 +58,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, warehouses } = newProps;
+        const { bookings, warehouses, booking } = newProps;
         let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
 
         for (let i = 0; i < bookings.length; i++) {
@@ -67,6 +70,11 @@ class AllBookingsPage extends React.Component {
                 toProcessCnt++;
             if (bookings[i].b_status === 'closed')
                 closedCnt++;
+        }
+
+        if (booking && this.printerFlag === true) {
+            this.props.getBookings();
+            this.setState({ printerFlag: false });
         }
 
         this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses });
@@ -162,7 +170,6 @@ class AllBookingsPage extends React.Component {
                         newFilteredBookings.push(bookings[i]);
             }
         }
-        console.log('@2 - ', num);
 
         this.setState({filtered_bookings: newFilteredBookings, hasFilter: true});
 
@@ -172,10 +179,16 @@ class AllBookingsPage extends React.Component {
             this.setState({orFilter: false});
     }
 
+    onClickPrinter(booking) {
+        booking.is_printed = !booking.is_printed;
+        this.props.updateBooking(booking.id, booking);
+        this.setState({ printerFlag: true });
+    }
+
     render() {
         const { bookings, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate } = this.state;
         let list, warehouses_list;
-        
+
         if (hasFilter)
             list = filtered_bookings;
         else
@@ -190,7 +203,9 @@ class AllBookingsPage extends React.Component {
         let bookingList = list.map((booking, index) => {
             return (
                 <tr key={index}>
-                    <th scope="row">{booking.id}</th>
+                    <th scope="row">
+                        <span className={booking.error_details ? 'c-red' : ''}>{booking.id}</span>
+                    </th>
                     <td>
                         {booking.b_bookingID_Visual}
                         <a href="#">
@@ -201,14 +216,31 @@ class AllBookingsPage extends React.Component {
                     <td>{booking.puPickUpAvailFrom_Date}</td>
                     <td>
                         {booking.b_clientReference_RA_Numbers}&nbsp;&nbsp;
-                        <a href="#">
-                            <i className="icon icon-warning"></i>
-                        </a>&nbsp;&nbsp;
-                        <a href="#">
-                            <i className="icon icon-printer"></i>
-                        </a>
                     </td>
-                    <td>{booking.b_status}</td>
+                    <td className="no-padding">
+                        {
+                            (booking.error_details) ?
+                                <div className="booking-status">
+                                    <TooltipItem booking={booking} />
+                                </div>
+                                :
+                                <div className="booking-status">   
+                                    <div className="disp-inline-block">
+                                        {
+                                            (booking.consignment_label_link.length > 0) ?
+                                                <a href="#" className={booking.is_printed ? 'bc-red' : 'bc-green'} onClick={() => this.onClickPrinter(booking)}>
+                                                    <i className="icon icon-printer"></i>
+                                                </a>
+                                                :
+                                                <a>
+                                                    <i className="icon icon-printer transparent"></i>
+                                                </a>
+                                        }
+                                        &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                        }
+                    </td>
                     <td>
                         {booking.vx_freight_provider}&nbsp;&nbsp;
                         <a href="#">
@@ -366,6 +398,7 @@ class AllBookingsPage extends React.Component {
                         </div>
                     </div>
                 </div>
+                
             </div>
         );
     }
@@ -374,6 +407,7 @@ class AllBookingsPage extends React.Component {
 const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
+        booking: state.booking.booking,
         filtered_bookings: state.booking.filtered_bookings,
         warehouses: state.warehouse.warehouses,
     };
@@ -384,6 +418,7 @@ const mapDispatchToProps = (dispatch) => {
         getBookings: () => dispatch(getBookings()),
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
         getWarehouses: () => dispatch(getWarehouses()),
+        updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
     };
 };
 
