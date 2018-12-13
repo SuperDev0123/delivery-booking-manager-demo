@@ -1,0 +1,366 @@
+/**********General***********/
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
+
+body{
+	font-family: 'Roboto', sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6{
+	margin: 0;
+}
+p{
+	margin:0;
+}
+ul{
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+a:hover{
+	cursor: pointer;
+	opacity: 0.9;
+	text-decoration: none;
+}
+.text-white{
+	color: #fff;
+}
+.text-black{
+	color: #333;
+}
+section{
+	padding:30px 0;
+}
+/**********General***********/
+
+
+
+/**********header***********/
+header{
+	background-color:#0189b9;
+	padding-top: 15px;
+}
+.topbar h3 small {
+	color: #fff;
+}
+
+ul.top li {
+	display: inline-block;
+	border-right: 1px solid #c3c3c3;
+	padding: 0 10px;
+}
+ul.top li:last-child{
+	border: none;
+}
+ul.top li a {
+	color: #fff;
+}
+ul.top{
+	padding-right: 15px;
+}
+.navbar{
+	padding-bottom: 0;
+	margin-bottom: 0;
+	padding-top: 15px;
+	border: none;
+}
+.navbar-expand-lg .navbar-nav .nav-link{
+	padding: 10px 20px;
+}
+
+ul.nav.navbar-nav a {
+	color: #fff;
+}
+ul.nav.navbar-nav li.active a {
+	color: #333;
+	background-color: #fff;
+}
+.nav>li>a:focus, .nav>li>a:hover{
+	text-decoration: none;
+	background-color: #fff;
+	color: #333;
+}
+.navbar-toggle .icon-bar{
+	background-color: #fff;
+}
+ul.nav.navbar-nav.navbar-right li a {
+	padding: 15px 25px;
+}
+/**********header***********/
+
+
+/**********UserHeader***********/
+
+.user-header{
+	-webkit-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	-moz-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	padding: 20px 0;
+}
+a.user-menu i{
+	font-size: 25px;
+	margin-top: 7px;
+	color: #333;
+}
+.user ul li {
+	display: inline-block;
+}
+.user ul li img{
+	height: 40px;
+}
+.user{
+	text-align: right;
+}
+/**********UserHeader***********/
+
+
+/**********Booking***********/
+
+section.booking{
+	margin-top: 20px;
+}
+
+/**********Booking***********/
+
+.btn-outline-light{
+	background-color: transparent;
+	color: #fff;
+	border: none;
+}
+ul.grid-head li {
+	display: inline-block;
+	padding: 0 5px;
+}
+ul.grid-head {
+	text-align: right;
+}
+ul.grid-head li:last-child {
+	padding-right: 0px;
+}
+.btn-theme{
+	background-color: #fff;
+	color: #0189b9;
+	border-color: #0189b9;
+}
+section.booking .grid .head{
+	background-color: #0189b9;
+	padding: 5px;
+}
+section.booking .grid .head p{
+	padding-top: 8px;
+}
+input.form-control {
+	border-color: #ebebeb;
+	border-radius: 0;
+	-webkit-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	-moz-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+}
+.input-group-addon{
+	-webkit-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	-moz-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	border-radius: 0;
+	background-color: #fff;
+	border-color: #ebebeb;
+}
+.detail-tab{
+	-webkit-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	-moz-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+	box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
+}
+.inner-text {
+	margin-top: 15px;
+}
+.mt-2{
+	margin-top: 15px;
+}
+.mt-1{
+	margin-top: 10px;
+}
+.mt-0{
+	margin-top: 0px !important;
+}
+
+label {
+	margin-top: 8px;
+	font-size: 12px;
+}
+.pickup-detail .head ul li {
+	display: inline-block;
+}
+.pickup-detail .head ul li a{
+	color: #fff;
+}
+.pickup-detail .head ul li:last-child{
+	float: right
+}
+.pickup-detail form{
+	padding: 15px;
+}
+.pickup-detail {
+	border: 1px solid #ebebeb;
+	margin-bottom: 10px;
+	padding-bottom: 20px;
+}
+.pick-dates{
+	display: none;
+}
+.deliver-date{
+	display: none;
+}
+#additional-pickup{
+	font-size: 18px;
+}
+#additional-delivery{
+	font-size: 18px;
+}
+.additional-pickup{
+	display: none;
+}
+.additional-delivery{
+	display: none;
+}
+.status-log {
+	border: 1px solid #ebebeb;
+	padding: 10px;
+	margin: 10px;
+	height: 125px;
+	overflow-y: scroll;
+}
+.status-log h4 {
+	margin-bottom: 10px;
+}
+a.popup i {
+	font-size: 10px;
+	color: #0189b9;
+}
+.custom-theme {
+	width: 265px;
+	font-size: 18px;
+	border-radius: 12px;
+	padding: 15px;
+	-webkit-transition: background-color 0.5s ease-out;
+	-moz-transition: background-color 0.5s ease-out;
+	-o-transition: background-color 0.5s ease-out;
+	transition: background-color 0.5s ease-out;
+}
+.custom-theme:hover{
+	background-color: #0189b9;
+	color: #fff;
+}
+/**********Booking***********/
+
+
+
+/**********Tabs***********/
+.tabs {
+
+}
+#tab-button {
+	display: table;
+	table-layout: fixed;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#tab-button li {
+	display: table-cell;
+	width: 20%;
+}
+#tab-button li a {
+	display: block;
+	padding: .5em;
+	background: #0189b9;
+	border: 1px solid #ddd;
+	text-align: center;
+	color: #fff;
+	text-decoration: none;
+}
+#tab-button li:not(:first-child) a {
+	border-left: none;
+}
+#tab-button .is-active a {
+	border-bottom-color: transparent;
+	background: #fff;
+	color: #333;
+}
+.tab-contents {
+	padding: .5em 2em 1em;
+	border: 1px solid #ddd;
+}
+.tab-button-outer {
+	display: none;
+}
+.tab-contents {
+	margin-top: 20px;
+}
+@media screen and (min-width: 768px) {
+	.tab-button-outer {
+		position: relative;
+		z-index: 2;
+		display: block;
+	}
+	.tab-select-outer {
+		display: none;
+	}
+	.tab-contents {
+		position: relative;
+		top: -1px;
+		margin-top: 0;
+	}
+}
+table.tab-table{
+	text-align: center;
+}
+table.tab-table thead th {
+    text-align: center;
+    background-color: #f3f3f3;
+}
+.tab-inner {
+    padding: 15px 0;
+    width: 100%;
+    overflow-x: scroll;
+}
+/**********Tabs***********/
+
+
+
+/**********Responsive***********/
+
+@media (min-width:767px) and (max-width:992px){
+	.custom-theme{
+		width: 100%;
+		padding: 10px;
+		font-size: 12px;
+	}
+	.buttons{
+		padding: 15px;
+	}
+}
+@media (max-width:767px){
+	select#tab-select {
+		padding: 10px;
+		width: 100%;
+		background-color: #0189b9;
+		color: #fff;
+	}
+	.custom-theme{
+		width: 100%;
+	}
+	.buttons{
+		padding: 15px;
+	}
+	ul.top.text-right {
+		text-align: center;
+	}
+	.topbar h3 small{
+		font-size: 10px;
+	}
+	ul.nav.navbar-nav.navbar-right li{
+		display: inline-block;
+	}
+}
+
+
+/**********Responsive***********/

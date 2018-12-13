@@ -482,3 +482,7 @@ div.borderB {
 .transparent {
     visibility: hidden;
 }
+
+.pickup-detail .progress .progress-bar-striped {
+    width: 50%;
+}
