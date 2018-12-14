@@ -229,6 +229,7 @@ class AllBookingsPage extends React.Component {
                                 <div className="booking-status">
                                     <div className="disp-inline-block">
                                         {
+                                            (booking.shipping_label_base64) &&
                                             (booking.shipping_label_base64.length > 0) ?
                                                 <a href="#" className={booking.is_printed ? 'bc-red' : 'bc-green'} onClick={() => this.onClickPrinter(booking)}>
                                                     <i className="icon icon-printer"></i>
