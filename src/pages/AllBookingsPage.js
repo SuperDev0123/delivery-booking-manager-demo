@@ -127,7 +127,7 @@ class AllBookingsPage extends React.Component {
         if (num === 6)
             if (startDate.length === 0 || endDate.length === 0)
                 num = -1;
-        
+
         for (let i = 0; i < bookings.length; i++) {
             if (num === 0)
                 if (bookings[i].error_details.length > 0)
@@ -149,12 +149,12 @@ class AllBookingsPage extends React.Component {
         if (orFilter && startDate.length !== 0 && endDate.length !== 0) {
             let temp = [];
 
-            for (let i = 0; i < bookings.length; i++) {                
+            for (let i = 0; i < bookings.length; i++) {
                 if (bookings[i].b_clientPU_Warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
                     temp.push(bookings[i]);
             }
             for (let i = 0; i < temp.length; i++) {
-                if (moment(temp[i].b_dateBookedDate) < moment(endDate) && 
+                if (moment(temp[i].b_dateBookedDate) < moment(endDate) &&
                     moment(temp[i].b_dateBookedDate) > moment(startDate))
                     newFilteredBookings.push(temp[i]);
             }
@@ -165,7 +165,7 @@ class AllBookingsPage extends React.Component {
                         newFilteredBookings.push(bookings[i]);
 
                 if (num === 6)
-                    if (moment(bookings[i].b_dateBookedDate) < moment(endDate) && 
+                    if (moment(bookings[i].b_dateBookedDate) < moment(endDate) &&
                         moment(bookings[i].b_dateBookedDate) > moment(startDate))
                         newFilteredBookings.push(bookings[i]);
             }
@@ -224,10 +224,10 @@ class AllBookingsPage extends React.Component {
                                     <TooltipItem booking={booking} />
                                 </div>
                                 :
-                                <div className="booking-status">   
+                                <div className="booking-status">
                                     <div className="disp-inline-block">
                                         {
-                                            (booking.consignment_label_link.length > 0) ?
+                                            (booking.shipping_label_base64.length > 0) ?
                                                 <a href="#" className={booking.is_printed ? 'bc-red' : 'bc-green'} onClick={() => this.onClickPrinter(booking)}>
                                                     <i className="icon icon-printer"></i>
                                                 </a>
@@ -390,7 +390,7 @@ class AllBookingsPage extends React.Component {
                                         </div>
                                         <div id="other5" className="tab-pane fade">
                                             <h3>Other 5</h3>
-                                            <p>Some content in Other 5</p>  
+                                            <p>Some content in Other 5</p>
                                         </div>
                                     </div>
                                 </div>
@@ -398,7 +398,7 @@ class AllBookingsPage extends React.Component {
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         );
     }
