@@ -1,93 +1,3 @@
-/**********General***********/
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900');
-
-body{
-	font-family: 'Roboto', sans-serif;
-}
-
-h1,h2,h3,h4,h5,h6{
-	margin: 0;
-}
-p{
-	margin:0;
-}
-ul{
-	padding: 0;
-	margin: 0;
-	list-style: none;
-}
-a:hover{
-	cursor: pointer;
-	opacity: 0.9;
-	text-decoration: none;
-}
-.text-white{
-	color: #fff;
-}
-.text-black{
-	color: #333;
-}
-section{
-	padding:30px 0;
-}
-/**********General***********/
-
-
-
-/**********header***********/
-header{
-	background-color:#0189b9;
-	padding-top: 15px;
-}
-.topbar h3 small {
-	color: #fff;
-}
-
-ul.top li {
-	display: inline-block;
-	border-right: 1px solid #c3c3c3;
-	padding: 0 10px;
-}
-ul.top li:last-child{
-	border: none;
-}
-ul.top li a {
-	color: #fff;
-}
-ul.top{
-	padding-right: 15px;
-}
-.navbar{
-	padding-bottom: 0;
-	margin-bottom: 0;
-	padding-top: 15px;
-	border: none;
-}
-.navbar-expand-lg .navbar-nav .nav-link{
-	padding: 10px 20px;
-}
-
-ul.nav.navbar-nav a {
-	color: #fff;
-}
-ul.nav.navbar-nav li.active a {
-	color: #333;
-	background-color: #fff;
-}
-.nav>li>a:focus, .nav>li>a:hover{
-	text-decoration: none;
-	background-color: #fff;
-	color: #333;
-}
-.navbar-toggle .icon-bar{
-	background-color: #fff;
-}
-ul.nav.navbar-nav.navbar-right li a {
-	padding: 15px 25px;
-}
-/**********header***********/
-
-
 /**********UserHeader***********/
 
 .user-header{
@@ -112,13 +22,15 @@ a.user-menu i{
 }
 /**********UserHeader***********/
 
-
 /**********Booking***********/
 
 section.booking{
 	margin-top: 20px;
+	padding-top: 30px;
 }
-
+.progress{
+	margin-bottom: 15px;
+}
 /**********Booking***********/
 
 .btn-outline-light{
@@ -162,6 +74,7 @@ input.form-control {
 	border-radius: 0;
 	background-color: #fff;
 	border-color: #ebebeb;
+	padding: 7px 9px;
 }
 .detail-tab{
 	-webkit-box-shadow: 0px 1px 5px 2px rgba(0,0,0,0.11);
@@ -215,10 +128,10 @@ label {
 	font-size: 18px;
 }
 .additional-pickup{
-	display: none;
+	/*display: none;*/
 }
 .additional-delivery{
-	display: none;
+	/*display: none;*/
 }
 .status-log {
 	border: 1px solid #ebebeb;
@@ -235,10 +148,11 @@ a.popup i {
 	color: #0189b9;
 }
 .custom-theme {
-	width: 265px;
-	font-size: 18px;
-	border-radius: 12px;
-	padding: 15px;
+	width: 265px !important;
+	font-size: 18px !important;
+	border-radius: 12px !important;
+	border: 1px solid !important;
+	padding: 15px !important;
 	-webkit-transition: background-color 0.5s ease-out;
 	-moz-transition: background-color 0.5s ease-out;
 	-o-transition: background-color 0.5s ease-out;
@@ -270,6 +184,8 @@ a.popup i {
 }
 #tab-button li a {
 	display: block;
+	font-size: 13px;
+	font-weight: bold;
 	padding: .5em;
 	background: #0189b9;
 	border: 1px solid #ddd;
@@ -283,7 +199,7 @@ a.popup i {
 #tab-button .is-active a {
 	border-bottom-color: transparent;
 	background: #fff;
-	color: #333;
+	color: #333 !important;
 }
 .tab-contents {
 	padding: .5em 2em 1em;
@@ -312,19 +228,32 @@ a.popup i {
 }
 table.tab-table{
 	text-align: center;
+	font-size: 12px;
 }
 table.tab-table thead th {
-    text-align: center;
-    background-color: #f3f3f3;
+	text-align: center;
+	background-color: #f3f3f3;
 }
 .tab-inner {
-    padding: 15px 0;
-    width: 100%;
-    overflow-x: scroll;
+	padding: 15px 0;
+	width: 100%;
+	overflow-x: scroll;
+}
+.font-16{
+	font-size: 16px;
 }
 /**********Tabs***********/
 
-
+a.create-user i{
+	font-size: 25px;
+    margin-top: 7px;
+    color: #333;
+    margin-right: 10px;
+}
+ul.grid-head button {
+    width: 80px;
+    font-size: 12px;
+}
 
 /**********Responsive***********/
 
@@ -339,6 +268,29 @@ table.tab-table thead th {
 	}
 }
 @media (max-width:767px){
+	.navbar{
+		padding-left: 0;
+	}
+	ul.nav.navbar-nav.navbar-right {
+		display: inline-block;
+		padding-bottom: 20px;
+	}
+	section.booking .grid .head p{
+		text-align: center !important;
+	}
+	ul.grid-head li {
+		padding: 0;
+	}
+	ul.grid-head li button {
+		padding: 5px;
+		width: 62px;
+	}
+	ul.grid-head li button i{
+		display: none;
+	}
+	ul.grid-head{
+		text-align: center;
+	}
 	select#tab-select {
 		padding: 10px;
 		width: 100%;
@@ -352,7 +304,8 @@ table.tab-table thead th {
 		padding: 15px;
 	}
 	ul.top.text-right {
-		text-align: center;
+		text-align: center !important;
+		padding-top: 10px;
 	}
 	.topbar h3 small{
 		font-size: 10px;
@@ -364,3 +317,70 @@ table.tab-table thead th {
 
 
 /**********Responsive***********/
+
+.grid-head button {
+	padding: 6px 12px;
+}
+
+.head {
+	height: 43px;
+}
+
+.head p {
+	margin-bottom: 0px;
+}
+
+.pickup-detail > .head {
+	padding-top: 13px !important;
+}
+
+.pickup-detail ul {
+	padding-left: 10px;
+}
+
+.input-group > span {
+	padding-left: 0px !important;
+	background: transparent;
+}
+
+.input-group > span > a > i {
+	color: #007bff !important;
+}
+
+.booking .detail-tab {
+	box-shadow: none;
+}
+
+.detail-tab > .row > .col-sm-4:nth-child(0) {
+	padding: 0px !important;
+}
+
+.booking .pickup-detail .col-sm-4 a,
+.booking .pickup-detail .col-sm-6 a {
+	padding: 0;
+}
+
+.booking form > .mt-2 .col-sm-4,
+.booking form > .mt-2 .col-sm-8, 
+.booking form > .mt-1 .col-sm-4,
+.booking form > .mt-1 .col-sm-8,
+.booking form > .mt-1 .col-sm-6 {
+	padding: 0 !important;
+}
+
+.booking .additional-pickup > .row .col-sm-12 {
+	padding: 0 !important;
+}
+
+.booking .additional-pickup > .row .col-sm-12 .col-sm-6:first-child {
+	padding-left: 0 !important;
+}
+
+.booking .additional-pickup > .row .col-sm-12 .col-sm-6:last-child {
+	padding-right: 0 !important;
+}
+
+.additional-delivery .col-sm-12 {
+	padding: 0px !important;
+}
+

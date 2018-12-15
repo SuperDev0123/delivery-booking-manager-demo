@@ -64,7 +64,7 @@
 	font-family: "Helvetica Neue Light", Helvetica, Arial, sans-serif!important;
 }
 
-.table > thead > tr > th 
+.table > thead > tr > th
 {
    font-family: "Helvetica Neue Bold", Helvetica, Arial, sans-serif!important;
 }
@@ -125,7 +125,7 @@ ul#datesection
 {
 	padding-bottom: 5px;
 }
-ul#datesection li 
+ul#datesection li
 {
 	display: block;
 	padding-bottom: 2px;
@@ -138,11 +138,11 @@ ul#datesection li a
 	padding: 0px 0px 0px 0px;
 	font-size: 12px;
 	font-weight: normal;
-	
+
 }
 .text-right
 {
-	padding-right: 70px !important;
+	
 }
 div#msection
 {
