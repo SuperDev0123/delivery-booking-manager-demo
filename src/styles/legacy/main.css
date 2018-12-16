@@ -115,12 +115,6 @@ label {
 	margin-bottom: 10px;
 	padding-bottom: 20px;
 }
-.pick-dates{
-	display: none;
-}
-.deliver-date{
-	display: none;
-}
 #additional-pickup{
 	font-size: 18px;
 }
@@ -384,3 +378,30 @@ ul.grid-head button {
 	padding: 0px !important;
 }
 
+.text-black {
+	color: black;
+}
+
+.booking .additional-pickup-div,
+.booking .additional-delivery-div { 
+	margin-top: 10px !important;
+}
+
+.booking .additional-pickup-div a,
+.booking .additional-delivery-div a {
+	padding-left: 0px;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+div.pick-dates,
+div.deliver-date {
+	padding: 0px;
+}
+
+a#pick-date {
+	padding-left: 10px;
+	padding-right: 10px;
+}

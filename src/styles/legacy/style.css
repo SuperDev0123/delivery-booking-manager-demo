@@ -47,7 +47,6 @@ body {
 }
 
 a {
-  color: #fff !important;
   -webkit-transition: 0.5s;
   -o-transition: 0.5s;
   transition: 0.5s;

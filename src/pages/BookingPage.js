@@ -2,7 +2,20 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 class BookingPage extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isShowAddServiceAndOpt: false,
+            isShowBookingCntAndTot: false,
+            isShowPUDate: false,
+            isShowDelDate: false,
+        };
+    }
+
     render() {
+        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate} = this.state;
+
         return (
             <div id="page">
                 <div className="user-header">
@@ -166,15 +179,15 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="row mt-1">
                                                     <div className="col-sm-4">
-                                                        <label className="" htmlFor="">Pickup Dates <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        <label className="" htmlFor="">Pickup Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
                                                         <div className="input-group">
                                                             <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                            <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
+                                                            <span className="input-group-addon"><a id="pick-date" onClick={() => this.setState({isShowPUDate: !isShowPUDate})}><i className="fas fa-calendar-alt"></i></a></span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-sm-12 pick-dates mt-1">
+                                                    <div className={isShowPUDate ? 'col-sm-12 pick-dates mt-1' : 'col-sm-12 pick-dates mt-1 hidden'}>
                                                         <div className="row">
                                                             <div className="col-sm-6">
                                                                 <div className="input-group">
@@ -211,10 +224,13 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Pickup Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                 </div>
-                                                <div className="mt-1">
-                                                    <a id="additional-pickup" className="text-black" href="">Additional Services & Options <i className="fas fa-caret-down text-black"></i></a>
+                                                <div className="mt-1 additional-pickup-div">
+                                                    <a id="additional-pickup" className="text-black pointer" onClick={() => this.setState({isShowAddServiceAndOpt: !isShowAddServiceAndOpt})}>
+                                                        Additional Services & Options 
+                                                        <i className="fas fa-caret-down text-black"></i>
+                                                    </a>
                                                 </div>
-                                                <div className="additional-pickup">
+                                                <div className={isShowAddServiceAndOpt ? 'additional-pickup' : 'additional-pickup hidden'}>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-12">
                                                             <div className="row">
@@ -401,15 +417,15 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="row mt-1">
                                                     <div className="col-sm-4">
-                                                        <label className="" htmlFor="">Delivery Dates <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        <label className="" htmlFor="">Delivery Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
                                                         <div className="input-group">
                                                             <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                            <span className="input-group-addon"><a id="deliver-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
+                                                            <span className="input-group-addon"><a id="deliver-date" onClick={() => this.setState({isShowDelDate: !isShowDelDate})}><i className="fas fa-calendar-alt"></i></a></span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-sm-12 deliver-date mt-1">
+                                                    <div className={isShowDelDate ? 'col-sm-12 deliver-date mt-1' : 'col-sm-12 deliver-date mt-1 hidden'}>
                                                         <div className="row">
                                                             <div className="col-sm-6">
                                                                 <div className="input-group">
@@ -443,10 +459,13 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                 </div>
-                                                <div className="mt-1">
-                                                    <a id="additional-delivery" className="text-black" href="">Booking Counts & Totals<i className="fas fa-caret-down text-black"></i></a>
+                                                <div className="mt-1 additional-delivery-div">
+                                                    <a id="additional-delivery" className="text-black pointer" onClick={() => this.setState({isShowBookingCntAndTot: !isShowBookingCntAndTot})}>
+                                                        Booking Counts & Totals
+                                                        <i className="fas fa-caret-down text-black"></i>
+                                                    </a>
                                                 </div>
-                                                <div className="additional-delivery">
+                                                <div className={isShowBookingCntAndTot ? 'additional-delivery' : 'additional-delivery hidden'}>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-12">
                                                             <label className="mt-0" htmlFor="">Total Pieces</label>
