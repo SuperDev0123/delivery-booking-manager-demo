@@ -46,6 +46,17 @@
 }
 /*for body - but smaller*/
 
+html, body, #app{height:100%;} 
+
+#outer {
+    min-height:100%;
+}
+
+* html #outer{height:100%;} /* for IE 6, if you care */
+
+body, p { margin:0; padding:0}
+
+
 .nav-tabs > li > a
 {
    font-family: Helvetica,sans-serif;
@@ -485,4 +496,53 @@ div.borderB {
 
 .pickup-detail .progress .progress-bar-striped {
     width: 50%;
+}
+
+#app    
+
+.theme-bg {
+    /* Firefox */
+    height: -moz-calc(100% - 114px);
+    /* WebKit */
+    height: -webkit-calc(100% - 114px);
+    /* Opera */
+    height: -o-calc(100% - 114px);
+    /* Standard */
+    height: calc(100% - 114px);
+    width: 100%;
+}
+
+#carouselExampleIndicators {
+    width: 50%;
+    height: 100%;
+    float: right;
+}
+
+.carousel-inner {
+    height: 100%;
+}
+
+.carousel-item {
+    width: 100%;
+    height: 100%;
+}
+
+.carousel-item > img {
+    height: 100%;
+}
+
+.right-pan {
+    width: 50%;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.right-pan > p:first-child {
+    font-size: 28px;
+}
+
+.right-pan > p:last-child {
+    font-size: 18px;
 }

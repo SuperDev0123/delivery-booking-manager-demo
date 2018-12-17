@@ -23,6 +23,10 @@ class HomePage extends Component {
     render() {
         return (
             <section className="theme-bg">
+                <div className="right-pan">
+                    <p>Deliver Me</p>
+                    <p>Your Delivery Concierge.. </p>
+                </div>
                 <div id="carouselExampleIndicators" className="carousel slide" data-ride="carousel">
                     <ol className="carousel-indicators">
                         <li data-target="#carouselExampleIndicators" data-slide-to="0" className="active"></li>
