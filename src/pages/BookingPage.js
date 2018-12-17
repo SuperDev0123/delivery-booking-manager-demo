@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import user from '../public/images/user.png';
+
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -17,19 +19,45 @@ class BookingPage extends Component {
         const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate} = this.state;
 
         return (
-            <div id="page">
+            <div>
+                <div id="headr" className="col-md-12">
+                    <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
+                        <ul className="nav nav-tabs">
+                            <li className="active"><a data-toggle="tab" href="#header">Header</a></li>
+                            <li><a data-toggle="tab" href="#all_booking">All Bookings</a></li>
+                            <li><a data-toggle="tab" href="#other1">Other 1</a></li>
+                            <li><a data-toggle="tab" href="#other2">Other 2</a></li>
+                            <li><a data-toggle="tab" href="#other3">Other 3</a></li>
+                            <li><a data-toggle="tab" href="#other4">Other 4</a></li>
+                            <li><a data-toggle="tab" href="#other5">Other 5</a></li>
+                        </ul>
+                    </div>
+                    <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
+                        <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <div className="popup">
+                            <i className="icon-search3" aria-hidden="true"></i>
+                        </div>
+                        <div className="popup">
+                            <i className="icon icon-th-list" aria-hidden="true"></i>
+                        </div>
+                        <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
+                        <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        <a href="">?</a>
+                    </div>
+                </div>
+
                 <div className="user-header">
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-6">
-                                <div className="text-left">
+                                <div className="text-left content">
                                     <a className="user-menu" href=""><i className="fas fa-bars"></i></a>
                                 </div>
                             </div>
                             <div className="col-sm-6">
-                                <div className="user">
+                                <div className="user content">
                                     <ul>
-                                        <li><img src="assets/img/user.png" alt="" /></li>
+                                        <li><img src={user} alt="" /></li>
                                         <li>Stephen Madeisky</li>
                                         <li><a href=""><i className="fas fa-caret-down text-black"></i></a></li>
                                     </ul>
