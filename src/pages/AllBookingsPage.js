@@ -290,11 +290,6 @@ class AllBookingsPage extends React.Component {
                         <ul className="nav nav-tabs">
                             <li><a href="/booking">Header</a></li>
                             <li className="active"><a href="/allbookings">All Bookings</a></li>
-                            <li><a data-toggle="tab" href="#other1">Other 1</a></li>
-                            <li><a data-toggle="tab" href="#other2">Other 2</a></li>
-                            <li><a data-toggle="tab" href="#other3">Other 3</a></li>
-                            <li><a data-toggle="tab" href="#other4">Other 4</a></li>
-                            <li><a data-toggle="tab" href="#other5">Other 5</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
