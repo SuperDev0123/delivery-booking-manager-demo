@@ -221,7 +221,7 @@ class AllBookingsPage extends React.Component {
 
         warehouses_list = warehouses.map((warehouse, index) => {
             return (
-                <option key={index} value={warehouse.pk_id_client_warehouse}>{warehouse.warehousename}</option>
+                <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
             );
         });
 
