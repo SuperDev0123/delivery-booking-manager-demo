@@ -1,0 +1,37 @@
+.additional-info {
+  background-color: gray;
+
+  i {
+    color: white;
+  }
+}
+
+span.arrow {
+  top: -16px !important;
+}
+
+.bs-popover-bottom .arrow::before {
+  border-bottom-color: #eee;
+}
+
+.popover-inner .popover-header {
+  text-align: center;
+}
+
+.location-info {
+  padding: 20px;
+
+  span:first-child {
+    font-weight: 600;
+  }
+}
+
+.popover {
+  max-width: 800px;
+  width: auto;
+}
+
+.disp-inline-block {
+  display: inline-block;
+  vertical-align: top;
+}

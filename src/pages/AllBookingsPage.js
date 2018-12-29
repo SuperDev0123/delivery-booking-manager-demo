@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { getBookings, simpleSearch, updateBooking } from '../state/services/bookingService';
@@ -29,7 +30,8 @@ class AllBookingsPage extends React.Component {
             endDate: '',
             orFilter: false,
             printerFlag: false,
-            filterConditions: {}
+            filterConditions: {},
+            additionanInfoOpens: []
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -204,6 +206,19 @@ class AllBookingsPage extends React.Component {
             this.setState({orFilter: false});
     }
 
+    showAdditionalInfo(bookingId) {
+        let additionanInfoOpens = this.state.additionanInfoOpens;
+        let flag = additionanInfoOpens['additional-info-popup-' + bookingId];
+        additionanInfoOpens = [];
+
+        if (flag)
+            additionanInfoOpens['additional-info-popup-' + bookingId] = false;
+        else
+            additionanInfoOpens['additional-info-popup-' + bookingId] = true;
+
+        this.setState({ additionanInfoOpens });
+    }
+
     onClickPrinter(booking) {
         booking.is_printed = !booking.is_printed;
         this.props.updateBooking(booking.id, booking);
@@ -228,9 +243,54 @@ class AllBookingsPage extends React.Component {
         let bookingList = list.map((booking, index) => {
             return (
                 <tr key={index}>
-                    <th scope="row">
+                    <td id={'additional-info-popup-' + booking.id} className={this.state.additionanInfoOpens['additional-info-popup-' + booking.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(booking.id)}>
+                        <i className="icon icon-plus"></i>
+                    </td>
+                    <Popover
+                        isOpen={this.state.additionanInfoOpens['additional-info-popup-' + booking.id]}
+                        target={'additional-info-popup-' + booking.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverHeader>Additional Info</PopoverHeader>
+                        <PopoverBody>
+                            <div className="location-info disp-inline-block">
+                                <span>PU Info</span><br />
+                                <span>Pickup Location:</span><br />
+                                <span>
+                                    {booking.pu_Address_street_1}<br />
+                                    {booking.pu_Address_street_2}<br />
+                                    {booking.pu_Address_Suburb}<br />
+                                    {booking.pu_Address_City}<br />
+                                    {booking.pu_Address_State} {booking.pu_Address_PostalCode}<br />
+                                    {booking.pu_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span>Delivery Info</span><br />
+                                <span>Delivery Location:</span><br />
+                                <span>
+                                    {booking.de_To_Address_street_1}<br />
+                                    {booking.de_To_Address_street_2}<br />
+                                    {booking.de_To_Address_Suburb}<br />
+                                    {booking.de_To_Address_City}<br />
+                                    {booking.de_To_Address_State} {booking.de_To_Address_PostalCode}<br />
+                                    {booking.de_To_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span></span>
+                                <span>
+                                    Contact: {booking.booking_Created_For}<br />
+                                    Actual Pickup Time: {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    Actual Deliver Time: {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                </span>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
+                    <td><input type="checkbox" /></td>
+                    <td scope="row">
                         <span className={booking.error_details ? 'c-red' : ''}>{booking.id}</span>
-                    </th>
+                    </td>
                     <td>
                         {booking.b_bookingID_Visual}
                         <a href="#">
@@ -349,6 +409,8 @@ class AllBookingsPage extends React.Component {
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
                                                     <tr className="filter">
+                                                        <th></th>
+                                                        <th></th>
                                                         <th scope="col"><input type="text" name="id" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="b_bookingID_Visual" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="b_dateBookedDate" onChange={(e) => {this.onFilterChange(e);}} /></th>
@@ -364,6 +426,8 @@ class AllBookingsPage extends React.Component {
                                                         <th scope="col"><input type="text" name="deToCompanyName" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                     </tr>
                                                     <tr>
+                                                        <th><i className="icon icon-plus"></i></th>
+                                                        <th><i className="icon icon-check"></i></th>
                                                         <th scope="col">Booking Id</th>
                                                         <th scope="col">BookingID Visual</th>
                                                         <th scope="col">Booked Date</th>
@@ -434,7 +498,6 @@ class AllBookingsPage extends React.Component {
                         </div>
                     </div>
                 </div>
-
             </div>
         );
     }
