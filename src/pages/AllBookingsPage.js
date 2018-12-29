@@ -280,9 +280,9 @@ class AllBookingsPage extends React.Component {
                             <div className="location-info disp-inline-block">
                                 <span></span>
                                 <span>
-                                    Contact: {booking.booking_Created_For}<br />
-                                    Actual Pickup Time: {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
-                                    Actual Deliver Time: {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                    <strong>Contact:</strong> {booking.booking_Created_For}<br />
+                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
                                 </span>
                             </div>
                         </PopoverBody>
