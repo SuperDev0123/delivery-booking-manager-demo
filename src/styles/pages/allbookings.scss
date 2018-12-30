@@ -1,8 +1,9 @@
-.additional-info {
+.additional-info, .booking-lines-info {
   background-color: gray;
 
   i {
-    color: white;
+    color: black;
+    background-color: transparent;
   }
 }
 
@@ -27,11 +28,34 @@ span.arrow {
 }
 
 .popover {
-  max-width: 800px;
+  max-width: 1000px;
   width: auto;
 }
 
 .disp-inline-block {
   display: inline-block;
   vertical-align: top;
+}
+
+table.booking-lines {
+  border-collapse: collapse;
+  width: 100%;
+
+  th, td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid black;
+  }
+
+  td.qty { background-color: #a4e85a; }
+
+  th { background-color: #4CAF50; }
+
+  tr:nth-child(even) {background-color: #f2f2f2;}
+
+  tr:hover {background-color: #f5f5f5;}
+}
+
+.pad-10p {
+  padding: 10px;
 }
