@@ -175,7 +175,7 @@ class AllBookingsPage extends React.Component {
             let flag = true;
 
             for (let fieldName in filterConditions) {
-                if (bookings[i][fieldName].toString().toLowerCase().indexOf(filterConditions[fieldName]) === -1)
+                if (bookings[i][fieldName].toString().toLowerCase().indexOf(filterConditions[fieldName].toLowerCase()) === -1)
                     flag = false;
             }
 
