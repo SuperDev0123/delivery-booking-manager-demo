@@ -10,6 +10,7 @@ import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { getBookings, simpleSearch, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
 
 class AllBookingsPage extends React.Component {
@@ -19,6 +20,8 @@ class AllBookingsPage extends React.Component {
         this.state = {
             bookings: [],
             bookingLines: [],
+            bookingLineDetails: [],
+            bookingLineDetailsLoaded: false,
             filtered_bookings: [],
             warehouses: [],
             selectedWarehouseId: '',
@@ -47,6 +50,7 @@ class AllBookingsPage extends React.Component {
     static propTypes = {
         getBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
+        getBookingLineDetails: PropTypes.func.isRequired,
         simpleSearch: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
@@ -68,7 +72,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, warehouses, booking, bookingLines } = newProps;
+        const { bookings, warehouses, booking, bookingLines, bookingLineDetails } = newProps;
         let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
 
         for (let i = 0; i < bookings.length; i++) {
@@ -86,6 +90,10 @@ class AllBookingsPage extends React.Component {
         if (booking && this.printerFlag === true) {
             this.props.getBookings();
             this.setState({ printerFlag: false });
+        }
+
+        if (bookingLineDetails && !this.state.bookingLineDetailsLoaded) {
+            this.setState({bookingLineDetails, bookingLineDetailsLoaded: true});
         }
 
         if (bookingLines) {
@@ -256,7 +264,7 @@ class AllBookingsPage extends React.Component {
         else
             additionalInfoOpens['additional-info-popup-' + bookingId] = true;
 
-        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [] });
+        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
     }
 
     showBookingLinesInfo(bookingId) {
@@ -270,7 +278,7 @@ class AllBookingsPage extends React.Component {
         else
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
 
-        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [] });
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [] });
     }
 
     onClickPrinter(booking) {
@@ -279,8 +287,13 @@ class AllBookingsPage extends React.Component {
         this.setState({ printerFlag: true });
     }
 
+    onClickBookingLine(bookingLineId) {
+        this.props.getBookingLineDetails(bookingLineId);
+        this.setState({ bookingLineDetailsLoaded: false });
+    }
+
     render() {
-        const { bookings, bookingLines, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal } = this.state;
+        const { bookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal } = this.state;
         let list, warehouses_list;
 
         if (hasFilter)
@@ -294,10 +307,24 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+        let bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
-                    <td>{index}</td>
+                    <td>{bookingLineDetail.modelNumber}</td>
+                    <td>{bookingLineDetail.itemDescription}</td>
+                    <td className="qty">{bookingLineDetail.quantity}</td>
+                    <td>{bookingLineDetail.itemFaultDescription}</td>
+                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{bookingLineDetail.gap_ra}</td>
+                    <td>{bookingLineDetail.clientRefNumber}</td>
+                </tr>
+            );
+        });
+
+        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+            return (
+                <tr key={index} onClick={() => this.onClickBookingLine(bookingLine.pk_auto_id_lines)}>
+                    <td>{bookingLine.pk_auto_id_lines}</td>
                     <td>{bookingLine.e_type_of_packaging}</td>
                     <td>{bookingLine.e_item}</td>
                     <td className="qty">{bookingLine.e_qty}</td>
@@ -369,6 +396,23 @@ class AllBookingsPage extends React.Component {
                                     </thead>
                                     <tbody>
                                         { bookingLinesList }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="pad-10p">
+                                <p><strong>Line Details</strong></p>
+                                <table className="booking-lines">
+                                    <thead>
+                                        <th>Model</th>
+                                        <th>Item Description</th>
+                                        <th>Qty</th>
+                                        <th>Fault Description</th>
+                                        <th>Insurance Value</th>
+                                        <th>Gap/ RA</th>
+                                        <th>Client Reference #</th>
+                                    </thead>
+                                    <tbody>
+                                        { bookingLineDetailsList }
                                     </tbody>
                                 </table>
                             </div>
@@ -641,6 +685,7 @@ const mapStateToProps = (state) => {
         bookings: state.booking.bookings,
         booking: state.booking.booking,
         bookingLines: state.bookingLine.bookingLines,
+        bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         filtered_bookings: state.booking.filtered_bookings,
         warehouses: state.warehouse.warehouses,
     };
@@ -650,6 +695,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getBookings: () => dispatch(getBookings()),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLineDetails: (bookingLineId) => dispatch(getBookingLineDetails(bookingLineId)),
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
