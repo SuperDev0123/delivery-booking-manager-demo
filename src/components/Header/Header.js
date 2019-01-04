@@ -44,7 +44,7 @@ class Header extends Component {
         return (
             <header>
                 {
-                    currentRoute === '/booking' || currentRoute === '/allbookings' || currentRoute === '/bookinglines' ?
+                    currentRoute === '/booking' || currentRoute === '/allbookings' || currentRoute === '/bookinglines' || currentRoute === '/bookinglinedetails' ?
                         <nav className="qbootstrap-nav" role="navigation">
                             <div className="col-md-12" id="headr">
                                 <div className="top">
@@ -81,9 +81,11 @@ class Header extends Component {
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/booking">Booking</a>
                                                 <div className="dropdown-divider"></div>
+                                                <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                                <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/bookinglines">Booking Lines</a>
                                                 <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                                <a className="dropdown-item" href="/bookinglinedatas">Booking Line Datas</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
                                             </div>

@@ -7,6 +7,7 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
+import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
 import AllBookingsPage from '../pages/AllBookingsPage';
 import UploadPage from '../pages/UploadPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
@@ -21,6 +22,7 @@ export const AppRouter = () => (
                 <Route exact path='/login' component={LoginPage} />
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
+                <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
                 <PrivateRoute exact path='/allbookings' component={AllBookingsPage} />
                 <PrivateRoute exact path='/upload' component={UploadPage} />
                 <Redirect to='/' />

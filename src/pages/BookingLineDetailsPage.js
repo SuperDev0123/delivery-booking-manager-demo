@@ -2,51 +2,46 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 
-class BookingLinesPage extends React.Component {
+class BookingLineDetailsPage extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            bookingLines: [],
+            bookingLineDetails: [],
         };
     }
 
     static propTypes = {
-        getBookingLines: PropTypes.func.isRequired,
+        getBookingLineDetails: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
-        this.props.getBookingLines();
+        this.props.getBookingLineDetails();
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookingLines } = newProps;
+        const { bookingLineDetails } = newProps;
 
-        if (bookingLines) {
-            this.setState({bookingLines: bookingLines});
+        if (bookingLineDetails) {
+            this.setState({bookingLineDetails: bookingLineDetails});
         }
     }
 
     render() {
-        const { bookingLines } = this.state;
+        const { bookingLineDetails } = this.state;
 
-        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+        let bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
-                    <td>{bookingLine.pk_auto_id_lines}</td>
-                    <td>{bookingLine.e_type_of_packaging}</td>
-                    <td>{bookingLine.e_item}</td>
-                    <td className="qty">{bookingLine.e_qty}</td>
-                    <td>{bookingLine.e_weightUOM}</td>
-                    <td>{bookingLine.e_weightPerEach}</td>
-                    <td>{bookingLine.total_kgs}</td>
-                    <td>{bookingLine.e_dimUOM}</td>
-                    <td>{bookingLine.e_dimLength}</td>
-                    <td>{bookingLine.e_dimWidth}</td>
-                    <td>{bookingLine.e_dimHeight}</td>
-                    <td>{bookingLine.cubic_meter}</td>
+                    <td>{bookingLineDetail.modelNumber}</td>
+                    <td>{bookingLineDetail.itemDescription}</td>
+                    <td className="qty">{bookingLineDetail.quantity}</td>
+                    <td>{bookingLineDetail.itemFaultDescription}</td>
+                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{bookingLineDetail.gap_ra}</td>
+                    <td>{bookingLineDetail.clientRefNumber}</td>
                 </tr>
             );
         });
@@ -58,8 +53,8 @@ class BookingLinesPage extends React.Component {
                         <ul className="nav nav-tabs">
                             <li><a href="/booking">Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
-                            <li className="active"><a href="/bookinglines">Booking Lines</a></li>
-                            <li><a href="/bookinglinedetails">Booking Line Datas</a></li>
+                            <li><a href="/bookinglines">Booking Lines</a></li>
+                            <li className="active"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
@@ -84,21 +79,16 @@ class BookingLinesPage extends React.Component {
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead>
-                                                    <th>ID</th>
-                                                    <th>Packaging</th>
+                                                    <th>Model</th>
                                                     <th>Item Description</th>
                                                     <th>Qty</th>
-                                                    <th>Wgt UOM</th>
-                                                    <th>Wgt Each</th>
-                                                    <th>Total Kgs</th>
-                                                    <th>Dim UOM</th>
-                                                    <th>Length</th>
-                                                    <th>Width</th>
-                                                    <th>Height</th>
-                                                    <th>Cubic Meter</th>
+                                                    <th>Fault Description</th>
+                                                    <th>Insurance Value</th>
+                                                    <th>Gap/ RA</th>
+                                                    <th>Client Reference #</th>
                                                 </thead>
                                                 <tbody>
-                                                    { bookingLinesList }
+                                                    { bookingLineDetailsList }
                                                 </tbody>
                                             </table>
                                         </div>
@@ -115,14 +105,14 @@ class BookingLinesPage extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        bookingLines: state.bookingLine.bookingLines,
+        bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getBookingLines: () => dispatch(getBookingLines()),
+        getBookingLineDetails: () => dispatch(getBookingLineDetails()),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(BookingLinesPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BookingLineDetailsPage);
