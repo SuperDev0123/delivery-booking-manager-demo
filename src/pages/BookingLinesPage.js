@@ -1,0 +1,127 @@
+import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { getBookingLines } from '../state/services/bookingLinesService';
+
+class BookingLinesPage extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            bookingLines: [],
+        };
+    }
+
+    static propTypes = {
+        getBookingLines: PropTypes.func.isRequired,
+    };
+
+    componentDidMount() {
+        this.props.getBookingLines();
+    }
+
+    componentWillReceiveProps(newProps) {
+        const { bookingLines } = newProps;
+
+        if (bookingLines) {
+            this.setState({bookingLines: bookingLines});
+        }
+    }
+
+    render() {
+        const { bookingLines } = this.state;
+
+        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+            return (
+                <tr key={index}>
+                    <td>{bookingLine.pk_auto_id_lines}</td>
+                    <td>{bookingLine.e_type_of_packaging}</td>
+                    <td>{bookingLine.e_item}</td>
+                    <td className="qty">{bookingLine.e_qty}</td>
+                    <td>{bookingLine.e_weightUOM}</td>
+                    <td>{bookingLine.e_weightPerEach}</td>
+                    <td>{bookingLine.total_kgs}</td>
+                    <td>{bookingLine.e_dimUOM}</td>
+                    <td>{bookingLine.e_dimLength}</td>
+                    <td>{bookingLine.e_dimWidth}</td>
+                    <td>{bookingLine.e_dimHeight}</td>
+                    <td>{bookingLine.cubic_meter}</td>
+                </tr>
+            );
+        });
+
+        return (
+            <div className="qbootstrap-nav" >
+                <div id="headr" className="col-md-12">
+                    <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
+                        <ul className="nav nav-tabs">
+                            <li><a href="/booking">Header</a></li>
+                            <li><a href="/allbookings">All Bookings</a></li>
+                            <li className="active"><a href="/bookinglines">Booking Lines</a></li>
+                        </ul>
+                    </div>
+                    <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
+                        <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <div className="popup">
+                            <i className="icon-search3" aria-hidden="true"></i>
+                        </div>
+                        <div className="popup">
+                            <i className="icon icon-th-list" aria-hidden="true"></i>
+                        </div>
+                        <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
+                        <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        <a href="">?</a>
+                    </div>
+                </div>
+                <div className="top-menu">
+                    <div className="container">
+                        <div className="row1">
+                            <div className="col-md-12 col-sm-12 col-lg-12 col-xs-12">
+                                <div className="tab-content">
+                                    <div id="all_booking" className="tab-pane fade in active">
+                                        <div className="table-responsive">
+                                            <table className="table table-hover table-bordered sortable">
+                                                <thead>
+                                                    <th>ID</th>
+                                                    <th>Packaging</th>
+                                                    <th>Item Description</th>
+                                                    <th>Qty</th>
+                                                    <th>Wgt UOM</th>
+                                                    <th>Wgt Each</th>
+                                                    <th>Total Kgs</th>
+                                                    <th>Dim UOM</th>
+                                                    <th>Length</th>
+                                                    <th>Width</th>
+                                                    <th>Height</th>
+                                                    <th>Cubic Meter</th>
+                                                </thead>
+                                                <tbody>
+                                                    { bookingLinesList }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        bookingLines: state.bookingLine.bookingLines,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getBookingLines: () => dispatch(getBookingLines()),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(BookingLinesPage);

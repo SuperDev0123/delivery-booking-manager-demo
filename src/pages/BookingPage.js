@@ -25,6 +25,7 @@ class BookingPage extends Component {
                         <ul className="nav nav-tabs">
                             <li className="active"><a href="/booking">Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
+                            <li><a href="/bookinglines">Booking Lines</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
