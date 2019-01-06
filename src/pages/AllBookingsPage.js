@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import { getBookings, simpleSearch, updateBooking } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -54,6 +54,7 @@ class AllBookingsPage extends React.Component {
         simpleSearch: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
+        allTrigger: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -292,6 +293,10 @@ class AllBookingsPage extends React.Component {
         this.setState({ bookingLineDetailsLoaded: false });
     }
 
+    onClickAllTrigger() {
+        this.props.allTrigger();
+    }
+
     render() {
         const { bookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal } = this.state;
         let list, warehouses_list;
@@ -503,6 +508,9 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td>
+                        {booking.b_status_API}&nbsp;&nbsp;
+                    </td>
+                    <td>
                         {booking.vx_freight_provider}&nbsp;&nbsp;
                         <a href="#">
                             <i className="icon icon-plus"></i>
@@ -581,6 +589,7 @@ class AllBookingsPage extends React.Component {
                                                 selected={endDate}
                                                 onChange={(e) => this.onDateChange(1, e)}
                                             />
+                                            <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
@@ -595,6 +604,7 @@ class AllBookingsPage extends React.Component {
                                                         <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="b_status" onChange={(e) => {this.onFilterChange(e);}} /></th>
+                                                        <th scope="col"><input type="text" name="b_status_API" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="vx_freight_provider" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="vx_serviceName" onChange={(e) => {this.onFilterChange(e);}} /></th>
                                                         <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" onChange={(e) => {this.onFilterChange(e);}} /></th>
@@ -616,6 +626,7 @@ class AllBookingsPage extends React.Component {
                                                         </th>
                                                         <th scope="col">Ref. Number</th>
                                                         <th scope="col">Status</th>
+                                                        <th scope="col">Status API</th>
                                                         <th scope="col">Freight Provider</th>
                                                         <th scope="col">Service</th>
                                                         <th scope="col">Pickup By</th>
@@ -701,6 +712,7 @@ const mapDispatchToProps = (dispatch) => {
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
+        allTrigger: () => dispatch(allTrigger()),
     };
 };
 
