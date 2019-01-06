@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { saveBooking } from '../state/services/bookingService';
 
 import user from '../public/images/user.png';
 
@@ -12,11 +15,26 @@ class BookingPage extends Component {
             isShowBookingCntAndTot: false,
             isShowPUDate: false,
             isShowDelDate: false,
+            formInputs: {},
         };
     }
 
+    static propTypes = {
+        saveBooking: PropTypes.func.isRequired,
+    };
+
+    onHandleInput(e) {
+        let formInputs = this.state.formInputs;
+        formInputs[e.target.name] = e.target.value;
+        this.setState({ formInputs });
+    }
+
+    onSave() {
+        this.props.saveBooking(this.state.formInputs);
+    }
+
     render() {
-        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate} = this.state;
+        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
 
         return (
             <div>
@@ -127,7 +145,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Pick Up Entity</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input placeholder="Tempo Pty Ltd" type="text" className="form-control" />
+                                                        <input placeholder="Tempo Pty Ltd" name="puCompany" type="text" value={formInputs['puCompany']} className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -135,7 +153,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -143,7 +161,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -151,15 +169,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
-                                                    </div>
-                                                </div>
-                                                <div className="row mt-1">
-                                                    <div className="col-sm-4">
-                                                        <label className="" htmlFor="">Postal Code</label>
-                                                    </div>
-                                                    <div className="col-sm-8">
-                                                        <input type="text" className="form-control"/>
+                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -167,7 +177,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control"/>
+                                                        <input type="text" name="pu_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -175,7 +185,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -183,7 +193,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Contact_F_L_Name" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -191,7 +201,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -199,7 +209,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="pu_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -365,7 +375,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Delivery Entity</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input placeholder="Tempo Pty Ltd" type="text" className="form-control" />
+                                                        <input placeholder="Tempo Pty Ltd" type="text" name="deToCompanyName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -373,7 +383,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_To_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -381,7 +391,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_To_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -389,15 +399,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
-                                                    </div>
-                                                </div>
-                                                <div className="row mt-1">
-                                                    <div className="col-sm-4">
-                                                        <label className="" htmlFor="">Postal Code</label>
-                                                    </div>
-                                                    <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -405,7 +407,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -413,7 +415,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_To_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -421,7 +423,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_to_Contact_F_LName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -429,7 +431,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_to_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -437,7 +439,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" className="form-control" />
+                                                        <input type="text" name="de_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -538,7 +540,7 @@ class BookingPage extends Component {
                                                     <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                 </div>
                                                 <div className="text-center mt-2">
-                                                    <button className="btn btn-theme custom-theme"><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
+                                                    <button className="btn btn-theme custom-theme" onClick={() => this.onSave()}><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
                                                 </div>
                                                 <div className="text-center mt-2">
                                                     <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>
@@ -808,16 +810,16 @@ class BookingPage extends Component {
     }
 }
 
-// const mapStateToProps = (state) => {
-//     return {
-//         username: state.auth.username
-//     };
-// };
+const mapStateToProps = (state) => {
+    return {
+        booking: state.booking.booking,
+    };
+};
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
+const mapDispatchToProps = (dispatch) => {
+    return {
+        saveBooking: (booking) => dispatch(saveBooking(booking)),
+    };
+};
 
-//     };
-// };
-
-export default connect()(BookingPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BookingPage);

@@ -42,3 +42,17 @@ export const updateBooking = (id, updateBooking) => {
             .then(({ data }) => dispatch(setBooking(data)))
             .catch((error) => dispatch(failedUpdateBooking(error)));
 };
+
+export const saveBooking = (booking) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/`,
+        data: booking
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setBooking(data)))
+            .catch((error) => dispatch(failedUpdateBooking(error)));
+};
