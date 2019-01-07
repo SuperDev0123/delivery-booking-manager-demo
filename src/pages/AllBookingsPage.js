@@ -6,6 +6,9 @@ import lodash from 'lodash';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { getBookings, simpleSearch, updateBooking, allTrigger } from '../state/services/bookingService';
@@ -526,8 +529,60 @@ class AllBookingsPage extends React.Component {
             );
         });
 
+        bookingList = 'aaa';
+
+        const columns = [
+            {
+                dataField: 'id',
+                text: 'Booking Id',
+                filter: textFilter()
+            },{
+                dataField: 'b_bookingID_Visual',
+                text: 'BookingID Visual'
+            },{
+                dataField: 'b_dateBookedDate',
+                text: 'Booked Date'
+            },{
+                dataField: 'puPickUpAvailFrom_Date',
+                text: 'Pickup from /<br/> Manifest Date'
+            },{
+                dataField: 'b_clientReference_RA_Numbers',
+                text: 'Ref. Number'
+            },{
+                dataField: 'b_status',
+                text: 'Status'
+            },{
+                dataField: 'b_status_API',
+                text: 'Status API'
+            },{
+                dataField: 'vx_freight_provider',
+                text: 'Freight Provider'
+            },{
+                dataField: 'vx_serviceName',
+                text: 'Service'
+            },{
+                dataField: 's_05_LatestPickUpDateTimeFinal',
+                text: 'Pickup By'
+            },{
+                dataField: 's_06_LatestDeliveryDateTimeFinal',
+                text: 'Latest Delivery'
+            },{
+                dataField: 'v_FPBookingNumber',
+                text: 'FP Booking Number'
+            },{
+                dataField: 'puCompany',
+                text: 'Company'
+            },{
+                dataField: 'deToCompanyName',
+                text: 'CompanyName'
+            }
+        ];
+
+        const products = list;
+
         return (
             <div className="qbootstrap-nav" >
+                { bookingList }
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -592,54 +647,14 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                         </div>
                                         <div className="table-responsive">
-                                            <table className="table table-hover table-bordered sortable">
-                                                <thead className="thead-light">
-                                                    <tr className="filter">
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th scope="col"><input type="text" name="id" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_dateBookedDate" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_status" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_status_API" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="vx_freight_provider" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="vx_serviceName" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="puCompany" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="deToCompanyName" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th><i className="icon icon-th-list"></i></th>
-                                                        <th><i className="icon icon-plus"></i></th>
-                                                        <th><i className="icon icon-check"></i></th>
-                                                        <th scope="col">Booking Id</th>
-                                                        <th scope="col">BookingID Visual</th>
-                                                        <th scope="col">Booked Date</th>
-                                                        <th scope="col">
-                                                            Pickup from /<br/>
-                                                            Manifest Date
-                                                        </th>
-                                                        <th scope="col">Ref. Number</th>
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Status API</th>
-                                                        <th scope="col">Freight Provider</th>
-                                                        <th scope="col">Service</th>
-                                                        <th scope="col">Pickup By</th>
-                                                        <th scope="col">Latest Delivery</th>
-                                                        <th scope="col">FP Booking Number</th>
-                                                        <th scope="col">Company</th>
-                                                        <th scope="col">CompanyName</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    { bookingList }
-                                                </tbody>
-                                            </table>
+                                            <BootstrapTable
+                                                keyField='id'
+                                                data={ products }
+                                                columns={ columns }
+                                                filter={ filterFactory() }
+                                                pagination={ paginationFactory() }
+                                                bootstrap4={ true }
+                                            />
                                         </div>
                                     </div>
                                     <div id="all_booking" className="tab-pane fade">
