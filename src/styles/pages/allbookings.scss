@@ -63,3 +63,48 @@ table.booking-lines {
 .all-trigger {
   margin-left: 50px;
 }
+
+// Main Table
+
+.table-responsive {
+  min-height: unset;
+  overflow-x: unset;
+  height: 1000px;
+  height: 100%;
+
+  .react-bootstrap-table {
+    overflow-x: scroll;
+  }
+
+  .dropdown-menu {
+    display: none;
+  }
+
+  .react-bootstrap-table-pagination-list > ul {
+    float: right;
+  }
+}
+
+.date-filter-input {
+  line-height: 12px;
+}
+
+.float-right {
+  float: right;
+}
+
+.bg-green {
+  background-color: green;
+}
+
+.bg-gray {
+  background-color: gray;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.font-size-16px {
+  font-size: 16px;
+}

@@ -6,6 +6,10 @@ import lodash from 'lodash';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+// BootstrapTable
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { getBookings, simpleSearch, updateBooking, allTrigger } from '../state/services/bookingService';
@@ -283,9 +287,17 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickPrinter(booking) {
+        let bookings = this.state.bookings;
         booking.is_printed = !booking.is_printed;
         this.props.updateBooking(booking.id, booking);
-        this.setState({ printerFlag: true });
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (booking.id === bookings[i].id) {
+                bookings[i]['is_printed'] = true;
+            }
+        }
+
+        this.setState({ printerFlag: true, bookings });
     }
 
     onClickBookingLine(bookingLineId) {
@@ -526,8 +538,145 @@ class AllBookingsPage extends React.Component {
             );
         });
 
+        bookingList = '';
+
+        const noPlaceholderFilter = textFilter({
+            placeholder: ' ', // custom the input placeholder
+            className: 'no-placeholder-text-filter', // custom classname on input
+            caseSensitive: true, // default is false, and true will only work when comparator is LIKE
+            style: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' }
+        });
+
+        const customDateFilter = dateFilter({
+            style: { height: '53px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' },
+            comparatorStyle: { padding: '0', paddingLeft: '5px' },
+            dateStyle: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial', lineHeight: '12px' },
+        });
+
+        const hasErrorDetailFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <span>
+                        <strong style={ { color: 'red' } }>{ cell }</strong>
+                    </span>
+                );
+            }
+
+            return (
+                <span>{ cell }</span>
+            );
+        };
+
+        let statusFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <div className="booking-status">
+                        <TooltipItem booking={row} />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="booking-status">
+                        <div className="disp-inline-block">
+                            {
+                                (row.shipping_label_base64) && (row.shipping_label_base64.length > 0) ?
+                                    <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                                    :
+                                    <a>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                            }
+                            &nbsp;&nbsp;{row.b_status}&nbsp;&nbsp;
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        const iconListAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        const iconPlusAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        let columns = [
+            {
+                dataField: 'id',
+                text: 'Booking Id',
+                filter: noPlaceholderFilter,
+                formatter: hasErrorDetailFormatter,
+            },{
+                dataField: 'b_bookingID_Visual',
+                text: 'BookingID Visual',
+                filter: noPlaceholderFilter,
+                formatter: iconListAttached,
+            },{
+                dataField: 'b_dateBookedDate',
+                text: 'Booked Date',
+                filter: customDateFilter,
+            },{
+                dataField: 'puPickUpAvailFrom_Date',
+                text: 'Pickup from Manifest Date',
+                filter: customDateFilter,
+            },{
+                dataField: 'b_clientReference_RA_Numbers',
+                text: 'Ref. Number',
+                filter: noPlaceholderFilter,
+            },{
+                dataField: 'b_status',
+                isDummyField: true,
+                text: 'Status',
+                filter: noPlaceholderFilter,
+                formatter: statusFormatter,
+            },{
+                dataField: 'b_status_API',
+                text: 'Status API',
+                filter: noPlaceholderFilter,
+            },{
+                dataField: 'vx_freight_provider',
+                text: 'Freight Provider',
+                filter: noPlaceholderFilter,
+                formatter: iconPlusAttached,
+            },{
+                dataField: 'vx_serviceName',
+                text: 'Service',
+                filter: noPlaceholderFilter,
+            },{
+                dataField: 's_05_LatestPickUpDateTimeFinal',
+                text: 'Pickup By',
+                filter: customDateFilter,
+            },{
+                dataField: 's_06_LatestDeliveryDateTimeFinal',
+                text: 'Latest Delivery',
+                filter: customDateFilter
+            },{
+                dataField: 'v_FPBookingNumber',
+                text: 'FP Booking Number',
+                filter: noPlaceholderFilter,
+            },{
+                dataField: 'puCompany',
+                text: 'Company',
+                filter: noPlaceholderFilter,
+            },{
+                dataField: 'deToCompanyName',
+                text: 'CompanyName',
+                filter: noPlaceholderFilter,
+            }
+        ];
+
+        let products = list;
+
         return (
             <div className="qbootstrap-nav" >
+                { bookingList }
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -592,54 +741,14 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                         </div>
                                         <div className="table-responsive">
-                                            <table className="table table-hover table-bordered sortable">
-                                                <thead className="thead-light">
-                                                    <tr className="filter">
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th></th>
-                                                        <th scope="col"><input type="text" name="id" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_dateBookedDate" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_status" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="b_status_API" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="vx_freight_provider" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="vx_serviceName" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="puCompany" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                        <th scope="col"><input type="text" name="deToCompanyName" onChange={(e) => {this.onFilterChange(e);}} /></th>
-                                                    </tr>
-                                                    <tr>
-                                                        <th><i className="icon icon-th-list"></i></th>
-                                                        <th><i className="icon icon-plus"></i></th>
-                                                        <th><i className="icon icon-check"></i></th>
-                                                        <th scope="col">Booking Id</th>
-                                                        <th scope="col">BookingID Visual</th>
-                                                        <th scope="col">Booked Date</th>
-                                                        <th scope="col">
-                                                            Pickup from /<br/>
-                                                            Manifest Date
-                                                        </th>
-                                                        <th scope="col">Ref. Number</th>
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Status API</th>
-                                                        <th scope="col">Freight Provider</th>
-                                                        <th scope="col">Service</th>
-                                                        <th scope="col">Pickup By</th>
-                                                        <th scope="col">Latest Delivery</th>
-                                                        <th scope="col">FP Booking Number</th>
-                                                        <th scope="col">Company</th>
-                                                        <th scope="col">CompanyName</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    { bookingList }
-                                                </tbody>
-                                            </table>
+                                            <BootstrapTable
+                                                keyField='id'
+                                                data={ products }
+                                                columns={ columns }
+                                                filter={ filterFactory() }
+                                                pagination={ paginationFactory() }
+                                                bootstrap4={ true }
+                                            />
                                         </div>
                                     </div>
                                     <div id="all_booking" className="tab-pane fade">
