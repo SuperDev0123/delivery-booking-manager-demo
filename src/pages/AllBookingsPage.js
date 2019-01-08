@@ -8,7 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
+import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { getBookings, simpleSearch, updateBooking, allTrigger } from '../state/services/bookingService';
@@ -531,50 +531,69 @@ class AllBookingsPage extends React.Component {
 
         bookingList = 'aaa';
 
+        const noPlaceholderFilter = textFilter({
+            placeholder: ' ',  // custom the input placeholder
+            className: 'no-placeholder-text-filter', // custom classname on input
+            caseSensitive: true, // default is false, and true will only work when comparator is LIKE
+        });
+
         const columns = [
             {
                 dataField: 'id',
                 text: 'Booking Id',
-                filter: textFilter()
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'b_bookingID_Visual',
-                text: 'BookingID Visual'
+                text: 'BookingID Visual',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'b_dateBookedDate',
-                text: 'Booked Date'
+                text: 'Booked Date',
+                filter: dateFilter(),
             },{
                 dataField: 'puPickUpAvailFrom_Date',
-                text: 'Pickup from /<br/> Manifest Date'
+                text: 'Pickup from /<br/> Manifest Date',
+                filter: dateFilter(),
             },{
                 dataField: 'b_clientReference_RA_Numbers',
-                text: 'Ref. Number'
+                text: 'Ref. Number',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'b_status',
-                text: 'Status'
+                text: 'Status',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'b_status_API',
-                text: 'Status API'
+                text: 'Status API',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'vx_freight_provider',
-                text: 'Freight Provider'
+                text: 'Freight Provider',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'vx_serviceName',
-                text: 'Service'
+                text: 'Service',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 's_05_LatestPickUpDateTimeFinal',
-                text: 'Pickup By'
+                text: 'Pickup By',
+                filter: dateFilter(),
             },{
                 dataField: 's_06_LatestDeliveryDateTimeFinal',
-                text: 'Latest Delivery'
+                text: 'Latest Delivery',
+                filter: dateFilter(),
             },{
                 dataField: 'v_FPBookingNumber',
-                text: 'FP Booking Number'
+                text: 'FP Booking Number',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'puCompany',
-                text: 'Company'
+                text: 'Company',
+                filter: noPlaceholderFilter,
             },{
                 dataField: 'deToCompanyName',
-                text: 'CompanyName'
+                text: 'CompanyName',
+                filter: noPlaceholderFilter,
             }
         ];
 
