@@ -6,6 +6,7 @@ import lodash from 'lodash';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+// BootstrapTable
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
@@ -286,9 +287,17 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickPrinter(booking) {
+        let bookings = this.state.bookings;
         booking.is_printed = !booking.is_printed;
         this.props.updateBooking(booking.id, booking);
-        this.setState({ printerFlag: true });
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (booking.id === bookings[i].id) {
+                bookings[i]['is_printed'] = true;
+            }
+        }
+
+        this.setState({ printerFlag: true, bookings });
     }
 
     onClickBookingLine(bookingLineId) {
@@ -529,39 +538,104 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        bookingList = 'aaa';
+        bookingList = '';
 
         const noPlaceholderFilter = textFilter({
-            placeholder: ' ',  // custom the input placeholder
+            placeholder: ' ', // custom the input placeholder
             className: 'no-placeholder-text-filter', // custom classname on input
             caseSensitive: true, // default is false, and true will only work when comparator is LIKE
+            style: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' }
         });
 
-        const columns = [
+        const customDateFilter = dateFilter({
+            style: { height: '53px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' },
+            comparatorStyle: { padding: '0', paddingLeft: '5px' },
+            dateStyle: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial', lineHeight: '12px' },
+        });
+
+        const hasErrorDetailFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <span>
+                        <strong style={ { color: 'red' } }>{ cell }</strong>
+                    </span>
+                );
+            }
+
+            return (
+                <span>{ cell }</span>
+            );
+        };
+
+        let statusFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <div className="booking-status">
+                        <TooltipItem booking={row} />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="booking-status">
+                        <div className="disp-inline-block">
+                            {
+                                (row.shipping_label_base64) && (row.shipping_label_base64.length > 0) ?
+                                    <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                                    :
+                                    <a>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                            }
+                            &nbsp;&nbsp;{row.b_status}&nbsp;&nbsp;
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        const iconListAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        const iconPlusAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        let columns = [
             {
                 dataField: 'id',
                 text: 'Booking Id',
                 filter: noPlaceholderFilter,
+                formatter: hasErrorDetailFormatter,
             },{
                 dataField: 'b_bookingID_Visual',
                 text: 'BookingID Visual',
                 filter: noPlaceholderFilter,
+                formatter: iconListAttached,
             },{
                 dataField: 'b_dateBookedDate',
                 text: 'Booked Date',
-                filter: dateFilter(),
+                filter: customDateFilter,
             },{
                 dataField: 'puPickUpAvailFrom_Date',
-                text: 'Pickup from /<br/> Manifest Date',
-                filter: dateFilter(),
+                text: 'Pickup from Manifest Date',
+                filter: customDateFilter,
             },{
                 dataField: 'b_clientReference_RA_Numbers',
                 text: 'Ref. Number',
                 filter: noPlaceholderFilter,
             },{
                 dataField: 'b_status',
+                isDummyField: true,
                 text: 'Status',
                 filter: noPlaceholderFilter,
+                formatter: statusFormatter,
             },{
                 dataField: 'b_status_API',
                 text: 'Status API',
@@ -570,6 +644,7 @@ class AllBookingsPage extends React.Component {
                 dataField: 'vx_freight_provider',
                 text: 'Freight Provider',
                 filter: noPlaceholderFilter,
+                formatter: iconPlusAttached,
             },{
                 dataField: 'vx_serviceName',
                 text: 'Service',
@@ -577,11 +652,11 @@ class AllBookingsPage extends React.Component {
             },{
                 dataField: 's_05_LatestPickUpDateTimeFinal',
                 text: 'Pickup By',
-                filter: dateFilter(),
+                filter: customDateFilter,
             },{
                 dataField: 's_06_LatestDeliveryDateTimeFinal',
                 text: 'Latest Delivery',
-                filter: dateFilter(),
+                filter: customDateFilter
             },{
                 dataField: 'v_FPBookingNumber',
                 text: 'FP Booking Number',
@@ -597,7 +672,7 @@ class AllBookingsPage extends React.Component {
             }
         ];
 
-        const products = list;
+        let products = list;
 
         return (
             <div className="qbootstrap-nav" >
