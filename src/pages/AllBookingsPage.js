@@ -45,6 +45,7 @@ class AllBookingsPage extends React.Component {
             bookingLinesInfoOpens: [],
             bookingLinesQtyTotal: 0,
             bookingLineDetailsQtyTotal: 0,
+            products: [],
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -106,7 +107,7 @@ class AllBookingsPage extends React.Component {
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
         }
 
-        this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses });
+        this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, products: bookings });
     }
 
     calcBookingLine(bookingLines) {
@@ -197,7 +198,7 @@ class AllBookingsPage extends React.Component {
                 filtered_bookings.push(bookings[i]);
         }
 
-        this.setState({hasFilter: true, filtered_bookings: filtered_bookings});
+        this.setState({hasFilter: true, filtered_bookings: filtered_bookings, products: filtered_bookings});
     }
 
     applyFilter(num) {
@@ -252,7 +253,7 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        this.setState({filtered_bookings: newFilteredBookings, hasFilter: true});
+        this.setState({filtered_bookings: newFilteredBookings, hasFilter: true, products: newFilteredBookings});
 
         if (num > 4)
             this.setState({orFilter: true});
@@ -291,14 +292,23 @@ class AllBookingsPage extends React.Component {
         let bookings = this.state.bookings;
         booking.is_printed = !booking.is_printed;
         this.props.updateBooking(booking.id, booking);
+        let index = 0;
 
         for (let i = 0; i < bookings.length; i++) {
             if (booking.id === bookings[i].id) {
-                bookings[i]['is_printed'] = true;
+                index = i;
+                break;
             }
         }
 
-        this.setState({ printerFlag: true, bookings });
+        let that=this;
+        bookings.splice(index, 1);
+        this.setState({ products: bookings});
+
+        setTimeout(function(){
+            bookings.splice(index, 0, booking);
+            that.setState({ products: bookings});
+        }, 100);
     }
 
     onClickBookingLine(bookingLineId) {
@@ -315,7 +325,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal } = this.state;
+        const { bookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal, products } = this.state;
         let list, warehouses_list;
 
         if (hasFilter)
@@ -612,8 +622,74 @@ class AllBookingsPage extends React.Component {
             );
         };
 
+        const iconCheck = (rowIndex) => {
+            return (
+                <span><i className="icon icon-check cursor-pointer font-size-16px bg-gray" onClick={() => console.log(rowIndex)}></i></span>
+            );
+        };
+
+        const iconPlus = (cell, row) => {
+            return (
+                <div>
+                    <div id={'additional-info-popup-' + row.id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.id)}>
+                        <i className="icon icon-plus cursor-pointer font-size-16px bg-gray"></i>
+                    </div>
+                    <Popover
+                        key={row.id}
+                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + row.id]}
+                        target={'additional-info-popup-' + row.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverHeader>Additional Info</PopoverHeader>
+                        <PopoverBody>
+                            <div className="location-info disp-inline-block">
+                                <span>PU Info</span><br />
+                                <span>Pickup Location:</span><br />
+                                <span>
+                                    {row.pu_Address_street_1}<br />
+                                    {row.pu_Address_street_2}<br />
+                                    {row.pu_Address_Suburb}<br />
+                                    {row.pu_Address_City}<br />
+                                    {row.pu_Address_State} {row.pu_Address_PostalCode}<br />
+                                    {row.pu_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span>Delivery Info</span><br />
+                                <span>Delivery Location:</span><br />
+                                <span>
+                                    {row.de_To_Address_street_1}<br />
+                                    {row.de_To_Address_street_2}<br />
+                                    {row.de_To_Address_Suburb}<br />
+                                    {row.de_To_Address_City}<br />
+                                    {row.de_To_Address_State} {row.de_To_Address_PostalCode}<br />
+                                    {row.de_To_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span></span>
+                                <span>
+                                    <strong>Contact:</strong> {row.booking_Created_For}<br />
+                                    <strong>Actual Pickup Time:</strong> {moment(row.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(row.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                </span>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
+                </div>
+            );
+        };
+
         let columns = [
             {
+                dataField: 'vx_futile_Booking_Notes',
+                text: '√',
+                formatter: iconCheck,
+            },{
+                dataField: 'pu_Operting_Hours',
+                text: '+',
+                formatter: iconPlus,
+            },{
                 dataField: 'id',
                 text: 'Booking Id',
                 filter: noPlaceholderFilter,
@@ -640,7 +716,7 @@ class AllBookingsPage extends React.Component {
                 isDummyField: true,
                 text: 'Status',
                 filter: noPlaceholderFilter,
-                formatter: statusFormatter,
+                formatter: statusFormatter
             },{
                 dataField: 'b_status_API',
                 text: 'Status API',
@@ -676,8 +752,6 @@ class AllBookingsPage extends React.Component {
                 filter: noPlaceholderFilter,
             }
         ];
-
-        let products = list;
 
         return (
             <div className="qbootstrap-nav" >
