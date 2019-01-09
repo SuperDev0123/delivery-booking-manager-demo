@@ -12,7 +12,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import { getBookings, simpleSearch, updateBooking, allTrigger } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -59,6 +59,7 @@ class AllBookingsPage extends React.Component {
         getWarehouses: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         allTrigger: PropTypes.func.isRequired,
+        mapBok1ToBookings: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -307,6 +308,10 @@ class AllBookingsPage extends React.Component {
 
     onClickAllTrigger() {
         this.props.allTrigger();
+    }
+
+    onClickMapBok1ToBookings() {
+        this.props.mapBok1ToBookings();
     }
 
     render() {
@@ -739,6 +744,7 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onDateChange(1, e)}
                                             />
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                            <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                         </div>
                                         <div className="table-responsive">
                                             <BootstrapTable
@@ -822,6 +828,7 @@ const mapDispatchToProps = (dispatch) => {
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         allTrigger: () => dispatch(allTrigger()),
+        mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };
 

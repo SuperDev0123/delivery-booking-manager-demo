@@ -69,3 +69,16 @@ export const allTrigger = () => {
             .then(({ data }) => dispatch(console.log('@1 - After all_trigger', data)))
             .catch((error) => dispatch(console.log('@2 - Failed all_trigger', error)));
 };
+
+export const mapBok1ToBookings = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_to_bookings/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('@1 - After bok_1_to_bookings', data)))
+            .catch((error) => dispatch(console.log('@2 - Failed bok_1_to_bookings', error)));
+};
