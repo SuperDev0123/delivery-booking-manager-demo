@@ -211,7 +211,7 @@ class AllBookingsPage extends React.Component {
         for (let i = 0; i < bookings.length; i++) {
             if (num === 0)
                 if (bookings[i].error_details && bookings[i].error_details.length)
-                        newFilteredBookings.push(bookings[i]);
+                    newFilteredBookings.push(bookings[i]);
 
             if (num === 1)
                 if (bookings[i].consignment_label_link.length === 0)
