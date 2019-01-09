@@ -83,9 +83,8 @@ class AllBookingsPage extends React.Component {
         let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
 
         for (let i = 0; i < bookings.length; i++) {
-            if (bookings[i].error_details)
-                if (bookings[i].error_details.length > 0)
-                    errors2CorrectCnt++;
+            if (bookings[i].error_details && bookings[i].error_details.length > 0)
+                errors2CorrectCnt++;
             if (bookings[i].consignment_label_link.length === 0)
                 missingLabelCnt++;
             if (bookings[i].b_status === 'booked')
@@ -211,8 +210,7 @@ class AllBookingsPage extends React.Component {
 
         for (let i = 0; i < bookings.length; i++) {
             if (num === 0)
-                if (bookings[i].error_details.length)
-                    if (bookings[i].error_details.length > 0)
+                if (bookings[i].error_details && bookings[i].error_details.length)
                         newFilteredBookings.push(bookings[i]);
 
             if (num === 1)
