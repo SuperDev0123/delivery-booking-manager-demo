@@ -230,7 +230,7 @@ class AllBookingsPage extends React.Component {
             let temp = [];
 
             for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].b_clientPU_Warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
+                if (bookings[i].fk_client_warehouse_id === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
                     temp.push(bookings[i]);
             }
             for (let i = 0; i < temp.length; i++) {
@@ -241,7 +241,7 @@ class AllBookingsPage extends React.Component {
         } else {
             for (let i = 0; i < bookings.length; i++) {
                 if (num === 5) // Warehouse filter
-                    if (bookings[i].b_clientPU_Warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
+                    if (bookings[i].fk_client_warehouse_id === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
                         newFilteredBookings.push(bookings[i]);
 
                 if (num === 6)
