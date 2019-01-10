@@ -692,62 +692,76 @@ class AllBookingsPage extends React.Component {
                 text: 'Booking Id',
                 filter: noPlaceholderFilter,
                 formatter: hasErrorDetailFormatter,
+                sort: true,
             },{
                 dataField: 'b_bookingID_Visual',
                 text: 'BookingID Visual',
                 filter: noPlaceholderFilter,
                 formatter: iconListAttached,
+                sort: true,
             },{
                 dataField: 'b_dateBookedDate',
                 text: 'Booked Date',
                 filter: customDateFilter,
+                sort: true,
             },{
                 dataField: 'puPickUpAvailFrom_Date',
                 text: 'Pickup from Manifest Date',
                 filter: customDateFilter,
+                sort: true,
             },{
                 dataField: 'b_clientReference_RA_Numbers',
                 text: 'Ref. Number',
                 filter: noPlaceholderFilter,
+                sort: true,
             },{
                 dataField: 'b_status',
                 isDummyField: true,
                 text: 'Status',
                 filter: noPlaceholderFilter,
-                formatter: statusFormatter
+                formatter: statusFormatter,
+                sort: true,
             },{
                 dataField: 'b_status_API',
                 text: 'Status API',
                 filter: noPlaceholderFilter,
+                sort: true,
             },{
                 dataField: 'vx_freight_provider',
                 text: 'Freight Provider',
                 filter: noPlaceholderFilter,
                 formatter: iconPlusAttached,
+                sort: true,
             },{
                 dataField: 'vx_serviceName',
                 text: 'Service',
                 filter: noPlaceholderFilter,
+                sort: true,
             },{
                 dataField: 's_05_LatestPickUpDateTimeFinal',
                 text: 'Pickup By',
                 filter: customDateFilter,
+                sort: true,
             },{
                 dataField: 's_06_LatestDeliveryDateTimeFinal',
                 text: 'Latest Delivery',
-                filter: customDateFilter
+                filter: customDateFilter,
+                sort: true,
             },{
                 dataField: 'v_FPBookingNumber',
                 text: 'FP Booking Number',
                 filter: noPlaceholderFilter,
+                sort: true,
             },{
                 dataField: 'puCompany',
                 text: 'Company',
                 filter: noPlaceholderFilter,
+                sort: true,
             },{
                 dataField: 'deToCompanyName',
                 text: 'CompanyName',
                 filter: noPlaceholderFilter,
+                sort: true,
             }
         ];
 
