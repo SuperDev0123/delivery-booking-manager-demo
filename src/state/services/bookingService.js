@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookings, failedGetBookings, setBooking, failedUpdateBooking } from '../actions/bookingActions';
+import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
@@ -79,6 +79,6 @@ export const mapBok1ToBookings = () => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(console.log('@1 - After bok_1_to_bookings', data)))
-            .catch((error) => dispatch(console.log('@2 - Failed bok_1_to_bookings', error)));
+            .then(({ data }) => dispatch(setMappedBok1ToBooking(data.mapped_bookings)))
+            .catch((error) => dispatch(failedUpdateBooking(error)));
 };

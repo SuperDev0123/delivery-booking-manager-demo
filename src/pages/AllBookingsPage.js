@@ -46,6 +46,8 @@ class AllBookingsPage extends React.Component {
             bookingLinesQtyTotal: 0,
             bookingLineDetailsQtyTotal: 0,
             products: [],
+            mappedBookings: [],
+            mapBok1ToBookings: false,
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -79,7 +81,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, warehouses, booking, bookingLines, bookingLineDetails } = newProps;
+        const { bookings, warehouses, booking, bookingLines, bookingLineDetails, mappedBookings } = newProps;
         let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
 
         for (let i = 0; i < bookings.length; i++) {
@@ -104,6 +106,10 @@ class AllBookingsPage extends React.Component {
 
         if (bookingLines) {
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+        }
+
+        if (mappedBookings && this.state.mapBok1ToBookings === true) {
+            this.setState({mapBok1ToBookings: false, mappedBookings});
         }
 
         this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, products: bookings });
@@ -320,10 +326,11 @@ class AllBookingsPage extends React.Component {
 
     onClickMapBok1ToBookings() {
         this.props.mapBok1ToBookings();
+        this.setState({mapBok1ToBookings: true});
     }
 
     render() {
-        const { bookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal, products } = this.state;
+        const { bookings, mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal, products } = this.state;
         let list, warehouses_list;
 
         if (hasFilter)
@@ -765,6 +772,53 @@ class AllBookingsPage extends React.Component {
             }
         ];
 
+        let columns1 = [
+            {
+                dataField: 'id',
+                text: 'Booking Id',
+            },{
+                dataField: 'b_bookingID_Visual',
+                text: 'BookingID Visual',
+            },{
+                dataField: 'b_dateBookedDate',
+                text: 'Booked Date',
+            },{
+                dataField: 'puPickUpAvailFrom_Date',
+                text: 'Pickup from Manifest Date',
+            },{
+                dataField: 'b_clientReference_RA_Numbers',
+                text: 'Ref. Number',
+            },{
+                dataField: 'b_status',
+                isDummyField: true,
+                text: 'Status',
+            },{
+                dataField: 'b_status_API',
+                text: 'Status API',
+            },{
+                dataField: 'vx_freight_provider',
+                text: 'Freight Provider',
+            },{
+                dataField: 'vx_serviceName',
+                text: 'Service',
+            },{
+                dataField: 's_05_LatestPickUpDateTimeFinal',
+                text: 'Pickup By',
+            },{
+                dataField: 's_06_LatestDeliveryDateTimeFinal',
+                text: 'Latest Delivery',
+            },{
+                dataField: 'v_FPBookingNumber',
+                text: 'FP Booking Number',
+            },{
+                dataField: 'puCompany',
+                text: 'Company',
+            },{
+                dataField: 'deToCompanyName',
+                text: 'CompanyName',
+            }
+        ];
+
         return (
             <div className="qbootstrap-nav" >
                 { bookingList }
@@ -841,6 +895,13 @@ class AllBookingsPage extends React.Component {
                                                 pagination={ paginationFactory() }
                                                 bootstrap4={ true }
                                             />
+
+                                            <BootstrapTable
+                                                keyField='id'
+                                                data={ mappedBookings }
+                                                columns={ columns1 }
+                                                bootstrap4={ true }
+                                            />
                                         </div>
                                     </div>
                                     <div id="all_booking" className="tab-pane fade">
@@ -898,6 +959,7 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         booking: state.booking.booking,
+        mappedBookings: state.booking.mappedBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         filtered_bookings: state.booking.filtered_bookings,
