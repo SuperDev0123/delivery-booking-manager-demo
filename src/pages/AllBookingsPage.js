@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import lodash from 'lodash';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -12,7 +12,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -38,6 +38,7 @@ class AllBookingsPage extends React.Component {
             closedCnt: 0,
             startDate: '',
             endDate: '',
+            mainDate: '',
             orFilter: false,
             printerFlag: false,
             filterConditions: {},
@@ -48,6 +49,7 @@ class AllBookingsPage extends React.Component {
             products: [],
             mappedBookings: [],
             mapBok1ToBookings: false,
+            userDateFilterField: '',
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -58,6 +60,7 @@ class AllBookingsPage extends React.Component {
         getBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
+        getUserDateFilterField: PropTypes.func.isRequired,
         simpleSearch: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
@@ -68,8 +71,9 @@ class AllBookingsPage extends React.Component {
     componentDidMount() {
         this.props.getBookings();
         this.props.getWarehouses();
+        this.props.getUserDateFilterField();
 
-        this.setState({ endDate: moment().toDate() });
+        this.setState({ endDate: moment().toDate(), mainDate:  moment().tz('Australia/Sydney').toDate() });
     }
 
     componentWillMount() {
@@ -81,19 +85,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, warehouses, booking, bookingLines, bookingLineDetails, mappedBookings } = newProps;
-        let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
-
-        for (let i = 0; i < bookings.length; i++) {
-            if (bookings[i].error_details && bookings[i].error_details.length > 0)
-                errors2CorrectCnt++;
-            if (bookings[i].consignment_label_link.length === 0)
-                missingLabelCnt++;
-            if (bookings[i].b_status === 'booked')
-                toProcessCnt++;
-            if (bookings[i].b_status === 'closed')
-                closedCnt++;
-        }
+        const { bookings, warehouses, booking, bookingLines, bookingLineDetails, mappedBookings, userDateFilterField } = newProps;
 
         if (booking && this.printerFlag === true) {
             this.props.getBookings();
@@ -108,11 +100,19 @@ class AllBookingsPage extends React.Component {
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
         }
 
+        if (userDateFilterField) {
+            this.setState({userDateFilterField});
+        }
+
         if (mappedBookings && this.state.mapBok1ToBookings === true) {
             this.setState({mapBok1ToBookings: false, mappedBookings});
         }
 
-        this.setState({ bookings, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, products: bookings });
+        if (bookings) {
+            this.setState({ bookings }, () => this.applyFilter());
+        }
+
+        this.setState({ warehouses, products: bookings });
     }
 
     calcBookingLine(bookingLines) {
@@ -174,14 +174,18 @@ class AllBookingsPage extends React.Component {
     }
 
     onSelectChange(e) {
-        this.setState({ selectedWarehouseId: e.target.value }, () => this.applyFilter(5));
+        this.setState({ selectedWarehouseId: e.target.value }, () => this.applyFilter());
     }
 
     onDateChange(num, date) {
-        if (num === 0)
-            this.setState({ startDate: date }, () => this.applyFilter(6));
-        else if (num === 1)
-            this.setState({ endDate: date }, () => this.applyFilter(6));
+        // if (num === 0)
+        //     this.setState({ startDate: date }, () => this.applyFilter(6));
+        // else if (num === 1)
+        //     this.setState({ endDate: date }, () => this.applyFilter(6));
+        // else if (num === 2)
+        //     this.setState({ mainDate: date }, () => this.applyFilter());
+        if (num === 2)
+            this.setState({ mainDate: date }, () => this.applyFilter());
     }
 
     onFilterChange(e) {
@@ -206,63 +210,54 @@ class AllBookingsPage extends React.Component {
         this.setState({hasFilter: true, filtered_bookings: filtered_bookings, products: filtered_bookings});
     }
 
-    applyFilter(num) {
-        const { bookings, selectedWarehouseId, startDate, endDate, orFilter } = this.state;
-        let newFilteredBookings = [];
+    applyFilter(num = -1) {
+        const { bookings, selectedWarehouseId, mainDate, userDateFilterField } = this.state;
+        let dateFiltered = [];
+        for (let i = 0; i < bookings.length; i++)
+            if (moment(bookings[i][userDateFilterField]).format('MM/DD/YYYY') === moment(mainDate).format('MM/DD/YYYY'))
+                dateFiltered.push(bookings[i]);
 
-        if (num === 6)
-            if (startDate.length === 0 || endDate.length === 0)
-                num = -1;
+        let warehouseFiltered = [];
+        for (let i = 0; i < dateFiltered.length; i++)
+            if (dateFiltered[i].fk_client_warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all' || selectedWarehouseId === '')
+                warehouseFiltered.push(dateFiltered[i]);
 
-        for (let i = 0; i < bookings.length; i++) {
+        let preFiltered = [];
+        for (let i = 0; i < warehouseFiltered.length; i++) {
             if (num === 0)
-                if (bookings[i].error_details && bookings[i].error_details.length)
-                    newFilteredBookings.push(bookings[i]);
+                if (warehouseFiltered[i].error_details && warehouseFiltered[i].error_details.length)
+                    preFiltered.push(warehouseFiltered[i]);
 
             if (num === 1)
-                if (bookings[i].consignment_label_link.length === 0)
-                    newFilteredBookings.push(bookings[i]);
+                if (warehouseFiltered[i].consignment_label_link.length === 0)
+                    preFiltered.push(warehouseFiltered[i]);
 
             if (num === 3)
-                if (bookings[i].b_status === 'booked')
-                    newFilteredBookings.push(bookings[i]);
+                if (warehouseFiltered[i].b_status === 'booked')
+                    preFiltered.push(warehouseFiltered[i]);
 
             if (num === 4)
-                if (bookings[i].b_status === 'closed')
-                    newFilteredBookings.push(bookings[i]);
+                if (warehouseFiltered[i].b_status === 'closed')
+                    preFiltered.push(warehouseFiltered[i]);
         }
 
-        if (orFilter && startDate.length !== 0 && endDate.length !== 0) {
-            let temp = [];
+        if (num === -1)
+            preFiltered = warehouseFiltered;
 
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].fk_client_warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
-                    temp.push(bookings[i]);
-            }
-            for (let i = 0; i < temp.length; i++) {
-                if (moment(temp[i].b_dateBookedDate) < moment(endDate) &&
-                    moment(temp[i].b_dateBookedDate) > moment(startDate))
-                    newFilteredBookings.push(temp[i]);
-            }
-        } else {
-            for (let i = 0; i < bookings.length; i++) {
-                if (num === 5) // Warehouse filter
-                    if (bookings[i].fk_client_warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all')
-                        newFilteredBookings.push(bookings[i]);
+        let errors2CorrectCnt = 0, missingLabelCnt = 0, toProcessCnt = 0, closedCnt = 0;
 
-                if (num === 6)
-                    if (moment(bookings[i].b_dateBookedDate) < moment(endDate) &&
-                        moment(bookings[i].b_dateBookedDate) > moment(startDate))
-                        newFilteredBookings.push(bookings[i]);
-            }
+        for (let i = 0; i < preFiltered.length; i++) {
+            if (preFiltered[i].error_details && preFiltered[i].error_details.length > 0)
+                errors2CorrectCnt++;
+            if (preFiltered[i].consignment_label_link.length === 0)
+                missingLabelCnt++;
+            if (preFiltered[i].b_status === 'booked')
+                toProcessCnt++;
+            if (preFiltered[i].b_status === 'closed')
+                closedCnt++;
         }
 
-        this.setState({filtered_bookings: newFilteredBookings, hasFilter: true, products: newFilteredBookings});
-
-        if (num > 4)
-            this.setState({orFilter: true});
-        else
-            this.setState({orFilter: false});
+        this.setState({filtered_bookings: preFiltered, hasFilter: true, products: preFiltered, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt});
     }
 
     showAdditionalInfo(bookingId) {
@@ -330,7 +325,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, bookingLinesQtyTotal, products } = this.state;
+        const { bookings, mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, mainDate, bookingLinesQtyTotal, products } = this.state;
         let list, warehouses_list;
 
         if (hasFilter)
@@ -859,6 +854,11 @@ class AllBookingsPage extends React.Component {
                                 <div className="tab-content">
                                     <div id="all_booking" className="tab-pane fade in active">
                                         <p>Date</p>
+                                        <label className="left-15px right-10px">Date:</label>
+                                        <DatePicker
+                                            selected={mainDate}
+                                            onChange={(e) => this.onDateChange(2, e)}
+                                        />
                                         <div id="line1"></div>
                                         <ul className="filter-conditions">
                                             <li><a onClick={() => this.applyFilter(0)}>( {errors2CorrectCnt} ) Errors to Correct</a></li>
@@ -960,6 +960,7 @@ const mapStateToProps = (state) => {
         bookings: state.booking.bookings,
         booking: state.booking.booking,
         mappedBookings: state.booking.mappedBookings,
+        userDateFilterField: state.booking.userDateFilterField,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         filtered_bookings: state.booking.filtered_bookings,
@@ -971,6 +972,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getBookings: () => dispatch(getBookings()),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getUserDateFilterField: () => dispatch(getUserDateFilterField()),
         getBookingLineDetails: (bookingLineId) => dispatch(getBookingLineDetails(bookingLineId)),
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
         getWarehouses: () => dispatch(getWarehouses()),

@@ -1,4 +1,4 @@
-import { SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS } from '../constants/bookingConstants';
+import { SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
 
 export function setBookings(bookings) {
     return {
@@ -34,5 +34,20 @@ export function failedUpdateBooking(error) {
     return {
         type: FAILED_UPDATE_BOOKING,
         errorMessage: 'Unable to update booking.'
+    };
+}
+
+export function setUserDateFilterField(userDateFilterField) {
+    return {
+        type: SET_USER_DATE_FILTER_FIELD,
+        userDateFilterField
+    };
+}
+
+export function failedGetUserDateFilterField(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_USER_DATE_FILTER_FIELD,
+        errorMessage: 'Unable to get User`s date filter field.'
     };
 }

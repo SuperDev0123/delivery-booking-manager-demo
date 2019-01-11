@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking } from '../actions/bookingActions';
+import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
@@ -81,4 +81,17 @@ export const mapBok1ToBookings = () => {
         axios(options)
             .then(({ data }) => dispatch(setMappedBok1ToBooking(data.mapped_bookings)))
             .catch((error) => dispatch(failedUpdateBooking(error)));
+};
+
+export const getUserDateFilterField = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_user_date_filter_field/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setUserDateFilterField(data.user_date_filter_field)))
+            .catch((error) => dispatch(failedGetUserDateFilterField(error)));
 };
