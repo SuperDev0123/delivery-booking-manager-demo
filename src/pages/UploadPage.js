@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import DropzoneComponent from 'react-dropzone-component';
 
+import { verifyToken } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 
 class UploadPage extends Component {
@@ -37,15 +38,40 @@ class UploadPage extends Component {
     }
 
     static propTypes = {
+        verifyToken: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
 
     componentDidMount() {
+        const token = localStorage.getItem('token');
+        const currentRoute = this.props.location.pathname;
+
+        if (token.length > 0) {
+            this.props.verifyToken();
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
+        if (this.props.redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
         this.props.getWarehouses();
     }
 
     componentWillReceiveProps(newProps) {
-        const { warehouses } = newProps;
+        const { warehouses, redirect } = newProps;
+        const currentRoute = this.props.location.pathname;
+
+        if (redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
 
         if (warehouses)
             this.setState({warehouses});
@@ -180,11 +206,13 @@ class UploadPage extends Component {
 const mapStateToProps = (state) => {
     return {
         warehouses: state.warehouse.warehouses,
+        redirect: state.auth.redirect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        verifyToken: () => dispatch(verifyToken()),
         getWarehouses: () => dispatch(getWarehouses()),
     };
 };

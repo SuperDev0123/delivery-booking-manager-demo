@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { verifyToken } from '../state/services/authService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 
 class BookingLinesPage extends React.Component {
@@ -14,15 +15,34 @@ class BookingLinesPage extends React.Component {
     }
 
     static propTypes = {
+        verifyToken: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
 
     componentDidMount() {
+        const token = localStorage.getItem('token');
+
+        if (token.length > 0) {
+            this.props.verifyToken();
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
         this.props.getBookingLines();
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookingLines } = newProps;
+        const { bookingLines, redirect } = newProps;
+        const currentRoute = this.props.location.pathname;
+
+        if (redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
 
         if (bookingLines) {
             this.setState({bookingLines: bookingLines});
@@ -116,11 +136,13 @@ class BookingLinesPage extends React.Component {
 const mapStateToProps = (state) => {
     return {
         bookingLines: state.bookingLine.bookingLines,
+        redirect: state.auth.redirect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        verifyToken: () => dispatch(verifyToken()),
         getBookingLines: () => dispatch(getBookingLines()),
     };
 };

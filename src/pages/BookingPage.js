@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { verifyToken } from '../state/services/authService';
 import { saveBooking } from '../state/services/bookingService';
 
 import user from '../public/images/user.png';
@@ -20,8 +21,39 @@ class BookingPage extends Component {
     }
 
     static propTypes = {
+        verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
+
+    componentDidMount() {
+        const token = localStorage.getItem('token');
+        const currentRoute = this.props.location.pathname;
+
+        if (token.length > 0) {
+            this.props.verifyToken();
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
+        if (this.props.redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        const { redirect } = newProps;
+        const currentRoute = this.props.location.pathname;
+
+        if (redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+    }
 
     onHandleInput(e) {
         let formInputs = this.state.formInputs;
@@ -813,11 +845,13 @@ class BookingPage extends Component {
 const mapStateToProps = (state) => {
     return {
         booking: state.booking.booking,
+        redirect: state.auth.redirect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
     };
 };

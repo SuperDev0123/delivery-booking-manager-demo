@@ -17,7 +17,7 @@ class LoginPage extends Component {
     static propTypes = {
         getToken: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
-        history: PropTypes.object.isRequired
+        history: PropTypes.object.isRequired,
     };
 
     componentWillReceiveProps(newProps) {
@@ -27,7 +27,7 @@ class LoginPage extends Component {
 
         if (token)
             this.props.getUser(token);
-        
+
         if (username)
             this.props.history.push('/home');
     }
@@ -50,9 +50,9 @@ class LoginPage extends Component {
                 <div className="container h-100vh">
                     <div className="row justify-content-md-center mt-md-5 mt-sm-0">
                         <div className=" col-md-4 col-sm-12 theme-bg rounded-left">
-                      
+
                             <form onSubmit={(e) => this.onSubmit(e)} className="form-signin text-center">
-                                <h1 className="h4 mb-5 mt-5 font-weight-normal">Welcome to Deliver-Me </h1>  
+                                <h1 className="h4 mb-5 mt-5 font-weight-normal">Welcome to Deliver-Me </h1>
                                 <div className="input-group input-group-text bg-white borderB">
                                     <span className="input-group-addon bg-white">
                                         <i className="fa fa-envelope text-lightgray"></i>

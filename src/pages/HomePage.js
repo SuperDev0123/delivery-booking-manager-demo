@@ -6,18 +6,37 @@ import img1 from '../public/images/1.png';
 import img2 from '../public/images/2.png';
 import img3 from '../public/images/3.png';
 
+import { verifyToken } from '../state/services/authService';
 import { getUser } from '../state/services/authService';
 
 class HomePage extends Component {
     static propTypes = {
+        verifyToken: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
+
+    componentDidUpdate() {
+        const currentRoute = this.props.location.pathname;
+
+        if (this.props.redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+    }
 
     componentDidMount() {
         const token = localStorage.getItem('token');
 
-        if (token)
+        if (token.length > 0) {
+            this.props.verifyToken();
             this.props.getUser(token);
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
     }
 
     render() {
@@ -72,12 +91,15 @@ class HomePage extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        username: state.auth.username
+        username: state.auth.username,
+        errorMessage: state.auth.errorMessage,
+        redirect: state.auth.redirect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        verifyToken: () => dispatch(verifyToken()),
         getUser: (token) => dispatch(getUser(token)),
     };
 };

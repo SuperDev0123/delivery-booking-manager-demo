@@ -11,7 +11,6 @@ class Header extends Component {
 
         this.state = {
             username: '',
-            isLoggedIn: 'false',
         };
     }
 
@@ -19,10 +18,6 @@ class Header extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
     };
-
-    componentDidMount() {
-        this.setState({isLoggedIn: localStorage.getItem('isLoggedIn')});
-    }
 
     componentWillReceiveProps(newProps) {
         const { username, isLoggedIn } = newProps;
@@ -38,8 +33,9 @@ class Header extends Component {
     }
 
     render() {
-        const { username, isLoggedIn } = this.state;
+        const { username } = this.state;
         const currentRoute = this.props.location.pathname;
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
 
         return (
             <header>

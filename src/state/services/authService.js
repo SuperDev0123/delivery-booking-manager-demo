@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setToken, failedGetToken, setUser, failedGetUser } from '../actions/authActions';
+import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken } from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getToken = (username, password) => {
@@ -11,6 +11,18 @@ export const getToken = (username, password) => {
         })
             .then(({ data: { token } }) => dispatch(setToken(token)))
             .catch((error) => dispatch(failedGetToken(error)) );
+};
+
+export const verifyToken = () => {
+    const token = localStorage.getItem('token');
+    console.log('Current token: ', token);
+
+    return dispatch =>
+        axios.post(`${HTTP_PROTOCOL}://${API_HOST}/api-token-verify/` , {
+            token: token,
+        })
+            .then(({ data }) => dispatch(detectTokenExpiration(data)) )
+            .catch((error) => dispatch(failedVerifiyToken(error)) );
 };
 
 export const getUser = (token) => {

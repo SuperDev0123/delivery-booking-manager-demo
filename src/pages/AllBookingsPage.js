@@ -12,6 +12,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-filter';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
+import { verifyToken } from '../state/services/authService';
 import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
@@ -57,6 +58,7 @@ class AllBookingsPage extends React.Component {
     }
 
     static propTypes = {
+        verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
@@ -66,9 +68,27 @@ class AllBookingsPage extends React.Component {
         updateBooking: PropTypes.func.isRequired,
         allTrigger: PropTypes.func.isRequired,
         mapBok1ToBookings: PropTypes.func.isRequired,
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
 
     componentDidMount() {
+        const token = localStorage.getItem('token');
+        const currentRoute = this.props.location.pathname;
+
+        if (token.length > 0) {
+            this.props.verifyToken();
+        } else {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
+        if (this.props.redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+
         this.props.getBookings();
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
@@ -85,7 +105,13 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, warehouses, booking, bookingLines, bookingLineDetails, mappedBookings, userDateFilterField } = newProps;
+        const { bookings, warehouses, booking, bookingLines, bookingLineDetails, mappedBookings, userDateFilterField, redirect } = newProps;
+        const currentRoute = this.props.location.pathname;
+
+        if (redirect && currentRoute != '/') {
+            localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
 
         if (booking && this.printerFlag === true) {
             this.props.getBookings();
@@ -965,11 +991,13 @@ const mapStateToProps = (state) => {
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         filtered_bookings: state.booking.filtered_bookings,
         warehouses: state.warehouse.warehouses,
+        redirect: state.auth.redirect,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        verifyToken: () => dispatch(verifyToken()),
         getBookings: () => dispatch(getBookings()),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
