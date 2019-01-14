@@ -27,12 +27,10 @@ class AllBookingsPage extends React.Component {
             bookingLines: [],
             bookingLineDetails: [],
             bookingLineDetailsLoaded: false,
-            filtered_bookings: [],
             warehouses: [],
             selectedWarehouseId: '',
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
-            hasFilter: false,
             errors2CorrectCnt: 0,
             missingLabelCnt: 0,
             toProcessCnt: 0,
@@ -51,6 +49,8 @@ class AllBookingsPage extends React.Component {
             mappedBookings: [],
             mapBok1ToBookings: false,
             userDateFilterField: '',
+            curPageNum: 0,
+            sizePerPage: 10,
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -204,6 +204,9 @@ class AllBookingsPage extends React.Component {
     }
 
     onDateChange(num, date) {
+        this.clearActivePopoverStatus();
+        this.clearActivePopoverVar();
+
         // if (num === 0)
         //     this.setState({ startDate: date }, () => this.applyFilter(6));
         // else if (num === 1)
@@ -233,7 +236,7 @@ class AllBookingsPage extends React.Component {
                 filtered_bookings.push(bookings[i]);
         }
 
-        this.setState({hasFilter: true, filtered_bookings: filtered_bookings, products: filtered_bookings});
+        this.setState({products: filtered_bookings});
     }
 
     applyFilter(num = -1) {
@@ -283,7 +286,7 @@ class AllBookingsPage extends React.Component {
                 closedCnt++;
         }
 
-        this.setState({filtered_bookings: preFiltered, hasFilter: true, products: preFiltered, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt});
+        this.setState({products: preFiltered, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt});
     }
 
     showAdditionalInfo(bookingId) {
@@ -325,9 +328,19 @@ class AllBookingsPage extends React.Component {
         const { products } = this.state;
 
         for (let i = 0; i < products.length; i++) {
-            document.getElementById('additional-info-popup-' + products[i].id).parentElement.setAttribute('class', 'additional-info-popup-inactive');
-            document.getElementById('booking-lines-info-popup-' + products[i].id).parentElement.setAttribute('class', 'booking-lines-info-popup-inactive');
+            let item0 = document.getElementById('additional-info-popup-' + products[i].id);
+            let item1 = document.getElementById('booking-lines-info-popup-' + products[i].id);
+
+            if (item0)
+                item0.parentElement.setAttribute('class', 'additional-info-popup-inactive');
+
+            if (item1)
+                item1.parentElement.setAttribute('class', 'booking-lines-info-popup-inactive');
         }
+    }
+
+    clearActivePopoverVar() {
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [] });
     }
 
     onClickPrinter(booking) {
@@ -368,21 +381,20 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, filtered_bookings, hasFilter, warehouses, selectedWarehouseId, startDate, endDate, mainDate, bookingLinesQtyTotal, products } = this.state;
-        let list, warehouses_list;
+        const { mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, selectedWarehouseId, startDate, endDate, mainDate, bookingLinesQtyTotal, products, sizePerPage, curPageNum } = this.state;
 
-        if (hasFilter)
-            list = filtered_bookings;
-        else
-            list = bookings;
+        let itemCntOnPage = products.length - sizePerPage * curPageNum;
 
-        warehouses_list = warehouses.map((warehouse, index) => {
+        if (itemCntOnPage > sizePerPage)
+            itemCntOnPage = sizePerPage;
+
+        const warehouses_list = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
             );
         });
 
-        let bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
+        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
                     <td>{bookingLineDetail.modelNumber}</td>
@@ -396,7 +408,7 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+        const bookingLinesList = bookingLines.map((bookingLine, index) => {
             return (
                 <tr key={index} onClick={() => this.onClickBookingLine(bookingLine.pk_auto_id_lines)}>
                     <td>{bookingLine.pk_auto_id_lines}</td>
@@ -415,21 +427,94 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        let bookingList = list.map((booking, index) => {
+        const noPlaceholderFilter = textFilter({
+            placeholder: ' ', // custom the input placeholder
+            className: 'no-placeholder-text-filter', // custom classname on input
+            caseSensitive: true, // default is false, and true will only work when comparator is LIKE
+            style: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' }
+        });
+
+        const customDateFilter = dateFilter({
+            style: { height: '53px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' },
+            comparatorStyle: { padding: '0', paddingLeft: '5px' },
+            dateStyle: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial', lineHeight: '12px' },
+        });
+
+        const hasErrorDetailFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <span>
+                        <strong style={ { color: 'red' } }>{ cell }</strong>
+                    </span>
+                );
+            }
+
             return (
-                <tr key={index}>
-                    <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
-                        <i className="icon icon-th-list"></i>
-                    </td>
+                <span>{ cell }</span>
+            );
+        };
+
+        const statusFormatter = (cell, row) => {
+            if (row.error_details) {
+                return (
+                    <div className="booking-status">
+                        <TooltipItem booking={row} />
+                    </div>
+                );
+            } else {
+                return (
+                    <div className="booking-status">
+                        <div className="disp-inline-block">
+                            {
+                                (row.shipping_label_base64) && (row.shipping_label_base64.length > 0) ?
+                                    <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                                    :
+                                    <a>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                            }
+                            &nbsp;&nbsp;{row.b_status}&nbsp;&nbsp;
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        const iconListAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        const iconPlusAttached = (cell) => {
+            return (
+                <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
+            );
+        };
+
+        const iconList = (cell, row) => {
+            return (
+                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
+                    <i className="icon icon-th-list cursor-pointer font-size-16px bg-gray"></i>
+                </div>
+            );
+        };
+
+        const linesInfoPopovers = products.map((product, index) => {
+            if (sizePerPage * curPageNum <= index && index < sizePerPage * curPageNum + itemCntOnPage) {
+                return (
                     <Popover
-                        isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id]}
-                        target={'booking-lines-info-popup-' + booking.id}
+                        key={product.id}
+                        isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.id]}
+                        target={'booking-lines-info-popup-' + product.id}
                         placement="right"
                         hideArrow={true} >
                         <PopoverHeader>Line and Line Details</PopoverHeader>
                         <PopoverBody>
                             <div className="pad-10p">
-                                <p><strong>Booking ID: {booking.id}</strong></p>
+                                <p><strong>Booking ID: {product.id}</strong></p>
                                 <table className="booking-lines">
                                     <thead>
                                         <tr>
@@ -493,262 +578,8 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td id={'additional-info-popup-' + booking.id} className={this.state.additionalInfoOpens['additional-info-popup-' + booking.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(booking.id)}>
-                        <i className="icon icon-plus"></i>
-                    </td>
-                    <Popover
-                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + booking.id]}
-                        target={'additional-info-popup-' + booking.id}
-                        placement="right"
-                        hideArrow={true} >
-                        <PopoverHeader>Additional Info</PopoverHeader>
-                        <PopoverBody>
-                            <div className="location-info disp-inline-block">
-                                <span>PU Info</span><br />
-                                <span>Pickup Location:</span><br />
-                                <span>
-                                    {booking.pu_Address_street_1}<br />
-                                    {booking.pu_Address_street_2}<br />
-                                    {booking.pu_Address_Suburb}<br />
-                                    {booking.pu_Address_City}<br />
-                                    {booking.pu_Address_State} {booking.pu_Address_PostalCode}<br />
-                                    {booking.pu_Address_Country}<br />
-                                </span>
-                            </div>
-                            <div className="location-info disp-inline-block">
-                                <span>Delivery Info</span><br />
-                                <span>Delivery Location:</span><br />
-                                <span>
-                                    {booking.de_To_Address_street_1}<br />
-                                    {booking.de_To_Address_street_2}<br />
-                                    {booking.de_To_Address_Suburb}<br />
-                                    {booking.de_To_Address_City}<br />
-                                    {booking.de_To_Address_State} {booking.de_To_Address_PostalCode}<br />
-                                    {booking.de_To_Address_Country}<br />
-                                </span>
-                            </div>
-                            <div className="location-info disp-inline-block">
-                                <span></span>
-                                <span>
-                                    <strong>Contact:</strong> {booking.booking_Created_For}<br />
-                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
-                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
-                                </span>
-                            </div>
-                        </PopoverBody>
-                    </Popover>
-                    <td><input type="checkbox" /></td>
-                    <td scope="row">
-                        <span className={booking.error_details ? 'c-red' : ''}>{booking.id}</span>
-                    </td>
-                    <td>
-                        {booking.b_bookingID_Visual}
-                        <a href="#">
-                            <i className="icon icon-th-list"></i>
-                        </a>
-                    </td>
-                    <td>{booking.b_dateBookedDate}</td>
-                    <td>{booking.puPickUpAvailFrom_Date}</td>
-                    <td>
-                        {booking.b_clientReference_RA_Numbers}&nbsp;&nbsp;
-                    </td>
-                    <td className="no-padding">
-                        {
-                            (booking.error_details) ?
-                                <div className="booking-status">
-                                    <TooltipItem booking={booking} />
-                                </div>
-                                :
-                                <div className="booking-status">
-                                    <div className="disp-inline-block">
-                                        {
-                                            (booking.shipping_label_base64) &&
-                                            (booking.shipping_label_base64.length > 0) ?
-                                                <a href="#" className={booking.is_printed ? 'bc-red' : 'bc-green'} onClick={() => this.onClickPrinter(booking)}>
-                                                    <i className="icon icon-printer"></i>
-                                                </a>
-                                                :
-                                                <a>
-                                                    <i className="icon icon-printer transparent"></i>
-                                                </a>
-                                        }
-                                        &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
-                                    </div>
-                                </div>
-                        }
-                    </td>
-                    <td>
-                        {booking.b_status_API}&nbsp;&nbsp;
-                    </td>
-                    <td>
-                        {booking.vx_freight_provider}&nbsp;&nbsp;
-                        <a href="#">
-                            <i className="icon icon-plus"></i>
-                        </a>
-                    </td>
-                    <td>{booking.vx_serviceName}</td>
-                    <td>{booking.s_05_LatestPickUpDateTimeFinal}</td>
-                    <td>{booking.s_06_LatestDeliveryDateTimeFinal}</td>
-                    <td>{booking.v_FPBookingNumber}</td>
-                    <td>{booking.puCompany}</td>
-                    <td>{booking.deToCompanyName}</td>
-                </tr>
-            );
-        });
-
-        bookingList = '';
-
-        const noPlaceholderFilter = textFilter({
-            placeholder: ' ', // custom the input placeholder
-            className: 'no-placeholder-text-filter', // custom classname on input
-            caseSensitive: true, // default is false, and true will only work when comparator is LIKE
-            style: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' }
-        });
-
-        const customDateFilter = dateFilter({
-            style: { height: '53px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial' },
-            comparatorStyle: { padding: '0', paddingLeft: '5px' },
-            dateStyle: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial', lineHeight: '12px' },
-        });
-
-        const hasErrorDetailFormatter = (cell, row) => {
-            if (row.error_details) {
-                return (
-                    <span>
-                        <strong style={ { color: 'red' } }>{ cell }</strong>
-                    </span>
                 );
             }
-
-            return (
-                <span>{ cell }</span>
-            );
-        };
-
-        let statusFormatter = (cell, row) => {
-            if (row.error_details) {
-                return (
-                    <div className="booking-status">
-                        <TooltipItem booking={row} />
-                    </div>
-                );
-            } else {
-                return (
-                    <div className="booking-status">
-                        <div className="disp-inline-block">
-                            {
-                                (row.shipping_label_base64) && (row.shipping_label_base64.length > 0) ?
-                                    <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
-                                    :
-                                    <a>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
-                            }
-                            &nbsp;&nbsp;{row.b_status}&nbsp;&nbsp;
-                        </div>
-                    </div>
-                );
-            }
-        };
-
-        const iconListAttached = (cell) => {
-            return (
-                <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
-            );
-        };
-
-        const iconPlusAttached = (cell) => {
-            return (
-                <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
-            );
-        };
-
-        const iconList = (cell, row) => {
-            return (
-                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
-                    <i className="icon icon-th-list cursor-pointer font-size-16px bg-gray"></i>
-                </div>
-            );
-        };
-
-        const linesInfoPopovers = products.map((product) => {
-            return (
-                <Popover
-                    key={product.id}
-                    isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.id]}
-                    target={'booking-lines-info-popup-' + product.id}
-                    placement="right"
-                    hideArrow={true} >
-                    <PopoverHeader>Line and Line Details</PopoverHeader>
-                    <PopoverBody>
-                        <div className="pad-10p">
-                            <p><strong>Booking ID: {product.id}</strong></p>
-                            <table className="booking-lines">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Qty Total</th>
-                                        <th>Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Lines</td>
-                                        <td>{bookingLinesQtyTotal}</td>
-                                        <td>{lodash.size(bookingLines)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Line Details</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="pad-10p">
-                            <p><strong>Lines</strong></p>
-                            <table className="booking-lines">
-                                <thead>
-                                    <th>ID</th>
-                                    <th>Packaging</th>
-                                    <th>Item Description</th>
-                                    <th>Qty</th>
-                                    <th>Wgt UOM</th>
-                                    <th>Wgt Each</th>
-                                    <th>Total Kgs</th>
-                                    <th>Dim UOM</th>
-                                    <th>Length</th>
-                                    <th>Width</th>
-                                    <th>Height</th>
-                                    <th>Cubic Meter</th>
-                                </thead>
-                                <tbody>
-                                    { bookingLinesList }
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="pad-10p">
-                            <p><strong>Line Details</strong></p>
-                            <table className="booking-lines">
-                                <thead>
-                                    <th>Model</th>
-                                    <th>Item Description</th>
-                                    <th>Qty</th>
-                                    <th>Fault Description</th>
-                                    <th>Insurance Value</th>
-                                    <th>Gap/ RA</th>
-                                    <th>Client Reference #</th>
-                                </thead>
-                                <tbody>
-                                    { bookingLineDetailsList }
-                                </tbody>
-                            </table>
-                        </div>
-                    </PopoverBody>
-                </Popover>
-            );
         });
 
         const iconPlus = (cell, row) => {
@@ -759,54 +590,56 @@ class AllBookingsPage extends React.Component {
             );
         };
 
-        const additionalInfoPopovers = products.map((product) => {
-            return (
-                <Popover
-                    key={product.id}
-                    isOpen={this.state.additionalInfoOpens['additional-info-popup-' + product.id]}
-                    target={'additional-info-popup-' + product.id}
-                    placement="right"
-                    hideArrow={true} >
-                    <PopoverHeader>Additional Info</PopoverHeader>
-                    <PopoverBody>
-                        <div className="location-info disp-inline-block">
-                            <span>PU Info</span><br />
-                            <span>Pickup Location:</span><br />
-                            <span>
-                                {product.pu_Address_street_1}<br />
-                                {product.pu_Address_street_2}<br />
-                                {product.pu_Address_Suburb}<br />
-                                {product.pu_Address_City}<br />
-                                {product.pu_Address_State} {product.pu_Address_PostalCode}<br />
-                                {product.pu_Address_Country}<br />
-                            </span>
-                        </div>
-                        <div className="location-info disp-inline-block">
-                            <span>Delivery Info</span><br />
-                            <span>Delivery Location:</span><br />
-                            <span>
-                                {product.de_To_Address_street_1}<br />
-                                {product.de_To_Address_street_2}<br />
-                                {product.de_To_Address_Suburb}<br />
-                                {product.de_To_Address_City}<br />
-                                {product.de_To_Address_State} {product.de_To_Address_PostalCode}<br />
-                                {product.de_To_Address_Country}<br />
-                            </span>
-                        </div>
-                        <div className="location-info disp-inline-block">
-                            <span></span>
-                            <span>
-                                <strong>Contact:</strong> {product.booking_Created_For}<br />
-                                <strong>Actual Pickup Time:</strong> {moment(product.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
-                                <strong>Actual Deliver Time:</strong> {moment(product.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
-                            </span>
-                        </div>
-                    </PopoverBody>
-                </Popover>
-            );
+        const additionalInfoPopovers = products.map((product, index) => {
+            if (sizePerPage * curPageNum <= index && index < sizePerPage * curPageNum + itemCntOnPage) {
+                return (
+                    <Popover
+                        key={product.id}
+                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + product.id]}
+                        target={'additional-info-popup-' + product.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverHeader>Additional Info</PopoverHeader>
+                        <PopoverBody>
+                            <div className="location-info disp-inline-block">
+                                <span>PU Info</span><br />
+                                <span>Pickup Location:</span><br />
+                                <span>
+                                    {product.pu_Address_street_1}<br />
+                                    {product.pu_Address_street_2}<br />
+                                    {product.pu_Address_Suburb}<br />
+                                    {product.pu_Address_City}<br />
+                                    {product.pu_Address_State} {product.pu_Address_PostalCode}<br />
+                                    {product.pu_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span>Delivery Info</span><br />
+                                <span>Delivery Location:</span><br />
+                                <span>
+                                    {product.de_To_Address_street_1}<br />
+                                    {product.de_To_Address_street_2}<br />
+                                    {product.de_To_Address_Suburb}<br />
+                                    {product.de_To_Address_City}<br />
+                                    {product.de_To_Address_State} {product.de_To_Address_PostalCode}<br />
+                                    {product.de_To_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span></span>
+                                <span>
+                                    <strong>Contact:</strong> {product.booking_Created_For}<br />
+                                    <strong>Actual Pickup Time:</strong> {moment(product.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(product.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                </span>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
+                );
+            }
         });
 
-        let columns = [
+        const columns = [
             {
                 dataField: 'vx_futile_Booking_Notes',
                 text: '…',
@@ -821,80 +654,80 @@ class AllBookingsPage extends React.Component {
                 text: 'Booking Id',
                 filter: noPlaceholderFilter,
                 formatter: hasErrorDetailFormatter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'b_bookingID_Visual',
                 text: 'BookingID Visual',
                 filter: noPlaceholderFilter,
                 formatter: iconListAttached,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'b_dateBookedDate',
                 text: 'Booked Date',
                 filter: customDateFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'puPickUpAvailFrom_Date',
                 text: 'Pickup from Manifest Date',
                 filter: customDateFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'b_clientReference_RA_Numbers',
                 text: 'Ref. Number',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'b_status',
                 isDummyField: true,
                 text: 'Status',
                 filter: noPlaceholderFilter,
                 formatter: statusFormatter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'b_status_API',
                 text: 'Status API',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'vx_freight_provider',
                 text: 'Freight Provider',
                 filter: noPlaceholderFilter,
                 formatter: iconPlusAttached,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'vx_serviceName',
                 text: 'Service',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 's_05_LatestPickUpDateTimeFinal',
                 text: 'Pickup By',
                 filter: customDateFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 's_06_LatestDeliveryDateTimeFinal',
                 text: 'Latest Delivery',
                 filter: customDateFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'v_FPBookingNumber',
                 text: 'FP Booking Number',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'puCompany',
                 text: 'Company',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             },{
                 dataField: 'deToCompanyName',
                 text: 'CompanyName',
                 filter: noPlaceholderFilter,
-                sort: true,
+                // sort: true,
             }
         ];
 
-        let columns1 = [
+        const columns1 = [
             {
                 dataField: 'id',
                 text: 'Booking Id',
@@ -941,9 +774,17 @@ class AllBookingsPage extends React.Component {
             }
         ];
 
+        const pagination = paginationFactory({
+            onSizePerPageChange: (sizePerPage, page) => {
+                this.setState({ curPageNum: page - 1, sizePerPage });
+            },
+            onPageChange: (page, sizePerPage) => {
+                this.setState({ curPageNum: page - 1, sizePerPage });
+            },
+        });
+
         return (
             <div className="qbootstrap-nav" >
-                { bookingList }
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -1019,7 +860,7 @@ class AllBookingsPage extends React.Component {
                                                 data={ products }
                                                 columns={ columns }
                                                 filter={ filterFactory() }
-                                                pagination={ paginationFactory() }
+                                                pagination={ pagination }
                                                 bootstrap4={ true }
                                             />
 
@@ -1093,7 +934,6 @@ const mapStateToProps = (state) => {
         userDateFilterField: state.booking.userDateFilterField,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
-        filtered_bookings: state.booking.filtered_bookings,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
     };
