@@ -325,18 +325,14 @@ class AllBookingsPage extends React.Component {
     }
 
     clearActivePopoverStatus() {
-        const { products } = this.state;
+        let items0 = document.getElementsByClassName('additional-info-popup-active');
+        let items1 = document.getElementsByClassName('booking-lines-info-popup-active');
+        console.log('@1 - ', items0);
+        if (items0 && items0.length > 0)
+            items0[0].setAttribute('class', 'additional-info-popup-inactive');
 
-        for (let i = 0; i < products.length; i++) {
-            let item0 = document.getElementById('additional-info-popup-' + products[i].id);
-            let item1 = document.getElementById('booking-lines-info-popup-' + products[i].id);
-
-            if (item0)
-                item0.parentElement.setAttribute('class', 'additional-info-popup-inactive');
-
-            if (item1)
-                item1.parentElement.setAttribute('class', 'booking-lines-info-popup-inactive');
-        }
+        if (items1 && items1.length > 0)
+            items1[0].setAttribute('class', 'booking-lines-info-popup-inactive');
     }
 
     clearActivePopoverVar() {
