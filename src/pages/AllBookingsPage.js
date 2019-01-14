@@ -124,6 +124,7 @@ class AllBookingsPage extends React.Component {
 
         if (bookingLines) {
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+            return;
         }
 
         if (userDateFilterField) {
@@ -327,7 +328,7 @@ class AllBookingsPage extends React.Component {
     clearActivePopoverStatus() {
         let items0 = document.getElementsByClassName('additional-info-popup-active');
         let items1 = document.getElementsByClassName('booking-lines-info-popup-active');
-        console.log('@1 - ', items0);
+
         if (items0 && items0.length > 0)
             items0[0].setAttribute('class', 'additional-info-popup-inactive');
 
