@@ -32,7 +32,7 @@ class BookingPage extends Component {
         const token = localStorage.getItem('token');
         const currentRoute = this.props.location.pathname;
 
-        if (token.length > 0) {
+        if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');

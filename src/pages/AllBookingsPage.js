@@ -77,7 +77,7 @@ class AllBookingsPage extends React.Component {
         const token = localStorage.getItem('token');
         const currentRoute = this.props.location.pathname;
 
-        if (token.length > 0) {
+        if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');
@@ -291,10 +291,14 @@ class AllBookingsPage extends React.Component {
         let flag = additionalInfoOpens['additional-info-popup-' + bookingId];
         additionalInfoOpens = [];
 
-        if (flag)
+        this.clearActivePopoverStatus();
+
+        if (flag) {
             additionalInfoOpens['additional-info-popup-' + bookingId] = false;
-        else
+        } else {
             additionalInfoOpens['additional-info-popup-' + bookingId] = true;
+            document.getElementById('additional-info-popup-' + bookingId).parentElement.setAttribute('class', 'additional-info-popup-active');
+        }
 
         this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
     }
@@ -305,12 +309,25 @@ class AllBookingsPage extends React.Component {
         let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId];
         bookingLinesInfoOpens = [];
 
-        if (flag)
+        this.clearActivePopoverStatus();
+
+        if (flag) {
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = false;
-        else
+        } else {
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
+            document.getElementById('booking-lines-info-popup-' + bookingId).parentElement.setAttribute('class', 'booking-lines-info-popup-active');
+        }
 
         this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [] });
+    }
+
+    clearActivePopoverStatus() {
+        const { products } = this.state;
+
+        for (let i = 0; i < products.length; i++) {
+            document.getElementById('additional-info-popup-' + products[i].id).parentElement.setAttribute('class', 'additional-info-popup-inactive');
+            document.getElementById('booking-lines-info-popup-' + products[i].id).parentElement.setAttribute('class', 'booking-lines-info-popup-inactive');
+        }
     }
 
     onClickPrinter(booking) {
@@ -648,73 +665,157 @@ class AllBookingsPage extends React.Component {
             );
         };
 
-        const iconCheck = (rowIndex) => {
+        const iconList = (cell, row) => {
             return (
-                <span><i className="icon icon-check cursor-pointer font-size-16px bg-gray" onClick={() => console.log(rowIndex)}></i></span>
-            );
-        };
-
-        const iconPlus = (cell, row) => {
-            return (
-                <div>
-                    <div id={'additional-info-popup-' + row.id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.id)}>
-                        <i className="icon icon-plus cursor-pointer font-size-16px bg-gray"></i>
-                    </div>
-                    <Popover
-                        key={row.id}
-                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + row.id]}
-                        target={'additional-info-popup-' + row.id}
-                        placement="right"
-                        hideArrow={true} >
-                        <PopoverHeader>Additional Info</PopoverHeader>
-                        <PopoverBody>
-                            <div className="location-info disp-inline-block">
-                                <span>PU Info</span><br />
-                                <span>Pickup Location:</span><br />
-                                <span>
-                                    {row.pu_Address_street_1}<br />
-                                    {row.pu_Address_street_2}<br />
-                                    {row.pu_Address_Suburb}<br />
-                                    {row.pu_Address_City}<br />
-                                    {row.pu_Address_State} {row.pu_Address_PostalCode}<br />
-                                    {row.pu_Address_Country}<br />
-                                </span>
-                            </div>
-                            <div className="location-info disp-inline-block">
-                                <span>Delivery Info</span><br />
-                                <span>Delivery Location:</span><br />
-                                <span>
-                                    {row.de_To_Address_street_1}<br />
-                                    {row.de_To_Address_street_2}<br />
-                                    {row.de_To_Address_Suburb}<br />
-                                    {row.de_To_Address_City}<br />
-                                    {row.de_To_Address_State} {row.de_To_Address_PostalCode}<br />
-                                    {row.de_To_Address_Country}<br />
-                                </span>
-                            </div>
-                            <div className="location-info disp-inline-block">
-                                <span></span>
-                                <span>
-                                    <strong>Contact:</strong> {row.booking_Created_For}<br />
-                                    <strong>Actual Pickup Time:</strong> {moment(row.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
-                                    <strong>Actual Deliver Time:</strong> {moment(row.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
-                                </span>
-                            </div>
-                        </PopoverBody>
-                    </Popover>
+                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
+                    <i className="icon icon-th-list cursor-pointer font-size-16px bg-gray"></i>
                 </div>
             );
         };
 
+        const linesInfoPopovers = products.map((product) => {
+            return (
+                <Popover
+                    key={product.id}
+                    isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.id]}
+                    target={'booking-lines-info-popup-' + product.id}
+                    placement="right"
+                    hideArrow={true} >
+                    <PopoverHeader>Line and Line Details</PopoverHeader>
+                    <PopoverBody>
+                        <div className="pad-10p">
+                            <p><strong>Booking ID: {product.id}</strong></p>
+                            <table className="booking-lines">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Qty Total</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Lines</td>
+                                        <td>{bookingLinesQtyTotal}</td>
+                                        <td>{lodash.size(bookingLines)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Line Details</td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="pad-10p">
+                            <p><strong>Lines</strong></p>
+                            <table className="booking-lines">
+                                <thead>
+                                    <th>ID</th>
+                                    <th>Packaging</th>
+                                    <th>Item Description</th>
+                                    <th>Qty</th>
+                                    <th>Wgt UOM</th>
+                                    <th>Wgt Each</th>
+                                    <th>Total Kgs</th>
+                                    <th>Dim UOM</th>
+                                    <th>Length</th>
+                                    <th>Width</th>
+                                    <th>Height</th>
+                                    <th>Cubic Meter</th>
+                                </thead>
+                                <tbody>
+                                    { bookingLinesList }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="pad-10p">
+                            <p><strong>Line Details</strong></p>
+                            <table className="booking-lines">
+                                <thead>
+                                    <th>Model</th>
+                                    <th>Item Description</th>
+                                    <th>Qty</th>
+                                    <th>Fault Description</th>
+                                    <th>Insurance Value</th>
+                                    <th>Gap/ RA</th>
+                                    <th>Client Reference #</th>
+                                </thead>
+                                <tbody>
+                                    { bookingLineDetailsList }
+                                </tbody>
+                            </table>
+                        </div>
+                    </PopoverBody>
+                </Popover>
+            );
+        });
+
+        const iconPlus = (cell, row) => {
+            return (
+                <div id={'additional-info-popup-' + row.id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.id)}>
+                    <i className="icon icon-plus cursor-pointer font-size-16px bg-gray"></i>
+                </div>
+            );
+        };
+
+        const additionalInfoPopovers = products.map((product) => {
+            return (
+                <Popover
+                    key={product.id}
+                    isOpen={this.state.additionalInfoOpens['additional-info-popup-' + product.id]}
+                    target={'additional-info-popup-' + product.id}
+                    placement="right"
+                    hideArrow={true} >
+                    <PopoverHeader>Additional Info</PopoverHeader>
+                    <PopoverBody>
+                        <div className="location-info disp-inline-block">
+                            <span>PU Info</span><br />
+                            <span>Pickup Location:</span><br />
+                            <span>
+                                {product.pu_Address_street_1}<br />
+                                {product.pu_Address_street_2}<br />
+                                {product.pu_Address_Suburb}<br />
+                                {product.pu_Address_City}<br />
+                                {product.pu_Address_State} {product.pu_Address_PostalCode}<br />
+                                {product.pu_Address_Country}<br />
+                            </span>
+                        </div>
+                        <div className="location-info disp-inline-block">
+                            <span>Delivery Info</span><br />
+                            <span>Delivery Location:</span><br />
+                            <span>
+                                {product.de_To_Address_street_1}<br />
+                                {product.de_To_Address_street_2}<br />
+                                {product.de_To_Address_Suburb}<br />
+                                {product.de_To_Address_City}<br />
+                                {product.de_To_Address_State} {product.de_To_Address_PostalCode}<br />
+                                {product.de_To_Address_Country}<br />
+                            </span>
+                        </div>
+                        <div className="location-info disp-inline-block">
+                            <span></span>
+                            <span>
+                                <strong>Contact:</strong> {product.booking_Created_For}<br />
+                                <strong>Actual Pickup Time:</strong> {moment(product.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                <strong>Actual Deliver Time:</strong> {moment(product.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                            </span>
+                        </div>
+                    </PopoverBody>
+                </Popover>
+            );
+        });
+
         let columns = [
             {
                 dataField: 'vx_futile_Booking_Notes',
-                text: '√',
-                formatter: iconCheck,
+                text: '…',
+                formatter: iconList,
             },{
                 dataField: 'pu_Operting_Hours',
                 text: '+',
                 formatter: iconPlus,
+                isDummyField: true,
             },{
                 dataField: 'id',
                 text: 'Booking Id',
@@ -928,6 +1029,9 @@ class AllBookingsPage extends React.Component {
                                                 columns={ columns1 }
                                                 bootstrap4={ true }
                                             />
+
+                                            { additionalInfoPopovers }
+                                            { linesInfoPopovers }
                                         </div>
                                     </div>
                                     <div id="all_booking" className="tab-pane fade">

@@ -30,7 +30,7 @@ class HomePage extends Component {
     componentDidMount() {
         const token = localStorage.getItem('token');
 
-        if (token.length > 0) {
+        if (token && token.length > 0) {
             this.props.verifyToken();
             this.props.getUser(token);
         } else {
