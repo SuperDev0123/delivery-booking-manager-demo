@@ -503,6 +503,10 @@ class AllBookingsPage extends React.Component {
             return moment(cell, 'YYYY-MM-DD').format('ddd DD MMM YYYY');
         };
 
+        const deleteDot = (cell) => {
+            return cell.substring(0, cell.indexOf('.'));
+        };
+
         const iconList = (cell, row) => {
             return (
                 <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
@@ -668,6 +672,7 @@ class AllBookingsPage extends React.Component {
                 dataField: 'b_bookingID_Visual',
                 text: 'DME Booking ID',
                 filter: noPlaceholderFilter,
+                formatter: deleteDot,
                 // sort: true,
             },{
                 dataField: 'b_dateBookedDate',
