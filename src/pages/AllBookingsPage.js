@@ -837,7 +837,7 @@ class AllBookingsPage extends React.Component {
                                         <DatePicker
                                             selected={mainDate}
                                             onChange={(e) => this.onDateChange(2, e)}
-                                            dateFormat="DD/MM/YYYY"
+                                            dateFormat="dd/mm/yyyy"
                                         />
                                         <div id="line1"></div>
                                         <ul className="filter-conditions">
@@ -857,13 +857,13 @@ class AllBookingsPage extends React.Component {
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(e) => this.onDateChange(0, e)}
-                                                dateFormat="DD/MM/YYYY"
+                                                dateFormat="dd/mm/yyyy"
                                             />
                                             <label className="left-15px right-10px">End Date:</label>
                                             <DatePicker
                                                 selected={endDate}
                                                 onChange={(e) => this.onDateChange(1, e)}
-                                                dateFormat="DD/MM/YYYY"
+                                                dateFormat="dd/mm/yyyy"
                                             />
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
