@@ -491,6 +491,18 @@ class AllBookingsPage extends React.Component {
         //     );
         // };
 
+        const iso2EUDate = (cell) => {
+            return moment(cell).format('ddd DD MMM YYYY');
+        };
+
+        const iso2EUDateTime = (cell) => {
+            return moment(cell).format('DD/MM/YYYY hh:mm:ss');
+        };
+
+        const asiaDate2EUDate = (cell) => {
+            return moment(cell, 'YYYY-MM-DD').format('ddd DD MMM YYYY');
+        };
+
         const iconList = (cell, row) => {
             return (
                 <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
@@ -626,8 +638,8 @@ class AllBookingsPage extends React.Component {
                                 <span></span>
                                 <span>
                                     <strong>Contact:</strong> {product.booking_Created_For}<br />
-                                    <strong>Actual Pickup Time:</strong> {moment(product.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
-                                    <strong>Actual Deliver Time:</strong> {moment(product.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                    <strong>Actual Pickup Time:</strong> {moment(product.s_20_Actual_Pickup_TimeStamp).format('ddd DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(product.s_21_Actual_Delivery_TimeStamp).format('ddd DD MMM YYYY')}
                                 </span>
                             </div>
                         </PopoverBody>
@@ -661,11 +673,13 @@ class AllBookingsPage extends React.Component {
                 dataField: 'b_dateBookedDate',
                 text: 'Booked Date',
                 filter: customDateFilter,
+                formatter: iso2EUDate,
                 // sort: true,
             },{
                 dataField: 'puPickUpAvailFrom_Date',
                 text: 'Pickup from Manifest Date',
                 filter: customDateFilter,
+                formatter: asiaDate2EUDate,
                 // sort: true,
             },{
                 dataField: 'b_clientReference_RA_Numbers',
@@ -698,11 +712,13 @@ class AllBookingsPage extends React.Component {
                 dataField: 's_05_LatestPickUpDateTimeFinal',
                 text: 'Pickup By',
                 filter: customDateFilter,
+                formatter: iso2EUDateTime,
                 // sort: true,
             },{
                 dataField: 's_06_LatestDeliveryDateTimeFinal',
                 text: 'Latest Delivery',
                 filter: customDateFilter,
+                formatter: iso2EUDateTime,
                 // sort: true,
             },{
                 dataField: 'v_FPBookingNumber',
@@ -821,6 +837,7 @@ class AllBookingsPage extends React.Component {
                                         <DatePicker
                                             selected={mainDate}
                                             onChange={(e) => this.onDateChange(2, e)}
+                                            dateFormat="DD/MM/YYYY"
                                         />
                                         <div id="line1"></div>
                                         <ul className="filter-conditions">
@@ -840,11 +857,13 @@ class AllBookingsPage extends React.Component {
                                             <DatePicker
                                                 selected={startDate}
                                                 onChange={(e) => this.onDateChange(0, e)}
+                                                dateFormat="DD/MM/YYYY"
                                             />
                                             <label className="left-15px right-10px">End Date:</label>
                                             <DatePicker
                                                 selected={endDate}
                                                 onChange={(e) => this.onDateChange(1, e)}
+                                                dateFormat="DD/MM/YYYY"
                                             />
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
