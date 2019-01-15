@@ -479,17 +479,17 @@ class AllBookingsPage extends React.Component {
             }
         };
 
-        const iconListAttached = (cell) => {
-            return (
-                <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
-            );
-        };
-
-        const iconPlusAttached = (cell) => {
-            return (
-                <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
-            );
-        };
+        // const iconListAttached = (cell) => {
+        //     return (
+        //         <span>{ cell } <i className="icon icon-th-list float-right cursor-pointer font-size-16px bg-gray"></i></span>
+        //     );
+        // };
+        //
+        // const iconPlusAttached = (cell) => {
+        //     return (
+        //         <span>{ cell } <i className="icon icon-plus float-right cursor-pointer font-size-16px bg-gray"></i></span>
+        //     );
+        // };
 
         const iconList = (cell, row) => {
             return (
@@ -654,9 +654,8 @@ class AllBookingsPage extends React.Component {
                 // sort: true,
             },{
                 dataField: 'b_bookingID_Visual',
-                text: 'BookingID Visual',
+                text: 'DME Booking ID',
                 filter: noPlaceholderFilter,
-                formatter: iconListAttached,
                 // sort: true,
             },{
                 dataField: 'b_dateBookedDate',
@@ -689,7 +688,6 @@ class AllBookingsPage extends React.Component {
                 dataField: 'vx_freight_provider',
                 text: 'Freight Provider',
                 filter: noPlaceholderFilter,
-                formatter: iconPlusAttached,
                 // sort: true,
             },{
                 dataField: 'vx_serviceName',
