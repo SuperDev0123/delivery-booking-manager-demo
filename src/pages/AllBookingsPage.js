@@ -259,7 +259,7 @@ class AllBookingsPage extends React.Component {
                     preFiltered.push(warehouseFiltered[i]);
 
             if (num === 1)
-                if (warehouseFiltered[i].consignment_label_link.length === 0)
+                if (warehouseFiltered[i].consignment_label_link && warehouseFiltered[i].consignment_label_link.length === 0)
                     preFiltered.push(warehouseFiltered[i]);
 
             if (num === 3)
@@ -279,7 +279,7 @@ class AllBookingsPage extends React.Component {
         for (let i = 0; i < preFiltered.length; i++) {
             if (preFiltered[i].error_details && preFiltered[i].error_details.length > 0)
                 errors2CorrectCnt++;
-            if (preFiltered[i].consignment_label_link.length === 0)
+            if (preFiltered[i].consignment_label_link && preFiltered[i].consignment_label_link.length === 0)
                 missingLabelCnt++;
             if (preFiltered[i].b_status === 'booked')
                 toProcessCnt++;
