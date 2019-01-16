@@ -838,13 +838,13 @@ class AllBookingsPage extends React.Component {
                                 <div className="tab-content">
                                     <div id="all_booking" className="tab-pane fade in active">
                                         <p>Date</p>
+                                        <div id="line1"></div>
                                         <label className="left-15px right-10px">Date:</label>
                                         <DatePicker
                                             selected={mainDate}
                                             onChange={(e) => this.onDateChange(2, e)}
                                             dateFormat="dd/MM/yyyy"
                                         />
-                                        <div id="line1"></div>
                                         <ul className="filter-conditions">
                                             <li><a onClick={() => this.applyFilter(0)}>( {errors2CorrectCnt} ) Errors to Correct</a></li>
                                             <li><a onClick={() => this.applyFilter(1)}>( {missingLabelCnt} ) Missing Labels</a></li>
