@@ -378,7 +378,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, selectedWarehouseId, startDate, endDate, mainDate, bookingLinesQtyTotal, products, sizePerPage, curPageNum } = this.state;
+        const { mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, selectedWarehouseId, mainDate, bookingLinesQtyTotal, products, sizePerPage, curPageNum } = this.state;
 
         let itemCntOnPage = products.length - sizePerPage * curPageNum;
 
@@ -858,18 +858,6 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehouses_list }
                                             </select>
-                                            <label className="left-15px right-10px">Start Date:</label>
-                                            <DatePicker
-                                                selected={startDate}
-                                                onChange={(e) => this.onDateChange(0, e)}
-                                                dateFormat="dd/MM/yyyy"
-                                            />
-                                            <label className="left-15px right-10px">End Date:</label>
-                                            <DatePicker
-                                                selected={endDate}
-                                                onChange={(e) => this.onDateChange(1, e)}
-                                                dateFormat="dd/MM/yyyy"
-                                            />
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                         </div>
