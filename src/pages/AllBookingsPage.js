@@ -492,15 +492,15 @@ class AllBookingsPage extends React.Component {
         // };
 
         const iso2EUDate = (cell) => {
-            return moment(cell).format('ddd DD MMM YYYY');
+            return cell ? moment(cell).format('ddd DD MMM YYYY') : '';
         };
 
         const iso2EUDateTime = (cell) => {
-            return moment(cell).format('DD/MM/YYYY hh:mm:ss');
+            return cell ? moment(cell).format('DD/MM/YYYY hh:mm:ss') : '';
         };
 
         const asiaDate2EUDate = (cell) => {
-            return moment(cell, 'YYYY-MM-DD').format('ddd DD MMM YYYY');
+            return cell ? moment(cell, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : '';
         };
 
         const deleteDot = (cell) => {
