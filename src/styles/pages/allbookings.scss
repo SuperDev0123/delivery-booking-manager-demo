@@ -114,6 +114,10 @@ table.booking-lines {
   background-color: gray;
 }
 
+.active > .page-link {
+  color: white !important;
+}
+
 .page-item > .page-link {
   color: #048fc2 !important;
 }
