@@ -504,7 +504,7 @@ class AllBookingsPage extends React.Component {
         };
 
         const deleteDot = (cell) => {
-            return cell.substring(0, cell.indexOf('.'));
+            return cell;
         };
 
         const iconList = (cell, row) => {
