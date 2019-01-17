@@ -509,7 +509,7 @@ class AllBookingsPage extends React.Component {
 
         const iconList = (cell, row) => {
             return (
-                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.pk_booking_id)}>
+                <div id={'booking-lines-info-popup-' + row.pk_booking_id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.pk_booking_id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.pk_booking_id)}>
                     <i className="icon icon-th-list cursor-pointer font-size-16px bg-gray"></i>
                 </div>
             );
@@ -520,7 +520,7 @@ class AllBookingsPage extends React.Component {
                 return (
                     <Popover
                         key={product.id}
-                        isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.id]}
+                        isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.pk_booking_id]}
                         target={'booking-lines-info-popup-' + product.id}
                         placement="right"
                         hideArrow={true} >
