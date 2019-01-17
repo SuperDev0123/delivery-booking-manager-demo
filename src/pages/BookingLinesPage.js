@@ -23,20 +23,20 @@ class BookingLinesPage extends React.Component {
     };
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
-        const currentRoute = this.props.location.pathname;
+        // const token = localStorage.getItem('token');
+        // const currentRoute = this.props.location.pathname;
 
-        if (token && token.length > 0) {
-            this.props.verifyToken();
-        } else {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
+        // if (token && token.length > 0) {
+        //     this.props.verifyToken();
+        // } else {
+        //     localStorage.setItem('isLoggedIn', 'false');
+        //     this.props.history.push('/');
+        // }
 
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
+        // if (this.props.redirect && currentRoute != '/') {
+        //     localStorage.setItem('isLoggedIn', 'false');
+        //     this.props.history.push('/');
+        // }
 
         this.props.getBookingLines();
     }
