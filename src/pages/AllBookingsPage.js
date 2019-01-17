@@ -357,6 +357,11 @@ class AllBookingsPage extends React.Component {
         bookings.splice(index, 1);
         this.setState({ products: bookings});
 
+        if (booking.z_label_url) {
+            var win = window.open('http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/static/pdfs/' + booking.z_label_url, '_blank');
+            win.focus();
+        }
+
         setTimeout(function(){
             bookings.splice(index, 0, booking);
             that.setState({ products: bookings});
