@@ -5,15 +5,12 @@ import axios from 'axios';
 import DropzoneComponent from 'react-dropzone-component';
 
 import { verifyToken } from '../state/services/authService';
-import { getWarehouses } from '../state/services/warehouseService';
 
 class UploadPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            warehouses: [],
-            warehouse_id: '',
             uploadedFileName: '',
             uploaded: false,
             uploadStatus: 0,
@@ -40,7 +37,6 @@ class UploadPage extends Component {
 
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
-        getWarehouses: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
@@ -61,25 +57,16 @@ class UploadPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-
-        this.props.getWarehouses();
     }
 
     componentWillReceiveProps(newProps) {
-        const { warehouses, redirect } = newProps;
+        const { redirect } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-
-        if (warehouses)
-            this.setState({warehouses});
-    }
-
-    handleFileSending(data, xhr, formData) {
-        formData.append('warehouse_id', this.state.warehouse_id);
     }
 
     handleUploadSuccess(file) {
@@ -125,32 +112,19 @@ class UploadPage extends Component {
         this.dropzone.processQueue();
     }
 
-    onSelectChange(e) {
-        this.setState({ warehouse_id: e.target.value });
-        this.djsConfig['params'] = {'warehouse_id': e.target.value};
-    }
-
     render() {
-        const { warehouses, warehouse_id, uploadedFileName, uploaded, uploadStatus, xlsxErrors } = this.state;
-        let warehouses_list = [];
+        const { uploadedFileName, uploaded, uploadStatus, xlsxErrors } = this.state;
         let xlsx_errors_list = [];
         let statusText = '';
 
         if (uploaded && uploadStatus === 0)
-            statusText = 'Uploaded file and checking now.';
+            statusText = 'Uploaded file.';
         else if (uploaded && uploadStatus === 1)
             statusText = 'Uploaded file and checked out! No errors!';
         else if (uploaded && uploadStatus === 2)
             statusText = 'Uploaded file has some errors, please fix them out and upload again.';
         else if (!uploaded)
-            statusText = 'Select a warehouse and upload a file.';
-
-        if (warehouses)
-            warehouses_list = warehouses.map((warehouse, index) => {
-                return (
-                    <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
-                );
-            });
+            statusText = 'Pleaes upload a file.';
 
         if (xlsxErrors) {
             if (xlsxErrors.length > 0) {
@@ -168,7 +142,6 @@ class UploadPage extends Component {
         const djsConfig = this.djsConfig;
         const eventHandlers = {
             init: dz => this.dropzone = dz,
-            sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
 
@@ -177,12 +150,8 @@ class UploadPage extends Component {
                 <div className="row justify-content-md-center mt-5 mb-5">
                     <div className="col-12">
                         <form onSubmit={(e) => this.handlePost(e)}>
-                            <select id="warehouse" required onChange={(e) => this.onSelectChange(e)} value={warehouse_id}>
-                                <option value="">Select a warehouse</option>
-                                { warehouses_list }
-                            </select>
-                            <button id="submit-upload" type="submit">upload</button>
                             <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
+                            <button id="submit-upload" type="submit">upload</button>
                         </form>
                     </div>
                     <div className="col-12">
@@ -207,7 +176,6 @@ class UploadPage extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
     };
 };
@@ -215,7 +183,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getWarehouses: () => dispatch(getWarehouses()),
     };
 };
 

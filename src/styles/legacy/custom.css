@@ -363,9 +363,8 @@ div.borderB {
 }
 
 #submit-upload {
-    position: absolute;
-    margin-top: -15px;
-    margin-left: 10px;
+    margin-top: 5px;
+    margin-left: 0px;
     width: 80px;
     height: 35px;
     border: none;
