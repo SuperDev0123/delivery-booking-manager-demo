@@ -521,7 +521,7 @@ class AllBookingsPage extends React.Component {
                     <Popover
                         key={product.id}
                         isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + product.pk_booking_id]}
-                        target={'booking-lines-info-popup-' + product.id}
+                        target={'booking-lines-info-popup-' + product.pk_booking_id}
                         placement="right"
                         hideArrow={true} >
                         <PopoverHeader>Line and Line Details</PopoverHeader>
@@ -597,7 +597,7 @@ class AllBookingsPage extends React.Component {
 
         const iconPlus = (cell, row) => {
             return (
-                <div id={'additional-info-popup-' + row.id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.id)}>
+                <div id={'additional-info-popup-' + row.pk_booking_id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.pk_booking_id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.pk_booking_id)}>
                     <i className="icon icon-plus cursor-pointer font-size-16px bg-gray"></i>
                 </div>
             );
@@ -608,8 +608,8 @@ class AllBookingsPage extends React.Component {
                 return (
                     <Popover
                         key={product.id}
-                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + product.id]}
-                        target={'additional-info-popup-' + product.id}
+                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + product.pk_booking_id]}
+                        target={'additional-info-popup-' + product.pk_booking_id}
                         placement="right"
                         hideArrow={true} >
                         <PopoverHeader>Additional Info</PopoverHeader>
