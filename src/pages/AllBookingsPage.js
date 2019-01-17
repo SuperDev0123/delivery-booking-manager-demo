@@ -290,36 +290,36 @@ class AllBookingsPage extends React.Component {
         this.setState({products: preFiltered, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt});
     }
 
-    showAdditionalInfo(bookingId) {
+    showAdditionalInfo(pk_booking_id) {
         let additionalInfoOpens = this.state.additionalInfoOpens;
-        let flag = additionalInfoOpens['additional-info-popup-' + bookingId];
+        let flag = additionalInfoOpens['additional-info-popup-' + pk_booking_id];
         additionalInfoOpens = [];
 
         this.clearActivePopoverStatus();
 
         if (flag) {
-            additionalInfoOpens['additional-info-popup-' + bookingId] = false;
+            additionalInfoOpens['additional-info-popup-' + pk_booking_id] = false;
         } else {
-            additionalInfoOpens['additional-info-popup-' + bookingId] = true;
-            document.getElementById('additional-info-popup-' + bookingId).parentElement.setAttribute('class', 'additional-info-popup-active');
+            additionalInfoOpens['additional-info-popup-' + pk_booking_id] = true;
+            document.getElementById('additional-info-popup-' + pk_booking_id).parentElement.setAttribute('class', 'additional-info-popup-active');
         }
 
         this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
     }
 
-    showBookingLinesInfo(bookingId) {
-        this.props.getBookingLines(bookingId);
+    showBookingLinesInfo(pk_booking_id) {
+        this.props.getBookingLines(pk_booking_id);
         let bookingLinesInfoOpens = this.state.bookingLinesInfoOpens;
-        let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId];
+        let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + pk_booking_id];
         bookingLinesInfoOpens = [];
 
         this.clearActivePopoverStatus();
 
         if (flag) {
-            bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = false;
+            bookingLinesInfoOpens['booking-lines-info-popup-' + pk_booking_id] = false;
         } else {
-            bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
-            document.getElementById('booking-lines-info-popup-' + bookingId).parentElement.setAttribute('class', 'booking-lines-info-popup-active');
+            bookingLinesInfoOpens['booking-lines-info-popup-' + pk_booking_id] = true;
+            document.getElementById('booking-lines-info-popup-' + pk_booking_id).parentElement.setAttribute('class', 'booking-lines-info-popup-active');
         }
 
         this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [] });
@@ -509,7 +509,7 @@ class AllBookingsPage extends React.Component {
 
         const iconList = (cell, row) => {
             return (
-                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.id)}>
+                <div id={'booking-lines-info-popup-' + row.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + row.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(row.pk_booking_id)}>
                     <i className="icon icon-th-list cursor-pointer font-size-16px bg-gray"></i>
                 </div>
             );
