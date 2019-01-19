@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import lodash from 'lodash';
+import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
@@ -17,6 +18,7 @@ import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -51,6 +53,7 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             curPageNum: 0,
             sizePerPage: 10,
+            urls2Download: [],
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -358,7 +361,7 @@ class AllBookingsPage extends React.Component {
         this.setState({ products: bookings});
 
         if (booking.z_label_url) {
-            var win = window.open('http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/static/pdfs/' + booking.z_label_url, '_blank');
+            var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
         }
 
@@ -366,6 +369,26 @@ class AllBookingsPage extends React.Component {
             bookings.splice(index, 0, booking);
             that.setState({ products: bookings});
         }, 100);
+    }
+
+    onDownloadPdfs() {
+        const urls2Download = this.state.urls2Download;
+        
+        for (let i = 0; i < urls2Download.length; i++) {
+            const options = {
+                method: 'get',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + urls2Download[i],
+                responseType: 'blob', // important
+            };
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', urls2Download[i]);
+                document.body.appendChild(link);
+                link.click();
+            });
+        }
     }
 
     onClickBookingLine(bookingLineId) {
@@ -380,6 +403,14 @@ class AllBookingsPage extends React.Component {
     onClickMapBok1ToBookings() {
         this.props.mapBok1ToBookings();
         this.setState({mapBok1ToBookings: true});
+    }
+
+    onCheck(e, url) {
+        if (!e.target.checked) {
+            this.setState({urls2Download: lodash.difference(this.state.urls2Download, [url])});
+        } else {
+            this.setState({urls2Download: lodash.union(this.state.urls2Download, [url])});
+        }
     }
 
     render() {
@@ -468,14 +499,9 @@ class AllBookingsPage extends React.Component {
                     <div className="booking-status">
                         <div className="disp-inline-block">
                             {
-                                (row.shipping_label_base64) && (row.shipping_label_base64.length > 0) ?
-                                    <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
-                                    :
-                                    <a>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
+                                <a href="#" className={row.is_printed ? 'bg-gray' : 'bc-green'} onClick={() => this.onClickPrinter(row)}>
+                                    <i className="icon icon-printer"></i>
+                                </a>
                             }
                             &nbsp;&nbsp;{row.b_status}&nbsp;&nbsp;
                         </div>
@@ -600,6 +626,12 @@ class AllBookingsPage extends React.Component {
             }
         });
 
+        const iconCheck = (cell, row) => {
+            return (
+                <input type="checkbox" checked={this.state.isGoing} onChange={(e) => this.onCheck(e, row.z_label_url)} />
+            );
+        };
+
         const iconPlus = (cell, row) => {
             return (
                 <div id={'additional-info-popup-' + row.pk_booking_id} className={this.state.additionalInfoOpens['additional-info-popup-' + row.pk_booking_id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(row.pk_booking_id)}>
@@ -659,6 +691,10 @@ class AllBookingsPage extends React.Component {
 
         const columns = [
             {
+                dataField: 'z_image_url',
+                text: '√',
+                formatter: iconCheck,
+            },{
                 dataField: 'vx_futile_Booking_Notes',
                 text: '…',
                 formatter: iconList,
@@ -865,6 +901,7 @@ class AllBookingsPage extends React.Component {
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                            <button className="btn btn-primary all-trigger" onClick={() => this.onDownloadPdfs()}>Download PDFs</button>
                                         </div>
                                         <div className="table-responsive">
                                             <BootstrapTable
