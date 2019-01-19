@@ -96,7 +96,11 @@ class AllBookingsPage extends React.Component {
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
 
-        this.setState({ mainDate: moment().tz('Australia/Sydney').toDate() });
+        const today = localStorage.getItem('today');
+        if (today)
+            this.setState({ mainDate: moment(today, 'YYYY-MM-DD').toDate() });
+        else
+            this.setState({ mainDate: moment().tz('Australia/Sydney').toDate() });
     }
 
     componentWillMount() {
@@ -217,8 +221,10 @@ class AllBookingsPage extends React.Component {
         //     this.setState({ endDate: date }, () => this.applyFilter(6));
         // else if (num === 2)
         //     this.setState({ mainDate: date }, () => this.applyFilter());
-        if (num === 2)
+        if (num === 2) {
+            localStorage.setItem('today', moment(date).format('YYYY-MM-DD'));
             this.setState({ mainDate: date }, () => this.applyFilter());
+        }
     }
 
     onFilterChange(e) {
@@ -373,7 +379,7 @@ class AllBookingsPage extends React.Component {
 
     onDownloadPdfs() {
         const urls2Download = this.state.urls2Download;
-        
+
         for (let i = 0; i < urls2Download.length; i++) {
             const options = {
                 method: 'get',
