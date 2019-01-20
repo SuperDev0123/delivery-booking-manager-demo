@@ -907,7 +907,9 @@ class AllBookingsPage extends React.Component {
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                            <button className="btn btn-primary all-trigger" onClick={() => this.onDownloadPdfs()}>Download PDFs</button>
+                                            <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
+                                                <i className="icon icon-download"></i>
+                                            </button>
                                         </div>
                                         <div className="table-responsive">
                                             <BootstrapTable
