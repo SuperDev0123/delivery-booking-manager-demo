@@ -57,6 +57,7 @@ class AllBookingsPage extends React.Component {
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.togglePopover = this.togglePopover.bind(this);
     }
 
     static propTypes = {
@@ -418,6 +419,11 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    togglePopover() {
+        this.clearActivePopoverStatus();
+        this.clearActivePopoverVar();
+    }
+
     render() {
         const { mappedBookings, bookingLines, bookingLineDetails, showSimpleSearchBox, simpleSearchKeyword, errors2CorrectCnt, missingLabelCnt, toProcessCnt, closedCnt, warehouses, selectedWarehouseId, mainDate, bookingLinesQtyTotal, products, sizePerPage, curPageNum } = this.state;
 
@@ -561,7 +567,7 @@ class AllBookingsPage extends React.Component {
                         target={'booking-lines-info-popup-' + product.pk_booking_id}
                         placement="right"
                         hideArrow={true} >
-                        <PopoverHeader>Line and Line Details</PopoverHeader>
+                        <PopoverHeader>Line and Line Details <a className="close-popover" onClick={this.togglePopover}>x</a> </PopoverHeader>
                         <PopoverBody>
                             <div className="pad-10p">
                                 <p><strong>Booking ID: {product.id}</strong></p>
@@ -660,7 +666,7 @@ class AllBookingsPage extends React.Component {
                         target={'additional-info-popup-' + product.pk_booking_id}
                         placement="right"
                         hideArrow={true} >
-                        <PopoverHeader>Additional Info</PopoverHeader>
+                        <PopoverHeader>Additional Info <a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
                         <PopoverBody>
                             <div className="location-info disp-inline-block">
                                 <span>PU Info</span><br />
