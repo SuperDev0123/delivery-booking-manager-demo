@@ -255,7 +255,7 @@ class AllBookingsPage extends React.Component {
         for (let i = 0; i < bookings.length; i++)
             if (moment(bookings[i][userDateFilterField]).format('MM/DD/YYYY') === moment(mainDate).format('MM/DD/YYYY'))
                 dateFiltered.push(bookings[i]);
-
+        console.log('@1 - ', dateFiltered.length);
         let warehouseFiltered = [];
         for (let i = 0; i < dateFiltered.length; i++)
             if (dateFiltered[i].fk_client_warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all' || selectedWarehouseId === '')
@@ -911,7 +911,7 @@ class AllBookingsPage extends React.Component {
                                             <li><a onClick={() => this.applyFilter(4)}>( {closedCnt} ) Closed</a></li>
                                         </ul>
                                         <div className="filter-conditions2">
-                                            <label className="right-10px">Warehouses:</label>
+                                            <label className="right-10px">Warehouse/Client:</label>
                                             <select id="warehouse" required onChange={(e) => this.onSelectChange(e)} value={selectedWarehouseId}>
                                                 <option value="all">All</option>
                                                 { warehouses_list }
