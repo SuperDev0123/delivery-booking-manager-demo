@@ -28,7 +28,6 @@ class AllBookingsPage extends React.Component {
             bookings: [],
             bookingLines: [],
             bookingLineDetails: [],
-            bookingLineDetailsLoaded: false,
             warehouses: [],
             selectedWarehouseId: '',
             simpleSearchKeyword: '',
@@ -125,8 +124,8 @@ class AllBookingsPage extends React.Component {
             this.setState({ printerFlag: false });
         }
 
-        if (bookingLineDetails && !this.state.bookingLineDetailsLoaded) {
-            this.setState({bookingLineDetails, bookingLineDetailsLoaded: true});
+        if (bookingLineDetails) {
+            this.setState({bookingLineDetails});
         }
 
         if (bookingLines) {
@@ -318,6 +317,7 @@ class AllBookingsPage extends React.Component {
 
     showBookingLinesInfo(pk_booking_id) {
         this.props.getBookingLines(pk_booking_id);
+        this.props.getBookingLineDetails(pk_booking_id);
         let bookingLinesInfoOpens = this.state.bookingLinesInfoOpens;
         let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + pk_booking_id];
         bookingLinesInfoOpens = [];
@@ -399,7 +399,6 @@ class AllBookingsPage extends React.Component {
 
     onClickBookingLine(bookingLineId) {
         this.props.getBookingLineDetails(bookingLineId);
-        this.setState({ bookingLineDetailsLoaded: false });
     }
 
     onClickAllTrigger() {
@@ -436,6 +435,7 @@ class AllBookingsPage extends React.Component {
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
+                    <td>{bookingLineDetail.lineItem}</td>
                     <td>{bookingLineDetail.modelNumber}</td>
                     <td>{bookingLineDetail.itemDescription}</td>
                     <td className="qty">{bookingLineDetail.quantity}</td>
@@ -449,7 +449,7 @@ class AllBookingsPage extends React.Component {
 
         const bookingLinesList = bookingLines.map((bookingLine, index) => {
             return (
-                <tr key={index} onClick={() => this.onClickBookingLine(bookingLine.pk_auto_id_lines)}>
+                <tr key={index}>
                     <td>{bookingLine.pk_auto_id_lines}</td>
                     <td>{bookingLine.e_type_of_packaging}</td>
                     <td>{bookingLine.e_item}</td>
@@ -589,42 +589,47 @@ class AllBookingsPage extends React.Component {
                             </div>
                             <div className="pad-10p">
                                 <p><strong>Lines</strong></p>
-                                <table className="booking-lines">
-                                    <thead>
-                                        <th>ID</th>
-                                        <th>Packaging</th>
-                                        <th>Item Description</th>
-                                        <th>Qty</th>
-                                        <th>Wgt UOM</th>
-                                        <th>Wgt Each</th>
-                                        <th>Total Kgs</th>
-                                        <th>Dim UOM</th>
-                                        <th>Length</th>
-                                        <th>Width</th>
-                                        <th>Height</th>
-                                        <th>Cubic Meter</th>
-                                    </thead>
-                                    <tbody>
-                                        { bookingLinesList }
-                                    </tbody>
-                                </table>
+                                <div className="booking-lines-div">
+                                    <table className="booking-lines">
+                                        <thead>
+                                            <th>ID</th>
+                                            <th>Packaging</th>
+                                            <th>Item</th>
+                                            <th>Qty</th>
+                                            <th>Wgt UOM</th>
+                                            <th>Wgt Each</th>
+                                            <th>Total Kgs</th>
+                                            <th>Dim UOM</th>
+                                            <th>Length</th>
+                                            <th>Width</th>
+                                            <th>Height</th>
+                                            <th>Cubic Meter</th>
+                                        </thead>
+                                        <tbody>
+                                            { bookingLinesList }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <div className="pad-10p">
                                 <p><strong>Line Details</strong></p>
-                                <table className="booking-lines">
-                                    <thead>
-                                        <th>Model</th>
-                                        <th>Item Description</th>
-                                        <th>Qty</th>
-                                        <th>Fault Description</th>
-                                        <th>Insurance Value</th>
-                                        <th>Gap/ RA</th>
-                                        <th>Client Reference #</th>
-                                    </thead>
-                                    <tbody>
-                                        { bookingLineDetailsList }
-                                    </tbody>
-                                </table>
+                                <div className="booking-lines-div">
+                                    <table className="booking-lines">
+                                        <thead>
+                                            <th>Line Item</th>
+                                            <th>Model</th>
+                                            <th>Item Description</th>
+                                            <th>Qty</th>
+                                            <th>Fault Description</th>
+                                            <th>Insurance Value</th>
+                                            <th>Gap/ RA</th>
+                                            <th>Client Reference #</th>
+                                        </thead>
+                                        <tbody>
+                                            { bookingLineDetailsList }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </PopoverBody>
                     </Popover>
@@ -1000,9 +1005,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         getBookings: () => dispatch(getBookings()),
-        getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLines: (pk_booking_id) => dispatch(getBookingLines(pk_booking_id)),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
-        getBookingLineDetails: (bookingLineId) => dispatch(getBookingLineDetails(bookingLineId)),
+        getBookingLineDetails: (pk_booking_id) => dispatch(getBookingLineDetails(pk_booking_id)),
         simpleSearch: (keyword) => dispatch(simpleSearch(keyword)),
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
