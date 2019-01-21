@@ -4,11 +4,12 @@ const defaultState = {
     token: '',
     errorMessage: null,
     username: null,
+    clientname: null,
     isLoggedIn: 'false',
     redirect: false
 };
 
-export const AuthReducer = (state = defaultState, { type, token, errorMessage, username, isLoggedIn }) => {
+export const AuthReducer = (state = defaultState, { type, token, errorMessage, username, clientname, isLoggedIn }) => {
     switch (type) {
         case SET_TOKEN:
             return {
@@ -32,6 +33,7 @@ export const AuthReducer = (state = defaultState, { type, token, errorMessage, u
             return {
                 ...state,
                 username: username,
+                clientname: clientname,
                 isLoggedIn: isLoggedIn,
                 redirect : false,
             };

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { getUser } from '../../state/services/authService';
 
 import logo from '../../public/images/logo-2.png';
 
@@ -11,19 +12,34 @@ class Header extends Component {
 
         this.state = {
             username: '',
+            clientname: '',
         };
     }
 
     static propTypes = {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
+        getUser: PropTypes.func.isRequired,
     };
 
+    componentDidMount() {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const token = localStorage.getItem('token');
+
+        if (isLoggedIn && token && token.length > 0)
+            this.props.getUser(token);
+    }
+
     componentWillReceiveProps(newProps) {
-        const { username, isLoggedIn } = newProps;
+        const { username, clientname, isLoggedIn } = newProps;
 
         if (username)
-            this.setState({username, isLoggedIn});
+            this.setState({username});
+
+        if (clientname)
+            this.setState({clientname});
+
+        this.setState({isLoggedIn});
     }
 
     logout() {
@@ -33,10 +49,10 @@ class Header extends Component {
     }
 
     render() {
-        const { username } = this.state;
+        const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-
+        console.log('@1 - ', clientname, username);
         return (
             <header>
                 {
@@ -46,7 +62,7 @@ class Header extends Component {
                                 <div className="top">
                                     <div className="row">
                                         <div className="col-md-8 col-sm-12 col-lg-8 col-xs-12 col-md-push-1 ">
-                                            <h3 className="label_hel"><a href="/"></a></h3>
+                                            <h3 className="label_hel"><a href="/">{clientname} is client and {username} is logged in</a></h3>
                                             <h3 className="label_hel"></h3>
                                         </div>
                                         <div className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right"> <a href="">Login Info Client</a> | <a href="">Accounts</a> | <a href="">Client Mode</a> | <a href="/">Home</a> </div>
@@ -102,14 +118,15 @@ class Header extends Component {
 const mapStateToProps = (state) => {
     return {
         username: state.auth.username,
+        clientname: state.auth.clientname,
         isLoggedIn: state.auth.isLoggedIn,
     };
 };
 
-// const mapDispatchToProps = (dispatch) => {
-//     return {
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getUser: (token) => dispatch(getUser(token)),
+    };
+};
 
-//     };
-// };
-
-export default withRouter(connect(mapStateToProps)(Header));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Header));
