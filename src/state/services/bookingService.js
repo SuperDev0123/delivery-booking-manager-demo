@@ -70,6 +70,20 @@ export const allTrigger = () => {
             .catch((error) => dispatch(console.log('@2 - Failed all_trigger', error)));
 };
 
+export const alliedBooking = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': 15975},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_allied/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('@1 - After allied_booking', data)))
+            .catch((error) => dispatch(console.log('@2 - Failed allied_booking', error)));
+};
+
 export const mapBok1ToBookings = () => {
     const token = localStorage.getItem('token');
     const options = {

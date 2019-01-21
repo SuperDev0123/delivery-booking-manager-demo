@@ -14,7 +14,7 @@ import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-fi
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { verifyToken } from '../state/services/authService';
-import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -70,6 +70,7 @@ class AllBookingsPage extends React.Component {
         getWarehouses: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         allTrigger: PropTypes.func.isRequired,
+        alliedBooking: PropTypes.func.isRequired,
         mapBok1ToBookings: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
@@ -255,7 +256,7 @@ class AllBookingsPage extends React.Component {
         for (let i = 0; i < bookings.length; i++)
             if (moment(bookings[i][userDateFilterField]).format('MM/DD/YYYY') === moment(mainDate).format('MM/DD/YYYY'))
                 dateFiltered.push(bookings[i]);
-        console.log('@1 - ', dateFiltered.length);
+
         let warehouseFiltered = [];
         for (let i = 0; i < dateFiltered.length; i++)
             if (dateFiltered[i].fk_client_warehouse === parseInt(selectedWarehouseId) || selectedWarehouseId === 'all' || selectedWarehouseId === '')
@@ -404,6 +405,10 @@ class AllBookingsPage extends React.Component {
 
     onClickAllTrigger() {
         this.props.allTrigger();
+    }
+
+    onClickAlliedBooking() {
+        this.props.alliedBooking();
     }
 
     onClickMapBok1ToBookings() {
@@ -917,6 +922,7 @@ class AllBookingsPage extends React.Component {
                                                 { warehouses_list }
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickAlliedBooking()}>Allied booking</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
                                                 <i className="icon icon-download"></i>
@@ -1018,6 +1024,7 @@ const mapDispatchToProps = (dispatch) => {
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         allTrigger: () => dispatch(allTrigger()),
+        alliedBooking: () => dispatch(alliedBooking()),
         mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };
