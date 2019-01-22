@@ -809,17 +809,17 @@ class AllBookingsPage extends React.Component {
                 sort: true,
             },{
                 dataField: 'v_FPBookingNumber',
-                text: 'FP Booking Number',
+                text: 'FP Consignment Number',
                 filter: noPlaceholderFilter,
                 sort: true,
             },{
                 dataField: 'puCompany',
-                text: 'Company',
+                text: 'Pickup Entity',
                 filter: noPlaceholderFilter,
                 sort: true,
             },{
                 dataField: 'deToCompanyName',
-                text: 'CompanyName',
+                text: 'Delivery Entity',
                 filter: noPlaceholderFilter,
                 sort: true,
             }
@@ -859,13 +859,13 @@ class AllBookingsPage extends React.Component {
                 text: 'Latest Delivery',
             },{
                 dataField: 'v_FPBookingNumber',
-                text: 'FP Booking Number',
+                text: 'FP Consignment Number',
             },{
                 dataField: 'puCompany',
-                text: 'Company',
+                text: 'Pickup Entity',
             },{
                 dataField: 'deToCompanyName',
-                text: 'CompanyName',
+                text: 'Delivery Entity',
             }
         ];
 
