@@ -415,13 +415,18 @@ class AllBookingsPage extends React.Component {
         } else if (urls2Download.length > 1) {
             alert('Please check only one booking!');
         } else {
+            let ind = -1;
             for (let i = 0; i < products.length; i++) {
                 if (products[i].hasOwnProperty('z_label_url')) {
                     if (products[i].z_label_url === urls2Download[0]) {
-                        this.props.alliedBooking(products[i].id);
+                        ind = i;
+                        break;
                     }
                 }
             }
+
+            if (ind > -1)
+                this.props.alliedBooking(products[ind].id);
         }
     }
 
