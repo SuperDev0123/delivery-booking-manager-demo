@@ -14,7 +14,7 @@ import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-fi
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { verifyToken } from '../state/services/authService';
-import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking, stBooking } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking, stBooking, getLabel } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -52,7 +52,7 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             curPageNum: 0,
             sizePerPage: 10,
-            urls2Download: [],
+            selectedBookingIds: [],
         };
 
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -63,6 +63,7 @@ class AllBookingsPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
+        getLabel: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         getUserDateFilterField: PropTypes.func.isRequired,
@@ -381,19 +382,29 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownloadPdfs() {
-        const urls2Download = this.state.urls2Download;
+        const { selectedBookingIds, products } = this.state;
 
-        for (let i = 0; i < urls2Download.length; i++) {
+        for (let i = 0; i < selectedBookingIds.length; i++) {
+            let ind = -1;
+
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].id === selectedBookingIds[i]) {
+                    ind = i;
+                    break;
+                }
+            }
+
             const options = {
                 method: 'get',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + urls2Download[i],
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
                 responseType: 'blob', // important
             };
+
             axios(options).then((response) => {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', urls2Download[i]);
+                link.setAttribute('download', selectedBookingIds[i]);
                 document.body.appendChild(link);
                 link.click();
             });
@@ -408,21 +419,20 @@ class AllBookingsPage extends React.Component {
         this.props.allTrigger();
     }
 
-    onClickAlliedBooking() {
-        const { urls2Download, products } = this.state;
+    onClickBooking() {
+        const { selectedBookingIds, products } = this.state;
 
-        if (urls2Download.length == 0) {
+        if (selectedBookingIds.length == 0) {
             alert('Please check only one booking!');
-        } else if (urls2Download.length > 1) {
+        } else if (selectedBookingIds.length > 1) {
             alert('Please check only one booking!');
         } else {
             let ind = -1;
+
             for (let i = 0; i < products.length; i++) {
-                if (products[i].hasOwnProperty('z_label_url')) {
-                    if (products[i].z_label_url === urls2Download[0]) {
-                        ind = i;
-                        break;
-                    }
+                if (products[i].id === selectedBookingIds[0]) {
+                    ind = i;
+                    break;
                 }
             }
 
@@ -441,11 +451,38 @@ class AllBookingsPage extends React.Component {
         this.setState({mapBok1ToBookings: true});
     }
 
-    onCheck(e, url) {
-        if (!e.target.checked) {
-            this.setState({urls2Download: lodash.difference(this.state.urls2Download, [url])});
+    onClickGetLabel() {
+        const { selectedBookingIds, products } = this.state;
+
+        if (selectedBookingIds.length == 0) {
+            alert('Please check only one booking!');
+        } else if (selectedBookingIds.length > 1) {
+            alert('Please check only one booking!');
         } else {
-            this.setState({urls2Download: lodash.union(this.state.urls2Download, [url])});
+            let ind = -1;
+
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].id === selectedBookingIds[0]) {
+                    ind = i;
+                    break;
+                }
+            }
+
+            if (products[ind].vx_freight_provider === 'STARTRACK') {
+                alert('Not support for STARTRACK now');
+            } else {
+                if (ind > -1) {
+                    this.props.getLabel(products[ind].id);
+                }
+            }
+        }
+    }
+
+    onCheck(e, id) {
+        if (!e.target.checked) {
+            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+        } else {
+            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
         }
     }
 
@@ -675,7 +712,7 @@ class AllBookingsPage extends React.Component {
 
         const iconCheck = (cell, row) => {
             return (
-                <input type="checkbox" checked={this.state.isGoing} onChange={(e) => this.onCheck(e, row.z_label_url)} />
+                <input type="checkbox" checked={this.state.isGoing} onChange={(e) => this.onCheck(e, row.id)} />
             );
         };
 
@@ -938,7 +975,8 @@ class AllBookingsPage extends React.Component {
                                                 { warehouses_list }
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickAlliedBooking()}>booking</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBooking()}>Booking</button>
+                                            <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
                                                 <i className="icon icon-download"></i>
@@ -1042,6 +1080,7 @@ const mapDispatchToProps = (dispatch) => {
         allTrigger: () => dispatch(allTrigger()),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
+        getLabel: (bookingId) => dispatch(getLabel(bookingId)),
         mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };

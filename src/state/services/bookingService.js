@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking } from '../actions/bookingActions';
+import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
@@ -96,6 +96,20 @@ export const stBooking = (bookingId) => {
         axios(options)
             .then(({data}) => dispatch(successStBooking(data)))
             .catch((error) => dispatch(failedStBooking(error)));
+};
+
+export const getLabel = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_allied/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successGetLabel(data)))
+            .catch((error) => dispatch(failedGetLabel(error)));
 };
 
 export const mapBok1ToBookings = () => {

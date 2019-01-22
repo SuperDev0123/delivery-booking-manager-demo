@@ -91,3 +91,23 @@ export function failedStBooking(error) {
         errorMessage: 'Unable to get User`s date filter field.'
     };
 }
+
+export function successGetLabel(data) {
+    if (!data[0].hasOwnProperty('Created Booking ID'))
+        alert('Failed get label: ' + data[0]['Error']);
+    else
+        alert('Successfully get label: ' + data[0]['Created Booking ID']);
+
+    return {
+        type: FAILED_GET_USER_DATE_FILTER_FIELD,
+        errorMessage: 'Unable to get User`s date filter field.'
+    };
+}
+
+export function failedGetLabel(error) {
+    alert('Failed get label: ' + error);
+    return {
+        type: FAILED_GET_USER_DATE_FILTER_FIELD,
+        errorMessage: 'Unable to get User`s date filter field.'
+    };
+}
