@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking } from '../actions/bookingActions';
+import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
@@ -82,6 +82,20 @@ export const alliedBooking = (bookingId) => {
         axios(options)
             .then(({data}) => dispatch(successAlliedBooking(data)))
             .catch((error) => dispatch(failedAlliedBooking(error)));
+};
+
+export const stBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_st/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successStBooking(data)))
+            .catch((error) => dispatch(failedStBooking(error)));
 };
 
 export const mapBok1ToBookings = () => {

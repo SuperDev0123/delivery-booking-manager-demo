@@ -14,7 +14,7 @@ import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-fi
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { verifyToken } from '../state/services/authService';
-import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking, stBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -71,6 +71,7 @@ class AllBookingsPage extends React.Component {
         updateBooking: PropTypes.func.isRequired,
         allTrigger: PropTypes.func.isRequired,
         alliedBooking: PropTypes.func.isRequired,
+        stBooking: PropTypes.func.isRequired,
         mapBok1ToBookings: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
@@ -425,8 +426,13 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            if (ind > -1)
-                this.props.alliedBooking(products[ind].id);
+            if (ind > -1) {
+                if (products[ind].vx_freight_provider && products[ind].vx_freight_provider === 'STARTRACK') {
+                    this.props.stBooking(products[ind].id);
+                } else if (products[ind].vx_freight_provider && products[ind].vx_freight_provider === 'Allied') {
+                    this.props.alliedBooking(products[ind].id);
+                }
+            }
         }
     }
 
@@ -932,7 +938,7 @@ class AllBookingsPage extends React.Component {
                                                 { warehouses_list }
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickAlliedBooking()}>Allied booking</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickAlliedBooking()}>booking</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
                                                 <i className="icon icon-download"></i>
@@ -1035,6 +1041,7 @@ const mapDispatchToProps = (dispatch) => {
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         allTrigger: () => dispatch(allTrigger()),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
+        stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };
