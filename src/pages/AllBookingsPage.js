@@ -509,19 +509,19 @@ class AllBookingsPage extends React.Component {
             dateStyle: { height: '20px', marginTop: '5px', padding: '3px', fontSize: '12px', fontFamily: 'Arial', lineHeight: '12px' },
         });
 
-        const hasErrorDetailFormatter = (cell, row) => {
-            if (row.error_details) {
-                return (
-                    <span>
-                        <strong style={ { color: 'red' } }>{ cell }</strong>
-                    </span>
-                );
-            }
-
-            return (
-                <span>{ cell }</span>
-            );
-        };
+        // const hasErrorDetailFormatter = (cell, row) => {
+        //     if (row.error_details) {
+        //         return (
+        //             <span>
+        //                 <strong style={ { color: 'red' } }>{ cell }</strong>
+        //             </span>
+        //         );
+        //     }
+        //
+        //     return (
+        //         <span>{ cell }</span>
+        //     );
+        // };
 
         const statusFormatter = (cell, row) => {
             if (row.error_details) {
