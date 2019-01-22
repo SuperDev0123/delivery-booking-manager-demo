@@ -54,9 +54,9 @@ export function failedGetUserDateFilterField(error) {
 
 export function successAlliedBooking(data) {
     if (!data[0].hasOwnProperty('Created Booking ID'))
-        alert('Successfully booking allied: ' + data[0]['Error']);
+        alert('Failed booking allied: ' + data[0]['Error']);
     else
-        alert('Failed booking allied: ' + data[0]['Created Booking ID']);
+        alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
 
     return {
         type: FAILED_GET_USER_DATE_FILTER_FIELD,
