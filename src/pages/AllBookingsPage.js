@@ -745,12 +745,6 @@ class AllBookingsPage extends React.Component {
                 formatter: iconPlus,
                 isDummyField: true,
             },{
-                dataField: 'id',
-                text: 'Booking Id',
-                filter: noPlaceholderFilter,
-                formatter: hasErrorDetailFormatter,
-                sort: true,
-            },{
                 dataField: 'b_bookingID_Visual',
                 text: 'DME Booking ID',
                 filter: noPlaceholderFilter,
