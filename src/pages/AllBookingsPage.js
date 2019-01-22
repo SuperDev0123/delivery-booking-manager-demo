@@ -821,9 +821,6 @@ class AllBookingsPage extends React.Component {
 
         const columns1 = [
             {
-                dataField: 'id',
-                text: 'Booking Id',
-            },{
                 dataField: 'b_bookingID_Visual',
                 text: 'BookingID Visual',
             },{
