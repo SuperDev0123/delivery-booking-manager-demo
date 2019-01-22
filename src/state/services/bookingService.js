@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField } from '../actions/bookingActions';
+import { setBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
@@ -70,18 +70,18 @@ export const allTrigger = () => {
             .catch((error) => dispatch(console.log('@2 - Failed all_trigger', error)));
 };
 
-export const alliedBooking = () => {
+export const alliedBooking = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': 15975},
+        data: {'booking_id': bookingId},
         url: `${HTTP_PROTOCOL}://${API_HOST}/booking_allied/`
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(console.log('@1 - After allied_booking', data)))
-            .catch((error) => dispatch(console.log('@2 - Failed allied_booking', error)));
+            .then(({data}) => dispatch(successAlliedBooking(data)))
+            .catch((error) => dispatch(failedAlliedBooking(error)));
 };
 
 export const mapBok1ToBookings = () => {

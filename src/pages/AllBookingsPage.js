@@ -408,7 +408,21 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickAlliedBooking() {
-        this.props.alliedBooking();
+        const { urls2Download, products } = this.state;
+
+        if (urls2Download.length == 0) {
+            alert('Please check only one booking!');
+        } else if (urls2Download.length > 1) {
+            alert('Please check only one booking!');
+        } else {
+            for (let i = 0; i < products.length; i++) {
+                if (products[i].hasOwnProperty('z_label_url')) {
+                    if (products[i].z_label_url === urls2Download[0]) {
+                        this.props.alliedBooking(products[i].id);
+                    }
+                }
+            }
+        }
     }
 
     onClickMapBok1ToBookings() {
@@ -1024,7 +1038,7 @@ const mapDispatchToProps = (dispatch) => {
         getWarehouses: () => dispatch(getWarehouses()),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         allTrigger: () => dispatch(allTrigger()),
-        alliedBooking: () => dispatch(alliedBooking()),
+        alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };

@@ -51,3 +51,23 @@ export function failedGetUserDateFilterField(error) {
         errorMessage: 'Unable to get User`s date filter field.'
     };
 }
+
+export function successAlliedBooking(data) {
+    if (data[0].hasOwnProperty('Error'))
+        alert('Successfully booking allied: ' + data[0]['Error']);
+    else
+        alert('Failed booking allied: ' + data[0]['Created Booking ID']);
+
+    return {
+        type: FAILED_GET_USER_DATE_FILTER_FIELD,
+        errorMessage: 'Unable to get User`s date filter field.'
+    };
+}
+
+export function failedAlliedBooking(error) {
+    alert('Failed booking allied: ' + error);
+    return {
+        type: FAILED_GET_USER_DATE_FILTER_FIELD,
+        errorMessage: 'Unable to get User`s date filter field.'
+    };
+}
