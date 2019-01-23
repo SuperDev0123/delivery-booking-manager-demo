@@ -98,13 +98,27 @@ export const stBooking = (bookingId) => {
             .catch((error) => dispatch(failedStBooking(error)));
 };
 
-export const getLabel = (bookingId) => {
+export const getAlliedLabel = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
         url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_allied/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successGetLabel(data)))
+            .catch((error) => dispatch(failedGetLabel(error)));
+};
+
+export const getSTLabel = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_st/`
     };
     return dispatch =>
         axios(options)

@@ -14,7 +14,7 @@ import filterFactory, { textFilter, dateFilter } from 'react-bootstrap-table2-fi
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import { verifyToken } from '../state/services/authService';
-import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking, stBooking, getLabel } from '../state/services/bookingService';
+import { getBookings, simpleSearch, updateBooking, allTrigger, mapBok1ToBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -63,7 +63,8 @@ class AllBookingsPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
-        getLabel: PropTypes.func.isRequired,
+        getSTLabel: PropTypes.func.isRequired,
+        getAlliedLabel: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         getUserDateFilterField: PropTypes.func.isRequired,
@@ -468,11 +469,11 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            if (products[ind].vx_freight_provider === 'STARTRACK') {
-                alert('Not support for STARTRACK now');
-            } else {
-                if (ind > -1) {
-                    this.props.getLabel(products[ind].id);
+            if (ind > -1) {
+                if (products[ind].vx_freight_provider === 'STARTRACK') {
+                    this.props.getSTLabel(products[ind].id);
+                } else {
+                    this.props.getAlliedLabel(products[ind].id);
                 }
             }
         }
@@ -1080,7 +1081,8 @@ const mapDispatchToProps = (dispatch) => {
         allTrigger: () => dispatch(allTrigger()),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
-        getLabel: (bookingId) => dispatch(getLabel(bookingId)),
+        getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
+        getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
         mapBok1ToBookings: () => dispatch(mapBok1ToBookings()),
     };
 };
