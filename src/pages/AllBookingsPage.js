@@ -980,7 +980,7 @@ class AllBookingsPage extends React.Component {
                                                 { warehouses_list }
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBooking()}>Booking</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBooking()}>Book</button>
                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
