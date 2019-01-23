@@ -388,9 +388,9 @@ class AllBookingsPage extends React.Component {
         for (let i = 0; i < selectedBookingIds.length; i++) {
             let ind = -1;
 
-            for (let i = 0; i < products.length; i++) {
-                if (products[i].id === selectedBookingIds[0]) {
-                    ind = i;
+            for (let j = 0; j < products.length; j++) {
+                if (products[j].id === selectedBookingIds[i]) {
+                    ind = j;
                     break;
                 }
             }
