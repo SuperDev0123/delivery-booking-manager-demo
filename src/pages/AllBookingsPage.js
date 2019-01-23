@@ -422,6 +422,8 @@ class AllBookingsPage extends React.Component {
 
     onClickBooking() {
         const { selectedBookingIds, products } = this.state;
+        const st_name = 'startrack';
+        const allied_name = 'allied';
 
         if (selectedBookingIds.length == 0) {
             alert('Please check only one booking!');
@@ -438,9 +440,9 @@ class AllBookingsPage extends React.Component {
             }
 
             if (ind > -1) {
-                if (products[ind].vx_freight_provider && products[ind].vx_freight_provider === 'STARTRACK') {
+                if (products[ind].vx_freight_provider && products[ind].vx_freight_provider.toLowerCase() === st_name) {
                     this.props.stBooking(products[ind].id);
-                } else if (products[ind].vx_freight_provider && products[ind].vx_freight_provider === 'Allied') {
+                } else if (products[ind].vx_freight_provider && products[ind].vx_freight_provider.toLowerCase() === allied_name) {
                     this.props.alliedBooking(products[ind].id);
                 }
             }
@@ -454,6 +456,8 @@ class AllBookingsPage extends React.Component {
 
     onClickGetLabel() {
         const { selectedBookingIds, products } = this.state;
+        const st_name = 'startrack';
+        const allied_name = 'allied';
 
         if (selectedBookingIds.length == 0) {
             alert('Please check only one booking!');
@@ -470,9 +474,9 @@ class AllBookingsPage extends React.Component {
             }
 
             if (ind > -1) {
-                if (products[ind].vx_freight_provider === 'STARTRACK') {
+                if (products[ind].vx_freight_provider.toLowerCase() === st_name) {
                     this.props.getSTLabel(products[ind].id);
-                } else {
+                } else if (products[ind].vx_freight_provider.toLowerCase() === allied_name) {
                     this.props.getAlliedLabel(products[ind].id);
                 }
             }
