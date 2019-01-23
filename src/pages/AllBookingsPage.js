@@ -384,7 +384,7 @@ class AllBookingsPage extends React.Component {
 
     onDownloadPdfs() {
         const { selectedBookingIds, products } = this.state;
-
+        console.log('@1 - ', selectedBookingIds);
         for (let i = 0; i < selectedBookingIds.length; i++) {
             let ind = -1;
 
@@ -395,20 +395,24 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            const options = {
-                method: 'get',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
-                responseType: 'blob', // important
-            };
+            if (ind > -1) {
+                const options = {
+                    method: 'get',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
+                    responseType: 'blob', // important
+                };
 
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', selectedBookingIds[i]);
-                document.body.appendChild(link);
-                link.click();
-            });
+                axios(options).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', selectedBookingIds[i]);
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            } else {
+                alert('No matching booking id');
+            }
         }
     }
 
