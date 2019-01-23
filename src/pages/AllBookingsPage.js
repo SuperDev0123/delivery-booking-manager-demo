@@ -399,7 +399,7 @@ class AllBookingsPage extends React.Component {
                 const options = {
                     method: 'get',
                     // url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
-                    url: HTTP_PROTOCOL + '://' + API_HOST + products[ind].z_label_url,
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
                     responseType: 'blob', // important
                 };
 
