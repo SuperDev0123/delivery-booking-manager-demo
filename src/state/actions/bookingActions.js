@@ -93,10 +93,10 @@ export function failedStBooking(error) {
 }
 
 export function successGetLabel(data) {
-    if (!data[0].hasOwnProperty('booking_id'))
+    if (!data[0].hasOwnProperty('Created label ID'))
         alert('Failed get label: ' + data[0]['Error']);
     else
-        alert('Successfully get label: ' + data[0]['booking_id']);
+        alert('Successfully get label: ' + data[0]['Created label ID']);
 
     return {
         type: FAILED_GET_USER_DATE_FILTER_FIELD,
