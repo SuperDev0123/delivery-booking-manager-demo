@@ -384,12 +384,12 @@ class AllBookingsPage extends React.Component {
 
     onDownloadPdfs() {
         const { selectedBookingIds, products } = this.state;
-        console.log('@1 - ', selectedBookingIds);
+
         for (let i = 0; i < selectedBookingIds.length; i++) {
             let ind = -1;
 
             for (let i = 0; i < products.length; i++) {
-                if (products[i].id === selectedBookingIds[i]) {
+                if (products[i].id === selectedBookingIds[0]) {
                     ind = i;
                     break;
                 }
