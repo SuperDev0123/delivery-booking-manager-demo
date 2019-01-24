@@ -408,7 +408,7 @@ class AllBookingsPage extends React.Component {
                     const link = document.createElement('a');
                     link.href = url;
                     // link.setAttribute('download', selectedBookingIds[i] + '.pdf');
-                    link.setAttribute('download', selectedBookingIds[i] + '.txt');
+                    link.setAttribute('download', products[ind].z_label_url);
                     document.body.appendChild(link);
                     link.click();
                 });
