@@ -55,10 +55,10 @@ export function failedGetUserDateFilterField(error) {
 }
 
 export function successAlliedBooking(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID'))
+    if (!data[0].hasOwnProperty('Created Booking ID')) {
         alert('Failed booking allied: ' + data[0]['Error']);
-    else {
-        // alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
+    } else {
+        alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
         getAlliedLabel(data[0]['Created Booking ID']);
     }
 
@@ -77,10 +77,10 @@ export function failedAlliedBooking(error) {
 }
 
 export function successStBooking(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID'))
+    if (!data[0].hasOwnProperty('Created Booking ID')) {
         alert('Failed booking STARTRACK: ' + data[0]['Error']);
-    else {
-        // alert('Successfully booking STARTRACK: ' + data[0]['Created Booking ID']);
+    } else {
+        alert('Successfully booking STARTRACK: ' + data[0]['Created Booking ID']);
         getSTLabel(data[0]['Created Booking ID']);
     }
 
