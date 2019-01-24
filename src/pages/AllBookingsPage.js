@@ -398,7 +398,6 @@ class AllBookingsPage extends React.Component {
             if (ind > -1) {
                 const options = {
                     method: 'get',
-                    // url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
                     url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + products[ind].z_label_url,
                     responseType: 'blob', // important
                 };
@@ -407,7 +406,6 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    // link.setAttribute('download', selectedBookingIds[i] + '.pdf');
                     link.setAttribute('download', products[ind].z_label_url);
                     document.body.appendChild(link);
                     link.click();
