@@ -1,5 +1,7 @@
 import { SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
 
+import { getAlliedLabel, getSTLabel } from '../services/bookingService';
+
 export function setBookings(bookings) {
     return {
         type: SET_BOOKINGS,
@@ -55,8 +57,10 @@ export function failedGetUserDateFilterField(error) {
 export function successAlliedBooking(data) {
     if (!data[0].hasOwnProperty('Created Booking ID'))
         alert('Failed booking allied: ' + data[0]['Error']);
-    else
-        alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
+    else {
+        // alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
+        getAlliedLabel(data[0]['Created Booking ID']);
+    }
 
     return {
         type: FAILED_GET_USER_DATE_FILTER_FIELD,
@@ -75,8 +79,10 @@ export function failedAlliedBooking(error) {
 export function successStBooking(data) {
     if (!data[0].hasOwnProperty('Created Booking ID'))
         alert('Failed booking STARTRACK: ' + data[0]['Error']);
-    else
-        alert('Successfully booking STARTRACK: ' + data[0]['Created Booking ID']);
+    else {
+        // alert('Successfully booking STARTRACK: ' + data[0]['Created Booking ID']);
+        getSTLabel(data[0]['Created Booking ID']);
+    }
 
     return {
         type: FAILED_GET_USER_DATE_FILTER_FIELD,
