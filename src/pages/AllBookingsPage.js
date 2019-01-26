@@ -3,12 +3,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
+import lodash from 'lodash';
+import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { getBookings, getUserDateFilterField } from '../state/services/bookingService';
-import { getWarehouses } from '../state/services/warehouseService';
 import { verifyToken } from '../state/services/authService';
+import { getWarehouses } from '../state/services/warehouseService';
+import { getBookings, getUserDateFilterField } from '../state/services/bookingService';
+import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -16,6 +21,8 @@ class AllBookingsPage extends React.Component {
 
         this.state = {
             bookings: [],
+            bookingLines: [],
+            bookingLineDetails: [],
             warehouses: [],
             mainDate: '',
             userDateFilterField: '',
@@ -24,12 +31,20 @@ class AllBookingsPage extends React.Component {
             sortDirection: 1,
             itemCountPerPage: 10,
             filterInputs: {},
+            additionalInfoOpens: [],
+            bookingLinesInfoOpens: [],
+            bookingLinesQtyTotal: 0,
+            bookingLineDetailsQtyTotal: 0,
         };
+
+        this.togglePopover = this.togglePopover.bind(this);
     }
 
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
+        getBookingLines: PropTypes.func.isRequired,
+        getBookingLineDetails: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getUserDateFilterField: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
@@ -81,8 +96,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { itemCountPerPage } = this.state;
-        const { bookings, bookingsCnt, warehouses, userDateFilterField, redirect } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -91,8 +105,15 @@ class AllBookingsPage extends React.Component {
         }
 
         if (bookings) {
-            const pageCnt = Math.ceil(bookingsCnt / itemCountPerPage);
-            this.setState({ bookings, pageCnt, bookingsCnt });
+            this.setState({ bookings, bookingsCnt });
+        }
+
+        if (bookingLineDetails) {
+            this.setState({bookingLineDetails: this.calcBookingLineDetail(bookingLineDetails)});
+        }
+
+        if (bookingLines) {
+            this.setState({bookingLines: this.calcBookingLine(bookingLines)});
         }
 
         if (warehouses) {
@@ -102,6 +123,48 @@ class AllBookingsPage extends React.Component {
         if (userDateFilterField) {
             this.setState({ userDateFilterField });
         }
+    }
+
+    calcBookingLine(bookingLines) {
+        let bookingLinesQtyTotal = 0;
+
+        let newBookingLines = bookingLines.map((bookingLine) => {
+            if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
+            else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else if (bookingLine.e_weightUOM === 'Kg' || bookingLine.e_weightUOM === 'Kgs')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else if (bookingLine.e_weightUOM === 'Ton' || bookingLine.e_weightUOM === 'Tons')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+
+            if (bookingLine.e_dimUOM === 'CM')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
+            else if (bookingLine.e_dimUOM === 'Meter')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+
+            bookingLinesQtyTotal += bookingLine.e_qty;
+
+            return bookingLine;
+        });
+
+        this.setState({ bookingLinesQtyTotal });
+        return newBookingLines;
+    }
+
+    calcBookingLineDetail(bookingLineDetails) {
+        let bookingLineDetailsQtyTotal = 0;
+
+        let newBookingLineDetails = bookingLineDetails.map((bookingLineDetail) => {
+            bookingLineDetailsQtyTotal += bookingLineDetail.quantity;
+
+            return bookingLineDetail;
+        });
+
+        this.setState({ bookingLineDetailsQtyTotal });
+        return newBookingLineDetails;
     }
 
     onDateChange(date) {
@@ -191,18 +254,207 @@ class AllBookingsPage extends React.Component {
         this.setState({filterInputs});
     }
 
-    render() {
-        const { bookings, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingsCnt } = this.state;
+    showAdditionalInfo(bookingId) {
+        let additionalInfoOpens = this.state.additionalInfoOpens;
+        let flag = additionalInfoOpens['additional-info-popup-' + bookingId];
+        additionalInfoOpens = [];
 
-        const warehouses_table = warehouses.map((warehouse, index) => {
+        if (flag)
+            additionalInfoOpens['additional-info-popup-' + bookingId] = false;
+        else
+            additionalInfoOpens['additional-info-popup-' + bookingId] = true;
+
+        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
+    }
+
+    showBookingLinesInfo(bookingId) {
+        this.props.getBookingLines(bookingId);
+        this.props.getBookingLineDetails(bookingId);
+        let bookingLinesInfoOpens = this.state.bookingLinesInfoOpens;
+        let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId];
+        bookingLinesInfoOpens = [];
+
+        if (flag)
+            bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = false;
+        else
+            bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
+
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [] });
+    }
+
+    clearActivePopoverVar() {
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [] });
+    }
+
+    togglePopover() {
+        this.clearActivePopoverVar();
+    }
+
+    render() {
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal } = this.state;
+
+        const warehousesList = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
             );
         });
 
-        const bookings_table = bookings.map((booking, index) => {
+        let bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
+                    <td>{bookingLineDetail.modelNumber}</td>
+                    <td>{bookingLineDetail.itemDescription}</td>
+                    <td className="qty">{bookingLineDetail.quantity}</td>
+                    <td>{bookingLineDetail.itemFaultDescription}</td>
+                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{bookingLineDetail.gap_ra}</td>
+                    <td>{bookingLineDetail.clientRefNumber}</td>
+                </tr>
+            );
+        });
+
+        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+            return (
+                <tr key={index}>
+                    <td>{bookingLine.pk_auto_id_lines}</td>
+                    <td>{bookingLine.e_type_of_packaging}</td>
+                    <td>{bookingLine.e_item}</td>
+                    <td className="qty">{bookingLine.e_qty}</td>
+                    <td>{bookingLine.e_weightUOM}</td>
+                    <td>{bookingLine.e_weightPerEach}</td>
+                    <td>{bookingLine.total_kgs}</td>
+                    <td>{bookingLine.e_dimUOM}</td>
+                    <td>{bookingLine.e_dimLength}</td>
+                    <td>{bookingLine.e_dimWidth}</td>
+                    <td>{bookingLine.e_dimHeight}</td>
+                    <td>{bookingLine.cubic_meter}</td>
+                </tr>
+            );
+        });
+
+        const bookingsList = bookings.map((booking, index) => {
+            return (
+                <tr key={index}>
+                    <td><input type="checkbox" /></td>
+                    <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
+                        <i className="icon icon-th-list"></i>
+                    </td>
+                    <Popover
+                        isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id]}
+                        target={'booking-lines-info-popup-' + booking.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverHeader>Line and Line Details <a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
+                        <PopoverBody>
+                            <div className="pad-10p">
+                                <p><strong>Booking ID: {booking.id}</strong></p>
+                                <table className="booking-lines">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Qty Total</th>
+                                            <th>Count</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Lines</td>
+                                            <td>{bookingLinesQtyTotal}</td>
+                                            <td>{lodash.size(bookingLines)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Line Details</td>
+                                            <td>{bookingLineDetailsQtyTotal}</td>
+                                            <td>{lodash.size(bookingLineDetails)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="pad-10p">
+                                <p><strong>Lines</strong></p>
+                                <table className="booking-lines">
+                                    <thead>
+                                        <th>ID</th>
+                                        <th>Packaging</th>
+                                        <th>Item Description</th>
+                                        <th>Qty</th>
+                                        <th>Wgt UOM</th>
+                                        <th>Wgt Each</th>
+                                        <th>Total Kgs</th>
+                                        <th>Dim UOM</th>
+                                        <th>Length</th>
+                                        <th>Width</th>
+                                        <th>Height</th>
+                                        <th>Cubic Meter</th>
+                                    </thead>
+                                    <tbody>
+                                        { bookingLinesList }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="pad-10p">
+                                <p><strong>Line Details</strong></p>
+                                <table className="booking-lines">
+                                    <thead>
+                                        <th>Model</th>
+                                        <th>Item Description</th>
+                                        <th>Qty</th>
+                                        <th>Fault Description</th>
+                                        <th>Insurance Value</th>
+                                        <th>Gap/ RA</th>
+                                        <th>Client Reference #</th>
+                                    </thead>
+                                    <tbody>
+                                        { bookingLineDetailsList }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
+                    <td id={'additional-info-popup-' + booking.id} className={this.state.additionalInfoOpens['additional-info-popup-' + booking.id] ? 'additional-info active' : 'additional-info'} onClick={() => this.showAdditionalInfo(booking.id)}>
+                        <i className="icon icon-plus"></i>
+                    </td>
+                    <Popover
+                        isOpen={this.state.additionalInfoOpens['additional-info-popup-' + booking.id]}
+                        target={'additional-info-popup-' + booking.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverHeader>Additional Info <a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
+                        <PopoverBody>
+                            <div className="location-info disp-inline-block">
+                                <span>PU Info</span><br />
+                                <span>Pickup Location:</span><br />
+                                <span>
+                                    {booking.pu_Address_street_1}<br />
+                                    {booking.pu_Address_street_2}<br />
+                                    {booking.pu_Address_Suburb}<br />
+                                    {booking.pu_Address_City}<br />
+                                    {booking.pu_Address_State} {booking.pu_Address_PostalCode}<br />
+                                    {booking.pu_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span>Delivery Info</span><br />
+                                <span>Delivery Location:</span><br />
+                                <span>
+                                    {booking.de_To_Address_street_1}<br />
+                                    {booking.de_To_Address_street_2}<br />
+                                    {booking.de_To_Address_Suburb}<br />
+                                    {booking.de_To_Address_City}<br />
+                                    {booking.de_To_Address_State} {booking.de_To_Address_PostalCode}<br />
+                                    {booking.de_To_Address_Country}<br />
+                                </span>
+                            </div>
+                            <div className="location-info disp-inline-block">
+                                <span></span>
+                                <span>
+                                    <strong>Contact:</strong> {booking.booking_Created_For}<br />
+                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
+                                </span>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
                     <td><span className={booking.error_details ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
@@ -262,7 +514,7 @@ class AllBookingsPage extends React.Component {
                                             <label className="right-10px">Warehouse/Client:</label>
                                             <select id="warehouse" required onChange={(e) => this.onWarehouseSelected(e)} value={selectedWarehouseId}>
                                                 <option value="all">All</option>
-                                                { warehouses_table }
+                                                { warehousesList }
                                             </select>
                                             <label className="left-50px font-20px">Count: {bookingsCnt}</label>
                                         </div>
@@ -270,6 +522,9 @@ class AllBookingsPage extends React.Component {
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
                                                     <tr>
+                                                        <th className="width-30px"></th>
+                                                        <th className="width-30px"></th>
+                                                        <th className="width-30px"></th>
                                                         <th className="width-100px" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">DME Booking ID</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">Booked Date</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
@@ -284,6 +539,9 @@ class AllBookingsPage extends React.Component {
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">Delivery Entity</th>
                                                     </tr>
                                                     <tr className="filter-tr">
+                                                        <th><i className="icon icon-check"></i></th>
+                                                        <th><i className="icon icon-th-list"></i></th>
+                                                        <th><i className="icon icon-plus"></i></th>
                                                         <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
@@ -299,7 +557,7 @@ class AllBookingsPage extends React.Component {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    { bookings_table }
+                                                    { bookingsList }
                                                 </tbody>
                                             </table>
                                         </div>
@@ -359,6 +617,8 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         bookingsCnt: state.booking.bookingsCnt,
+        bookingLines: state.bookingLine.bookingLines,
+        bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
     };
@@ -368,6 +628,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters)),
+        getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
     };
