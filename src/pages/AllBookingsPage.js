@@ -159,11 +159,12 @@ class AllBookingsPage extends React.Component {
             sortDirection = 1;
         }
 
+        this.setState({ sortField: fieldName, sortDirection });
+
         if (sortDirection < 0)
             fieldName = '-' + fieldName;
-        console.log('@2 - ', mainDate);
-        this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, sortField: fieldName);
-        this.setState({ sortField: fieldName, sortDirection });
+
+        this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, fieldName);
     }
 
     render() {
