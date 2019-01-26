@@ -4,16 +4,18 @@ import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
 import lodash from 'lodash';
+import axios from 'axios';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { verifyToken } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-
+import TooltipItem from '../components/Tooltip/TooltipComponent';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -31,6 +33,7 @@ class AllBookingsPage extends React.Component {
             sortDirection: 1,
             itemCountPerPage: 10,
             filterInputs: {},
+            selectedBookingIds: [],
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
             bookingLinesQtyTotal: 0,
@@ -43,10 +46,16 @@ class AllBookingsPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
+        updateBooking: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getUserDateFilterField: PropTypes.func.isRequired,
+        allTrigger: PropTypes.func.isRequired,
+        alliedBooking: PropTypes.func.isRequired,
+        stBooking: PropTypes.func.isRequired,
+        getSTLabel: PropTypes.func.isRequired,
+        getAlliedLabel: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
@@ -290,6 +299,138 @@ class AllBookingsPage extends React.Component {
         this.clearActivePopoverVar();
     }
 
+    onCheck(e, id) {
+        if (!e.target.checked) {
+            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+        } else {
+            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
+        }
+    }
+
+    onClickAllTrigger() {
+        this.props.allTrigger();
+    }
+
+    onClickBooking() {
+        const { selectedBookingIds, bookings } = this.state;
+        const st_name = 'startrack';
+        const allied_name = 'allied';
+
+        if (selectedBookingIds.length == 0) {
+            alert('Please check only one booking!');
+        } else if (selectedBookingIds.length > 1) {
+            alert('Please check only one booking!');
+        } else {
+            let ind = -1;
+
+            for (let i = 0; i < bookings.length; i++) {
+                if (bookings[i].id === selectedBookingIds[0]) {
+                    ind = i;
+                    break;
+                }
+            }
+
+            if (ind > -1) {
+                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
+                    this.props.stBooking(bookings[ind].id);
+                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
+                    this.props.alliedBooking(bookings[ind].id);
+                }
+            }
+        }
+    }
+
+    onClickGetLabel() {
+        const { selectedBookingIds, bookings } = this.state;
+        const st_name = 'startrack';
+        const allied_name = 'allied';
+
+        if (selectedBookingIds.length == 0) {
+            alert('Please check only one booking!');
+        } else if (selectedBookingIds.length > 1) {
+            alert('Please check only one booking!');
+        } else {
+            let ind = -1;
+
+            for (let i = 0; i < bookings.length; i++) {
+                if (bookings[i].id === selectedBookingIds[0]) {
+                    ind = i;
+                    break;
+                }
+            }
+
+            if (ind > -1) {
+                if (bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
+                    this.props.getSTLabel(bookings[ind].id);
+                } else if (bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
+                    bookings.props.getAlliedLabel(bookings[ind].id);
+                }
+            }
+        }
+    }
+
+    onDownloadPdfs() {
+        const { selectedBookingIds, bookings } = this.state;
+
+        for (let i = 0; i < selectedBookingIds.length; i++) {
+            let ind = -1;
+
+            for (let j = 0; j < bookings.length; j++) {
+                if (bookings[j].id === selectedBookingIds[i]) {
+                    ind = j;
+                    break;
+                }
+            }
+
+            if (ind > -1) {
+                const options = {
+                    method: 'get',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + bookings[ind].z_label_url,
+                    responseType: 'blob', // important
+                };
+
+                axios(options).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', bookings[ind].z_label_url);
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            } else {
+                alert('No matching booking id');
+            }
+        }
+    }
+
+    onClickPrinter(booking) {
+        let bookings = this.state.bookings;
+        booking.is_printed = !booking.is_printed;
+        // this.props.updateBooking(booking.id, booking);
+        let index = 0;
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (booking.id === bookings[i].id) {
+                index = i;
+                break;
+            }
+        }
+
+        let that=this;
+        bookings.splice(index, 1);
+        this.setState({ products: bookings});
+
+        if (booking.z_label_url) {
+            var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+            win.focus();
+        }
+
+        setTimeout(function(){
+            bookings.splice(index, 0, booking);
+            that.setState({ bookings});
+        }, 100);
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal } = this.state;
 
@@ -299,7 +440,7 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        let bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
+        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
                     <td>{bookingLineDetail.modelNumber}</td>
@@ -313,7 +454,7 @@ class AllBookingsPage extends React.Component {
             );
         });
 
-        let bookingLinesList = bookingLines.map((bookingLine, index) => {
+        const bookingLinesList = bookingLines.map((bookingLine, index) => {
             return (
                 <tr key={index}>
                     <td>{bookingLine.pk_auto_id_lines}</td>
@@ -455,11 +596,29 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td><span className={booking.error_details ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
+                    <td><span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
-                    <td >{booking.b_status}</td>
+                    <td className="no-padding">
+                        {
+                            (booking.b_error_Capture) ?
+                                <div className="booking-status">
+                                    <TooltipItem booking={booking} />
+                                </div>
+                                :
+                                <div className="booking-status">
+                                    <div className="disp-inline-block">
+                                        {
+                                            <a href="#" className={(booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'} onClick={() => this.onClickPrinter(booking)}>
+                                                <i className="icon icon-printer"></i>
+                                            </a>
+                                        }
+                                        &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
+                                    </div>
+                                </div>
+                        }
+                    </td>
                     <td >{booking.vx_freight_provider}</td>
                     <td >{booking.vx_serviceName}</td>
                     <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
@@ -516,6 +675,13 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
+                                            <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBooking()}>Book</button>
+                                            <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                            <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                            <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
+                                                <i className="icon icon-download"></i>
+                                            </button>
                                             <label className="left-50px font-20px">Count: {bookingsCnt}</label>
                                         </div>
                                         <div className="table-responsive">
@@ -628,10 +794,16 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters)),
+        updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
+        allTrigger: () => dispatch(allTrigger()),
+        alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
+        stBooking: (bookingId) => dispatch(stBooking(bookingId)),
+        getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
+        getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
     };
 };
 

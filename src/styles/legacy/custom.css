@@ -423,7 +423,6 @@ div.borderB {
 }
 
 .booking-status {
-    height: 50px;
 }
 
 .booking-status a > i {
@@ -434,8 +433,8 @@ div.borderB {
 }
 
 .booking-status a {
-    padding-top: 10px;
-    padding-bottom: 7px;
+    padding-top: 14px;
+    padding-bottom: 12px;
     padding-right: 4px;
     padding-left: 4px;
     text-decoration: none !important;
