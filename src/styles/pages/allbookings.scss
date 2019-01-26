@@ -66,7 +66,7 @@ table.booking-lines {
 
 .table-responsive {
   min-height: unset;
-  overflow-x: unset;
+  overflow-x: auto;
   height: 1000px;
   height: 100%;
 
@@ -81,6 +81,15 @@ table.booking-lines {
   .react-bootstrap-table-pagination-list > ul {
     float: right;
   }
+
+  table {
+    width: 1200px;
+    table-layout: fixed;
+  }
+}
+
+table {
+  max-width: none !important;
 }
 
 .date-filter-input {
@@ -152,4 +161,38 @@ table.booking-lines {
 
 .none {
   display: none !important;
+}
+
+.filter-tr {
+  input {
+    width: 100%;
+  }
+}
+
+.left-50px {
+  margin-left: 50px;
+}
+
+.font-20px {
+  font-size: 20px;
+}
+
+.width-100px {
+  width: 100px;
+}
+
+.width-150px {
+  width: 150px;
+}
+
+.width-50px {
+  width: 50px;
+}
+
+.width-30px {
+  width: 30px;
+}
+
+.no-padding {
+  padding: 0px !important;
 }

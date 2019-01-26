@@ -6,7 +6,7 @@ class TooltipItem extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = { 
+        this.state = {
             tooltipOpen: false
         };
     }
@@ -25,7 +25,7 @@ class TooltipItem extends React.Component {
         return (
             <div className="disp-inline-block">
                 {
-                    (booking.consignment_label_link.length > 0) ?
+                    (booking.b_error_Capture.length > 0) ?
                         <a href="#" className="dark-blue warning" id={'error-tooltip' + booking.id}>
                             <i className="icon icon-warning"></i>
                         </a>
@@ -35,7 +35,7 @@ class TooltipItem extends React.Component {
                         </a>
                 }
                 <Tooltip placement="right" isOpen={this.state.tooltipOpen} target={'error-tooltip' + booking.id} toggle={() => this.toggleTooltip()} className='tooltipitem'>
-                    {booking.error_details}
+                    {booking.b_error_Capture}
                 </Tooltip>
                 &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
             </div>

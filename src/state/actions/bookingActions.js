@@ -2,10 +2,11 @@ import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
-export function setBookings(bookings) {
+export function successFetchBookings(data) {
     return {
         type: SET_BOOKINGS,
-        bookings
+        bookings: data['bookings'],
+        bookingsCnt: data['count'],
     };
 }
 

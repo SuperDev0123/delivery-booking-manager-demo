@@ -3,17 +3,19 @@ import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING
 const defaultState = {
     booking: null,
     bookings: [],
+    bookingsCnt: 0,
     userDateFilterField: '',
     mappedBookings: [],
     errorMessage: null,
 };
 
-export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, booking, mappedBookings, userDateFilterField }) => {
+export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField }) => {
     switch (type) {
         case SET_BOOKINGS:
             return {
                 ...state,
-                bookings: bookings
+                bookings: bookings,
+                bookingsCnt: bookingsCnt,
             };
         case SET_MAPPEDBOOKINGS:
             return {
