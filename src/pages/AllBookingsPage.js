@@ -204,14 +204,14 @@ class AllBookingsPage extends React.Component {
             return (
                 <tr key={index}>
                     <td><span className={booking.error_details ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
-                    <td >{moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY')}</td>
-                    <td >{booking.puPickUpAvailFrom_Date}</td>
+                    <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
+                    <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
                     <td >{booking.b_status}</td>
                     <td >{booking.vx_freight_provider}</td>
                     <td >{booking.vx_serviceName}</td>
-                    <td >{booking.s_05_LatestPickUpDateTimeFinal}</td>
-                    <td >{booking.s_06_LatestDeliveryDateTimeFinal}</td>
+                    <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
+                    <td >{booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.v_FPBookingNumber}</td>
                     <td >{booking.puCompany}</td>
                     <td >{booking.deToCompanyName}</td>
@@ -270,16 +270,16 @@ class AllBookingsPage extends React.Component {
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
                                                     <tr>
-                                                        <th onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">DME Booking ID</th>
+                                                        <th className="width-100px" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">DME Booking ID</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">Booked Date</th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">Ref. Number</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">Ref. Number</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('b_status')} scope="col">Status</th>
-                                                        <th onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">Freight Provider</th>
-                                                        <th onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">Service</th>
-                                                        <th onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">Pickup By</th>
-                                                        <th onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">Latest Delivery</th>
-                                                        <th onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">FP Consignment Number</th>
+                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">Freight Provider</th>
+                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">Service</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">Pickup By</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">Latest Delivery</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">FP Consignment Number</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('puCompany')} scope="col">Pickup Entity</th>
                                                         <th className="width-150px" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">Delivery Entity</th>
                                                     </tr>

@@ -84,6 +84,7 @@ table.booking-lines {
 
   table {
     width: 1200px;
+    table-layout: fixed;
   }
 }
 
@@ -182,4 +183,8 @@ table {
 
 .width-150px {
   width: 150px;
+}
+
+.width-50px {
+  width: 50px;
 }
