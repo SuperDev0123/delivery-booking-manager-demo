@@ -1,4 +1,4 @@
-import { SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
+import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -7,6 +7,14 @@ export function successFetchBookings(data) {
         type: SET_BOOKINGS,
         bookings: data['bookings'],
         bookingsCnt: data['count'],
+    };
+}
+
+export function setBookingFilter(data) {
+    console.log('@!' + data);
+    return {
+        type: SET_BOOKING_WITH_FILTER,
+        booking: data.booking
     };
 }
 

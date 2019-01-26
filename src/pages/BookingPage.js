@@ -5,8 +5,10 @@ import PropTypes from 'prop-types';
 import { verifyToken } from '../state/services/authService';
 import { saveBooking } from '../state/services/bookingService';
 
+import { getBookingWithFilter } from '../state/services/bookingService';
 import user from '../public/images/user.png';
-
+import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -17,6 +19,10 @@ class BookingPage extends Component {
             isShowPUDate: false,
             isShowDelDate: false,
             formInputs: {},
+            selected:'dme',
+            booking:{},
+            bookingLines: [],
+            bookingLineDetails: [],
         };
     }
 
@@ -26,8 +32,14 @@ class BookingPage extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
+        getBookingWithFilter: PropTypes.func.isRequired,
+        getBookingLines: PropTypes.func.isRequired,
+        getBookingLineDetails: PropTypes.func.isRequired,
     };
 
+    componentDidUpdate () {
+        
+    }
     componentDidMount() {
         const token = localStorage.getItem('token');
         const currentRoute = this.props.location.pathname;
@@ -43,15 +55,55 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
+
+        
     }
 
     componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, booking ,bookingLines, bookingLineDetails, } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
+        }
+
+        if (bookingLineDetails) {
+            console.log('hi i am bookingLIneDetail');
+            this.setState({bookingLineDetails});
+        }
+
+        if (bookingLines) {
+            console.log('hi i am bookingLines');
+            this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+            return;
+        }
+
+        if (booking) {
+            let formInputs = this.state.formInputs;
+            formInputs['puCompany'] = booking.booking.puCompany;
+            formInputs['pu_Address_Street_1'] = booking.booking.pu_Address_Street_1;
+            formInputs['pu_Address_Street_2'] = booking.booking.pu_Address_street_2;
+            formInputs['pu_Address_PostalCode'] = booking.booking.pu_Address_PostalCode;
+            formInputs['pu_Address_Suburb'] = booking.booking.pu_Address_Suburb;
+            formInputs['pu_Address_Country'] = booking.booking.pu_Address_Country;
+            formInputs['pu_Contact_F_L_Name'] = booking.booking.pu_Contact_F_L_Name;
+            formInputs['pu_Phone_Main'] = booking.booking.pu_Phone_Main;
+            formInputs['pu_Email'] = booking.booking.pu_Email;
+            formInputs['de_To_Address_Street_1'] = booking.booking.de_To_Address_Street_1;
+            formInputs['de_To_Address_Street_2'] = booking.booking.de_To_Address_Street_2;
+            formInputs['de_To_Address_PostalCode'] = booking.booking.de_To_Address_PostalCode;
+            formInputs['de_To_Address_Suburb'] = booking.booking.de_To_Address_Suburb;
+            formInputs['de_To_Address_Country'] = booking.booking.de_To_Address_Country;
+            formInputs['de_to_Contact_F_LName'] = booking.booking.de_to_Contact_F_LName;
+            formInputs['de_to_Phone_Main'] = booking.booking.de_to_Phone_Main;
+            formInputs['de_Email'] = booking.booking.de_Email;
+            formInputs['deToCompanyName'] = booking.booking.deToCompanyName;
+            this.setState({ formInputs, booking });
+
+            console.log(booking.booking.pk_booking_id);
+            this.props.getBookingLines(booking.booking.pk_booking_id);
+            this.props.getBookingLineDetails(booking.booking.pk_booking_id);
         }
     }
 
@@ -61,13 +113,117 @@ class BookingPage extends Component {
         this.setState({ formInputs });
     }
 
+    getRadioValue(event) {
+        console.log(event.target.value);
+    }
+    getPrevBooking(e){
+        e.preventDefault();
+        const {booking} = this.state;
+        console.log(booking.previd);
+        if(booking.nextid)
+            this.props.getBookingWithFilter(booking.previd, 'id');
+        console.log('handle request prev');
+    }
+    getNextBooking(e){
+        e.preventDefault();
+        const {booking} = this.state;
+        console.log(booking.nextid);
+        if(booking.nextid)
+            this.props.getBookingWithFilter(booking.nextid, 'id');
+        console.log('handle request next');
+    }
     onSave() {
         this.props.saveBooking(this.state.formInputs);
     }
 
-    render() {
-        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+    getInitialState() {
+        return {typed: ''};
+    }
+    calcBookingLine(bookingLines) {
+        let bookingLinesQtyTotal = 0;
 
+        let newBookingLines = bookingLines.map((bookingLine) => {
+            if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
+            else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else if (bookingLine.e_weightUOM === 'Kg' || bookingLine.e_weightUOM === 'Kgs')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else if (bookingLine.e_weightUOM === 'Ton' || bookingLine.e_weightUOM === 'Tons')
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            else
+                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+
+            if (bookingLine.e_dimUOM === 'CM')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
+            else if (bookingLine.e_dimUOM === 'Meter')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+
+            bookingLinesQtyTotal += bookingLine.e_qty;
+
+            return bookingLine;
+        });
+
+        this.setState({ bookingLinesQtyTotal });
+        return newBookingLines;
+    }
+    _handleKeyPress(e) {
+        this.setState({typed: e.target.value});
+        const {selected, typed} = this.state;
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if((selected == undefined) || (selected == '')){
+                alert('id value is empty');
+                return;
+            }
+            if((typed == undefined) || (typed == '')){
+                alert('id value is empty');
+                return;
+            }
+            this.props.getBookingWithFilter(typed, selected);
+        }
+    }
+
+  
+    onChangeText(e) {
+        this.setState({typed: e.target.value});
+        console.log(e.target.value);
+    }
+
+    render() {
+        const {isShowBookingCntAndTot, bookingLines, bookingLineDetails, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
+            return (
+                <tr key={index}>
+                    <td>{bookingLineDetail.modelNumber}</td>
+                    <td>{bookingLineDetail.itemDescription}</td>
+                    <td className="qty">{bookingLineDetail.quantity}</td>
+                    <td>{bookingLineDetail.itemFaultDescription}</td>
+                    <td>{bookingLineDetail.insuranceValueEach}</td>
+                    <td>{bookingLineDetail.gap_ra}</td>
+                    <td>{bookingLineDetail.clientRefNumber}</td>
+                </tr>
+            );
+        });
+
+        const bookingLinesList = bookingLines.map((bookingLine, index) => {
+            return (
+                <tr key={index} onClick={() => this.onClickBookingLine(bookingLine.pk_auto_id_lines)}>
+                    <td>{bookingLine.pk_auto_id_lines}</td>
+                    <td>{bookingLine.e_type_of_packaging}</td>
+                    <td>{bookingLine.e_item}</td>
+                    <td className="qty">{bookingLine.e_qty}</td>
+                    <td>{bookingLine.e_weightUOM}</td>
+                    <td>{bookingLine.e_weightPerEach}</td>
+                    <td>{bookingLine.total_kgs}</td>
+                    <td>{bookingLine.e_dimUOM}</td>
+                    <td>{bookingLine.e_dimLength}</td>
+                    <td>{bookingLine.e_dimWidth}</td>
+                    <td>{bookingLine.e_dimHeight}</td>
+                    <td>{bookingLine.cubic_meter}</td>
+                </tr>
+            );
+        });
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -148,6 +304,23 @@ class BookingPage extends Component {
                                     <div className="col-sm-4 form-group">
                                         <input className="form-control" type="text" placeholder="BioPAK" />
                                     </div>
+
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-sm-2" onChange={this.getRadioValue.bind(this)}>
+                                                <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #
+                                                <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
+                                            </div>
+                                            <div className="col-sm-6 form-group">
+                                                <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this._handleKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                            </div>
+                                            <div className="col-sm-4">
+                                                <button onClick={(e) => this.getPrevBooking(e)} className="btn success btn-theme prev-btn">Prev</button>
+                                                <button onClick={(e) => this.getNextBooking(e)} className="btn btn-theme next-btn">Next</button>
+                                            </div>
+                                        </div>
+                
+                                    </div>
                                 </form>
                                 <div className="clearfix"></div>
                             </div>
@@ -185,7 +358,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Street_1" className="form-control" value = {formInputs['pu_Address_Street_1']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -193,7 +366,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Street_2" className="form-control" value = {formInputs['pu_Address_Street_2']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -201,7 +374,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" value = {formInputs['pu_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -209,7 +382,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Suburb" className="form-control" value = {formInputs['pu_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -217,7 +390,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Country" className="form-control" value = {formInputs['pu_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -225,7 +398,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Contact_F_L_Name" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Contact_F_L_Name" className="form-control" value = {formInputs['pu_Contact_F_L_Name']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -233,7 +406,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Phone_Main" className="form-control" value = {formInputs['pu_Phone_Main']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -241,7 +414,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Email" className="form-control" value = {formInputs['pu_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -407,7 +580,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Delivery Entity</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input placeholder="Tempo Pty Ltd" type="text" name="deToCompanyName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input placeholder="Tempo Pty Ltd" type="text" name="deToCompanyName" value = {formInputs['deToCompanyName']} className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -415,7 +588,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Street_1" className="form-control" value = {formInputs['de_To_Address_Street_1']}  onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -423,7 +596,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Street_2" className="form-control" value = {formInputs['de_To_Address_Street_2']}  onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -431,7 +604,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" value = {formInputs['de_To_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -439,7 +612,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" value = {formInputs['de_To_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -447,7 +620,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Country" className="form-control" value = {formInputs['de_To_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -455,7 +628,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_to_Contact_F_LName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_to_Contact_F_LName" className="form-control" value = {formInputs['de_to_Contact_F_LName']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -463,7 +636,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_to_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_to_Phone_Main" className="form-control" value = {formInputs['de_to_Phone_Main']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -471,7 +644,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_Email" className="form-control" value = {formInputs['de_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -601,18 +774,12 @@ class BookingPage extends Component {
                                         <ul id="tab-button">
                                             <li><a href="#tab01">Shipment Packages / Goods</a></li>
                                             <li><a href="#tab02">Freight Options</a></li>
-                                            <li><a href="#tab03">Communication Log</a></li>
-                                            <li><a href="#tab04">Attachments</a></li>
-                                            <li><a href="#tab05">Action / Help</a></li>
                                         </ul>
                                     </div>
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
                                             <option value="#tab01">Shipment Packages / Goods</option>
                                             <option value="#tab02">Freight Options</option>
-                                            <option value="#tab03">Communication Log</option>
-                                            <option value="#tab04">Attachments</option>
-                                            <option value="#tab05">Action / Help</option>
                                         </select>
                                     </div>
 
@@ -620,66 +787,21 @@ class BookingPage extends Component {
                                         <div className="tab-inner">
                                             <table className="tab-table table table-bordered .table-striped">
                                                 <thead>
-                                                    <th>Line no</th>
+                                                    <th>ID</th>
                                                     <th>Packaging</th>
-                                                    <th>UOM</th>
+                                                    <th>Item Description</th>
                                                     <th>Qty</th>
-                                                    <th>Weight UOM</th>
-                                                    <th>Weight (ea)</th>
-                                                    <th>Total KGs</th>
+                                                    <th>Wgt UOM</th>
+                                                    <th>Wgt Each</th>
+                                                    <th>Total Kgs</th>
                                                     <th>Dim UOM</th>
                                                     <th>Length</th>
                                                     <th>Width</th>
                                                     <th>Height</th>
                                                     <th>Cubic Meter</th>
-                                                    <th>Del</th>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Carton</td>
-                                                        <td>5 Ca</td>
-                                                        <td>5</td>
-                                                        <td>10 KG</td>
-                                                        <td>10</td>
-                                                        <td>50</td>
-                                                        <td>1 M</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Carton</td>
-                                                        <td>5 Ca</td>
-                                                        <td>5</td>
-                                                        <td>10 KG</td>
-                                                        <td>10</td>
-                                                        <td>50</td>
-                                                        <td>1 M</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td>1</td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Totals</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>15</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>150</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>15</td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
+                                                    { bookingLinesList }
                                                 </tbody>
                                             </table>
                                         </div>
@@ -688,146 +810,16 @@ class BookingPage extends Component {
                                         <div className="tab-inner">
                                             <table className="tab-table table table-bordered .table-striped">
                                                 <thead>
-                                                    <th>Provider</th>
-                                                    <th>Service</th>
-                                                    <th>ETD</th>
-                                                    <th>Total Fee Ex (GST)</th>
-                                                    <th>Booking Cutoff Time</th>
+                                                    <th>Model</th>
+                                                    <th>Item Description</th>
+                                                    <th>Qty</th>
+                                                    <th>Fault Description</th>
+                                                    <th>Insurance Value</th>
+                                                    <th>Gap/ RA</th>
+                                                    <th>Client Reference #</th>
                                                 </thead>
                                                 <tbody>
-                                                    <tr>
-                                                        <td>TNT</td>
-                                                        <td>Road Freight Express</td>
-                                                        <td>3/2/2018</td>
-                                                        <td>100 $</td>
-                                                        <td>12:00:00 PM</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Allied</td>
-                                                        <td>Road Freight Express</td>
-                                                        <td>3/2/2018</td>
-                                                        <td>100 $</td>
-                                                        <td>12:00:00 PM</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div id="tab03" className="tab-contents">
-                                        <div className="tab-inner">
-                                            <table className="tab-table table table-bordered .table-striped">
-                                                <thead>
-                                                    <th>Comm No</th>
-                                                    <th>Date</th>
-                                                    <th>Type</th>
-                                                    <th>Description</th>
-                                                    <th>View</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>TNT</td>
-                                                        <td>01 March 18</td>
-                                                        <td>EMAIL</td>
-                                                        <td>Booking confirmation and consignment note</td>
-                                                        <td>21</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Allied</td>
-                                                        <td>01 March 18</td>
-                                                        <td>EMAIL</td>
-                                                        <td>Proof of Delivery</td>
-                                                        <td></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div id="tab04" className="tab-contents">
-                                        <div className="tab-inner">
-                                            <table className="tab-table table table-bordered .table-striped">
-                                                <thead>
-                                                    <th>Attachment No</th>
-                                                    <th>Description</th>
-                                                    <th>FileName</th>
-                                                    <th>Date Updated</th>
-                                                    <th>Upload File</th>
-                                                    <th>Del</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>Pictures of goods</td>
-                                                        <td>pic.jpg</td>
-                                                        <td>1 March 2018</td>
-                                                        <td><input type="file" /></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>Pictures of goods</td>
-                                                        <td>pic.jpg</td>
-                                                        <td>1 March 2018</td>
-                                                        <td><input type="file" /></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                    <div id="tab05" className="tab-contents">
-                                        <div className="tab-inner">
-                                            <table className="tab-table table table-bordered .table-striped">
-                                                <thead>
-                                                    <th>Comm No</th>
-                                                    <th>Entry Date </th>
-                                                    <th>Type</th>
-                                                    <th>Description</th>
-                                                    <th>Due Date</th>
-                                                    <th>Status</th>
-                                                    <th>View / Listen</th>
-                                                    <th>Del</th>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>1</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Auto Email</td>
-                                                        <td>Email to Fp to follow up when delivery</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Sent</td>
-                                                        <td><i className="far fa-square"></i></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>2</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Manual Email</td>
-                                                        <td>Email to Fp to follow up  delivery</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Sent</td>
-                                                        <td><i className="far fa-square"></i></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>3</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Phone Call</td>
-                                                        <td>Call to FP to follow up delivery</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Called</td>
-                                                        <td><i className="far fa-square"></i></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>4</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Action item</td>
-                                                        <td>Find out from fb where goods are</td>
-                                                        <td>1 March 2018</td>
-                                                        <td>Open</td>
-                                                        <td><i className="far fa-square"></i></td>
-                                                        <td><a href=""><i className="fas fa-times-circle"></i></a></td>
-                                                    </tr>
+                                                    { bookingLineDetailsList }
                                                 </tbody>
                                             </table>
                                         </div>
@@ -846,6 +838,8 @@ const mapStateToProps = (state) => {
     return {
         booking: state.booking.booking,
         redirect: state.auth.redirect,
+        bookingLines: state.bookingLine.bookingLines,
+        bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
     };
 };
 
@@ -853,6 +847,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
+        getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
+        getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLineDetails: (bookingLineId) => dispatch(getBookingLineDetails(bookingLineId)),
     };
 };
 

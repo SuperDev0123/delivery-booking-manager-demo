@@ -23,18 +23,31 @@ export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, so
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
-// export const simpleSearch = (keyword) => {
-//     const token = localStorage.getItem('token');
-//     const options = {
-//         method: 'get',
-//         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-//         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/?searchType=` + '1&keyword=' + keyword,
-//     };
-//     return dispatch =>
-//         axios(options)
-//             .then(({ data }) => dispatch(setBookings(data)))
-//             .catch((error) => dispatch(failedGetBookings(error)));
-// };
+export const getBookingWithFilter = (id, filter) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/?id=` + id + '&filter=' + filter,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setBooking(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};
+
+export const simpleSearch = (keyword) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/?searchType=` + '1&keyword=' + keyword,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setBookings(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};
 
 export const updateBooking = (id, updateBooking) => {
     const token = localStorage.getItem('token');
