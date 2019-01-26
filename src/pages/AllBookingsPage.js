@@ -311,7 +311,7 @@ class AllBookingsPage extends React.Component {
         this.props.allTrigger();
     }
 
-    onClickBooking() {
+    onClickBook() {
         const { selectedBookingIds, bookings } = this.state;
         const st_name = 'startrack';
         const allied_name = 'allied';
@@ -363,7 +363,7 @@ class AllBookingsPage extends React.Component {
                 if (bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
                     this.props.getSTLabel(bookings[ind].id);
                 } else if (bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    bookings.props.getAlliedLabel(bookings[ind].id);
+                    this.props.getAlliedLabel(bookings[ind].id);
                 }
             }
         }
@@ -476,7 +476,7 @@ class AllBookingsPage extends React.Component {
         const bookingsList = bookings.map((booking, index) => {
             return (
                 <tr key={index}>
-                    <td><input type="checkbox" /></td>
+                    <td><input type="checkbox" onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
                     </td>
@@ -676,7 +676,7 @@ class AllBookingsPage extends React.Component {
                                                 { warehousesList }
                                             </select>
                                             <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBooking()}>Book</button>
+                                            <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
