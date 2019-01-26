@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successFetchBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
+import { successGetBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='id', columnFilters={}) => {
@@ -19,7 +19,7 @@ export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, so
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successFetchBookings(data)))
+            .then(({ data }) => dispatch(successGetBookings(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
@@ -45,7 +45,7 @@ export const simpleSearch = (keyword) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(setBookings(data)))
+            .then(({ data }) => dispatch(successGetBookings(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
