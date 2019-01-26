@@ -159,22 +159,30 @@ table {
   display: none;
 }
 
-.none {
-  display: none !important;
-}
-
 .filter-tr {
   input {
     width: 100%;
   }
 }
 
+#warehouse {
+  width: 300px;
+}
+
+.float-right {
+  float: right;
+}
+
+.none {
+  display: none !important;
+}
+
 .left-50px {
   margin-left: 50px;
 }
 
-.font-20px {
-  font-size: 20px;
+.font-24px {
+  font-size: 24px;
 }
 
 .width-100px {

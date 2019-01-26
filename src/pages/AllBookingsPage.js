@@ -682,7 +682,7 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
                                                 <i className="icon icon-download"></i>
                                             </button>
-                                            <label className="left-50px font-20px">Count: {bookingsCnt}</label>
+                                            <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
