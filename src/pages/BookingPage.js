@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { verifyToken } from '../state/services/authService';
 import { saveBooking } from '../state/services/bookingService';
 
+import { getBookingWithFilter } from '../state/services/bookingService';
 import user from '../public/images/user.png';
 
 class BookingPage extends Component {
@@ -17,6 +18,8 @@ class BookingPage extends Component {
             isShowPUDate: false,
             isShowDelDate: false,
             formInputs: {},
+            selected:'dme',
+            booking:{},
         };
     }
 
@@ -26,8 +29,12 @@ class BookingPage extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
+        getBookingWithFilter: PropTypes.func.isRequired,
     };
 
+    componentDidUpdate () {
+        
+    }
     componentDidMount() {
         const token = localStorage.getItem('token');
         const currentRoute = this.props.location.pathname;
@@ -43,15 +50,40 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
+
+        
     }
 
     componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, booking } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
+        }
+
+        if (booking) {
+            let formInputs = this.state.formInputs;
+            formInputs['puCompany'] = booking.booking.puCompany;
+            formInputs['pu_Address_Street_1'] = booking.booking.pu_Address_Street_1;
+            formInputs['pu_Address_Street_2'] = booking.booking.pu_Address_street_2;
+            formInputs['pu_Address_PostalCode'] = booking.booking.pu_Address_PostalCode;
+            formInputs['pu_Address_Suburb'] = booking.booking.pu_Address_Suburb;
+            formInputs['pu_Address_Country'] = booking.booking.pu_Address_Country;
+            formInputs['pu_Contact_F_L_Name'] = booking.booking.pu_Contact_F_L_Name;
+            formInputs['pu_Phone_Main'] = booking.booking.pu_Phone_Main;
+            formInputs['pu_Email'] = booking.booking.pu_Email;
+            formInputs['de_To_Address_Street_1'] = booking.booking.de_To_Address_Street_1;
+            formInputs['de_To_Address_Street_2'] = booking.booking.de_To_Address_Street_2;
+            formInputs['de_To_Address_PostalCode'] = booking.booking.de_To_Address_PostalCode;
+            formInputs['de_To_Address_Suburb'] = booking.booking.de_To_Address_Suburb;
+            formInputs['de_To_Address_Country'] = booking.booking.de_To_Address_Country;
+            formInputs['de_to_Contact_F_LName'] = booking.booking.de_to_Contact_F_LName;
+            formInputs['de_to_Phone_Main'] = booking.booking.de_to_Phone_Main;
+            formInputs['de_Email'] = booking.booking.de_Email;
+            formInputs['deToCompanyName'] = booking.booking.deToCompanyName;
+            this.setState({ formInputs, booking });
         }
     }
 
@@ -61,8 +93,53 @@ class BookingPage extends Component {
         this.setState({ formInputs });
     }
 
+    getRadioValue(event) {
+        console.log(event.target.value);
+    }
+    getPrevBooking(e){
+        e.preventDefault();
+        const {booking} = this.state;
+        console.log(booking.previd);
+        if(booking.nextid)
+            this.props.getBookingWithFilter(booking.previd, 'id');
+        console.log('handle request prev');
+    }
+    getNextBooking(e){
+        e.preventDefault();
+        const {booking} = this.state;
+        console.log(booking.nextid);
+        if(booking.nextid)
+            this.props.getBookingWithFilter(booking.nextid, 'id');
+        console.log('handle request next');
+    }
     onSave() {
         this.props.saveBooking(this.state.formInputs);
+    }
+
+    getInitialState() {
+        return {typed: ''};
+    }
+
+    _handleKeyPress(e) {
+        this.setState({typed: e.target.value});
+        const {selected, typed} = this.state;
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            if((selected == undefined) || (selected == '')){
+                alert('id value is empty');
+                return;
+            }
+            if((typed == undefined) || (typed == '')){
+                alert('id value is empty');
+                return;
+            }
+            this.props.getBookingWithFilter(typed, selected);
+        }
+    }
+
+    onChangeText(e) {
+        this.setState({typed: e.target.value});
+        console.log(e.target.value);
     }
 
     render() {
@@ -148,6 +225,23 @@ class BookingPage extends Component {
                                     <div className="col-sm-4 form-group">
                                         <input className="form-control" type="text" placeholder="BioPAK" />
                                     </div>
+
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-sm-2" onChange={this.getRadioValue.bind(this)}>
+                                                <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #
+                                                <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
+                                            </div>
+                                            <div className="col-sm-6 form-group">
+                                                <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this._handleKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                            </div>
+                                            <div className="col-sm-4">
+                                                <button onClick={(e) => this.getPrevBooking(e)} className="btn success btn-theme prev-btn">Prev</button>
+                                                <button onClick={(e) => this.getNextBooking(e)} className="btn btn-theme next-btn">Next</button>
+                                            </div>
+                                        </div>
+                
+                                    </div>
                                 </form>
                                 <div className="clearfix"></div>
                             </div>
@@ -185,7 +279,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Street_1" className="form-control" value = {formInputs['pu_Address_Street_1']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -193,7 +287,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Street_2" className="form-control" value = {formInputs['pu_Address_Street_2']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -201,7 +295,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" value = {formInputs['pu_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -209,7 +303,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Suburb" className="form-control" value = {formInputs['pu_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -217,7 +311,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Country" className="form-control" value = {formInputs['pu_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -225,7 +319,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Contact_F_L_Name" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Contact_F_L_Name" className="form-control" value = {formInputs['pu_Contact_F_L_Name']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -233,7 +327,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Phone_Main" className="form-control" value = {formInputs['pu_Phone_Main']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -241,7 +335,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Email" className="form-control" value = {formInputs['pu_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -407,7 +501,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Delivery Entity</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input placeholder="Tempo Pty Ltd" type="text" name="deToCompanyName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input placeholder="Tempo Pty Ltd" type="text" name="deToCompanyName" value = {formInputs['deToCompanyName']} className="form-control" onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -415,7 +509,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 1</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Street_1" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Street_1" className="form-control" value = {formInputs['de_To_Address_Street_1']}  onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -423,7 +517,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Street 2</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Street_2" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Street_2" className="form-control" value = {formInputs['de_To_Address_Street_2']}  onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -431,7 +525,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" value = {formInputs['de_To_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -439,7 +533,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" value = {formInputs['de_To_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -447,7 +541,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Country" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_To_Address_Country" className="form-control" value = {formInputs['de_To_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -455,7 +549,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_to_Contact_F_LName" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_to_Contact_F_LName" className="form-control" value = {formInputs['de_to_Contact_F_LName']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -463,7 +557,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Tel</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_to_Phone_Main" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_to_Phone_Main" className="form-control" value = {formInputs['de_to_Phone_Main']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -471,7 +565,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Email</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_Email" className="form-control" onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="de_Email" className="form-control" value = {formInputs['de_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -853,6 +947,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
+        getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
     };
 };
 

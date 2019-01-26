@@ -1,4 +1,4 @@
-import { SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
+import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
@@ -19,6 +19,11 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
             return {
                 ...state,
                 mappedBookings: mappedBookings
+            };
+        case SET_BOOKING_WITH_FILTER:
+            return {
+                ...state,
+                booking: booking
             };
         case FAILED_GET_BOOKINGS:
             return {
