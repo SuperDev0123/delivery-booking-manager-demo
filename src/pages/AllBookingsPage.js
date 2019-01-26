@@ -23,6 +23,7 @@ class AllBookingsPage extends React.Component {
             sortField: 'id',
             sortDirection: 1,
             itemCountPerPage: 10,
+            filterInputs: {},
         };
     }
 
@@ -91,7 +92,7 @@ class AllBookingsPage extends React.Component {
 
         if (bookings) {
             const pageCnt = Math.ceil(bookingsCnt / itemCountPerPage);
-            this.setState({ bookings, pageCnt });
+            this.setState({ bookings, pageCnt, bookingsCnt });
         }
 
         if (warehouses) {
@@ -121,16 +122,15 @@ class AllBookingsPage extends React.Component {
         const {mainDate, itemCountPerPage, sortDirection} = this.state;
         const selectedWarehouseId = e.target.value;
         let sortField = this.state.sortField;
+        let warehouseId = 0;
 
         if (sortDirection < 0)
             sortField = '-' + sortField;
 
-        if (selectedWarehouseId === 'all') {
-            this.props.getBookings(mainDate, 0, itemCountPerPage);
-        } else {
-            this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, sortField);
-        }
+        if (selectedWarehouseId !== 'all')
+            warehouseId = selectedWarehouseId;
 
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField);
         this.setState({ selectedWarehouseId });
     }
 
@@ -152,23 +152,47 @@ class AllBookingsPage extends React.Component {
         const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
+        let warehouseId = 0;
 
-        if (fieldName === sortField) {
+        if (fieldName === sortField)
             sortDirection = -1 * sortDirection;
-        } else {
+        else
             sortDirection = 1;
-        }
+
+        if (sortDirection < 0)
+            sortField = '-' + sortField;
+
+        if (selectedWarehouseId !== 'all')
+            warehouseId = selectedWarehouseId;
 
         this.setState({ sortField: fieldName, sortDirection });
 
         if (sortDirection < 0)
             fieldName = '-' + fieldName;
 
-        this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, fieldName);
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, fieldName);
+    }
+
+    onChangeFilterInput(e) {
+        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
+        let sortField = this.state.sortField;
+        let sortDirection = this.state.sortDirection;
+        let filterInputs = this.state.filterInputs;
+        let warehouseId = 0;
+
+        if (sortDirection < 0)
+            sortField = '-' + sortField;
+
+        if (selectedWarehouseId !== 'all')
+            warehouseId = selectedWarehouseId;
+
+        filterInputs[e.target.name] = e.target.value;
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs);
+        this.setState({filterInputs});
     }
 
     render() {
-        const { bookings, mainDate, selectedWarehouseId, warehouses } = this.state;
+        const { bookings, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingsCnt } = this.state;
 
         const warehouses_table = warehouses.map((warehouse, index) => {
             return (
@@ -180,7 +204,7 @@ class AllBookingsPage extends React.Component {
             return (
                 <tr key={index}>
                     <td><span className={booking.error_details ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
-                    <td >{booking.b_dateBookedDate}</td>
+                    <td >{moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY')}</td>
                     <td >{booking.puPickUpAvailFrom_Date}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
                     <td >{booking.b_status}</td>
@@ -240,23 +264,38 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehouses_table }
                                             </select>
+                                            <label className="left-50px font-20px">Count: {bookingsCnt}</label>
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
                                                     <tr>
                                                         <th onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">DME Booking ID</th>
-                                                        <th onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">Booked Date</th>
-                                                        <th onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
-                                                        <th onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">Ref. Number</th>
-                                                        <th onClick={() => this.onChangeSortField('b_status')} scope="col">Status</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">Booked Date</th>
+                                                        <th className="width-100px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
+                                                        <th className="width-100px" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">Ref. Number</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_status')} scope="col">Status</th>
                                                         <th onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">Freight Provider</th>
                                                         <th onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">Service</th>
                                                         <th onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">Pickup By</th>
                                                         <th onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">Latest Delivery</th>
                                                         <th onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">FP Consignment Number</th>
-                                                        <th onClick={() => this.onChangeSortField('puCompany')} scope="col">Pickup Entity</th>
-                                                        <th onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">Delivery Entity</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puCompany')} scope="col">Pickup Entity</th>
+                                                        <th className="width-150px" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">Delivery Entity</th>
+                                                    </tr>
+                                                    <tr className="filter-tr">
+                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -328,7 +367,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (date, warehouseId, itemCountPerPage, sortField) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField)),
+        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
     };
