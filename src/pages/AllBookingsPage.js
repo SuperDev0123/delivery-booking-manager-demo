@@ -20,9 +20,9 @@ class AllBookingsPage extends React.Component {
             mainDate: '',
             userDateFilterField: '',
             selectedWarehouseId: 0,
-            itemCountPerPage: 5,
-            pageCnt: 0,
-            curPage: 0,
+            sortField: 'id',
+            sortDirection: 1,
+            itemCountPerPage: 10,
         };
     }
 
@@ -64,7 +64,7 @@ class AllBookingsPage extends React.Component {
             dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         }
 
-        this.setState({ mainDate });
+        this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
 
         this.props.getBookings(dateParam, 0, this.state.itemCountPerPage);
         this.props.getWarehouses();
@@ -91,7 +91,6 @@ class AllBookingsPage extends React.Component {
 
         if (bookings) {
             const pageCnt = Math.ceil(bookingsCnt / itemCountPerPage);
-            console.log('@2 - ', pageCnt, bookings.length);
             this.setState({ bookings, pageCnt });
         }
 
@@ -115,37 +114,60 @@ class AllBookingsPage extends React.Component {
         }
 
         localStorage.setItem('today', mainDate);
-        this.setState({ mainDate });
+        this.setState({ mainDate, sortField: 'id', sortDirection: 1 });
     }
 
     onWarehouseSelected(e) {
-        const {mainDate, itemCountPerPage} = this.state;
+        const {mainDate, itemCountPerPage, sortDirection} = this.state;
         const selectedWarehouseId = e.target.value;
+        let sortField = this.state.sortField;
+
+        if (sortDirection < 0)
+            sortField = '-' + sortField;
 
         if (selectedWarehouseId === 'all') {
             this.props.getBookings(mainDate, 0, itemCountPerPage);
         } else {
-            this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage);
+            this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, sortField);
         }
 
         this.setState({ selectedWarehouseId });
     }
 
     onItemCountPerPageChange(e) {
-        const {mainDate, selectedWarehouseId} = this.state;
-        const itemCountPerPage = e.target.value;
+        console.log('@80 - ', e.target.value);
+        // const {mainDate, selectedWarehouseId} = this.state;
+        // const itemCountPerPage = e.target.value;
+        //
+        // if (selectedWarehouseId === 'all') {
+        //     this.props.getBookings(mainDate);
+        // } else {
+        //     this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage);
+        // }
+        //
+        // this.setState({ itemCountPerPage });
+    }
 
-        if (selectedWarehouseId === 'all') {
-            this.props.getBookings(mainDate);
+    onChangeSortField(fieldName) {
+        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
+        let sortField = this.state.sortField;
+        let sortDirection = this.state.sortDirection;
+
+        if (fieldName === sortField) {
+            sortDirection = -1 * sortDirection;
         } else {
-            this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage);
+            sortDirection = 1;
         }
 
-        this.setState({ itemCountPerPage });
+        if (sortDirection < 0)
+            fieldName = '-' + fieldName;
+        console.log('@2 - ', mainDate);
+        this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage, sortField: fieldName);
+        this.setState({ sortField: fieldName, sortDirection });
     }
 
     render() {
-        const { bookings, mainDate, selectedWarehouseId, warehouses, itemCountPerPage } = this.state;
+        const { bookings, mainDate, selectedWarehouseId, warehouses } = this.state;
 
         const warehouses_table = warehouses.map((warehouse, index) => {
             return (
@@ -157,17 +179,17 @@ class AllBookingsPage extends React.Component {
             return (
                 <tr key={index}>
                     <td><span className={booking.error_details ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
-                    <td>{booking.b_dateBookedDate}</td>
-                    <td>{booking.puPickUpAvailFrom_Date}</td>
-                    <td>{booking.b_clientReference_RA_Numbers}</td>
-                    <td>{booking.b_status}</td>
-                    <td>{booking.vx_freight_provider}</td>
-                    <td>{booking.vx_serviceName}</td>
-                    <td>{booking.s_05_LatestPickUpDateTimeFinal}</td>
-                    <td>{booking.s_06_LatestDeliveryDateTimeFinal}</td>
-                    <td>{booking.v_FPBookingNumber}</td>
-                    <td>{booking.puCompany}</td>
-                    <td>{booking.deToCompanyName}</td>
+                    <td >{booking.b_dateBookedDate}</td>
+                    <td >{booking.puPickUpAvailFrom_Date}</td>
+                    <td >{booking.b_clientReference_RA_Numbers}</td>
+                    <td >{booking.b_status}</td>
+                    <td >{booking.vx_freight_provider}</td>
+                    <td >{booking.vx_serviceName}</td>
+                    <td >{booking.s_05_LatestPickUpDateTimeFinal}</td>
+                    <td >{booking.s_06_LatestDeliveryDateTimeFinal}</td>
+                    <td >{booking.v_FPBookingNumber}</td>
+                    <td >{booking.puCompany}</td>
+                    <td >{booking.deToCompanyName}</td>
                 </tr>
             );
         });
@@ -222,33 +244,24 @@ class AllBookingsPage extends React.Component {
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
                                                     <tr>
-                                                        <th scope="col">DME Booking ID</th>
-                                                        <th scope="col">Booked Date</th>
-                                                        <th scope="col">Pickup from Manifest Date</th>
-                                                        <th scope="col">Ref. Number</th>
-                                                        <th scope="col">Status</th>
-                                                        <th scope="col">Freight Provider</th>
-                                                        <th scope="col">Service</th>
-                                                        <th scope="col">Pickup By</th>
-                                                        <th scope="col">Latest Delivery</th>
-                                                        <th scope="col">FP Consignment Number</th>
-                                                        <th scope="col">Pickup Entity</th>
-                                                        <th scope="col">Delivery Entity</th>
+                                                        <th onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">DME Booking ID</th>
+                                                        <th onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">Booked Date</th>
+                                                        <th onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">Pickup from Manifest Date</th>
+                                                        <th onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">Ref. Number</th>
+                                                        <th onClick={() => this.onChangeSortField('b_status')} scope="col">Status</th>
+                                                        <th onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">Freight Provider</th>
+                                                        <th onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">Service</th>
+                                                        <th onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">Pickup By</th>
+                                                        <th onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">Latest Delivery</th>
+                                                        <th onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">FP Consignment Number</th>
+                                                        <th onClick={() => this.onChangeSortField('puCompany')} scope="col">Pickup Entity</th>
+                                                        <th onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">Delivery Entity</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     { bookings_table }
                                                 </tbody>
                                             </table>
-                                            <div className="control">
-                                                <select required onChange={(e) => this.onItemCountPerPageChange(e)} value={itemCountPerPage}>
-                                                    <option value="10">5</option>
-                                                    <option value="10">10</option>
-                                                    <option value="20">20</option>
-                                                    <option value="30">30</option>
-                                                    <option value="50">40</option>
-                                                </select>
-                                            </div>
                                         </div>
                                     </div>
                                     <div id="all_booking" className="tab-pane fade">
@@ -314,7 +327,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (date, warehouseId, itemCountPerPage) => dispatch(getBookings(date, warehouseId, itemCountPerPage)),
+        getBookings: (date, warehouseId, itemCountPerPage, sortField) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
     };
