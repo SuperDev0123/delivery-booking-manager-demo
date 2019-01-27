@@ -1,4 +1,4 @@
-import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
+import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -64,47 +64,47 @@ export function failedGetUserDateFilterField(error) {
     };
 }
 
-export function successAlliedBooking(data) {
+export function successAlliedBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed booking allied: ' + data[0]['Error']);
+        alert('Failed book allied: ' + data[0]['Error']);
     } else {
-        alert('Successfully booking allied: ' + data[0]['Created Booking ID']);
+        alert('Successfully book allied: ' + data[0]['Created Booking ID']);
         getAlliedLabel(data[0]['Created Booking ID']);
     }
 
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: BOOK_SUCCESS,
+        errorMessage: 'Book success'
     };
 }
 
-export function failedAlliedBooking(error) {
-    alert('Failed booking allied: ' + error);
+export function failedAlliedBook(error) {
+    alert('Failed book allied: ' + error);
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: BOOK_FAILED,
+        errorMessage: 'Book failed'
     };
 }
 
-export function successStBooking(data) {
+export function successStBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed booking STARTRACK: ' + data[0]['Error']);
+        alert('Failed book STARTRACK: ' + data[0]['Error']);
     } else {
-        alert('Successfully booking STARTRACK: ' + data[0]['Created Booking ID']);
+        alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
         getSTLabel(data[0]['Created Booking ID']);
     }
 
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: BOOK_SUCCESS,
+        errorMessage: 'Book success'
     };
 }
 
-export function failedStBooking(error) {
-    alert('Failed booking STARTRACK: ' + error);
+export function failedStBook(error) {
+    alert('Failed book STARTRACK: ' + error);
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: BOOK_FAILED,
+        errorMessage: 'Book failed'
     };
 }
 
@@ -115,15 +115,15 @@ export function successGetLabel(data) {
         alert('Successfully get label: ' + data[0]['Created label ID']);
 
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: GET_LABEL_SUCCESS,
+        errorMessage: 'GetLable success'
     };
 }
 
 export function failedGetLabel(error) {
     alert('Failed get label: ' + error);
     return {
-        type: FAILED_GET_USER_DATE_FILTER_FIELD,
-        errorMessage: 'Unable to get User`s date filter field.'
+        type: GET_LABEL_FAILED,
+        errorMessage: 'GetLable failed'
     };
 }

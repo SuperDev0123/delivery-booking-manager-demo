@@ -105,7 +105,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -131,6 +131,20 @@ class AllBookingsPage extends React.Component {
 
         if (userDateFilterField) {
             this.setState({ userDateFilterField });
+        }
+
+        if (needUpdateBookings) {
+            const {mainDate, itemCountPerPage, sortDirection, selectedWarehouseId} = this.state;
+            let sortField = this.state.sortField;
+            let warehouseId = 0;
+
+            if (sortDirection < 0)
+                sortField = '-' + sortField;
+
+            if (selectedWarehouseId !== 'all')
+                warehouseId = selectedWarehouseId;
+
+            this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField);
         }
     }
 
@@ -804,6 +818,7 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         bookingsCnt: state.booking.bookingsCnt,
+        needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         warehouses: state.warehouse.warehouses,

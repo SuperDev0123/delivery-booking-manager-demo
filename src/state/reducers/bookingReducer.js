@@ -1,4 +1,4 @@
-import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD } from '../constants/bookingConstants';
+import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, GET_LABEL_SUCCESS } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
@@ -9,6 +9,7 @@ const defaultState = {
     errorMessage: null,
     nextBookingId: null,
     prevBookingId: null,
+    needUpdateBookings: false,
 };
 
 export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId }) => {
@@ -18,6 +19,7 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
                 ...state,
                 bookings: bookings,
                 bookingsCnt: bookingsCnt,
+                needUpdateBookings: false,
             };
         case SET_MAPPEDBOOKINGS:
             return {
@@ -55,6 +57,16 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
             return {
                 ...state,
                 errorMessage: errorMessage
+            };
+        case BOOK_SUCCESS:
+            return {
+                ...state,
+                needUpdateBookings: true,
+            };
+        case GET_LABEL_SUCCESS:
+            return {
+                ...state,
+                needUpdateBookings: true,
             };
         default:
             return state;

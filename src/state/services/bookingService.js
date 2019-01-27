@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetBookings, failedGetBookings, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
+import { successGetBookings, failedGetBookings, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='id', columnFilters={}) => {
@@ -100,8 +100,8 @@ export const alliedBooking = (bookingId) => {
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successAlliedBooking(data)))
-            .catch((error) => dispatch(failedAlliedBooking(error)));
+            .then(({data}) => dispatch(successAlliedBook(data)))
+            .catch((error) => dispatch(failedAlliedBook(error)));
 };
 
 export const stBooking = (bookingId) => {
@@ -114,8 +114,8 @@ export const stBooking = (bookingId) => {
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successStBooking(data)))
-            .catch((error) => dispatch(failedStBooking(error)));
+            .then(({data}) => dispatch(successStBook(data)))
+            .catch((error) => dispatch(failedStBook(error)));
 };
 
 export const getAlliedLabel = (bookingId) => {
