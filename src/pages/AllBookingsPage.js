@@ -435,16 +435,6 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickPrinter(booking) {
-        let bookings = this.state.bookings;
-
-        let index = 0;
-        for (let i = 0; i < bookings.length; i++) {
-            if (booking.id === bookings[i].id) {
-                index = i;
-                break;
-            }
-        }
-
         if (booking.z_label_url && booking.z_label_url.length > 0) {
             var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
