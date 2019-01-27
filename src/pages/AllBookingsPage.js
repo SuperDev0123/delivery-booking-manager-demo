@@ -276,9 +276,27 @@ class AllBookingsPage extends React.Component {
         this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
     }
 
+    getPKBookingIdFromId(id) {
+        const {bookings} = this.state;
+        let pkBookingId = 0;
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (bookings[i].id === id) {
+                console.log('@1 - ', bookings[i]);
+                pkBookingId = bookings[i].pk_booking_id;
+                break;
+            }
+        }
+
+        return pkBookingId;
+    }
+
     showBookingLinesInfo(bookingId) {
-        this.props.getBookingLines(bookingId);
-        this.props.getBookingLineDetails(bookingId);
+        const pkBookingId = this.getPKBookingIdFromId(bookingId);
+
+        this.props.getBookingLines(pkBookingId);
+        this.props.getBookingLineDetails(pkBookingId);
+
         let bookingLinesInfoOpens = this.state.bookingLinesInfoOpens;
         let flag = bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId];
         bookingLinesInfoOpens = [];
