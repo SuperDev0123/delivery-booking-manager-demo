@@ -41,6 +41,14 @@ class BookingPage extends Component {
 
     componentDidMount() {
         const token = localStorage.getItem('token');
+        //const { bookingid } = this.props.match.params;
+        var urlParams = new URLSearchParams(window.location.search);
+        var bookingId = urlParams.get('bookingid');
+
+        if (bookingId != null) {
+            this.props.getBookingWithFilter(bookingId, 'id');
+        }
+
         const currentRoute = this.props.location.pathname;
 
         if (token && token.length > 0) {
