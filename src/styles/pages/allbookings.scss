@@ -107,7 +107,9 @@ table {
 .bg-gray {
   background-color: gray;
 }
-
+.bg-yellow {
+  background-color: darkgoldenrod;
+}
 .cursor-pointer {
   cursor: pointer;
 }
@@ -167,6 +169,10 @@ table {
 
 #warehouse {
   width: 300px;
+}
+
+.fa-sort-alpha-asc {
+  margin-left: 5px;
 }
 
 .float-right {
