@@ -436,9 +436,6 @@ class AllBookingsPage extends React.Component {
 
     onClickPrinter(booking) {
         let bookings = this.state.bookings;
-        booking.is_printed = !booking.is_printed;
-        booking.z_downloaded_shipping_label_timestamp = new Date();
-        this.props.updateBooking(booking.id, booking);
 
         let index = 0;
         for (let i = 0; i < bookings.length; i++) {
@@ -449,16 +446,12 @@ class AllBookingsPage extends React.Component {
         }
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
-            let that=this;
-            bookings.splice(index, 1);
-
             var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
 
-            setTimeout(function(){
-                bookings.splice(index, 0, booking);
-                that.setState({ bookings});
-            }, 100);
+            booking.is_printed = true;
+            booking.z_downloaded_shipping_label_timestamp = new Date();
+            this.props.updateBooking(booking.id, booking);
         } else {
             alert('This booking has no label');
         }
