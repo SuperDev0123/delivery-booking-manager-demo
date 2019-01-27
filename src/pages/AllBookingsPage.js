@@ -282,7 +282,6 @@ class AllBookingsPage extends React.Component {
 
         for (let i = 0; i < bookings.length; i++) {
             if (bookings[i].id === id) {
-                console.log('@1 - ', bookings[i]);
                 pkBookingId = bookings[i].pk_booking_id;
                 break;
             }
@@ -510,7 +509,7 @@ class AllBookingsPage extends React.Component {
                         <PopoverHeader>Line and Line Details <a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
                         <PopoverBody>
                             <div className="pad-10p">
-                                <p><strong>Booking ID: {booking.id}</strong></p>
+                                <p><strong>Booking ID: {booking.b_bookingID_Visual}</strong></p>
                                 <table className="booking-lines">
                                     <thead>
                                         <tr>
