@@ -54,7 +54,7 @@ export const updateBooking = (id, updateBooking) => {
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/` + id + '/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/` + id + '/update_booking/',
         data: updateBooking
     };
     return dispatch =>
