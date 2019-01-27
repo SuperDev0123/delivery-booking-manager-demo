@@ -24,6 +24,7 @@ class BookingPage extends Component {
             bookingLineDetails: [],
             nextBookingId: null,
             prevBookingId: null,
+            loadedLineAndLineDetail: false,
         };
     }
 
@@ -57,7 +58,6 @@ class BookingPage extends Component {
 
     componentWillReceiveProps(newProps) {
         const { redirect, booking ,bookingLines, bookingLineDetails, nextBookingId, prevBookingId } = newProps;
-        const oldBookingLines = this.state.bookingLines;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -94,17 +94,13 @@ class BookingPage extends Component {
             formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
             formInputs['de_Email'] = booking.de_Email;
             formInputs['deToCompanyName'] = booking.deToCompanyName;
-            this.setState({ formInputs, booking, nextBookingId, prevBookingId });
 
-            if (oldBookingLines && oldBookingLines.length > 0) {
-                if (oldBookingLines[0].fk_booking_id !== booking.pk_booking_id) {
-                    this.props.getBookingLines(booking.pk_booking_id);
-                    this.props.getBookingLineDetails(booking.pk_booking_id);
-                }
-            } else {
+            if (!this.state.loadedLineAndLineDetail) {
                 this.props.getBookingLines(booking.pk_booking_id);
                 this.props.getBookingLineDetails(booking.pk_booking_id);
             }
+
+            this.setState({ formInputs, booking, nextBookingId, prevBookingId, loadedLineAndLineDetail: true });
         }
     }
 
@@ -119,12 +115,14 @@ class BookingPage extends Component {
     }
 
     onClickPrev(e){
+        e.preventDefault();
         const {prevBookingId} = this.state;
 
         if (prevBookingId && prevBookingId > -1) {
-            e.preventDefault();
             this.props.getBookingWithFilter(prevBookingId, 'id');
         }
+
+        this.setState({loadedLineAndLineDetail: false});
     }
 
     onClickNext(e){
@@ -134,6 +132,8 @@ class BookingPage extends Component {
         if (nextBookingId && nextBookingId > -1) {
             this.props.getBookingWithFilter(nextBookingId, 'id');
         }
+
+        this.setState({loadedLineAndLineDetail: false});
     }
 
     onSave() {
@@ -190,7 +190,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(typed, selected);
         }
 
-        this.setState({typed});
+        this.setState({typed, loadedLineAndLineDetail: false});
     }
 
     onChangeText(e) {
@@ -286,7 +286,7 @@ class BookingPage extends Component {
                             <div className="head">
                                 <div className="row">
                                     <div className="col-sm-2">
-                                        <p className="text-white">Edit Booking 78300</p>
+                                        <p className="text-white">Edit Booking {this.state.booking.id}</p>
                                     </div>
                                     <div className="col-sm-2">
                                         <p className="text-white text-center">Tempo <a href=""><i className="fas fa-file-alt text-white"></i></a></p>
@@ -322,7 +322,7 @@ class BookingPage extends Component {
                                                 <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                             </div>
                                             <div className="col-sm-6 form-group">
-                                                <input className="form-control" type="text" value={this.state.selected === 'dme' ? this.state.booking.b_bookingID_Visual : this.state.booking.v_FPBookingNumber} onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                                <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
                                             </div>
                                             <div className="col-sm-4">
                                                 <button onClick={(e) => this.onClickPrev(e)} className="btn success btn-theme prev-btn">Prev</button>
