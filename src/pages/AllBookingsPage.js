@@ -451,9 +451,11 @@ class AllBookingsPage extends React.Component {
         bookings.splice(index, 1);
         this.setState({ products: bookings});
 
-        if (booking.z_label_url) {
+        if (booking.z_label_url && boooking.z_label_url.length > 0) {
             var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
+        } else {
+            alert("This booking has no label");
         }
 
         setTimeout(function(){
