@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { verifyToken } from '../state/services/authService';
-import { saveBooking } from '../state/services/bookingService';
-
-import { getBookingWithFilter } from '../state/services/bookingService';
 import user from '../public/images/user.png';
+import { verifyToken } from '../state/services/authService';
+import { getBookingWithFilter, saveBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -19,10 +18,12 @@ class BookingPage extends Component {
             isShowPUDate: false,
             isShowDelDate: false,
             formInputs: {},
-            selected:'dme',
-            booking:{},
+            selected: 'dme',
+            booking: {},
             bookingLines: [],
             bookingLineDetails: [],
+            nextBookingId: null,
+            prevBookingId: null,
         };
     }
 
@@ -37,9 +38,6 @@ class BookingPage extends Component {
         getBookingLineDetails: PropTypes.func.isRequired,
     };
 
-    componentDidUpdate () {
-        
-    }
     componentDidMount() {
         const token = localStorage.getItem('token');
         const currentRoute = this.props.location.pathname;
@@ -55,12 +53,11 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-
-        
     }
 
     componentWillReceiveProps(newProps) {
-        const { redirect, booking ,bookingLines, bookingLineDetails, } = newProps;
+        const { redirect, booking ,bookingLines, bookingLineDetails, nextBookingId, prevBookingId } = newProps;
+        const oldBookingLines = this.state.bookingLines;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -69,41 +66,45 @@ class BookingPage extends Component {
         }
 
         if (bookingLineDetails) {
-            console.log('hi i am bookingLIneDetail');
             this.setState({bookingLineDetails});
         }
 
         if (bookingLines) {
-            console.log('hi i am bookingLines');
             this.setState({bookingLines: this.calcBookingLine(bookingLines)});
-            return;
         }
 
         if (booking) {
             let formInputs = this.state.formInputs;
-            formInputs['puCompany'] = booking.booking.puCompany;
-            formInputs['pu_Address_Street_1'] = booking.booking.pu_Address_Street_1;
-            formInputs['pu_Address_Street_2'] = booking.booking.pu_Address_street_2;
-            formInputs['pu_Address_PostalCode'] = booking.booking.pu_Address_PostalCode;
-            formInputs['pu_Address_Suburb'] = booking.booking.pu_Address_Suburb;
-            formInputs['pu_Address_Country'] = booking.booking.pu_Address_Country;
-            formInputs['pu_Contact_F_L_Name'] = booking.booking.pu_Contact_F_L_Name;
-            formInputs['pu_Phone_Main'] = booking.booking.pu_Phone_Main;
-            formInputs['pu_Email'] = booking.booking.pu_Email;
-            formInputs['de_To_Address_Street_1'] = booking.booking.de_To_Address_Street_1;
-            formInputs['de_To_Address_Street_2'] = booking.booking.de_To_Address_Street_2;
-            formInputs['de_To_Address_PostalCode'] = booking.booking.de_To_Address_PostalCode;
-            formInputs['de_To_Address_Suburb'] = booking.booking.de_To_Address_Suburb;
-            formInputs['de_To_Address_Country'] = booking.booking.de_To_Address_Country;
-            formInputs['de_to_Contact_F_LName'] = booking.booking.de_to_Contact_F_LName;
-            formInputs['de_to_Phone_Main'] = booking.booking.de_to_Phone_Main;
-            formInputs['de_Email'] = booking.booking.de_Email;
-            formInputs['deToCompanyName'] = booking.booking.deToCompanyName;
-            this.setState({ formInputs, booking });
 
-            console.log(booking.booking.pk_booking_id);
-            this.props.getBookingLines(booking.booking.pk_booking_id);
-            this.props.getBookingLineDetails(booking.booking.pk_booking_id);
+            formInputs['puCompany'] = booking.puCompany;
+            formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
+            formInputs['pu_Address_Street_2'] = booking.pu_Address_street_2;
+            formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
+            formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
+            formInputs['pu_Address_Country'] = booking.pu_Address_Country;
+            formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
+            formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
+            formInputs['pu_Email'] = booking.pu_Email;
+            formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
+            formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;
+            formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
+            formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
+            formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
+            formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
+            formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
+            formInputs['de_Email'] = booking.de_Email;
+            formInputs['deToCompanyName'] = booking.deToCompanyName;
+            this.setState({ formInputs, booking, nextBookingId, prevBookingId });
+
+            if (oldBookingLines && oldBookingLines.length > 0) {
+                if (oldBookingLines[0].fk_booking_id !== booking.pk_booking_id) {
+                    this.props.getBookingLines(booking.pk_booking_id);
+                    this.props.getBookingLineDetails(booking.pk_booking_id);
+                }
+            } else {
+                this.props.getBookingLines(booking.pk_booking_id);
+                this.props.getBookingLineDetails(booking.pk_booking_id);
+            }
         }
     }
 
@@ -116,22 +117,25 @@ class BookingPage extends Component {
     getRadioValue(event) {
         console.log(event.target.value);
     }
-    getPrevBooking(e){
-        e.preventDefault();
-        const {booking} = this.state;
-        console.log(booking.previd);
-        if(booking.nextid)
-            this.props.getBookingWithFilter(booking.previd, 'id');
-        console.log('handle request prev');
+
+    onClickPrev(e){
+        const {prevBookingId} = this.state;
+
+        if (prevBookingId && prevBookingId > -1) {
+            e.preventDefault();
+            this.props.getBookingWithFilter(prevBookingId, 'id');
+        }
     }
-    getNextBooking(e){
+
+    onClickNext(e){
         e.preventDefault();
-        const {booking} = this.state;
-        console.log(booking.nextid);
-        if(booking.nextid)
-            this.props.getBookingWithFilter(booking.nextid, 'id');
-        console.log('handle request next');
+        const {nextBookingId} = this.state;
+
+        if (nextBookingId && nextBookingId > -1) {
+            this.props.getBookingWithFilter(nextBookingId, 'id');
+        }
     }
+
     onSave() {
         this.props.saveBooking(this.state.formInputs);
     }
@@ -139,6 +143,7 @@ class BookingPage extends Component {
     getInitialState() {
         return {typed: ''};
     }
+
     calcBookingLine(bookingLines) {
         let bookingLinesQtyTotal = 0;
 
@@ -167,9 +172,11 @@ class BookingPage extends Component {
         this.setState({ bookingLinesQtyTotal });
         return newBookingLines;
     }
-    _handleKeyPress(e) {
-        this.setState({typed: e.target.value});
-        const {selected, typed} = this.state;
+
+    onKeyPress(e) {
+        const {selected} = this.state;
+        const typed = e.target.value;
+
         if (e.key === 'Enter') {
             e.preventDefault();
             if((selected == undefined) || (selected == '')){
@@ -182,9 +189,10 @@ class BookingPage extends Component {
             }
             this.props.getBookingWithFilter(typed, selected);
         }
+
+        this.setState({typed});
     }
 
-  
     onChangeText(e) {
         this.setState({typed: e.target.value});
         console.log(e.target.value);
@@ -192,6 +200,7 @@ class BookingPage extends Component {
 
     render() {
         const {isShowBookingCntAndTot, bookingLines, bookingLineDetails, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
             return (
                 <tr key={index}>
@@ -224,6 +233,7 @@ class BookingPage extends Component {
                 </tr>
             );
         });
+
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -312,14 +322,15 @@ class BookingPage extends Component {
                                                 <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                             </div>
                                             <div className="col-sm-6 form-group">
-                                                <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this._handleKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                                <input className="form-control" type="text" value={this.state.selected === 'dme' ? this.state.booking.b_bookingID_Visual : this.state.booking.v_FPBookingNumber} onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
                                             </div>
                                             <div className="col-sm-4">
-                                                <button onClick={(e) => this.getPrevBooking(e)} className="btn success btn-theme prev-btn">Prev</button>
-                                                <button onClick={(e) => this.getNextBooking(e)} className="btn btn-theme next-btn">Next</button>
+                                                <button onClick={(e) => this.onClickPrev(e)} className="btn success btn-theme prev-btn">Prev</button>
+                                                <button onClick={(e) => this.onClickNext(e)} className="btn btn-theme next-btn">Next</button>
+                                                <button type="submit" className="btn btn-theme submit none">Submit</button>
                                             </div>
                                         </div>
-                
+
                                     </div>
                                 </form>
                                 <div className="clearfix"></div>
@@ -837,6 +848,8 @@ class BookingPage extends Component {
 const mapStateToProps = (state) => {
     return {
         booking: state.booking.booking,
+        nextBookingId: state.booking.nextBookingId,
+        prevBookingId: state.booking.prevBookingId,
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -849,7 +862,7 @@ const mapDispatchToProps = (dispatch) => {
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
-        getBookingLineDetails: (bookingLineId) => dispatch(getBookingLineDetails(bookingLineId)),
+        getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
     };
 };
 

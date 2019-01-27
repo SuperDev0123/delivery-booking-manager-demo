@@ -10,11 +10,12 @@ export function successGetBookings(data) {
     };
 }
 
-export function setBookingFilter(data) {
-    console.log('@!' + data);
+export function successGetBooking(data) {
     return {
         type: SET_BOOKING_WITH_FILTER,
-        booking: data.booking
+        booking: data['booking'],
+        nextBookingId: data['nextid'],
+        prevBookingId: data['previd'],
     };
 }
 

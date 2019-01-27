@@ -7,9 +7,11 @@ const defaultState = {
     userDateFilterField: '',
     mappedBookings: [],
     errorMessage: null,
+    nextBookingId: null,
+    prevBookingId: null,
 };
 
-export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField }) => {
+export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId }) => {
     switch (type) {
         case SET_BOOKINGS:
             return {
@@ -25,7 +27,9 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
         case SET_BOOKING_WITH_FILTER:
             return {
                 ...state,
-                booking: booking
+                booking: booking,
+                nextBookingId: nextBookingId,
+                prevBookingId: prevBookingId,
             };
         case FAILED_GET_BOOKINGS:
             return {

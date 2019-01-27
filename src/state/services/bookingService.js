@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetBookings, failedGetBookings, setBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
+import { successGetBookings, failedGetBookings, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBooking, failedAlliedBooking, successStBooking, failedStBooking, successGetLabel, failedGetLabel } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='id', columnFilters={}) => {
@@ -23,19 +23,6 @@ export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, so
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
-export const getBookingWithFilter = (id, filter) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/?id=` + id + '&filter=' + filter,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(setBooking(data)))
-            .catch((error) => dispatch(failedGetBookings(error)));
-};
-
 export const simpleSearch = (keyword) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -49,6 +36,19 @@ export const simpleSearch = (keyword) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
+export const getBookingWithFilter = (id, filter) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/?id=` + id + '&filter=' + filter,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetBooking(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};
+
 export const updateBooking = (id, updateBooking) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -59,7 +59,7 @@ export const updateBooking = (id, updateBooking) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(setBooking(data)))
+            .then(({ data }) => dispatch(successGetBooking(data)))
             .catch((error) => dispatch(failedUpdateBooking(error)));
 };
 
@@ -73,7 +73,7 @@ export const saveBooking = (booking) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(setBooking(data)))
+            .then(({ data }) => dispatch(successGetBooking(data)))
             .catch((error) => dispatch(failedUpdateBooking(error)));
 };
 
