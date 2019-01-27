@@ -439,6 +439,7 @@ class AllBookingsPage extends React.Component {
         booking.is_printed = !booking.is_printed;
         booking.z_downloaded_shipping_label_timestamp = new Date();
         this.props.updateBooking(booking.id, booking);
+
         let index = 0;
         for (let i = 0; i < bookings.length; i++) {
             if (booking.id === bookings[i].id) {
@@ -447,27 +448,26 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        let that=this;
-        bookings.splice(index, 1);
-        this.setState({ products: bookings});
-
         if (booking.z_label_url && booking.z_label_url.length > 0) {
+            let that=this;
+            bookings.splice(index, 1);
+
             var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
+
+            setTimeout(function(){
+                bookings.splice(index, 0, booking);
+                that.setState({ bookings});
+            }, 100);
         } else {
             alert('This booking has no label');
         }
-
-        setTimeout(function(){
-            bookings.splice(index, 0, booking);
-            that.setState({ bookings});
-        }, 100);
     }
-    onClickRow(e){
-        console.log(JSON.stringify(e));
-        //this.props.history.push('/booking');
+
+    onClickRow(e) {
         window.location.assign('/booking?bookingid=' + e);
     }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection } = this.state;
 
