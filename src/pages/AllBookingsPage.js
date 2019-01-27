@@ -451,11 +451,11 @@ class AllBookingsPage extends React.Component {
         bookings.splice(index, 1);
         this.setState({ products: bookings});
 
-        if (booking.z_label_url && boooking.z_label_url.length > 0) {
+        if (booking.z_label_url && booking.z_label_url.length > 0) {
             var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
             win.focus();
         } else {
-            alert("This booking has no label");
+            alert('This booking has no label');
         }
 
         setTimeout(function(){
@@ -648,14 +648,14 @@ class AllBookingsPage extends React.Component {
                                     <div className="disp-inline-block">
                                         {
                                             <a href="#" className={
-                                                (booking.z_downloaded_shipping_label_timestamp != null) ?    
-                                                    'bg-yellow' 
+                                                (booking.z_downloaded_shipping_label_timestamp != null) ?
+                                                    'bg-yellow'
                                                     :
-                                                    (booking.z_label_url && booking.z_label_url.length > 0) ? 
-                                                        'bg-green' 
-                                                        : 
+                                                    (booking.z_label_url && booking.z_label_url.length > 0) ?
+                                                        'bg-green'
+                                                        :
                                                         'bg-gray'
-                                            } 
+                                            }
                                             onClick={() => this.onClickPrinter(booking)}>
                                                 <i className="icon icon-printer"></i>
                                             </a>
