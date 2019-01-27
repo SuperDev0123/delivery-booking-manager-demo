@@ -448,7 +448,11 @@ class AllBookingsPage extends React.Component {
             that.setState({ bookings});
         }, 100);
     }
-
+    onClickRow(e){
+        console.log(JSON.stringify(e));
+        //this.props.history.push('/booking');
+        window.location.assign('/booking?bookingid=' + e);
+    }
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal } = this.state;
 
@@ -614,7 +618,7 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td><span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
+                    <td onClick={()=>this.onClickRow(booking.id)}><span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
@@ -726,7 +730,7 @@ class AllBookingsPage extends React.Component {
                                                         <th><i className="icon icon-check"></i></th>
                                                         <th><i className="icon icon-th-list"></i></th>
                                                         <th><i className="icon icon-plus"></i></th>
-                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onClick={(e) => this.onClickRow(e)}/></th>
                                                         <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
