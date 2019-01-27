@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import user from '../public/images/user.png';
 import { verifyToken } from '../state/services/authService';
-import { getBookingWithFilter, saveBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, alliedBooking, stBooking, saveBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 
@@ -37,6 +37,8 @@ class BookingPage extends Component {
         getBookingWithFilter: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
+        alliedBooking: PropTypes.func.isRequired,
+        stBooking: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -179,6 +181,20 @@ class BookingPage extends Component {
 
         this.setState({ bookingLinesQtyTotal });
         return newBookingLines;
+    }
+    onClickBook() {
+        const {booking } = this.state;
+        const st_name = 'startrack';
+        const allied_name = 'allied';
+        if (booking.id && (booking.id != undefined)) {
+            if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
+                this.props.stBooking(booking.id);
+            } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
+                this.props.alliedBooking(booking.id);
+            }
+        } else {
+            alert('Please Find any booking and then click this!');
+        }
     }
 
     onKeyPress(e) {
@@ -775,6 +791,9 @@ class BookingPage extends Component {
                                                 <div className="text-center mt-2">
                                                     <button className="btn btn-theme custom-theme"><i className="fas fa-copy"></i> Duplicate Booking</button>
                                                 </div>
+                                                <div className="text-center mt-2">
+                                                    <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -871,6 +890,9 @@ const mapDispatchToProps = (dispatch) => {
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
+        alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
+        stBooking: (bookingId) => dispatch(stBooking(bookingId)),
+
     };
 };
 
