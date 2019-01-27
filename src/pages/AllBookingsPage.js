@@ -385,7 +385,7 @@ class AllBookingsPage extends React.Component {
             if (ind > -1) {
                 const options = {
                     method: 'get',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + bookings[ind].z_label_url,
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + bookings[ind].z_label_url + '&id=' + bookings[ind].id,
                     responseType: 'blob', // important
                 };
 
@@ -406,9 +406,9 @@ class AllBookingsPage extends React.Component {
     onClickPrinter(booking) {
         let bookings = this.state.bookings;
         booking.is_printed = !booking.is_printed;
-        // this.props.updateBooking(booking.id, booking);
+        booking.z_downloaded_shipping_label_timestamp = new Date();
+        this.props.updateBooking(booking.id, booking);
         let index = 0;
-
         for (let i = 0; i < bookings.length; i++) {
             if (booking.id === bookings[i].id) {
                 index = i;
@@ -614,7 +614,16 @@ class AllBookingsPage extends React.Component {
                                 <div className="booking-status">
                                     <div className="disp-inline-block">
                                         {
-                                            <a href="#" className={(booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'} onClick={() => this.onClickPrinter(booking)}>
+                                            <a href="#" className={
+                                                (booking.z_downloaded_shipping_label_timestamp != null) ?    
+                                                    'bg-yellow' 
+                                                    :
+                                                    (booking.z_label_url && booking.z_label_url.length > 0) ? 
+                                                        'bg-green' 
+                                                        : 
+                                                        'bg-gray'
+                                            } 
+                                            onClick={() => this.onClickPrinter(booking)}>
                                                 <i className="icon icon-printer"></i>
                                             </a>
                                         }
