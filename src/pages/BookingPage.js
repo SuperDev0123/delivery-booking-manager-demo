@@ -22,8 +22,8 @@ class BookingPage extends Component {
             booking: {},
             bookingLines: [],
             bookingLineDetails: [],
-            nextBookingId: null,
-            prevBookingId: null,
+            nextBookingId: 0,
+            prevBookingId: 0,
             loadedLineAndLineDetail: false,
         };
     }
@@ -43,6 +43,7 @@ class BookingPage extends Component {
 
     componentDidMount() {
         const token = localStorage.getItem('token');
+        // const bBookingable = this.state;
         //const { bookingid } = this.props.match.params;
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
@@ -64,7 +65,13 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
+
+        // if (bBookingable == false) {
+        //     this.disablePrevAndNextButton(true, true);
+        // }
     }
+
+ 
 
     componentWillReceiveProps(newProps) {
         const { redirect, booking ,bookingLines, bookingLineDetails, nextBookingId, prevBookingId } = newProps;
@@ -349,8 +356,8 @@ class BookingPage extends Component {
                                                 <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
                                             </div>
                                             <div className="col-sm-4">
-                                                <button onClick={(e) => this.onClickPrev(e)} className="btn success btn-theme prev-btn">Prev</button>
-                                                <button onClick={(e) => this.onClickNext(e)} className="btn btn-theme next-btn">Next</button>
+                                                <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn success btn-theme prev-btn">Prev</button>
+                                                <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0}  className="btn btn-theme next-btn">Next</button>
                                                 <button type="submit" className="btn btn-theme submit none">Submit</button>
                                             </div>
                                         </div>
