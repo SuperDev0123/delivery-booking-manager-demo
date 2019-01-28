@@ -12,9 +12,12 @@ const defaultState = {
     needUpdateBookings: false,
     errorsToCorrect: 0,
     toManifest: 0,
+    closed: 0,
+    missingLabels: 0,
+    toProcess: 0,
 };
 
-export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect }) => {
+export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels }) => {
     switch (type) {
         case SET_BOOKINGS:
             return {
@@ -24,6 +27,9 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
                 needUpdateBookings: false,
                 errorsToCorrect: errorsToCorrect,
                 toManifest: toManifest,
+                toProcess: toProcess,
+                closed: closed,
+                missingLabels: missingLabels,
             };
         case SET_MAPPEDBOOKINGS:
             return {

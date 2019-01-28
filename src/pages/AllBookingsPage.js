@@ -26,6 +26,7 @@ class AllBookingsPage extends React.Component {
             bookingLines: [],
             bookingLineDetails: [],
             warehouses: [],
+            bookingsCnt: 0,
             mainDate: '',
             userDateFilterField: '',
             selectedWarehouseId: 0,
@@ -41,6 +42,9 @@ class AllBookingsPage extends React.Component {
             prefilterInd: 0,
             errorsToCorrect: 0,
             toManifest: 0,
+            toProcess: 0,
+            closed: 0,
+            missingLabels: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -108,7 +112,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -117,7 +121,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (bookings) {
-            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest });
+            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
         }
 
         if (bookingLineDetails) {
@@ -476,7 +480,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -716,11 +720,11 @@ class AllBookingsPage extends React.Component {
                                             dateFormat="dd/MM/yyyy"
                                         />
                                         <ul className="filter-conditions">
-                                            <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct({errorsToCorrect})</a></li>
-                                            <li><a >Missing Labels</a></li>
-                                            <li><a onClick={() => this.onClickPrefilter(3)}>To Manifest({toManifest})</a></li>
-                                            <li><a >To Process</a></li>
-                                            <li><a >Closed</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(2)}>Missing Labels ({missingLabels})</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(3)}>To Manifest ({toManifest})</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(4)}>To Process ({toProcess})</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(5)}>Closed ({closed})</a></li>
                                         </ul>
                                         <div className="filter-conditions2">
                                             <label className="right-10px">Warehouse/Client:</label>
@@ -945,7 +949,10 @@ const mapStateToProps = (state) => {
         bookings: state.booking.bookings,
         bookingsCnt: state.booking.bookingsCnt,
         errorsToCorrect: state.booking.errorsToCorrect,
+        missingLabels: state.booking.missingLabels,
         toManifest: state.booking.toManifest,
+        toProcess: state.booking.toProcess,
+        closed: state.booking.closed,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,

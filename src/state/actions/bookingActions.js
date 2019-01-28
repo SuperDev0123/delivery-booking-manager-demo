@@ -8,7 +8,10 @@ export function successGetBookings(data) {
         bookings: data['bookings'],
         bookingsCnt: data['count'],
         toManifest: data['to_manifest'],
+        toProcess: data['to_process'],
+        closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
+        missingLabels: data['missing_labels'],
     };
 }
 
