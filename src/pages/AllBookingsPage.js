@@ -449,9 +449,19 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickPrinter(booking) {
+        const st_name = 'startrack';
+        const allied_name = 'allied';
+
         if (booking.z_label_url && booking.z_label_url.length > 0) {
-            var win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
-            win.focus();
+            if (booking.vx_freight_provider.toLowerCase() === st_name) {
+                const win = window.open(booking.z_label_url);
+                win.focus();
+            } else if (booking.vx_freight_provider.toLowerCase() === allied_name) {
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+                win.focus();
+            }
+
+
 
             booking.is_printed = true;
             booking.z_downloaded_shipping_label_timestamp = new Date();
