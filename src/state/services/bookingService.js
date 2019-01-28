@@ -42,7 +42,7 @@ export const getBookingWithFilter = (id, filter) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/?id=` + id + '&filter=' + filter,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_booking/?id=` + id + '&filter=' + filter,
     };
     return dispatch =>
         axios(options)
