@@ -35,6 +35,7 @@ class TooltipItem extends React.Component {
                         </a>
                 }
                 <Tooltip
+                    placement='right'
                     isOpen={this.state.tooltipOpen}
                     target={'error-tooltip' + booking.id}
                     toggle={() => this.toggleTooltip()}
