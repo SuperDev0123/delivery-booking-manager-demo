@@ -810,14 +810,14 @@ class BookingPage extends Component {
                                 <div className="tabs">
                                     <div className="tab-button-outer">
                                         <ul id="tab-button">
-                                            <li><a href="#tab01">Shipment Packages / Goods</a></li>
-                                            <li><a href="#tab02">Freight Options</a></li>
+                                            <li><a href="#tab01">Booking Lines</a></li>
+                                            <li><a href="#tab02">Booking LIne Details</a></li>
                                         </ul>
                                     </div>
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
-                                            <option value="#tab01">Shipment Packages / Goods</option>
-                                            <option value="#tab02">Freight Options</option>
+                                            <option value="#tab01">Booking Lines</option>
+                                            <option value="#tab02">Booking Line Details</option>
                                         </select>
                                     </div>
 
