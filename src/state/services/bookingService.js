@@ -3,7 +3,7 @@ import axios from 'axios';
 import { successGetBookings, failedGetBookings, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0) => {
+export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -16,6 +16,7 @@ export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, so
             sortField: sortField,
             columnFilters: columnFilters,
             prefilterInd: prefilterInd,
+            simpleSearchKeyword: simpleSearchKeyword,
         }
     };
     return dispatch =>

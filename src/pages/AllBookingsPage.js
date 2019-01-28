@@ -45,6 +45,8 @@ class AllBookingsPage extends React.Component {
             toProcess: 0,
             closed: 0,
             missingLabels: 0,
+            simpleSearchKeyword: '',
+            showSimpleSearchBox: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -479,8 +481,38 @@ class AllBookingsPage extends React.Component {
         window.location.assign('/booking?bookingid=' + e);
     }
 
+    onClickGetAll(e) {
+        e.preventDefault();
+        const {mainDate} = this.state;
+
+        this.props.getBookings(mainDate);
+        localStorage.setItem('today', mainDate);
+        this.setState({ mainDate, warehouseId: 0, sortField: 'id', sortDirection: 1, filterInputs: {}, selectedWarehouseId: 'all' });
+    }
+
+    onClickSimpleSearch() {
+        this.setState({showSimpleSearchBox: true});
+    }
+
+    onInputChange(e) {
+        this.setState({simpleSearchKeyword: e.target.value});
+    }
+
+    onSimpleSearch(e) {
+        e.preventDefault();
+        const {mainDate, simpleSearchKeyword} = this.state;
+
+        if (simpleSearchKeyword.length === 0) {
+            alert('Please input search keyword!');
+        } else {
+            this.props.getBookings(mainDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            localStorage.setItem('today', mainDate);
+            this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {}, selectedWarehouseId: 'all' });
+        }
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -700,6 +732,20 @@ class AllBookingsPage extends React.Component {
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
                         <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <div className="popup" onClick={() => this.onClickSimpleSearch()}>
+                            <i className="icon-search3" aria-hidden="true"></i>
+                            {
+                                showSimpleSearchBox &&
+                                <div ref={this.setWrapperRef}>
+                                    <form onSubmit={(e) => this.onSimpleSearch(e)}>
+                                        <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                        <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
+                            <i className="icon icon-th-list" aria-hidden="true"></i>
+                        </div>
                         <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                         <a href="">?</a>
@@ -893,47 +939,6 @@ class AllBookingsPage extends React.Component {
                                             </table>
                                         </div>
                                     </div>
-                                    <div id="all_booking" className="tab-pane fade">
-                                        <p>Date</p>
-                                        <div id="line1"></div>
-                                        <div className="row">
-                                            <div id="msection" className="col-md-6">
-                                                <ul id="datesection">
-                                                    <li><a href="#">( 04 ) Errors to Correct</a></li>
-                                                    <li><a href="#">( 00 ) Missing Labels</a></li>
-                                                    <li><a href="#">( 50 ) To Manifest</a></li>
-                                                    <li><a href="#">( 15 ) To Process</a></li>
-                                                    <li><a href="#">( 01 ) Closed</a></li>
-                                                </ul>
-                                            </div>
-                                            <div className="col-md-4">
-                                                <a href="#" id="manifest">Manifest</a>
-                                            </div>
-                                            <div id="found" className="col-md-2">
-                                                <p>Found: <b>32</b> of 8607</p>
-                                            </div>
-                                        </div>
-                                        <div id="other1" className="tab-pane fade">
-                                            <h3>Other 1</h3>
-                                            <p>Some content in Other 1</p>
-                                        </div>
-                                        <div id="other2" className="tab-pane fade">
-                                            <h3>Other 2</h3>
-                                            <p>Some content in Other 2</p>
-                                        </div>
-                                        <div id="other3" className="tab-pane fade">
-                                            <h3>Other 3</h3>
-                                            <p>Some content in Other 3</p>
-                                        </div>
-                                        <div id="other4" className="tab-pane fade">
-                                            <h3>Other 4</h3>
-                                            <p>Some content in Other 4</p>
-                                        </div>
-                                        <div id="other5" className="tab-pane fade">
-                                            <h3>Other 5</h3>
-                                            <p>Some content in Other 5</p>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -964,7 +969,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd)),
+        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
