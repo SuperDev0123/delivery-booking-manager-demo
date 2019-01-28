@@ -34,7 +34,12 @@ class TooltipItem extends React.Component {
                             <i className="icon icon-printer transparent"></i>
                         </a>
                 }
-                <Tooltip placement="right" isOpen={this.state.tooltipOpen} target={'error-tooltip' + booking.id} toggle={() => this.toggleTooltip()} className='tooltipitem'>
+                <Tooltip
+                    isOpen={this.state.tooltipOpen}
+                    target={'error-tooltip' + booking.id}
+                    toggle={() => this.toggleTooltip()}
+                    hideArrow={true}
+                    className='tooltipitem'>
                     {booking.b_error_Capture}
                 </Tooltip>
                 &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
