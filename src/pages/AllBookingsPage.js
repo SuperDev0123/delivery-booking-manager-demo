@@ -718,7 +718,7 @@ class AllBookingsPage extends React.Component {
                                         <ul className="filter-conditions">
                                             <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct({errorsToCorrect})</a></li>
                                             <li><a >Missing Labels</a></li>
-                                            <li><a onClick={() => this.onClickPrefilter(3)}>( 50 ) To Manifest({toManifest})</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(3)}>To Manifest({toManifest})</a></li>
                                             <li><a >To Process</a></li>
                                             <li><a >Closed</a></li>
                                         </ul>
