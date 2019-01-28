@@ -7,6 +7,8 @@ import { verifyToken } from '../state/services/authService';
 import { getBookingWithFilter, alliedBooking, stBooking, saveBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+import BootstrapTable from 'react-bootstrap-table-next';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -25,7 +27,13 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loadedLineAndLineDetail: false,
+            products: [{'id': 1, 'name': 'han', 'price': 50}],
+            bookingLinesListProduct: [],
+            bookingLinesListDetailProduct: [],
+            deletedBookingLine: -1,
         };
+
+        this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
     }
 
     static propTypes = {
@@ -83,11 +91,43 @@ class BookingPage extends Component {
         }
 
         if (bookingLineDetails) {
+            const tempBookings = bookingLineDetails;
             this.setState({bookingLineDetails});
+            const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
+                let result = [];
+                result.modelNumber = bookingLine.modelNumber;
+                result.itemDescription = bookingLine.itemDescription;
+                result.quantity = bookingLine.quantity;
+                result.itemFaultDescription = bookingLine.itemFaultDescription;
+                result.insuranceValueEach = bookingLine.insuranceValueEach;
+                result.gap_ra = bookingLine.gap_ra;
+                result.clientRefNumber = bookingLine.clientRefNumber;
+                return result;
+            });
+            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
         }
 
         if (bookingLines) {
-            this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+            const bookingLines1 = this.calcBookingLine(bookingLines);
+            //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
+            this.setState({bookingLines: bookingLines1});
+            const bookingLinesListProduct = bookingLines1.map((bookingLine) => {
+                let result = [];
+                result.pk_auto_id_lines = bookingLine.pk_auto_id_lines;
+                result.e_type_of_packaging = bookingLine.e_type_of_packaging;
+                result.e_item = bookingLine.e_item;
+                result.e_qty = bookingLine.e_qty;
+                result.e_weightUOM = bookingLine.e_weightUOM;
+                result.e_weightPerEach = bookingLine.e_weightPerEach;
+                result.total_kgs = bookingLine.total_kgs;
+                result.e_dimUOM = bookingLine.e_dimUOM;
+                result.e_dimLength = bookingLine.e_dimLength;
+                result.e_dimWidth = bookingLine.e_dimWidth;
+                result.e_dimHeight = bookingLine.e_dimHeight;
+                result.cubic_meter = bookingLine.cubic_meter;
+                return result;
+            });
+            this.setState({bookingLinesListProduct: bookingLinesListProduct});
         }
 
         if (booking) {
@@ -204,6 +244,12 @@ class BookingPage extends Component {
         }
     }
 
+    deleteRow() {
+        const {deletedBookingLine, bookingLinesListProduct} = this.state;
+        let tempBooking = bookingLinesListProduct;
+        tempBooking.splice(deletedBookingLine, 1);
+        this.setState({bookingLinesListProduct: tempBooking, deletedBookingLine: -1});
+    }
     onKeyPress(e) {
         const {selected} = this.state;
         const typed = e.target.value;
@@ -224,47 +270,104 @@ class BookingPage extends Component {
         this.setState({typed, loadedLineAndLineDetail: false});
     }
 
+    handleOnSelectLineRow(row, isSelect) {
+        if (isSelect) {
+            const {bookingLinesListProduct} = this.state;
+            var a = bookingLinesListProduct.indexOf(row);
+            console.log('@a value' + a);
+            this.setState({deletedBookingLine: a});
+        }
+    }
     onChangeText(e) {
         this.setState({typed: e.target.value});
         console.log(e.target.value);
     }
 
     render() {
-        const {isShowBookingCntAndTot, bookingLines, bookingLineDetails, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
 
-        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
-            return (
-                <tr key={index}>
-                    <td>{bookingLineDetail.modelNumber}</td>
-                    <td>{bookingLineDetail.itemDescription}</td>
-                    <td className="qty">{bookingLineDetail.quantity}</td>
-                    <td>{bookingLineDetail.itemFaultDescription}</td>
-                    <td>{bookingLineDetail.insuranceValueEach}</td>
-                    <td>{bookingLineDetail.gap_ra}</td>
-                    <td>{bookingLineDetail.clientRefNumber}</td>
-                </tr>
-            );
-        });
-
-        const bookingLinesList = bookingLines.map((bookingLine, index) => {
-            return (
-                <tr key={index} onClick={() => this.onClickBookingLine(bookingLine.pk_auto_id_lines)}>
-                    <td>{bookingLine.pk_auto_id_lines}</td>
-                    <td>{bookingLine.e_type_of_packaging}</td>
-                    <td>{bookingLine.e_item}</td>
-                    <td className="qty">{bookingLine.e_qty}</td>
-                    <td>{bookingLine.e_weightUOM}</td>
-                    <td>{bookingLine.e_weightPerEach}</td>
-                    <td>{bookingLine.total_kgs}</td>
-                    <td>{bookingLine.e_dimUOM}</td>
-                    <td>{bookingLine.e_dimLength}</td>
-                    <td>{bookingLine.e_dimWidth}</td>
-                    <td>{bookingLine.e_dimHeight}</td>
-                    <td>{bookingLine.cubic_meter}</td>
-                </tr>
-            );
-        });
-
+        const columns = [{
+            dataField: 'pk_auto_id_lines',
+            text: 'ID'
+        }, {
+            dataField: 'e_type_of_packaging',
+            text: 'Packaging'
+        }, {
+            dataField: 'e_item',
+            text: 'Item Description'
+        }, {
+            dataField: 'e_qty',
+            text: 'Qty'
+        }, {
+            dataField: 'e_weightUOM',
+            text: 'Wgt UOM'
+        }, {
+            dataField: 'e_weightPerEach',
+            text: 'Wgt Each'
+        }, {
+            dataField: 'total_kgs',
+            text: 'Total Kgs'
+        }, {
+            dataField: 'e_dimUOM',
+            text: 'Dim UOM'
+        }, {
+            dataField: 'e_dimLength',
+            text: 'Length'
+        }, {
+            dataField: 'e_dimWidth',
+            text: 'Width'
+        }, {
+            dataField: 'e_dimHeight',
+            text: 'Hegiht'
+        }, {
+            dataField: 'cubic_meter',
+            text: 'Cubic Meter'
+        }
+        ];
+        const selectRow = {
+            mode: 'checkbox',
+            clickToSelect: true,
+            onSelect: this.handleOnSelectLineRow,
+            clickToEdit: true  // Click to edit cell also
+        };
+          
+        // const cellEdit = {
+        //     mode: 'click'
+        // };
+          
+        const selectRow1 = {
+            mode: 'checkbox',
+            clickToSelect: true,
+            onSelect: this.handleOnSelectLineRow,
+            clickToEdit: true  // Click to edit cell also
+        };
+          
+        // const cellEdit1 = {
+        //     mode: 'click'
+        // };
+        const columnDetails = [{
+            dataField: 'modelNumber',
+            text: 'Model'
+        }, {
+            dataField: 'itemDescription',
+            text: 'Item Description'
+        }, {
+            dataField: 'quantity',
+            text: 'Qty'
+        }, {
+            dataField: 'itemFaultDescription',
+            text: 'Fault Description'
+        }, {
+            dataField: 'insuranceValueEach',
+            text: 'Insurance Value'
+        }, {
+            dataField: 'gap_ra',
+            text: 'Gap/ RA'
+        }, {
+            dataField: 'clientRefNumber',
+            text: 'Client Reference #'
+        }
+        ];     
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -812,6 +915,7 @@ class BookingPage extends Component {
                 </section>
                 <section>
                     <div className="container">
+                        
                         <div className="row">
                             <div className="col-sm-12">
                                 <div className="tabs">
@@ -827,46 +931,28 @@ class BookingPage extends Component {
                                             <option value="#tab02">Booking Line Details</option>
                                         </select>
                                     </div>
-
                                     <div id="tab01" className="tab-contents">
+                                        <button align="right" onClick={(e)=> this.deleteRow(e)}className="btn btn-light btn-theme next-btn"> Delete </button>
                                         <div className="tab-inner">
-                                            <table className="tab-table table table-bordered .table-striped">
-                                                <thead>
-                                                    <th>ID</th>
-                                                    <th>Packaging</th>
-                                                    <th>Item Description</th>
-                                                    <th>Qty</th>
-                                                    <th>Wgt UOM</th>
-                                                    <th>Wgt Each</th>
-                                                    <th>Total Kgs</th>
-                                                    <th>Dim UOM</th>
-                                                    <th>Length</th>
-                                                    <th>Width</th>
-                                                    <th>Height</th>
-                                                    <th>Cubic Meter</th>
-                                                </thead>
-                                                <tbody>
-                                                    { bookingLinesList }
-                                                </tbody>
-                                            </table>
+                                            <BootstrapTable
+                                                keyField="pk_auto_id_lines"
+                                                data={ this.state.bookingLinesListProduct }
+                                                columns={ columns }
+                                                selectRow={ selectRow }
+                                                cellEdit={ cellEditFactory({ mode: 'dbclick' }) }
+                                            />
+                                            
                                         </div>
                                     </div>
                                     <div id="tab02" className="tab-contents">
                                         <div className="tab-inner">
-                                            <table className="tab-table table table-bordered .table-striped">
-                                                <thead>
-                                                    <th>Model</th>
-                                                    <th>Item Description</th>
-                                                    <th>Qty</th>
-                                                    <th>Fault Description</th>
-                                                    <th>Insurance Value</th>
-                                                    <th>Gap/ RA</th>
-                                                    <th>Client Reference #</th>
-                                                </thead>
-                                                <tbody>
-                                                    { bookingLineDetailsList }
-                                                </tbody>
-                                            </table>
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ this.state.bookingLinesListDetailProduct }
+                                                columns={ columnDetails }
+                                                selectRow={ selectRow1 }
+                                                cellEdit1={ cellEditFactory({ mode: 'dbclick' }) }
+                                            />
                                         </div>
                                     </div>
                                 </div>
