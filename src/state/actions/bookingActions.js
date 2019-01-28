@@ -7,6 +7,8 @@ export function successGetBookings(data) {
         type: SET_BOOKINGS,
         bookings: data['bookings'],
         bookingsCnt: data['count'],
+        toManifest: data['to_manifest'],
+        errorsToCorrect: data['errors_to_correct'],
     };
 }
 

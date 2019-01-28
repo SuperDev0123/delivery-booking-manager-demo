@@ -38,6 +38,9 @@ class AllBookingsPage extends React.Component {
             bookingLinesInfoOpens: [],
             bookingLinesQtyTotal: 0,
             bookingLineDetailsQtyTotal: 0,
+            prefilterInd: 0,
+            errorsToCorrect: 0,
+            toManifest: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -105,7 +108,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -114,7 +117,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (bookings) {
-            this.setState({ bookings, bookingsCnt });
+            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest });
         }
 
         if (bookingLineDetails) {
@@ -201,11 +204,11 @@ class AllBookingsPage extends React.Component {
         }
 
         localStorage.setItem('today', mainDate);
-        this.setState({ mainDate, sortField: 'id', sortDirection: 1 });
+        this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
     }
 
     onWarehouseSelected(e) {
-        const {mainDate, itemCountPerPage, sortDirection} = this.state;
+        const {mainDate, itemCountPerPage, sortDirection, prefilterInd, filterInputs} = this.state;
         const selectedWarehouseId = e.target.value;
         let sortField = this.state.sortField;
         let warehouseId = 0;
@@ -216,7 +219,7 @@ class AllBookingsPage extends React.Component {
         if (selectedWarehouseId !== 'all')
             warehouseId = selectedWarehouseId;
 
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField);
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs, prefilterInd);
         this.setState({ selectedWarehouseId });
     }
 
@@ -235,7 +238,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onChangeSortField(fieldName) {
-        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
+        const {mainDate, selectedWarehouseId, itemCountPerPage, filterInputs, prefilterInd} = this.state;
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
         let warehouseId = 0;
@@ -256,11 +259,11 @@ class AllBookingsPage extends React.Component {
         if (sortDirection < 0)
             fieldName = '-' + fieldName;
 
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, fieldName);
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, fieldName, filterInputs, prefilterInd);
     }
 
     onChangeFilterInput(e) {
-        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
+        const {mainDate, selectedWarehouseId, itemCountPerPage, prefilterInd} = this.state;
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
         let filterInputs = this.state.filterInputs;
@@ -273,8 +276,19 @@ class AllBookingsPage extends React.Component {
             warehouseId = selectedWarehouseId;
 
         filterInputs[e.target.name] = e.target.value;
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs);
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs, prefilterInd);
         this.setState({filterInputs});
+    }
+
+    onClickPrefilter(prefilterInd) {
+        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
+        let warehouseId = 0;
+
+        if (selectedWarehouseId !== 'all')
+            warehouseId = selectedWarehouseId;
+
+        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, '-id', {}, prefilterInd);
+        this.setState({ prefilterInd:prefilterInd, sortField: 'id', sortDirection: 1, filterInputs: {} });
     }
 
     showAdditionalInfo(bookingId) {
@@ -452,7 +466,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -692,9 +706,9 @@ class AllBookingsPage extends React.Component {
                                             dateFormat="dd/MM/yyyy"
                                         />
                                         <ul className="filter-conditions">
-                                            <li><a >Errors to Correct</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct({errorsToCorrect})</a></li>
                                             <li><a >Missing Labels</a></li>
-                                            <li><a >( 50 ) To Manifest</a></li>
+                                            <li><a onClick={() => this.onClickPrefilter(3)}>( 50 ) To Manifest({toManifest})</a></li>
                                             <li><a >To Process</a></li>
                                             <li><a >Closed</a></li>
                                         </ul>
@@ -845,7 +859,7 @@ class AllBookingsPage extends React.Component {
                                                         <th><i className="icon icon-check"></i></th>
                                                         <th><i className="icon icon-th-list"></i></th>
                                                         <th><i className="icon icon-plus"></i></th>
-                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onClick={(e) => this.onClickRow(e)}/></th>
+                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
@@ -920,6 +934,8 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         bookingsCnt: state.booking.bookingsCnt,
+        errorsToCorrect: state.booking.errorsToCorrect,
+        toManifest: state.booking.toManifest,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -931,7 +947,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters)),
+        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
