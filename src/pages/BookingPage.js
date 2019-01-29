@@ -484,7 +484,7 @@ class BookingPage extends Component {
                             <div className="head">
                                 <div className="row">
                                     <div className="col-sm-2">
-                                        <p className="text-white">Edit Booking {this.state.booking.id}</p>
+                                        <p className="text-white">Edit Booking {this.state.booking.b_bookingID_Visual}</p>
                                     </div>
                                     <div className="col-sm-2">
                                         <p className="text-white text-center">Tempo <a href=""><i className="fas fa-file-alt text-white"></i></a></p>
