@@ -28,7 +28,8 @@ export function failedGetBookings(error) {
     console.log('Error: ', error);
     return {
         type: FAILED_GET_BOOKINGS,
-        errorMessage: 'Unable to fetch bookings.'
+        errorMessage: 'Unable to fetch bookings.',
+        bBooking: false
     };
 }
 
