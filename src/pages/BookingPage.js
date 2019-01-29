@@ -31,6 +31,7 @@ class BookingPage extends Component {
             bookingLinesListProduct: [],
             bookingLinesListDetailProduct: [],
             deletedBookingLine: -1,
+            bBooking: null,
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -82,7 +83,7 @@ class BookingPage extends Component {
  
 
     componentWillReceiveProps(newProps) {
-        const { redirect, booking ,bookingLines, bookingLineDetails, nextBookingId, prevBookingId } = newProps;
+        const { redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -128,6 +129,12 @@ class BookingPage extends Component {
                 return result;
             });
             this.setState({bookingLinesListProduct: bookingLinesListProduct});
+        }
+
+        if (bBooking == false) {
+            alert('There is no such booking with that DME`/CON` number.');
+            console.log('@booking Data' + bBooking);
+            this.setState({bBooking: null});
         }
 
         if (booking) {
@@ -973,6 +980,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
+        bBooking: state.booking.bBooking,
     };
 };
 

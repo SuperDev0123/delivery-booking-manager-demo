@@ -17,7 +17,7 @@ const defaultState = {
     toProcess: 0,
 };
 
-export const BookingReducer = (state = defaultState, { type, errorMessage, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels }) => {
+export const BookingReducer = (state = defaultState, { type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels }) => {
     switch (type) {
         case SET_BOOKINGS:
             return {
@@ -41,12 +41,14 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, booki
                 ...state,
                 booking: booking,
                 nextBookingId: nextBookingId,
-                prevBookingId: prevBookingId,
+                prevBookingId: prevBookingId
             };
         case FAILED_GET_BOOKINGS:
+            console.log('@booking ---' + bBooking);
             return {
                 ...state,
-                errorMessage: errorMessage
+                errorMessage: errorMessage,
+                bBooking: bBooking
             };
         case SET_BOOKING:
             return {
