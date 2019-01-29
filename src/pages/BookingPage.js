@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import DatePicker from 'react-datepicker';
+import moment from 'moment-timezone';
 import user from '../public/images/user.png';
 import { verifyToken } from '../state/services/authService';
 import { getBookingWithFilter, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
@@ -32,6 +34,7 @@ class BookingPage extends Component {
             bookingLinesListDetailProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
+            mainDate: '',
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -75,7 +78,18 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
+        let mainDate = '';
+        // let dateParam = '';
+        const today = localStorage.getItem('today');
+        if (today) {
+            mainDate = moment(today, 'YYYY-MM-DD').toDate();
+            // dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
+        } else {
+            mainDate = moment().tz('Australia/Sydney').toDate();
+            // dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+        }
 
+        this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
         // if (bBookingable == false) {
         //     this.disablePrevAndNextButton(true, true);
         // }
@@ -278,6 +292,20 @@ class BookingPage extends Component {
         tempBooking.splice(deletedBookingLine, 1);
         this.setState({bookingLinesListProduct: tempBooking, deletedBookingLine: -1});
     }
+    
+    onPickUpDateChange(date) {
+        // const {selectedWarehouseId, itemCountPerPage} = this.state;
+        const mainDate = moment(date).format('YYYY-MM-DD');
+
+        // if (selectedWarehouseId === 'all') {
+        //     this.props.getBookings(mainDate, 0, itemCountPerPage);
+        // } else {
+            
+        // }
+
+        localStorage.setItem('today', mainDate);
+        this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
+    }
 
     deleteRowDetails() {
         const {deletedBookingLine, bookingLinesListDetailProduct} = this.state;
@@ -319,7 +347,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isShowBookingCntAndTot, booking, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, mainDate, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
 
         const columns = [{
             dataField: 'pk_auto_id_lines',
@@ -404,6 +432,7 @@ class BookingPage extends Component {
         }
         ];     
         return (
+            
             <div>
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
@@ -603,8 +632,11 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="col-sm-8">
                                                         <div className="input-group">
-                                                            <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                            <span className="input-group-addon"><a id="pick-date" onClick={() => this.setState({isShowPUDate: !isShowPUDate})}><i className="fas fa-calendar-alt"></i></a></span>
+                                                            <DatePicker
+                                                                selected={mainDate}
+                                                                onChange={(e) => this.onPickUpDateChange(e)}
+                                                                dateFormat="dd/MM/yyyy"
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className={isShowPUDate ? 'col-sm-12 pick-dates mt-1' : 'col-sm-12 pick-dates mt-1 hidden'}>
@@ -833,8 +865,11 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="col-sm-8">
                                                         <div className="input-group">
-                                                            <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                            <span className="input-group-addon"><a id="deliver-date" onClick={() => this.setState({isShowDelDate: !isShowDelDate})}><i className="fas fa-calendar-alt"></i></a></span>
+                                                            <DatePicker
+                                                                selected={mainDate}
+                                                                onChange={(e) => this.onPickUpDateChange(e)}
+                                                                dateFormat="dd/MM/yyyy"
+                                                            />
                                                         </div>
                                                     </div>
                                                     <div className={isShowDelDate ? 'col-sm-12 deliver-date mt-1' : 'col-sm-12 deliver-date mt-1 hidden'}>
