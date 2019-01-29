@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 
 import user from '../public/images/user.png';
 import { verifyToken } from '../state/services/authService';
-import { getBookingWithFilter, alliedBooking, stBooking, saveBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
-
+import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -48,6 +48,7 @@ class BookingPage extends Component {
         getBookingLineDetails: PropTypes.func.isRequired,
         alliedBooking: PropTypes.func.isRequired,
         stBooking: PropTypes.func.isRequired,
+        updateBooking: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -189,6 +190,26 @@ class BookingPage extends Component {
         this.setState({loadedLineAndLineDetail: false});
     }
 
+    onClickPrinter(booking) {
+        const st_name = 'startrack';
+        const allied_name = 'allied';
+
+        if (booking.z_label_url && booking.z_label_url.length > 0) {
+            if (booking.vx_freight_provider.toLowerCase() === st_name) {
+                const win = window.open(booking.z_label_url);
+                win.focus();
+            } else if (booking.vx_freight_provider.toLowerCase() === allied_name) {
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+                win.focus();
+            }
+            booking.is_printed = true;
+            booking.z_downloaded_shipping_label_timestamp = new Date();
+            this.props.updateBooking(booking.id, booking);
+        } else {
+            alert('This booking has no label');
+        }
+    }
+
     onClickNext(e){
         e.preventDefault();
         const {nextBookingId} = this.state;
@@ -257,6 +278,13 @@ class BookingPage extends Component {
         tempBooking.splice(deletedBookingLine, 1);
         this.setState({bookingLinesListProduct: tempBooking, deletedBookingLine: -1});
     }
+
+    deleteRowDetails() {
+        const {deletedBookingLine, bookingLinesListDetailProduct} = this.state;
+        let tempBooking = bookingLinesListDetailProduct;
+        tempBooking.splice(deletedBookingLine, 1);
+        this.setState({bookingLinesListDetailProduct: tempBooking, deletedBookingLine: -1});
+    }
     onKeyPress(e) {
         const {selected} = this.state;
         const typed = e.target.value;
@@ -291,7 +319,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isShowBookingCntAndTot, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
 
         const columns = [{
             dataField: 'pk_auto_id_lines',
@@ -911,6 +939,9 @@ class BookingPage extends Component {
                                                 <div className="text-center mt-2">
                                                     <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
                                                 </div>
+                                                <div className="text-center mt-2">
+                                                    <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -948,10 +979,10 @@ class BookingPage extends Component {
                                                 selectRow={ selectRow }
                                                 cellEdit={ cellEditFactory({ mode: 'dbclick' }) }
                                             />
-                                            
                                         </div>
                                     </div>
                                     <div id="tab02" className="tab-contents">
+                                        <button align="right" onClick={(e)=> this.deleteRowDetails(e)}className="btn btn-light btn-theme next-btn"> Delete </button>
                                         <div className="tab-inner">
                                             <BootstrapTable
                                                 keyField="modelNumber"
@@ -993,7 +1024,7 @@ const mapDispatchToProps = (dispatch) => {
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
-
+        updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
     };
 };
 
