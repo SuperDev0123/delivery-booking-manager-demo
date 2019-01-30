@@ -12,6 +12,7 @@ import { getBookingLineDetails } from '../state/services/bookingLineDetailsServi
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import lodash from 'lodash';
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -29,12 +30,15 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loadedLineAndLineDetail: false,
-            products: [{'id': 1, 'name': 'han', 'price': 50}],
+            products: [],
             bookingLinesListProduct: [],
             bookingLinesListDetailProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
             mainDate: '',
+            selectedBookingIds: [],
+            isGoing: false,
+            checkBoxStatus: [],
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -106,7 +110,7 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (bookingLineDetails) {
+        if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
             this.setState({bookingLineDetails});
             const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
@@ -123,13 +127,13 @@ class BookingPage extends Component {
             this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
         }
 
-        if (bookingLines) {
+        if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
             this.setState({bookingLines: bookingLines1});
             const bookingLinesListProduct = bookingLines1.map((bookingLine) => {
                 let result = [];
-                result.pk_auto_id_lines = bookingLine.pk_auto_id_lines;
+                result.pk_auto_id_lines = bookingLine.pk_lines_id;
                 result.e_type_of_packaging = bookingLine.e_type_of_packaging;
                 result.e_item = bookingLine.e_item;
                 result.e_qty = bookingLine.e_qty;
@@ -143,43 +147,50 @@ class BookingPage extends Component {
                 result.cubic_meter = bookingLine.cubic_meter;
                 return result;
             });
-            this.setState({bookingLinesListProduct: bookingLinesListProduct});
+            this.setState({products: bookingLinesListProduct, bookingLinesListProduct: bookingLinesListProduct});
         }
 
-        if (bBooking == false) {
-            alert('There is no such booking with that DME`/CON` number.');
-            console.log('@booking Data' + bBooking);
-            this.setState({bBooking: null});
-        }
-
-        if (booking) {
-            let formInputs = this.state.formInputs;
-
-            formInputs['puCompany'] = booking.puCompany;
-            formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
-            formInputs['pu_Address_Street_2'] = booking.pu_Address_street_2;
-            formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
-            formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
-            formInputs['pu_Address_Country'] = booking.pu_Address_Country;
-            formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
-            formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
-            formInputs['pu_Email'] = booking.pu_Email;
-            formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
-            formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;
-            formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
-            formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
-            formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
-            formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
-            formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
-            formInputs['de_Email'] = booking.de_Email;
-            formInputs['deToCompanyName'] = booking.deToCompanyName;
-
-            if (!this.state.loadedLineAndLineDetail) {
-                this.props.getBookingLines(booking.pk_booking_id);
-                this.props.getBookingLineDetails(booking.pk_booking_id);
+        if ( bBooking ) {
+            if ( bBooking == false ) {
+                alert('There is no such booking with that DME`/CON` number.');
+                console.log('@booking Data' + bBooking);
+                this.setState({bBooking: null});
             }
+        }
 
-            this.setState({ formInputs, booking, nextBookingId, prevBookingId, loadedLineAndLineDetail: true });
+        if ( booking ) {
+            if ( booking.puCompany || booking.deToCompanyName ) {
+                let formInputs = this.state.formInputs;
+
+                formInputs['puCompany'] = booking.puCompany;
+                formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
+                formInputs['pu_Address_Street_2'] = booking.pu_Address_street_2;
+                formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
+                formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
+                formInputs['pu_Address_Country'] = booking.pu_Address_Country;
+                formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
+                formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
+                formInputs['pu_Email'] = booking.pu_Email;
+                formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
+                formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;
+                formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
+                formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
+                formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
+                formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
+                formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
+                formInputs['de_Email'] = booking.de_Email;
+                formInputs['deToCompanyName'] = booking.deToCompanyName;
+
+                if (!this.state.loadedLineAndLineDetail) {
+                    this.props.getBookingLines(booking.pk_booking_id);
+                    this.props.getBookingLineDetails(booking.pk_booking_id);
+                }
+
+                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loadedLineAndLineDetail: true });
+            } else {
+                this.setState({ formInputs: {} });
+                alert('There is no such booking with that DME/CON number.');
+            }
         }
     }
 
@@ -271,6 +282,27 @@ class BookingPage extends Component {
         this.setState({ bookingLinesQtyTotal });
         return newBookingLines;
     }
+    
+    onCheckLine(e, row) {
+        // if (!e.target.checked) {
+        //     this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
+        // } else {
+        //     this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
+            
+        // }
+        const { products } = this.state;
+        let clonedProducts = lodash.clone(products);
+        clonedProducts = lodash.difference(clonedProducts, [row]);
+        this.setState({products: clonedProducts});
+    }
+
+    onCheckLine1(e, row) {
+        const { bookingLinesListDetailProduct } = this.state;
+        let clonedProducts = lodash.clone(bookingLinesListDetailProduct);
+        clonedProducts = lodash.difference(clonedProducts, [row]);
+        this.setState({bookingLinesListDetailProduct: clonedProducts});
+    }
+
     onClickBook() {
         const {booking } = this.state;
         const st_name = 'startrack';
@@ -287,10 +319,25 @@ class BookingPage extends Component {
     }
 
     deleteRow() {
-        const {deletedBookingLine, bookingLinesListProduct} = this.state;
-        let tempBooking = bookingLinesListProduct;
-        tempBooking.splice(deletedBookingLine, 1);
-        this.setState({bookingLinesListProduct: tempBooking, deletedBookingLine: -1});
+        // const {deletedBookingLine, bookingLinesListProduct} = this.state;
+        const { selectedBookingIds, products } = this.state;
+
+        if (selectedBookingIds.length == 0) {
+            alert('No delete booking id');
+            return;
+        }
+        let clonedProducts = lodash.clone(products);
+        for (let i = 0; i < selectedBookingIds.length; i++) {
+            for (let j = 0; j < products.length; j++) {
+                if ( products[j].pk_auto_id_lines === selectedBookingIds[i] ) {
+                    clonedProducts = lodash.difference(clonedProducts, [products[j]]);
+                    break;
+                }
+            }
+        }
+
+        this.setState({products: clonedProducts});
+        this.setState({selectedBookingIds: []});
     }
     
     onPickUpDateChange(date) {
@@ -347,11 +394,26 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isShowBookingCntAndTot, booking, mainDate, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const iconCheck = (cell, row) => {
+            return (
+                // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
+                <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine(e, row);}}><i className="icon icon-trash"></i></button>
+            );
+        };
+
+        const iconCheck1 = (cell, row) => {
+            return (
+                // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
+                <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine1(e, row);}}><i className="icon icon-trash"></i></button>
+            );
+        };
 
         const columns = [{
             dataField: 'pk_auto_id_lines',
-            text: 'ID'
+            text: '',
+            formatter: iconCheck,
+            editable: false
         }, {
             dataField: 'e_type_of_packaging',
             text: 'Packaging'
@@ -387,28 +449,12 @@ class BookingPage extends Component {
             text: 'Cubic Meter'
         }
         ];
-        const selectRow = {
-            mode: 'checkbox',
-            clickToSelect: true,
-            onSelect: this.handleOnSelectLineRow,
-            clickToEdit: true  // Click to edit cell also
-        };
-          
-        // const cellEdit = {
-        //     mode: 'click'
-        // };
-          
-        const selectRow1 = {
-            mode: 'checkbox',
-            clickToSelect: true,
-            onSelect: this.handleOnSelectLineRow,
-            clickToEdit: true  // Click to edit cell also
-        };
-          
-        // const cellEdit1 = {
-        //     mode: 'click'
-        // };
+
         const columnDetails = [{
+            text: '',
+            formatter: iconCheck1,
+            editable: false
+        }, {
             dataField: 'modelNumber',
             text: 'Model'
         }, {
@@ -1005,26 +1051,24 @@ class BookingPage extends Component {
                                         </select>
                                     </div>
                                     <div id="tab01" className="tab-contents">
-                                        <button align="right" onClick={(e)=> this.deleteRow(e)}className="btn btn-light btn-theme next-btn"> Delete </button>
                                         <div className="tab-inner">
                                             <BootstrapTable
-                                                keyField="pk_auto_id_lines"
-                                                data={ this.state.bookingLinesListProduct }
+                                                keyField='pk_auto_id_lines'
+                                                data={ products }
                                                 columns={ columns }
-                                                selectRow={ selectRow }
-                                                cellEdit={ cellEditFactory({ mode: 'dbclick' }) }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
                                             />
                                         </div>
                                     </div>
                                     <div id="tab02" className="tab-contents">
-                                        <button align="right" onClick={(e)=> this.deleteRowDetails(e)}className="btn btn-light btn-theme next-btn"> Delete </button>
                                         <div className="tab-inner">
                                             <BootstrapTable
                                                 keyField="modelNumber"
-                                                data={ this.state.bookingLinesListDetailProduct }
+                                                data={ bookingLinesListDetailProduct }
                                                 columns={ columnDetails }
-                                                selectRow={ selectRow1 }
-                                                cellEdit1={ cellEditFactory({ mode: 'dbclick' }) }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
                                             />
                                         </div>
                                     </div>
