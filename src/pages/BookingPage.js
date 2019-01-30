@@ -12,6 +12,7 @@ import { getBookingLineDetails } from '../state/services/bookingLineDetailsServi
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import lodash from 'lodash';
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -29,12 +30,13 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loadedLineAndLineDetail: false,
-            products: [{'id': 1, 'name': 'han', 'price': 50}],
+            products: [],
             bookingLinesListProduct: [],
             bookingLinesListDetailProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
             mainDate: '',
+            selectedBookingIds: [],
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -129,7 +131,7 @@ class BookingPage extends Component {
             this.setState({bookingLines: bookingLines1});
             const bookingLinesListProduct = bookingLines1.map((bookingLine) => {
                 let result = [];
-                result.pk_auto_id_lines = bookingLine.pk_auto_id_lines;
+                result.pk_auto_id_lines = bookingLine.pk_lines_id;
                 result.e_type_of_packaging = bookingLine.e_type_of_packaging;
                 result.e_item = bookingLine.e_item;
                 result.e_qty = bookingLine.e_qty;
@@ -143,7 +145,7 @@ class BookingPage extends Component {
                 result.cubic_meter = bookingLine.cubic_meter;
                 return result;
             });
-            this.setState({bookingLinesListProduct: bookingLinesListProduct});
+            this.setState({products: bookingLinesListProduct, bookingLinesListProduct: bookingLinesListProduct});
         }
 
         if (bBooking == false) {
@@ -271,6 +273,23 @@ class BookingPage extends Component {
         this.setState({ bookingLinesQtyTotal });
         return newBookingLines;
     }
+    
+    onCheckLine(e, id) {
+        if (!e.target.checked) {
+            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+        } else {
+            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
+        }
+    }
+
+    onCheckLineDetail(e, id) {
+        if (!e.target.checked) {
+            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+        } else {
+            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
+        }
+    }
+
     onClickBook() {
         const {booking } = this.state;
         const st_name = 'startrack';
@@ -287,10 +306,26 @@ class BookingPage extends Component {
     }
 
     deleteRow() {
-        const {deletedBookingLine, bookingLinesListProduct} = this.state;
-        let tempBooking = bookingLinesListProduct;
-        tempBooking.splice(deletedBookingLine, 1);
-        this.setState({bookingLinesListProduct: tempBooking, deletedBookingLine: -1});
+        // const {deletedBookingLine, bookingLinesListProduct} = this.state;
+        const { selectedBookingIds, products } = this.state;
+
+        if (selectedBookingIds.length == 0) {
+            alert('No delete booking id');
+            return;
+        }
+        let clonedProducts = lodash.clone(products);
+        for (let i = 0; i < selectedBookingIds.length; i++) {
+            for (let j = 0; j < products.length; j++) {
+                if ( products[j].pk_auto_id_lines === selectedBookingIds[i] ) {
+                    clonedProducts = lodash.difference(clonedProducts, [products[j]]);
+                    break;
+                }
+            }
+        }
+        console.log('@products--', products);
+        console.log('@cloned--', clonedProducts);
+        this.setState({products: clonedProducts});
+        this.setState({selectedBookingIds: []});
     }
     
     onPickUpDateChange(date) {
@@ -347,9 +382,19 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isShowBookingCntAndTot, booking, mainDate, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, mainDate, products, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        console.log('@products22222--', products);
+        const iconCheck = (cell, row) => {
+            return (
+                <input type="checkbox" checked={this.state.isGoing} onChange={(e) => this.onCheckLine(e, row.pk_auto_id_lines)} />
+            );
+        };
 
         const columns = [{
+            dataField: 'id',
+            text: '√',
+            formatter: iconCheck,
+        }, {
             dataField: 'pk_auto_id_lines',
             text: 'ID'
         }, {
@@ -387,13 +432,6 @@ class BookingPage extends Component {
             text: 'Cubic Meter'
         }
         ];
-        const selectRow = {
-            mode: 'checkbox',
-            clickToSelect: true,
-            onSelect: this.handleOnSelectLineRow,
-            clickToEdit: true  // Click to edit cell also
-        };
-          
         // const cellEdit = {
         //     mode: 'click'
         // };
@@ -1008,11 +1046,10 @@ class BookingPage extends Component {
                                         <button align="right" onClick={(e)=> this.deleteRow(e)}className="btn btn-light btn-theme next-btn"> Delete </button>
                                         <div className="tab-inner">
                                             <BootstrapTable
-                                                keyField="pk_auto_id_lines"
-                                                data={ this.state.bookingLinesListProduct }
+                                                keyField='pk_auto_id_lines'
+                                                data={ products }
                                                 columns={ columns }
-                                                selectRow={ selectRow }
-                                                cellEdit={ cellEditFactory({ mode: 'dbclick' }) }
+                                                bootstrap4={ true }
                                             />
                                         </div>
                                     </div>
