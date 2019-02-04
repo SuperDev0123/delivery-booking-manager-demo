@@ -147,7 +147,7 @@ class BookingPage extends Component {
 
         if (stateStrings && stateStrings.length > 0) {
             console.log('@state is received');
-            this.setState({selectedOption: stateStrings[0]});
+            // this.setState({selectedOption: stateStrings[0]});
             if ( !this.state.loadedPostal ) {
                 this.props.getSuburbStrings('postalcode', stateStrings[0].label);
             }
@@ -171,9 +171,8 @@ class BookingPage extends Component {
 
         if (deStateStrings && deStateStrings.length > 0) {
             console.log('@deStateStrings is received');
-            this.setState({deSelectedOptionState: deStateStrings[1]});
             if ( !this.state.deLoadedPostal ) {
-                this.props.getDeliverySuburbStrings('postalcode', deStateStrings[1].label);
+                this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
             }
             this.setState({deStateStrings, deLoadedPostal: true});
         }
@@ -185,7 +184,7 @@ class BookingPage extends Component {
         if (deSuburbStrings && deSuburbStrings.length > 0) {
             if (deSuburbStrings.length == 1) {
                 this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
-            } else if (suburbStrings.length > 1) {
+            } else if (deSuburbStrings.length > 1) {
                 this.setState({deSelectedOptionSuburb: null});
             }
             this.setState({deSuburbStrings});
@@ -462,13 +461,16 @@ class BookingPage extends Component {
     handleChangeState = (selectedOption) => {
         this.setState({ selectedOption });
         console.log('Option selected:', selectedOption);
-        this.setState({loadedPostal: false});
+        this.props.getSuburbStrings('postalcode', selectedOption.label);
+        this.setState({selectedOptionPostal: null});
+        // this.setState({loadedPostal: false});
     };
 
     handleChangePostalcode = (selectedOptionPostal) => {
         this.props.getSuburbStrings('suburb', selectedOptionPostal.label);
         this.setState({ selectedOptionPostal });
         console.log('postalcode selected:', selectedOptionPostal);
+        this.setState({selectedOptionSuburb: null});
     };
 
     handleChangeSuburb = (selectedOptionSuburb) => {
@@ -478,14 +480,16 @@ class BookingPage extends Component {
 
     handleChangeStateDelivery = (deSelectedOptionState) => {
         this.setState({ deSelectedOptionState });
+        this.props.getDeliverySuburbStrings('postalcode', deSelectedOptionState.label);
         console.log('Option selected:', deSelectedOptionState);
-        this.setState({deLoadedPostal: false});
+        this.setState({deSelectedOptionPostal: null});
     };
 
     handleChangePostalcodeDelivery = (deSelectedOptionPostal) => {
         this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
         this.setState({ deSelectedOptionPostal });
         console.log('postalcode selected:', deSelectedOptionPostal);
+        this.setState({deSelectedOptionSuburb: null});
     };
 
     handleChangeSuburbDelivery = (deSelectedOptionSuburb) => {
