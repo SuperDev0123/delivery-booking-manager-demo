@@ -6,13 +6,15 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import user from '../public/images/user.png';
 import { verifyToken } from '../state/services/authService';
-import { getBookingWithFilter, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import Clock from 'react-live-clock';
 import lodash from 'lodash';
+import Select from 'react-select';
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -39,6 +41,23 @@ class BookingPage extends Component {
             selectedBookingIds: [],
             isGoing: false,
             checkBoxStatus: [],
+            selectedOption: null,
+            selectedOptionPostal: null,
+            selectedOptionSuburb: null,
+            stateStrings: [],
+            postalCode: [],
+            suburbStrings: [],
+            loadedPostal: false,
+            loadedSuburb: false,
+            deSelectedOptionState: null,
+            deSelectedOptionPostal: null,
+            deSelectedOptionSuburb: null,
+            deStateStrings: [],
+            dePostalCode: [],
+            deSuburbStrings: [],
+            deLoadedPostal: false,
+            deLoadedSuburb: false,
+            bAllComboboxViewOnlyonBooking: false,
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -51,6 +70,8 @@ class BookingPage extends Component {
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         getBookingWithFilter: PropTypes.func.isRequired,
+        getSuburbStrings: PropTypes.func.isRequired,
+        getDeliverySuburbStrings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         alliedBooking: PropTypes.func.isRequired,
@@ -60,8 +81,6 @@ class BookingPage extends Component {
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-        // const bBookingable = this.state;
-        //const { bookingid } = this.props.match.params;
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
 
@@ -94,15 +113,15 @@ class BookingPage extends Component {
         }
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
-        // if (bBookingable == false) {
-        //     this.disablePrevAndNextButton(true, true);
-        // }
+
+        this.props.getSuburbStrings('state', undefined);
+        this.props.getDeliverySuburbStrings('state', undefined);
     }
 
  
 
     componentWillReceiveProps(newProps) {
-        const { redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
+        const { suburbStrings, postalCode, stateStrings, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -127,6 +146,52 @@ class BookingPage extends Component {
             this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
         }
 
+        if (!this.state.bAllComboboxViewOnlyonBooking) {
+            if (stateStrings && stateStrings.length > 0) {
+                console.log('@state is received');
+                // this.setState({selectedOption: stateStrings[0]});
+                if ( !this.state.loadedPostal ) {
+                    this.props.getSuburbStrings('postalcode', stateStrings[0].label);
+                }
+                this.setState({stateStrings, loadedPostal: true});
+            }
+
+            if (postalCode && postalCode.length > 0) {
+                console.log('@postalCode is received');
+                this.setState({postalCode});
+            }
+
+            if (suburbStrings && suburbStrings.length > 0) {
+                if (suburbStrings.length == 1) {
+                    this.setState({selectedOptionSuburb: suburbStrings[0]});
+                } else if (suburbStrings.length > 1) {
+                    this.setState({selectedOptionSuburb: null});
+                }
+                this.setState({suburbStrings});
+                console.log('@suburbStrings is received');
+            }
+
+            if (deStateStrings && deStateStrings.length > 0) {
+                console.log('@deStateStrings is received');
+                if ( !this.state.deLoadedPostal ) {
+                    this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
+                }
+                this.setState({deStateStrings, deLoadedPostal: true});
+            }
+
+            if (dePostalCode && dePostalCode.length > 0) {
+                this.setState({dePostalCode});
+            }
+
+            if (deSuburbStrings && deSuburbStrings.length > 0) {
+                if (deSuburbStrings.length == 1) {
+                    this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
+                } else if (deSuburbStrings.length > 1) {
+                    this.setState({deSelectedOptionSuburb: null});
+                }
+                this.setState({deSuburbStrings});
+            }
+        }
         if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
@@ -180,6 +245,29 @@ class BookingPage extends Component {
                 formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
                 formInputs['de_Email'] = booking.de_Email;
                 formInputs['deToCompanyName'] = booking.deToCompanyName;
+                formInputs['pu_Address_State'] = booking.pu_Address_State;
+                formInputs['de_To_Address_State'] = booking.de_To_Address_State;
+
+                if (booking.b_status == 'Booked') {
+                    console.log('@booking---', booking.b_status);
+                    this.setState({
+                        bAllComboboxViewOnlyonBooking: true,
+                        selectedOptionPostal: booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,
+                        selectedOptionSuburb: booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,
+                        selectedOptionState: booking.pu_Address_State ? booking.pu_Address_State : null,
+                        deSelectedOptionPostal: booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,
+                        deSelectedOptionSuburb: booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,
+                        deSelectedOptionState: booking.de_To_Address_State ? booking.de_To_Address_State : null,
+                        postalCode: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
+                        stateStrings: {'value': booking.pu_Address_State, 'label': booking.pu_Address_State},
+                        suburbStrings: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
+                        deStateStrings: {'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State},
+                        dePostalCode: {'value': booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode},
+                        deSuburbStrings: {'value': booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb},
+                    });
+                }
+                else
+                    this.setState({bAllComboboxViewOnlyonBooking: false});
 
                 if (!this.state.loadedLineAndLineDetail) {
                     this.props.getBookingLines(booking.pk_booking_id);
@@ -193,7 +281,9 @@ class BookingPage extends Component {
             }
         }
     }
-
+    onChangeState(e) {
+        console.log(e);
+    }
     onHandleInput(e) {
         let formInputs = this.state.formInputs;
         formInputs[e.target.name] = e.target.value;
@@ -388,13 +478,55 @@ class BookingPage extends Component {
             this.setState({deletedBookingLine: a});
         }
     }
+
     onChangeText(e) {
         this.setState({typed: e.target.value});
         console.log(e.target.value);
     }
 
+    handleChangeState = (selectedOption) => {
+        this.setState({ selectedOption });
+        console.log('Option selected:', selectedOption);
+        this.props.getSuburbStrings('postalcode', selectedOption.label);
+        this.setState({selectedOptionPostal: null});
+        this.setState({selectedOptionSuburb: null});
+        // this.setState({loadedPostal: false});
+    };
+
+    handleChangePostalcode = (selectedOptionPostal) => {
+        this.props.getSuburbStrings('suburb', selectedOptionPostal.label);
+        this.setState({ selectedOptionPostal });
+        console.log('postalcode selected:', selectedOptionPostal);
+        this.setState({selectedOptionSuburb: null});
+    };
+
+    handleChangeSuburb = (selectedOptionSuburb) => {
+        this.setState({ selectedOptionSuburb });
+        console.log('suburb selected:', selectedOptionSuburb);
+    };
+
+    handleChangeStateDelivery = (deSelectedOptionState) => {
+        this.setState({ deSelectedOptionState });
+        this.props.getDeliverySuburbStrings('postalcode', deSelectedOptionState.label);
+        console.log('Option selected:', deSelectedOptionState);
+        this.setState({deSelectedOptionPostal: null});
+        this.setState({deSelectedOptionSuburb: null});
+    };
+
+    handleChangePostalcodeDelivery = (deSelectedOptionPostal) => {
+        this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
+        this.setState({ deSelectedOptionPostal });
+        console.log('postalcode selected:', deSelectedOptionPostal);
+        this.setState({deSelectedOptionSuburb: null});
+    };
+
+    handleChangeSuburbDelivery = (deSelectedOptionSuburb) => {
+        this.setState({ deSelectedOptionSuburb });
+        console.log('suburb selected:', deSelectedOptionSuburb);
+    };
+
     render() {
-        const {isShowBookingCntAndTot, booking, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, selectedOption, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
@@ -596,9 +728,8 @@ class BookingPage extends Component {
                                                         95%
                                                     </div>
                                                 </div>
-                                                <div className="input-group">
-                                                    <input type="text" placeholder="Working Day*" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                    <span className="input-group-addon"><a href=""><i className="fas fa-calendar-alt"></i></a></span>
+                                                <div className="input-group" align="right">
+                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
                                                 </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">
@@ -626,10 +757,28 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="row mt-1">
                                                     <div className="col-sm-4">
+                                                        <label className="" htmlFor="">State</label>
+                                                    </div>
+                                                    <div className="col-sm-8">
+                                                        <Select
+                                                            value={selectedOption}
+                                                            onChange={this.handleChangeState}
+                                                            options={this.state.stateStrings}
+                                                            placeholder='select your state'
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="row mt-1">
+                                                    <div className="col-sm-4">
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_PostalCode" className="form-control" value = {formInputs['pu_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
+                                                        <Select
+                                                            value={selectedOptionPostal}
+                                                            onChange={this.handleChangePostalcode}
+                                                            options={this.state.postalCode}
+                                                            placeholder='select your postal code'
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -637,7 +786,12 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Suburb" className="form-control" value = {formInputs['pu_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
+                                                        <Select
+                                                            value={selectedOptionSuburb}
+                                                            onChange={this.handleChangeSuburb}
+                                                            options={this.state.suburbStrings}
+                                                            placeholder='select your suburb'
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -645,7 +799,7 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Country</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="pu_Address_Country" className="form-control" value = {formInputs['pu_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
+                                                        <input type="text" name="pu_Address_Country" className="form-control" value = 'Australia' onChange={(e) => this.onHandleInput(e)} />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -681,7 +835,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd/MM/yyyy"
+                                                                dateFormat="dd-MM-yyyy"
                                                             />
                                                         </div>
                                                     </div>
@@ -830,8 +984,7 @@ class BookingPage extends Component {
                                                     </div>
                                                 </div>
                                                 <div className="input-group">
-                                                    <input type="text" placeholder="Working Day*" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                    <span className="input-group-addon"><a href=""><i className="fas fa-calendar-alt"></i></a></span>
+                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
                                                 </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">
@@ -859,10 +1012,28 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="row mt-1">
                                                     <div className="col-sm-4">
+                                                        <label className="" htmlFor="">State</label>
+                                                    </div>
+                                                    <div className="col-sm-8">
+                                                        <Select
+                                                            value={deSelectedOptionState}
+                                                            onChange={this.handleChangeStateDelivery}
+                                                            options={this.state.deStateStrings}
+                                                            placeholder='select your state'
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="row mt-1">
+                                                    <div className="col-sm-4">
                                                         <label className="" htmlFor="">Postal Code</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_PostalCode" className="form-control" value = {formInputs['de_To_Address_PostalCode']} onChange={(e) => this.onHandleInput(e)} />
+                                                        <Select
+                                                            value={deSelectedOptionPostal}
+                                                            onChange={this.handleChangePostalcodeDelivery}
+                                                            options={this.state.dePostalCode}
+                                                            placeholder='select your postal code'
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -870,7 +1041,12 @@ class BookingPage extends Component {
                                                         <label className="" htmlFor="">Suburb</label>
                                                     </div>
                                                     <div className="col-sm-8">
-                                                        <input type="text" name="de_To_Address_Suburb" className="form-control" value = {formInputs['de_To_Address_Suburb']} onChange={(e) => this.onHandleInput(e)} />
+                                                        <Select
+                                                            value={deSelectedOptionSuburb}
+                                                            onChange={this.handleChangeSuburbDelivery}
+                                                            options={this.state.deSuburbStrings}
+                                                            placeholder='select your suburb'
+                                                        />
                                                     </div>
                                                 </div>
                                                 <div className="row mt-1">
@@ -914,7 +1090,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd/MM/yyyy"
+                                                                dateFormat="dd-MM-yyyy"
                                                             />
                                                         </div>
                                                     </div>
@@ -1091,6 +1267,12 @@ const mapStateToProps = (state) => {
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         bBooking: state.booking.bBooking,
+        stateStrings: state.booking.stateStrings,
+        postalCode: state.booking.postalCode,
+        suburbStrings: state.booking.suburbStrings,
+        deStateStrings: state.booking.deStateStrings,
+        dePostalCode: state.booking.dePostalCode,
+        deSuburbStrings: state.booking.deSuburbStrings,
     };
 };
 
@@ -1099,6 +1281,8 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
+        getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
+        getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
