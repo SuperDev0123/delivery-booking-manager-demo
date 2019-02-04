@@ -146,51 +146,52 @@ class BookingPage extends Component {
             this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
         }
 
-        if (stateStrings && stateStrings.length > 0) {
-            console.log('@state is received');
-            // this.setState({selectedOption: stateStrings[0]});
-            if ( !this.state.loadedPostal ) {
-                this.props.getSuburbStrings('postalcode', stateStrings[0].label);
+        if (!this.state.bAllComboboxViewOnlyonBooking) {
+            if (stateStrings && stateStrings.length > 0) {
+                console.log('@state is received');
+                // this.setState({selectedOption: stateStrings[0]});
+                if ( !this.state.loadedPostal ) {
+                    this.props.getSuburbStrings('postalcode', stateStrings[0].label);
+                }
+                this.setState({stateStrings, loadedPostal: true});
             }
-            this.setState({stateStrings, loadedPostal: true});
-        }
 
-        if (postalCode && postalCode.length > 0) {
-            console.log('@postalCode is received');
-            this.setState({postalCode});
-        }
-
-        if (suburbStrings && suburbStrings.length > 0) {
-            if (suburbStrings.length == 1) {
-                this.setState({selectedOptionSuburb: suburbStrings[0]});
-            } else if (suburbStrings.length > 1) {
-                this.setState({selectedOptionSuburb: null});
+            if (postalCode && postalCode.length > 0) {
+                console.log('@postalCode is received');
+                this.setState({postalCode});
             }
-            this.setState({suburbStrings});
-            console.log('@suburbStrings is received');
-        }
 
-        if (deStateStrings && deStateStrings.length > 0) {
-            console.log('@deStateStrings is received');
-            if ( !this.state.deLoadedPostal ) {
-                this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
+            if (suburbStrings && suburbStrings.length > 0) {
+                if (suburbStrings.length == 1) {
+                    this.setState({selectedOptionSuburb: suburbStrings[0]});
+                } else if (suburbStrings.length > 1) {
+                    this.setState({selectedOptionSuburb: null});
+                }
+                this.setState({suburbStrings});
+                console.log('@suburbStrings is received');
             }
-            this.setState({deStateStrings, deLoadedPostal: true});
-        }
 
-        if (dePostalCode && dePostalCode.length > 0) {
-            this.setState({dePostalCode});
-        }
-
-        if (deSuburbStrings && deSuburbStrings.length > 0) {
-            if (deSuburbStrings.length == 1) {
-                this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
-            } else if (deSuburbStrings.length > 1) {
-                this.setState({deSelectedOptionSuburb: null});
+            if (deStateStrings && deStateStrings.length > 0) {
+                console.log('@deStateStrings is received');
+                if ( !this.state.deLoadedPostal ) {
+                    this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
+                }
+                this.setState({deStateStrings, deLoadedPostal: true});
             }
-            this.setState({deSuburbStrings});
-        }
 
+            if (dePostalCode && dePostalCode.length > 0) {
+                this.setState({dePostalCode});
+            }
+
+            if (deSuburbStrings && deSuburbStrings.length > 0) {
+                if (deSuburbStrings.length == 1) {
+                    this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
+                } else if (deSuburbStrings.length > 1) {
+                    this.setState({deSelectedOptionSuburb: null});
+                }
+                this.setState({deSuburbStrings});
+            }
+        }
         if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
@@ -244,9 +245,27 @@ class BookingPage extends Component {
                 formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
                 formInputs['de_Email'] = booking.de_Email;
                 formInputs['deToCompanyName'] = booking.deToCompanyName;
+                formInputs['pu_Address_State'] = booking.pu_Address_State;
+                formInputs['de_To_Address_State'] = booking.de_To_Address_State;
 
-                if (booking.b_status)
-                    this.setState({bAllComboboxViewOnlyonBooking: true});
+                if (booking.b_status == 'Booked') {
+                    console.log('@booking---', booking.b_status);
+                    this.setState({
+                        bAllComboboxViewOnlyonBooking: true,
+                        selectedOptionPostal: booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,
+                        selectedOptionSuburb: booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,
+                        selectedOptionState: booking.pu_Address_State ? booking.pu_Address_State : null,
+                        deSelectedOptionPostal: booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,
+                        deSelectedOptionSuburb: booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,
+                        deSelectedOptionState: booking.de_To_Address_State ? booking.de_To_Address_State : null,
+                        postalCode: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
+                        stateStrings: {'value': booking.pu_Address_State, 'label': booking.pu_Address_State},
+                        suburbStrings: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
+                        deStateStrings: {'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State},
+                        dePostalCode: {'value': booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode},
+                        deSuburbStrings: {'value': booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb},
+                    });
+                }
                 else
                     this.setState({bAllComboboxViewOnlyonBooking: false});
 
