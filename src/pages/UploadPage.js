@@ -6,6 +6,8 @@ import DropzoneComponent from 'react-dropzone-component';
 
 import { verifyToken } from '../state/services/authService';
 
+import { API_HOST, HTTP_PROTOCOL } from '../config';
+
 class UploadPage extends Component {
     constructor(props) {
         super(props);
@@ -27,8 +29,7 @@ class UploadPage extends Component {
         this.componentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: 'http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/api/share/upload/filename', // Dev
-            // postUrl: 'http://localhost:8000/api/share/upload/filename', // Local
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/upload/filename',
         };
 
         this.dropzone = null;
@@ -84,8 +85,7 @@ class UploadPage extends Component {
         let that = this;
 
         axios({
-            url: 'http://ec2-35-161-196-46.us-west-2.compute.amazonaws.com/api/share/upload-status/', // Dev
-            // url: 'http://localhost:8000/api/share/upload-status/', // Local
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/share/upload-status/', // Dev
             method: 'get',
             params: { filename: this.state.uploadedFileName.substring(this.state.uploadedFileName.indexOf('_') + 1) },
             headers: {
