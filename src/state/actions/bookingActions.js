@@ -1,4 +1,4 @@
-import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
+import { SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -21,6 +21,62 @@ export function successGetBooking(data) {
         booking: data['booking'],
         nextBookingId: data['nextid'],
         prevBookingId: data['previd'],
+    };
+}
+
+export function successGetSuburbs(data) {
+    if (data['type'] == 'state') {
+        return {
+            type: SET_STATE,
+            stateStrings: data['suburbs'],
+        };
+    } else if ( data['type'] == 'postalcode' ) {
+        return {
+            type: SET_POSTALCODE,
+            postalCode: data['suburbs'],
+        };
+    } else if ( data['type'] == 'suburb' ) {
+        return {
+            type: SET_SUBURB,
+            suburbStrings: data['suburbs'],
+        };
+    }
+}
+
+export function failedGetSuburbs(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_SUBURBS,
+        errorMessage: 'Unable to fetch suburbs.',
+        bBooking: false
+    };
+}
+
+export function successDeliveryGetSuburbs(data) {
+    if (data['type'] == 'state') {
+        return {
+            type: SET_STATE_DE,
+            deStateStrings: data['suburbs'],
+        };
+    } else if ( data['type'] == 'postalcode' ) {
+        return {
+            type: SET_POSTALCODE_DE,
+            dePostalCode: data['suburbs'],
+        };
+    } else if ( data['type'] == 'suburb' ) {
+        return {
+            type: SET_SUBURB_DE,
+            deSuburbStrings: data['suburbs'],
+        };
+    }
+}
+
+export function failedDeliveryGetSuburbs(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_SUBURBS_DE,
+        errorMessage: 'Unable to fetch suburbs.',
+        bBooking: false
     };
 }
 

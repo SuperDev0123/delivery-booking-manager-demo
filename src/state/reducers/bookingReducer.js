@@ -1,4 +1,4 @@
-import { SET_BOOKING_WITH_FILTER, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, GET_LABEL_SUCCESS } from '../constants/bookingConstants';
+import { SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, GET_LABEL_SUCCESS } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
@@ -17,7 +17,7 @@ const defaultState = {
     toProcess: 0,
 };
 
-export const BookingReducer = (state = defaultState, { type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels }) => {
+export const BookingReducer = (state = defaultState, { type, suburbStrings, postalCode, stateStrings, deSuburbStrings, dePostalCode, deStateStrings, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels }) => {
     switch (type) {
         case SET_BOOKINGS:
             return {
@@ -30,6 +30,36 @@ export const BookingReducer = (state = defaultState, { type, errorMessage, bBook
                 toProcess: toProcess,
                 closed: closed,
                 missingLabels: missingLabels,
+            };
+        case SET_SUBURB:
+            return {
+                ...state,
+                suburbStrings: suburbStrings
+            };
+        case SET_POSTALCODE:
+            return {
+                ...state,
+                postalCode: postalCode
+            };
+        case SET_STATE:
+            return {
+                ...state,
+                stateStrings: stateStrings
+            };
+        case SET_SUBURB_DE:
+            return {
+                ...state,
+                deSuburbStrings: deSuburbStrings
+            };
+        case SET_POSTALCODE_DE:
+            return {
+                ...state,
+                dePostalCode: dePostalCode
+            };
+        case SET_STATE_DE:
+            return {
+                ...state,
+                deStateStrings: deStateStrings
             };
         case SET_MAPPEDBOOKINGS:
             return {
