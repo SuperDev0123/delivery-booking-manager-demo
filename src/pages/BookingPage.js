@@ -57,6 +57,7 @@ class BookingPage extends Component {
             deSuburbStrings: [],
             deLoadedPostal: false,
             deLoadedSuburb: false,
+            bAllComboboxViewOnlyonBooking: false,
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -243,6 +244,11 @@ class BookingPage extends Component {
                 formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
                 formInputs['de_Email'] = booking.de_Email;
                 formInputs['deToCompanyName'] = booking.deToCompanyName;
+
+                if (booking.b_status)
+                    this.setState({bAllComboboxViewOnlyonBooking: true});
+                else
+                    this.setState({bAllComboboxViewOnlyonBooking: false});
 
                 if (!this.state.loadedLineAndLineDetail) {
                     this.props.getBookingLines(booking.pk_booking_id);
@@ -453,6 +459,7 @@ class BookingPage extends Component {
             this.setState({deletedBookingLine: a});
         }
     }
+
     onChangeText(e) {
         this.setState({typed: e.target.value});
         console.log(e.target.value);
@@ -463,6 +470,7 @@ class BookingPage extends Component {
         console.log('Option selected:', selectedOption);
         this.props.getSuburbStrings('postalcode', selectedOption.label);
         this.setState({selectedOptionPostal: null});
+        this.setState({selectedOptionSuburb: null});
         // this.setState({loadedPostal: false});
     };
 
@@ -483,6 +491,7 @@ class BookingPage extends Component {
         this.props.getDeliverySuburbStrings('postalcode', deSelectedOptionState.label);
         console.log('Option selected:', deSelectedOptionState);
         this.setState({deSelectedOptionPostal: null});
+        this.setState({deSelectedOptionSuburb: null});
     };
 
     handleChangePostalcodeDelivery = (deSelectedOptionPostal) => {
