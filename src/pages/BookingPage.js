@@ -86,6 +86,10 @@ class BookingPage extends Component {
 
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
+            this.setState({bAllComboboxViewOnlyonBooking: true });
+        } else {
+            this.props.getSuburbStrings('state', undefined);
+            this.props.getDeliverySuburbStrings('state', undefined);
         }
 
         const currentRoute = this.props.location.pathname;
@@ -114,14 +118,13 @@ class BookingPage extends Component {
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
 
-        this.props.getSuburbStrings('state', undefined);
-        this.props.getDeliverySuburbStrings('state', undefined);
+
     }
 
  
 
     componentWillReceiveProps(newProps) {
-        const { suburbStrings, postalCode, stateStrings, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
+        const { suburbStrings, postalCode, stateStrings, bAllComboboxViewOnlyonBooking, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -223,7 +226,7 @@ class BookingPage extends Component {
             }
         }
 
-        if ( booking ) {
+        if ( booking && !bAllComboboxViewOnlyonBooking) {
             if ( booking.puCompany || booking.deToCompanyName ) {
                 let formInputs = this.state.formInputs;
 
@@ -249,21 +252,15 @@ class BookingPage extends Component {
                 formInputs['de_To_Address_State'] = booking.de_To_Address_State;
 
                 if (booking.b_status == 'Booked') {
-                    console.log('@booking---', booking.b_status);
+                    console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
                     this.setState({
                         bAllComboboxViewOnlyonBooking: true,
-                        selectedOptionPostal: booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,
-                        selectedOptionSuburb: booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,
-                        selectedOptionState: booking.pu_Address_State ? booking.pu_Address_State : null,
-                        deSelectedOptionPostal: booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,
-                        deSelectedOptionSuburb: booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,
-                        deSelectedOptionState: booking.de_To_Address_State ? booking.de_To_Address_State : null,
-                        postalCode: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
-                        stateStrings: {'value': booking.pu_Address_State, 'label': booking.pu_Address_State},
-                        suburbStrings: {'value': booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode},
-                        deStateStrings: {'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State},
-                        dePostalCode: {'value': booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode},
-                        deSuburbStrings: {'value': booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb},
+                        selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
+                        selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
+                        selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
+                        deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
+                        deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
+                        deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
                     });
                 }
                 else
@@ -526,7 +523,7 @@ class BookingPage extends Component {
     };
 
     render() {
-        const {isShowBookingCntAndTot, booking, selectedOption, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
@@ -655,10 +652,13 @@ class BookingPage extends Component {
                         </div>
                     </div>
                 </div>
-
+            
                 <section className="booking">
                     <div className="container">
                         <div className="grid">
+                            <div className="userclock">
+                                <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
+                            </div>
                             <div className="head">
                                 <div className="row">
                                     <div className="col-sm-2">
@@ -728,9 +728,6 @@ class BookingPage extends Component {
                                                         95%
                                                     </div>
                                                 </div>
-                                                <div className="input-group" align="right">
-                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
-                                                </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">
                                                         <label className="" htmlFor="">Pick Up Entity</label>
@@ -761,7 +758,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="col-sm-8">
                                                         <Select
-                                                            value={selectedOption}
+                                                            value={selectedOptionState}
                                                             onChange={this.handleChangeState}
                                                             options={this.state.stateStrings}
                                                             placeholder='select your state'
@@ -982,9 +979,6 @@ class BookingPage extends Component {
                                                     <div className="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
                                                         50%
                                                     </div>
-                                                </div>
-                                                <div className="input-group">
-                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
                                                 </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">
