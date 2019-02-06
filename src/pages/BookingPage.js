@@ -655,10 +655,13 @@ class BookingPage extends Component {
                         </div>
                     </div>
                 </div>
-
+            
                 <section className="booking">
                     <div className="container">
                         <div className="grid">
+                            <div className="userclock">
+                                <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
+                            </div>
                             <div className="head">
                                 <div className="row">
                                     <div className="col-sm-2">
@@ -727,9 +730,6 @@ class BookingPage extends Component {
                                                     <div className="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
                                                         95%
                                                     </div>
-                                                </div>
-                                                <div className="input-group" align="right">
-                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
                                                 </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">
@@ -982,9 +982,6 @@ class BookingPage extends Component {
                                                     <div className="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100">
                                                         50%
                                                     </div>
-                                                </div>
-                                                <div className="input-group">
-                                                    <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
                                                 </div>
                                                 <div className="row mt-2">
                                                     <div className="col-sm-4">

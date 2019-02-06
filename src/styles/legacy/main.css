@@ -25,10 +25,14 @@ a.user-menu i{
 
 section.booking{
 	margin-top: 20px;
-	padding-top: 30px;
+	padding-top: 0px;
 }
 .progress{
 	margin-bottom: 15px;
+}
+.userclock {
+	padding-right: 60px;
+	text-align: right;
 }
 /**********Booking***********/
 
