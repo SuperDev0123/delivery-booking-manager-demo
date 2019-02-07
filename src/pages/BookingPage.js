@@ -15,6 +15,8 @@ import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import Clock from 'react-live-clock';
 import lodash from 'lodash';
 import Select from 'react-select';
+
+var cityTimezones = require('city-timezones');
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -58,6 +60,8 @@ class BookingPage extends Component {
             deLoadedPostal: false,
             deLoadedSuburb: false,
             bAllComboboxViewOnlyonBooking: false,
+            puTimeZone: null,
+            deTimeZone: null,
         };
 
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
@@ -79,6 +83,11 @@ class BookingPage extends Component {
         updateBooking: PropTypes.func.isRequired,
     };
 
+    // getTimeZone(cityName) {
+    //     const AU_TIME_ZONE = [
+    //         'ACT': 
+    //     ];
+    // }
     componentDidMount() {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
@@ -117,11 +126,28 @@ class BookingPage extends Component {
         }
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
-
-
+        let cityLookup = cityTimezones.findFromCityStateProvince('Northern Territory');
+        console.log('@time zone---ACT', cityLookup);
     }
 
- 
+    getTime(country, city) {
+        const timeZoneTable = 
+        {
+            'Australia':
+            {
+                'ACT': 'Australia/Currie',
+                'NT': 'Australia/Darwin',
+                'SA': 'Australia/Adelaide',
+                'WA': 'Australia/Perth',
+                'NSW': 'Australia/Sydney',
+                'QLD': 'Australia/Brisbane',
+                'VIC': 'Australia/Melbourne',
+                'TAS': 'Australia/Hobart',
+            }
+        };
+    
+        return timeZoneTable[country][city];
+    }
 
     componentWillReceiveProps(newProps) {
         const { suburbStrings, postalCode, stateStrings, bAllComboboxViewOnlyonBooking, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
@@ -251,6 +277,8 @@ class BookingPage extends Component {
                 formInputs['pu_Address_State'] = booking.pu_Address_State;
                 formInputs['de_To_Address_State'] = booking.de_To_Address_State;
 
+                this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
+                this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
                 if (booking.b_status == 'Booked') {
                     console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
                     this.setState({
@@ -606,6 +634,60 @@ class BookingPage extends Component {
             text: 'Client Reference #'
         }
         ];     
+
+        const columnFreight = [{
+            dataField: 'provider',
+            text: 'Provider'
+        }, {
+            dataField: 'service',
+            text: 'Service'
+        }, {
+            dataField: 'etd',
+            text: 'ETD'
+        }, {
+            dataField: 'totalFeeEx',
+            text: 'Total Fee Ex(GST)'
+        }, {
+            dataField: 'bookingCutoffTime',
+            text: 'Booking Cutoff Time'
+        }
+        ];  
+
+        const columnCommunication = [{
+            dataField: 'no',
+            text: 'Comm No'
+        }, {
+            dataField: 'date',
+            text: 'Date'
+        }, {
+            dataField: 'type',
+            text: 'Type'
+        }, {
+            dataField: 'description',
+            text: 'Description'
+        }, {
+            dataField: 'view',
+            text: 'View'
+        }
+        ];  
+
+        const columnAttachments = [{
+            dataField: 'no',
+            text: 'Attachment No'
+        }, {
+            dataField: 'description',
+            text: 'Description'
+        }, {
+            dataField: 'filename',
+            text: 'FileName'
+        }, {
+            dataField: 'dateupdated',
+            text: 'Date Updated'
+        }, {
+            dataField: 'uploadfile',
+            text: 'Upload File'
+        }
+        ];  
         return (
             
             <div>
@@ -657,7 +739,7 @@ class BookingPage extends Component {
                     <div className="container">
                         <div className="grid">
                             <div className="userclock">
-                                <Clock format={'MM-DD-YYYY h:mm:ss A'} ticking={true} timezone={'Australia/Sydney'} />
+                                <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                             </div>
                             <div className="head">
                                 <div className="row">
@@ -719,7 +801,7 @@ class BookingPage extends Component {
                                             <div className="head text-white">
                                                 <ul>
                                                     <li>Pick Up Details</li>
-                                                    <li><a href=""><i className="fas fa-calendar-alt"></i> 01 Mar 2018 12:31</a></li>
+                                                    <li className="peclock"><Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.puTimeZone} /></li>
                                                 </ul>
                                             </div>
                                             <form action="">
@@ -971,7 +1053,9 @@ class BookingPage extends Component {
                                             <div className="head text-white">
                                                 <ul>
                                                     <li>Delivery Details</li>
-                                                    <li><a href=""><i className="fas fa-calendar-alt"></i> 01 Mar 2018 12:31</a></li>
+                                                    <li className="peclock" >
+                                                        <Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.deTimeZone} />
+                                                    </li>
                                                 </ul>
                                             </div>
                                             <form action="">
@@ -1210,14 +1294,18 @@ class BookingPage extends Component {
                                 <div className="tabs">
                                     <div className="tab-button-outer">
                                         <ul id="tab-button">
-                                            <li><a href="#tab01">Booking Lines</a></li>
-                                            <li><a href="#tab02">Booking LIne Details</a></li>
+                                            <li><a href="#tab01">Shipment Packages / Goods</a></li>
+                                            <li><a href="#tab03">Freight Options</a></li>
+                                            <li><a href="#tab04">Communication Log</a></li>
+                                            <li><a href="#tab05">Attachments</a></li>
                                         </ul>
                                     </div>
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
-                                            <option value="#tab01">Booking Lines</option>
-                                            <option value="#tab02">Booking Line Details</option>
+                                            <option value="#tab01">Shipment Packages / Goods</option>
+                                            <option value="#tab03">Freight Options</option>
+                                            <option value="#tab04">Communication Log</option>
+                                            <option value="#tab05">Attachments</option>
                                         </select>
                                     </div>
                                     <div id="tab01" className="tab-contents">
@@ -1229,14 +1317,43 @@ class BookingPage extends Component {
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
                                             />
-                                        </div>
-                                    </div>
-                                    <div id="tab02" className="tab-contents">
-                                        <div className="tab-inner">
                                             <BootstrapTable
                                                 keyField="modelNumber"
                                                 data={ bookingLinesListDetailProduct }
                                                 columns={ columnDetails }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab03" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnFreight }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab04" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnCommunication }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab05" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnAttachments }
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
                                             />
