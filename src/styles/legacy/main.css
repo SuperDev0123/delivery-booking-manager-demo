@@ -34,6 +34,9 @@ section.booking{
 	padding-right: 60px;
 	text-align: right;
 }
+.peclock {
+	text-align: right;
+}
 /**********Booking***********/
 
 .btn-outline-light{
