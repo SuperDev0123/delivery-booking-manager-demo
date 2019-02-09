@@ -117,7 +117,7 @@ class BookingPage extends Component {
         // let dateParam = '';
         const today = localStorage.getItem('today');
         if (today) {
-            mainDate = moment(today, 'YYYY-MM-DD').toDate();
+            mainDate = moment(today, 'DD MMM YYYY').toDate();
             // dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
         } else {
             mainDate = moment().tz('Australia/Sydney').toDate();
@@ -706,6 +706,54 @@ class BookingPage extends Component {
             text: 'Upload File'
         }
         ];  
+
+        const columnAdditionalServices = [{
+            dataField: 'freightprovider',
+            text: 'Freight Provider'
+        }, {
+            dataField: 'tnt',
+            text: 'TNT'
+        }, {
+            dataField: 'service',
+            text: 'Service'
+        }, {
+            dataField: 'consignmentNo',
+            text: 'Consignment No'
+        }, {
+            dataField: 'bookingCutoff',
+            text: 'Booking Cutoff'
+        }, {
+            dataField: 'RoadFreightExpress',
+            text: 'Road Freight Express'
+        }, {
+            dataField: 'pickupManifestNo',
+            text: 'Pickup / Manifest No'
+        }, {
+            dataField: 'EnteredDate',
+            text: 'Entered Date'
+        }, {
+            dataField: 'Quoted',
+            text: 'Quoted'
+        }, {
+            dataField: 'BookedDate',
+            text: 'Booked Date'
+        }, {
+            dataField: 'Invoiced',
+            text: 'Invoiced'
+        }
+        ];
+        
+        const columnBookingCounts = [{
+            dataField: 'TotalPieces',
+            text: 'Total Pieces'
+        }, {
+            dataField: 'TotalMass',
+            text: 'Total Mass'
+        }, {
+            dataField: 'TotalCubicKG',
+            text: 'Total Cubic KG'
+        }
+        ];  
         return (
             
             <div>
@@ -932,7 +980,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1186,7 +1234,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1313,6 +1361,7 @@ class BookingPage extends Component {
                                     <div className="tab-button-outer">
                                         <ul id="tab-button">
                                             <li><a href="#tab01">Shipment Packages / Goods</a></li>
+                                            <li><a href="#tab02">Additional Services & Options</a></li>
                                             <li><a href="#tab03">Freight Options</a></li>
                                             <li><a href="#tab04">Communication Log</a></li>
                                             <li><a href="#tab05">Attachments</a></li>
@@ -1321,6 +1370,7 @@ class BookingPage extends Component {
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
                                             <option value="#tab01">Shipment Packages / Goods</option>
+                                            <option value="#tab02">Additional Services & Options</option>
                                             <option value="#tab03">Freight Options</option>
                                             <option value="#tab04">Communication Log</option>
                                             <option value="#tab05">Attachments</option>
@@ -1339,6 +1389,24 @@ class BookingPage extends Component {
                                                 keyField="modelNumber"
                                                 data={ bookingLinesListDetailProduct }
                                                 columns={ columnDetails }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab02" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField='pk_auto_id_lines'
+                                                data={ products }
+                                                columns={ columnAdditionalServices }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnBookingCounts }
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
                                             />
