@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import user from '../public/images/user.png';
-import { verifyToken } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
@@ -80,6 +80,7 @@ class BookingPage extends Component {
         alliedBooking: PropTypes.func.isRequired,
         stBooking: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     // getTimeZone(cityName) {
@@ -100,8 +101,6 @@ class BookingPage extends Component {
             this.props.getDeliverySuburbStrings('state', undefined);
         }
 
-        const currentRoute = this.props.location.pathname;
-
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
@@ -109,15 +108,11 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
         let mainDate = '';
         // let dateParam = '';
         const today = localStorage.getItem('today');
         if (today) {
-            mainDate = moment(today, 'YYYY-MM-DD').toDate();
+            mainDate = moment(today, 'DD MMM YYYY').toDate();
             // dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
         } else {
             mainDate = moment().tz('Australia/Sydney').toDate();
@@ -164,12 +159,12 @@ class BookingPage extends Component {
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
         if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
-            this.setState({bookingLineDetails});
             const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
                 let result = [];
                 result.modelNumber = bookingLine.modelNumber;
@@ -179,9 +174,11 @@ class BookingPage extends Component {
                 result.insuranceValueEach = bookingLine.insuranceValueEach;
                 result.gap_ra = bookingLine.gap_ra;
                 result.clientRefNumber = bookingLine.clientRefNumber;
+
                 return result;
             });
-            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
+
+            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct, bookingLineDetails});
         }
 
         if (!this.state.bAllComboboxViewOnlyonBooking) {
@@ -706,6 +703,54 @@ class BookingPage extends Component {
             text: 'Upload File'
         }
         ];  
+
+        const columnAdditionalServices = [{
+            dataField: 'freightprovider',
+            text: 'Freight Provider'
+        }, {
+            dataField: 'tnt',
+            text: 'TNT'
+        }, {
+            dataField: 'service',
+            text: 'Service'
+        }, {
+            dataField: 'consignmentNo',
+            text: 'Consignment No'
+        }, {
+            dataField: 'bookingCutoff',
+            text: 'Booking Cutoff'
+        }, {
+            dataField: 'RoadFreightExpress',
+            text: 'Road Freight Express'
+        }, {
+            dataField: 'pickupManifestNo',
+            text: 'Pickup / Manifest No'
+        }, {
+            dataField: 'EnteredDate',
+            text: 'Entered Date'
+        }, {
+            dataField: 'Quoted',
+            text: 'Quoted'
+        }, {
+            dataField: 'BookedDate',
+            text: 'Booked Date'
+        }, {
+            dataField: 'Invoiced',
+            text: 'Invoiced'
+        }
+        ];
+        
+        const columnBookingCounts = [{
+            dataField: 'TotalPieces',
+            text: 'Total Pieces'
+        }, {
+            dataField: 'TotalMass',
+            text: 'Total Mass'
+        }, {
+            dataField: 'TotalCubicKG',
+            text: 'Total Cubic KG'
+        }
+        ];  
         return (
             
             <div>
@@ -932,7 +977,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1186,7 +1231,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1313,6 +1358,7 @@ class BookingPage extends Component {
                                     <div className="tab-button-outer">
                                         <ul id="tab-button">
                                             <li><a href="#tab01">Shipment Packages / Goods</a></li>
+                                            <li><a href="#tab02">Additional Services & Options</a></li>
                                             <li><a href="#tab03">Freight Options</a></li>
                                             <li><a href="#tab04">Communication Log</a></li>
                                             <li><a href="#tab05">Attachments</a></li>
@@ -1321,6 +1367,7 @@ class BookingPage extends Component {
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
                                             <option value="#tab01">Shipment Packages / Goods</option>
+                                            <option value="#tab02">Additional Services & Options</option>
                                             <option value="#tab03">Freight Options</option>
                                             <option value="#tab04">Communication Log</option>
                                             <option value="#tab05">Attachments</option>
@@ -1339,6 +1386,24 @@ class BookingPage extends Component {
                                                 keyField="modelNumber"
                                                 data={ bookingLinesListDetailProduct }
                                                 columns={ columnDetails }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab02" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField='pk_auto_id_lines'
+                                                data={ products }
+                                                columns={ columnAdditionalServices }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnBookingCounts }
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
                                             />
@@ -1417,6 +1482,7 @@ const mapDispatchToProps = (dispatch) => {
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 
