@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Clock from 'react-live-clock';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -758,6 +759,9 @@ class AllBookingsPage extends React.Component {
                             <div className="col-md-12 col-sm-12 col-lg-12 col-xs-12">
                                 <div className="tab-content">
                                     <div id="all_booking" className="tab-pane fade in active">
+                                        <div className="userclock">
+                                            <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
+                                        </div>
                                         <label className="right-10px">Date:</label>
                                         <DatePicker
                                             selected={mainDate}
