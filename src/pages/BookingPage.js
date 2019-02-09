@@ -16,7 +16,6 @@ import Clock from 'react-live-clock';
 import lodash from 'lodash';
 import Select from 'react-select';
 
-var cityTimezones = require('city-timezones');
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -113,7 +112,7 @@ class BookingPage extends Component {
         // let dateParam = '';
         const today = localStorage.getItem('today');
         if (today) {
-            mainDate = moment(today, 'YYYY-MM-DD').toDate();
+            mainDate = moment(today, 'DD MMM YYYY').toDate();
             // dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
         } else {
             mainDate = moment().tz('Australia/Sydney').toDate();
@@ -121,8 +120,6 @@ class BookingPage extends Component {
         }
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
-        let cityLookup = cityTimezones.findFromCityStateProvince('Northern Territory');
-        console.log('@time zone---ACT', cityLookup);
     }
 
     getTime(country, city) {
@@ -138,9 +135,21 @@ class BookingPage extends Component {
                 'QLD': 'Australia/Brisbane',
                 'VIC': 'Australia/Melbourne',
                 'TAS': 'Australia/Hobart',
+            },
+            'AU':
+            {
+                'ACT': 'Australia/Currie',
+                'NT': 'Australia/Darwin',
+                'SA': 'Australia/Adelaide',
+                'WA': 'Australia/Perth',
+                'NSW': 'Australia/Sydney',
+                'QLD': 'Australia/Brisbane',
+                'VIC': 'Australia/Melbourne',
+                'TAS': 'Australia/Hobart',
             }
         };
-    
+        console.log('@country---', country);
+        console.log('@city---', city);
         return timeZoneTable[country][city];
     }
 
@@ -218,6 +227,7 @@ class BookingPage extends Component {
                 this.setState({deSuburbStrings});
             }
         }
+        
         if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
@@ -274,22 +284,28 @@ class BookingPage extends Component {
                 formInputs['pu_Address_State'] = booking.pu_Address_State;
                 formInputs['de_To_Address_State'] = booking.de_To_Address_State;
 
-                this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
-                this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
-                if (booking.b_status == 'Booked') {
-                    console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
-                    this.setState({
-                        bAllComboboxViewOnlyonBooking: true,
-                        selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
-                        selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
-                        selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
-                        deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
-                        deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
-                        deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
-                    });
+                if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
+                    this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
                 }
-                else
+
+                if (booking.de_To_Address_Country != undefined && booking.de_To_Address_State != undefined) {
+                    this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
+                }
+
+                console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
+                this.setState({
+                    bAllComboboxViewOnlyonBooking: true,
+                    selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
+                    selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
+                    selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
+                    deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
+                    deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
+                    deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                });
+
+                if (booking.b_status != 'Booked') {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
+                }
 
                 if (!this.state.loadedLineAndLineDetail) {
                     this.props.getBookingLines(booking.pk_booking_id);
@@ -370,6 +386,7 @@ class BookingPage extends Component {
         let bookingLinesQtyTotal = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
+
             if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
             else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
@@ -478,6 +495,7 @@ class BookingPage extends Component {
 
         if (e.key === 'Enter') {
             e.preventDefault();
+            
             if((selected == undefined) || (selected == '')){
                 alert('id value is empty');
                 return;
@@ -683,6 +701,54 @@ class BookingPage extends Component {
         }, {
             dataField: 'uploadfile',
             text: 'Upload File'
+        }
+        ];  
+
+        const columnAdditionalServices = [{
+            dataField: 'freightprovider',
+            text: 'Freight Provider'
+        }, {
+            dataField: 'tnt',
+            text: 'TNT'
+        }, {
+            dataField: 'service',
+            text: 'Service'
+        }, {
+            dataField: 'consignmentNo',
+            text: 'Consignment No'
+        }, {
+            dataField: 'bookingCutoff',
+            text: 'Booking Cutoff'
+        }, {
+            dataField: 'RoadFreightExpress',
+            text: 'Road Freight Express'
+        }, {
+            dataField: 'pickupManifestNo',
+            text: 'Pickup / Manifest No'
+        }, {
+            dataField: 'EnteredDate',
+            text: 'Entered Date'
+        }, {
+            dataField: 'Quoted',
+            text: 'Quoted'
+        }, {
+            dataField: 'BookedDate',
+            text: 'Booked Date'
+        }, {
+            dataField: 'Invoiced',
+            text: 'Invoiced'
+        }
+        ];
+        
+        const columnBookingCounts = [{
+            dataField: 'TotalPieces',
+            text: 'Total Pieces'
+        }, {
+            dataField: 'TotalMass',
+            text: 'Total Mass'
+        }, {
+            dataField: 'TotalCubicKG',
+            text: 'Total Cubic KG'
         }
         ];  
         return (
@@ -911,7 +977,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1165,7 +1231,7 @@ class BookingPage extends Component {
                                                             <DatePicker
                                                                 selected={mainDate}
                                                                 onChange={(e) => this.onPickUpDateChange(e)}
-                                                                dateFormat="dd-MM-yyyy"
+                                                                dateFormat="DD MMM YYYY"
                                                             />
                                                         </div>
                                                     </div>
@@ -1292,6 +1358,7 @@ class BookingPage extends Component {
                                     <div className="tab-button-outer">
                                         <ul id="tab-button">
                                             <li><a href="#tab01">Shipment Packages / Goods</a></li>
+                                            <li><a href="#tab02">Additional Services & Options</a></li>
                                             <li><a href="#tab03">Freight Options</a></li>
                                             <li><a href="#tab04">Communication Log</a></li>
                                             <li><a href="#tab05">Attachments</a></li>
@@ -1300,6 +1367,7 @@ class BookingPage extends Component {
                                     <div className="tab-select-outer">
                                         <select id="tab-select">
                                             <option value="#tab01">Shipment Packages / Goods</option>
+                                            <option value="#tab02">Additional Services & Options</option>
                                             <option value="#tab03">Freight Options</option>
                                             <option value="#tab04">Communication Log</option>
                                             <option value="#tab05">Attachments</option>
@@ -1318,6 +1386,24 @@ class BookingPage extends Component {
                                                 keyField="modelNumber"
                                                 data={ bookingLinesListDetailProduct }
                                                 columns={ columnDetails }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div id="tab02" className="tab-contents">
+                                        <div className="tab-inner">
+                                            <BootstrapTable
+                                                keyField='pk_auto_id_lines'
+                                                data={ products }
+                                                columns={ columnAdditionalServices }
+                                                cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                bootstrap4={ true }
+                                            />
+                                            <BootstrapTable
+                                                keyField="modelNumber"
+                                                data={ bookingLinesListDetailProduct }
+                                                columns={ columnBookingCounts }
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
                                             />
