@@ -16,7 +16,6 @@ import Clock from 'react-live-clock';
 import lodash from 'lodash';
 import Select from 'react-select';
 
-var cityTimezones = require('city-timezones');
 class BookingPage extends Component {
     constructor(props) {
         super(props);
@@ -126,8 +125,6 @@ class BookingPage extends Component {
         }
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
-        let cityLookup = cityTimezones.findFromCityStateProvince('Northern Territory');
-        console.log('@time zone---ACT', cityLookup);
     }
 
     getTime(country, city) {
@@ -143,9 +140,21 @@ class BookingPage extends Component {
                 'QLD': 'Australia/Brisbane',
                 'VIC': 'Australia/Melbourne',
                 'TAS': 'Australia/Hobart',
+            },
+            'AU':
+            {
+                'ACT': 'Australia/Currie',
+                'NT': 'Australia/Darwin',
+                'SA': 'Australia/Adelaide',
+                'WA': 'Australia/Perth',
+                'NSW': 'Australia/Sydney',
+                'QLD': 'Australia/Brisbane',
+                'VIC': 'Australia/Melbourne',
+                'TAS': 'Australia/Hobart',
             }
         };
-    
+        console.log('@country---', country);
+        console.log('@city---', city);
         return timeZoneTable[country][city];
     }
 
@@ -221,6 +230,7 @@ class BookingPage extends Component {
                 this.setState({deSuburbStrings});
             }
         }
+        
         if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
@@ -277,22 +287,28 @@ class BookingPage extends Component {
                 formInputs['pu_Address_State'] = booking.pu_Address_State;
                 formInputs['de_To_Address_State'] = booking.de_To_Address_State;
 
-                this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
-                this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
-                if (booking.b_status == 'Booked') {
-                    console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
-                    this.setState({
-                        bAllComboboxViewOnlyonBooking: true,
-                        selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
-                        selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
-                        selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
-                        deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
-                        deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
-                        deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
-                    });
+                if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
+                    this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
                 }
-                else
+
+                if (booking.de_To_Address_Country != undefined && booking.de_To_Address_State != undefined) {
+                    this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
+                }
+
+                console.log('@booking---', booking.pu_Address_State, booking.de_To_Address_PostalCode);
+                this.setState({
+                    bAllComboboxViewOnlyonBooking: true,
+                    selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
+                    selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
+                    selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
+                    deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
+                    deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
+                    deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                });
+
+                if (booking.b_status != 'Booked') {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
+                }
 
                 if (!this.state.loadedLineAndLineDetail) {
                     this.props.getBookingLines(booking.pk_booking_id);
@@ -373,6 +389,7 @@ class BookingPage extends Component {
         let bookingLinesQtyTotal = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
+
             if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
             else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
@@ -481,6 +498,7 @@ class BookingPage extends Component {
 
         if (e.key === 'Enter') {
             e.preventDefault();
+            
             if((selected == undefined) || (selected == '')){
                 alert('id value is empty');
                 return;
