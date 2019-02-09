@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import user from '../public/images/user.png';
-import { verifyToken } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
@@ -81,6 +81,7 @@ class BookingPage extends Component {
         alliedBooking: PropTypes.func.isRequired,
         stBooking: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     // getTimeZone(cityName) {
@@ -101,8 +102,6 @@ class BookingPage extends Component {
             this.props.getDeliverySuburbStrings('state', undefined);
         }
 
-        const currentRoute = this.props.location.pathname;
-
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
@@ -110,10 +109,6 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
         let mainDate = '';
         // let dateParam = '';
         const today = localStorage.getItem('today');
@@ -155,12 +150,12 @@ class BookingPage extends Component {
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
         if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
-            this.setState({bookingLineDetails});
             const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
                 let result = [];
                 result.modelNumber = bookingLine.modelNumber;
@@ -170,9 +165,11 @@ class BookingPage extends Component {
                 result.insuranceValueEach = bookingLine.insuranceValueEach;
                 result.gap_ra = bookingLine.gap_ra;
                 result.clientRefNumber = bookingLine.clientRefNumber;
+
                 return result;
             });
-            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct});
+
+            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct, bookingLineDetails});
         }
 
         if (!this.state.bAllComboboxViewOnlyonBooking) {
@@ -1399,6 +1396,7 @@ const mapDispatchToProps = (dispatch) => {
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 

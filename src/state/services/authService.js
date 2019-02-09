@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken } from '../actions/authActions';
+import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState } from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getToken = (username, password) => {
@@ -15,7 +15,7 @@ export const getToken = (username, password) => {
 
 export const verifyToken = () => {
     const token = localStorage.getItem('token');
-    console.log('Current token: ', token);
+    // console.log('Current token: ', token);
 
     return dispatch =>
         axios.post(`${HTTP_PROTOCOL}://${API_HOST}/api-token-verify/` , {
@@ -38,4 +38,8 @@ export const getUser = (token) => {
         axios(options)
             .then(({ data: { username, clientname } }) => dispatch(setUser(username, clientname)))
             .catch((error) => dispatch(failedGetUser(error)) );
+};
+
+export const cleanRedirectState = () => {
+    return dispatch => dispatch(resetRedirectState());
 };

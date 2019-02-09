@@ -9,7 +9,7 @@ import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-import { verifyToken } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
@@ -68,21 +68,17 @@ class AllBookingsPage extends React.Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-        const currentRoute = this.props.location.pathname;
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
-
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
@@ -119,6 +115,7 @@ class AllBookingsPage extends React.Component {
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
@@ -980,6 +977,7 @@ const mapDispatchToProps = (dispatch) => {
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
         getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 

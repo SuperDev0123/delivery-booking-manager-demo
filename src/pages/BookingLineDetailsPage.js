@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { verifyToken } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 
 class BookingLineDetailsPage extends React.Component {
@@ -20,20 +20,15 @@ class BookingLineDetailsPage extends React.Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-        const currentRoute = this.props.location.pathname;
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
-
-        if (this.props.redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
@@ -47,6 +42,7 @@ class BookingLineDetailsPage extends React.Component {
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
@@ -139,6 +135,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
         getBookingLineDetails: () => dispatch(getBookingLineDetails()),
     };
 };

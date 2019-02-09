@@ -1,4 +1,4 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN } from '../constants/authConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE } from '../constants/authConstants';
 
 const defaultState = {
     token: '',
@@ -42,6 +42,11 @@ export const AuthReducer = (state = defaultState, { type, token, errorMessage, u
                 ...state,
                 errorMessage: errorMessage,
                 redirect : true,
+            };
+        case RESET_REDIRECT_STATE:
+            return {
+                ...state,
+                redirect: false,
             };
         default:
             return state;

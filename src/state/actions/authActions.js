@@ -1,4 +1,4 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, FAILED_VERIFY_TOKEN, SET_USER, FAILED_GET_USER } from '../constants/authConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, FAILED_VERIFY_TOKEN, SET_USER, FAILED_GET_USER, RESET_REDIRECT_STATE } from '../constants/authConstants';
 
 export function setToken(token) {
     console.log('Token set: ', token);
@@ -63,5 +63,11 @@ export function failedGetUser(error) {
     return {
         type: FAILED_GET_USER,
         errorMessage: 'Unable to get user with this token.'
+    };
+}
+
+export function resetRedirectState() {
+    return {
+        type: RESET_REDIRECT_STATE,
     };
 }
