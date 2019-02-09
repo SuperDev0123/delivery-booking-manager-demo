@@ -58,12 +58,7 @@ table.booking-lines {
   padding: 10px;
 }
 
-.all-trigger {
-  margin-left: 50px;
-}
-
 // Main Table
-
 .table-responsive {
   min-height: unset;
   overflow-x: auto;
@@ -169,6 +164,7 @@ table {
 
 #warehouse {
   width: 300px;
+  margin-right: 50px;
 }
 
 .tooltipitem {
@@ -213,4 +209,17 @@ table {
 
 .no-padding {
   padding: 0px !important;
+}
+
+.visualID-box {
+  cursor: pointer;
+}
+
+.visualID-box:hover {
+  background-color: lightblue;
+}
+
+ul.filter-conditions {
+  margin-left: 40px !important;
+  margin-top: 10px !important;
 }
