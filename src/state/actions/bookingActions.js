@@ -171,10 +171,12 @@ export function failedStBook(error) {
 }
 
 export function successGetLabel(data) {
-    if (!data[0].hasOwnProperty('Created label url'))
-        alert('Failed get label: ' + data[0]['Error']);
-    else
+    if (data[0].hasOwnProperty('Created label url'))
         alert('Successfully get label: ' + data[0]['Created label url']);
+    else if (data[0].hasOwnProperty('Created label ID'))
+        alert('Successfully get label: ' + data[0]['Created label ID']);
+    else
+        alert('Failed get label: ' + data[0]['Error']);
 
     return {
         type: GET_LABEL_SUCCESS,

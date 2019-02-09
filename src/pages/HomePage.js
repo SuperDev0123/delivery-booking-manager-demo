@@ -6,26 +6,17 @@ import img1 from '../public/images/1.png';
 import img2 from '../public/images/2.png';
 import img3 from '../public/images/3.png';
 
-import { verifyToken } from '../state/services/authService';
-import { getUser } from '../state/services/authService';
+import { verifyToken, getUser, cleanRedirectState } from '../state/services/authService';
 
 class HomePage extends Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
     };
-
-    componentDidUpdate() {
-        const currentRoute = this.props.location.pathname;
-
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
-    }
 
     componentDidMount() {
         const token = localStorage.getItem('token');
@@ -35,6 +26,15 @@ class HomePage extends Component {
             this.props.getUser(token);
         } else {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/');
+        }
+    }
+
+    componentWillReceiveProps(newProps) {
+        const {redirect} = newProps;
+
+        if (redirect) {
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
     }
@@ -101,6 +101,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         getUser: (token) => dispatch(getUser(token)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 

@@ -8,13 +8,15 @@ import axios from 'axios';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Clock from 'react-live-clock';
 
-import { verifyToken } from '../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
+import ToDetailPageTooltipItem from '../components/Tooltip/ToDetailPageTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
@@ -68,21 +70,17 @@ class AllBookingsPage extends React.Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-        const currentRoute = this.props.location.pathname;
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/');
-        }
-
-        if (this.props.redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
@@ -119,6 +117,7 @@ class AllBookingsPage extends React.Component {
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.cleanRedirectState();
             this.props.history.push('/');
         }
 
@@ -676,7 +675,10 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td onClick={()=>this.onClickRow(booking.id)}><span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> </td>
+                    <td id={'detailpage-tooltip' + booking.id} className='visualID-box' onClick={()=>this.onClickRow(booking.id)}>
+                        <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> 
+                        <ToDetailPageTooltipItem booking={booking} />
+                    </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
@@ -757,9 +759,10 @@ class AllBookingsPage extends React.Component {
                             <div className="col-md-12 col-sm-12 col-lg-12 col-xs-12">
                                 <div className="tab-content">
                                     <div id="all_booking" className="tab-pane fade in active">
-                                        <p>Date</p>
-                                        <div id="line1"></div>
-                                        <label className="left-15px right-10px">Date:</label>
+                                        <div className="userclock">
+                                            <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
+                                        </div>
+                                        <label className="right-10px">Date:</label>
                                         <DatePicker
                                             selected={mainDate}
                                             onChange={(e) => this.onDateChange(e)}
@@ -778,7 +781,7 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
-                                            <button className="btn btn-primary all-trigger" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                            <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                             <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
@@ -980,6 +983,7 @@ const mapDispatchToProps = (dispatch) => {
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
         getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
     };
 };
 

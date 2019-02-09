@@ -52,7 +52,7 @@ class Header extends Component {
         const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        console.log('@1 - ', clientname, username);
+
         return (
             <header>
                 {
