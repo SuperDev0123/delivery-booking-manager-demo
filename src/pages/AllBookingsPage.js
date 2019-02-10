@@ -680,8 +680,12 @@ class AllBookingsPage extends React.Component {
                         <ToDetailPageTooltipItem booking={booking} />
                     </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
-                    <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
+                    <td >{booking.puCompany}</td>
+                    <td >{booking.deToCompanyName}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
+                    <td >{booking.vx_freight_provider}</td>
+                    <td >{booking.vx_serviceName}</td>
+                    <td >{booking.v_FPBookingNumber}</td>
                     <td className="no-padding">
                         {
                             (booking.b_error_Capture) ?
@@ -710,19 +714,14 @@ class AllBookingsPage extends React.Component {
                                 </div>
                         }
                     </td>
-                    <td >{booking.vx_freight_provider}</td>
-                    <td >{booking.vx_serviceName}</td>
                     <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
-                    <td >{booking.v_FPBookingNumber}</td>
-                    <td >{booking.puCompany}</td>
-                    <td >{booking.deToCompanyName}</td>
                 </tr>
             );
         });
 
         return (
-            <div className="qbootstrap-nav" >
+            <div className="qbootstrap-nav allbookings" >
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -793,12 +792,30 @@ class AllBookingsPage extends React.Component {
                                         <div className="table-responsive">
                                             <table className="table table-hover table-bordered sortable">
                                                 <thead className="thead-light">
+                                                    <colgroup>
+                                                        <col className="width-5p" />
+                                                        <col className="width-5p" />
+                                                        <col className="width-5p" />
+                                                        <col className="width-10p" />
+                                                        <col className="width-10p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-10p" />
+                                                        <col className="width-10p" />
+                                                        <col className="width-5p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                        <col className="width-15p" />
+                                                    </colgroup>
                                                     <tr>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">
-                                                            DME Booking ID
+                                                        <th className=""></th>
+                                                        <th className=""></th>
+                                                        <th className=""></th>
+                                                        <th className="" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">
+                                                            Booking ID
                                                             {
                                                                 (sortField === 'b_bookingID_Visual') ?
                                                                     (sortDirection > 0) ?
@@ -807,28 +824,8 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">
-                                                            Booked Date
-                                                            {
-                                                                (sortField === 'b_dateBookedDate') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
-                                                                        : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">
-                                                            Pickup from Manifest Date
-                                                            {
-                                                                (sortField === 'b_clientReference_RA_Numbers') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
-                                                                        : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">
-                                                            Ref. Number
+                                                        <th className="" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">
+                                                            Pickup / Manifest
                                                             {
                                                                 (sortField === 'puPickUpAvailFrom_Date') ?
                                                                     (sortDirection > 0) ?
@@ -837,17 +834,37 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_status')} scope="col">
-                                                            Status
+                                                        <th className="" onClick={() => this.onChangeSortField('puCompany')} scope="col">
+                                                            From
                                                             {
-                                                                (sortField === 'b_status') ?
+                                                                (sortField === 'puCompany') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-amount-asc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">
+                                                        <th className="" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">
+                                                            To
+                                                            {
+                                                                (sortField === 'deToCompanyName') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                        : <i className="fa fa-sort-amount-desc"></i>
+                                                                    : <i className="fa fa-sort-amount-desc"></i>
+                                                            }
+                                                        </th>
+                                                        <th className="" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">
+                                                            Reference
+                                                            {
+                                                                (sortField === 'b_clientReference_RA_Numbers') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                        : <i className="fa fa-sort-amount-desc"></i>
+                                                                    : <i className="fa fa-sort-amount-desc"></i>
+                                                            }
+                                                        </th>
+                                                        <th className="" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">
                                                             Freight Provider
                                                             {
                                                                 (sortField === 'vx_freight_provider') ?
@@ -857,7 +874,7 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">
+                                                        <th className="" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">
                                                             Service
                                                             {
                                                                 (sortField === 'vx_serviceName') ?
@@ -867,28 +884,8 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">
-                                                            Pickup By
-                                                            {
-                                                                (sortField === 's_05_LatestPickUpDateTimeFinal') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
-                                                                        : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">
-                                                            Latest Delivery
-                                                            {
-                                                                (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
-                                                                        : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">
-                                                            FP Consignment Number
+                                                        <th className="" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">
+                                                            Consignment
                                                             {
                                                                 (sortField === 'v_FPBookingNumber') ?
                                                                     (sortDirection > 0) ?
@@ -897,25 +894,41 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puCompany')} scope="col">
-                                                            Pickup Entity
+                                                        <th className="" onClick={() => this.onChangeSortField('b_status')} scope="col">
+                                                            Status
                                                             {
-                                                                (sortField === 'puCompany') ?
+                                                                (sortField === 'b_status') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-amount-asc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
                                                         </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">
-                                                            Delivery Entity
+                                                        <th className="" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">
+                                                            Pickup Due
                                                             {
-                                                                (sortField === 'deToCompanyName') ?
+                                                                (sortField === 's_05_LatestPickUpDateTimeFinal') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-amount-asc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
                                                                     : <i className="fa fa-sort-amount-desc"></i>
                                                             }
+                                                        </th>
+                                                        <th className="" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">
+                                                            Delivery Due
+                                                            {
+                                                                (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                        : <i className="fa fa-sort-amount-desc"></i>
+                                                                    : <i className="fa fa-sort-amount-desc"></i>
+                                                            }
+                                                        </th>
+                                                        <th className="" scope="col">
+                                                            Collected
+                                                        </th>
+                                                        <th className="" scope="col">
+                                                            Delivered
                                                         </th>
                                                     </tr>
                                                     <tr className="filter-tr">
@@ -924,16 +937,15 @@ class AllBookingsPage extends React.Component {
                                                         <th><i className="icon icon-plus"></i></th>
                                                         <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                         <th scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>

@@ -60,27 +60,7 @@ table.booking-lines {
 
 // Main Table
 .table-responsive {
-  min-height: unset;
-  overflow-x: auto;
-  height: 1000px;
-  height: 100%;
-
-  .react-bootstrap-table {
-    overflow-x: scroll;
-  }
-
-  .dropdown-menu {
-    display: none;
-  }
-
-  .react-bootstrap-table-pagination-list > ul {
-    float: right;
-  }
-
-  table {
-    width: 1200px;
-    table-layout: fixed;
-  }
+  
 }
 
 table {
@@ -195,6 +175,18 @@ table {
   width: 100px;
 }
 
+.width-5p {
+  width: 5%;
+}
+
+.width-10p {
+  width: 10%;
+}
+
+.width-15p {
+  width: 15%;
+}
+
 .width-150px {
   width: 150px;
 }
@@ -226,4 +218,9 @@ ul.filter-conditions {
 
 #all_booking .userclock {
   padding-right: 0px;
+}
+
+.allbookings .container {
+  max-width: none;
+  width: 100%;
 }
