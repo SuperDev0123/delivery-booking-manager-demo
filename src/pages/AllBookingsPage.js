@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
-import lodash from 'lodash';
+import _ from 'lodash';
 import axios from 'axios';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
@@ -351,9 +351,9 @@ class AllBookingsPage extends React.Component {
 
     onCheck(e, id) {
         if (!e.target.checked) {
-            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+            this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
         } else {
-            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
+            this.setState({selectedBookingIds: _.union(this.state.selectedBookingIds, [id])});
         }
     }
 
@@ -511,8 +511,8 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox } = this.state;
-
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds } = this.state;
+        console.log('@1 - ', selectedBookingIds);
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
@@ -555,7 +555,7 @@ class AllBookingsPage extends React.Component {
         const bookingsList = bookings.map((booking, index) => {
             return (
                 <tr key={index}>
-                    <td><input type="checkbox" onChange={(e) => this.onCheck(e, booking.id)} /></td>
+                    <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
                     </td>
@@ -580,12 +580,12 @@ class AllBookingsPage extends React.Component {
                                         <tr>
                                             <td>Lines</td>
                                             <td>{bookingLinesQtyTotal}</td>
-                                            <td>{lodash.size(bookingLines)}</td>
+                                            <td>{_.size(bookingLines)}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
                                             <td>{bookingLineDetailsQtyTotal}</td>
-                                            <td>{lodash.size(bookingLineDetails)}</td>
+                                            <td>{_.size(bookingLineDetails)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
