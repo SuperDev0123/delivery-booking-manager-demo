@@ -218,6 +218,13 @@ ul.filter-conditions {
 
 #all_booking .userclock {
   padding-right: 0px;
+  text-align: left;
+  padding-left: 39px;
+}
+
+.allbookings .fa-sort-amount-asc,
+.allbookings .fa-sort-amount-desc {
+  float: right;
 }
 
 .allbookings .container {

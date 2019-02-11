@@ -62,10 +62,10 @@ class Header extends Component {
                                 <div className="top">
                                     <div className="row">
                                         <div className="col-md-8 col-sm-12 col-lg-8 col-xs-12 col-md-push-1 ">
-                                            <h3 className="label_hel"><a href="/">{clientname} is client and {username} is logged in</a></h3>
+                                            <h3 className="label_hel"><a href="/">Company: {clientname ? clientname : '---'}    User: {username ? username : '---'}</a></h3>
                                             <h3 className="label_hel"></h3>
                                         </div>
-                                        <div className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right"> <a href="">Login Info Client</a> | <a href="">Accounts</a> | <a href="">Client Mode</a> | <a href="/">Home</a> </div>
+                                        <div className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right"> <a href="" className="none">Login Info Client</a> <span className="none">|</span> <a href="" className="none">Accounts</a> <span className="none">|</span> <a href="" className="none">Client Mode</a> <span className="none">|</span> <a href="/">Home</a> </div>
                                     </div>
                                     <div className="line"></div>
                                 </div>
