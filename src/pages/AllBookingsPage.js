@@ -420,36 +420,25 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownloadPdfs() {
-        const { selectedBookingIds, bookings } = this.state;
+        const { selectedBookingIds } = this.state;
 
-        for (let i = 0; i < selectedBookingIds.length; i++) {
-            let ind = -1;
+        if (selectedBookingIds.length > 0) {
+            const options = {
+                method: 'get',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/' + '?ids=' + selectedBookingIds,
+                responseType: 'blob', // important
+            };
 
-            for (let j = 0; j < bookings.length; j++) {
-                if (bookings[j].id === selectedBookingIds[i]) {
-                    ind = j;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                const options = {
-                    method: 'get',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + bookings[ind].z_label_url + '&id=' + bookings[ind].id,
-                    responseType: 'blob', // important
-                };
-
-                axios(options).then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', bookings[ind].z_label_url);
-                    document.body.appendChild(link);
-                    link.click();
-                });
-            } else {
-                alert('No matching booking id');
-            }
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'labels.zip');
+                document.body.appendChild(link);
+                link.click();
+            });
+        } else {
+            alert('No matching booking id');
         }
     }
 
@@ -512,7 +501,7 @@ class AllBookingsPage extends React.Component {
 
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds } = this.state;
-        console.log('@1 - ', selectedBookingIds);
+
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
