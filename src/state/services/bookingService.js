@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel } from '../actions/bookingActions';
+import { successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
@@ -23,6 +23,18 @@ export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, so
         axios(options)
             .then(({ data }) => dispatch(successGetBookings(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
+};
+
+export const setGetBookingsFilter = (key, value) => {
+    return dispatch => dispatch(setLocalFilter(key, value));
+};
+
+export const setAllGetBookingsFilter = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
+    return dispatch => dispatch(setAllLocalFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword));
+};
+
+export const setNeedUpdateBookingsState = (boolFlag) => {
+    return dispatch => dispatch(setNeedUpdateBookingsFlag(boolFlag));
 };
 
 export const simpleSearch = (keyword) => {
