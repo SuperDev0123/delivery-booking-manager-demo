@@ -191,6 +191,7 @@ class AllBookingsPage extends React.Component {
         const mainDate = moment(date).format('YYYY-MM-DD');
         this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
+        this.setState({mainDate});
     }
 
     onWarehouseSelected(e) {
