@@ -315,27 +315,30 @@ class AllBookingsPage extends React.Component {
         const st_name = 'startrack';
         const allied_name = 'allied';
 
-        if (selectedBookingIds.length == 0) {
-            alert('Please check only one booking!');
-        } else if (selectedBookingIds.length > 1) {
-            alert('Please check only one booking!');
+        if (selectedBookingIds.length < 1) {
+            alert('Please select at least one booking!');
         } else {
-            let ind = -1;
+            for (let k = 0; k < selectedBookingIds.length; k++) {
+                let ind = -1;
 
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[0]) {
-                    ind = i;
-                    break;
+                for (let i = 0; i < bookings.length; i++) {
+                    if (bookings[i].id === selectedBookingIds[k]) {
+                        ind = i;
+                        break;
+                    }
+                }
+
+                if (ind > -1) {
+                    let that = this;
+                    if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
+                        setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 30000 * k);
+                    } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
+                        setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 30000 * k);
+                    }
                 }
             }
 
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
+            this.setState({selectedBookingIds: []});
         }
     }
 
