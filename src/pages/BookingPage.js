@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
+import Clock from 'react-live-clock';
+import lodash from 'lodash';
+import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
+import BootstrapTable from 'react-bootstrap-table-next';
+import cellEditFactory from 'react-bootstrap-table2-editor';
+import Loader from 'react-loader';
+
 import user from '../public/images/user.png';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
-import Clock from 'react-live-clock';
-import lodash from 'lodash';
-import Select from 'react-select';
+// import Loading from '../components/Loading/Loading';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -32,7 +34,7 @@ class BookingPage extends Component {
             bookingLineDetails: [],
             nextBookingId: 0,
             prevBookingId: 0,
-            loadedLineAndLineDetail: false,
+            loading: true,
             products: [],
             bookingLinesListProduct: [],
             bookingLinesListDetailProduct: [],
@@ -85,9 +87,10 @@ class BookingPage extends Component {
 
     // getTimeZone(cityName) {
     //     const AU_TIME_ZONE = [
-    //         'ACT': 
+    //         'ACT':
     //     ];
     // }
+
     componentDidMount() {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
@@ -123,7 +126,7 @@ class BookingPage extends Component {
     }
 
     getTime(country, city) {
-        const timeZoneTable = 
+        const timeZoneTable =
         {
             'Australia':
             {
@@ -227,7 +230,7 @@ class BookingPage extends Component {
                 this.setState({deSuburbStrings});
             }
         }
-        
+
         if (bookingLines && bookingLines.length > 0) {
             const bookingLines1 = this.calcBookingLine(bookingLines);
             //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
@@ -307,21 +310,23 @@ class BookingPage extends Component {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
-                if (!this.state.loadedLineAndLineDetail) {
+                if (!this.state.loading) {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                 }
 
-                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loadedLineAndLineDetail: true });
+                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loading: true });
             } else {
                 this.setState({ formInputs: {} });
                 alert('There is no such booking with that DME/CON number.');
             }
         }
     }
+
     onChangeState(e) {
         console.log(e);
     }
+
     onHandleInput(e) {
         let formInputs = this.state.formInputs;
         formInputs[e.target.name] = e.target.value;
@@ -340,7 +345,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(prevBookingId, 'id');
         }
 
-        this.setState({loadedLineAndLineDetail: false});
+        this.setState({loading: false});
     }
 
     onClickPrinter(booking) {
@@ -371,7 +376,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(nextBookingId, 'id');
         }
 
-        this.setState({loadedLineAndLineDetail: false});
+        this.setState({loading: false});
     }
 
     onSave() {
@@ -411,13 +416,13 @@ class BookingPage extends Component {
         this.setState({ bookingLinesQtyTotal });
         return newBookingLines;
     }
-    
+
     onCheckLine(e, row) {
         // if (!e.target.checked) {
         //     this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
         // } else {
         //     this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
-            
+
         // }
         const { products } = this.state;
         let clonedProducts = lodash.clone(products);
@@ -468,7 +473,7 @@ class BookingPage extends Component {
         this.setState({products: clonedProducts});
         this.setState({selectedBookingIds: []});
     }
-    
+
     onPickUpDateChange(date) {
         // const {selectedWarehouseId, itemCountPerPage} = this.state;
         const mainDate = moment(date).format('YYYY-MM-DD');
@@ -476,7 +481,7 @@ class BookingPage extends Component {
         // if (selectedWarehouseId === 'all') {
         //     this.props.getBookings(mainDate, 0, itemCountPerPage);
         // } else {
-            
+
         // }
 
         localStorage.setItem('today', mainDate);
@@ -489,13 +494,14 @@ class BookingPage extends Component {
         tempBooking.splice(deletedBookingLine, 1);
         this.setState({bookingLinesListDetailProduct: tempBooking, deletedBookingLine: -1});
     }
+
     onKeyPress(e) {
         const {selected} = this.state;
         const typed = e.target.value;
 
         if (e.key === 'Enter') {
             e.preventDefault();
-            
+
             if((selected == undefined) || (selected == '')){
                 alert('id value is empty');
                 return;
@@ -507,7 +513,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(typed, selected);
         }
 
-        this.setState({typed, loadedLineAndLineDetail: false});
+        this.setState({typed, loading: false});
     }
 
     handleOnSelectLineRow(row, isSelect) {
@@ -567,6 +573,7 @@ class BookingPage extends Component {
 
     render() {
         const {isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
@@ -581,179 +588,186 @@ class BookingPage extends Component {
             );
         };
 
-        const columns = [{
-            dataField: 'pk_auto_id_lines',
-            text: '',
-            formatter: iconCheck,
-            editable: false
-        }, {
-            dataField: 'e_type_of_packaging',
-            text: 'Packaging'
-        }, {
-            dataField: 'e_item',
-            text: 'Item Description'
-        }, {
-            dataField: 'e_qty',
-            text: 'Qty'
-        }, {
-            dataField: 'e_weightUOM',
-            text: 'Wgt UOM'
-        }, {
-            dataField: 'e_weightPerEach',
-            text: 'Wgt Each'
-        }, {
-            dataField: 'total_kgs',
-            text: 'Total Kgs'
-        }, {
-            dataField: 'e_dimUOM',
-            text: 'Dim UOM'
-        }, {
-            dataField: 'e_dimLength',
-            text: 'Length'
-        }, {
-            dataField: 'e_dimWidth',
-            text: 'Width'
-        }, {
-            dataField: 'e_dimHeight',
-            text: 'Hegiht'
-        }, {
-            dataField: 'cubic_meter',
-            text: 'Cubic Meter'
-        }
+        const columns = [
+            {
+                dataField: 'pk_auto_id_lines',
+                text: '',
+                formatter: iconCheck,
+                editable: false
+            }, {
+                dataField: 'e_type_of_packaging',
+                text: 'Packaging'
+            }, {
+                dataField: 'e_item',
+                text: 'Item Description'
+            }, {
+                dataField: 'e_qty',
+                text: 'Qty'
+            }, {
+                dataField: 'e_weightUOM',
+                text: 'Wgt UOM'
+            }, {
+                dataField: 'e_weightPerEach',
+                text: 'Wgt Each'
+            }, {
+                dataField: 'total_kgs',
+                text: 'Total Kgs'
+            }, {
+                dataField: 'e_dimUOM',
+                text: 'Dim UOM'
+            }, {
+                dataField: 'e_dimLength',
+                text: 'Length'
+            }, {
+                dataField: 'e_dimWidth',
+                text: 'Width'
+            }, {
+                dataField: 'e_dimHeight',
+                text: 'Hegiht'
+            }, {
+                dataField: 'cubic_meter',
+                text: 'Cubic Meter'
+            },
         ];
 
-        const columnDetails = [{
-            text: '',
-            formatter: iconCheck1,
-            editable: false
-        }, {
-            dataField: 'modelNumber',
-            text: 'Model'
-        }, {
-            dataField: 'itemDescription',
-            text: 'Item Description'
-        }, {
-            dataField: 'quantity',
-            text: 'Qty'
-        }, {
-            dataField: 'itemFaultDescription',
-            text: 'Fault Description'
-        }, {
-            dataField: 'insuranceValueEach',
-            text: 'Insurance Value'
-        }, {
-            dataField: 'gap_ra',
-            text: 'Gap/ RA'
-        }, {
-            dataField: 'clientRefNumber',
-            text: 'Client Reference #'
-        }
-        ];     
-
-        const columnFreight = [{
-            dataField: 'provider',
-            text: 'Provider'
-        }, {
-            dataField: 'service',
-            text: 'Service'
-        }, {
-            dataField: 'etd',
-            text: 'ETD'
-        }, {
-            dataField: 'totalFeeEx',
-            text: 'Total Fee Ex(GST)'
-        }, {
-            dataField: 'bookingCutoffTime',
-            text: 'Booking Cutoff Time'
-        }
-        ];  
-
-        const columnCommunication = [{
-            dataField: 'no',
-            text: 'Comm No'
-        }, {
-            dataField: 'date',
-            text: 'Date'
-        }, {
-            dataField: 'type',
-            text: 'Type'
-        }, {
-            dataField: 'description',
-            text: 'Description'
-        }, {
-            dataField: 'view',
-            text: 'View'
-        }
-        ];  
-
-        const columnAttachments = [{
-            dataField: 'no',
-            text: 'Attachment No'
-        }, {
-            dataField: 'description',
-            text: 'Description'
-        }, {
-            dataField: 'filename',
-            text: 'FileName'
-        }, {
-            dataField: 'dateupdated',
-            text: 'Date Updated'
-        }, {
-            dataField: 'uploadfile',
-            text: 'Upload File'
-        }
-        ];  
-
-        const columnAdditionalServices = [{
-            dataField: 'freightprovider',
-            text: 'Freight Provider'
-        }, {
-            dataField: 'tnt',
-            text: 'TNT'
-        }, {
-            dataField: 'service',
-            text: 'Service'
-        }, {
-            dataField: 'consignmentNo',
-            text: 'Consignment No'
-        }, {
-            dataField: 'bookingCutoff',
-            text: 'Booking Cutoff'
-        }, {
-            dataField: 'RoadFreightExpress',
-            text: 'Road Freight Express'
-        }, {
-            dataField: 'pickupManifestNo',
-            text: 'Pickup / Manifest No'
-        }, {
-            dataField: 'EnteredDate',
-            text: 'Entered Date'
-        }, {
-            dataField: 'Quoted',
-            text: 'Quoted'
-        }, {
-            dataField: 'BookedDate',
-            text: 'Booked Date'
-        }, {
-            dataField: 'Invoiced',
-            text: 'Invoiced'
-        }
+        const columnDetails = [
+            {
+                text: '',
+                formatter: iconCheck1,
+                editable: false
+            }, {
+                dataField: 'modelNumber',
+                text: 'Model'
+            }, {
+                dataField: 'itemDescription',
+                text: 'Item Description'
+            }, {
+                dataField: 'quantity',
+                text: 'Qty'
+            }, {
+                dataField: 'itemFaultDescription',
+                text: 'Fault Description'
+            }, {
+                dataField: 'insuranceValueEach',
+                text: 'Insurance Value'
+            }, {
+                dataField: 'gap_ra',
+                text: 'Gap/ RA'
+            }, {
+                dataField: 'clientRefNumber',
+                text: 'Client Reference #'
+            },
         ];
-        
-        const columnBookingCounts = [{
-            dataField: 'TotalPieces',
-            text: 'Total Pieces'
-        }, {
-            dataField: 'TotalMass',
-            text: 'Total Mass'
-        }, {
-            dataField: 'TotalCubicKG',
-            text: 'Total Cubic KG'
-        }
-        ];  
+
+        const columnFreight = [
+            {
+                dataField: 'provider',
+                text: 'Provider'
+            }, {
+                dataField: 'service',
+                text: 'Service'
+            }, {
+                dataField: 'etd',
+                text: 'ETD'
+            }, {
+                dataField: 'totalFeeEx',
+                text: 'Total Fee Ex(GST)'
+            }, {
+                dataField: 'bookingCutoffTime',
+                text: 'Booking Cutoff Time'
+            },
+        ];
+
+        const columnCommunication = [
+            {
+                dataField: 'no',
+                text: 'Comm No'
+            }, {
+                dataField: 'date',
+                text: 'Date'
+            }, {
+                dataField: 'type',
+                text: 'Type'
+            }, {
+                dataField: 'description',
+                text: 'Description'
+            }, {
+                dataField: 'view',
+                text: 'View'
+            },
+        ];
+
+        const columnAttachments = [
+            {
+                dataField: 'no',
+                text: 'Attachment No'
+            }, {
+                dataField: 'description',
+                text: 'Description'
+            }, {
+                dataField: 'filename',
+                text: 'FileName'
+            }, {
+                dataField: 'dateupdated',
+                text: 'Date Updated'
+            }, {
+                dataField: 'uploadfile',
+                text: 'Upload File'
+            }
+        ];
+
+        const columnAdditionalServices = [
+            {
+                dataField: 'freightprovider',
+                text: 'Freight Provider'
+            }, {
+                dataField: 'tnt',
+                text: 'TNT'
+            }, {
+                dataField: 'service',
+                text: 'Service'
+            }, {
+                dataField: 'consignmentNo',
+                text: 'Consignment No'
+            }, {
+                dataField: 'bookingCutoff',
+                text: 'Booking Cutoff'
+            }, {
+                dataField: 'RoadFreightExpress',
+                text: 'Road Freight Express'
+            }, {
+                dataField: 'pickupManifestNo',
+                text: 'Pickup / Manifest No'
+            }, {
+                dataField: 'EnteredDate',
+                text: 'Entered Date'
+            }, {
+                dataField: 'Quoted',
+                text: 'Quoted'
+            }, {
+                dataField: 'BookedDate',
+                text: 'Booked Date'
+            }, {
+                dataField: 'Invoiced',
+                text: 'Invoiced'
+            },
+        ];
+
+        const columnBookingCounts = [
+            {
+                dataField: 'TotalPieces',
+                text: 'Total Pieces'
+            }, {
+                dataField: 'TotalMass',
+                text: 'Total Mass'
+            }, {
+                dataField: 'TotalCubicKG',
+                text: 'Total Cubic KG'
+            },
+        ];
+
         return (
-            
-            <div>
+            <Loader className="container" loaded={this.state.loading}>
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -797,7 +811,7 @@ class BookingPage extends Component {
                         </div>
                     </div>
                 </div>
-            
+
                 <section className="booking">
                     <div className="container">
                         <div className="grid">
@@ -1349,9 +1363,10 @@ class BookingPage extends Component {
                         </div>
                     </div>
                 </section>
+
                 <section>
                     <div className="container">
-                        
+
                         <div className="row">
                             <div className="col-sm-12">
                                 <div className="tabs">
@@ -1447,7 +1462,7 @@ class BookingPage extends Component {
                         </div>
                     </div>
                 </section>
-            </div>
+            </Loader>
         );
     }
 }
