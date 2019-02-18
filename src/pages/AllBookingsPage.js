@@ -3,16 +3,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
-import lodash from 'lodash';
+import _ from 'lodash';
 import axios from 'axios';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
+import Loader from 'react-loader';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
@@ -31,10 +32,6 @@ class AllBookingsPage extends React.Component {
             bookingsCnt: 0,
             mainDate: '',
             userDateFilterField: '',
-            selectedWarehouseId: 0,
-            sortField: 'id',
-            sortDirection: -1,
-            itemCountPerPage: 10,
             filterInputs: {},
             selectedBookingIds: [],
             additionalInfoOpens: [],
@@ -49,6 +46,7 @@ class AllBookingsPage extends React.Component {
             missingLabels: 0,
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
+            loading: true,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -71,6 +69,9 @@ class AllBookingsPage extends React.Component {
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        setGetBookingsFilter: PropTypes.func.isRequired,
+        setAllGetBookingsFilter: PropTypes.func.isRequired,
+        setNeedUpdateBookingsState: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -98,7 +99,7 @@ class AllBookingsPage extends React.Component {
 
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
 
-        this.props.getBookings(dateParam, 0, this.state.itemCountPerPage);
+        this.props.setGetBookingsFilter('selectedDate', dateParam);
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
     }
@@ -112,7 +113,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -142,17 +143,10 @@ class AllBookingsPage extends React.Component {
         }
 
         if (needUpdateBookings) {
-            const {mainDate, itemCountPerPage, sortDirection, selectedWarehouseId} = this.state;
-            let sortField = this.state.sortField;
-            let warehouseId = 0;
-
-            if (sortDirection < 0)
-                sortField = '-' + sortField;
-
-            if (selectedWarehouseId !== 'all')
-                warehouseId = selectedWarehouseId;
-
-            this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField);
+            this.setState({loading: false});
+            this.props.getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
+        } else {
+            this.setState({loading: true});
         }
     }
 
@@ -199,33 +193,20 @@ class AllBookingsPage extends React.Component {
     }
 
     onDateChange(date) {
-        const {selectedWarehouseId, itemCountPerPage} = this.state;
         const mainDate = moment(date).format('YYYY-MM-DD');
-
-        if (selectedWarehouseId === 'all') {
-            this.props.getBookings(mainDate, 0, itemCountPerPage);
-        } else {
-            this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage);
-        }
-
+        this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
-        this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
+        this.setState({mainDate});
     }
 
     onWarehouseSelected(e) {
-        const {mainDate, itemCountPerPage, sortDirection, prefilterInd, filterInputs} = this.state;
         const selectedWarehouseId = e.target.value;
-        let sortField = this.state.sortField;
         let warehouseId = 0;
-
-        if (sortDirection < 0)
-            sortField = '-' + sortField;
 
         if (selectedWarehouseId !== 'all')
             warehouseId = selectedWarehouseId;
 
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs, prefilterInd);
-        this.setState({ selectedWarehouseId });
+        this.props.setGetBookingsFilter('warehouseId', warehouseId);
     }
 
     onItemCountPerPageChange(e) {
@@ -234,66 +215,39 @@ class AllBookingsPage extends React.Component {
         // const itemCountPerPage = e.target.value;
         //
         // if (selectedWarehouseId === 'all') {
-        //     this.props.getBookings(mainDate);
+        //     this.props.setGetBookingsFilter(mainDate);
         // } else {
-        //     this.props.getBookings(mainDate, selectedWarehouseId, itemCountPerPage);
+        //     this.props.setGetBookingsFilter(mainDate, selectedWarehouseId, itemCountPerPage);
         // }
         //
         // this.setState({ itemCountPerPage });
     }
 
     onChangeSortField(fieldName) {
-        const {mainDate, selectedWarehouseId, itemCountPerPage, filterInputs, prefilterInd} = this.state;
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
-        let warehouseId = 0;
 
         if (fieldName === sortField)
             sortDirection = -1 * sortDirection;
         else
             sortDirection = -1;
 
-        if (sortDirection < 0)
-            sortField = '-' + sortField;
-
-        if (selectedWarehouseId !== 'all')
-            warehouseId = selectedWarehouseId;
-
-        this.setState({ sortField: fieldName, sortDirection });
+        this.setState({sortField: fieldName, sortDirection});
 
         if (sortDirection < 0)
             fieldName = '-' + fieldName;
 
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, fieldName, filterInputs, prefilterInd);
+        this.props.setGetBookingsFilter('sortField', fieldName);
     }
 
     onChangeFilterInput(e) {
-        const {mainDate, selectedWarehouseId, itemCountPerPage, prefilterInd} = this.state;
-        let sortField = this.state.sortField;
-        let sortDirection = this.state.sortDirection;
         let filterInputs = this.state.filterInputs;
-        let warehouseId = 0;
-
-        if (sortDirection < 0)
-            sortField = '-' + sortField;
-
-        if (selectedWarehouseId !== 'all')
-            warehouseId = selectedWarehouseId;
-
         filterInputs[e.target.name] = e.target.value;
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, sortField, filterInputs, prefilterInd);
-        this.setState({filterInputs});
+        this.props.setGetBookingsFilter('columnFilters', filterInputs);
     }
 
     onClickPrefilter(prefilterInd) {
-        const {mainDate, selectedWarehouseId, itemCountPerPage} = this.state;
-        let warehouseId = 0;
-
-        if (selectedWarehouseId !== 'all')
-            warehouseId = selectedWarehouseId;
-
-        this.props.getBookings(mainDate, warehouseId, itemCountPerPage, '-id', {}, prefilterInd);
-        this.setState({ prefilterInd:prefilterInd, sortField: 'id', sortDirection: 1, filterInputs: {} });
+        this.props.setGetBookingsFilter('prefilterInd', prefilterInd);
     }
 
     showAdditionalInfo(bookingId) {
@@ -351,9 +305,9 @@ class AllBookingsPage extends React.Component {
 
     onCheck(e, id) {
         if (!e.target.checked) {
-            this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [id])});
+            this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
         } else {
-            this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [id])});
+            this.setState({selectedBookingIds: _.union(this.state.selectedBookingIds, [id])});
         }
     }
 
@@ -366,27 +320,30 @@ class AllBookingsPage extends React.Component {
         const st_name = 'startrack';
         const allied_name = 'allied';
 
-        if (selectedBookingIds.length == 0) {
-            alert('Please check only one booking!');
-        } else if (selectedBookingIds.length > 1) {
-            alert('Please check only one booking!');
+        if (selectedBookingIds.length < 1) {
+            alert('Please select at least one booking!');
         } else {
-            let ind = -1;
+            for (let k = 0; k < selectedBookingIds.length; k++) {
+                let ind = -1;
 
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[0]) {
-                    ind = i;
-                    break;
+                for (let i = 0; i < bookings.length; i++) {
+                    if (bookings[i].id === selectedBookingIds[k]) {
+                        ind = i;
+                        break;
+                    }
+                }
+
+                if (ind > -1) {
+                    let that = this;
+                    if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
+                        setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 30000 * k);
+                    } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
+                        setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 30000 * k);
+                    }
                 }
             }
 
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
+            this.setState({selectedBookingIds: []});
         }
     }
 
@@ -420,36 +377,25 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownloadPdfs() {
-        const { selectedBookingIds, bookings } = this.state;
+        const { selectedBookingIds } = this.state;
 
-        for (let i = 0; i < selectedBookingIds.length; i++) {
-            let ind = -1;
+        if (selectedBookingIds.length > 0) {
+            const options = {
+                method: 'get',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/' + '?ids=' + selectedBookingIds,
+                responseType: 'blob', // important
+            };
 
-            for (let j = 0; j < bookings.length; j++) {
-                if (bookings[j].id === selectedBookingIds[i]) {
-                    ind = j;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                const options = {
-                    method: 'get',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf?filename=' + bookings[ind].z_label_url + '&id=' + bookings[ind].id,
-                    responseType: 'blob', // important
-                };
-
-                axios(options).then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', bookings[ind].z_label_url);
-                    document.body.appendChild(link);
-                    link.click();
-                });
-            } else {
-                alert('No matching booking id');
-            }
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'labels.zip');
+                document.body.appendChild(link);
+                link.click();
+            });
+        } else {
+            alert('No matching booking id');
         }
     }
 
@@ -465,8 +411,6 @@ class AllBookingsPage extends React.Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             }
-
-
 
             booking.is_printed = true;
             booking.z_downloaded_shipping_label_timestamp = new Date();
@@ -484,9 +428,7 @@ class AllBookingsPage extends React.Component {
         e.preventDefault();
         const {mainDate} = this.state;
 
-        this.props.getBookings(mainDate);
-        localStorage.setItem('today', mainDate);
-        this.setState({ mainDate, warehouseId: 0, sortField: 'id', sortDirection: 1, filterInputs: {}, selectedWarehouseId: 'all' });
+        this.props.setAllGetBookingsFilter(mainDate);
     }
 
     onClickSimpleSearch() {
@@ -504,14 +446,12 @@ class AllBookingsPage extends React.Component {
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            this.props.getBookings(mainDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
-            localStorage.setItem('today', mainDate);
-            this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {}, selectedWarehouseId: 'all' });
+            this.props.setAllGetBookingsFilter(mainDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
         }
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -555,7 +495,7 @@ class AllBookingsPage extends React.Component {
         const bookingsList = bookings.map((booking, index) => {
             return (
                 <tr key={index}>
-                    <td><input type="checkbox" onChange={(e) => this.onCheck(e, booking.id)} /></td>
+                    <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
                     </td>
@@ -580,12 +520,12 @@ class AllBookingsPage extends React.Component {
                                         <tr>
                                             <td>Lines</td>
                                             <td>{bookingLinesQtyTotal}</td>
-                                            <td>{lodash.size(bookingLines)}</td>
+                                            <td>{_.size(bookingLines)}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
                                             <td>{bookingLineDetailsQtyTotal}</td>
-                                            <td>{lodash.size(bookingLineDetails)}</td>
+                                            <td>{_.size(bookingLineDetails)}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -676,12 +616,16 @@ class AllBookingsPage extends React.Component {
                         </PopoverBody>
                     </Popover>
                     <td id={'detailpage-tooltip' + booking.id} className='visualID-box' onClick={()=>this.onClickRow(booking.id)}>
-                        <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span> 
+                        <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span>
                         <ToDetailPageTooltipItem booking={booking} />
                     </td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
-                    <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date, 'YYYY-MM-DD').format('ddd DD MMM YYYY') : ''}</td>
+                    <td >{booking.puCompany}</td>
+                    <td >{booking.deToCompanyName}</td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
+                    <td >{booking.vx_freight_provider}</td>
+                    <td >{booking.vx_serviceName}</td>
+                    <td >{booking.v_FPBookingNumber}</td>
                     <td className="no-padding">
                         {
                             (booking.b_error_Capture) ?
@@ -710,19 +654,16 @@ class AllBookingsPage extends React.Component {
                                 </div>
                         }
                     </td>
-                    <td >{booking.vx_freight_provider}</td>
-                    <td >{booking.vx_serviceName}</td>
                     <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
-                    <td >{booking.v_FPBookingNumber}</td>
-                    <td >{booking.puCompany}</td>
-                    <td >{booking.deToCompanyName}</td>
+                    <td >{booking.s_20_Actual_Pickup_TimeStamp}</td>
+                    <td >{booking.s_21_Actual_Delivery_TimeStamp}</td>
                 </tr>
             );
         });
 
         return (
-            <div className="qbootstrap-nav" >
+            <div className="qbootstrap-nav allbookings" >
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -790,157 +731,188 @@ class AllBookingsPage extends React.Component {
                                             </button>
                                             <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                         </div>
-                                        <div className="table-responsive">
-                                            <table className="table table-hover table-bordered sortable">
-                                                <thead className="thead-light">
-                                                    <tr>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-30px"></th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col">
-                                                            DME Booking ID
-                                                            {
-                                                                (sortField === 'b_bookingID_Visual') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                        <Loader className="container" loaded={loading}>
+                                            <div className="table-responsive">
+                                                <table className="table table-hover table-bordered sortable">
+                                                    <thead className="thead-light">
+                                                        <colgroup>
+                                                            <col className="width-5p" />
+                                                            <col className="width-5p" />
+                                                            <col className="width-5p" />
+                                                            <col className="width-10p" />
+                                                            <col className="width-10p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-10p" />
+                                                            <col className="width-10p" />
+                                                            <col className="width-5p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                            <col className="width-15p" />
+                                                        </colgroup>
+                                                        <tr>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className="" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col" nowrap>
+                                                                <p>Booking ID</p>
+                                                                {
+                                                                    (sortField === 'b_bookingID_Visual') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_dateBookedDate')} scope="col">
-                                                            Booked Date
-                                                            {
-                                                                (sortField === 'b_dateBookedDate') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col" nowrap>
+                                                                <p>Pickup / Manifest</p>
+                                                                {
+                                                                    (sortField === 'puPickUpAvailFrom_Date') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col">
-                                                            Pickup from Manifest Date
-                                                            {
-                                                                (sortField === 'b_clientReference_RA_Numbers') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('puCompany')} scope="col" nowrap>
+                                                                <p>From</p>
+                                                                {
+                                                                    (sortField === 'puCompany') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col">
-                                                            Ref. Number
-                                                            {
-                                                                (sortField === 'puPickUpAvailFrom_Date') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col" nowrap>
+                                                                <p>To</p>
+                                                                {
+                                                                    (sortField === 'deToCompanyName') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('b_status')} scope="col">
-                                                            Status
-                                                            {
-                                                                (sortField === 'b_status') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col" nowrap>
+                                                                <p>Reference</p>
+                                                                {
+                                                                    (sortField === 'b_clientReference_RA_Numbers') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col">
-                                                            Freight Provider
-                                                            {
-                                                                (sortField === 'vx_freight_provider') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col" nowrap>
+                                                                <p>Freight Provider</p>
+                                                                {
+                                                                    (sortField === 'vx_freight_provider') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-100px" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col">
-                                                            Service
-                                                            {
-                                                                (sortField === 'vx_serviceName') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col" nowrap>
+                                                                <p>Service</p>
+                                                                {
+                                                                    (sortField === 'vx_serviceName') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col">
-                                                            Pickup By
-                                                            {
-                                                                (sortField === 's_05_LatestPickUpDateTimeFinal') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col" nowrap>
+                                                                <p>Consignment</p>
+                                                                {
+                                                                    (sortField === 'v_FPBookingNumber') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col">
-                                                            Latest Delivery
-                                                            {
-                                                                (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('b_status')} scope="col" nowrap>
+                                                                <p>Status</p>
+                                                                {
+                                                                    (sortField === 'b_status') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col">
-                                                            FP Consignment Number
-                                                            {
-                                                                (sortField === 'v_FPBookingNumber') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col" nowrap>
+                                                                <p>Pickup Due</p>
+                                                                {
+                                                                    (sortField === 's_05_LatestPickUpDateTimeFinal') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('puCompany')} scope="col">
-                                                            Pickup Entity
-                                                            {
-                                                                (sortField === 'puCompany') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col" nowrap>
+                                                                <p>Delivery Due</p>
+                                                                {
+                                                                    (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                        <th className="width-150px" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col">
-                                                            Delivery Entity
-                                                            {
-                                                                (sortField === 'deToCompanyName') ?
-                                                                    (sortDirection > 0) ?
-                                                                        <i className="fa fa-sort-amount-asc"></i>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('s_20_Actual_Pickup_TimeStamp')} scope="col">
+                                                                <p>Collected</p>
+                                                                {
+                                                                    (sortField === 's_20_Actual_Pickup_TimeStamp') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
                                                                         : <i className="fa fa-sort-amount-desc"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                            }
-                                                        </th>
-                                                    </tr>
-                                                    <tr className="filter-tr">
-                                                        <th><i className="icon icon-check"></i></th>
-                                                        <th><i className="icon icon-th-list"></i></th>
-                                                        <th><i className="icon icon-plus"></i></th>
-                                                        <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                        <th scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    { bookingsList }
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                                }
+                                                            </th>
+                                                            <th className="" onClick={() => this.onChangeSortField('s_21_Actual_Delivery_TimeStamp')} scope="col">
+                                                                <p>Delivered</p>
+                                                                {
+                                                                    (sortField === 's_21_Actual_Delivery_TimeStamp') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-amount-asc"></i>
+                                                                            : <i className="fa fa-sort-amount-desc"></i>
+                                                                        : <i className="fa fa-sort-amount-desc"></i>
+                                                                }
+                                                            </th>
+                                                        </tr>
+                                                        <tr className="filter-tr">
+                                                            <th><i className="icon icon-check"></i></th>
+                                                            <th><i className="icon icon-th-list"></i></th>
+                                                            <th><i className="icon icon-plus"></i></th>
+                                                            <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        { bookingsList }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </Loader>
                                     </div>
                                 </div>
                             </div>
@@ -966,13 +938,23 @@ const mapStateToProps = (state) => {
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
+        selectedDate: state.booking.selectedDate,
+        warehouseId: state.booking.warehouseId,
+        itemCountPerPage: state.booking.itemCountPerPage,
+        sortField: state.booking.sortField,
+        columnFilters: state.booking.columnFilters,
+        prefilterInd: state.booking.prefilterInd,
+        simpleSearchKeyword: state.booking.simpleSearchKeyword,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(date, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        getBookings: (selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
+        setAllGetBookingsFilter: (selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(setAllGetBookingsFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),

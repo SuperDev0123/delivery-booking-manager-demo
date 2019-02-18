@@ -1,4 +1,4 @@
-import { SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
+import { SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -12,6 +12,60 @@ export function successGetBookings(data) {
         closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
         missingLabels: data['missing_labels'],
+    };
+}
+
+export function setLocalFilter(key, value) {
+    if (key === 'selectedDate') {
+        return {
+            type: SET_LOCAL_FILTER_SELECTEDATE,
+            selectedDate: value,
+        };
+    } else if (key === 'warehouseId') {
+        return {
+            type: SET_LOCAL_FILTER_WAREHOUSEID,
+            warehouseId: value,
+        };
+    } else if (key === 'sortField') {
+        return {
+            type: SET_LOCAL_FILTER_SORTFIELD,
+            sortField: value,
+        };
+    } else if (key === 'columnFilters') {
+        return {
+            type: SET_LOCAL_FILTER_COLUMNFILTER,
+            columnFilters: value,
+        };
+    } else if (key === 'prefilterInd') {
+        return {
+            type: SET_LOCAL_FILTER_PREFILTERIND,
+            prefilterInd: value,
+        };
+    } else if (key === 'simpleSearchKeyword') {
+        return {
+            type: SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+            simpleSearchKeyword: value,
+        };
+    }
+}
+
+export function setAllLocalFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) {
+    return {
+        type: SET_LOCAL_FILTER_ALL,
+        selectedDate: selectedDate,
+        warehouseId: warehouseId,
+        sortField: sortField,
+        itemCountPerPage: itemCountPerPage,
+        columnFilters: columnFilters,
+        prefilterInd: prefilterInd,
+        simpleSearchKeyword: simpleSearchKeyword,
+    };
+}
+
+export function setNeedUpdateBookingsFlag(boolFlag) {
+    return {
+        type: SET_FETCH_BOOKINGS_FLAG,
+        needUpdateBookings: boolFlag,
     };
 }
 
@@ -143,9 +197,9 @@ export function failedGetUserDateFilterField(error) {
 
 export function successAlliedBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book allied: ' + data[0]['Error']);
+        // alert('Failed book allied: ' + data[0]['Error']);
     } else {
-        alert('Successfully book allied: ' + data[0]['Created Booking ID']);
+        // alert('Successfully book allied: ' + data[0]['Created Booking ID']);
         getAlliedLabel(data[0]['Created Booking ID']);
     }
 
@@ -156,7 +210,8 @@ export function successAlliedBook(data) {
 }
 
 export function failedAlliedBook(error) {
-    alert('Failed book allied: ' + error);
+    // alert('Failed book allied: ' + error);
+    console.log('Failed book allied: ' + error);
     return {
         type: BOOK_FAILED,
         errorMessage: 'Book failed'
@@ -165,9 +220,9 @@ export function failedAlliedBook(error) {
 
 export function successStBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book STARTRACK: ' + data[0]['Error']);
+    //     alert('Failed book STARTRACK: ' + data[0]['Error']);
     } else {
-        alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
+    //     alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
         getSTLabel(data[0]['Created Booking ID']);
     }
 
@@ -178,7 +233,8 @@ export function successStBook(data) {
 }
 
 export function failedStBook(error) {
-    alert('Failed book STARTRACK: ' + error);
+    // alert('Failed book STARTRACK: ' + error);
+    console.log('Failed book STARTRACK: ' + error);
     return {
         type: BOOK_FAILED,
         errorMessage: 'Book failed'
