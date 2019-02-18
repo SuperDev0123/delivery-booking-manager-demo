@@ -60,7 +60,19 @@ table.booking-lines {
 
 // Main Table
 .table-responsive {
-  
+  th {
+    white-space: nowrap;
+
+    p {
+      display: inline-block;
+      width: calc(100% - 12px);
+      overflow: hidden;
+    }
+
+    i {
+      vertical-align: top;
+    }
+  }
 }
 
 table {
