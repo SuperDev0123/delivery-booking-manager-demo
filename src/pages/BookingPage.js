@@ -6,15 +6,16 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import user from '../public/images/user.png';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
-import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
-import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import Clock from 'react-live-clock';
 import lodash from 'lodash';
 import Select from 'react-select';
+import DropzoneComponent from 'react-dropzone-component';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -61,8 +62,22 @@ class BookingPage extends Component {
             bAllComboboxViewOnlyonBooking: false,
             puTimeZone: null,
             deTimeZone: null,
+            attachmentsHistory: [],
         };
 
+        this.djsConfig = {
+            addRemoveLinks: true,
+            autoProcessQueue: false,
+            params: { filename: 'file' }
+        };
+
+        this.componentConfig = {
+            iconFiletypes: ['.xlsx'],
+            showFiletypeIcon: true,
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/attachments/filename',
+        };
+
+        this.dropzone = null;
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
     }
 
@@ -81,6 +96,7 @@ class BookingPage extends Component {
         stBooking: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        getAttachmentHistory: PropTypes.func.isRequired,
     };
 
     // getTimeZone(cityName) {
@@ -154,7 +170,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { suburbStrings, postalCode, stateStrings, bAllComboboxViewOnlyonBooking, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
+        const { attachments, suburbStrings, postalCode, stateStrings, bAllComboboxViewOnlyonBooking, deSuburbStrings, dePostalCode, deStateStrings, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -163,6 +179,21 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
+        if (attachments && attachments.length > 0) {
+            console.log('attachments', attachments);
+            const tempAttachments = attachments;
+            const bookingLinesListDetailProduct = tempAttachments.map((attach) => {
+                let result = [];
+                result.no = attach.pk_id_attachment;
+                result.description = attach.fk_id_dme_booking;
+                result.filename = attach.fileName;
+                result.uploadfile = attach.linkurl;
+                result.dateupdated = attach.upload_Date;
+                return result;
+            });
+
+            this.setState({attachmentsHistory: bookingLinesListDetailProduct});
+        }
         if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
             const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
@@ -565,8 +596,40 @@ class BookingPage extends Component {
         console.log('suburb selected:', deSelectedOptionSuburb);
     };
 
+    handlePost(e) {
+        e.preventDefault();
+        const {booking} = this.state;
+        if ( booking != null && booking.id != null) {
+            console.log('nakcall', booking);
+            this.dropzone.processQueue();
+        } else {
+            console.log('nakcall----');
+            alert('There is no booking data.');
+        }
+    }
+
+    handleFileSending(data, xhr, formData) {
+        formData.append('warehouse_id', this.state.booking.id);
+    }
+
+    handleUploadSuccess(file) {
+        let uploadedFileName = file.xhr.responseText.substring(file.xhr.responseText.indexOf('"'));
+        uploadedFileName = uploadedFileName.replace(/"/g,'');
+        this.interval = setInterval(() => this.myTimer(), 2000);
+
+        this.setState({
+            uploadedFileName,
+            uploaded: true,
+        });
+    }
+    
+    handleUploadFinish() {
+        console.log('@upload finish');
+        this.props.getAttachmentHistory(this.state.booking.id);
+        
+    }
     render() {
-        const {isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {attachmentsHistory, isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
@@ -751,6 +814,17 @@ class BookingPage extends Component {
             text: 'Total Cubic KG'
         }
         ];  
+
+        // DropzoneComponent config
+        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
+        const config = this.componentConfig;
+        const djsConfig = this.djsConfig;
+        const eventHandlers = {
+            init: dz => this.dropzone = dz,
+            sending: this.handleFileSending.bind(this),
+            success: this.handleUploadSuccess.bind(this),
+            queuecomplete: this.handleUploadFinish.bind(this),
+        };
         return (
             
             <div>
@@ -1432,10 +1506,16 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div id="tab05" className="tab-contents">
+                                        <div className="col-12">
+                                            <form onSubmit={(e) => this.handlePost(e)}>
+                                                <DropzoneComponent id="myDropzone" config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
+                                                <button id="submit-upload" type="submit">upload</button>
+                                            </form>
+                                        </div>
                                         <div className="tab-inner">
                                             <BootstrapTable
-                                                keyField="modelNumber"
-                                                data={ bookingLinesListDetailProduct }
+                                                keyField="pk_id_attachment"
+                                                data={ attachmentsHistory }
                                                 columns={ columnAttachments }
                                                 cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                 bootstrap4={ true }
@@ -1467,6 +1547,7 @@ const mapStateToProps = (state) => {
         deStateStrings: state.booking.deStateStrings,
         dePostalCode: state.booking.dePostalCode,
         deSuburbStrings: state.booking.deSuburbStrings,
+        attachments: state.booking.attachments,
     };
 };
 
@@ -1476,6 +1557,7 @@ const mapDispatchToProps = (dispatch) => {
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
+        getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),

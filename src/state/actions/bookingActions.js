@@ -1,4 +1,4 @@
-import { SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
+import { SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -49,6 +49,21 @@ export function failedGetSuburbs(error) {
         type: FAILED_GET_SUBURBS,
         errorMessage: 'Unable to fetch suburbs.',
         bBooking: false
+    };
+}
+
+export function successGetAttachments(data) {
+    return {
+        type: SET_ATTACHMENTS,
+        attachments: data['history'],
+    };
+}
+
+export function failedGetAttachments(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_ATTACHMENTS,
+        errorMessage: 'Unable to get attachments.',
     };
 }
 
