@@ -15,12 +15,8 @@ import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-<<<<<<< HEAD
-import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
-=======
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import DropzoneComponent from 'react-dropzone-component';
->>>>>>> a5142c01531c23b32a6712e46e214e4b1151d0a4
 
 class BookingPage extends Component {
     constructor(props) {
@@ -227,7 +223,7 @@ class BookingPage extends Component {
                     this.props.getSuburbStrings('postalcode', stateStrings[0].label);
                 }
                 this.setState({stateStrings, loadedPostal: true});
-            } 
+            }
             else {
                 console.log('@bAllComboBox-----2');
                 this.props.getSuburbStrings('state', undefined);
@@ -642,11 +638,11 @@ class BookingPage extends Component {
             uploaded: true,
         });
     }
-    
+
     handleUploadFinish() {
         console.log('@upload finish');
         this.props.getAttachmentHistory(this.state.booking.id);
-        
+
     }
     render() {
         const {attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
@@ -1558,11 +1554,7 @@ class BookingPage extends Component {
                             </div>
                         </div>
                     </section>
-<<<<<<< HEAD
                 </LoadingOverlay>
-=======
-                </Loader>
->>>>>>> a5142c01531c23b32a6712e46e214e4b1151d0a4
             </div>
         );
     }
