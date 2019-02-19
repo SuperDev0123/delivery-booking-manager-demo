@@ -767,8 +767,8 @@ class AllBookingsPage extends React.Component {
                                         <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                         <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                         <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                        <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST Order</button>
-                                        <button className="btn btn-primary" onClick={() => this.onClickExcel()}>Excel</button>
+                                        <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                        <button className="btn btn-primary" onClick={() => this.onClickExcel()}>seaway XL</button>
                                         <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                         <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                     </div>
