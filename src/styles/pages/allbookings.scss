@@ -71,12 +71,13 @@ table.booking-lines {
 
     p {
       display: inline-block;
-      width: calc(100% - 15px);
+      width: calc(100% - 10px);
       overflow: hidden;
     }
 
     i {
       vertical-align: top;
+      float: right;
     }
   }
 }
