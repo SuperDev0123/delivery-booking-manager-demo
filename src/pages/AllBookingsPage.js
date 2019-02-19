@@ -9,7 +9,7 @@ import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
-import Loader from 'react-loader';
+import LoadingOverlay from 'react-loading-overlay';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -46,7 +46,7 @@ class AllBookingsPage extends React.Component {
             missingLabels: 0,
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
-            loading: true,
+            loading: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -143,10 +143,10 @@ class AllBookingsPage extends React.Component {
         }
 
         if (needUpdateBookings) {
-            this.setState({loading: false});
+            this.setState({loading: true});
             this.props.getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
         } else {
-            this.setState({loading: true});
+            this.setState({loading: false});
         }
     }
 
@@ -737,7 +737,11 @@ class AllBookingsPage extends React.Component {
                                             </button>
                                             <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                         </div>
-                                        <Loader className="container" loaded={loading}>
+                                        <LoadingOverlay
+                                            active={loading}
+                                            spinner
+                                            text='Loading...'
+                                        >
                                             <div className="table-responsive">
                                                 <table className="table table-hover table-bordered sortable">
                                                     <thead className="thead-light">
@@ -984,7 +988,7 @@ class AllBookingsPage extends React.Component {
                                                     </tbody>
                                                 </table>
                                             </div>
-                                        </Loader>
+                                        </LoadingOverlay>
                                     </div>
                                 </div>
                             </div>

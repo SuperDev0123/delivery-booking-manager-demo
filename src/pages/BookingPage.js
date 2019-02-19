@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
-import Loader from 'react-loader';
+import LoadingOverlay from 'react-loading-overlay';
 
 import user from '../public/images/user.png';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
@@ -16,7 +16,6 @@ import { getBookingWithFilter, getSuburbStrings, getDeliverySuburbStrings, allie
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
-// import Loading from '../components/Loading/Loading';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -34,7 +33,7 @@ class BookingPage extends Component {
             bookingLineDetails: [],
             nextBookingId: 0,
             prevBookingId: 0,
-            loading: true,
+            loading: false,
             products: [],
             bookingLinesListProduct: [],
             bookingLinesListDetailProduct: [],
@@ -315,9 +314,9 @@ class BookingPage extends Component {
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                 }
 
-                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loading: true });
+                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loading: false });
             } else {
-                this.setState({ formInputs: {}, loading: true });
+                this.setState({ formInputs: {}, loading: false });
                 alert('There is no such booking with that DME/CON number.');
             }
         }
@@ -345,7 +344,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(prevBookingId, 'id');
         }
 
-        this.setState({loading: false});
+        this.setState({loading: true});
     }
 
     onClickPrinter(booking) {
@@ -376,7 +375,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(nextBookingId, 'id');
         }
 
-        this.setState({loading: false});
+        this.setState({loading: true});
     }
 
     onSave() {
@@ -511,7 +510,7 @@ class BookingPage extends Component {
                 return;
             }
             this.props.getBookingWithFilter(typed, selected);
-            this.setState({loading: false});
+            this.setState({loading: true});
         }
 
         this.setState({typed});
@@ -813,8 +812,11 @@ class BookingPage extends Component {
                     </div>
                 </div>
 
-                <Loader className="container" loaded={this.state.loading}>
-
+                <LoadingOverlay
+                    active={this.state.loading}
+                    spinner
+                    text='Loading...'
+                >
                     <section className="booking">
                         <div className="container">
                             <div className="grid">
@@ -1465,8 +1467,7 @@ class BookingPage extends Component {
                             </div>
                         </div>
                     </section>
-
-                </Loader>
+                </LoadingOverlay>
             </div>
         );
     }
