@@ -225,3 +225,29 @@ export const getUserDateFilterField = () => {
             .then(({ data }) => dispatch(setUserDateFilterField(data.user_date_filter_field)))
             .catch((error) => dispatch(failedGetUserDateFilterField(error)));
 };
+
+export const stOrder = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_create_order/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('@1 - After ST order', data)))
+            .catch((error) => dispatch(console.log('@2 - Failed ST order', error)));
+};
+
+export const getExcel = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/excel/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('@1 - After getExcel', data)))
+            .catch((error) => dispatch(console.log('@2 - Failed getExcel', error)));
+};
