@@ -848,194 +848,233 @@ class AllBookingsPage extends React.Component {
                                                     <th className=""></th>
                                                     <th className=""></th>
                                                     <th className="" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col" nowrap>
-                                                        <p>Booking ID</p>
-                                                        {
-                                                            (sortField === 'b_bookingID_Visual') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Booking ID
+                                                            {
+                                                                (sortField === 'b_bookingID_Visual') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} scope="col" nowrap>
-                                                        <p>Pickup / Manifest</p>
-                                                        {
-                                                            (sortField === 'puPickUpAvailFrom_Date') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Pickup / Manifest
+                                                            {
+                                                                (sortField === 'puPickUpAvailFrom_Date') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('puCompany')} scope="col" nowrap>
-                                                        <p>From</p>
-                                                        {
-                                                            (sortField === 'puCompany') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            From
+                                                            {
+                                                                (sortField === 'puCompany') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('pu_Address_Suburb')} scope="col" nowrap>
-                                                        <p>From Suburb</p>
-                                                        {
-                                                            (sortField === 'pu_Address_Suburb') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            From Suburb
+                                                            {
+                                                                (sortField === 'pu_Address_Suburb') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('pu_Address_State')} scope="col" nowrap>
-                                                        <p>From State</p>
-                                                        {
-                                                            (sortField === 'pu_Address_State') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            From State
+                                                            {
+                                                                (sortField === 'pu_Address_State') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('pu_Address_PostalCode')} scope="col" nowrap>
-                                                        <p>From Postal Code</p>
-                                                        {
-                                                            (sortField === 'pu_Address_PostalCode') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            From Postal Code
+                                                            {
+                                                                (sortField === 'pu_Address_PostalCode') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('deToCompanyName')} scope="col" nowrap>
-                                                        <p>To</p>
-                                                        {
-                                                            (sortField === 'deToCompanyName') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            To
+                                                            {
+                                                                (sortField === 'deToCompanyName') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
+
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('de_To_Address_Suburb')} scope="col" nowrap>
-                                                        <p>To Suburb</p>
-                                                        {
-                                                            (sortField === 'de_To_Address_Suburb') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            To Suburb
+                                                            {
+                                                                (sortField === 'de_To_Address_Suburb') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('de_To_Address_State')} scope="col" nowrap>
-                                                        <p>To State</p>
-                                                        {
-                                                            (sortField === 'de_To_Address_State') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            To State
+                                                            {
+                                                                (sortField === 'de_To_Address_State') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('de_To_Address_PostalCode')} scope="col" nowrap>
-                                                        <p>To Postal Code</p>
-                                                        {
-                                                            (sortField === 'de_To_Address_PostalCode') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            To Postal Code
+                                                            {
+                                                                (sortField === 'de_To_Address_PostalCode') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col" nowrap>
-                                                        <p>Reference</p>
-                                                        {
-                                                            (sortField === 'b_clientReference_RA_Numbers') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Reference
+                                                            {
+                                                                (sortField === 'b_clientReference_RA_Numbers') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('vx_freight_provider')} scope="col" nowrap>
-                                                        <p>Freight Provider</p>
-                                                        {
-                                                            (sortField === 'vx_freight_provider') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-amount-desc"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Freight Provider
+                                                            {
+                                                                (sortField === 'vx_freight_provider') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-amount-desc"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('vx_serviceName')} scope="col" nowrap>
-                                                        <p>Service</p>
-                                                        {
-                                                            (sortField === 'vx_serviceName') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Service
+                                                            {
+                                                                (sortField === 'vx_serviceName') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('v_FPBookingNumber')} scope="col" nowrap>
-                                                        <p>Consignment</p>
-                                                        {
-                                                            (sortField === 'v_FPBookingNumber') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Consignment
+                                                            {
+                                                                (sortField === 'v_FPBookingNumber') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('b_status')} scope="col" nowrap>
-                                                        <p>Status</p>
-                                                        {
-                                                            (sortField === 'b_status') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Status
+                                                            {
+                                                                (sortField === 'b_status') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col" nowrap>
-                                                        <p>Pickup Due</p>
-                                                        {
-                                                            (sortField === 's_05_LatestPickUpDateTimeFinal') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Pickup Due
+                                                            {
+                                                                (sortField === 's_05_LatestPickUpDateTimeFinal') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} scope="col" nowrap>
-                                                        <p>Delivery Due</p>
-                                                        {
-                                                            (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Delivery Due
+                                                            {
+                                                                (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('s_20_Actual_Pickup_TimeStamp')} scope="col">
-                                                        <p>Collected</p>
-                                                        {
-                                                            (sortField === 's_20_Actual_Pickup_TimeStamp') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Collected
+                                                            {
+                                                                (sortField === 's_20_Actual_Pickup_TimeStamp') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                     <th className="" onClick={() => this.onChangeSortField('s_21_Actual_Delivery_TimeStamp')} scope="col">
-                                                        <p>Delivered</p>
-                                                        {
-                                                            (sortField === 's_21_Actual_Delivery_TimeStamp') ?
-                                                                (sortDirection > 0) ?
-                                                                    <i className="fa fa-sort-up"></i>
-                                                                    : <i className="fa fa-sort-down"></i>
-                                                                : <i className="fa fa-sort"></i>
-                                                        }
+                                                        <p>
+                                                            Delivered
+                                                            {
+                                                                (sortField === 's_21_Actual_Delivery_TimeStamp') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                            }
+                                                        </p>
                                                     </th>
                                                 </tr>
                                                 <tr className="filter-tr">
