@@ -461,6 +461,13 @@ class AllBookingsPage extends React.Component {
         this.setState({activeTabInd});
     }
 
+    onDatePlusOrMinus(number) {
+        const mainDate = moment(this.state.mainDate).add(number, 'd').format('YYYY-MM-DD');
+        this.props.setGetBookingsFilter('selectedDate', mainDate);
+        localStorage.setItem('today', mainDate);
+        this.setState({mainDate});
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd } = this.state;
 
@@ -720,12 +727,15 @@ class AllBookingsPage extends React.Component {
                                         <div className="userclock">
                                             <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                         </div>
-                                        <label className="right-10px">Date:</label>
-                                        <DatePicker
-                                            selected={mainDate}
-                                            onChange={(e) => this.onDateChange(e)}
-                                            dateFormat="dd/MM/yyyy"
-                                        />
+                                        <div className="date-controls">
+                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
+                                            <DatePicker
+                                                selected={mainDate}
+                                                onChange={(e) => this.onDateChange(e)}
+                                                dateFormat="dd/MM/yyyy"
+                                            />
+                                            <div className="date-adjust"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
+                                        </div>
                                         <ul className="filter-conditions none">
                                             <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
                                             <li><a onClick={() => this.onClickPrefilter(2)}>Missing Labels ({missingLabels})</a></li>
@@ -743,9 +753,6 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                            <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
-                                                <i className="icon icon-download"></i>
-                                            </button>
                                             <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                         </div>
                                         <div>
@@ -828,7 +835,11 @@ class AllBookingsPage extends React.Component {
                                                             <col className="width-15p" />
                                                         </colgroup>
                                                         <tr>
-                                                            <th className=""></th>
+                                                            <th className="">
+                                                                <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
+                                                                    <i className="icon icon-download"></i>
+                                                                </button>
+                                                            </th>
                                                             <th className=""></th>
                                                             <th className=""></th>
                                                             <th className="" onClick={() => this.onChangeSortField('b_bookingID_Visual')} scope="col" nowrap>
