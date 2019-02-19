@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag } from '../actions/bookingActions';
+import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
@@ -75,6 +75,19 @@ export const getSuburbStrings = (type, name) => {
         axios(options)
             .then(({ data }) => dispatch(successGetSuburbs(data)))
             .catch((error) => dispatch(failedGetSuburbs(error)));
+};
+
+export const getAttachmentHistory = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/attachments/?id=` + id,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAttachments(data)))
+            .catch((error) => dispatch(failedGetAttachments(error)));
 };
 
 export const getDeliverySuburbStrings = (type, name) => {
