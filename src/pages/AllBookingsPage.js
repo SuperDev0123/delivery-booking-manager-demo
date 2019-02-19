@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
-import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
@@ -47,6 +47,7 @@ class AllBookingsPage extends React.Component {
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
             loading: false,
+            activeTabInd: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -427,7 +428,6 @@ class AllBookingsPage extends React.Component {
     onClickGetAll(e) {
         e.preventDefault();
         const {mainDate} = this.state;
-
         this.props.setAllGetBookingsFilter(mainDate);
     }
 
@@ -450,8 +450,19 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickTab(activeTabInd) {
+        if (activeTabInd === 0) {
+            const {mainDate} = this.state;
+            this.props.setAllGetBookingsFilter(mainDate);
+        } else {
+            this.onClickPrefilter(activeTabInd);
+        }
+
+        this.setState({activeTabInd});
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -715,7 +726,7 @@ class AllBookingsPage extends React.Component {
                                             onChange={(e) => this.onDateChange(e)}
                                             dateFormat="dd/MM/yyyy"
                                         />
-                                        <ul className="filter-conditions">
+                                        <ul className="filter-conditions none">
                                             <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
                                             <li><a onClick={() => this.onClickPrefilter(2)}>Missing Labels ({missingLabels})</a></li>
                                             <li><a onClick={() => this.onClickPrefilter(3)}>To Manifest ({toManifest})</a></li>
@@ -737,6 +748,59 @@ class AllBookingsPage extends React.Component {
                                             </button>
                                             <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                         </div>
+                                        <div>
+                                            <Nav tabs>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 0 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(0)}
+                                                    >
+                                                        All
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 1 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(1)}
+                                                    >
+                                                        Errors to Correct ({errorsToCorrect})
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 2 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(2)}
+                                                    >
+                                                        Missing Labels ({missingLabels})
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 3 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(3)}
+                                                    >
+                                                        To Manifest ({toManifest})
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 4 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(4)}
+                                                    >
+                                                        To Process ({toProcess})
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 5 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(5)}
+                                                    >
+                                                        Closed ({closed})
+                                                    </NavLink>
+                                                </NavItem>
+                                            </Nav>
+                                        </div>
+                                        <hr />
                                         <LoadingOverlay
                                             active={loading}
                                             spinner
