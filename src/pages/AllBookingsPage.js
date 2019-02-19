@@ -48,6 +48,7 @@ class AllBookingsPage extends React.Component {
             showSimpleSearchBox: false,
             loading: false,
             activeTabInd: 0,
+            checkedAll: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -466,6 +467,20 @@ class AllBookingsPage extends React.Component {
         this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
         this.setState({mainDate});
+    }
+
+    onCheckAll() {
+        const { bookings, checkedAll } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+
+        for (let i = 0; i < bookings.length; i++) {
+            if (!checkedAll) {
+                selectedBookingIds = _.union(selectedBookingIds, [bookings[i].id]);
+            } else {
+                selectedBookingIds = _.difference(selectedBookingIds, [bookings[i].id]);
+            }
+        }
+        this.setState({checkedAll: !checkedAll, selectedBookingIds});
     }
 
     render() {
@@ -1012,7 +1027,7 @@ class AllBookingsPage extends React.Component {
                                                     </th>
                                                 </tr>
                                                 <tr className="filter-tr">
-                                                    <th><i className="icon icon-check"></i></th>
+                                                    <th><input type="checkbox" className="checkall" checked={this.state.checkedAll ? 'checked' : ''} onChange={() => this.onCheckAll()} /></th>
                                                     <th><i className="icon icon-th-list"></i></th>
                                                     <th><i className="icon icon-plus"></i></th>
                                                     <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
