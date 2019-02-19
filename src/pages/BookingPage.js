@@ -15,12 +15,7 @@ import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
-import Clock from 'react-live-clock';
-import lodash from 'lodash';
-import Select from 'react-select';
 import DropzoneComponent from 'react-dropzone-component';
 
 class BookingPage extends Component {
@@ -115,10 +110,10 @@ class BookingPage extends Component {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
-
+        console.log('@booingId===', bookingId);
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
-            this.setState({bAllComboboxViewOnlyonBooking: true });
+            // this.setState({bAllComboboxViewOnlyonBooking: true });
         } else {
             this.props.getSuburbStrings('state', undefined);
             this.props.getDeliverySuburbStrings('state', undefined);
@@ -218,8 +213,9 @@ class BookingPage extends Component {
 
             this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct, bookingLineDetails});
         }
-
+        console.log('@bAllComboBox-----1', this.state.bAllComboboxViewOnlyonBooking);
         if (!this.state.bAllComboboxViewOnlyonBooking) {
+            console.log('@bAllComboBox-----1');
             if (stateStrings && stateStrings.length > 0) {
                 console.log('@state is received');
                 // this.setState({selectedOption: stateStrings[0]});
@@ -227,7 +223,9 @@ class BookingPage extends Component {
                     this.props.getSuburbStrings('postalcode', stateStrings[0].label);
                 }
                 this.setState({stateStrings, loadedPostal: true});
-            } else {
+            } 
+            else {
+                console.log('@bAllComboBox-----2');
                 this.props.getSuburbStrings('state', undefined);
                 this.props.getDeliverySuburbStrings('state', undefined);
             }
@@ -346,7 +344,7 @@ class BookingPage extends Component {
                         deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
                     });
                 }
-                console.log('str1----2');
+
                 if (booking.b_status !== 'Booked') {
                     console.log('@Here 2-----');
                     this.setState({bAllComboboxViewOnlyonBooking: false});
@@ -1509,7 +1507,6 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-======
                                         <div id="tab03" className="tab-contents">
                                             <div className="tab-inner">
                                                 <BootstrapTable
@@ -1542,7 +1539,7 @@ class BookingPage extends Component {
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
-                                                    data={ bookingLinesListDetailProduct }
+                                                    data={ attachmentsHistory }
                                                     columns={ columnAttachments }
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
