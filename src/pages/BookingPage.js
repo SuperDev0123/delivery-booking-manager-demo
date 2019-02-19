@@ -350,7 +350,7 @@ class BookingPage extends Component {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
-                if (!this.state.loading) {
+                if (this.state.loading) {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                 }

@@ -60,13 +60,18 @@ table.booking-lines {
 
 // Main Table
 .table-responsive {
+  margin-top: 5px !important;
+  height: calc(100% - 120px);
+  width: 100%;
+  overflow-x: scroll;
+
   th {
     white-space: nowrap;
     padding: 3px !important;
 
     p {
       display: inline-block;
-      width: calc(100% - 12px);
+      width: calc(100% - 15px);
       overflow: hidden;
     }
 
@@ -74,6 +79,88 @@ table.booking-lines {
       vertical-align: top;
     }
   }
+}
+
+$table_body_height: 100%;
+$column_1_width: 30px;
+$column_2_width: 30px;
+$column_3_width: 30px;
+$column_4_width: 100px;
+$column_5_width: 100px;
+$column_6_width: 100px;
+$column_7_width: 100px;
+$column_8_width: 100px;
+$column_9_width: 100px;
+$column_10_width: 100px;
+$column_11_width: 100px;
+$column_12_width: 100px;
+$column_13_width: 100px;
+$column_14_width: 100px;
+$column_15_width: 100px;
+$column_16_width: 100px;
+
+.fixed_headers {
+  th { text-decoration: none; }
+  th, td {
+    padding: 3px;
+    text-align: left;
+  }
+
+  td:nth-child(1), th:nth-child(1) { width: $column_1_width; }
+  td:nth-child(2), th:nth-child(2) { width: $column_2_width; }
+  td:nth-child(3), th:nth-child(3) { width: $column_3_width; }
+  td:nth-child(4), th:nth-child(4) { width: $column_4_width; }
+  td:nth-child(5), th:nth-child(5) { width: $column_5_width; }
+  td:nth-child(6), th:nth-child(6) { width: $column_6_width; }
+  td:nth-child(7), th:nth-child(7) { width: $column_7_width; }
+  td:nth-child(8), th:nth-child(8) { width: $column_8_width; }
+  td:nth-child(9), th:nth-child(9) { width: $column_9_width; }
+  td:nth-child(10), th:nth-child(10) { width: $column_10_width; }
+  td:nth-child(11), th:nth-child(11) { width: $column_11_width; }
+  td:nth-child(12), th:nth-child(12) { width: $column_12_width; }
+  td:nth-child(13), th:nth-child(13) { width: $column_13_width; }
+  td:nth-child(14), th:nth-child(14) { width: $column_14_width; }
+  td:nth-child(15), th:nth-child(15) { width: $column_15_width; }
+  td:nth-child(16), th:nth-child(16) { width: $column_16_width; }
+
+  tr:nth-child(1), tr:nth-child(2) {
+    color: #048abb;
+  }
+
+  thead {
+    tr {
+      display: block;
+      position: relative;
+    }
+  }
+  tbody {
+    display: block;
+    overflow: auto;
+    height: $table_body_height;
+  }
+}
+
+.table-div {
+  height: calc(100% - 100px);
+  overflow: auto;
+}
+
+.allbookings {
+  height: calc(100% - 71px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.top-menu {
+  height: calc(100% - 40px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.fix-box {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
 }
 
 table {
@@ -180,6 +267,10 @@ table {
   margin-left: 50px;
 }
 
+.left-30px {
+  margin-left: 30px;
+}
+
 .font-24px {
   font-size: 24px;
 }
@@ -247,33 +338,42 @@ ul.filter-conditions {
 
 hr {
   margin-top: 0px;
+  margin-bottom: 3px;
 }
 
 ul.nav-tabs {
   width: 880px;
   margin: 0 auto;
+
+  li {
+    cursor: pointer;
+  }
 }
 
-.date-controls {
+.filter-controls {
   padding-left: 77px;
 
   .date-adjust {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     margin-left: 5px;
     margin-right: 5px;
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: top;
     padding-left: 7px;
-    padding-top: 7px;
+    padding-top: 10px;
 
     i {
       font-size: 18px;
     }
   }
+
+  .btn {
+    padding: 7px !important;
+  }
 }
 
-.date-controls > .date-adjust:hover {
+.filter-controls > .date-adjust:hover {
   background: gray;
 }
 
