@@ -108,6 +108,7 @@ $column_18_width: 250px;
   }
   th { text-decoration: none; }
   th, td {
+    font-weight: lighter;
     padding: 3px;
     text-align: left;
   }
@@ -376,6 +377,10 @@ ul.nav-tabs {
 
   li {
     cursor: pointer;
+
+    a {
+      font-weight: lighter;
+    }
   }
 }
 
