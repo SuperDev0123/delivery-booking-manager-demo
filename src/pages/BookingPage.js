@@ -110,7 +110,6 @@ class BookingPage extends Component {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
-        console.log('@booingId===', bookingId);
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
             // this.setState({bAllComboboxViewOnlyonBooking: true });
@@ -166,9 +165,11 @@ class BookingPage extends Component {
                 'TAS': 'Australia/Hobart',
             }
         };
-        console.log('@country---', country);
-        console.log('@city---', city);
-        return timeZoneTable[country][city];
+        if (timeZoneTable[country] == undefined || timeZoneTable[country] == 'undefined'  || timeZoneTable[country][city] == 'undefined' || timeZoneTable[country][city] == undefined) {
+            return 'Australia/Currie';
+        } else {
+            return timeZoneTable[country][city];
+        }
     }
 
     componentWillReceiveProps(newProps) {
@@ -182,7 +183,6 @@ class BookingPage extends Component {
         }
 
         if (attachments && attachments.length > 0) {
-            console.log('attachments', attachments);
             const tempAttachments = attachments;
             const bookingLinesListDetailProduct = tempAttachments.map((attach) => {
                 let result = [];
@@ -213,56 +213,142 @@ class BookingPage extends Component {
 
             this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct, bookingLineDetails});
         }
-        console.log('@bAllComboBox-----1', this.state.bAllComboboxViewOnlyonBooking);
-        if (!this.state.bAllComboboxViewOnlyonBooking) {
-            console.log('@bAllComboBox-----1');
+
+        if (!bAllComboboxViewOnlyonBooking) {
             if (stateStrings && stateStrings.length > 0) {
-                console.log('@state is received');
-                // this.setState({selectedOption: stateStrings[0]});
                 if ( !this.state.loadedPostal ) {
                     if (postalCode == '' || postalCode == null)
                         this.props.getSuburbStrings('postalcode', stateStrings[0].label);
                 }
+
+                if (booking.pu_Address_State) {
+                    let addedPostalCode = lodash.clone(stateStrings);
+                    let bHas = false;
+                    for (let i = 0; i < addedPostalCode.length; i++ ){
+                        if (addedPostalCode[i].label == booking.pu_Address_State) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        addedPostalCode.push({'value':booking.pu_Address_State, 'label': booking.pu_Address_State});
+                    this.setState({stateStrings: addedPostalCode});        
+                } else {
+                    this.setState({stateStrings});             
+                }
+
                 this.setState({stateStrings, loadedPostal: true});
             }
             else {
-                console.log('@bAllComboBox-----2');
                 this.props.getSuburbStrings('state', undefined);
             }
 
             if (postalCode && postalCode.length > 0) {
-                console.log('@postalCode is received');
-                this.setState({postalCode});
+                if (booking.pu_Address_PostalCode) {
+                    let addedPostalCode = lodash.clone(postalCode);
+                    let bHas = false;
+                    for (let i = 0; i < addedPostalCode.length; i++ ){
+                        if (addedPostalCode[i].label == booking.pu_Address_PostalCode) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        addedPostalCode.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
+                    this.setState({postalCode: addedPostalCode});        
+                } else {
+                    this.setState({postalCode});                    
+                }
             }
 
             if (suburbStrings && suburbStrings.length > 0) {
                 if (suburbStrings.length == 1) {
                     this.setState({selectedOptionSuburb: suburbStrings[0]});
                 } else if (suburbStrings.length > 1) {
+                    if (booking.pu_Address_Suburb) {
+                        let addedPostalCode = lodash.clone(suburbStrings);
+                        let bHas = false;
+                        for (let i = 0; i < addedPostalCode.length; i++ ){
+                            if (addedPostalCode[i].label == booking.pu_Address_Suburb) {
+                                bHas = true;
+                                break;
+                            }
+                        }
+                        if (bHas == false)
+                            addedPostalCode.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
+                        this.setState({suburbStrings: addedPostalCode});        
+                    } else {
+                        this.setState({suburbStrings});                    
+                    }
+    
                     this.setState({selectedOptionSuburb: null});
                 }
                 this.setState({suburbStrings});
-                console.log('@suburbStrings is received');
             }
 
             if (deStateStrings && deStateStrings.length > 0) {
-                console.log('@deStateStrings is received');
                 if ( !this.state.deLoadedPostal ) {
                     this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
                 }
+
+                if (booking.de_To_Address_State) {
+                    let addedPostalCode = lodash.clone(deStateStrings);
+                    let bHas = false;
+                    for (let i = 0; i < addedPostalCode.length; i++ ){
+                        if (addedPostalCode[i].label == booking.de_To_Address_State) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        addedPostalCode.push({'value':booking.de_To_Address_State, 'label': booking.de_To_Address_State});
+                    this.setState({deStateStrings: addedPostalCode});        
+                } else {
+                    this.setState({deStateStrings});                    
+                }
+
                 this.setState({deStateStrings, deLoadedPostal: true});
             } else {
                 this.props.getDeliverySuburbStrings('state', undefined);
             }
 
             if (dePostalCode && dePostalCode.length > 0) {
-                this.setState({dePostalCode});
+                if (booking.de_To_Address_PostalCode) {
+                    let addedPostalCode = lodash.clone(dePostalCode);
+                    let bHas = false;
+                    for (let i = 0; i < addedPostalCode.length; i++ ){
+                        if (addedPostalCode[i].label == booking.de_To_Address_PostalCode) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        addedPostalCode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
+                    this.setState({dePostalCode: addedPostalCode});        
+                } else {
+                    this.setState({dePostalCode});             
+                }
             }
 
             if (deSuburbStrings && deSuburbStrings.length > 0) {
                 if (deSuburbStrings.length == 1) {
                     this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
                 } else if (deSuburbStrings.length > 1) {
+                    if (booking.de_To_Address_State) {
+                        let addedPostalCode = lodash.clone(deSuburbStrings);
+                        let bHas = false;
+                        for (let i = 0; i < addedPostalCode.length; i++ ){
+                            if (addedPostalCode[i].label == booking.de_To_Address_State) {
+                                bHas = true;
+                                break;
+                            }
+                        }
+                        if (bHas == false)
+                            addedPostalCode.push({'value':booking.de_To_Address_State, 'label': booking.de_To_Address_State});
+                        this.setState({deSuburbStrings: addedPostalCode});        
+                    } else {
+                        this.setState({deSuburbStrings});             
+                    }
                     this.setState({deSelectedOptionSuburb: null});
                 }
                 this.setState({deSuburbStrings});
@@ -295,13 +381,14 @@ class BookingPage extends Component {
         if ( bBooking ) {
             if ( bBooking == false ) {
                 alert('There is no such booking with that DME`/CON` number.');
-                console.log('@booking Data' + bBooking);
+                // console.log('@booking Data' + bBooking);
                 this.setState({bBooking: null});
             }
         }
 
         if ( booking && !bAllComboboxViewOnlyonBooking) {
-            if ( booking.puCompany || booking.deToCompanyName ) {
+            // console.log(booking.puCompany , booking.deToCompanyName , booking.de_Email , booking.pu_Email);
+            if ( booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
 
                 formInputs['puCompany'] = booking.puCompany;
@@ -334,7 +421,6 @@ class BookingPage extends Component {
                 }
                 
                 this.setState({
-                    bAllComboboxViewOnlyonBooking: true,
                     selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
                     selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
                     selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
@@ -344,9 +430,10 @@ class BookingPage extends Component {
                 });
 
                 if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
-                    console.log('@booking data is on.');
+                    // console.log('@booking data is on.');
+                    this.setState({bAllComboboxViewOnlyonBooking: true});
                 } else {
-                    console.log('@booking data is off.');
+                    // console.log('@booking data is off.');
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
@@ -368,9 +455,25 @@ class BookingPage extends Component {
     }
 
     onHandleInput(e) {
-        let formInputs = this.state.formInputs;
-        formInputs[e.target.name] = e.target.value;
-        this.setState({ formInputs });
+        
+        if ( this.state.bAllComboboxViewOnlyonBooking === false) {
+            let formInputs = this.state.formInputs;
+            let booking = this.state.booking;
+            formInputs[e.target.name] = e.target.value;
+            booking[e.target.name] = e.target.value;
+            this.setState({ formInputs });
+            this.setState({ booking });
+        } else {
+            let formInputs = this.state.formInputs;
+            let booking = this.state.booking;
+            // console.log('@here', e.target.value, booking[e.target.name]);
+            if (booking[e.target.name] == null) {
+                formInputs[e.target.name] = '';
+            } else {
+                formInputs[e.target.name] = booking[e.target.name];
+            }
+            this.setState({ formInputs });
+        }
     }
 
     getRadioValue(event) {
@@ -515,17 +618,11 @@ class BookingPage extends Component {
     }
 
     onPickUpDateChange(date) {
-        // const {selectedWarehouseId, itemCountPerPage} = this.state;
-        const mainDate = moment(date).format('YYYY-MM-DD');
-
-        // if (selectedWarehouseId === 'all') {
-        //     this.props.getBookings(mainDate, 0, itemCountPerPage);
-        // } else {
-
-        // }
-
-        localStorage.setItem('today', mainDate);
-        this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
+        if (this.state.bAllComboboxViewOnlyonBooking == false) {        
+            const mainDate = moment(date).format('YYYY-MM-DD');
+            localStorage.setItem('today', mainDate);
+            this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
+        }
     }
 
     deleteRowDetails() {
@@ -561,66 +658,81 @@ class BookingPage extends Component {
         if (isSelect) {
             const {bookingLinesListProduct} = this.state;
             var a = bookingLinesListProduct.indexOf(row);
-            console.log('@a value' + a);
+            // console.log('@a value' + a);
             this.setState({deletedBookingLine: a});
         }
     }
 
     onChangeText(e) {
         this.setState({typed: e.target.value});
-        console.log(e.target.value);
+        // console.log(e.target.value);
     }
 
     handleChangeState = (selectedOption) => {
-        this.setState({ selectedOption });
-        console.log('Option selected:', selectedOption);
-        this.props.getSuburbStrings('postalcode', selectedOption.label);
-        this.setState({selectedOptionPostal: null});
-        this.setState({selectedOptionSuburb: null});
-        // this.setState({loadedPostal: false});
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.setState({ selectedOption });
+            // console.log('Option selected:', selectedOption);
+            this.props.getSuburbStrings('postalcode', selectedOption.label);
+            this.setState({selectedOptionPostal: null});
+            this.setState({selectedOptionSuburb: null});
+        }
     };
 
     handleChangePostalcode = (selectedOptionPostal) => {
-        this.props.getSuburbStrings('suburb', selectedOptionPostal.label);
-        this.setState({ selectedOptionPostal });
-        console.log('postalcode selected:', selectedOptionPostal);
-        this.setState({selectedOptionSuburb: null});
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.props.getSuburbStrings('suburb', selectedOptionPostal.label);
+            this.setState({ selectedOptionPostal });
+            // console.log('postalcode selected:', selectedOptionPostal);
+            this.setState({selectedOptionSuburb: null});
+        }
     };
 
     handleChangeSuburb = (selectedOptionSuburb) => {
-        this.setState({ selectedOptionSuburb });
-        console.log('suburb selected:', selectedOptionSuburb);
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.setState({ selectedOptionSuburb });
+            // console.log('suburb selected:', selectedOptionSuburb);
+        }
     };
 
     handleChangeStateDelivery = (deSelectedOptionState) => {
-        this.setState({ deSelectedOptionState });
-        this.props.getDeliverySuburbStrings('postalcode', deSelectedOptionState.label);
-        console.log('Option selected:', deSelectedOptionState);
-        this.setState({deSelectedOptionPostal: null});
-        this.setState({deSelectedOptionSuburb: null});
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.setState({ deSelectedOptionState });
+            this.props.getDeliverySuburbStrings('postalcode', deSelectedOptionState.label);
+            // console.log('Option selected:', deSelectedOptionState);
+            this.setState({deSelectedOptionPostal: null});
+            this.setState({deSelectedOptionSuburb: null});
+        }
     };
 
     handleChangePostalcodeDelivery = (deSelectedOptionPostal) => {
-        this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
-        this.setState({ deSelectedOptionPostal });
-        console.log('postalcode selected:', deSelectedOptionPostal);
-        this.setState({deSelectedOptionSuburb: null});
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
+            this.setState({ deSelectedOptionPostal });
+            // console.log('postalcode selected:', deSelectedOptionPostal);
+            this.setState({deSelectedOptionSuburb: null});
+        }
     };
 
     handleChangeSuburbDelivery = (deSelectedOptionSuburb) => {
-        this.setState({ deSelectedOptionSuburb });
-        console.log('suburb selected:', deSelectedOptionSuburb);
+        if ( this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.setState({ deSelectedOptionSuburb });
+            // console.log('suburb selected:', deSelectedOptionSuburb);
+        }
     };
 
     handlePost(e) {
         e.preventDefault();
         const {booking} = this.state;
         if ( booking != null && booking.id != null) {
-            console.log('nakcall', booking);
             this.dropzone.processQueue();
         } else {
-            console.log('nakcall----');
             alert('There is no booking data.');
+        }
+    }
+
+    displayNoOptionsMessage() {
+        if (this.state.bAllComboboxViewOnlyonBooking == true) {
+            return 'No Editable';
         }
     }
 
@@ -640,12 +752,11 @@ class BookingPage extends Component {
     }
 
     handleUploadFinish() {
-        console.log('@upload finish');
         this.props.getAttachmentHistory(this.state.booking.id);
 
     }
     render() {
-        const {attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
@@ -1007,6 +1118,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangeState}
                                                                 options={this.state.stateStrings}
                                                                 placeholder='select your state'
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
                                                             />
                                                         </div>
                                                     </div>
@@ -1020,6 +1133,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangePostalcode}
                                                                 options={this.state.postalCode}
                                                                 placeholder='select your postal code'
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                             />
                                                         </div>
                                                     </div>
@@ -1033,6 +1148,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangeSuburb}
                                                                 options={this.state.suburbStrings}
                                                                 placeholder='select your suburb'
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                             />
                                                         </div>
                                                     </div>
@@ -1041,7 +1158,7 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Country</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input type="text" name="pu_Address_Country" className="form-control" value = 'Australia' onChange={(e) => this.onHandleInput(e)} />
+                                                            <input type="text" name="pu_Address_Country" className="form-control" value = {formInputs['pu_Address_Country']} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -1078,6 +1195,7 @@ class BookingPage extends Component {
                                                                     selected={mainDate}
                                                                     onChange={(e) => this.onPickUpDateChange(e)}
                                                                     dateFormat="DD MMM YYYY"
+                                                                    disabled={bAllComboboxViewOnlyonBooking ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
@@ -1261,6 +1379,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangeStateDelivery}
                                                                 options={this.state.deStateStrings}
                                                                 placeholder='select your state'
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
                                                             />
                                                         </div>
                                                     </div>
@@ -1274,6 +1394,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangePostalcodeDelivery}
                                                                 options={this.state.dePostalCode}
                                                                 placeholder='select your postal code'
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
                                                             />
                                                         </div>
                                                     </div>
@@ -1287,6 +1409,8 @@ class BookingPage extends Component {
                                                                 onChange={this.handleChangeSuburbDelivery}
                                                                 options={this.state.deSuburbStrings}
                                                                 placeholder='select your suburb'
+                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
                                                             />
                                                         </div>
                                                     </div>
@@ -1332,6 +1456,7 @@ class BookingPage extends Component {
                                                                     selected={mainDate}
                                                                     onChange={(e) => this.onPickUpDateChange(e)}
                                                                     dateFormat="DD MMM YYYY"
+                                                                    disabled={bAllComboboxViewOnlyonBooking ? true : false}
                                                                 />
                                                             </div>
                                                         </div>
