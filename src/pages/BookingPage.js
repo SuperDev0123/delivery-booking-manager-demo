@@ -220,14 +220,14 @@ class BookingPage extends Component {
                 console.log('@state is received');
                 // this.setState({selectedOption: stateStrings[0]});
                 if ( !this.state.loadedPostal ) {
-                    this.props.getSuburbStrings('postalcode', stateStrings[0].label);
+                    if (postalCode == '' || postalCode == null)
+                        this.props.getSuburbStrings('postalcode', stateStrings[0].label);
                 }
                 this.setState({stateStrings, loadedPostal: true});
             }
             else {
                 console.log('@bAllComboBox-----2');
                 this.props.getSuburbStrings('state', undefined);
-                this.props.getDeliverySuburbStrings('state', undefined);
             }
 
             if (postalCode && postalCode.length > 0) {
@@ -251,6 +251,8 @@ class BookingPage extends Component {
                     this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
                 }
                 this.setState({deStateStrings, deLoadedPostal: true});
+            } else {
+                this.props.getDeliverySuburbStrings('state', undefined);
             }
 
             if (dePostalCode && dePostalCode.length > 0) {
@@ -330,23 +332,21 @@ class BookingPage extends Component {
                 if (booking.de_To_Address_Country != undefined && booking.de_To_Address_State != undefined) {
                     this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
                 }
+                
+                this.setState({
+                    bAllComboboxViewOnlyonBooking: true,
+                    selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
+                    selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
+                    selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
+                    deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
+                    deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
+                    deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                });
 
-                console.log('@booking---1211', booking.b_status, booking);
-                if ( booking.b_status === 'Booked') {
-                    console.log('@Here 1-----');
-                    this.setState({
-                        bAllComboboxViewOnlyonBooking: true,
-                        selectedOptionPostal: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
-                        selectedOptionSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
-                        selectedOptionState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
-                        deSelectedOptionPostal: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
-                        deSelectedOptionSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
-                        deSelectedOptionState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
-                    });
-                }
-
-                if (booking.b_status !== 'Booked') {
-                    console.log('@Here 2-----');
+                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
+                    console.log('@booking data is on.');
+                } else {
+                    console.log('@booking data is off.');
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
