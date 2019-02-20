@@ -490,7 +490,21 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickExcel() {
-        this.props.getExcel();
+        // this.props.getExcel();
+        const options = {
+            method: 'get',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/',
+            responseType: 'blob', // important
+        };
+
+        axios(options).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'bookings_seaway.xlsx');
+            document.body.appendChild(link);
+            link.click();
+        });
     }
 
     render() {
