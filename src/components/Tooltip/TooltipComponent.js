@@ -43,7 +43,6 @@ class TooltipItem extends React.Component {
                     className='tooltipitem'>
                     {booking.b_error_Capture}
                 </Tooltip>
-                &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
             </div>
         );
     }

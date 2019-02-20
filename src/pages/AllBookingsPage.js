@@ -671,11 +671,18 @@ class AllBookingsPage extends React.Component {
                     <td >{booking.de_To_Address_Suburb}</td>
                     <td >{booking.de_To_Address_State}</td>
                     <td >{booking.de_To_Address_PostalCode}</td>
-                    <td >{booking.b_clientReference_RA_Numbers}</td>
-                    <td >{booking.vx_freight_provider}</td>
-                    <td >{booking.vx_serviceName}</td>
-                    <td >{booking.v_FPBookingNumber}</td>
-                    <td className="no-padding">
+                    <td className={
+                        (booking.b_error_Capture) ?
+                            'dark-blue warning pad-top-12px'
+                            :
+                            (booking.z_downloaded_shipping_label_timestamp != null) ?
+                                'bg-yellow pad-top-12px'
+                                :
+                                (booking.z_label_url && booking.z_label_url.length > 0) ?
+                                    'bg-green pad-top-12px'
+                                    :
+                                    'bg-gray pad-top-12px'
+                    }>
                         {
                             (booking.b_error_Capture) ?
                                 <div className="booking-status">
@@ -685,23 +692,20 @@ class AllBookingsPage extends React.Component {
                                 <div className="booking-status">
                                     <div className="disp-inline-block">
                                         {
-                                            <a href="#" className={
-                                                (booking.z_downloaded_shipping_label_timestamp != null) ?
-                                                    'bg-yellow'
-                                                    :
-                                                    (booking.z_label_url && booking.z_label_url.length > 0) ?
-                                                        'bg-green'
-                                                        :
-                                                        'bg-gray'
-                                            }
-                                            onClick={() => this.onClickPrinter(booking)}>
+                                            <a href="#" onClick={() => this.onClickPrinter(booking)}>
                                                 <i className="icon icon-printer"></i>
                                             </a>
                                         }
-                                        &nbsp;&nbsp;{booking.b_status}&nbsp;&nbsp;
                                     </div>
                                 </div>
                         }
+                    </td>
+                    <td >{booking.b_clientReference_RA_Numbers}</td>
+                    <td >{booking.vx_freight_provider}</td>
+                    <td >{booking.vx_serviceName}</td>
+                    <td >{booking.v_FPBookingNumber}</td>
+                    <td >
+                        {booking.b_status}
                     </td>
                     <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
@@ -740,6 +744,7 @@ class AllBookingsPage extends React.Component {
                         </div>
                         <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        <a onClick={() => this.onClickExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                         <a href="">?</a>
                     </div>
                 </div>
@@ -768,7 +773,6 @@ class AllBookingsPage extends React.Component {
                                         <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                         <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                         <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
-                                        <button className="btn btn-primary" onClick={() => this.onClickExcel()}>seaway XL</button>
                                         <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                         <label className="font-24px float-right">Count: {bookingsCnt}</label>
                                     </div>
@@ -968,6 +972,7 @@ class AllBookingsPage extends React.Component {
                                                             }
                                                         </p>
                                                     </th>
+                                                    <th className=""></th>
                                                     <th className="" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col" nowrap>
                                                         <p>
                                                             Reference
@@ -1091,6 +1096,7 @@ class AllBookingsPage extends React.Component {
                                                     <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                    <th className="printer-column"><i className="icon icon-printer"></i></th>
                                                     <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
                                                     <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
