@@ -157,6 +157,10 @@ $column_18_width: 250px;
     text-align: center;
   }
 
+  tr:nth-child(2) {
+    font-size: 13px !important;
+  }
+
   thead {
     tr {
       display: block;
