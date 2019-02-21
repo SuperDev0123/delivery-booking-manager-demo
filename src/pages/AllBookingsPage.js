@@ -264,12 +264,6 @@ class AllBookingsPage extends React.Component {
     onKeyPress(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-
-            if((e.target.value == undefined) || (e.target.value == '')){
-                alert('id value is empty');
-                return;
-            }
-
             let filterInputs = this.state.filterInputs;
             filterInputs[e.target.name] = e.target.value;
             this.setState({filterInputs});
