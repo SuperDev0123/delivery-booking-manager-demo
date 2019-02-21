@@ -52,6 +52,8 @@ class AllBookingsPage extends React.Component {
         };
 
         this.togglePopover = this.togglePopover.bind(this);
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
 
     static propTypes = {
@@ -109,11 +111,11 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillMount() {
-        // document.addEventListener('mousedown', this.handleClickOutside);
+        document.addEventListener('mousedown', this.handleClickOutside);
     }
 
     componentWillUnmount() {
-        // document.removeEventListener('mousedown', this.handleClickOutside);
+        document.removeEventListener('mousedown', this.handleClickOutside);
     }
 
     componentWillReceiveProps(newProps) {
@@ -152,6 +154,15 @@ class AllBookingsPage extends React.Component {
         } else {
             this.setState({loading: false});
         }
+    }
+
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target))
+            this.setState({showSimpleSearchBox: false});
+    }
+
+    setWrapperRef(node) {
+        this.wrapperRef = node;
     }
 
     calcBookingLine(bookingLines) {
