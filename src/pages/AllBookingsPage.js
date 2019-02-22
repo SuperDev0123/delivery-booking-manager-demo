@@ -208,7 +208,14 @@ class AllBookingsPage extends React.Component {
     }
 
     onDateChange(date) {
-        const mainDate = moment(date).format('YYYY-MM-DD');
+        let mainDate = '';
+        
+        if (_.isNull(date)) {
+            mainDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+        } else {
+            mainDate = moment(date).format('YYYY-MM-DD');
+        }
+
         this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
         this.setState({mainDate});
