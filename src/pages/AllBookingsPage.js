@@ -49,6 +49,7 @@ class AllBookingsPage extends React.Component {
             loading: false,
             activeTabInd: 7,
             checkedAll: false,
+            showGearMenu: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -158,7 +159,7 @@ class AllBookingsPage extends React.Component {
 
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target))
-            this.setState({showSimpleSearchBox: false});
+            this.setState({showSimpleSearchBox: false, showGearMenu: false});
     }
 
     setWrapperRef(node) {
@@ -471,8 +472,12 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds: []});
     }
 
-    onClickSimpleSearch() {
-        this.setState({showSimpleSearchBox: true});
+    onClickSimpleSearch(num) {
+        if (num === 0) {
+            this.setState({showSimpleSearchBox: true});
+        } else if (num === 1) {
+            this.setState({showGearMenu: true});
+        }
     }
 
     onInputChange(e) {
@@ -547,6 +552,10 @@ class AllBookingsPage extends React.Component {
             document.body.appendChild(link);
             link.click();
         });
+    }
+
+    onClickGear() {
+        this.setState({showGearMenu: true});
     }
 
     render() {
@@ -804,7 +813,7 @@ class AllBookingsPage extends React.Component {
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
                         <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
-                        <div className="popup" onClick={() => this.onClickSimpleSearch()}>
+                        <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                             <i className="icon-search3" aria-hidden="true"></i>
                             {
                                 showSimpleSearchBox &&
@@ -818,7 +827,15 @@ class AllBookingsPage extends React.Component {
                         <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
                             <i className="icon icon-th-list" aria-hidden="true"></i>
                         </div>
-                        <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
+                        <div className="popup" onClick={() => this.onClickSimpleSearch(1)}>
+                            <i className="icon-cog2" aria-hidden="true"></i>
+                            {
+                                this.state.showGearMenu &&
+                                <div ref={this.setWrapperRef}>
+                                    <button className="popuptext1 btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                </div>
+                            }
+                        </div>
                         <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                         <a onClick={() => this.onClickExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                         <a href="">?</a>
@@ -848,7 +865,6 @@ class AllBookingsPage extends React.Component {
                                         <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                         <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
                                         <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                        <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
                                         <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                         <p className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</p>
                                     </div>
