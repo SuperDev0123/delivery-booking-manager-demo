@@ -683,24 +683,44 @@ class AllBookingsPage extends React.Component {
                             <div className="location-info disp-inline-block">
                                 <span>PU Info</span><br />
                                 <span>Pickup Location:</span><br />
-                                <span>
+                                <span className={(_.isEmpty(booking.pu_Address_street_1)) ? ' none' :  ''}>
                                     {booking.pu_Address_street_1}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.pu_Address_street_2)) ? ' none' :  ''}>
                                     {booking.pu_Address_street_2}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.pu_Address_Suburb)) ? ' none' :  ''}>
                                     {booking.pu_Address_Suburb}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.pu_Address_City)) ? ' none' :  ''}>
                                     {booking.pu_Address_City}<br />
+                                </span>
+                                <span className={((_.isEmpty(booking.pu_Address_State)) && (_.isEmpty(booking.pu_Address_PostalCode))) ? ' none' :  ''}>
                                     {booking.pu_Address_State} {booking.pu_Address_PostalCode}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.pu_Address_Country)) ? ' none' :  ''}>
                                     {booking.pu_Address_Country}<br />
                                 </span>
                             </div>
                             <div className="location-info disp-inline-block">
                                 <span>Delivery Info</span><br />
                                 <span>Delivery Location:</span><br />
-                                <span>
+                                <span className={(_.isEmpty(booking.de_To_Address_street_1)) ? ' none' :  ''}>
                                     {booking.de_To_Address_street_1}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.de_To_Address_street_2)) ? ' none' :  ''}>
                                     {booking.de_To_Address_street_2}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.de_To_Address_Suburb)) ? ' none' :  ''}>
                                     {booking.de_To_Address_Suburb}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.de_To_Address_City)) ? ' none' :  ''}>
                                     {booking.de_To_Address_City}<br />
+                                </span>
+                                <span className={((_.isEmpty(booking.de_To_Address_State)) && (_.isEmpty(booking.de_To_Address_PostalCode))) ? ' none' :  ''}>
                                     {booking.de_To_Address_State} {booking.de_To_Address_PostalCode}<br />
+                                </span>
+                                <span className={(_.isEmpty(booking.de_To_Address_Country)) ? ' none' :  ''}>
                                     {booking.de_To_Address_Country}<br />
                                 </span>
                             </div>
