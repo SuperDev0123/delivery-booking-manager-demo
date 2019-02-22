@@ -77,7 +77,7 @@ body, p { margin:0; padding:0}
 
 .table > thead > tr > th
 {
-   font-family: "Helvetica Neue Bold", Helvetica, Arial, sans-serif!important;
+   /* font-family: "Helvetica Neue Bold", Helvetica, Arial, sans-serif!important; */
 }
 
 #headr{

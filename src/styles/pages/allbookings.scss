@@ -64,12 +64,14 @@ table.booking-lines {
   height: calc(100% - 120px);
   width: 100%;
   overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 .fixed_headers {
   th {
     white-space: nowrap;
     text-decoration: none;
+    overflow: hidden;
 
     p {
       overflow: hidden;
@@ -82,6 +84,9 @@ table.booking-lines {
 
     input {
       width: 80%;
+      margin-left: 10%;
+      padding: 0px;
+      font-weight: lighter;
     }
   }
   th, td {
@@ -90,39 +95,48 @@ table.booking-lines {
     text-align: left;
   }
 
-  td:nth-child(1), th:nth-child(1) { min-width: 50px; }
-  td:nth-child(2), th:nth-child(2) { min-width: 30px; }
-  td:nth-child(3), th:nth-child(3) { min-width: 30px; }
-  td:nth-child(4), th:nth-child(4) { min-width: 100px; }
-  td:nth-child(5), th:nth-child(5) { min-width: 150px; }
-  td:nth-child(6), th:nth-child(6) { min-width: 100px; }
-  td:nth-child(7), th:nth-child(7) { min-width: 100px; }
-  td:nth-child(8), th:nth-child(8) { min-width: 100px; }
-  td:nth-child(9), th:nth-child(9) { min-width: 150px; }
-  td:nth-child(10), th:nth-child(10) { min-width: 150px; }
-  td:nth-child(11), th:nth-child(11) { min-width: 100px; }
-  td:nth-child(12), th:nth-child(12) { min-width: 100px; }
-  td:nth-child(13), th:nth-child(13) { min-width: 150px; }
-  td:nth-child(14), th:nth-child(14) { min-width: 150px; }
-  td:nth-child(15), th:nth-child(15) { min-width: 150px; }
-  td:nth-child(16), th:nth-child(16) { min-width: 150px; }
-  td:nth-child(17), th:nth-child(17) { min-width: 150px; }
-  td:nth-child(18), th:nth-child(18) { min-width: 150px; }
-  td:nth-child(18), th:nth-child(18) { min-width: 150px }
-  td:nth-child(19), th:nth-child(19) { min-width: 150px }
-  td:nth-child(20), th:nth-child(20) { min-width: 150px }
-  td:nth-child(21), th:nth-child(21) { min-width: 150px }
-  td:nth-child(22), th:nth-child(21) { min-width: 150px }
-
-  tr:nth-child(1), tr:nth-child(2) {
-    color: #048abb;
-  }
+  td:nth-child(1), th:nth-child(1) { min-width: 40px; width: 40px; }
+  td:nth-child(2), th:nth-child(2) { min-width: 25px; width: 25px; }
+  td:nth-child(3), th:nth-child(3) { min-width: 25px; width: 25px; }
+  td:nth-child(4), th:nth-child(4) { min-width: 80px; width: 80px; }
+  td:nth-child(5), th:nth-child(5) { min-width: 130px; width: 130px; }
+  td:nth-child(6), th:nth-child(6) { min-width: 100px; width: 100px; }
+  td:nth-child(7), th:nth-child(7) { min-width: 100px; width: 100px; }
+  td:nth-child(8), th:nth-child(8) { min-width: 100px; width: 100px; }
+  td:nth-child(9), th:nth-child(9) { min-width: 130px; width: 130px; }
+  td:nth-child(10), th:nth-child(10) { min-width: 250px; width: 250px; }
+  td:nth-child(11), th:nth-child(11) { min-width: 100px; width: 100px; }
+  td:nth-child(12), th:nth-child(12) { min-width: 80px; width: 80px; }
+  td:nth-child(13), th:nth-child(13) { min-width: 130px; width: 130px; }
+  td:nth-child(14), th:nth-child(14) { min-width: 30px; width: 30px; }
+  td:nth-child(15), th:nth-child(15) { min-width: 80px; width: 80px; }
+  td:nth-child(16), th:nth-child(16) { min-width: 120px; width: 120px; }
+  td:nth-child(17), th:nth-child(17) { min-width: 80px; width: 80px; }
+  td:nth-child(18), th:nth-child(18) { min-width: 120px; width: 120px; }
+  td:nth-child(18), th:nth-child(18) { min-width: 120px; width: 120px; }
+  td:nth-child(19), th:nth-child(19) { min-width: 120px; width: 120px; }
+  td:nth-child(20), th:nth-child(20) { min-width: 150px; width: 150px; }
+  td:nth-child(21), th:nth-child(21) { min-width: 150px; width: 150px; }
+  td:nth-child(22), th:nth-child(22) { min-width: 180px; width: 180px; }
+  td:nth-child(23), th:nth-child(23) { min-width: 180px; width: 180px; }
 
   tr td:nth-child(1) {
     text-align: center;
   }
 
+  tr:nth-child(1), tr:nth-child(2) {
+    color: #048abb;
+    font-weight: lighter;
+  }
+
   tr:nth-child(2) {
+    th:nth-child(2), th:nth-child(3) {
+      i {
+        float: left;
+        margin: 0 auto;
+        font-size: 16px;
+      }
+    }
     font-size: 13px !important;
   }
 
@@ -134,8 +148,10 @@ table.booking-lines {
   }
   tbody {
     display: block;
-    overflow: auto;
-    height: 300px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: calc(400px);
+    // height: calc(100% - 80px);
   }
 }
 
