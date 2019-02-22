@@ -175,6 +175,10 @@ $column_18_width: 250px;
     overflow: auto;
     height: $table_body_height;
   }
+
+  td.active {
+    background-color: whitesmoke;
+  }
 }
 
 .table-div {
