@@ -47,7 +47,7 @@ class AllBookingsPage extends React.Component {
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
             loading: false,
-            activeTabInd: 0,
+            activeTabInd: 7,
             checkedAll: false,
         };
 
@@ -209,7 +209,7 @@ class AllBookingsPage extends React.Component {
 
     onDateChange(date) {
         let mainDate = '';
-        
+
         if (_.isNull(date)) {
             mainDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         } else {
@@ -483,6 +483,8 @@ class AllBookingsPage extends React.Component {
 
     onClickTab(activeTabInd) {
         if (activeTabInd === 0) {
+            this.props.setAllGetBookingsFilter('*');
+        } else if (activeTabInd === 7) {
             const {mainDate} = this.state;
             this.props.setAllGetBookingsFilter(mainDate);
         } else {
@@ -816,7 +818,7 @@ class AllBookingsPage extends React.Component {
                                         <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                         <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
                                         <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                        <label className="font-24px float-right">Count: {bookingsCnt}</label>
+                                        <span className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</span>
                                     </div>
                                     <ul className="filter-conditions none">
                                         <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
@@ -833,6 +835,14 @@ class AllBookingsPage extends React.Component {
                                                     onClick={() => this.onClickTab(0)}
                                                 >
                                                     All
+                                                </NavLink>
+                                            </NavItem>
+                                            <NavItem>
+                                                <NavLink
+                                                    className={activeTabInd === 7 ? 'active' : ''}
+                                                    onClick={() => this.onClickTab(7)}
+                                                >
+                                                    Today (or by date)
                                                 </NavLink>
                                             </NavItem>
                                             <NavItem>
