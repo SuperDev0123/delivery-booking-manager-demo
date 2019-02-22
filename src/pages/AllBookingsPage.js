@@ -805,7 +805,7 @@ class AllBookingsPage extends React.Component {
                                         <DatePicker
                                             selected={mainDate}
                                             onChange={(e) => this.onDateChange(e)}
-                                            dateFormat="dd/MM/yyyy"
+                                            dateFormat="dd MMM yyyy"
                                         />
                                         <div className="date-adjust"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                                         <label className="left-30px right-10px">Warehouse/Client:</label>
