@@ -229,6 +229,7 @@ class AllBookingsPage extends React.Component {
             warehouseId = selectedWarehouseId;
 
         this.props.setGetBookingsFilter('warehouseId', warehouseId);
+        this.setState({selectedBookingIds: []});
     }
 
     onItemCountPerPageChange(e) {
