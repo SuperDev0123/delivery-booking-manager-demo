@@ -393,10 +393,11 @@ ul.nav-tabs {
 
 .filter-controls {
   padding-left: 77px;
+  margin-bottom: 10px;
 
   .date-adjust {
-    width: 25px;
-    height: 25px;
+    width: 30px;
+    height: 35px;
     margin-left: 5px;
     margin-right: 5px;
     display: inline-block;
@@ -411,6 +412,12 @@ ul.nav-tabs {
 
   .btn {
     padding: 7px !important;
+  }
+
+  p {
+    font-size: 18px;
+    margin-top: 55px;
+    font-weight: lighter;
   }
 }
 

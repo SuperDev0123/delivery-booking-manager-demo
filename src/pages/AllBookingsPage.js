@@ -818,7 +818,7 @@ class AllBookingsPage extends React.Component {
                                         <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                         <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
                                         <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                        <span className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</span>
+                                        <p className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</p>
                                     </div>
                                     <ul className="filter-conditions none">
                                         <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
