@@ -524,7 +524,7 @@ class BookingPage extends Component {
                 win.focus();
             }
             booking.is_printed = true;
-            booking.z_downloaded_shipping_label_timestamp = new Date();
+            // booking.z_downloaded_shipping_label_timestamp = new Date();
             this.props.updateBooking(booking.id, booking);
         } else {
             alert('This booking has no label');
