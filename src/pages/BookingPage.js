@@ -135,7 +135,7 @@ class BookingPage extends Component {
             mainDate = moment().tz('Australia/Sydney').toDate();
             // dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         }
-
+        console.log('@main data----', mainDate);
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
     }
 
@@ -390,27 +390,47 @@ class BookingPage extends Component {
             // console.log(booking.puCompany , booking.deToCompanyName , booking.de_Email , booking.pu_Email);
             if ( booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
-
-                formInputs['puCompany'] = booking.puCompany;
-                formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
-                formInputs['pu_Address_Street_2'] = booking.pu_Address_street_2;
-                formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
-                formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
-                formInputs['pu_Address_Country'] = booking.pu_Address_Country;
-                formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
-                formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
-                formInputs['pu_Email'] = booking.pu_Email;
-                formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
-                formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;
-                formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
-                formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
-                formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
-                formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
-                formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
-                formInputs['de_Email'] = booking.de_Email;
-                formInputs['deToCompanyName'] = booking.deToCompanyName;
-                formInputs['pu_Address_State'] = booking.pu_Address_State;
-                formInputs['de_To_Address_State'] = booking.de_To_Address_State;
+                console.log('@booking dme', booking.de_To_Address_Street_2);
+                if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
+                else formInputs['puCompany'] = '';
+                if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
+                else formInputs['pu_Address_Street_1'] = '';
+                if (booking.pu_Address_Street_2 != null) formInputs['pu_Address_Street_2'] = booking.pu_Address_street_2;
+                else formInputs['pu_Address_Street_2'] = '';
+                if (booking.pu_Address_PostalCode != null) formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
+                else formInputs['pu_Address_PostalCode'] = '';
+                if (booking.pu_Address_Suburb != null) formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
+                else formInputs['pu_Address_Suburb'] = '';
+                if (booking.pu_Address_Country != null) formInputs['pu_Address_Country'] = booking.pu_Address_Country;
+                else formInputs['pu_Address_Country'] = '';
+                if (booking.pu_Contact_F_L_Name != null) formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
+                else formInputs['pu_Contact_F_L_Name'] = '';
+                if (booking.pu_Phone_Main != null) formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
+                else formInputs['pu_Phone_Main'] = '';
+                if (booking.pu_Email != null) formInputs['pu_Email'] = booking.pu_Email;
+                else formInputs['pu_Email'] = '';
+                if (booking.de_To_Address_Street_1 != null) formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
+                else formInputs['de_To_Address_Street_1'] = '';
+                if (booking.de_To_Address_Street_2 != null) {formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;}
+                else formInputs['de_To_Address_Street_2'] = '';
+                if (booking.de_To_Address_PostalCode != null) formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
+                else formInputs['de_To_Address_PostalCode'] = '';
+                if (booking.de_To_Address_Suburb != null) formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
+                else formInputs['de_To_Address_Suburb'] = '';
+                if (booking.de_To_Address_Country != null) formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
+                else formInputs['de_To_Address_Country'] = '';
+                if (booking.de_to_Contact_F_LName != null) formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
+                else formInputs['de_to_Contact_F_LName'] = '';
+                if (booking.de_to_Phone_Main != null) formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
+                else formInputs['de_to_Phone_Main'] = '';
+                if (booking.de_Email != null) formInputs['de_Email'] = booking.de_Email;
+                else formInputs['de_Email'] = '';
+                if (booking.deToCompanyName != null) formInputs['deToCompanyName'] = booking.deToCompanyName;
+                else formInputs['deToCompanyName'] = '';
+                if (booking.pu_Address_State != null) formInputs['pu_Address_State'] = booking.pu_Address_State;
+                else formInputs['pu_Address_State'] = '';
+                if (booking.de_To_Address_State != null) formInputs['de_To_Address_State'] = booking.de_To_Address_State;
+                else formInputs['de_To_Address_State'] = '';
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -523,7 +543,16 @@ class BookingPage extends Component {
     }
 
     onSave() {
-        this.props.saveBooking(this.state.formInputs);
+        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+            let bookingToUpdate = this.state.booking;
+            delete bookingToUpdate.pu_Address_Street_2;
+            bookingToUpdate.pu_Address_street_2 = this.state.booking.pu_Address_Street_2;
+            const mainDate = moment(new Date(), 'DD MMM YYYY').toDate();
+            bookingToUpdate.b_dateBookedDate = mainDate;
+            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+        } else {
+            console.log ('@confir booking---');
+        }
     }
 
     getInitialState() {
@@ -708,7 +737,7 @@ class BookingPage extends Component {
         if ( this.state.bAllComboboxViewOnlyonBooking == false) {
             this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
             this.setState({ deSelectedOptionPostal });
-            // console.log('postalcode selected:', deSelectedOptionPostal);
+            console.log('postalcode selected:', deSelectedOptionPostal);
             this.setState({deSelectedOptionSuburb: null});
         }
     };
@@ -716,7 +745,7 @@ class BookingPage extends Component {
     handleChangeSuburbDelivery = (deSelectedOptionSuburb) => {
         if ( this.state.bAllComboboxViewOnlyonBooking == false) {
             this.setState({ deSelectedOptionSuburb });
-            // console.log('suburb selected:', deSelectedOptionSuburb);
+            console.log('suburb selected:', deSelectedOptionSuburb);
         }
     };
 
