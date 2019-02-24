@@ -214,7 +214,6 @@ a.popup i {
 @media screen and (min-width: 768px) {
 	.tab-button-outer {
 		position: relative;
-		z-index: 2;
 		display: block;
 	}
 	.tab-select-outer {
