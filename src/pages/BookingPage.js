@@ -524,7 +524,7 @@ class BookingPage extends Component {
                 win.focus();
             }
             booking.is_printed = true;
-            // booking.z_downloaded_shipping_label_timestamp = new Date();
+            booking.z_downloaded_shipping_label_timestamp = new Date();
             this.props.updateBooking(booking.id, booking);
         } else {
             alert('This booking has no label');
@@ -547,8 +547,8 @@ class BookingPage extends Component {
             let bookingToUpdate = this.state.booking;
             delete bookingToUpdate.pu_Address_Street_2;
             bookingToUpdate.pu_Address_street_2 = this.state.booking.pu_Address_Street_2;
-            const mainDate = moment(new Date(), 'DD MMM YYYY').toDate();
-            bookingToUpdate.b_dateBookedDate = mainDate;
+            //const mainDate = moment(new Date(), 'DD MMM YYYY').toDate();
+            // bookingToUpdate.b_dateBookedDate = mainDate;
             this.props.updateBooking(this.state.booking.id, bookingToUpdate);
         } else {
             console.log ('@confir booking---');
