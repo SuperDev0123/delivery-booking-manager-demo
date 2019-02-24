@@ -523,7 +523,11 @@ class BookingPage extends Component {
     }
 
     onSave() {
-        this.props.saveBooking(this.state.formInputs);
+        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+            this.props.saveBooking(this.state.booking);
+        } else {
+            console.log ('@confir booking---');
+        }
     }
 
     getInitialState() {
@@ -708,7 +712,7 @@ class BookingPage extends Component {
         if ( this.state.bAllComboboxViewOnlyonBooking == false) {
             this.props.getDeliverySuburbStrings('suburb', deSelectedOptionPostal.label);
             this.setState({ deSelectedOptionPostal });
-            // console.log('postalcode selected:', deSelectedOptionPostal);
+            console.log('postalcode selected:', deSelectedOptionPostal);
             this.setState({deSelectedOptionSuburb: null});
         }
     };
@@ -716,7 +720,7 @@ class BookingPage extends Component {
     handleChangeSuburbDelivery = (deSelectedOptionSuburb) => {
         if ( this.state.bAllComboboxViewOnlyonBooking == false) {
             this.setState({ deSelectedOptionSuburb });
-            // console.log('suburb selected:', deSelectedOptionSuburb);
+            console.log('suburb selected:', deSelectedOptionSuburb);
         }
     };
 
