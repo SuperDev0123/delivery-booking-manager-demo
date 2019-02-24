@@ -221,7 +221,7 @@ class BookingPage extends Component {
                         this.props.getSuburbStrings('postalcode', stateStrings[0].label);
                 }
 
-                if (booking.pu_Address_State) {
+                if (booking && booking.pu_Address_State) {
                     let addedPostalCode = lodash.clone(stateStrings);
                     let bHas = false;
                     for (let i = 0; i < addedPostalCode.length; i++ ){
@@ -244,7 +244,7 @@ class BookingPage extends Component {
             }
 
             if (postalCode && postalCode.length > 0) {
-                if (booking.pu_Address_PostalCode) {
+                if (booking && booking.pu_Address_PostalCode) {
                     let addedPostalCode = lodash.clone(postalCode);
                     let bHas = false;
                     for (let i = 0; i < addedPostalCode.length; i++ ){
@@ -265,7 +265,7 @@ class BookingPage extends Component {
                 if (suburbStrings.length == 1) {
                     this.setState({selectedOptionSuburb: suburbStrings[0]});
                 } else if (suburbStrings.length > 1) {
-                    if (booking.pu_Address_Suburb) {
+                    if (booking && booking.pu_Address_Suburb) {
                         let addedPostalCode = lodash.clone(suburbStrings);
                         let bHas = false;
                         for (let i = 0; i < addedPostalCode.length; i++ ){
@@ -291,7 +291,7 @@ class BookingPage extends Component {
                     this.props.getDeliverySuburbStrings('postalcode', deStateStrings[0].label);
                 }
 
-                if (booking.de_To_Address_State) {
+                if (booking && booking.de_To_Address_State) {
                     let addedPostalCode = lodash.clone(deStateStrings);
                     let bHas = false;
                     for (let i = 0; i < addedPostalCode.length; i++ ){
@@ -313,7 +313,7 @@ class BookingPage extends Component {
             }
 
             if (dePostalCode && dePostalCode.length > 0) {
-                if (booking.de_To_Address_PostalCode) {
+                if (booking && booking.de_To_Address_PostalCode) {
                     let addedPostalCode = lodash.clone(dePostalCode);
                     let bHas = false;
                     for (let i = 0; i < addedPostalCode.length; i++ ){
@@ -334,7 +334,7 @@ class BookingPage extends Component {
                 if (deSuburbStrings.length == 1) {
                     this.setState({deSelectedOptionSuburb: deSuburbStrings[0]});
                 } else if (deSuburbStrings.length > 1) {
-                    if (booking.de_To_Address_State) {
+                    if (booking && booking.de_To_Address_State) {
                         let addedPostalCode = lodash.clone(deSuburbStrings);
                         let bHas = false;
                         for (let i = 0; i < addedPostalCode.length; i++ ){
