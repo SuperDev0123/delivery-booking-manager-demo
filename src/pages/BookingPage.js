@@ -135,7 +135,7 @@ class BookingPage extends Component {
             mainDate = moment().tz('Australia/Sydney').toDate();
             // dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         }
-
+        console.log('@main data----', mainDate);
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
     }
 
@@ -524,7 +524,12 @@ class BookingPage extends Component {
 
     onSave() {
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
-            this.props.saveBooking(this.state.booking);
+            let bookingToUpdate = this.state.booking;
+            delete bookingToUpdate.pu_Address_Street_2;
+            bookingToUpdate.pu_Address_street_2 = this.state.booking.pu_Address_Street_2;
+            const mainDate = moment(new Date(), 'DD MMM YYYY').toDate();
+            bookingToUpdate.b_dateBookedDate = mainDate;
+            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
         } else {
             console.log ('@confir booking---');
         }
