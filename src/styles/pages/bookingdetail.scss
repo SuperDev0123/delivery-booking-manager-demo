@@ -2,3 +2,23 @@
 .next-btn {
     border: 1px solid grey;
 }
+
+.not-editable {
+	cursor: not-allowed;
+}
+
+.not-editable > div,
+.not-editable table {
+	pointer-events: none;
+}
+
+.not-editable div,
+.not-editable input,
+.not-editable table {
+	background-color: #eee;
+}
+
+.not-editable input {
+	border: none;
+	padding-left: 20px;
+}
