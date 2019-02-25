@@ -220,7 +220,7 @@ class AllBookingsPage extends React.Component {
         this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
         this.setState({mainDate});
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onWarehouseSelected(e) {
@@ -231,7 +231,7 @@ class AllBookingsPage extends React.Component {
             warehouseId = selectedWarehouseId;
 
         this.props.setGetBookingsFilter('warehouseId', warehouseId);
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onItemCountPerPageChange(e) {
@@ -283,7 +283,7 @@ class AllBookingsPage extends React.Component {
 
     onClickPrefilter(prefilterInd) {
         this.props.setGetBookingsFilter('prefilterInd', prefilterInd);
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     showAdditionalInfo(bookingId) {
@@ -379,7 +379,7 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            this.setState({selectedBookingIds: []});
+            this.setState({selectedBookingIds: [], checkedAll: false});
         }
     }
 
@@ -411,7 +411,7 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onDownloadPdfs() {
@@ -436,7 +436,7 @@ class AllBookingsPage extends React.Component {
             alert('No matching booking id');
         }
 
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onClickPrinter(booking) {
@@ -462,7 +462,7 @@ class AllBookingsPage extends React.Component {
 
     onClickRow(e) {
         window.location.assign('/booking?bookingid=' + e);
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onClickGetAll(e) {
@@ -494,7 +494,7 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter(mainDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
         }
 
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onClickTab(activeTabInd) {
@@ -507,14 +507,14 @@ class AllBookingsPage extends React.Component {
             this.onClickPrefilter(activeTabInd);
         }
 
-        this.setState({activeTabInd, selectedBookingIds: []});
+        this.setState({activeTabInd, selectedBookingIds: [], checkedAll: false});
     }
 
     onDatePlusOrMinus(number) {
         const mainDate = moment(this.state.mainDate).add(number, 'd').format('YYYY-MM-DD');
         this.props.setGetBookingsFilter('selectedDate', mainDate);
         localStorage.setItem('today', mainDate);
-        this.setState({mainDate, selectedBookingIds: []});
+        this.setState({mainDate, selectedBookingIds: [], checkedAll: false});
     }
 
     onCheckAll() {
@@ -533,7 +533,7 @@ class AllBookingsPage extends React.Component {
 
     onClickSTOrder() {
         this.props.stOrder();
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onClickExcel() {
