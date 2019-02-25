@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Clock from 'react-live-clock';
 import lodash from 'lodash';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
@@ -40,7 +39,6 @@ class BookingPage extends Component {
             bookingLinesListDetailProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
-            mainDate: '',
             selectedBookingIds: [],
             isGoing: false,
             checkBoxStatus: [],
@@ -118,16 +116,6 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-
-        let mainDate = '';
-        const today = localStorage.getItem('today');
-        if (today) {
-            mainDate = moment(today, 'DD MMM YYYY').toDate();
-        } else {
-            mainDate = moment().tz('Australia/Sydney').toDate();
-        }
-
-        this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
     }
 
     getTime(country, city) {
@@ -187,6 +175,7 @@ class BookingPage extends Component {
 
             this.setState({attachmentsHistory: bookingLinesListDetailProduct});
         }
+
         if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
             const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
@@ -369,19 +358,18 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct: bookingLinesListProduct});
         }
 
-        if ( bBooking ) {
-            if ( bBooking == false ) {
+        if (bBooking) {
+            if (bBooking === false) {
                 alert('There is no such booking with that DME`/CON` number.');
                 // console.log('@booking Data' + bBooking);
                 this.setState({bBooking: null});
             }
         }
 
-        if ( booking && !bAllComboboxViewOnlyonBooking) {
-            // console.log(booking.puCompany , booking.deToCompanyName , booking.de_Email , booking.pu_Email);
-            if ( booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
+        if (booking && !bAllComboboxViewOnlyonBooking) {
+            if (booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
-                console.log('@booking dme', booking.de_To_Address_Street_2);
+
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
@@ -422,6 +410,12 @@ class BookingPage extends Component {
                 else formInputs['pu_Address_State'] = '';
                 if (booking.de_To_Address_State != null) formInputs['de_To_Address_State'] = booking.de_To_Address_State;
                 else formInputs['de_To_Address_State'] = '';
+                if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
+                else formInputs['s_20_Actual_Pickup_TimeStamp'] = '';
+                if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp.de_Deliver_From_Date;
+                else formInputs['s_21_Actual_Delivery_TimeStamp'] = '';
+
+                console.log('@1 - ', formInputs['s_20_Actual_Pickup_TimeStamp'], formInputs['s_21_Actual_Delivery_TimeStamp']);
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -441,10 +435,8 @@ class BookingPage extends Component {
                 });
 
                 if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
-                    // console.log('@booking data is on.');
                     this.setState({bAllComboboxViewOnlyonBooking: true});
                 } else {
-                    // console.log('@booking data is off.');
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
@@ -631,14 +623,6 @@ class BookingPage extends Component {
         this.setState({selectedBookingIds: []});
     }
 
-    onPickUpDateChange(date) {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {        
-            const mainDate = moment(date).format('YYYY-MM-DD');
-            localStorage.setItem('today', mainDate);
-            this.setState({ mainDate, sortField: 'id', sortDirection: 1, filterInputs: {} });
-        }
-    }
-
     deleteRowDetails() {
         const {deletedBookingLine, bookingLinesListDetailProduct} = this.state;
         let tempBooking = bookingLinesListDetailProduct;
@@ -770,7 +754,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
 
         const iconCheck = (cell, row) => {
             return (
@@ -1207,13 +1191,8 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pickup Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <div className="input-group">
-                                                                <DatePicker
-                                                                    selected={mainDate}
-                                                                    onChange={(e) => this.onPickUpDateChange(e)}
-                                                                    dateFormat="DD MMM YYYY"
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? true : false}
-                                                                />
+                                                            <div className="input-group pad-left-20px">
+                                                                {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}
                                                             </div>
                                                         </div>
                                                         <div className={isShowPUDate ? 'col-sm-12 pick-dates mt-1' : 'col-sm-12 pick-dates mt-1 hidden'}>
@@ -1468,13 +1447,8 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Delivery Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <div className="input-group">
-                                                                <DatePicker
-                                                                    selected={mainDate}
-                                                                    onChange={(e) => this.onPickUpDateChange(e)}
-                                                                    dateFormat="DD MMM YYYY"
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? true : false}
-                                                                />
+                                                            <div className="input-group pad-left-20px">
+                                                                {formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}
                                                             </div>
                                                         </div>
                                                         <div className={isShowDelDate ? 'col-sm-12 deliver-date mt-1' : 'col-sm-12 deliver-date mt-1 hidden'}>
