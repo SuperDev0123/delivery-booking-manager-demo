@@ -100,19 +100,13 @@ class BookingPage extends Component {
         getAttachmentHistory: PropTypes.func.isRequired,
     };
 
-    // getTimeZone(cityName) {
-    //     const AU_TIME_ZONE = [
-    //         'ACT':
-    //     ];
-    // }
-
     componentDidMount() {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
+
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
-            // this.setState({bAllComboboxViewOnlyonBooking: true });
         } else {
             this.props.getSuburbStrings('state', undefined);
             this.props.getDeliverySuburbStrings('state', undefined);
@@ -126,16 +120,13 @@ class BookingPage extends Component {
         }
 
         let mainDate = '';
-        // let dateParam = '';
         const today = localStorage.getItem('today');
         if (today) {
             mainDate = moment(today, 'DD MMM YYYY').toDate();
-            // dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
         } else {
             mainDate = moment().tz('Australia/Sydney').toDate();
-            // dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         }
-        console.log('@main data----', mainDate);
+
         this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
     }
 
@@ -470,28 +461,26 @@ class BookingPage extends Component {
         }
     }
 
-    onChangeState(e) {
-        console.log(e);
-    }
-
     onHandleInput(e) {
-        
-        if ( this.state.bAllComboboxViewOnlyonBooking === false) {
+        if (this.state.bAllComboboxViewOnlyonBooking === false) {
             let formInputs = this.state.formInputs;
             let booking = this.state.booking;
+
             formInputs[e.target.name] = e.target.value;
             booking[e.target.name] = e.target.value;
+
             this.setState({ formInputs });
             this.setState({ booking });
         } else {
             let formInputs = this.state.formInputs;
             let booking = this.state.booking;
-            // console.log('@here', e.target.value, booking[e.target.name]);
+
             if (booking[e.target.name] == null) {
                 formInputs[e.target.name] = '';
             } else {
                 formInputs[e.target.name] = booking[e.target.name];
             }
+
             this.setState({ formInputs });
         }
     }
@@ -553,10 +542,6 @@ class BookingPage extends Component {
         } else {
             console.log ('@confir booking---');
         }
-    }
-
-    getInitialState() {
-        return {typed: ''};
     }
 
     calcBookingLine(bookingLines) {
@@ -786,6 +771,7 @@ class BookingPage extends Component {
 
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
+
         const iconCheck = (cell, row) => {
             return (
                 // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
