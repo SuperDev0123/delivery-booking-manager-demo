@@ -753,8 +753,8 @@ class BookingPage extends Component {
 
     handleUploadFinish() {
         this.props.getAttachmentHistory(this.state.booking.id);
-
     }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, selectedOptionState, selectedOptionPostal, selectedOptionSuburb, deSelectedOptionState, deSelectedOptionPostal, deSelectedOptionSuburb, mainDate, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs} = this.state;
         const iconCheck = (cell, row) => {
@@ -841,6 +841,7 @@ class BookingPage extends Component {
                 text: 'Client Reference #'
             },
         ];
+
         const columnFreight = [
             {
                 dataField: 'provider',
@@ -1577,7 +1578,6 @@ class BookingPage extends Component {
 
                     <section>
                         <div className="container">
-
                             <div className="row">
                                 <div className="col-sm-12">
                                     <div className="tabs">
