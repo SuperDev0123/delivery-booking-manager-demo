@@ -106,6 +106,7 @@ class BookingPage extends Component {
 
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
+            this.setState({loading: true});
         } else {
             this.props.getSuburbStrings('state', undefined);
             this.props.getDeliverySuburbStrings('state', undefined);
