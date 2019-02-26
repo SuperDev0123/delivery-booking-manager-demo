@@ -10,6 +10,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
 import LoadingOverlay from 'react-loading-overlay';
+import BarLoader from 'react-spinners/BarLoader';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -47,6 +48,7 @@ class AllBookingsPage extends React.Component {
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
             loading: false,
+            loadingBooking: false,
             activeTabInd: 7,
             checkedAll: false,
             showGearMenu: false,
@@ -150,7 +152,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (needUpdateBookings) {
-            this.setState({loading: true});
+            this.setState({loading: true, loadingBooking: false});
             this.props.getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
         } else {
             this.setState({loading: false});
@@ -371,10 +373,13 @@ class AllBookingsPage extends React.Component {
 
                 if (ind > -1) {
                     let that = this;
+
                     if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
                         setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 30000 * k);
+                        this.setState({loadingBooking: true});
                     } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
                         setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 30000 * k);
+                        this.setState({loadingBooking: true});
                     }
                 }
             }
@@ -405,8 +410,10 @@ class AllBookingsPage extends React.Component {
             if (ind > -1) {
                 if (bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
                     this.props.getSTLabel(bookings[ind].id);
+                    this.setState({loadingBooking: true});
                 } else if (bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
                     this.props.getAlliedLabel(bookings[ind].id);
+                    this.setState({loadingBooking: true});
                 }
             }
         }
@@ -559,7 +566,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -862,10 +869,18 @@ class AllBookingsPage extends React.Component {
                                             <option value="all">All</option>
                                             { warehousesList }
                                         </select>
-                                        <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                        <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
-                                        <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                        <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                        <div className="disp-inline-block">
+                                            <LoadingOverlay
+                                                active={loadingBooking}
+                                                spinner={<BarLoader color={'#FFF'} />}
+                                                text=''
+                                            >
+                                                <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                                <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
+                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                            </LoadingOverlay>
+                                        </div>
                                         <p className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</p>
                                     </div>
                                     <ul className="filter-conditions none">
