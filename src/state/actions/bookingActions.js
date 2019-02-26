@@ -82,17 +82,17 @@ export function successGetSuburbs(data) {
     if (data['type'] == 'state') {
         return {
             type: SET_STATE,
-            stateStrings: data['suburbs'],
+            puStates: data['suburbs'],
         };
     } else if ( data['type'] == 'postalcode' ) {
         return {
             type: SET_POSTALCODE,
-            postalCode: data['suburbs'],
+            puPostalCodes: data['suburbs'],
         };
     } else if ( data['type'] == 'suburb' ) {
         return {
             type: SET_SUBURB,
-            suburbStrings: data['suburbs'],
+            puSuburbs: data['suburbs'],
         };
     }
 }
@@ -125,17 +125,17 @@ export function successDeliveryGetSuburbs(data) {
     if (data['type'] == 'state') {
         return {
             type: SET_STATE_DE,
-            deStateStrings: data['suburbs'],
+            deToStates: data['suburbs'],
         };
     } else if ( data['type'] == 'postalcode' ) {
         return {
             type: SET_POSTALCODE_DE,
-            dePostalCode: data['suburbs'],
+            deToPostalCodes: data['suburbs'],
         };
     } else if ( data['type'] == 'suburb' ) {
         return {
             type: SET_SUBURB_DE,
-            deSuburbStrings: data['suburbs'],
+            deToSuburbs: data['suburbs'],
         };
     }
 }
