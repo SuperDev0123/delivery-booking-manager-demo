@@ -12,7 +12,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import user from '../public/images/user.png';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
-import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLines, createBookingLine, updateBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import DropzoneComponent from 'react-dropzone-component';
@@ -84,6 +84,8 @@ class BookingPage extends Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
+        createBookingLine: PropTypes.func.isRequired,
+        updateBookingLine: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
@@ -154,13 +156,17 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (needUpdateBookingLines && booking) {
+            this.props.getBookingLines(booking.pk_booking_id);
         }
 
         if (bookingLines && bookingLines.length > 0) {
@@ -175,12 +181,12 @@ class BookingPage extends Component {
                 result.e_qty = bookingLine.e_qty;
                 result.e_weightUOM = bookingLine.e_weightUOM;
                 result.e_weightPerEach = bookingLine.e_weightPerEach;
-                result.total_kgs = bookingLine.total_kgs;
+                result.e_Total_KG_weight = bookingLine.e_Total_KG_weight;
                 result.e_dimUOM = bookingLine.e_dimUOM;
                 result.e_dimLength = bookingLine.e_dimLength;
                 result.e_dimWidth = bookingLine.e_dimWidth;
                 result.e_dimHeight = bookingLine.e_dimHeight;
-                result.cubic_meter = bookingLine.cubic_meter;
+                result.e_1_Total_dimCubicMeter = bookingLine.e_1_Total_dimCubicMeter;
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct: bookingLinesListProduct});
@@ -739,28 +745,65 @@ class BookingPage extends Component {
         this.props.getAttachmentHistory(this.state.booking.id);
     }
 
+    onClickDuplicate(num, row) {
+        console.log('onDuplicateLine: ', num, row);
+        let newBookingLine = {
+            fk_booking_id: this.state.booking.pk_booking_id,
+            cubic_meter: row.cubic_meter,
+            e_dimHeight: row.e_dimHeight,
+            e_dimLength: row.e_dimLength,
+            e_dimUOM: row.e_dimUOM,
+            e_dimWidth: row.e_dimWidth,
+            e_item: row.e_item,
+            e_qty: row.e_qty,
+            e_type_of_packaging: row.e_type_of_packaging,
+            e_weightPerEach: row.e_weightPerEach,
+            e_weightUOM: row.e_weightUOM,
+            e_Total_KG_weight: row.e_Total_KG_weight,
+            e_1_Total_dimCubicMeter: row.e_1_Total_dimCubicMeter
+        };
+        this.props.createBookingLine(newBookingLine);
+    }
+
+    onUpdateBookingLine(oldValue, newValue, row, column) {
+        console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
+        let updatedBookingLine = {
+            pk_auto_id_lines: row.pk_auto_id_lines,
+        };
+        updatedBookingLine[column.dataField] = newValue;
+        this.props.updateBookingLine(updatedBookingLine);
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
 
-        const iconCheck = (cell, row) => {
+        const iconTrash = (cell, row) => {
             return (
-                // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
                 <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine(e, row);}}><i className="icon icon-trash"></i></button>
+            );
+        };
+
+        const iconDoublePlus = (cell, row) => {
+            let that = this;
+            return (
+                <button className="btn btn-light btn-theme" onClick={() => {that.onClickDuplicate(0, row);}}>
+                    <i className="icon icon-plus"></i>
+                    <i className="icon icon-plus"></i>
+                </button>
             );
         };
 
         const iconCheck1 = (cell, row) => {
             return (
-                // <input type="button" classname ="icon-remove" onClick={(e) => this.onCheckLine(e, row)}></input>
                 <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine1(e, row);}}><i className="icon icon-trash"></i></button>
             );
         };
 
-        const columns = [
+        const bookingLineColumns = [
             {
                 dataField: 'pk_auto_id_lines',
                 text: '',
-                formatter: iconCheck,
+                formatter: iconTrash,
                 editable: false
             }, {
                 dataField: 'e_type_of_packaging',
@@ -778,7 +821,7 @@ class BookingPage extends Component {
                 dataField: 'e_weightPerEach',
                 text: 'Wgt Each'
             }, {
-                dataField: 'total_kgs',
+                dataField: 'e_Total_KG_weight',
                 text: 'Total Kgs'
             }, {
                 dataField: 'e_dimUOM',
@@ -793,8 +836,13 @@ class BookingPage extends Component {
                 dataField: 'e_dimHeight',
                 text: 'Hegiht'
             }, {
-                dataField: 'cubic_meter',
+                dataField: 'e_1_Total_dimCubicMeter',
                 text: 'Cubic Meter'
+            }, {
+                dataField: 'pk_auto_id_lines',
+                text: 'Duplicate',
+                formatter: iconDoublePlus,
+                editable: false
             },
         ];
 
@@ -1580,8 +1628,12 @@ class BookingPage extends Component {
                                                 <BootstrapTable
                                                     keyField='pk_auto_id_lines'
                                                     data={ products }
-                                                    columns={ columns }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                    columns={ bookingLineColumns }
+                                                    cellEdit={ cellEditFactory({ 
+                                                        mode: 'click',
+                                                        blurToSave: true,
+                                                        afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
+                                                    })}
                                                     bootstrap4={ true }
                                                 />
                                                 <BootstrapTable
@@ -1677,6 +1729,7 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
+        needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
     };
 };
 
@@ -1684,6 +1737,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
+        createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),
+        updateBookingLine: (bookingLine) => dispatch(updateBookingLine(bookingLine)),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),

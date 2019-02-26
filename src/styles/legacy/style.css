@@ -1917,7 +1917,7 @@ td > a > .icon-th-list {
   color: green
 }
 
-tbody .icon-plus{
+.fixed_headers tbody .icon-plus{
   background-color: grey;
   font-size: 16px;
 }
