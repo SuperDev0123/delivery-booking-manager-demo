@@ -211,7 +211,8 @@ class BookingPage extends Component {
             }
         }
 
-        if (booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0) {
+        if ((booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0) || 
+            (booking && !bAllComboboxViewOnlyonBooking && this.state.loading)) {
             if (booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
 
@@ -526,13 +527,16 @@ class BookingPage extends Component {
     onSave() {
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
             let bookingToUpdate = this.state.booking;
+
             bookingToUpdate.pu_Address_State = this.state.puState.label;
             bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
             bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
             bookingToUpdate.de_To_Address_State = this.state.deToState.label;
             bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
             bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+
             this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+            this.setState({loading: true});
         }
     }
 
