@@ -152,7 +152,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (needUpdateBookings) {
-            this.setState({loading: true, loadingBooking: false});
+            this.setState({loading: true});
             this.props.getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
         } else {
             this.setState({loading: false});
@@ -361,6 +361,9 @@ class AllBookingsPage extends React.Component {
         if (selectedBookingIds.length < 1) {
             alert('Please select at least one booking!');
         } else {
+            this.setState({loadingBooking: true});
+            let that = this;
+
             for (let k = 0; k < selectedBookingIds.length; k++) {
                 let ind = -1;
 
@@ -372,18 +375,15 @@ class AllBookingsPage extends React.Component {
                 }
 
                 if (ind > -1) {
-                    let that = this;
-
                     if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                        setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 30000 * k);
-                        this.setState({loadingBooking: true});
+                        setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 15000 * k);
                     } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                        setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 30000 * k);
-                        this.setState({loadingBooking: true});
+                        setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 15000 * k);
                     }
                 }
             }
 
+            setTimeout(function(){ that.setState({loadingBooking: false}); }, 15000 * (selectedBookingIds.length + 1));
             this.setState({selectedBookingIds: [], checkedAll: false});
         }
     }
