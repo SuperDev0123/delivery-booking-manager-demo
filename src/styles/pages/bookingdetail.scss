@@ -26,3 +26,15 @@
 .pad-left-20px {
 	padding-left: 20px;
 }
+
+._loading_overlay_wrapper {
+	.row {
+		.col-sm-4 {
+			padding: 0 !important;
+		}
+
+		.col-sm-8 {
+			padding: 0 !important;
+		}
+	}
+}

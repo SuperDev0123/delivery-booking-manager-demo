@@ -34,6 +34,8 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loading: false,
+            loadingGeoPU: false,
+            loadingGeoDeTo: false,
             loadingBookingLine: false,
             loadingBookingLineDetail: false,
             products: [],
@@ -337,9 +339,10 @@ class BookingPage extends Component {
                     this.setState({puStates});             
                 }
 
-                this.setState({puStates, loadedPostal: true});
+                this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
             } else {
                 this.props.getSuburbStrings('state', undefined);
+                this.setState({loadingGeoPU: true});
             }
 
             if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
@@ -354,15 +357,15 @@ class BookingPage extends Component {
                     }
                     if (bHas == false)
                         postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
-                    this.setState({puPostalCodes: postalcodes});        
+                    this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
                 } else {
-                    this.setState({puPostalCodes});                    
+                    this.setState({puPostalCodes, loadingGeoPU: false});                    
                 }
             }
 
             if (puSuburbs && puSuburbs.length > 0 && this.state.selectionChanged === 1) {
                 if (puSuburbs.length == 1) {
-                    this.setState({puSuburb: puSuburbs[0]});
+                    this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
                 } else if (puSuburbs.length > 1) {
                     if (booking && booking.pu_Address_Suburb) {
                         let suburbs = lodash.clone(puSuburbs);
@@ -375,14 +378,11 @@ class BookingPage extends Component {
                         }
                         if (bHas == false)
                             suburbs.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
-                        this.setState({puSuburbs: suburbs});
+                        this.setState({puSuburbs: suburbs, loadingGeoPU: false});
                     } else {
-                        this.setState({puSuburbs});
+                        this.setState({puSuburbs, loadingGeoPU: false});
                     }
-    
-                    this.setState({puSuburb: null});
                 }
-                this.setState({puSuburbs});
             }
 
             if (deToStates && deToStates.length > 0) {
@@ -406,9 +406,10 @@ class BookingPage extends Component {
                     this.setState({deToStates});                    
                 }
 
-                this.setState({deToStates, deLoadedPostal: true});
+                this.setState({deToStates, deLoadedPostal: true, loadingGeoDeTo: false});
             } else {
                 this.props.getDeliverySuburbStrings('state', undefined);
+                this.setState({loadingGeoDeTo: true});
             }
 
             if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
@@ -423,9 +424,9 @@ class BookingPage extends Component {
                     }
                     if (bHas == false)
                         postalcode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
-                    this.setState({deToPostalCodes: postalcode});        
+                    this.setState({deToPostalCodes: postalcode, loadingGeoDeTo: false});        
                 } else {
-                    this.setState({deToPostalCodes});             
+                    this.setState({deToPostalCodes, loadingGeoDeTo: false});             
                 }
             }
 
@@ -448,9 +449,8 @@ class BookingPage extends Component {
                     } else {
                         this.setState({deToSuburbs});             
                     }
-                    this.setState({deToSuburb: null});
                 }
-                this.setState({deToSuburbs});
+                this.setState({deToSuburbs, loadingGeoDeTo: false});
             }
 
             this.setState({selectionChanged: 0});
@@ -691,10 +691,10 @@ class BookingPage extends Component {
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
             if (num === 0) {
                 this.props.getSuburbStrings('postalcode', selectedOption.label);
-                this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1});
+                this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
             } else if (num === 1) {
                 this.props.getDeliverySuburbStrings('postalcode', selectedOption.label);
-                this.setState({deToState: selectedOption, deToPostalCode: null, deToSuburb: null, selectionChanged: 2});
+                this.setState({deToState: selectedOption, deToPostalCode: null, deToSuburb: null, selectionChanged: 2, loadingGeoDeTo: true});
             }
         }
     };
@@ -703,10 +703,10 @@ class BookingPage extends Component {
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
             if (num === 0) {
                 this.props.getSuburbStrings('suburb', selectedOption.label);
-                this.setState({puPostalCode: selectedOption, puSuburb: null, selectionChanged: 1});
+                this.setState({puPostalCode: selectedOption, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
             } else if (num === 1) {
                 this.props.getDeliverySuburbStrings('suburb', selectedOption.label);
-                this.setState({deToPostalCode: selectedOption, deToSuburb: null, selectionChanged: 2});
+                this.setState({deToPostalCode: selectedOption, deToSuburb: null, selectionChanged: 2, loadingGeoDeTo: true});
             }
         }
     };
@@ -1185,51 +1185,57 @@ class BookingPage extends Component {
                                                             <input type="text" name="pu_Address_street_2" className="form-control" value = {formInputs['pu_Address_street_2']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">State</label>
+                                                    <LoadingOverlay
+                                                        active={this.state.loadingGeoPU}
+                                                        spinner
+                                                        text='Loading...'
+                                                    >
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">State</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={puState}
+                                                                    onChange={(e) => this.handleChangeState(0, e)}
+                                                                    options={puStates}
+                                                                    placeholder='select your state'
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    openMenuOnClick={bAllComboboxViewOnlyonBooking ? false : true}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={puState}
-                                                                onChange={(e) => this.handleChangeState(0, e)}
-                                                                options={puStates}
-                                                                placeholder='select your state'
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                openMenuOnClick={bAllComboboxViewOnlyonBooking ? false : true}
-                                                            />
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Postal Code</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={puPostalCode}
+                                                                    onChange={(e) => this.handleChangePostalCode(0, e)}
+                                                                    options={puPostalCodes}
+                                                                    placeholder='select your postal code'
+                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Postal Code</label>
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Suburb</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={puSuburb}
+                                                                    onChange={(e) => this.handleChangeSuburb(0, e)}
+                                                                    options={puSuburbs}
+                                                                    placeholder='select your suburb'
+                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={puPostalCode}
-                                                                onChange={(e) => this.handleChangePostalCode(0, e)}
-                                                                options={puPostalCodes}
-                                                                placeholder='select your postal code'
-                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Suburb</label>
-                                                        </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={puSuburb}
-                                                                onChange={(e) => this.handleChangeSuburb(0, e)}
-                                                                options={puSuburbs}
-                                                                placeholder='select your suburb'
-                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                    </LoadingOverlay>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Country</label>
@@ -1441,51 +1447,57 @@ class BookingPage extends Component {
                                                             <input type="text" name="de_To_Address_Street_2" className="form-control" disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['de_To_Address_Street_2']} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">State</label>
+                                                    <LoadingOverlay
+                                                        active={this.state.loadingGeoDeTo}
+                                                        spinner
+                                                        text='Loading...'
+                                                    >
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">State</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={deToState}
+                                                                    onChange={(e) => this.handleChangeState(1, e)}
+                                                                    options={deToStates}
+                                                                    placeholder='select your state'
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={deToState}
-                                                                onChange={(e) => this.handleChangeState(1, e)}
-                                                                options={deToStates}
-                                                                placeholder='select your state'
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                            />
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Postal Code</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={deToPostalCode}
+                                                                    onChange={(e) => this.handleChangePostalCode(1, e)}
+                                                                    options={deToPostalCodes}
+                                                                    placeholder='select your postal code'
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Postal Code</label>
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Suburb</label>
+                                                            </div>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                                <Select
+                                                                    value={deToSuburb}
+                                                                    onChange={(e) => this.handleChangeSuburb(1, e)}
+                                                                    options={deToSuburbs}
+                                                                    placeholder='select your suburb'
+                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                />
+                                                            </div>
                                                         </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={deToPostalCode}
-                                                                onChange={(e) => this.handleChangePostalCode(1, e)}
-                                                                options={deToPostalCodes}
-                                                                placeholder='select your postal code'
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Suburb</label>
-                                                        </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <Select
-                                                                value={deToSuburb}
-                                                                onChange={(e) => this.handleChangeSuburb(1, e)}
-                                                                options={deToSuburbs}
-                                                                placeholder='select your suburb'
-                                                                noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                            />
-                                                        </div>
-                                                    </div>
+                                                    </LoadingOverlay>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Country</label>
