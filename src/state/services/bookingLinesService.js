@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine } from '../actions/bookingLineActions';
+import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine } from '../actions/bookingLineActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookingLines = (pk_booking_id) => {
@@ -36,11 +36,25 @@ export const updateBookingLine = (bookingLine) => {
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/` + bookingLine.pk_auto_id_lines + '/update_booking_line/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/` + bookingLine.pk_lines_id + '/update_booking_line/',
         data: bookingLine
     };
     return dispatch =>
         axios(options)
             .then(({ data }) => dispatch(successUpdateBookingLine(data)))
             .catch((error) => dispatch(failedUpdateBookingLine(error)));
+};
+
+export const deleteBookingLine = (bookingLine) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/` + bookingLine.pk_lines_id + '/delete_booking_line/',
+        data: bookingLine
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteBookingLine(data)))
+            .catch((error) => dispatch(failedDeleteBookingLine(error)));
 };

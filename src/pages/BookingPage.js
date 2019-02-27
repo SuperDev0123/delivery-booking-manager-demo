@@ -12,8 +12,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import user from '../public/images/user.png';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
-import { getBookingLines, createBookingLine, updateBookingLine } from '../state/services/bookingLinesService';
-import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
+import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import DropzoneComponent from 'react-dropzone-component';
 
@@ -36,7 +36,7 @@ class BookingPage extends Component {
             loading: false,
             products: [],
             bookingLinesListProduct: [],
-            bookingLinesListDetailProduct: [],
+            bookingLineDetailsProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
             selectedBookingIds: [],
@@ -85,7 +85,11 @@ class BookingPage extends Component {
         verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
+        deleteBookingLine: PropTypes.func.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
+        createBookingLineDetail: PropTypes.func.isRequired,
+        deleteBookingLineDetail: PropTypes.func.isRequired,
+        updateBookingLineDetail: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
@@ -156,7 +160,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -169,13 +173,16 @@ class BookingPage extends Component {
             this.props.getBookingLines(booking.pk_booking_id);
         }
 
+        if (needUpdateBookingLineDetails && booking) {
+            this.props.getBookingLineDetails(booking.pk_booking_id);
+        }
+
         if (bookingLines && bookingLines.length > 0) {
-            const bookingLines1 = this.calcBookingLine(bookingLines);
-            //this.setState({bookingLines: this.calcBookingLine(bookingLines)});
-            this.setState({bookingLines: bookingLines1});
-            const bookingLinesListProduct = bookingLines1.map((bookingLine) => {
+            const calcedbookingLines = this.calcBookingLine(bookingLines);
+            this.setState({bookingLines: calcedbookingLines});
+            const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
                 let result = [];
-                result.pk_auto_id_lines = bookingLine.pk_lines_id;
+                result.pk_lines_id = bookingLine.pk_lines_id;
                 result.e_type_of_packaging = bookingLine.e_type_of_packaging;
                 result.e_item = bookingLine.e_item;
                 result.e_qty = bookingLine.e_qty;
@@ -194,20 +201,20 @@ class BookingPage extends Component {
 
         if (bookingLineDetails && bookingLineDetails.length > 0) {
             const tempBookings = bookingLineDetails;
-            const bookingLinesListDetailProduct = tempBookings.map((bookingLine) => {
+            const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = [];
-                result.modelNumber = bookingLine.modelNumber;
-                result.itemDescription = bookingLine.itemDescription;
-                result.quantity = bookingLine.quantity;
-                result.itemFaultDescription = bookingLine.itemFaultDescription;
-                result.insuranceValueEach = bookingLine.insuranceValueEach;
-                result.gap_ra = bookingLine.gap_ra;
-                result.clientRefNumber = bookingLine.clientRefNumber;
-
+                result.pk_id_lines_data = bookingLineDetail.pk_id_lines_data;
+                result.modelNumber = bookingLineDetail.modelNumber;
+                result.itemDescription = bookingLineDetail.itemDescription;
+                result.quantity = bookingLineDetail.quantity;
+                result.itemFaultDescription = bookingLineDetail.itemFaultDescription;
+                result.insuranceValueEach = bookingLineDetail.insuranceValueEach;
+                result.gap_ra = bookingLineDetail.gap_ra;
+                result.clientRefNumber = bookingLineDetail.clientRefNumber;
                 return result;
             });
 
-            this.setState({bookingLinesListDetailProduct: bookingLinesListDetailProduct, bookingLineDetails});
+            this.setState({bookingLineDetailsProduct, bookingLineDetails});
         }
 
         if (bBooking) {
@@ -447,7 +454,7 @@ class BookingPage extends Component {
 
         if (attachments && attachments.length > 0) {
             const tempAttachments = attachments;
-            const bookingLinesListDetailProduct = tempAttachments.map((attach) => {
+            const bookingLineDetailsProduct = tempAttachments.map((attach) => {
                 let result = [];
                 result.no = attach.pk_id_attachment;
                 result.description = attach.fk_id_dme_booking;
@@ -457,7 +464,7 @@ class BookingPage extends Component {
                 return result;
             });
 
-            this.setState({attachmentsHistory: bookingLinesListDetailProduct});
+            this.setState({attachmentsHistory: bookingLineDetailsProduct});
         }
     }
 
@@ -579,9 +586,9 @@ class BookingPage extends Component {
 
     onCheckLine(e, row) {
         // if (!e.target.checked) {
-        //     this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
+        //     this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [row.pk_id_lines_data])});
         // } else {
-        //     this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [row.pk_auto_id_lines])});
+        //     this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [row.pk_id_lines_data])});
 
         // }
         const { products } = this.state;
@@ -591,10 +598,10 @@ class BookingPage extends Component {
     }
 
     onCheckLine1(e, row) {
-        const { bookingLinesListDetailProduct } = this.state;
-        let clonedProducts = lodash.clone(bookingLinesListDetailProduct);
+        const { bookingLineDetailsProduct } = this.state;
+        let clonedProducts = lodash.clone(bookingLineDetailsProduct);
         clonedProducts = lodash.difference(clonedProducts, [row]);
-        this.setState({bookingLinesListDetailProduct: clonedProducts});
+        this.setState({bookingLineDetailsProduct: clonedProducts});
     }
 
     onClickBook() {
@@ -623,7 +630,7 @@ class BookingPage extends Component {
         let clonedProducts = lodash.clone(products);
         for (let i = 0; i < selectedBookingIds.length; i++) {
             for (let j = 0; j < products.length; j++) {
-                if ( products[j].pk_auto_id_lines === selectedBookingIds[i] ) {
+                if ( products[j].pk_lines_id === selectedBookingIds[i] ) {
                     clonedProducts = lodash.difference(clonedProducts, [products[j]]);
                     break;
                 }
@@ -635,10 +642,10 @@ class BookingPage extends Component {
     }
 
     deleteRowDetails() {
-        const {deletedBookingLine, bookingLinesListDetailProduct} = this.state;
-        let tempBooking = bookingLinesListDetailProduct;
+        const {deletedBookingLine, bookingLineDetailsProduct} = this.state;
+        let tempBooking = bookingLineDetailsProduct;
         tempBooking.splice(deletedBookingLine, 1);
-        this.setState({bookingLinesListDetailProduct: tempBooking, deletedBookingLine: -1});
+        this.setState({bookingLineDetailsProduct: tempBooking, deletedBookingLine: -1});
     }
 
     onKeyPress(e) {
@@ -746,44 +753,53 @@ class BookingPage extends Component {
     }
 
     onClickDuplicate(num, row) {
-        console.log('onDuplicateLine: ', num, row);
-        let newBookingLine = {
-            fk_booking_id: this.state.booking.pk_booking_id,
-            cubic_meter: row.cubic_meter,
-            e_dimHeight: row.e_dimHeight,
-            e_dimLength: row.e_dimLength,
-            e_dimUOM: row.e_dimUOM,
-            e_dimWidth: row.e_dimWidth,
-            e_item: row.e_item,
-            e_qty: row.e_qty,
-            e_type_of_packaging: row.e_type_of_packaging,
-            e_weightPerEach: row.e_weightPerEach,
-            e_weightUOM: row.e_weightUOM,
-            e_Total_KG_weight: row.e_Total_KG_weight,
-            e_1_Total_dimCubicMeter: row.e_1_Total_dimCubicMeter
-        };
-        this.props.createBookingLine(newBookingLine);
+        console.log('onDuplicate: ', num, row);
+
+        if (num === 0) {
+            let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
+            this.props.createBookingLine(duplicatedBookingLine);
+        } else if (num === 1) {
+            let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
+            this.props.createBookingLineDetail(duplicatedBookingLineDetail);
+        }
+    }
+
+    onClickDelete(num, row) {
+        console.log('onDelete: ', num, row);
+
+        if (num === 0) {
+            let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
+            this.props.deleteBookingLine(deletedBookingLine);
+        } else if (num === 1) {
+            let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
+            this.props.deleteBookingLineDetail(deletedBookingLineDetail);
+        }
     }
 
     onUpdateBookingLine(oldValue, newValue, row, column) {
         console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
-        let updatedBookingLine = {
-            pk_auto_id_lines: row.pk_auto_id_lines,
-        };
+        let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
         this.props.updateBookingLine(updatedBookingLine);
     }
 
-    render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, products, bookingLinesListDetailProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+    onUpdateBookingLineDetail(oldValue, newValue, row, column) {
+        console.log('onUpdateBookingLineDetail: ', row, oldValue, newValue, column);
+        let updatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
+        updatedBookingLineDetail[column.dataField] = newValue;
+        this.props.updateBookingLineDetail(updatedBookingLineDetail);
+    }
 
-        const iconTrash = (cell, row) => {
+    render() {
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, products, bookingLineDetailsProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+
+        const iconTrashBookingLine = (cell, row) => {
             return (
-                <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine(e, row);}}><i className="icon icon-trash"></i></button>
+                <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
             );
         };
 
-        const iconDoublePlus = (cell, row) => {
+        const iconDoublePlusBookingLine = (cell, row) => {
             let that = this;
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {that.onClickDuplicate(0, row);}}>
@@ -793,17 +809,27 @@ class BookingPage extends Component {
             );
         };
 
-        const iconCheck1 = (cell, row) => {
+        const iconTrashBookingLineDetail = (cell, row) => {
             return (
-                <button className="btn btn-light btn-theme" onClick={(e) => {if (window.confirm('Are you sure you wish to delete this item?'))this.onCheckLine1(e, row);}}><i className="icon icon-trash"></i></button>
+                <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(1, row);}}><i className="icon icon-trash"></i></button>
+            );
+        };
+
+        const iconDoublePlusBookingLineDetail = (cell, row) => {
+            let that = this;
+            return (
+                <button className="btn btn-light btn-theme" onClick={() => {that.onClickDuplicate(1, row);}}>
+                    <i className="icon icon-plus"></i>
+                    <i className="icon icon-plus"></i>
+                </button>
             );
         };
 
         const bookingLineColumns = [
             {
-                dataField: 'pk_auto_id_lines',
-                text: '',
-                formatter: iconTrash,
+                dataField: 'pk_lines_id',
+                text: 'Delete',
+                formatter: iconTrashBookingLine,
                 editable: false
             }, {
                 dataField: 'e_type_of_packaging',
@@ -839,17 +865,18 @@ class BookingPage extends Component {
                 dataField: 'e_1_Total_dimCubicMeter',
                 text: 'Cubic Meter'
             }, {
-                dataField: 'pk_auto_id_lines',
+                dataField: 'pk_lines_id',
                 text: 'Duplicate',
-                formatter: iconDoublePlus,
+                formatter: iconDoublePlusBookingLine,
                 editable: false
             },
         ];
 
-        const columnDetails = [
+        const bookingLineDetailsColumns = [
             {
-                text: '',
-                formatter: iconCheck1,
+                dataField: 'pk_id_lines_data',
+                text: 'Delete',
+                formatter: iconTrashBookingLineDetail,
                 editable: false
             }, {
                 dataField: 'modelNumber',
@@ -872,6 +899,11 @@ class BookingPage extends Component {
             }, {
                 dataField: 'clientRefNumber',
                 text: 'Client Reference #'
+            }, {
+                dataField: 'pk_id_lines_data',
+                text: 'Duplicate',
+                formatter: iconDoublePlusBookingLineDetail,
+                editable: false
             },
         ];
 
@@ -1626,7 +1658,7 @@ class BookingPage extends Component {
                                         <div id="tab01" className="tab-contents">
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
                                                 <BootstrapTable
-                                                    keyField='pk_auto_id_lines'
+                                                    keyField='pk_lines_id'
                                                     data={ products }
                                                     columns={ bookingLineColumns }
                                                     cellEdit={ cellEditFactory({ 
@@ -1637,10 +1669,14 @@ class BookingPage extends Component {
                                                     bootstrap4={ true }
                                                 />
                                                 <BootstrapTable
-                                                    keyField="modelNumber"
-                                                    data={ bookingLinesListDetailProduct }
-                                                    columns={ columnDetails }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                    keyField="pk_id_lines_data"
+                                                    data={ bookingLineDetailsProduct }
+                                                    columns={ bookingLineDetailsColumns }
+                                                    cellEdit={ cellEditFactory({ 
+                                                        mode: 'click',
+                                                        blurToSave: true,
+                                                        afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
+                                                    })}
                                                     bootstrap4={ true }
                                                 />
                                             </div>
@@ -1648,7 +1684,7 @@ class BookingPage extends Component {
                                         <div id="tab02" className="tab-contents">
                                             <div className="tab-inner">
                                                 <BootstrapTable
-                                                    keyField='pk_auto_id_lines'
+                                                    keyField='pk_id_lines_data'
                                                     data={ products }
                                                     columns={ columnAdditionalServices }
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
@@ -1656,7 +1692,7 @@ class BookingPage extends Component {
                                                 />
                                                 <BootstrapTable
                                                     keyField="modelNumber"
-                                                    data={ bookingLinesListDetailProduct }
+                                                    data={ bookingLineDetailsProduct }
                                                     columns={ columnBookingCounts }
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
@@ -1667,7 +1703,7 @@ class BookingPage extends Component {
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
-                                                    data={ bookingLinesListDetailProduct }
+                                                    data={ bookingLineDetailsProduct }
                                                     columns={ columnFreight }
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
@@ -1678,7 +1714,7 @@ class BookingPage extends Component {
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
-                                                    data={ bookingLinesListDetailProduct }
+                                                    data={ bookingLineDetailsProduct }
                                                     columns={ columnCommunication }
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
@@ -1730,6 +1766,7 @@ const mapStateToProps = (state) => {
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
+        needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
     };
 };
 
@@ -1737,14 +1774,18 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
-        createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),
-        updateBookingLine: (bookingLine) => dispatch(updateBookingLine(bookingLine)),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),
+        deleteBookingLine: (bookingLine) => dispatch(deleteBookingLine(bookingLine)),
+        updateBookingLine: (bookingLine) => dispatch(updateBookingLine(bookingLine)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
+        createBookingLineDetail: (bookingLineDetail) => dispatch(createBookingLineDetail(bookingLineDetail)),
+        deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
+        updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),

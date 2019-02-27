@@ -1,4 +1,4 @@
-import { SET_BOOKINGLINES, FAILED_GET_BOOKINGLINES, SUCCESS_CREATE_BOOKING_LINE, SUCCESS_UPDATE_BOOKING_LINE, FAILED_CREATE_BOOKING_LINE, FAILED_UPDATE_BOOKING_LINE } from '../constants/bookingLineConstants';
+import { SET_BOOKINGLINES, FAILED_GET_BOOKINGLINES, SUCCESS_CREATE_BOOKING_LINE, SUCCESS_UPDATE_BOOKING_LINE, FAILED_CREATE_BOOKING_LINE, FAILED_UPDATE_BOOKING_LINE, SUCCESS_DELETE_BOOKING_LINE, FAILED_DELETE_BOOKING_LINE } from '../constants/bookingLineConstants';
 
 export function setBookingLines(bookingLines) {
     return {
@@ -39,5 +39,19 @@ export function failedUpdateBookingLine(error) {
     return {
         type: FAILED_UPDATE_BOOKING_LINE,
         errorMessage: 'Unable to update BookingLine. Error: ' + error,
+    };
+}
+
+export function successDeleteBookingLine(bookingLine) {
+    return {
+        type: SUCCESS_DELETE_BOOKING_LINE,
+        bookingLine,
+    };
+}
+
+export function failedDeleteBookingLine(error) {
+    return {
+        type: FAILED_DELETE_BOOKING_LINE,
+        errorMessage: 'Unable to delete BookingLine. Error: ' + error,
     };
 }
