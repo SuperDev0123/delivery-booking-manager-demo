@@ -34,6 +34,8 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loading: false,
+            loadingBookingLine: false,
+            loadingBookingLineDetail: false,
             products: [],
             bookingLinesListProduct: [],
             bookingLineDetailsProduct: [],
@@ -169,14 +171,6 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (needUpdateBookingLines && booking) {
-            this.props.getBookingLines(booking.pk_booking_id);
-        }
-
-        if (needUpdateBookingLineDetails && booking) {
-            this.props.getBookingLineDetails(booking.pk_booking_id);
-        }
-
         if (bookingLines && bookingLines.length > 0) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
@@ -196,7 +190,7 @@ class BookingPage extends Component {
                 result.e_1_Total_dimCubicMeter = bookingLine.e_1_Total_dimCubicMeter;
                 return result;
             });
-            this.setState({products: bookingLinesListProduct, bookingLinesListProduct: bookingLinesListProduct});
+            this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
         }
 
         if (bookingLineDetails && bookingLineDetails.length > 0) {
@@ -214,7 +208,17 @@ class BookingPage extends Component {
                 return result;
             });
 
-            this.setState({bookingLineDetailsProduct, bookingLineDetails});
+            this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
+        }
+
+        if (needUpdateBookingLines && booking) {
+            this.setState({loadingBookingLine: true});
+            this.props.getBookingLines(booking.pk_booking_id);
+        }
+
+        if (needUpdateBookingLineDetails && booking) {
+            this.props.getBookingLineDetails(booking.pk_booking_id);
+            this.setState({loadingBookingLineDetail: true});
         }
 
         if (bBooking) {
@@ -758,9 +762,11 @@ class BookingPage extends Component {
         if (num === 0) {
             let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.createBookingLine(duplicatedBookingLine);
+            this.setState({loadingBookingLine: true});
         } else if (num === 1) {
             let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.createBookingLineDetail(duplicatedBookingLineDetail);
+            this.setState({loadingBookingLineDetail: true});
         }
     }
 
@@ -770,9 +776,11 @@ class BookingPage extends Component {
         if (num === 0) {
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.deleteBookingLine(deletedBookingLine);
+            this.setState({loadingBookingLine: true});
         } else if (num === 1) {
             let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
+            this.setState({loadingBookingLineDetail: true});
         }
     }
 
@@ -781,6 +789,7 @@ class BookingPage extends Component {
         let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
         this.props.updateBookingLine(updatedBookingLine);
+        this.setState({loadingBookingLine: true});
     }
 
     onUpdateBookingLineDetail(oldValue, newValue, row, column) {
@@ -788,6 +797,7 @@ class BookingPage extends Component {
         let updatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
         updatedBookingLineDetail[column.dataField] = newValue;
         this.props.updateBookingLineDetail(updatedBookingLineDetail);
+        this.setState({loadingBookingLineDetail: true});
     }
 
     render() {
@@ -1657,28 +1667,40 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab01" className="tab-contents">
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
-                                                <BootstrapTable
-                                                    keyField='pk_lines_id'
-                                                    data={ products }
-                                                    columns={ bookingLineColumns }
-                                                    cellEdit={ cellEditFactory({ 
-                                                        mode: 'click',
-                                                        blurToSave: true,
-                                                        afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
-                                                    })}
-                                                    bootstrap4={ true }
-                                                />
-                                                <BootstrapTable
-                                                    keyField="pk_id_lines_data"
-                                                    data={ bookingLineDetailsProduct }
-                                                    columns={ bookingLineDetailsColumns }
-                                                    cellEdit={ cellEditFactory({ 
-                                                        mode: 'click',
-                                                        blurToSave: true,
-                                                        afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
-                                                    })}
-                                                    bootstrap4={ true }
-                                                />
+                                                <LoadingOverlay
+                                                    active={this.state.loadingBookingLine}
+                                                    spinner
+                                                    text='Loading...'
+                                                >
+                                                    <BootstrapTable
+                                                        keyField='pk_lines_id'
+                                                        data={ products }
+                                                        columns={ bookingLineColumns }
+                                                        cellEdit={ cellEditFactory({ 
+                                                            mode: 'click',
+                                                            blurToSave: true,
+                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
+                                                        })}
+                                                        bootstrap4={ true }
+                                                    />
+                                                </LoadingOverlay>
+                                                <LoadingOverlay
+                                                    active={this.state.loadingBookingLineDetail}
+                                                    spinner
+                                                    text='Loading...'
+                                                >
+                                                    <BootstrapTable
+                                                        keyField="pk_id_lines_data"
+                                                        data={ bookingLineDetailsProduct }
+                                                        columns={ bookingLineDetailsColumns }
+                                                        cellEdit={ cellEditFactory({ 
+                                                            mode: 'click',
+                                                            blurToSave: true,
+                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
+                                                        })}
+                                                        bootstrap4={ true }
+                                                    />
+                                                </LoadingOverlay>
                                             </div>
                                         </div>
                                         <div id="tab02" className="tab-contents">
