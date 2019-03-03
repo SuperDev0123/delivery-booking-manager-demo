@@ -161,7 +161,7 @@ class AllBookingsPage extends React.Component {
             this.setState({loading: false});
         }
 
-        if (errorMessage === 'Book success') {
+        if (errorMessage === 'Book success' && needUpdateBookings) {
             this.onAfterBook();
         }
 
