@@ -53,6 +53,8 @@ class AllBookingsPage extends React.Component {
             activeTabInd: 7,
             checkedAll: false,
             showGearMenu: false,
+            selectedBookingsCnt: 0,
+            currentBookInd: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -123,7 +125,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, errorMessage } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -158,6 +160,11 @@ class AllBookingsPage extends React.Component {
         } else {
             this.setState({loading: false});
         }
+
+        if (errorMessage === 'Book success') {
+            this.onAfterBook();
+        }
+
     }
 
     handleClickOutside(event) {
@@ -362,7 +369,7 @@ class AllBookingsPage extends React.Component {
         if (selectedBookingIds.length < 1) {
             alert('Please select at least one booking!');
         } else {
-            this.setState({loadingBooking: true});
+            this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
             let that = this;
 
             for (let k = 0; k < selectedBookingIds.length; k++) {
@@ -377,15 +384,24 @@ class AllBookingsPage extends React.Component {
 
                 if (ind > -1) {
                     if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                        setTimeout(function(){ that.props.stBooking(bookings[ind].id); }, 15000 * k);
+                        setTimeout(function (){ 
+                            that.props.stBooking(bookings[ind].id);
+                        }, 15000 * k);
                     } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                        setTimeout(function(){ that.props.alliedBooking(bookings[ind].id); }, 15000 * k);
+                        setTimeout(function (){
+                            that.props.alliedBooking(bookings[ind].id);
+                        }, 15000 * k);
                     }
                 }
             }
+        }
+    }
 
-            setTimeout(function(){ that.setState({loadingBooking: false}); }, 15000 * (selectedBookingIds.length + 1));
-            this.setState({selectedBookingIds: [], checkedAll: false});
+    onAfterBook() {
+        if (this.state.currentBookInd === this.state.selectedBookingsCnt - 1) {
+            this.setState({selectedBookingIds: [], checkedAll: false, loadingBooking: false, selectedBookingsCnt: 0, currentBookInd: 0});
+        } else {
+            this.setState({currentBookInd: this.state.currentBookInd + 1});    
         }
     }
 
@@ -570,7 +586,7 @@ class AllBookingsPage extends React.Component {
 
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload } = this.state;
-
+        console.log('@11 - ', this.state.currentBookInd, this.state.selectedBookingsCnt);
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
@@ -885,6 +901,9 @@ class AllBookingsPage extends React.Component {
                                                 >
                                                     <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                     <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
+                                                    {
+                                                        loadingBooking ? this.state.currentBookInd + '/' + this.state.selectedBookingsCnt : ''
+                                                    }
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
@@ -1266,6 +1285,7 @@ const mapStateToProps = (state) => {
         columnFilters: state.booking.columnFilters,
         prefilterInd: state.booking.prefilterInd,
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
+        errorMessage: state.booking.errorMessage,
     };
 };
 

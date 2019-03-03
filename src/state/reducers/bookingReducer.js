@@ -124,6 +124,7 @@ export const BookingReducer = (state = defaultState, { attachments, type, errorM
         case BOOK_SUCCESS:
             return {
                 ...state,
+                errorMessage: errorMessage,
                 needUpdateBookings: true,
             };
         case BOOK_FAILED:
