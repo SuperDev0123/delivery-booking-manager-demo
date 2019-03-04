@@ -173,7 +173,7 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (bookingLines && bookingLines.length > 0) {
+        if (bookingLines) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
@@ -195,7 +195,7 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
         }
 
-        if (bookingLineDetails && bookingLineDetails.length > 0) {
+        if (bookingLineDetails) {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = [];
