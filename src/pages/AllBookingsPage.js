@@ -397,7 +397,8 @@ class AllBookingsPage extends React.Component {
         const allied_name = 'allied';
 
         if (currentBookInd === selectedBookingsCnt - 1) {
-            this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
+            this.setState({selectedBookingIds: [], checkedAll: false, loadingBooking: false, selectedBookingsCnt: 0, currentBookInd: 0});
+        } else {
             let ind = -1;
 
             for (let i = 0; i < bookings.length; i++) {
@@ -414,10 +415,8 @@ class AllBookingsPage extends React.Component {
                     this.props.alliedBooking(bookings[ind].id);
                 }
             }
-
-            this.setState({selectedBookingIds: [], checkedAll: false, loadingBooking: false, selectedBookingsCnt: 0, currentBookInd: 0});
-        } else {
-            this.setState({currentBookInd: currentBookInd + 1});    
+            
+            this.setState({currentBookInd: currentBookInd + 1});
         }
     }
 
