@@ -15,7 +15,8 @@ const defaultState = {
     closed: 0,
     missingLabels: 0,
     toProcess: 0,
-    selectedDate: '',
+    startDate: '',
+    endDate: '',
     warehouseId: 0,
     itemCountPerPage: 10,
     sortField: '-id',
@@ -24,7 +25,7 @@ const defaultState = {
     simpleSearchKeyword: '',
 };
 
-export const BookingReducer = (state = defaultState, { attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, selectedDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs }) => {
+export const BookingReducer = (state = defaultState, { attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs }) => {
     switch (type) {
         case SET_ATTACHMENTS:
             return {
@@ -145,7 +146,8 @@ export const BookingReducer = (state = defaultState, { attachments, type, errorM
         case SET_LOCAL_FILTER_ALL:
             return {
                 ...state,
-                selectedDate: selectedDate,
+                startDate: startDate,
+                endDate: endDate,
                 warehouseId: warehouseId,
                 sortField: sortField,
                 columnFilters: columnFilters,
@@ -156,7 +158,8 @@ export const BookingReducer = (state = defaultState, { attachments, type, errorM
         case SET_LOCAL_FILTER_SELECTEDATE:
             return {
                 ...state,
-                selectedDate: selectedDate,
+                startDate: startDate,
+                endDate: endDate,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_WAREHOUSEID:

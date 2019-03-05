@@ -3,14 +3,15 @@ import axios from 'axios';
 import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getBookings = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
+export const getBookings = (startDate, endDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_bookings/`,
         params: {
-            date: selectedDate,
+            startDate: startDate,
+            endDate: endDate,
             warehouseId: warehouseId,
             itemCountPerPage: itemCountPerPage,
             sortField: sortField,
@@ -29,8 +30,8 @@ export const setGetBookingsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetBookingsFilter = (selectedDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
-    return dispatch => dispatch(setAllLocalFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword));
+export const setAllGetBookingsFilter = (startDate, endDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
+    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword));
 };
 
 export const setNeedUpdateBookingsState = (boolFlag) => {

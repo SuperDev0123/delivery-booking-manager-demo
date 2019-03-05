@@ -16,10 +16,11 @@ export function successGetBookings(data) {
 }
 
 export function setLocalFilter(key, value) {
-    if (key === 'selectedDate') {
+    if (key === 'date') {
         return {
             type: SET_LOCAL_FILTER_SELECTEDATE,
-            selectedDate: value,
+            startDate: value.startDate,
+            endDate: value.endDate,
         };
     } else if (key === 'warehouseId') {
         return {
@@ -49,10 +50,11 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) {
+export function setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) {
     return {
         type: SET_LOCAL_FILTER_ALL,
-        selectedDate: selectedDate,
+        startDate: startDate,
+        endDate: endDate,
         warehouseId: warehouseId,
         sortField: sortField,
         itemCountPerPage: itemCountPerPage,

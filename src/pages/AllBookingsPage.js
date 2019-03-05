@@ -31,7 +31,8 @@ class AllBookingsPage extends React.Component {
             bookingLineDetails: [],
             warehouses: [],
             bookingsCnt: 0,
-            mainDate: '',
+            startDate: '',
+            endDate: '',
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
@@ -98,20 +99,23 @@ class AllBookingsPage extends React.Component {
         }
 
         const today = localStorage.getItem('today');
-        let mainDate = '';
+        let startDate = '';
         let dateParam = '';
 
         if (today) {
-            mainDate = moment(today, 'YYYY-MM-DD').toDate();
+            startDate = moment(today, 'YYYY-MM-DD').toDate();
             dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
         } else {
-            mainDate = moment().tz('Australia/Sydney').toDate();
+            startDate = moment().tz('Australia/Sydney').toDate();
             dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
         }
 
-        this.setState({ mainDate: moment(mainDate).format('YYYY-MM-DD') });
+        this.setState({ 
+            startDate: moment(startDate).format('YYYY-MM-DD'),
+            endDate: moment(startDate).format('YYYY-MM-DD'),
+        });
 
-        this.props.setGetBookingsFilter('selectedDate', dateParam);
+        this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
     }
@@ -125,7 +129,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, errorMessage } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, errorMessage } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -156,7 +160,7 @@ class AllBookingsPage extends React.Component {
 
         if (needUpdateBookings) {
             this.setState({loading: true});
-            this.props.getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
+            this.props.getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
         } else {
             this.setState({loading: false});
         }
@@ -220,18 +224,44 @@ class AllBookingsPage extends React.Component {
         return newBookingLineDetails;
     }
 
-    onDateChange(date) {
-        let mainDate = '';
+    onDateChange(date, dateType) {
+        let startDate = '';
+        let endDate = '';
 
-        if (_.isNull(date)) {
-            mainDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
-        } else {
-            mainDate = moment(date).format('YYYY-MM-DD');
+        if (dateType === 'startDate') {
+            if (_.isNull(date)) {
+                startDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+            } else {
+                startDate = moment(date).format('YYYY-MM-DD');
+            }
+
+            if (moment(startDate, 'YYYY-MM-DD') > moment(this.state.endDate)) {
+                endDate = startDate;
+                this.setState({startDate, endDate});    
+                this.props.setGetBookingsFilter('date', {startDate, endDate});
+            } else {
+                this.setState({startDate});
+                this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: this.state.endDate});
+            }
+
+            localStorage.setItem('today', startDate);
+        } else if (dateType === 'endDate') {
+            if (_.isNull(date)) {
+                endDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+            } else {
+                endDate = moment(date).format('YYYY-MM-DD');
+            }
+
+            if (moment(endDate, 'YYYY-MM-DD') < moment(this.state.startDate)) {
+                startDate = endDate;
+                this.setState({startDate, endDate});    
+                this.props.setGetBookingsFilter('date', {startDate, endDate});
+            } else {
+                this.setState({endDate});
+                this.props.setGetBookingsFilter('date', {startDate: this.state.startDate, endDate});
+            }
         }
 
-        this.props.setGetBookingsFilter('selectedDate', mainDate);
-        localStorage.setItem('today', mainDate);
-        this.setState({mainDate});
         this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
@@ -248,13 +278,13 @@ class AllBookingsPage extends React.Component {
 
     onItemCountPerPageChange(e) {
         console.log('@80 - ', e.target.value);
-        // const {mainDate, selectedWarehouseId} = this.state;
+        // const {startDate, selectedWarehouseId} = this.state;
         // const itemCountPerPage = e.target.value;
         //
         // if (selectedWarehouseId === 'all') {
-        //     this.props.setGetBookingsFilter(mainDate);
+        //     this.props.setGetBookingsFilter(startDate);
         // } else {
-        //     this.props.setGetBookingsFilter(mainDate, selectedWarehouseId, itemCountPerPage);
+        //     this.props.setGetBookingsFilter(startDate, selectedWarehouseId, itemCountPerPage);
         // }
         //
         // this.setState({ itemCountPerPage });
@@ -506,8 +536,8 @@ class AllBookingsPage extends React.Component {
 
     onClickGetAll(e) {
         e.preventDefault();
-        const {mainDate} = this.state;
-        this.props.setAllGetBookingsFilter(mainDate);
+        const {startDate, endDate} = this.state;
+        this.props.setAllGetBookingsFilter(startDate, endDate);
         this.setState({selectedBookingIds: []});
     }
 
@@ -525,12 +555,12 @@ class AllBookingsPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {mainDate, simpleSearchKeyword} = this.state;
+        const {startDate, endDate, simpleSearchKeyword} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            this.props.setAllGetBookingsFilter(mainDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
         }
 
         this.setState({selectedBookingIds: [], checkedAll: false});
@@ -540,8 +570,8 @@ class AllBookingsPage extends React.Component {
         if (activeTabInd === 0) {
             this.props.setAllGetBookingsFilter('*');
         } else if (activeTabInd === 7) {
-            const {mainDate} = this.state;
-            this.props.setAllGetBookingsFilter(mainDate);
+            const {startDate, endDate} = this.state;
+            this.props.setAllGetBookingsFilter(startDate, endDate);
         } else {
             this.onClickPrefilter(activeTabInd);
         }
@@ -550,10 +580,12 @@ class AllBookingsPage extends React.Component {
     }
 
     onDatePlusOrMinus(number) {
-        const mainDate = moment(this.state.mainDate).add(number, 'd').format('YYYY-MM-DD');
-        this.props.setGetBookingsFilter('selectedDate', mainDate);
-        localStorage.setItem('today', mainDate);
-        this.setState({mainDate, selectedBookingIds: [], checkedAll: false});
+        console.log('number - ', number);
+        // const startDate = moment(this.state.startDate).add(number, 'd').format('YYYY-MM-DD');
+        // const endDate = moment(this.state.endDate).add(number, 'd').format('YYYY-MM-DD');
+        // this.props.setGetBookingsFilter('date', {startDate, endDate});
+        // localStorage.setItem('today', startDate);
+        // this.setState({startDate, selectedBookingIds: [], checkedAll: false});
     }
 
     onCheckAll() {
@@ -600,8 +632,8 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, mainDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload } = this.state;
-        console.log('@11 - ', this.state.currentBookInd, this.state.selectedBookingsCnt);
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload } = this.state;
+
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
                 <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
@@ -896,13 +928,18 @@ class AllBookingsPage extends React.Component {
                                             <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                         </div>
                                         <div className="filter-controls">
-                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
+                                            <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
-                                                selected={mainDate}
-                                                onChange={(e) => this.onDateChange(e)}
+                                                selected={startDate}
+                                                onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
-                                            <div className="date-adjust"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
+                                            <DatePicker
+                                                selected={endDate}
+                                                onChange={(e) => this.onDateChange(e, 'endDate')}
+                                                dateFormat="dd MMM yyyy"
+                                            />
+                                            <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                                             <label className="left-30px right-10px">Warehouse/Client:</label>
                                             <select id="warehouse" required onChange={(e) => this.onWarehouseSelected(e)} value={selectedWarehouseId}>
                                                 <option value="all">All</option>
@@ -1293,7 +1330,8 @@ const mapStateToProps = (state) => {
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
-        selectedDate: state.booking.selectedDate,
+        startDate: state.booking.startDate,
+        endDate: state.booking.endDate,
         warehouseId: state.booking.warehouseId,
         itemCountPerPage: state.booking.itemCountPerPage,
         sortField: state.booking.sortField,
@@ -1307,9 +1345,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        getBookings: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(setAllGetBookingsFilter(selectedDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        setAllGetBookingsFilter: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(setAllGetBookingsFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
