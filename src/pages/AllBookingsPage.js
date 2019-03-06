@@ -862,9 +862,8 @@ class AllBookingsPage extends React.Component {
                     <td >{booking.vx_freight_provider}</td>
                     <td >{booking.vx_serviceName}</td>
                     <td >{booking.v_FPBookingNumber}</td>
-                    <td >
-                        {booking.b_status}
-                    </td>
+                    <td >{booking.b_status}</td>
+                    <td >{booking.b_status_API}</td>
                     <td >{booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td >{booking.s_20_Actual_Pickup_TimeStamp}</td>
@@ -1227,6 +1226,18 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </p>
                                                         </th>
+                                                        <th className="" onClick={() => this.onChangeSortField('b_status_API')} scope="col" nowrap>
+                                                            <p>
+                                                                API Status
+                                                                {
+                                                                    (sortField === 'b_status_API') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
+                                                            </p>
+                                                        </th>
                                                         <th className="" onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} scope="col" nowrap>
                                                             <p>
                                                                 Pickup Due
@@ -1296,6 +1307,7 @@ class AllBookingsPage extends React.Component {
                                                         <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                        <th scope="col"><input type="text" name="b_status_API" value={filterInputs['b_status_API'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
