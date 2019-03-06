@@ -56,6 +56,7 @@ class AllBookingsPage extends React.Component {
             showGearMenu: false,
             selectedBookingsCnt: 0,
             currentBookInd: 0,
+            downloadOption: 'label',
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -483,26 +484,83 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
-    onDownloadPdfs() {
-        const { selectedBookingIds } = this.state;
+    onDownload() {
+        const { selectedBookingIds, downloadOption, bookings, startDate, endDate } = this.state;
 
         if (selectedBookingIds.length > 0) {
             this.setState({loadingDownload: true});
-            const options = {
-                method: 'get',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/' + '?ids=' + selectedBookingIds,
-                responseType: 'blob', // important
-            };
 
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'labels.zip');
-                document.body.appendChild(link);
-                link.click();
-                this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
-            });
+            if (downloadOption === 'label') {
+                const options = {
+                    method: 'get',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/' + '?ids=' + selectedBookingIds,
+                    responseType: 'blob', // important
+                };
+
+                axios(options).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'labels.zip');
+                    document.body.appendChild(link);
+                    link.click();
+                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                });
+            } else if (downloadOption === 'pod') {
+                const options = {
+                    method: 'get',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/' + '?ids=' + selectedBookingIds + '&onlyNew=ALL',
+                    responseType: 'blob', // important
+                };
+
+                axios(options).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'pod_and_pod_signed.zip');
+                    document.body.appendChild(link);
+                    link.click();
+                    this.props.setGetBookingsFilter('date', {startDate, endDate});
+                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                });
+            } else if (downloadOption === 'pod_new') {
+                let hasNewPod = false;
+
+                for (let i = 0; i < bookings.length; i++) {
+                    for (let j = 0; j < selectedBookingIds.length; j++) {
+                        if (bookings[i].id === selectedBookingIds[j]) {
+                            if (bookings[i].z_downloaded_pod_timestamp === null &&
+                                bookings[i].z_pod_url &&
+                                length(bookings[i].z_pod_url) > 0 &&
+                                bookings[i].z_pod_signed_url &&
+                                length(bookings[i].z_pod_signed_url) > 0)
+                                hasNewPod = true;
+                        }
+                    }
+                }
+
+                if (hasNewPod) {
+                    const options = {
+                        method: 'get',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/' + '?ids=' + selectedBookingIds + '&onlyNew=NEW',
+                        responseType: 'blob', // important
+                    };
+
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'pod_and_pod_signed.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        this.props.setGetBookingsFilter('date', {startDate, endDate});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    });
+                } else {
+                    alert('No new POD info');
+                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                }
+            }
         } else {
             alert('No matching booking id');
         }
@@ -631,8 +689,12 @@ class AllBookingsPage extends React.Component {
         this.setState({showGearMenu: true});
     }
 
+    onDwonloadOptionChange(e) {
+        this.setState({downloadOption: e.target.value});
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -1029,6 +1091,13 @@ class AllBookingsPage extends React.Component {
                                             </Nav>
                                         </div>
                                         <hr />
+                                        <div>
+                                            <select value={downloadOption} onChange={(e) => this.onDwonloadOptionChange(e)}>
+                                                <option value="label">Label</option>
+                                                <option value="pod">Pod</option>
+                                                <option value="pod_new">New Pod</option>
+                                            </select>
+                                        </div>
                                         <LoadingOverlay
                                             active={loading}
                                             spinner
@@ -1038,7 +1107,7 @@ class AllBookingsPage extends React.Component {
                                                 <table className="table table-hover table-bordered sortable fixed_headers">
                                                     <tr>
                                                         <th className="">
-                                                            <button className="btn btn-primary multi-download" onClick={() => this.onDownloadPdfs()}>
+                                                            <button className="btn btn-primary multi-download" onClick={() => this.onDownload()}>
                                                                 <i className="icon icon-download"></i>
                                                             </button>
                                                         </th>
