@@ -531,9 +531,9 @@ class AllBookingsPage extends React.Component {
                         if (bookings[i].id === selectedBookingIds[j]) {
                             if (bookings[i].z_downloaded_pod_timestamp === null &&
                                 bookings[i].z_pod_url &&
-                                length(bookings[i].z_pod_url) > 0 &&
+                                bookings[i].z_pod_url.length > 0 &&
                                 bookings[i].z_pod_signed_url &&
-                                length(bookings[i].z_pod_signed_url) > 0)
+                                bookings[i].z_pod_signed_url.length > 0)
                                 hasNewPod = true;
                         }
                     }
