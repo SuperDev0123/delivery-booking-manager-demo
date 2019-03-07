@@ -935,12 +935,12 @@ class AllBookingsPage extends React.Component {
         });
 
         return (
-            <LoadingOverlay
-                active={loadingDownload}
-                spinner
-                text='Ready to download...'
-            >
-                <div className="qbootstrap-nav allbookings" >
+            <div className="qbootstrap-nav allbookings" >
+                <LoadingOverlay
+                    active={loadingDownload}
+                    spinner
+                    text='Ready to download...'
+                >
                     <div id="headr" className="col-md-12">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                             <ul className="nav nav-tabs">
@@ -1391,8 +1391,8 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </div>
                     </div>
-                </div>
-            </LoadingOverlay>
+                </LoadingOverlay>
+            </div>            
         );
     }
 }
