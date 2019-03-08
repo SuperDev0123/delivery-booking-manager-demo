@@ -613,12 +613,13 @@ class AllBookingsPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {startDate, endDate, simpleSearchKeyword} = this.state;
+        const {simpleSearchKeyword} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            this.setState({activeTabInd: 0});
         }
 
         this.setState({selectedBookingIds: [], checkedAll: false});
