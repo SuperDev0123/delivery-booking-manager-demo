@@ -836,7 +836,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, products, bookingLineDetailsProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1351,94 +1351,6 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pickup Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                     </div>
-                                                    <div className="mt-1 additional-pickup-div">
-                                                        <a id="additional-pickup" className="text-black pointer" onClick={() => this.setState({isShowAddServiceAndOpt: !isShowAddServiceAndOpt})}>
-                                                            Additional Services & Options
-                                                            <i className="fas fa-caret-down text-black"></i>
-                                                        </a>
-                                                    </div>
-                                                    <div className={isShowAddServiceAndOpt ? 'additional-pickup' : 'additional-pickup hidden'}>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Freight Provider</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">TNT</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Service</label>
-                                                                        <input type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Consignment No</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Booking Cutoff</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Road Freight Express</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Pickup / Manifest No</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Entered Date</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Quoted</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Booked Date</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Invoiced</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <div className="clearfix"></div>
                                                 </form>
                                             </div>
@@ -1608,32 +1520,6 @@ class BookingPage extends Component {
                                                     <div className="row mt-1">
                                                         <div className="col-sm-6">
                                                             <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                    </div>
-                                                    <div className="mt-1 additional-delivery-div">
-                                                        <a id="additional-delivery" className="text-black pointer" onClick={() => this.setState({isShowBookingCntAndTot: !isShowBookingCntAndTot})}>
-                                                            Booking Counts & Totals
-                                                            <i className="fas fa-caret-down text-black"></i>
-                                                        </a>
-                                                    </div>
-                                                    <div className={isShowBookingCntAndTot ? 'additional-delivery' : 'additional-delivery hidden'}>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Pieces</label>
-                                                                <input placeholder="3" type="text" className="form-control" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Mass</label>
-                                                                <input placeholder="100 KG" type="text" className="form-control" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Cubic KG</label>
-                                                                <input placeholder="150 KG" type="text" className="form-control" />
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </form>
