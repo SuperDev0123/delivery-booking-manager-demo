@@ -193,6 +193,16 @@ class BookingPage extends Component {
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
+
+            if (this.state.products && this.state.products.length > 0) {
+                setTimeout(function (){
+                    for (let i = 0; i < bookingLines.length; i++) {
+                        setTimeout(function (){
+                            document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();    
+                        }, 50 * i);
+                    }
+                }, 500);
+            }
         }
 
         if (bookingLineDetails) {
@@ -788,8 +798,33 @@ class BookingPage extends Component {
         console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
         let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
+        updatedBookingLine['e_1_Total_dimCubicMeter'] = this.getCubicMeter(row);
+        updatedBookingLine['e_Total_KG_weight'] = this.getTotalWeight(row);
         this.props.updateBookingLine(updatedBookingLine);
         this.setState({loadingBookingLine: true});
+    }
+
+    getCubicMeter(row) {
+        if (row['e_dimUOM'].toUpperCase() === 'CM')
+            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000);
+        else if (row['e_dimUOM'].toUpperCase() === 'METER')
+            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']));
+        else
+            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000000);
+    }
+
+    getTotalWeight(row) {
+        if (row['e_weightUOM'].toUpperCase() === 'GRAM' || 
+            row['e_weightUOM'].toUpperCase() === 'GRAMS')
+            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) / 1000;
+        else if (row['e_weightUOM'].toUpperCase() === 'KILOGRAM' || 
+                 row['e_weightUOM'].toUpperCase() === 'KILOGRAMS' ||
+                 row['e_weightUOM'].toUpperCase() === 'KG' ||
+                 row['e_weightUOM'].toUpperCase() === 'KGS')
+            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']);
+        else if (row['e_weightUOM'].toUpperCase() === 'TON' ||
+                 row['e_weightUOM'].toUpperCase() === 'TONS')
+            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) * 1000;
     }
 
     onUpdateBookingLineDetail(oldValue, newValue, row, column) {
@@ -840,45 +875,47 @@ class BookingPage extends Component {
                 dataField: 'pk_lines_id',
                 text: 'Delete',
                 formatter: iconTrashBookingLine,
-                editable: false
+                editable: false,
             }, {
                 dataField: 'e_type_of_packaging',
-                text: 'Packaging'
+                text: 'Packaging',
             }, {
                 dataField: 'e_item',
                 text: 'Item Description'
             }, {
                 dataField: 'e_qty',
-                text: 'Qty'
+                text: 'Qty',
             }, {
                 dataField: 'e_weightUOM',
                 text: 'Wgt UOM'
             }, {
                 dataField: 'e_weightPerEach',
-                text: 'Wgt Each'
+                text: 'Wgt Each',
             }, {
                 dataField: 'e_Total_KG_weight',
-                text: 'Total Kgs'
+                text: 'Total Kgs',
+                editable: false,
             }, {
                 dataField: 'e_dimUOM',
-                text: 'Dim UOM'
+                text: 'Dim UOM',
             }, {
                 dataField: 'e_dimLength',
-                text: 'Length'
+                text: 'Length',
             }, {
                 dataField: 'e_dimWidth',
-                text: 'Width'
+                text: 'Width',
             }, {
                 dataField: 'e_dimHeight',
-                text: 'Hegiht'
+                text: 'Hegiht',
             }, {
                 dataField: 'e_1_Total_dimCubicMeter',
-                text: 'Cubic Meter'
+                text: 'Cubic Meter',
+                editable: false,
             }, {
                 dataField: 'pk_lines_id',
                 text: 'Duplicate',
                 formatter: iconDoublePlusBookingLine,
-                editable: false
+                editable: false,
             },
         ];
 
@@ -1690,7 +1727,7 @@ class BookingPage extends Component {
                                                         columns={ bookingLineColumns }
                                                         cellEdit={ cellEditFactory({ 
                                                             mode: 'click',
-                                                            blurToSave: true,
+                                                            blurToSave: false,
                                                             afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
                                                         })}
                                                         bootstrap4={ true }
