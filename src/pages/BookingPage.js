@@ -8,14 +8,15 @@ import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
+import DropzoneComponent from 'react-dropzone-component';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import user from '../public/images/user.png';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
-import DropzoneComponent from 'react-dropzone-component';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -67,6 +68,9 @@ class BookingPage extends Component {
             deTimeZone: null,
             attachmentsHistory: [],
             selectionChanged: 0,
+            isShowDuplicateBookingOptionsModal: false,
+            switchInfo: false,
+            dupLineAndLineDetail: false,
         };
 
         this.djsConfig = {
@@ -83,11 +87,13 @@ class BookingPage extends Component {
 
         this.dropzone = null;
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
+        this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
     }
 
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
+        duplicateBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         deleteBookingLine: PropTypes.func.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
@@ -107,6 +113,7 @@ class BookingPage extends Component {
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
+        resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -164,7 +171,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -221,6 +228,13 @@ class BookingPage extends Component {
             });
 
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
+        }
+
+        if (needUpdateLineAndLineDetail) {
+            this.setState({loadingBookingLine: true});
+            this.props.resetNeedUpdateLineAndLineDetail();
+            this.props.getBookingLines(booking.pk_booking_id);
+            this.props.getBookingLineDetails(booking.pk_booking_id);
         }
 
         if (needUpdateBookingLines && booking) {
@@ -793,17 +807,29 @@ class BookingPage extends Component {
         this.props.getAttachmentHistory(this.state.booking.id);
     }
 
-    onClickDuplicate(num, row) {
+    onClickDuplicate(num, row={}) {
         console.log('onDuplicate: ', num, row);
+        const {booking} = this.state;
 
-        if (num === 0) {
+        if (num === 0) { // Duplicate line
             let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.createBookingLine(duplicatedBookingLine);
             this.setState({loadingBookingLine: true});
-        } else if (num === 1) {
+        } else if (num === 1) { // Duplicate line detail
             let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.createBookingLineDetail(duplicatedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
+        } else if (num === 2) { // On click `Duplicate Booking` button
+            if (!booking.hasOwnProperty('id')) {
+                alert('Please select a booking.');
+            } else {
+                this.toggleDuplicateBookingOptionsModal();
+            }
+        } else if (num === 3) { // On click `Duplicate` on modal
+            const {switchInfo, dupLineAndLineDetail} = this.state;
+            this.props.duplicateBooking(booking.id, switchInfo, dupLineAndLineDetail);
+            this.toggleDuplicateBookingOptionsModal();
+            this.setState({switchInfo: false, dupLineAndLineDetail: false});
         }
     }
 
@@ -860,6 +886,18 @@ class BookingPage extends Component {
         updatedBookingLineDetail[column.dataField] = newValue;
         this.props.updateBookingLineDetail(updatedBookingLineDetail);
         this.setState({loadingBookingLineDetail: true});
+    }
+
+    toggleDuplicateBookingOptionsModal() {
+        this.setState(prevState => ({isShowDuplicateBookingOptionsModal: !prevState.isShowDuplicateBookingOptionsModal}));
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        this.setState({[name]: value});
     }
 
     render() {
@@ -1645,7 +1683,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-backspace"></i> Cancel Request</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-copy"></i> Duplicate Booking</button>
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}><i className="fas fa-copy"></i>Duplicate Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
@@ -1790,6 +1828,33 @@ class BookingPage extends Component {
                         </div>
                     </section>
                 </LoadingOverlay>
+
+                <Modal isOpen={this.state.isShowDuplicateBookingOptionsModal} toggle={this.toggleDuplicateBookingOptionsModal} className="duplicate-option-modal">
+                    <ModalHeader toggle={this.toggleDuplicateBookingOptionsModal}>Duplicate Booking Options</ModalHeader>
+                    <ModalBody>
+                        <label>
+                            <input
+                                name="switchInfo"
+                                type="checkbox"
+                                checked={this.state.switchInfo}
+                                onChange={(e) => this.handleInputChange(e)} />
+                            Switch Addresses & Contacts
+                        </label>
+                        <br />
+                        <label>
+                            <input
+                                name="dupLineAndLineDetail"
+                                type="checkbox"
+                                checked={this.state.dupLineAndLineDetail}
+                                onChange={(e) => this.handleInputChange(e)} />
+                            Duplicate related Lines and LineDetails
+                        </label>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => this.onClickDuplicate(3)}>Duplicate</Button>{' '}
+                        <Button color="secondary" onClick={this.toggleDuplicateBookingOptionsModal}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         );
     }
@@ -1811,8 +1876,7 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
-        needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
-        needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
+        needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
     };
 };
 
@@ -1820,6 +1884,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
+        duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
+        resetNeedUpdateLineAndLineDetail: () => dispatch(resetNeedUpdateLineAndLineDetail()),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),

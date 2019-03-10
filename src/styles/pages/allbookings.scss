@@ -482,3 +482,17 @@ ul.nav-tabs {
 header > .qbootstrap-nav {
   height: 50px;
 }
+
+.duplicate-option-modal {
+  top: 100px;
+
+  .modal-header {
+    h5 {
+      font-size: 20px !important;
+    }
+  }
+
+  input {
+    margin-right: 10px;
+  }
+}
