@@ -262,8 +262,8 @@ class AllBookingsPage extends React.Component {
                 this.props.setGetBookingsFilter('date', {startDate: this.state.startDate, endDate});
             }
         }
-
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
+        this.props.setGetBookingsFilter('columnFilters', {});
     }
 
     onWarehouseSelected(e) {
@@ -326,7 +326,8 @@ class AllBookingsPage extends React.Component {
 
     onClickPrefilter(prefilterInd) {
         this.props.setGetBookingsFilter('prefilterInd', prefilterInd);
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.props.setGetBookingsFilter('columnFilters', {});
+        this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
     }
 
     showAdditionalInfo(bookingId) {
