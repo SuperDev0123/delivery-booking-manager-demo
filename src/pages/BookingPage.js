@@ -290,6 +290,33 @@ class BookingPage extends Component {
                 else formInputs['s_20_Actual_Pickup_TimeStamp'] = '';
                 if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp.de_Deliver_From_Date;
                 else formInputs['s_21_Actual_Delivery_TimeStamp'] = '';
+                if (booking.b_client_name != null) formInputs['b_client_name'] = booking.b_client_name;
+                else formInputs['b_client_name'] = '';
+                if (booking.b_client_warehouse_code != null) formInputs['b_client_warehouse_code'] = booking.b_client_warehouse_code;
+                else formInputs['b_client_warehouse_code'] = '';
+                if (booking.b_clientPU_Warehouse != null) formInputs['b_clientPU_Warehouse'] = booking.b_clientPU_Warehouse;
+                else formInputs['b_clientPU_Warehouse'] = '';
+                if (booking.booking_Created_For_Email != null) formInputs['booking_Created_For_Email'] = booking.booking_Created_For_Email;
+                else formInputs['booking_Created_For_Email'] = '';
+                if (booking.booking_Created_For != null) formInputs['booking_Created_For'] = booking.booking_Created_For;
+                else formInputs['booking_Created_For'] = '';
+
+                if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
+                else formInputs['vx_fp_pu_eta_time'] = '';
+                if (booking.vx_fp_del_eta_time != null) formInputs['vx_fp_del_eta_time'] = booking.vx_fp_del_eta_time;
+                else formInputs['vx_fp_del_eta_time'] = '';
+
+                if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
+                else formInputs['b_clientReference_RA_Numbers'] = '';
+
+                if (booking.de_to_Pick_Up_Instructions_Contact != null) formInputs['de_to_Pick_Up_Instructions_Contact'] = booking.de_to_Pick_Up_Instructions_Contact;
+                else formInputs['de_to_Pick_Up_Instructions_Contact'] = '';
+                if (booking.de_to_PickUp_Instructions_Address != null) formInputs['de_to_PickUp_Instructions_Address'] = booking.de_to_PickUp_Instructions_Address;
+                else formInputs['de_to_PickUp_Instructions_Address'] = '';
+                if (booking.pu_pickup_instructions_address != null) formInputs['pu_pickup_instructions_address'] = booking.pu_pickup_instructions_address;
+                else formInputs['pu_pickup_instructions_address'] = '';
+                if (booking.pu_PickUp_Instructions_Contact != null) formInputs['pu_PickUp_Instructions_Contact'] = booking.pu_PickUp_Instructions_Contact;
+                else formInputs['pu_PickUp_Instructions_Contact'] = '';
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -836,7 +863,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,isShowBookingCntAndTot, booking, products, bookingLineDetailsProduct, isShowAddServiceAndOpt, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1016,9 +1043,6 @@ class BookingPage extends Component {
                 dataField: 'freightprovider',
                 text: 'Freight Provider'
             }, {
-                dataField: 'tnt',
-                text: 'TNT'
-            }, {
                 dataField: 'service',
                 text: 'Service'
             }, {
@@ -1154,13 +1178,19 @@ class BookingPage extends Component {
 
                                 <div className="inner-text">
                                     <form action="">
-                                        <div className="col-sm-2 form-group">
-                                            <label className="" htmlFor="">Booking Contact</label>
+                                        <div className="row col-sm-6">
+                                            <div className="col-sm-4 form-group">
+                                                <input className="form-control" type="text" placeholder="BioPAK" name="b_client_name" value = {formInputs['b_client_name']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                            </div>
+                                            <div className="col-sm-4 form-group">
+                                                <input className="form-control" type="text" placeholder="warehouse code" name="b_client_warehouse_code" value = {formInputs['b_client_warehouse_code']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                <input className="form-control" type="text" placeholder="warehouse" name="b_clientPU_Warehouse" value = {formInputs['b_clientPU_Warehouse']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                            </div>
+                                            <div className="col-sm-4 form-group">
+                                                <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                <input className="form-control" type="text" placeholder="contact mail" name="booking_Created_For_Email" value = {formInputs['booking_Created_For_Email']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                            </div>
                                         </div>
-                                        <div className="col-sm-4 form-group">
-                                            <input className="form-control" type="text" placeholder="BioPAK" />
-                                        </div>
-
                                         <div className="container">
                                             <div className="row">
                                                 <div className="col-sm-2" onChange={this.getRadioValue.bind(this)}>
@@ -1344,99 +1374,43 @@ class BookingPage extends Component {
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
-                                                        <div className="col-sm-6">
-                                                            <label className="" htmlFor="">Reference No <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">ETA Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
+                                                        <div className="col-sm-8">
+                                                            <div className="input-group">
+                                                                <input type="text" name="vx_fp_pu_eta_time" className="form-control" value = {formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Actual Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            <div className="input-group">
+                                                                <input type="text" name="s_20_Actual_Pickup_TimeStamp" className="form-control" value = {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
                                                         <div className="col-sm-6">
                                                             <label className="" htmlFor="">Pickup Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
+                                                        <div className="col-sm-6">
+                                                            <textarea name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']}/>
+                                                        </div>
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
-                                                        <a id="additional-pickup" className="text-black pointer" onClick={() => this.setState({isShowAddServiceAndOpt: !isShowAddServiceAndOpt})}>
-                                                            Additional Services & Options
-                                                            <i className="fas fa-caret-down text-black"></i>
-                                                        </a>
-                                                    </div>
-                                                    <div className={isShowAddServiceAndOpt ? 'additional-pickup' : 'additional-pickup hidden'}>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Freight Provider</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">TNT</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">    Reference No 
+                                                            <a id="additional-pickup" className="text-black pointer">
+                                                                <i className="fas fa-caret-down text-black"></i>
+                                                            </a>
+                                                            </label>
                                                         </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Service</label>
-                                                                        <input type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Consignment No</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Booking Cutoff</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Road Freight Express</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Pickup / Manifest No</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Entered Date</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Quoted</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Booked Date</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <div className="row">
-                                                                    <div className="col-sm-6">
-                                                                        <label className="mt-0" htmlFor="">Invoiced</label>
-                                                                        <input placeholder="" type="text" className="form-control" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                        <div className="col-sm-8">
+                                                            <input type="text" name="b_clientReference_RA_Numbers" className="form-control" value = {formInputs['b_clientReference_RA_Numbers']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
                                                     <div className="clearfix"></div>
@@ -1606,34 +1580,32 @@ class BookingPage extends Component {
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">ETA Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            <div className="input-group">
+                                                                <input type="text" name="vx_fp_del_eta_time" className="form-control" value = {formInputs['vx_fp_del_eta_time'] ? moment(formInputs['vx_fp_del_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Actual Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            <div className="input-group">
+                                                                <input type="text" name="s_21_Actual_Delivery_TimeStamp" className="form-control" value = {formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
                                                         <div className="col-sm-6">
                                                             <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
-                                                    </div>
-                                                    <div className="mt-1 additional-delivery-div">
-                                                        <a id="additional-delivery" className="text-black pointer" onClick={() => this.setState({isShowBookingCntAndTot: !isShowBookingCntAndTot})}>
-                                                            Booking Counts & Totals
-                                                            <i className="fas fa-caret-down text-black"></i>
-                                                        </a>
-                                                    </div>
-                                                    <div className={isShowBookingCntAndTot ? 'additional-delivery' : 'additional-delivery hidden'}>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Pieces</label>
-                                                                <input placeholder="3" type="text" className="form-control" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Mass</label>
-                                                                <input placeholder="100 KG" type="text" className="form-control" />
-                                                            </div>
-                                                        </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-12">
-                                                                <label className="mt-0" htmlFor="">Total Cubic KG</label>
-                                                                <input placeholder="150 KG" type="text" className="form-control" />
-                                                            </div>
+                                                        <div className="col-sm-6">
+                                                            <textarea name="body" rows="1" cols="9" value={formInputs['de_to_PickUp_Instructions_Address'] + formInputs['de_to_Pick_Up_Instructions_Contact']}/>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -1660,25 +1632,25 @@ class BookingPage extends Component {
                                                     <p>01 March Delivered</p>
                                                 </div>
                                                 <div className="buttons">
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onSave()}><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-backspace"></i> Cancel Request</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-copy"></i> Duplicate Booking</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
                                                     </div>
-                                                    <div className="text-center mt-2">
+                                                    <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
                                                 </div>
@@ -1699,7 +1671,7 @@ class BookingPage extends Component {
                                         <div className="tab-button-outer">
                                             <ul id="tab-button">
                                                 <li><a href="#tab01">Shipment Packages / Goods</a></li>
-                                                <li><a href="#tab02">Additional Services & Options</a></li>
+                                                <li><a href="#tab02">Additional Information</a></li>
                                                 <li><a href="#tab03">Freight Options</a></li>
                                                 <li><a href="#tab04">Communication Log</a></li>
                                                 <li><a href="#tab05">Attachments</a></li>
@@ -1753,7 +1725,9 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab02" className="tab-contents">
+                                            <p className="font-24px float-right">Booking Counts:   / total pieces:   / total mass:   / total kg:   </p>
                                             <div className="tab-inner">
+                                                <p className="font-24px float-left">Additional Services & Options</p>
                                                 <BootstrapTable
                                                     keyField='pk_id_lines_data'
                                                     data={ products }
@@ -1761,6 +1735,7 @@ class BookingPage extends Component {
                                                     cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
+                                                <p className="font-24px float-left">Booking Counts & Totals</p>
                                                 <BootstrapTable
                                                     keyField="modelNumber"
                                                     data={ bookingLineDetailsProduct }
