@@ -67,6 +67,8 @@ class BookingPage extends Component {
             deTimeZone: null,
             attachmentsHistory: [],
             selectionChanged: 0,
+            AdditionalServices: [],
+            bookingTotals: [],
         };
 
         this.djsConfig = {
@@ -195,13 +197,15 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
 
             if (this.state.products && this.state.products.length > 0) {
-                setTimeout(function (){
-                    for (let i = 0; i < bookingLines.length; i++) {
-                        setTimeout(function (){
-                            document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();    
-                        }, 50 * i);
-                    }
-                }, 500);
+                if  (this.state.bAllComboboxViewOnlyonBooking != true) {
+                    setTimeout(function (){
+                        for (let i = 0; i < bookingLines.length; i++) {
+                            setTimeout(function (){
+                                document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();  
+                            }, 10 * i);
+                        }
+                    }, 100);
+                }
             }
         }
 
@@ -321,11 +325,44 @@ class BookingPage extends Component {
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
                 }
-
                 if (booking.de_To_Address_Country != undefined && booking.de_To_Address_State != undefined) {
                     this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
                 }
-                
+
+                //For Additioan Services
+                let tempAdditionalServices = this.state.AdditionalServices;
+                if (booking.vx_freight_provider != null) tempAdditionalServices.vx_freight_provider = booking.vx_freight_provider;
+                else tempAdditionalServices.vx_freight_provider = '';
+                if (booking.vx_serviceName != null) tempAdditionalServices.vx_serviceName = booking.vx_serviceName;
+                else tempAdditionalServices.vx_serviceName = '';
+                if (booking.consignment_label_link != null) tempAdditionalServices.consignment_label_link = booking.consignment_label_link;
+                else tempAdditionalServices.consignment_label_link = '';
+                if (booking.s_02_Booking_Cutoff_Time != null) tempAdditionalServices.s_02_Booking_Cutoff_Time = booking.s_02_Booking_Cutoff_Time;
+                else tempAdditionalServices.s_02_Booking_Cutoff_Time = '';
+                if (booking.puPickUpAvailFrom_Date != null) tempAdditionalServices.puPickUpAvailFrom_Date = booking.puPickUpAvailFrom_Date;
+                else tempAdditionalServices.puPickUpAvailFrom_Date = '';
+                if (booking.z_CreatedTimestamp != null) tempAdditionalServices.z_CreatedTimestamp = booking.z_CreatedTimestamp;
+                else tempAdditionalServices.z_CreatedTimestamp = '';
+                tempAdditionalServices.Quoted = '';
+                if (booking.b_dateBookedDate != null) tempAdditionalServices.b_dateBookedDate = booking.b_dateBookedDate;
+                else tempAdditionalServices.b_dateBookedDate = '';
+                tempAdditionalServices.Invoiced = '';
+  
+                let AdditionalServices = [];
+                AdditionalServices.push(tempAdditionalServices);
+
+                //For Total Pieces Info
+                let tempTotalPieces = this.state.bookingTotals;
+                if (booking.total_lines_qty_override != null) tempTotalPieces.total_lines_qty_override = booking.total_lines_qty_override;
+                else tempTotalPieces.total_lines_qty_override = '';
+                if (booking.total_1_KG_weight_override != null) tempTotalPieces.total_1_KG_weight_override = booking.total_1_KG_weight_override;
+                else tempTotalPieces.total_1_KG_weight_override = '';
+                if (booking.total_Cubic_Meter_override != null) tempTotalPieces.total_Cubic_Meter_override = booking.total_Cubic_Meter_override;
+                else tempTotalPieces.total_Cubic_Meter_override = '';
+
+                let TotalPieces = [];
+                TotalPieces.push(tempTotalPieces);
+
                 this.setState({
                     puPostalCode: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
                     puSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
@@ -346,7 +383,7 @@ class BookingPage extends Component {
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                 }
 
-                this.setState({ formInputs, booking, nextBookingId, prevBookingId, loading: false });
+                this.setState({ AdditionalServices: AdditionalServices, bookingTotals: TotalPieces, formInputs, booking, nextBookingId, prevBookingId, loading: false });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 alert('There is no such booking with that DME/CON number.');
@@ -863,8 +900,8 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
-
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+        console.log('bookingTotals---222222---', AdditionalServices);
         const iconTrashBookingLine = (cell, row) => {
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
@@ -1040,31 +1077,28 @@ class BookingPage extends Component {
 
         const columnAdditionalServices = [
             {
-                dataField: 'freightprovider',
+                dataField: 'vx_freight_provider',
                 text: 'Freight Provider'
             }, {
-                dataField: 'service',
+                dataField: 'vx_serviceName',
                 text: 'Service'
             }, {
-                dataField: 'consignmentNo',
+                dataField: 'consignment_label_link',
                 text: 'Consignment No'
             }, {
-                dataField: 'bookingCutoff',
+                dataField: 's_02_Booking_Cutoff_Time',
                 text: 'Booking Cutoff'
             }, {
-                dataField: 'RoadFreightExpress',
-                text: 'Road Freight Express'
-            }, {
-                dataField: 'pickupManifestNo',
+                dataField: 'puPickUpAvailFrom_Date',
                 text: 'Pickup / Manifest No'
             }, {
-                dataField: 'EnteredDate',
+                dataField: 'z_CreatedTimestamp',
                 text: 'Entered Date'
             }, {
                 dataField: 'Quoted',
                 text: 'Quoted'
             }, {
-                dataField: 'BookedDate',
+                dataField: 'b_dateBookedDate',
                 text: 'Booked Date'
             }, {
                 dataField: 'Invoiced',
@@ -1074,13 +1108,13 @@ class BookingPage extends Component {
 
         const columnBookingCounts = [
             {
-                dataField: 'TotalPieces',
+                dataField: 'total_lines_qty_override',
                 text: 'Total Pieces'
             }, {
-                dataField: 'TotalMass',
+                dataField: 'total_1_KG_weight_override',
                 text: 'Total Mass'
             }, {
-                dataField: 'TotalCubicKG',
+                dataField: 'total_Cubic_Meter_override',
                 text: 'Total Cubic KG'
             },
         ];
@@ -1394,11 +1428,11 @@ class BookingPage extends Component {
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
-                                                        <div className="col-sm-6">
-                                                            <label className="" htmlFor="">Pickup Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Pickup <br></br>Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
-                                                        <div className="col-sm-6">
-                                                            <textarea name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']}/>
+                                                        <div className="col-sm-8">
+                                                            <textarea width="100%" className="textarea-width" name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']}/>
                                                         </div>
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
@@ -1601,11 +1635,11 @@ class BookingPage extends Component {
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
-                                                        <div className="col-sm-6">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
-                                                        <div className="col-sm-6">
-                                                            <textarea name="body" rows="1" cols="9" value={formInputs['de_to_PickUp_Instructions_Address'] + formInputs['de_to_Pick_Up_Instructions_Contact']}/>
+                                                        <div className="col-sm-8">
+                                                            <textarea name="body" className="textarea-width" rows="1" cols="9" value={formInputs['de_to_PickUp_Instructions_Address'] + formInputs['de_to_Pick_Up_Instructions_Contact']}/>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -1725,22 +1759,19 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab02" className="tab-contents">
-                                            <p className="font-24px float-right">Booking Counts:   / total pieces:   / total mass:   / total kg:   </p>
                                             <div className="tab-inner">
                                                 <p className="font-24px float-left">Additional Services & Options</p>
                                                 <BootstrapTable
-                                                    keyField='pk_id_lines_data'
-                                                    data={ products }
+                                                    keyField='vx_freight_provider'
+                                                    data={ AdditionalServices }
                                                     columns={ columnAdditionalServices }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
                                                 <p className="font-24px float-left">Booking Counts & Totals</p>
                                                 <BootstrapTable
-                                                    keyField="modelNumber"
-                                                    data={ bookingLineDetailsProduct }
+                                                    keyField="total_lines_qty_override"
+                                                    data={ bookingTotals }
                                                     columns={ columnBookingCounts }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
                                             </div>
