@@ -172,6 +172,10 @@ a.popup i {
   width: 100% !important;
   text-indent: 15px;
 }
+
+.select-margin > div > div > div:nth-child(1) > div:nth-child(1) {
+  margin-left: 15px !important;
+}
 /**********Booking***********/
 
 
