@@ -669,14 +669,19 @@ class AllBookingsPage extends React.Component {
 
     onClickDownloadExcel() {
         const { bookings } = this.state;
+        let bookingIds = '';
 
         if (bookings && bookings.length === 0) {
             alert('There is no filtered bookings to build Excel.');
         } else {
+            for (let i = 0; i < bookings.length - 1; i++)
+                bookingIds = bookingIds + bookings[i].id + ',';
+            bookingIds = bookingIds + bookings[bookings.length - 1].id;
+
             this.setState({loadingDownload: true});
             const options = {
                 method: 'get',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/?bookings=' + JSON.stringify(bookings),
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/?bookingIds=' + bookingIds,
                 responseType: 'blob', // important
             };
 
