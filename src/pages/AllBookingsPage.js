@@ -667,23 +667,28 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickDownloadExcel() {
-        this.setState({loadingDownload: true});
+        const { bookings } = this.state;
 
-        const options = {
-            method: 'get',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/',
-            responseType: 'blob', // important
-        };
+        if (bookings && bookings.length === 0) {
+            alert('There is no filtered bookings to build Excel.');
+        } else {
+            this.setState({loadingDownload: true});
+            const options = {
+                method: 'get',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/?bookings=' + JSON.stringify(bookings),
+                responseType: 'blob', // important
+            };
 
-        axios(options).then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'bookings_seaway.xlsx');
-            document.body.appendChild(link);
-            link.click();
-            this.setState({loadingDownload: false});
-        });
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'bookings_seaway.xlsx');
+                document.body.appendChild(link);
+                link.click();
+                this.setState({loadingDownload: false});
+            });
+        }
     }
 
     onClickGear() {
