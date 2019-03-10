@@ -37,6 +37,7 @@ section.booking{
 .peclock {
 	text-align: right;
 }
+
 /**********Booking***********/
 
 .btn-outline-light{
@@ -164,6 +165,12 @@ a.popup i {
 .custom-theme:hover{
 	background-color: #0189b9;
 	color: #fff;
+}
+
+
+.textarea-width {
+  width: 100% !important;
+  text-indent: 15px;
 }
 /**********Booking***********/
 
