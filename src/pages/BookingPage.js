@@ -1333,7 +1333,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={puState}
                                                                     onChange={(e) => this.handleChangeState(0, e)}
@@ -1348,7 +1348,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={puPostalCode}
                                                                     onChange={(e) => this.handleChangePostalCode(0, e)}
@@ -1363,7 +1363,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={puSuburb}
                                                                     onChange={(e) => this.handleChangeSuburb(0, e)}
@@ -1539,7 +1539,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={deToState}
                                                                     onChange={(e) => this.handleChangeState(1, e)}
@@ -1554,7 +1554,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={deToPostalCode}
                                                                     onChange={(e) => this.handleChangePostalCode(1, e)}
@@ -1569,7 +1569,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
                                                                 <Select
                                                                     value={deToSuburb}
                                                                     onChange={(e) => this.handleChangeSuburb(1, e)}
