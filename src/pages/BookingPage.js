@@ -336,6 +336,8 @@ class BookingPage extends Component {
                 else formInputs['pu_pickup_instructions_address'] = '';
                 if (booking.pu_PickUp_Instructions_Contact != null) formInputs['pu_PickUp_Instructions_Contact'] = booking.pu_PickUp_Instructions_Contact;
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
+                if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
+                else formInputs['b_status_API'] = '';
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -1232,20 +1234,20 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-2">
-                                            <p className="text-white">Edit Booking {this.state.booking.b_bookingID_Visual}</p>
+                                            <p className="text-white">Booking Details :  {this.state.booking.b_bookingID_Visual}</p>
                                         </div>
                                         <div className="col-sm-2">
-                                            <p className="text-white text-center">Tempo <a href=""><i className="fas fa-file-alt text-white"></i></a></p>
+                                            <p className="text-white text-center"> <a href=""><i className="fas fa-file-alt text-white"></i></a></p>
                                         </div>
                                         <div className="col-sm-3">
-                                            <p className="text-white text-right">AUS Mon 18:00 2018-02-04 <a href=""><i className="fas fa-location-arrow text-white"></i></a></p>
+                                            <p className="text-white text-right">AUS Mon 18:00 2018-02-04 </p>
                                         </div>
                                         <div className="col-sm-5">
                                             <ul className="grid-head">
-                                                <li><button className="btn btn-light btn-theme"><i className="fas fa-eye"></i> Preview</button></li>
+                                                <li><button className="btn btn-light btn-theme"> Preview</button></li>
                                                 <li><button className="btn btn-light btn-theme">Email</button></li>
                                                 <li><button className="btn btn-light btn-theme">Print PDF</button></li>
-                                                <li><button className="btn btn-light btn-theme"><i className="fas fa-undo"></i> Undo</button></li>
+                                                <li><button className="btn btn-light btn-theme">Undo</button></li>
                                             </ul>
                                         </div>
                                     </div>
@@ -1257,6 +1259,7 @@ class BookingPage extends Component {
                                         <div className="row col-sm-6">
                                             <div className="col-sm-4 form-group">
                                                 <input className="form-control" type="text" placeholder="BioPAK" name="b_client_name" value = {formInputs['b_client_name']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                <input className="form-control" type="text" placeholder="api status" name="b_status_API" value = {formInputs['b_status_API']} disabled="true" />
                                             </div>
                                             <div className="col-sm-4 form-group">
                                                 <input className="form-control" type="text" placeholder="warehouse code" name="b_client_warehouse_code" value = {formInputs['b_client_warehouse_code']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
@@ -1664,7 +1667,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-backspace"></i> Cancel Request</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}><i className="fas fa-copy"></i>Duplicate Booking</button>
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
