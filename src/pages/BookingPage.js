@@ -1282,7 +1282,7 @@ class BookingPage extends Component {
                                                 <div className="col-sm-8">
                                                 </div>
                                                 <div className="col-sm-4">
-                                                    <button onClick={() => this.onUpdateBooking()} disabled={bAllComboboxViewOnlyonBooking} className="btn btn-theme btn-primary">Update</button>
+                                                    <button onClick={() => this.onUpdateBooking()} disabled={bAllComboboxViewOnlyonBooking} className="btn btn-theme btn-standard">Update</button>
                                                 </div>
                                             </div>
                                         </div>
