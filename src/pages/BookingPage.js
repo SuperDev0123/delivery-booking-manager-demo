@@ -25,8 +25,6 @@ class BookingPage extends Component {
         this.state = {
             isShowAddServiceAndOpt: false,
             isShowBookingCntAndTot: false,
-            isShowPUDate: false,
-            isShowDelDate: false,
             formInputs: {},
             selected: 'dme',
             booking: {},
@@ -938,7 +936,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1413,7 +1411,7 @@ class BookingPage extends Component {
                                                             <input type="text" name="pu_Email" className="form-control" disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['pu_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
+                                                    <div className="row mt-1 none">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Pickup Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
@@ -1422,34 +1420,9 @@ class BookingPage extends Component {
                                                                 {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}
                                                             </div>
                                                         </div>
-                                                        <div className={isShowPUDate ? 'col-sm-12 pick-dates mt-1' : 'col-sm-12 pick-dates mt-1 hidden'}>
-                                                            <div className="row">
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    </div>
+                                                    <div className="head text-white panel-title">
+                                                        PickUp Dates
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
@@ -1473,7 +1446,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup <br></br>Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Pickup Instructions<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             <textarea width="100%" className="textarea-width" name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']}/>
@@ -1481,11 +1454,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">    Reference No 
-                                                            <a id="additional-pickup" className="text-black pointer">
-                                                                <i className="fas fa-caret-down text-black"></i>
-                                                            </a>
-                                                            </label>
+                                                            <label className="" htmlFor="">Reference No</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             <input type="text" name="b_clientReference_RA_Numbers" className="form-control" value = {formInputs['b_clientReference_RA_Numbers']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)} />
@@ -1619,43 +1588,8 @@ class BookingPage extends Component {
                                                             <input type="text" name="de_Email" className="form-control" disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['de_Email']} onChange={(e) => this.onHandleInput(e)} />
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
-                                                            <div className="input-group pad-left-20px">
-                                                                {formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}
-                                                            </div>
-                                                        </div>
-                                                        <div className={isShowDelDate ? 'col-sm-12 deliver-date mt-1' : 'col-sm-12 deliver-date mt-1 hidden'}>
-                                                            <div className="row">
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6">
-                                                                    <div className="input-group">
-                                                                        <input type="text" placeholder="01-01-2020" className="form-control" aria-label="Amount (to the nearest dollar)" />
-                                                                        <span className="input-group-addon"><a id="pick-date" href=""><i className="fas fa-calendar-alt"></i></a></span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <div className="head text-white panel-title">
+                                                        Delivery Dates
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
