@@ -57,6 +57,9 @@ class AllBookingsPage extends React.Component {
             selectedBookingsCnt: 0,
             currentBookInd: 0,
             downloadOption: 'label',
+            total_qty: 0,
+            total_kgs: 0,
+            total_cubic_meter: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -184,31 +187,39 @@ class AllBookingsPage extends React.Component {
     }
 
     calcBookingLine(bookingLines) {
-        let bookingLinesQtyTotal = 0;
+        let total_qty = 0;
+        let total_kgs = 0;
+        let total_cubic_meter = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
-            if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
+            if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-            else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
+            else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM === 'Kg' || bookingLine.e_weightUOM === 'Kgs')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM === 'Ton' || bookingLine.e_weightUOM === 'Tons')
+            else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'TONS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
             else
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
 
-            if (bookingLine.e_dimUOM === 'CM')
+            if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
                 bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-            else if (bookingLine.e_dimUOM === 'Meter')
+            else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+            else
                 bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
 
-            bookingLinesQtyTotal += bookingLine.e_qty;
-
+            total_qty += bookingLine.e_qty;
+            total_kgs += bookingLine['total_kgs'];
+            total_cubic_meter += bookingLine['cubic_meter'];
             return bookingLine;
         });
 
-        this.setState({ bookingLinesQtyTotal });
+        this.setState({total_qty, total_kgs, total_cubic_meter});
         return newBookingLines;
     }
 
@@ -706,7 +717,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, bookingLinesQtyTotal, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
             return (
@@ -767,20 +778,26 @@ class AllBookingsPage extends React.Component {
                                     <thead>
                                         <tr>
                                             <th></th>
-                                            <th>Qty Total</th>
                                             <th>Count</th>
+                                            <th>Total Qty</th>
+                                            <th>Total Kgs</th>
+                                            <th>Total Cubic Metro</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
                                             <td>Lines</td>
-                                            <td>{bookingLinesQtyTotal}</td>
                                             <td>{_.size(bookingLines)}</td>
+                                            <td>{total_qty}</td>
+                                            <td>{total_kgs}</td>
+                                            <td>{total_cubic_meter}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
-                                            <td>{bookingLineDetailsQtyTotal}</td>
                                             <td>{_.size(bookingLineDetails)}</td>
+                                            <td>{bookingLineDetailsQtyTotal}</td>
+                                            <td>X</td>
+                                            <td>X</td>
                                         </tr>
                                     </tbody>
                                 </table>

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Clock from 'react-live-clock';
-import lodash from 'lodash';
+import _ from 'lodash';
 import Select from 'react-select';
 import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -173,6 +173,8 @@ class BookingPage extends Component {
     componentWillReceiveProps(newProps) {
         const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail } = newProps;
         const currentRoute = this.props.location.pathname;
+        let curBooking = this.state.booking;
+        let curProducts = this.state.products;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -201,15 +203,16 @@ class BookingPage extends Component {
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
 
-            if (this.state.products && this.state.products.length > 0) {
-                if  (this.state.bAllComboboxViewOnlyonBooking != true) {
+            if (curProducts && curProducts.length > 0) {
+                if  (_.isUndefined(curBooking.b_dateBookedDate) ||
+                    _.isEmpty(curBooking.b_dateBookedDate)) {
                     setTimeout(function (){
                         for (let i = 0; i < bookingLines.length; i++) {
                             setTimeout(function (){
-                                document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();  
-                            }, 10 * i);
+                                document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();
+                            }, 50 * i);
                         }
-                    }, 100);
+                    }, 500);
                 }
             }
         }
@@ -359,21 +362,9 @@ class BookingPage extends Component {
                 if (booking.b_dateBookedDate != null) tempAdditionalServices.b_dateBookedDate = booking.b_dateBookedDate;
                 else tempAdditionalServices.b_dateBookedDate = '';
                 tempAdditionalServices.Invoiced = '';
-  
+
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
-
-                //For Total Pieces Info
-                let tempTotalPieces = this.state.bookingTotals;
-                if (booking.total_lines_qty_override != null) tempTotalPieces.total_lines_qty_override = booking.total_lines_qty_override;
-                else tempTotalPieces.total_lines_qty_override = '';
-                if (booking.total_1_KG_weight_override != null) tempTotalPieces.total_1_KG_weight_override = booking.total_1_KG_weight_override;
-                else tempTotalPieces.total_1_KG_weight_override = '';
-                if (booking.total_Cubic_Meter_override != null) tempTotalPieces.total_Cubic_Meter_override = booking.total_Cubic_Meter_override;
-                else tempTotalPieces.total_Cubic_Meter_override = '';
-
-                let TotalPieces = [];
-                TotalPieces.push(tempTotalPieces);
 
                 this.setState({
                     puPostalCode: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
@@ -395,7 +386,7 @@ class BookingPage extends Component {
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                 }
 
-                this.setState({ AdditionalServices: AdditionalServices, bookingTotals: TotalPieces, formInputs, booking, nextBookingId, prevBookingId, loading: false });
+                this.setState({ AdditionalServices: AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 alert('There is no such booking with that DME/CON number.');
@@ -410,7 +401,7 @@ class BookingPage extends Component {
                 }
 
                 if (booking && booking.pu_Address_State) {
-                    let states = lodash.clone(puStates);
+                    let states = _.clone(puStates);
                     let bHas = false;
                     for (let i = 0; i < states.length; i++ ){
                         if (states[i].label == booking.pu_Address_State) {
@@ -433,7 +424,7 @@ class BookingPage extends Component {
 
             if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
                 if (booking && booking.pu_Address_PostalCode) {
-                    let postalcodes = lodash.clone(puPostalCodes);
+                    let postalcodes = _.clone(puPostalCodes);
                     let bHas = false;
                     for (let i = 0; i < postalcodes.length; i++ ){
                         if (postalcodes[i].label == booking.pu_Address_PostalCode) {
@@ -454,7 +445,7 @@ class BookingPage extends Component {
                     this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
                 } else if (puSuburbs.length > 1) {
                     if (booking && booking.pu_Address_Suburb) {
-                        let suburbs = lodash.clone(puSuburbs);
+                        let suburbs = _.clone(puSuburbs);
                         let bHas = false;
                         for (let i = 0; i < suburbs.length; i++){
                             if (suburbs[i].label == booking.pu_Address_Suburb) {
@@ -477,7 +468,7 @@ class BookingPage extends Component {
                 }
 
                 if (booking && booking.de_To_Address_State) {
-                    let states = lodash.clone(deToStates);
+                    let states = _.clone(deToStates);
                     let bHas = false;
                     for (let i = 0; i < states.length; i++ ){
                         if (states[i].label == booking.de_To_Address_State) {
@@ -500,7 +491,7 @@ class BookingPage extends Component {
 
             if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
                 if (booking && booking.de_To_Address_PostalCode) {
-                    let postalcode = lodash.clone(deToPostalCodes);
+                    let postalcode = _.clone(deToPostalCodes);
                     let bHas = false;
                     for (let i = 0; i < postalcode.length; i++ ){
                         if (postalcode[i].label == booking.de_To_Address_PostalCode) {
@@ -521,7 +512,7 @@ class BookingPage extends Component {
                     this.setState({deToSuburb: deToSuburbs[0]});
                 } else if (deToSuburbs.length > 1) {
                     if (booking && booking.de_To_Address_Suburb) {
-                        let suburbs = lodash.clone(deToSuburbs);
+                        let suburbs = _.clone(deToSuburbs);
                         let bHas = false;
                         for (let i = 0; i < suburbs.length; i++ ){
                             if (suburbs[i].label == booking.de_To_Address_Suburb) {
@@ -645,52 +636,59 @@ class BookingPage extends Component {
     }
 
     calcBookingLine(bookingLines) {
-        let bookingLinesQtyTotal = 0;
+        let qty = 0;
+        let total_kgs = 0;
+        let cubic_meter = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
-
-            if (bookingLine.e_weightUOM === 'Gram' || bookingLine.e_weightUOM === 'Grams')
+            if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-            else if (bookingLine.e_weightUOM === 'Kilogram' || bookingLine.e_weightUOM === 'Kilograms')
+            else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM === 'Kg' || bookingLine.e_weightUOM === 'Kgs')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM === 'Ton' || bookingLine.e_weightUOM === 'Tons')
+            else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
+                bookingLine.e_weightUOM.toUpperCase() === 'TONS')
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
             else
                 bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
 
-            if (bookingLine.e_dimUOM === 'CM')
+            if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
                 bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-            else if (bookingLine.e_dimUOM === 'Meter')
+            else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
+                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+            else
                 bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
 
-            bookingLinesQtyTotal += bookingLine.e_qty;
-
+            qty += bookingLine.e_qty;
+            total_kgs += bookingLine['total_kgs'];
+            cubic_meter += bookingLine['cubic_meter'];
             return bookingLine;
         });
 
-        this.setState({ bookingLinesQtyTotal });
+        this.setState({bookingTotals: [{id: 0, qty, total_kgs, cubic_meter}]});
         return newBookingLines;
     }
 
     onCheckLine(e, row) {
         // if (!e.target.checked) {
-        //     this.setState({selectedBookingIds: lodash.difference(this.state.selectedBookingIds, [row.pk_id_lines_data])});
+        //     this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [row.pk_id_lines_data])});
         // } else {
-        //     this.setState({selectedBookingIds: lodash.union(this.state.selectedBookingIds, [row.pk_id_lines_data])});
+        //     this.setState({selectedBookingIds: _.union(this.state.selectedBookingIds, [row.pk_id_lines_data])});
 
         // }
         const { products } = this.state;
-        let clonedProducts = lodash.clone(products);
-        clonedProducts = lodash.difference(clonedProducts, [row]);
+        let clonedProducts = _.clone(products);
+        clonedProducts = _.difference(clonedProducts, [row]);
         this.setState({products: clonedProducts});
     }
 
     onCheckLine1(e, row) {
         const { bookingLineDetailsProduct } = this.state;
-        let clonedProducts = lodash.clone(bookingLineDetailsProduct);
-        clonedProducts = lodash.difference(clonedProducts, [row]);
+        let clonedProducts = _.clone(bookingLineDetailsProduct);
+        clonedProducts = _.difference(clonedProducts, [row]);
         this.setState({bookingLineDetailsProduct: clonedProducts});
     }
 
@@ -717,11 +715,11 @@ class BookingPage extends Component {
             alert('No delete booking id');
             return;
         }
-        let clonedProducts = lodash.clone(products);
+        let clonedProducts = _.clone(products);
         for (let i = 0; i < selectedBookingIds.length; i++) {
             for (let j = 0; j < products.length; j++) {
                 if ( products[j].pk_lines_id === selectedBookingIds[i] ) {
-                    clonedProducts = lodash.difference(clonedProducts, [products[j]]);
+                    clonedProducts = _.difference(clonedProducts, [products[j]]);
                     break;
                 }
             }
@@ -884,6 +882,7 @@ class BookingPage extends Component {
 
     onUpdateBookingLine(oldValue, newValue, row, column) {
         console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
+
         let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
         updatedBookingLine['e_1_Total_dimCubicMeter'] = this.getCubicMeter(row);
@@ -917,6 +916,7 @@ class BookingPage extends Component {
 
     onUpdateBookingLineDetail(oldValue, newValue, row, column) {
         console.log('onUpdateBookingLineDetail: ', row, oldValue, newValue, column);
+
         let updatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
         updatedBookingLineDetail[column.dataField] = newValue;
         this.props.updateBookingLineDetail(updatedBookingLineDetail);
@@ -1144,14 +1144,14 @@ class BookingPage extends Component {
 
         const columnBookingCounts = [
             {
-                dataField: 'total_lines_qty_override',
+                dataField: 'qty',
                 text: 'Total Pieces'
             }, {
-                dataField: 'total_1_KG_weight_override',
-                text: 'Total Mass'
+                dataField: 'total_kgs',
+                text: 'Total Kgs'
             }, {
-                dataField: 'total_Cubic_Meter_override',
-                text: 'Total Cubic KG'
+                dataField: 'cubic_meter',
+                text: 'Total Cubic Meter'
             },
         ];
 
@@ -1700,6 +1700,12 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab01" className="tab-contents">
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
+                                                <BootstrapTable
+                                                    keyField="id"
+                                                    data={ bookingTotals }
+                                                    columns={ columnBookingCounts }
+                                                    bootstrap4={ true }
+                                                />
                                                 <LoadingOverlay
                                                     active={this.state.loadingBookingLine}
                                                     spinner
@@ -1745,13 +1751,7 @@ class BookingPage extends Component {
                                                     columns={ columnAdditionalServices }
                                                     bootstrap4={ true }
                                                 />
-                                                <p className="font-24px float-left">Booking Counts & Totals</p>
-                                                <BootstrapTable
-                                                    keyField="total_lines_qty_override"
-                                                    data={ bookingTotals }
-                                                    columns={ columnBookingCounts }
-                                                    bootstrap4={ true }
-                                                />
+                                                <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
                                         <div id="tab03" className="tab-contents">
@@ -1847,6 +1847,8 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
+        needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
+        needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
     };
 };
