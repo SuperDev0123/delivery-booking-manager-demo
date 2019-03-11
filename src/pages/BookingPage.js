@@ -619,7 +619,8 @@ class BookingPage extends Component {
         this.setState({loading: true});
     }
 
-    onUpdateBooking() {
+    onUpdateBooking(e) {
+        e.preventDefault();
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
             let bookingToUpdate = this.state.booking;
 
@@ -933,6 +934,11 @@ class BookingPage extends Component {
         const name = target.name;
 
         this.setState({[name]: value});
+    }
+
+    onClickGoToCommPage(e) {
+        e.preventDefault();
+        window.location.assign('/comm?bookingid=' + this.state.booking.id);
     }
 
     render() {
@@ -1278,9 +1284,10 @@ class BookingPage extends Component {
                                             </div>
                                             <div className="row">
                                                 <div className="col-sm-8">
+                                                    <button onClick={(e) => this.onClickGoToCommPage(e)} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-comm">all the comm records</button>
                                                 </div>
                                                 <div className="col-sm-4">
-                                                    <button onClick={() => this.onUpdateBooking()} disabled={bAllComboboxViewOnlyonBooking} className="btn btn-theme btn-standard">Update</button>
+                                                    <button onClick={(e) => this.onUpdateBooking(e)} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-update">Update</button>
                                                 </div>
                                             </div>
                                         </div>
