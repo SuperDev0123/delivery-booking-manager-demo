@@ -630,7 +630,7 @@ class BookingPage extends Component {
         this.setState({loading: true});
     }
 
-    onSave() {
+    onUpdateBooking() {
         if (this.state.bAllComboboxViewOnlyonBooking == false) {
             let bookingToUpdate = this.state.booking;
 
@@ -939,7 +939,7 @@ class BookingPage extends Component {
 
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, isShowPUDate, isShowDelDate, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
-        console.log('bookingTotals---222222---', AdditionalServices);
+
         const iconTrashBookingLine = (cell, row) => {
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
@@ -1273,12 +1273,18 @@ class BookingPage extends Component {
                                                     <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
                                                 </div>
                                                 <div className="col-sm-4">
-                                                    <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn success btn-theme prev-btn">Prev</button>
+                                                    <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">Prev</button>
                                                     <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0}  className="btn btn-theme next-btn">Next</button>
                                                     <button type="submit" className="btn btn-theme submit none">Submit</button>
                                                 </div>
                                             </div>
-
+                                            <div className="row">
+                                                <div className="col-sm-8">
+                                                </div>
+                                                <div className="col-sm-4">
+                                                    <button onClick={() => this.onUpdateBooking()} disabled={bAllComboboxViewOnlyonBooking} className="btn btn-theme btn-primary">Update</button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </form>
                                     <div className="clearfix"></div>
@@ -1708,7 +1714,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onSave()}><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
+                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>

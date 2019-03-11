@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail } from '../actions/bookingActions';
+import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (startDate, endDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
@@ -262,7 +262,7 @@ export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) =>
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successUpdateBooking(data)))
+            .then(({ data }) => dispatch(successDuplicateBooking(data)))
             .catch((error) => dispatch(console.log('@2 - Failed duplicateBooking', error)));
 };
 
