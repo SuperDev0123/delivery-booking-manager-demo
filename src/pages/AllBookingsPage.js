@@ -781,7 +781,7 @@ class AllBookingsPage extends React.Component {
                                             <th>Count</th>
                                             <th>Total Qty</th>
                                             <th>Total Kgs</th>
-                                            <th>Total Cubic Metro</th>
+                                            <th>Total Cubic Meter</th>
                                         </tr>
                                     </thead>
                                     <tbody>
