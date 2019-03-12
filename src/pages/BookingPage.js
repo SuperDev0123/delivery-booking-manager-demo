@@ -10,6 +10,9 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import TimePicker from 'react-time-picker';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
@@ -17,6 +20,7 @@ import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
+import { createComm } from '../state/services/commService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -26,6 +30,7 @@ class BookingPage extends Component {
             isShowAddServiceAndOpt: false,
             isShowBookingCntAndTot: false,
             formInputs: {},
+            commFormInputs: {},
             selected: 'dme',
             booking: {},
             bookingLines: [],
@@ -69,6 +74,7 @@ class BookingPage extends Component {
             AdditionalServices: [],
             bookingTotals: [],
             isShowDuplicateBookingOptionsModal: false,
+            isShowCreateCommModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
         };
@@ -88,6 +94,7 @@ class BookingPage extends Component {
         this.dropzone = null;
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
+        this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
     }
 
     static propTypes = {
@@ -114,6 +121,7 @@ class BookingPage extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
         resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
+        createComm: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -938,13 +946,49 @@ class BookingPage extends Component {
         this.setState({[name]: value});
     }
 
-    onClickGoToCommPage(e) {
-        e.preventDefault();
+    handleCommModalInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs[name] = value;
+        this.setState({commFormInputs});
+    }
+
+    onClickGoToCommPage() {
         window.location.assign('/comm?bookingid=' + this.state.booking.id);
     }
 
+    onClickCreateComm() {
+        this.toggleCreateCommModal();
+    }
+
+    toggleCreateCommModal() {
+        this.setState(prevState => ({isShowCreateCommModal: !prevState.isShowCreateCommModal}));
+    }
+
+    onCreateComm() {
+        const {commFormInputs, booking} = this.state;
+        commFormInputs['fk_booking_id'] = booking.pk_booking_id;
+        this.props.createComm(commFormInputs);
+        this.toggleCreateCommModal();
+    }
+
+    onDateChange(date) {
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+        this.setState({commFormInputs});
+    }
+
+    onTimeChange(time) {
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs['due_by_time'] = time;
+        this.setState({commFormInputs});
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1287,7 +1331,6 @@ class BookingPage extends Component {
                                             </div>
                                             <div className="row">
                                                 <div className="col-sm-8">
-                                                    <button onClick={(e) => this.onClickGoToCommPage(e)} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-comm">all the comm records</button>
                                                 </div>
                                                 <div className="col-sm-4">
                                                     <button onClick={(e) => this.onUpdateBooking(e)} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-update">Update</button>
@@ -1776,12 +1819,16 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab04" className="tab-contents">
+                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-comm">all the comm records</button>
+                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="create-comm">
+                                                <i className="icon icon-plus"></i>
+                                            </button>
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
                                                     data={ bookingLineDetailsProduct }
                                                     columns={ columnCommunication }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
+                                                    cellEdit={ cellEditFactory({ mode: 'click', blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
                                             </div>
@@ -1836,6 +1883,135 @@ class BookingPage extends Component {
                         <Button color="secondary" onClick={this.toggleDuplicateBookingOptionsModal}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
+
+                <Modal isOpen={isShowCreateCommModal} toggle={this.toggleCreateCommModal} className="create-comm-modal">
+                    <ModalHeader toggle={this.toggleCreateCommModal}>Create Communication Modal</ModalHeader>
+                    <ModalBody>
+                        <label>
+                            <p>Booking Id</p>
+                            <input 
+                                className="form-control"
+                                type="text"
+                                value = {booking.pk_booking_id}
+                                disabled={true}
+                            />
+                        </label>
+                        <br />
+                        <label>
+                            <p>Assigned To</p>
+                            <select
+                                required 
+                                name="assigned_to" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['assigned_to']} >
+                                <option value="emadeisky">emadeisky</option>
+                                <option value="nlimbauan">nlimbauan</option>
+                                <option value="status query">status query</option>
+                                <option value="edit…">edit…</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>Priority Of Log</p>
+                            <select
+                                required 
+                                name="priority_of_log" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['priority_of_log']} >
+                                <option value="Standard">Standard</option>
+                                <option value="Low">Low</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>Status</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="status" 
+                                value = {commFormInputs['status']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Action</p>
+                            <select
+                                required 
+                                name="dme_action" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['dme_action']} >
+                                <option value="---">*** Follow up Booking is on TIME! ***</option>
+                                <option value="No follow up required, noted for info purposes">No follow up required, noted for info purposes</option>
+                                <option value="Follow up with FP when to be collected">Follow up with FP when to be collected</option>
+                                <option value="Follow up with Booking Contact as per log">Follow up with Booking Contact as per log</option>
+                                <option value="Follow up with Cust if they still need collected">Follow up with Cust if they still need collected</option>
+                                <option value="Follow up Cust to confirm pickup date / time">Follow up Cust to confirm pickup date / time</option>
+                                <option value="Follow up Cust to confirm packaging & pickup date / time">Follow up Cust to confirm packaging & pickup date / time</option>
+                                <option value="Follow up with FP Booked in & on Schedule">Follow up with FP Booked in & on Schedule</option>
+                                <option value="Follow up with FP Futile re-booked or collected">Follow up with FP Futile re-booked or collected</option>
+                                <option value="Follow up FP Collection will be on Time">Follow up FP Collection will be on Time</option>
+                                <option value="Follow up FP / Cust Booking was Collected">Follow up FP / Cust Booking was Collected</option>
+                                <option value="Follow up FP Delivery will be on Time">Follow up FP Delivery will be on Time</option>
+                                <option value="Follow up FP / Cust Delivery Occurred">Follow up FP / Cust Delivery Occurred</option>
+                                <option value="Follow up Futile Email to Customer">Follow up Futile Email to Customer</option>
+                                <option value="Close futile booking 5 days after 2nd email">Close futile booking 5 days after 2nd email</option>
+                                <option value="Follow up query to Freight Provider">Follow up query to Freight Provider</option>
+                                <option value="Follow up FP for Quote">Follow up FP for Quote</option>
+                                <option value="Follow up FP for Credit">Follow up FP for Credit</option>
+                                <option value="Awaiting Invoice to Process to FP File">Awaiting Invoice to Process to FP File</option>
+                                <option value="Confirm FP has not invoiced this booking">Confirm FP has not invoiced this booking</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Notes Type</p>
+                            <select
+                                required 
+                                name="dme_notes_type" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['dme_notes_type']} >
+                                <option value="Delivery">Delivery</option>
+                                <option value="Financial">Financial</option>
+                                <option value="FP Query">FP Query</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Notes</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="dme_notes" 
+                                value = {commFormInputs['dme_notes']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <label>
+                            <p>Due By Date</p>
+                            <DatePicker
+                                selected={commFormInputs['due_by_date']}
+                                onChange={(e) => this.onDateChange(e)}
+                                dateFormat="dd MMM yyyy"
+                            />
+                        </label>
+                        <label>
+                            <p>Due By Time</p>
+                            <TimePicker
+                                onChange={(e) => this.onTimeChange(e)}
+                                value={commFormInputs['due_by_time']}
+                            />
+                        </label>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => this.onCreateComm()}>Create</Button>{' '}
+                        <Button color="secondary" onClick={this.toggleCreateCommModal}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
             </div>
         );
     }
@@ -1885,6 +2061,7 @@ const mapDispatchToProps = (dispatch) => {
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
+        createComm: (comm) => dispatch(createComm(comm)),
     };
 };
 

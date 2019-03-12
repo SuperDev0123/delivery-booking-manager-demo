@@ -5,6 +5,7 @@ import { BookingReducer } from './bookingReducer';
 import { BookingLineReducer } from './bookingLineReducer';
 import { BookingLineDetailReducer } from './bookingLineDetailReducer';
 import { WarehouseReducer } from './warehouseReducer';
+import { CommReducer } from './commReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -12,4 +13,5 @@ export const AppReducer = combineReducers({
     bookingLine: BookingLineReducer,
     bookingLineDetail: BookingLineDetailReducer,
     warehouse: WarehouseReducer,
+    comm: CommReducer,
 });

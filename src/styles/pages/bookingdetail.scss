@@ -44,10 +44,17 @@
 }
 
 .btn-standard {
-	width: 70px;
 	height: 40px;
 	border: 1px solid #aaa;
 	padding: 0px !important;
+}
+
+.btn-update {
+	width: 70px;
+}
+
+.btn-comm {
+	width: 150px;
 }
 
 .panel-title {
@@ -61,4 +68,37 @@
 
 .textarea-width {
 	padding-left: 15px !important;
+}
+
+.create-comm {
+	background: no-repeat;
+	border: none;
+	font-size: 36px;
+	vertical-align: middle;
+
+	i {
+		vertical-align: middle;
+	}
+}
+
+.create-comm-modal {
+	margin-top: 200px;
+
+	label {
+		width: 90%;
+
+		p {
+			width: 30%;
+			display: inline-block;
+		}
+
+		input, select {
+			width: 65%;
+			display: inline-block;
+		}
+
+		select {
+			height: 25px;
+		}
+	}
 }

@@ -10,6 +10,7 @@ import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
 import AllBookingsPage from '../pages/AllBookingsPage';
 import UploadPage from '../pages/UploadPage';
+import CommPage from '../pages/CommPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 
 export const AppRouter = () => (
@@ -25,6 +26,7 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
                 <PrivateRoute exact path='/allbookings' component={AllBookingsPage} />
                 <PrivateRoute exact path='/upload' component={UploadPage} />
+                <PrivateRoute exact path='/comm' component={CommPage} />
                 <Redirect to='/' />
             </Switch>
             <Footer />
