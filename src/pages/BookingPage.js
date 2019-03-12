@@ -181,8 +181,6 @@ class BookingPage extends Component {
     componentWillReceiveProps(newProps) {
         const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail } = newProps;
         const currentRoute = this.props.location.pathname;
-        let curBooking = this.state.booking;
-        let curProducts = this.state.products;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -210,19 +208,6 @@ class BookingPage extends Component {
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
-
-            if (curProducts && curProducts.length > 0) {
-                if  (_.isUndefined(curBooking.b_dateBookedDate) ||
-                    _.isEmpty(curBooking.b_dateBookedDate)) {
-                    setTimeout(function (){
-                        for (let i = 0; i < bookingLines.length; i++) {
-                            setTimeout(function (){
-                                document.querySelector('#tab01 table tbody tr:nth-child(' + (i + 1) + ') td:nth-child(2)').click();
-                            }, 50 * i);
-                        }
-                    }, 500);
-                }
-            }
         }
 
         if (bookingLineDetails) {
@@ -894,12 +879,21 @@ class BookingPage extends Component {
     onUpdateBookingLine(oldValue, newValue, row, column) {
         console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
 
+        let products = this.state.products;
         let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
         updatedBookingLine['e_1_Total_dimCubicMeter'] = this.getCubicMeter(row);
         updatedBookingLine['e_Total_KG_weight'] = this.getTotalWeight(row);
+
+        for (let i = 0; i < products.length; i++) {
+            if (products[i].pk_lines_id === row.pk_lines_id) {
+                products[i]['e_Total_KG_weight'] = updatedBookingLine['e_Total_KG_weight'];
+                products[i]['e_1_Total_dimCubicMeter'] = updatedBookingLine['e_1_Total_dimCubicMeter'];
+            }
+        }
+        
         this.props.updateBookingLine(updatedBookingLine);
-        this.setState({loadingBookingLine: true});
+        this.setState({loadingBookingLine: true, products});
     }
 
     getCubicMeter(row) {
@@ -1502,7 +1496,7 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pickup Instructions<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <textarea width="100%" className="textarea-width" name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']}/>
+                                                            <textarea width="100%" className="textarea-width" name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)}/>
                                                         </div>
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
