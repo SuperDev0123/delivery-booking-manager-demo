@@ -1496,7 +1496,7 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pickup Instructions<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <textarea width="100%" className="textarea-width" name="body" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address'] + formInputs['pu_PickUp_Instructions_Contact']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)}/>
+                                                            <textarea width="100%" className="textarea-width" name="pu_pickup_instructions_address" rows="1" cols="9" value={formInputs['pu_pickup_instructions_address']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)}/>
                                                         </div>
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
@@ -1664,7 +1664,7 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <textarea name="body" className="textarea-width" rows="1" cols="9" value={formInputs['de_to_PickUp_Instructions_Address'] + formInputs['de_to_Pick_Up_Instructions_Contact']}/>
+                                                            <textarea width="100%" className="textarea-width" name="de_to_PickUp_Instructions_Address" rows="1" cols="9" value={formInputs['de_to_PickUp_Instructions_Address']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} onChange={(e) => this.onHandleInput(e)}/>
                                                         </div>
                                                     </div>
                                                 </form>
