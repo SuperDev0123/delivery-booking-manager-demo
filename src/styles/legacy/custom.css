@@ -438,36 +438,6 @@ div.borderB {
     height: 30px;
 }
 
-.booking-status {
-}
-
-.pad-top-12px {
-  padding-top: 12px !important;
-}
-
-.booking-status a > i {
-    font-size: 16px;
-}
-
-.booking-status > div {
-}
-
-.booking-status a {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-right: 3px;
-    padding-left: 3px;
-    text-decoration: none !important;
-}
-
-.booking-status .warning > i {
-    color: #ff5309;
-}
-
-.dark-blue {
-    background-color: #0995a5 !important;
-}
-
 .tootipitem .tooltip-inner {
   background-color: #333;
   color: #333;

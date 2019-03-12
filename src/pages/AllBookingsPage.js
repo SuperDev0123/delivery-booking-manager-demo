@@ -950,6 +950,24 @@ class AllBookingsPage extends React.Component {
                                 </div>
                         }
                     </td>
+                    <td className={
+                        (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
+                            (!_.isEmpty(booking.z_downloaded_pod_timestamp)) ?
+                                'bg-yellow pad-top-12px'
+                                :
+                                'dark-blue pad-top-12px'
+                            :
+                            null
+                    }>
+                        {
+                            (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
+                                <div className="pod-status">
+                                    <i className="icon icon-image"></i>
+                                </div>
+                                :
+                                null
+                        }
+                    </td>
                     <td >{booking.b_clientReference_RA_Numbers}</td>
                     <td >{booking.vx_freight_provider}</td>
                     <td >{booking.vx_serviceName}</td>
@@ -1254,6 +1272,7 @@ class AllBookingsPage extends React.Component {
                                                             }
                                                         </th>
                                                         <th className=""></th>
+                                                        <th className=""></th>
                                                         <th className="" onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} scope="col" nowrap>
                                                             <p>Reference</p>
                                                             {
@@ -1370,7 +1389,8 @@ class AllBookingsPage extends React.Component {
                                                         <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                        <th className="printer-column"><i className="icon icon-printer"></i></th>
+                                                        <th className="narrow-column"><i className="icon icon-printer"></i></th>
+                                                        <th className="narrow-column"><i className="icon icon-image"></i></th>
                                                         <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
