@@ -1984,7 +1984,7 @@ class BookingPage extends Component {
                         </label>
                         <br />
                         <label>
-                            <p>DME Notes Type</p>
+                            <p>Type</p>
                             <input 
                                 className="form-control" 
                                 type="text" 
