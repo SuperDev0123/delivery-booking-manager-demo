@@ -167,7 +167,7 @@ class CommPage extends React.Component {
                     <td>{comm.dme_action}</td>
                     <td><input type="checkbox" checked={comm.closed} name="closed" onChange={(e) => this.onCheck(e, comm.id, index)} /></td>
                     <td>{comm.status_log_closed_time ? moment(comm.status_log_closed_time).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
-                    <td>{comm.dme_notes}</td>
+                    <td>{comm.dme_detail}</td>
                     <td>{comm.dme_notes_external}</td>
                     <td>{comm.due_by_date}</td>
                     <td>{comm.due_by_time}</td>
@@ -255,7 +255,7 @@ class CommPage extends React.Component {
                                     <p>Closed Time</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>Notes</p>
+                                    <p>Detail</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
                                     <p>Notes External</p>

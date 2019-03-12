@@ -12,7 +12,6 @@ import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import TimePicker from 'react-time-picker';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
@@ -30,7 +29,7 @@ class BookingPage extends Component {
             isShowAddServiceAndOpt: false,
             isShowBookingCntAndTot: false,
             formInputs: {},
-            commFormInputs: {},
+            commFormInputs: {assigned_to: 'emadeisky', priority_of_log: 'Standard'},
             selected: 'dme',
             booking: {},
             bookingLines: [],
@@ -983,7 +982,7 @@ class BookingPage extends Component {
 
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal} = this.state;
-
+        console.log('@1 - ', commFormInputs);
         const iconTrashBookingLine = (cell, row) => {
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
@@ -1211,6 +1210,59 @@ class BookingPage extends Component {
             success: this.handleUploadSuccess.bind(this),
             queuecomplete: this.handleUploadFinish.bind(this),
         };
+
+        const timeSelectOptions = [
+            {value: '06:00', label: '06:00'},
+            {value: '06:30', label: '06:30'},
+            {value: '07:00', label: '07:00'},
+            {value: '07:30', label: '07:30'},
+            {value: '08:00', label: '08:00'},
+            {value: '08:30', label: '08:30'},
+            {value: '09:00', label: '09:00'},
+            {value: '09:30', label: '09:30'},
+            {value: '10:00', label: '10:00'},
+            {value: '10:30', label: '10:30'},
+            {value: '11:00', label: '11:00'},
+            {value: '11:30', label: '11:30'},
+            {value: '12:00', label: '12:00'},
+            {value: '12:30', label: '12:30'},
+            {value: '13:00', label: '13:00'},
+            {value: '13:30', label: '13:30'},
+            {value: '14:00', label: '14:00'},
+            {value: '14:30', label: '14:30'},
+            {value: '15:00', label: '15:00'},
+            {value: '15:30', label: '15:30'},
+            {value: '16:00', label: '16:00'},
+            {value: '16:30', label: '16:30'},
+            {value: '17:00', label: '17:00'},
+            {value: '17:30', label: '17:30'},
+            {value: '18:00', label: '18:00'},
+            {value: '18:30', label: '18:30'},
+            {value: '19:00', label: '19:00'},
+            {value: '19:30', label: '19:30'},
+            {value: '20:00', label: '20:00'},
+            {value: '20:30', label: '20:30'},
+            {value: '21:00', label: '21:00'},
+            {value: '21:30', label: '21:30'},
+            {value: '22:00', label: '22:00'},
+            {value: '22:30', label: '22:30'},
+            {value: '23:00', label: '23:00'},
+            {value: '23:30', label: '23:30'},
+            {value: '00:00', label: '00:00'},
+            {value: '00:30', label: '00:30'},
+            {value: '01:00', label: '01:00'},
+            {value: '01:30', label: '01:30'},
+            {value: '02:00', label: '02:00'},
+            {value: '02:30', label: '02:30'},
+            {value: '03:00', label: '03:00'},
+            {value: '03:30', label: '03:30'},
+            {value: '04:00', label: '04:00'},
+            {value: '04:30', label: '04:30'},
+            {value: '05:00', label: '05:00'},
+            {value: '05:30', label: '05:30'},
+        ];
+
+        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
 
         return (
             <div>
@@ -1879,18 +1931,8 @@ class BookingPage extends Component {
                 </Modal>
 
                 <Modal isOpen={isShowCreateCommModal} toggle={this.toggleCreateCommModal} className="create-comm-modal">
-                    <ModalHeader toggle={this.toggleCreateCommModal}>Create Communication Modal</ModalHeader>
+                    <ModalHeader toggle={this.toggleCreateCommModal}>Create Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
                     <ModalBody>
-                        <label>
-                            <p>Booking Id</p>
-                            <input 
-                                className="form-control"
-                                type="text"
-                                value = {booking.pk_booking_id}
-                                disabled={true}
-                            />
-                        </label>
-                        <br />
                         <label>
                             <p>Assigned To</p>
                             <select
@@ -1906,7 +1948,7 @@ class BookingPage extends Component {
                         </label>
                         <br />
                         <label>
-                            <p>Priority Of Log</p>
+                            <p>Priority</p>
                             <select
                                 required 
                                 name="priority_of_log" 
@@ -1917,6 +1959,17 @@ class BookingPage extends Component {
                                 <option value="High">High</option>
                                 <option value="Critical">Critical</option>
                             </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Comm Title</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="dme_com_title" 
+                                value = {commFormInputs['dme_com_title']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
                         </label>
                         <br />
                         <label>
@@ -1931,75 +1984,44 @@ class BookingPage extends Component {
                         </label>
                         <br />
                         <label>
-                            <p>DME Action</p>
-                            <select
-                                required 
-                                name="dme_action" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_action']} >
-                                <option value="---">*** Follow up Booking is on TIME! ***</option>
-                                <option value="No follow up required, noted for info purposes">No follow up required, noted for info purposes</option>
-                                <option value="Follow up with FP when to be collected">Follow up with FP when to be collected</option>
-                                <option value="Follow up with Booking Contact as per log">Follow up with Booking Contact as per log</option>
-                                <option value="Follow up with Cust if they still need collected">Follow up with Cust if they still need collected</option>
-                                <option value="Follow up Cust to confirm pickup date / time">Follow up Cust to confirm pickup date / time</option>
-                                <option value="Follow up Cust to confirm packaging & pickup date / time">Follow up Cust to confirm packaging & pickup date / time</option>
-                                <option value="Follow up with FP Booked in & on Schedule">Follow up with FP Booked in & on Schedule</option>
-                                <option value="Follow up with FP Futile re-booked or collected">Follow up with FP Futile re-booked or collected</option>
-                                <option value="Follow up FP Collection will be on Time">Follow up FP Collection will be on Time</option>
-                                <option value="Follow up FP / Cust Booking was Collected">Follow up FP / Cust Booking was Collected</option>
-                                <option value="Follow up FP Delivery will be on Time">Follow up FP Delivery will be on Time</option>
-                                <option value="Follow up FP / Cust Delivery Occurred">Follow up FP / Cust Delivery Occurred</option>
-                                <option value="Follow up Futile Email to Customer">Follow up Futile Email to Customer</option>
-                                <option value="Close futile booking 5 days after 2nd email">Close futile booking 5 days after 2nd email</option>
-                                <option value="Follow up query to Freight Provider">Follow up query to Freight Provider</option>
-                                <option value="Follow up FP for Quote">Follow up FP for Quote</option>
-                                <option value="Follow up FP for Credit">Follow up FP for Credit</option>
-                                <option value="Awaiting Invoice to Process to FP File">Awaiting Invoice to Process to FP File</option>
-                                <option value="Confirm FP has not invoiced this booking">Confirm FP has not invoiced this booking</option>
-                            </select>
-                        </label>
-                        <br />
-                        <label>
                             <p>DME Notes Type</p>
-                            <select
-                                required 
-                                name="dme_notes_type" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_notes_type']} >
-                                <option value="Delivery">Delivery</option>
-                                <option value="Financial">Financial</option>
-                                <option value="FP Query">FP Query</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </label>
-                        <br />
-                        <label>
-                            <p>DME Notes</p>
                             <input 
                                 className="form-control" 
                                 type="text" 
                                 placeholder="" 
-                                name="dme_notes" 
-                                value = {commFormInputs['dme_notes']}
+                                name="dme_notes_type" 
+                                value = {commFormInputs['dme_notes_type']}
                                 onChange={(e) => this.handleCommModalInputChange(e)} />
                         </label>
                         <br />
                         <label>
+                            <p>DME Detail</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="dme_detail" 
+                                value = {commFormInputs['dme_detail']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <div className="datetime">
                             <p>Due By Date</p>
                             <DatePicker
                                 selected={commFormInputs['due_by_date']}
                                 onChange={(e) => this.onDateChange(e)}
                                 dateFormat="dd MMM yyyy"
                             />
-                        </label>
-                        <label>
+                        </div>
+                        <div className="datetime">
                             <p>Due By Time</p>
-                            <TimePicker
-                                onChange={(e) => this.onTimeChange(e)}
-                                value={commFormInputs['due_by_time']}
+                            <Select
+                                value={due_by_time}
+                                onChange={(e) => this.handleCommModalInputChange({target: {name: 'due_by_time', value: e.value, type: 'input'}})}
+                                options={timeSelectOptions}
+                                placeholder='Select time'
                             />
-                        </label>
+                        </div>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onCreateComm()}>Create</Button>{' '}

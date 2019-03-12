@@ -84,6 +84,11 @@
 .create-comm-modal {
 	margin-top: 200px;
 
+	.modal-title {
+		font-size: 20px !important;
+		font-weight: bold !important;
+	}
+
 	label {
 		width: 90%;
 
@@ -99,6 +104,22 @@
 
 		select {
 			height: 25px;
+		}
+	}
+	
+	.datetime {
+		width: 50%;
+		display: inline-block;
+
+		p {
+			width: 30%;
+			font-size: 12px;
+			display: inline-block;
+		}
+
+		>div {
+			width: 65%;
+			display: inline-block;
 		}
 	}
 }
