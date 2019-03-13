@@ -1973,25 +1973,17 @@ class BookingPage extends Component {
                         </label>
                         <br />
                         <label>
-                            <p>Status</p>
-                            <input 
-                                className="form-control" 
-                                type="text" 
-                                placeholder="" 
-                                name="status" 
-                                value = {commFormInputs['status']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                        <br />
-                        <label>
                             <p>Type</p>
-                            <input 
-                                className="form-control" 
-                                type="text" 
-                                placeholder="" 
+                            <select
+                                required 
                                 name="dme_notes_type" 
-                                value = {commFormInputs['dme_notes_type']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['dme_notes_type']} >
+                                <option value="Delivery">Delivery</option>
+                                <option value="Financial">Financial</option>
+                                <option value="FP Query">FP Query</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </label>
                         <br />
                         <label>

@@ -203,6 +203,11 @@ class CommPage extends React.Component {
         this.setState({isShowNoteForm: false, noteFormInputs: {}});
     }
 
+    onClickHeader(e) {
+        e.preventDefault();
+        window.location.assign('/booking?bookingid=' + this.state.booking.id);
+    }
+
     render() {
         const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs } = this.state;
 
@@ -249,7 +254,7 @@ class CommPage extends React.Component {
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
-                            <li><a href="/booking">Header</a></li>
+                            <li><a onClick={(e) => this.onClickHeader(e)}>Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
