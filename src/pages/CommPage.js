@@ -13,7 +13,7 @@ import Select from 'react-select';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
-import { getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote } from '../state/services/commService';
+import { getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 
 class CommPage extends React.Component {
     constructor(props) {
@@ -30,8 +30,10 @@ class CommPage extends React.Component {
             filterInputs: {},
             isNotePaneOpen: false,
             selectedCommId: null,
+            selectedNoteId: null,
             isShowNoteForm: false,
             isShowUpdateCommModal: false,
+            noteFormMode: 'create',
             noteFormInputs: {},
             commFormInputs: {},
         };
@@ -51,6 +53,7 @@ class CommPage extends React.Component {
         setGetCommsFilter: PropTypes.func.isRequired,
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
+        updateNote: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -184,29 +187,27 @@ class CommPage extends React.Component {
     }
 
     onCreateNoteButton() {
-        this.setState({isShowNoteForm: true});
-    }
-
-    handleNoteModalInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        let noteFormInputs = this.state.noteFormInputs;
-        noteFormInputs[name] = value;
-        this.setState({noteFormInputs});
+        this.setState({isShowNoteForm: true, noteFormMode: 'create'});
     }
 
     onCancel() {
         this.setState({isShowNoteForm: false});
     }
 
-    onCreateNote() {
-        const {noteFormInputs, selectedCommId, notes} = this.state;
-        noteFormInputs['comm'] = selectedCommId;
-        noteFormInputs['username'] = 'Stephen';
-        noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
-        this.props.createNote(noteFormInputs);
+    onSubmitNote() {
+        const {noteFormInputs, selectedNoteId, selectedCommId, notes, noteFormMode} = this.state;
+        
+        if (noteFormMode === 'create') {
+            noteFormInputs['comm'] = selectedCommId;
+            noteFormInputs['username'] = 'Stephen';
+            noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
+            this.props.createNote(noteFormInputs);
+        } else if (noteFormMode === 'update') {
+            noteFormInputs['comm'] = selectedCommId;
+            delete noteFormInputs.z_modifiedTimeStamp;
+            this.props.updateNote(selectedNoteId, noteFormInputs);
+        }
+
         this.setState({isShowNoteForm: false, noteFormInputs: {}});
     }
 
@@ -215,34 +216,41 @@ class CommPage extends React.Component {
         window.location.assign('/booking?bookingid=' + this.state.booking.id);
     }
 
-    onUpdateCommBtnClick(comm) {
+    onUpdateBtnClick(type, data) {
         console.log('Click update comm button');
         
-        const commFormInputs = {};
-        commFormInputs['assigned_to'] = comm.assigned_to;
-        commFormInputs['dme_notes_type'] = comm.dme_notes_type;
-        commFormInputs['priority_of_log'] = comm.priority_of_log;
-        commFormInputs['dme_detail'] = comm.dme_detail;
-        commFormInputs['dme_com_title'] = comm.dme_com_title;
-        commFormInputs['due_by_date'] = comm.due_by_date;
-        commFormInputs['due_by_time'] = comm.due_by_time.substring(0, 5);
-        this.setState({selectedCommId: comm.id, commFormInputs});
-        this.toggleUpdateCommModal();
+        if (type === 'comm') {
+            const comm = data;
+            const commFormInputs = comm;
+            commFormInputs['due_by_time'] = comm.due_by_time.substring(0, 5);
+            this.setState({selectedCommId: comm.id, commFormInputs});
+            this.toggleUpdateCommModal();
+        } else if (type === 'note') {
+            const note = data;
+            const noteFormInputs = note;
+            this.setState({selectedNoteId: note.id, noteFormInputs});
+            this.setState({isShowNoteForm: true, noteFormMode: 'update'});
+        }
     }
 
     toggleUpdateCommModal() {
         this.setState(prevState => ({isShowUpdateCommModal: !prevState.isShowUpdateCommModal}));
     }
 
-    onUpdateComm() {
+    onUpdate(type) {
         console.log('Update comm');
 
-        const {booking, selectedCommId} = this.state;
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs['fk_booking_id'] = booking.fk_booking_id;
-        commFormInputs['id'] = selectedCommId;
-        this.props.updateComm(selectedCommId, commFormInputs);
-        this.toggleUpdateCommModal();
+        if (type === 'comm') {
+            const {selectedCommId, commFormInputs} = this.state;
+
+            this.props.updateComm(selectedCommId, commFormInputs);
+            this.toggleUpdateCommModal();
+        } else if (type === 'note') {
+            const {selectedNoteId, noteFormInputs} = this.state;
+
+            this.props.updateComm(selectedNoteId, noteFormInputs);
+            this.setState({isShowNoteForm: false});
+        }
     }
 
     onDatePlusOrMinus(number) {
@@ -254,18 +262,30 @@ class CommPage extends React.Component {
         this.setState({commFormInputs});
     }
 
-    handleCommModalInputChange(event) {
+    handleModalInputChange(type, event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
+        if (type === 'comm') {
+            let commFormInputs = this.state.commFormInputs;
+            commFormInputs[name] = value;
+            this.setState({commFormInputs});
+        } else if (type === 'note') {
+            let noteFormInputs = this.state.noteFormInputs;
+            noteFormInputs[name] = value;
+            this.setState({noteFormInputs});
+        }
+    }
+
+    onDateChange(date) {
         let commFormInputs = this.state.commFormInputs;
-        commFormInputs[name] = value;
+        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
         this.setState({commFormInputs});
     }
 
     render() {
-        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal } = this.state;
+        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode } = this.state;
 
         const commsList = comms.map((comm, index) => {
             return (
@@ -288,7 +308,7 @@ class CommPage extends React.Component {
                     <td>{comm.dme_notes_external}</td>
                     <td>{comm.due_by_date}</td>
                     <td>{comm.due_by_time}</td>
-                    <td className="update"><Button color="primary" onClick={() => this.onUpdateCommBtnClick(comm)}>Update</Button></td>
+                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('comm', comm)}>Update</Button></td>
                 </tr>
             );
         });
@@ -355,6 +375,7 @@ class CommPage extends React.Component {
                     <td>{note.dme_notes}</td>
                     <td>{moment(note.z_modifiedTimeStamp).format('MM/DD/YYYY')}</td>
                     <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
+                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note)}>Update</Button></td>
                 </tr>
             );
         });
@@ -493,6 +514,9 @@ class CommPage extends React.Component {
                                                 <th className="" scope="col" nowrap>
                                                     <p>Time</p>
                                                 </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Update</p>
+                                                </th>
                                             </tr>
                                             { notesList }
                                         </table>
@@ -512,7 +536,7 @@ class CommPage extends React.Component {
                                             placeholder="" 
                                             name="dme_notes_type" 
                                             value = {noteFormInputs['dme_notes_type']}
-                                            onChange={(e) => this.handleNoteModalInputChange(e)} />
+                                            onChange={(e) => this.handleModalInputChange('note', e)} />
                                     </label>
                                     <br />
                                     <label>
@@ -523,11 +547,15 @@ class CommPage extends React.Component {
                                             placeholder="" 
                                             name="dme_notes" 
                                             value = {noteFormInputs['dme_notes']}
-                                            onChange={(e) => this.handleNoteModalInputChange(e)} />
+                                            onChange={(e) => this.handleModalInputChange('note', e)} />
                                     </label>
                                     <br />
                                     <div className="button-group">
-                                        <Button color="primary" onClick={() => this.onCreateNote()}>Create</Button>{' '}
+                                        <Button color="primary" onClick={() => this.onSubmitNote()}>
+                                            {
+                                                (noteFormMode === 'create') ? 'Create' : 'Update'
+                                            }
+                                        </Button>{' '}
                                         <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
                                     </div>
                                 </div>
@@ -542,7 +570,7 @@ class CommPage extends React.Component {
                             <select
                                 required 
                                 name="assigned_to" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                onChange={(e) => this.handleModalInputChange('comm', e)}
                                 value = {commFormInputs['assigned_to']} >
                                 <option value="emadeisky">emadeisky</option>
                                 <option value="nlimbauan">nlimbauan</option>
@@ -556,7 +584,7 @@ class CommPage extends React.Component {
                             <select
                                 required 
                                 name="priority_of_log" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                onChange={(e) => this.handleModalInputChange('comm', e)}
                                 value = {commFormInputs['priority_of_log']} >
                                 <option value="Standard">Standard</option>
                                 <option value="Low">Low</option>
@@ -573,7 +601,7 @@ class CommPage extends React.Component {
                                 placeholder="" 
                                 name="dme_com_title" 
                                 value = {commFormInputs['dme_com_title']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                                onChange={(e) => this.handleModalInputChange('comm', e)} />
                         </label>
                         <br />
                         <label>
@@ -581,7 +609,7 @@ class CommPage extends React.Component {
                             <select
                                 required 
                                 name="dme_notes_type" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                onChange={(e) => this.handleModalInputChange('comm', e)}
                                 value = {commFormInputs['dme_notes_type']} >
                                 <option value="Delivery">Delivery</option>
                                 <option value="Financial">Financial</option>
@@ -598,7 +626,7 @@ class CommPage extends React.Component {
                                 placeholder="" 
                                 name="dme_detail" 
                                 value = {commFormInputs['dme_detail']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                                onChange={(e) => this.handleModalInputChange('comm', e)} />
                         </label>
                         <br />
                         <div className="datetime">
@@ -615,14 +643,14 @@ class CommPage extends React.Component {
                             <p>Due By Time</p>
                             <Select
                                 value={due_by_time}
-                                onChange={(e) => this.handleCommModalInputChange({target: {name: 'due_by_time', value: e.value, type: 'input'}})}
+                                onChange={(e) => this.handleModalInputChange('comm', {target: {name: 'due_by_time', value: e.value, type: 'input'}})}
                                 options={timeSelectOptions}
                                 placeholder='Select time'
                             />
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => this.onUpdateComm()}>Update</Button>{' '}
+                        <Button color="primary" onClick={() => this.onUpdate('comm')}>Update</Button>{' '}
                         <Button color="secondary" onClick={this.toggleUpdateCommModal}>Cancel</Button>
                     </ModalFooter>
                 </ReactstrapModal>
@@ -654,6 +682,7 @@ const mapDispatchToProps = (dispatch) => {
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
+        updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
     };
 };
 

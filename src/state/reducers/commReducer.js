@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE } from '../constants/commConstants';
 
 const defaultState = {
     comms: [],
@@ -64,6 +64,17 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 needUpdateNotes: true,
             };
         case FAILED_CREATE_NOTE:
+            return { 
+                ...state, 
+                errorMessage: errorMessage 
+            };
+        case SUCCESS_UPDATE_NOTE:
+            return { 
+                ...state, 
+                note: note,
+                needUpdateNotes: true,
+            };
+        case FAILED_UPDATE_NOTE:
             return { 
                 ...state, 
                 errorMessage: errorMessage 

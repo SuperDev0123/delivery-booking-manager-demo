@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote } from '../actions/commActions';
+import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getCommsWithBookingId = (bookingId, sortField='-id', columnFilters={}) => {
@@ -81,4 +81,18 @@ export const createNote = (note) => {
         axios(options)
             .then(({ data }) => dispatch(successCreateNote(data)))
             .catch((error) => dispatch(failedCreateNote(error)));
+};
+
+export const updateNote = (id, updatedNote) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/note/` + id + '/update_note/',
+        data: updatedNote
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateNote(data)))
+            .catch((error) => dispatch(failedUpdateNote(error)));
 };

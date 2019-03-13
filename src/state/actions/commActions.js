@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE } from '../constants/commConstants';
 
 export function setComms(data) {
     return {
@@ -67,5 +67,19 @@ export function failedCreateNote(error) {
     return {
         type: FAILED_CREATE_NOTE,
         errorMessage: 'Unable to create Note. Error:' + error,
+    };
+}
+
+export function successUpdateNote(data) {
+    return {
+        type: SUCCESS_UPDATE_NOTE,
+        note: data,
+    };
+}
+
+export function failedUpdateNote(error) {
+    return {
+        type: FAILED_UPDATE_NOTE,
+        errorMessage: 'Unable to update Note. Error:' + error,
     };
 }
