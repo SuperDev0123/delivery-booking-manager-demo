@@ -19,7 +19,7 @@ import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm } from '../state/services/commService';
+import { createComm, getCommsWithBookingId } from '../state/services/commService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -29,7 +29,11 @@ class BookingPage extends Component {
             isShowAddServiceAndOpt: false,
             isShowBookingCntAndTot: false,
             formInputs: {},
-            commFormInputs: {assigned_to: 'emadeisky', priority_of_log: 'Standard'},
+            commFormInputs: {
+                assigned_to: 'emadeisky', 
+                priority_of_log: 'Standard',
+                dme_notes_type: 'Delivery',
+            },
             selected: 'dme',
             booking: {},
             bookingLines: [],
@@ -76,6 +80,7 @@ class BookingPage extends Component {
             isShowCreateCommModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
+            comms: [],
         };
 
         this.djsConfig = {
@@ -121,6 +126,7 @@ class BookingPage extends Component {
         getAttachmentHistory: PropTypes.func.isRequired,
         resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
         createComm: PropTypes.func.isRequired,
+        getCommsWithBookingId: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -130,6 +136,7 @@ class BookingPage extends Component {
 
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
+            this.props.getCommsWithBookingId(bookingId);
             this.setState({loading: true});
         } else {
             this.props.getSuburbStrings('state', undefined);
@@ -142,6 +149,10 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
+
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs['due_by_date'] = moment().format('YYYY-MM-DD');
+        this.setState({commFormInputs});
     }
 
     getTime(country, city) {
@@ -178,13 +189,18 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (comms) {
+            console.log('@11 - ', comms.length);
+            this.setState({comms});
         }
 
         if (bookingLines) {
@@ -242,6 +258,11 @@ class BookingPage extends Component {
         if (needUpdateBookingLineDetails && booking) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
+        }
+
+        if (needUpdateComms) {
+            console.log('@111 - ');
+            this.props.getCommsWithBookingId(booking.id);
         }
 
         if (bBooking) {
@@ -378,6 +399,7 @@ class BookingPage extends Component {
                 if (this.state.loading) {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
+                    this.props.getCommsWithBookingId(booking.id);
                 }
 
                 this.setState({ AdditionalServices: AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false });
@@ -980,9 +1002,18 @@ class BookingPage extends Component {
         this.setState({commFormInputs});
     }
 
-    render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal} = this.state;
+    onDatePlusOrMinus(number) {
+        console.log('number - ', number);
 
+        let commFormInputs = this.state.commFormInputs;
+        const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
+        commFormInputs['due_by_date'] = date;
+        this.setState({commFormInputs});
+    }
+
+    render() {
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms} = this.state;
+        console.log('@1 - ', comms.length);
         const iconTrashBookingLine = (cell, row) => {
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
@@ -1120,20 +1151,26 @@ class BookingPage extends Component {
 
         const columnCommunication = [
             {
-                dataField: 'no',
+                dataField: 'id',
                 text: 'Comm No'
             }, {
-                dataField: 'date',
-                text: 'Date'
-            }, {
-                dataField: 'type',
+                dataField: 'dme_notes_type',
                 text: 'Type'
             }, {
-                dataField: 'description',
-                text: 'Description'
+                dataField: 'assigned_to',
+                text: 'Assined to'
             }, {
-                dataField: 'view',
-                text: 'View'
+                dataField: 'dme_com_title',
+                text: 'Title'
+            }, {
+                dataField: 'due_by_date',
+                text: 'Date'
+            }, {
+                dataField: 'due_by_time',
+                text: 'Time'
+            }, {
+                dataField: 'dme_detail',
+                text: 'Detail'
             },
         ];
 
@@ -1865,16 +1902,17 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab04" className="tab-contents">
-                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-comm">all the comm records</button>
-                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="create-comm">
+                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard">
+                                                <i className="icon icon-th-list"></i>
+                                            </button>
+                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard">
                                                 <i className="icon icon-plus"></i>
                                             </button>
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
-                                                    data={ bookingLineDetailsProduct }
+                                                    data={ comms }
                                                     columns={ columnCommunication }
-                                                    cellEdit={ cellEditFactory({ mode: 'click', blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
                                             </div>
@@ -1999,11 +2037,13 @@ class BookingPage extends Component {
                         <br />
                         <div className="datetime">
                             <p>Due By Date</p>
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                             <DatePicker
                                 selected={commFormInputs['due_by_date']}
                                 onChange={(e) => this.onDateChange(e)}
                                 dateFormat="dd MMM yyyy"
                             />
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                         </div>
                         <div className="datetime">
                             <p>Due By Time</p>
@@ -2041,6 +2081,8 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
+        comms: state.comm.comms,
+        needUpdateComms: state.comm.needUpdateComms,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
@@ -2070,6 +2112,7 @@ const mapDispatchToProps = (dispatch) => {
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
+        getCommsWithBookingId: (id, sortField, columnFilters) => dispatch(getCommsWithBookingId(id, sortField, columnFilters)),
     };
 };
 

@@ -112,14 +112,48 @@
 		display: inline-block;
 
 		p {
-			width: 30%;
+			width: 35%;
 			font-size: 12px;
+			font-weight: bold;
 			display: inline-block;
 		}
 
 		>div {
-			width: 65%;
+			width: 45%;
 			display: inline-block;
+
+			input {
+				width: 100%;
+			}
 		}
+
+		.date-adjust {
+			width: 12px !important;
+			margin-left: 3px;
+			margin-right: 3px;
+		}
+
+		.date-adjust:hover {
+			background: grey;
+		}
+	}
+}
+
+#tab04 {
+	button {
+		width: 40px;
+
+		i {
+			font-size: 25px;
+			color: #0189b9;
+		}
+	}
+
+	button:hover {
+		background-color: #eee;
+	}
+
+	.tab-inner {
+		height: 300px;
 	}
 }
