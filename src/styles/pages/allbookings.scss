@@ -376,6 +376,12 @@ table {
 
 .visualID-box {
   cursor: pointer;
+
+  i {
+    color: #0995a5;
+    float: right;
+    margin-right: 3px;
+  }
 }
 
 .visualID-box:hover {
@@ -530,4 +536,19 @@ header > .qbootstrap-nav {
 
 .dark-blue {
     background-color: #0995a5 !important;
+}
+
+.links-div {
+  button {
+    width: 100px !important;
+    padding: 3px !important;
+    margin: 2px !important;
+    background: transparent !important;
+    border: 1px solid #999;
+    color: black;
+  }
+
+  button:hover {
+    background: #0995a5;
+  }
 }

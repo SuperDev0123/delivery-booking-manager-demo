@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
-import { Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink } from 'reactstrap';
+import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
@@ -18,7 +18,6 @@ import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLab
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import ToDetailPageTooltipItem from '../components/Tooltip/ToDetailPageTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
@@ -60,6 +59,7 @@ class AllBookingsPage extends React.Component {
             total_qty: 0,
             total_kgs: 0,
             total_cubic_meter: 0,
+            linkPopoverOpens: [],
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -351,7 +351,20 @@ class AllBookingsPage extends React.Component {
         else
             additionalInfoOpens['additional-info-popup-' + bookingId] = true;
 
-        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [] });
+        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
+    }
+
+    showLinkPopover(bookingId) {
+        let linkPopoverOpens = this.state.linkPopoverOpens;
+        let flag = linkPopoverOpens['link-popover-' + bookingId];
+        linkPopoverOpens = [];
+
+        if (flag)
+            linkPopoverOpens['link-popover-' + bookingId] = false;
+        else
+            linkPopoverOpens['link-popover-' + bookingId] = true;
+
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens });
     }
 
     getPKBookingIdFromId(id) {
@@ -383,11 +396,11 @@ class AllBookingsPage extends React.Component {
         else
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
 
-        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [] });
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
     }
 
     clearActivePopoverVar() {
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [] });
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
     }
 
     togglePopover() {
@@ -599,11 +612,6 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onClickRow(e) {
-        window.location.assign('/booking?bookingid=' + e);
-        this.setState({selectedBookingIds: [], checkedAll: false});
-    }
-
     onClickGetAll(e) {
         e.preventDefault();
         const {startDate, endDate} = this.state;
@@ -714,6 +722,13 @@ class AllBookingsPage extends React.Component {
 
     onDwonloadOptionChange(e) {
         this.setState({downloadOption: e.target.value});
+    }
+
+    onClickLink(num, bookingId) {
+        if (num === 0)
+            window.location.assign('/booking?bookingid=' + bookingId);
+        else if (num === 1)
+            window.location.assign('/comm?bookingid=' + bookingId);
     }
 
     render() {
@@ -907,10 +922,28 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td id={'detailpage-tooltip' + booking.id} className='visualID-box' onClick={()=>this.onClickRow(booking.id)}>
+                    <td id={'link-popover-' + booking.id} className='visualID-box' onClick={() => this.showLinkPopover(booking.id)}>
                         <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span>
-                        <ToDetailPageTooltipItem booking={booking} />
+                        { 
+                            (booking.has_comms) ?
+                                <i className="fa fa-comments" aria-hidden="true"></i>
+                                :
+                                null
+                        }
                     </td>
+                    <Popover
+                        isOpen={this.state.linkPopoverOpens['link-popover-' + booking.id]}
+                        target={'link-popover-' + booking.id}
+                        placement="right"
+                        hideArrow={true} >
+                        <PopoverBody>
+                            <div className="links-div">
+                                <Button color="primary" onClick={() => this.onClickLink(0, booking.id)}>Go to Detail</Button>
+                                <br />
+                                <Button color="primary" onClick={() => this.onClickLink(1, booking.id)}>Go to Comms</Button>
+                            </div>
+                        </PopoverBody>
+                    </Popover>
                     <td >{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td >{booking.puCompany}</td>
