@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import Clock from 'react-live-clock';
 import _ from 'lodash';
 import Select from 'react-select';
@@ -199,7 +200,6 @@ class BookingPage extends Component {
         }
 
         if (comms) {
-            console.log('@11 - ', comms.length);
             this.setState({comms});
         }
 
@@ -261,7 +261,6 @@ class BookingPage extends Component {
         }
 
         if (needUpdateComms) {
-            console.log('@111 - ');
             this.props.getCommsWithBookingId(booking.id);
         }
 
@@ -1013,7 +1012,7 @@ class BookingPage extends Component {
 
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms} = this.state;
-        console.log('@1 - ', comms.length);
+
         const iconTrashBookingLine = (cell, row) => {
             return (
                 <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>

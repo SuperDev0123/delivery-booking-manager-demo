@@ -6,7 +6,10 @@ import moment from 'moment-timezone';
 import Modal from 'react-modal';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-import { Button } from 'reactstrap';
+import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
@@ -28,8 +31,12 @@ class CommPage extends React.Component {
             isNotePaneOpen: false,
             selectedCommId: null,
             isShowNoteForm: false,
+            isShowUpdateCommModal: false,
             noteFormInputs: {},
+            commFormInputs: {},
         };
+
+        this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
     }
 
     static propTypes = {
@@ -208,8 +215,57 @@ class CommPage extends React.Component {
         window.location.assign('/booking?bookingid=' + this.state.booking.id);
     }
 
+    onUpdateCommBtnClick(comm) {
+        console.log('Click update comm button');
+        
+        const commFormInputs = {};
+        commFormInputs['assigned_to'] = comm.assigned_to;
+        commFormInputs['dme_notes_type'] = comm.dme_notes_type;
+        commFormInputs['priority_of_log'] = comm.priority_of_log;
+        commFormInputs['dme_detail'] = comm.dme_detail;
+        commFormInputs['dme_com_title'] = comm.dme_com_title;
+        commFormInputs['due_by_date'] = comm.due_by_date;
+        commFormInputs['due_by_time'] = comm.due_by_time.substring(0, 5);
+        this.setState({selectedCommId: comm.id, commFormInputs});
+        this.toggleUpdateCommModal();
+    }
+
+    toggleUpdateCommModal() {
+        this.setState(prevState => ({isShowUpdateCommModal: !prevState.isShowUpdateCommModal}));
+    }
+
+    onUpdateComm() {
+        console.log('Update comm');
+
+        const {booking, selectedCommId} = this.state;
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs['fk_booking_id'] = booking.fk_booking_id;
+        commFormInputs['id'] = selectedCommId;
+        this.props.updateComm(selectedCommId, commFormInputs);
+        this.toggleUpdateCommModal();
+    }
+
+    onDatePlusOrMinus(number) {
+        console.log('number - ', number);
+
+        let commFormInputs = this.state.commFormInputs;
+        const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
+        commFormInputs['due_by_date'] = date;
+        this.setState({commFormInputs});
+    }
+
+    handleCommModalInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        let commFormInputs = this.state.commFormInputs;
+        commFormInputs[name] = value;
+        this.setState({commFormInputs});
+    }
+
     render() {
-        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs } = this.state;
+        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal } = this.state;
 
         const commsList = comms.map((comm, index) => {
             return (
@@ -232,9 +288,63 @@ class CommPage extends React.Component {
                     <td>{comm.dme_notes_external}</td>
                     <td>{comm.due_by_date}</td>
                     <td>{comm.due_by_time}</td>
+                    <td className="update"><Button color="primary" onClick={() => this.onUpdateCommBtnClick(comm)}>Update</Button></td>
                 </tr>
             );
         });
+
+        const timeSelectOptions = [
+            {value: '06:00', label: '06:00'},
+            {value: '06:30', label: '06:30'},
+            {value: '07:00', label: '07:00'},
+            {value: '07:30', label: '07:30'},
+            {value: '08:00', label: '08:00'},
+            {value: '08:30', label: '08:30'},
+            {value: '09:00', label: '09:00'},
+            {value: '09:30', label: '09:30'},
+            {value: '10:00', label: '10:00'},
+            {value: '10:30', label: '10:30'},
+            {value: '11:00', label: '11:00'},
+            {value: '11:30', label: '11:30'},
+            {value: '12:00', label: '12:00'},
+            {value: '12:30', label: '12:30'},
+            {value: '13:00', label: '13:00'},
+            {value: '13:30', label: '13:30'},
+            {value: '14:00', label: '14:00'},
+            {value: '14:30', label: '14:30'},
+            {value: '15:00', label: '15:00'},
+            {value: '15:30', label: '15:30'},
+            {value: '16:00', label: '16:00'},
+            {value: '16:30', label: '16:30'},
+            {value: '17:00', label: '17:00'},
+            {value: '17:30', label: '17:30'},
+            {value: '18:00', label: '18:00'},
+            {value: '18:30', label: '18:30'},
+            {value: '19:00', label: '19:00'},
+            {value: '19:30', label: '19:30'},
+            {value: '20:00', label: '20:00'},
+            {value: '20:30', label: '20:30'},
+            {value: '21:00', label: '21:00'},
+            {value: '21:30', label: '21:30'},
+            {value: '22:00', label: '22:00'},
+            {value: '22:30', label: '22:30'},
+            {value: '23:00', label: '23:00'},
+            {value: '23:30', label: '23:30'},
+            {value: '00:00', label: '00:00'},
+            {value: '00:30', label: '00:30'},
+            {value: '01:00', label: '01:00'},
+            {value: '01:30', label: '01:30'},
+            {value: '02:00', label: '02:00'},
+            {value: '02:30', label: '02:30'},
+            {value: '03:00', label: '03:00'},
+            {value: '03:30', label: '03:30'},
+            {value: '04:00', label: '04:00'},
+            {value: '04:30', label: '04:30'},
+            {value: '05:00', label: '05:00'},
+            {value: '05:30', label: '05:30'},
+        ];
+
+        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
 
         const notesList = notes.map((note, index) => {
             return (
@@ -340,6 +450,9 @@ class CommPage extends React.Component {
                                 <th className="" scope="col" nowrap>
                                     <p>Time</p>
                                 </th>
+                                <th className="" scope="col" nowrap>
+                                    <p>Update</p>
+                                </th>
                             </tr>
                             <tr>
                                 <th scope="col"><input type="text" name="id" value={filterInputs['id'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -421,6 +534,98 @@ class CommPage extends React.Component {
                         }
                     </div>
                 </SlidingPane>
+                <ReactstrapModal isOpen={isShowUpdateCommModal} toggle={this.toggleUpdateCommModal} className="create-comm-modal">
+                    <ModalHeader toggle={this.toggleUpdateCommModal}>Update Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
+                    <ModalBody>
+                        <label>
+                            <p>Assigned To</p>
+                            <select
+                                required 
+                                name="assigned_to" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['assigned_to']} >
+                                <option value="emadeisky">emadeisky</option>
+                                <option value="nlimbauan">nlimbauan</option>
+                                <option value="status query">status query</option>
+                                <option value="edit…">edit…</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>Priority</p>
+                            <select
+                                required 
+                                name="priority_of_log" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['priority_of_log']} >
+                                <option value="Standard">Standard</option>
+                                <option value="Low">Low</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Comm Title</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="dme_com_title" 
+                                value = {commFormInputs['dme_com_title']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <label>
+                            <p>Type</p>
+                            <select
+                                required 
+                                name="dme_notes_type" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['dme_notes_type']} >
+                                <option value="Delivery">Delivery</option>
+                                <option value="Financial">Financial</option>
+                                <option value="FP Query">FP Query</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+                        <br />
+                        <label>
+                            <p>DME Detail</p>
+                            <input 
+                                className="form-control" 
+                                type="text" 
+                                placeholder="" 
+                                name="dme_detail" 
+                                value = {commFormInputs['dme_detail']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <div className="datetime">
+                            <p>Due By Date</p>
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
+                            <DatePicker
+                                selected={commFormInputs['due_by_date']}
+                                onChange={(e) => this.onDateChange(e)}
+                                dateFormat="dd MMM yyyy"
+                            />
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
+                        </div>
+                        <div className="datetime">
+                            <p>Due By Time</p>
+                            <Select
+                                value={due_by_time}
+                                onChange={(e) => this.handleCommModalInputChange({target: {name: 'due_by_time', value: e.value, type: 'input'}})}
+                                options={timeSelectOptions}
+                                placeholder='Select time'
+                            />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => this.onUpdateComm()}>Update</Button>{' '}
+                        <Button color="secondary" onClick={this.toggleUpdateCommModal}>Cancel</Button>
+                    </ModalFooter>
+                </ReactstrapModal>
             </div>
         );
     }

@@ -24,7 +24,7 @@ $column_5_width: 90px;
 $column_6_width: 250px;
 $column_7_width: 90px;
 $column_8_width: 70px;
-$column_9_width: 70px;
+$column_9_width: 90px;
 $column_10_width: 70px;
 
 $column_11_width: 70px;
@@ -35,6 +35,7 @@ $column_15_width: 70px;
 $column_16_width: 70px;
 $column_17_width: 70px;
 $column_18_width: 70px;
+$column_19_width: 70px;
 
 .comm .content .fixed_headers {
   table-layout: fixed;
@@ -80,6 +81,8 @@ $column_18_width: 70px;
   td:nth-child(17) p, th:nth-child(17) p { width: 70px }
   td:nth-child(18), th:nth-child(18) { width: $column_18_width; }
   td:nth-child(18) p, th:nth-child(18) p { width: 70px }
+  td:nth-child(19), th:nth-child(19) { width: $column_19_width; }
+  td:nth-child(19) p, th:nth-child(19) p { width: 70px }
 
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
@@ -107,6 +110,13 @@ $column_18_width: 70px;
 
   td.active {
     background-color: whitesmoke;
+  }
+}
+
+td.update {
+  button {
+    height: 25px !important;
+    padding: 0 8px !important;
   }
 }
 
