@@ -36,7 +36,7 @@ $column_16_width: 70px;
 $column_17_width: 70px;
 $column_18_width: 70px;
 
-.comm .fixed_headers {
+.comm .content .fixed_headers {
   table-layout: fixed;
 
   th { text-decoration: none; }
@@ -108,4 +108,26 @@ $column_18_width: 70px;
   td.active {
     background-color: whitesmoke;
   }
+}
+
+.form-view {
+  text-align: center;
+
+  label {
+    width: 100%;
+    text-align: center;
+
+    p {
+      width: 100px;
+      display: inline-block;
+    }
+    input {
+      width: 200px;
+      display: inline-block;
+    }
+  }
+}
+
+.button-group {
+  margin-top: 20px;
 }

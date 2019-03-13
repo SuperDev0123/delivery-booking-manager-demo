@@ -3,10 +3,14 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
+import Modal from 'react-modal';
+import SlidingPane from 'react-sliding-pane';
+import 'react-sliding-pane/dist/react-sliding-pane.css';
+import { Button } from 'reactstrap';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
-import { getCommsWithBookingId, updateComm, setGetCommsFilter } from '../state/services/commService';
+import { getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote } from '../state/services/commService';
 
 class CommPage extends React.Component {
     constructor(props) {
@@ -15,11 +19,16 @@ class CommPage extends React.Component {
         this.state = {
             booking: {},
             comms: [],
+            notes: [],
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
             sortDirection: -1,
             sortField: 'id',
             filterInputs: {},
+            isNotePaneOpen: false,
+            selectedCommId: null,
+            isShowNoteForm: false,
+            noteFormInputs: {},
         };
     }
 
@@ -33,6 +42,8 @@ class CommPage extends React.Component {
         getCommsWithBookingId: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
         setGetCommsFilter: PropTypes.func.isRequired,
+        getNotes: PropTypes.func.isRequired,
+        createNote: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -55,10 +66,13 @@ class CommPage extends React.Component {
         } else {
             console.log('Booking ID is null');
         }
+
+        Modal.setAppElement(this.el);
     }
 
     componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, columnFilters } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, columnFilters, notes, needUpdateNotes } = newProps;
+        const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -75,8 +89,16 @@ class CommPage extends React.Component {
             this.setState({comms});
         }
 
+        if (notes) {
+            this.setState({notes});
+        }
+
         if (needUpdateComms) {
             this.props.getCommsWithBookingId(booking.id, sortField, columnFilters);
+        }
+
+        if (needUpdateNotes) {
+            this.props.getNotes(selectedCommId);
         }
     }
 
@@ -147,13 +169,47 @@ class CommPage extends React.Component {
         }
     }
 
+    onClickCommIdCell(comm) {
+        console.log('Comm ID: ', comm.id);
+
+        this.setState({ isNotePaneOpen: true, selectedCommId: comm.id });
+        this.props.getNotes(comm.id);
+    }
+
+    onCreateNoteButton() {
+        this.setState({isShowNoteForm: true});
+    }
+
+    handleNoteModalInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        let noteFormInputs = this.state.noteFormInputs;
+        noteFormInputs[name] = value;
+        this.setState({noteFormInputs});
+    }
+
+    onCancel() {
+        this.setState({isShowNoteForm: false});
+    }
+
+    onCreateNote() {
+        const {noteFormInputs, selectedCommId, notes} = this.state;
+        noteFormInputs['comm'] = selectedCommId;
+        noteFormInputs['username'] = 'Stephen';
+        noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
+        this.props.createNote(noteFormInputs);
+        this.setState({isShowNoteForm: false, noteFormInputs: {}});
+    }
+
     render() {
-        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs } = this.state;
+        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs } = this.state;
 
         const commsList = comms.map((comm, index) => {
             return (
                 <tr key={index}>
-                    <td>{comm.id}</td>
+                    <td onClick={() => this.onClickCommIdCell(comm)}>{comm.id}</td>
                     <td>{booking.b_bookingID_Visual}</td>
                     <td>{booking.b_status}</td>
                     <td>{booking.vx_freight_Provider}</td>
@@ -175,8 +231,21 @@ class CommPage extends React.Component {
             );
         });
 
+        const notesList = notes.map((note, index) => {
+            return (
+                <tr key={index}>
+                    <td>{note.dme_notes_no}</td>
+                    <td>{note.username}</td>
+                    <td>{note.dme_notes_type}</td>
+                    <td>{note.dme_notes}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('MM/DD/YYYY')}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
+                </tr>
+            );
+        });
+
         return (
-            <div className="qbootstrap-nav comm" >
+            <div className="qbootstrap-nav comm" ref={ref => this.el = ref}>
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
@@ -274,6 +343,79 @@ class CommPage extends React.Component {
                         </table>
                     </div>
                 </div>
+                <SlidingPane
+                    className='note-pan'
+                    overlayClassName='note-pan-overlay'
+                    isOpen={isNotePaneOpen}
+                    title='Note Panel'
+                    subtitle={!isShowNoteForm ? 'List view' : 'Form view'}
+                    onRequestClose={() => {this.setState({ isNotePaneOpen: false });}}>
+                    <div className="slider-content">
+                        {
+                            !isShowNoteForm ?
+                                <div className="table-view">
+                                    <div className="table-responsive">
+                                        <table className="table table-hover table-bordered sortable fixed_headers">
+                                            <tr>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note No</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>User</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note Type</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Date</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Time</p>
+                                                </th>
+                                            </tr>
+                                            { notesList }
+                                        </table>
+                                    </div>
+                                    <div className="button-group">
+                                        <Button color="primary" onClick={() => this.onCreateNoteButton()}>Create</Button>
+                                    </div>
+                                </div>
+                                :
+                                <div className="form-view">
+                                    <h2>Create a note</h2>
+                                    <label>
+                                        <p>Note Type</p>
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            placeholder="" 
+                                            name="dme_notes_type" 
+                                            value = {noteFormInputs['dme_notes_type']}
+                                            onChange={(e) => this.handleNoteModalInputChange(e)} />
+                                    </label>
+                                    <br />
+                                    <label>
+                                        <p>Note</p>
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            placeholder="" 
+                                            name="dme_notes" 
+                                            value = {noteFormInputs['dme_notes']}
+                                            onChange={(e) => this.handleNoteModalInputChange(e)} />
+                                    </label>
+                                    <br />
+                                    <div className="button-group">
+                                        <Button color="primary" onClick={() => this.onCreateNote()}>Create</Button>{' '}
+                                        <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+                </SlidingPane>
             </div>
         );
     }
@@ -287,6 +429,8 @@ const mapStateToProps = (state) => {
         sortField: state.comm.sortField,
         columnFilters: state.comm.columnFilters,
         needUpdateComms: state.comm.needUpdateComms,
+        notes: state.comm.notes,
+        needUpdateNotes: state.comm.needUpdateNotes,
     };
 };
 
@@ -298,6 +442,8 @@ const mapDispatchToProps = (dispatch) => {
         getCommsWithBookingId: (id, sortField, columnFilters) => dispatch(getCommsWithBookingId(id, sortField, columnFilters)),        
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
+        getNotes: (commId) => dispatch(getNotes(commId)),
+        createNote: (note) => dispatch(createNote(note)),
     };
 };
 
