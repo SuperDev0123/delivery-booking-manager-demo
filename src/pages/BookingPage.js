@@ -34,6 +34,8 @@ class BookingPage extends Component {
                 assigned_to: 'emadeisky', 
                 priority_of_log: 'Standard',
                 dme_notes_type: 'Delivery',
+                dme_action: 'No follow up required, noted for info purposes',
+                additional_action_task: '',
             },
             selected: 'dme',
             booking: {},
@@ -82,6 +84,7 @@ class BookingPage extends Component {
             switchInfo: false,
             dupLineAndLineDetail: false,
             comms: [],
+            isShowAdditionalActionTaskInput: false,
         };
 
         this.djsConfig = {
@@ -150,10 +153,6 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs['due_by_date'] = moment().format('YYYY-MM-DD');
-        this.setState({commFormInputs});
     }
 
     getTime(country, city) {
@@ -965,6 +964,10 @@ class BookingPage extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
+        if (target.name === 'dme_action' && target.value === 'Other') {
+            this.setState({isShowAdditionalActionTaskInput: true});
+        }
+
         let commFormInputs = this.state.commFormInputs;
         commFormInputs[name] = value;
         this.setState({commFormInputs});
@@ -985,6 +988,10 @@ class BookingPage extends Component {
     onCreateComm() {
         const {commFormInputs, booking} = this.state;
         commFormInputs['fk_booking_id'] = booking.pk_booking_id;
+
+        if (commFormInputs['dme_action'] === 'Other')
+            commFormInputs['dme_action'] = commFormInputs['additional_action_task'];
+
         this.props.createComm(commFormInputs);
         this.toggleCreateCommModal();
     }
@@ -1011,7 +1018,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms, isShowAdditionalActionTaskInput} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -2024,14 +2031,84 @@ class BookingPage extends Component {
                         </label>
                         <br />
                         <label>
+                            <p>Action Task</p>
+                            <select
+                                required 
+                                name="dme_action" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['dme_action']} >
+                                <option value="No follow up required, noted for info purposes">No follow up required, noted for info purposes</option>
+                                <option value="Follow up with FP when to be collected">Follow up with FP when to be collected</option>
+                                <option value="Follow up with Booking Contact as per log">Follow up with Booking Contact as per log</option>
+                                <option value="Follow up with Cust if they still need collected">Follow up with Cust if they still need collected</option>
+                                <option value="Follow up Cust to confirm pickup date / time">Follow up Cust to confirm pickup date / time</option>
+                                <option value="Follow up Cust to confirm packaging & pickup date / time">Follow up Cust to confirm packaging & pickup date / time</option>
+                                <option value="Follow up with FP Booked in & on Schedule">Follow up with FP Booked in & on Schedule</option>
+                                <option value="Follow up with FP Futile re-booked or collected">Follow up with FP Futile re-booked or collected</option>
+                                <option value="Follow up FP Collection will be on Time">Follow up FP Collection will be on Time</option>
+                                <option value="Follow up FP / Cust Booking was Collected">Follow up FP / Cust Booking was Collected</option>
+                                <option value="Follow up FP Delivery will be on Time">Follow up FP Delivery will be on Time</option>
+                                <option value="Follow up FP / Cust Delivery Occurred">Follow up FP / Cust Delivery Occurred</option>
+                                <option value="Follow up Futile Email to Customer">Follow up Futile Email to Customer</option>
+                                <option value="Close futile booking 5 days after 2nd email">Close futile booking 5 days after 2nd email</option>
+                                <option value="Follow up query to Freight Provider">Follow up query to Freight Provider</option>
+                                <option value="Follow up FP for Quote">Follow up FP for Quote</option>
+                                <option value="Follow up FP for Credit">Follow up FP for Credit</option>
+                                <option value="Awaiting Invoice to Process to FP File">Awaiting Invoice to Process to FP File</option>
+                                <option value="Confirm FP has not invoiced this booking">Confirm FP has not invoiced this booking</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </label>
+                        {
+                            (isShowAdditionalActionTaskInput) ?
+                                <label>
+                                    <p>Action Task(Other)</p>
+                                    <input 
+                                        className="form-control" 
+                                        type="text" 
+                                        placeholder="" 
+                                        name="additional_action_task" 
+                                        value = {commFormInputs['additional_action_task']}
+                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
+                                </label>
+                                :
+                                null
+                        }
+                        <br />
+                        <label>
                             <p>DME Detail</p>
-                            <input 
+                            <textarea 
                                 className="form-control" 
-                                type="text" 
                                 placeholder="" 
                                 name="dme_detail" 
                                 value = {commFormInputs['dme_detail']}
                                 onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <label>
+                            <p>First Note</p>
+                            <textarea 
+                                className="form-control" 
+                                placeholder="" 
+                                name="dme_notes" 
+                                value = {commFormInputs['dme_notes']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
+                        <br />
+                        <label>
+                            <p>Note Type</p>
+                            <select
+                                required 
+                                name="notes_type" 
+                                onChange={(e) => this.handleCommModalInputChange(e)}
+                                value = {commFormInputs['notes_type']} >
+                                <option value="Call">Call</option>
+                                <option value="Email">Email</option>
+                                <option value="SMS">SMS</option>
+                                <option value="Letter">Letter</option>
+                                <option value="Note">Note</option>
+                                <option value="Other">Other</option>
+                            </select>
                         </label>
                         <br />
                         <div className="datetime">

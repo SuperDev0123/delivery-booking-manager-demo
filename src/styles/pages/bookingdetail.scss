@@ -90,15 +90,16 @@
 	}
 
 	label {
-		width: 90%;
+		width: 100%;
 
 		p {
 			width: 30%;
 			display: inline-block;
+			vertical-align: top;
 		}
 
-		input, select {
-			width: 65%;
+		input, select, textarea {
+			width: 70%;
 			display: inline-block;
 		}
 
@@ -108,7 +109,6 @@
 	}
 	
 	.datetime {
-		width: 50%;
 		display: inline-block;
 
 		p {
@@ -116,15 +116,6 @@
 			font-size: 12px;
 			font-weight: bold;
 			display: inline-block;
-		}
-
-		>div {
-			width: 45%;
-			display: inline-block;
-
-			input {
-				width: 100%;
-			}
 		}
 
 		.date-adjust {
@@ -135,6 +126,36 @@
 
 		.date-adjust:hover {
 			background: grey;
+		}
+	}
+
+	.datetime:first-of-type {
+		width: 60%;
+
+		>div {
+			width: 45%;
+			display: inline-block;
+
+			input {
+				width: 100%;
+			}
+		}
+	}
+
+	.datetime:last-of-type {
+		width: 40%;
+
+		p {
+			width: 45%;
+		}
+
+		>div {
+			width: 55%;
+			display: inline-block;
+
+			input {
+				width: 100%;
+			}
 		}
 	}
 }
