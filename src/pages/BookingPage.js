@@ -1155,28 +1155,51 @@ class BookingPage extends Component {
             },
         ];
 
+        const datetimeFormatter = (cell) => {
+            return (
+                moment(cell).format('DD/MM/YYYY hh:mm:ss')
+            );
+        };
+
         const columnCommunication = [
             {
                 dataField: 'id',
-                text: 'Comm No'
+                text: 'Comm No',
+                style: {
+                    width: '30px',
+                },
             }, {
                 dataField: 'dme_notes_type',
-                text: 'Type'
+                text: 'Type',
+                style: {
+                    width: '40px',
+                },
             }, {
                 dataField: 'assigned_to',
-                text: 'Assined to'
+                text: 'Assined',
+                style: {
+                    width: '40px',
+                },
             }, {
                 dataField: 'dme_com_title',
-                text: 'Title'
+                text: 'Title',
+                style: {
+                    width: '300px',
+                },
             }, {
-                dataField: 'due_by_date',
-                text: 'Date'
+                dataField: 'z_createdTimeStamp',
+                text: 'Date/Time Created',
+                formatter: datetimeFormatter,
             }, {
-                dataField: 'due_by_time',
-                text: 'Time'
+                dataField: 'due_by_datetime',
+                text: 'Date/Time Due',
+                formatter: datetimeFormatter,
             }, {
-                dataField: 'dme_detail',
-                text: 'Detail'
+                dataField: 'dme_action',
+                text: 'Action Task',
+                style: {
+                    width: '300px',
+                },
             },
         ];
 
@@ -1916,7 +1939,7 @@ class BookingPage extends Component {
                                             </button>
                                             <div className="tab-inner">
                                                 <BootstrapTable
-                                                    keyField="modelNumber"
+                                                    keyField="id"
                                                     data={ comms }
                                                     columns={ columnCommunication }
                                                     bootstrap4={ true }
