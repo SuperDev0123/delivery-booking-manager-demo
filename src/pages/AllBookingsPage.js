@@ -458,7 +458,7 @@ class AllBookingsPage extends React.Component {
             let ind = -1;
 
             for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[currentBookInd]) {
+                if (bookings[i].id === selectedBookingIds[currentBookInd + 1]) {
                     ind = i;
                     break;
                 }
