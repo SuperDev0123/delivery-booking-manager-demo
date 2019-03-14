@@ -2,7 +2,7 @@ import React from 'react';
 import { Tooltip } from 'reactstrap';
 import PropTypes from 'prop-types';
 
-class ToDetailPageTooltipItem extends React.Component {
+class NoteDetailTooltipItem extends React.Component {
     constructor(props) {
         super(props);
 
@@ -12,7 +12,7 @@ class ToDetailPageTooltipItem extends React.Component {
     }
 
     static propTypes = {
-        booking: PropTypes.object.isRequired,
+        note: PropTypes.object.isRequired,
     };
 
     toggleTooltip() {
@@ -20,22 +20,22 @@ class ToDetailPageTooltipItem extends React.Component {
     }
 
     render() {
-        const { booking } = this.props;
+        const { note } = this.props;
 
         return (
             <div className="disp-inline-block">
                 <Tooltip
-                    placement='right'
+                    placement='top'
                     isOpen={this.state.tooltipOpen}
-                    target={'detailpage-tooltip' + booking.id}
+                    target={'note-detail-tooltip-' + note.id}
                     toggle={() => this.toggleTooltip()}
                     hideArrow={true}
-                    className='tooltipitem'>
-                    Click to see detail of this booking.
+                    className='note-detail-tooltip'>
+                    {note.dme_notes}
                 </Tooltip>
             </div>
         );
     }
 }
 
-export default ToDetailPageTooltipItem;
+export default NoteDetailTooltipItem;

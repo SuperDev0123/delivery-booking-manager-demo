@@ -12,7 +12,7 @@ class TooltipItem extends React.Component {
     }
 
     static propTypes = {
-        booking: PropTypes.array.isRequired,
+        booking: PropTypes.object.isRequired,
     };
 
     toggleTooltip() {

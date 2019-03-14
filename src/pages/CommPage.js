@@ -11,6 +11,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
 
+import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
 import { getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
@@ -370,11 +371,14 @@ class CommPage extends React.Component {
             return (
                 <tr key={index}>
                     <td>{note.dme_notes_no}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('DD MMM YYYY')}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
                     <td>{note.username}</td>
                     <td>{note.dme_notes_type}</td>
-                    <td>{note.dme_notes}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('MM/DD/YYYY')}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
+                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
+                        {note.dme_notes}
+                        <NoteDetailTooltipItem note={note} />
+                    </td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note)}>Update</Button></td>
                 </tr>
             );
@@ -500,6 +504,12 @@ class CommPage extends React.Component {
                                                     <p>Note No</p>
                                                 </th>
                                                 <th className="" scope="col" nowrap>
+                                                    <p>Date Entered</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Time Entered</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
                                                     <p>User</p>
                                                 </th>
                                                 <th className="" scope="col" nowrap>
@@ -507,12 +517,6 @@ class CommPage extends React.Component {
                                                 </th>
                                                 <th className="" scope="col" nowrap>
                                                     <p>Note</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Date</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Time</p>
                                                 </th>
                                                 <th className="" scope="col" nowrap>
                                                     <p>Update</p>
