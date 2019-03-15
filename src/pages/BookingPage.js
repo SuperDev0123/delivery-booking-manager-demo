@@ -1934,7 +1934,7 @@ class BookingPage extends Component {
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
-                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard">
+                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Create a comm">
                                                 <i className="icon icon-plus"></i>
                                             </button>
                                             <div className="tab-inner">
