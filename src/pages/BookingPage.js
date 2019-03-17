@@ -86,6 +86,7 @@ class BookingPage extends Component {
             dupLineAndLineDetail: false,
             comms: [],
             isShowAdditionalActionTaskInput: false,
+            isShowAssignedToInput: false,
         };
 
         this.djsConfig = {
@@ -967,6 +968,8 @@ class BookingPage extends Component {
 
         if (target.name === 'dme_action' && target.value === 'Other') {
             this.setState({isShowAdditionalActionTaskInput: true});
+        } else if (target.name === 'assigned_to' && target.value === 'edit…') {
+            this.setState({isShowAssignedToInput: true});
         }
 
         let commFormInputs = this.state.commFormInputs;
@@ -992,6 +995,10 @@ class BookingPage extends Component {
 
         if (commFormInputs['dme_action'] === 'Other')
             commFormInputs['dme_action'] = commFormInputs['additional_action_task'];
+
+        if (commFormInputs['assigned_to'] === 'edit…')
+            commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
+
 
         this.props.createComm(commFormInputs);
         this.toggleCreateCommModal();
@@ -1019,7 +1026,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms, isShowAdditionalActionTaskInput} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1095,7 +1102,7 @@ class BookingPage extends Component {
                 text: 'Cubic Meter',
                 editable: false,
             }, {
-                dataField: 'pk_lines_id',
+                dataField: 'pk_lines_id0',
                 text: 'Duplicate',
                 formatter: iconDoublePlusBookingLine,
                 editable: false,
@@ -1130,7 +1137,7 @@ class BookingPage extends Component {
                 dataField: 'clientRefNumber',
                 text: 'Client Reference #'
             }, {
-                dataField: 'pk_id_lines_data',
+                dataField: 'pk_id_lines_data0',
                 text: 'Duplicate',
                 formatter: iconDoublePlusBookingLineDetail,
                 editable: false
@@ -2015,6 +2022,21 @@ class BookingPage extends Component {
                             </select>
                         </label>
                         <br />
+                        {
+                            (isShowAssignedToInput) ?
+                                <label>
+                                    <p>Assigned To(New)</p>
+                                    <input 
+                                        className="form-control" 
+                                        type="text" 
+                                        placeholder="" 
+                                        name="new_assigned_to" 
+                                        value = {commFormInputs['new_assigned_to']}
+                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
+                                </label>
+                                :
+                                null
+                        }
                         <label>
                             <p>Priority</p>
                             <select
