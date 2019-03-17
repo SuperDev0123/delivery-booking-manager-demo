@@ -133,7 +133,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, errorMessage } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, errorMessage } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -164,7 +164,7 @@ class AllBookingsPage extends React.Component {
 
         if (needUpdateBookings) {
             this.setState({loading: true});
-            this.props.getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword);
+            this.props.getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
         } else {
             this.setState({loading: false});
         }
@@ -729,7 +729,13 @@ class AllBookingsPage extends React.Component {
         this.setState({showGearMenu: true});
     }
 
-    onDwonloadOptionChange(e) {
+    onDownloadOptionChange(e) {
+        if (e.target.value === 'pod_new') {
+            this.props.setGetBookingsFilter('newPod', true);
+        } else if (e.target.value !== 'pod_new' && this.state.downloadOption === 'pod_new') {
+            this.props.setGetBookingsFilter('newPod', false);
+        }
+
         this.setState({downloadOption: e.target.value});
     }
 
@@ -1182,7 +1188,7 @@ class AllBookingsPage extends React.Component {
                                         </div>
                                         <hr />
                                         <div>
-                                            <select value={downloadOption} onChange={(e) => this.onDwonloadOptionChange(e)}>
+                                            <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)}>
                                                 <option value="label">Label</option>
                                                 <option value="pod">Pod</option>
                                                 <option value="pod_new">New Pod</option>
@@ -1481,6 +1487,7 @@ const mapStateToProps = (state) => {
         columnFilters: state.booking.columnFilters,
         prefilterInd: state.booking.prefilterInd,
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
+        newPod: state.booking.newPod,
         errorMessage: state.booking.errorMessage,
     };
 };
