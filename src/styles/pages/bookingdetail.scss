@@ -110,18 +110,30 @@
 	
 	.datetime {
 		display: inline-block;
+		width: 100%;
 
 		p {
-			width: 35%;
+			width: 27%;
 			font-size: 12px;
 			font-weight: bold;
 			display: inline-block;
 		}
 
+		input {
+			width: 100%;
+		}
+
+		>div {
+			display: inline-block;
+		}
+
 		.date-adjust {
-			width: 12px !important;
-			margin-left: 3px;
-			margin-right: 3px;
+			width: 24px !important;
+			height: 24px !important;
+			margin-left: 12px;
+			margin-right: 12px;
+			text-align: center;
+			padding-top: 4px;
 		}
 
 		.date-adjust:hover {
@@ -129,33 +141,10 @@
 		}
 	}
 
-	.datetime:first-of-type {
-		width: 60%;
-
+	.time {
 		>div {
-			width: 45%;
-			display: inline-block;
-
-			input {
-				width: 100%;
-			}
-		}
-	}
-
-	.datetime:last-of-type {
-		width: 40%;
-
-		p {
-			width: 45%;
-		}
-
-		>div {
-			width: 55%;
-			display: inline-block;
-
-			input {
-				width: 100%;
-			}
+			width: 39%;
+			margin-left: 16px;
 		}
 	}
 }

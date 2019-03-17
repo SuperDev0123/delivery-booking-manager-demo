@@ -36,6 +36,7 @@ class BookingPage extends Component {
                 dme_notes_type: 'Delivery',
                 dme_action: 'No follow up required, noted for info purposes',
                 additional_action_task: '',
+                notes_type: 'Call',
             },
             selected: 'dme',
             booking: {},
@@ -2099,16 +2100,6 @@ class BookingPage extends Component {
                         }
                         <br />
                         <label>
-                            <p>DME Detail</p>
-                            <textarea 
-                                className="form-control" 
-                                placeholder="" 
-                                name="dme_detail" 
-                                value = {commFormInputs['dme_detail']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                        <br />
-                        <label>
                             <p>First Note</p>
                             <textarea 
                                 className="form-control" 
@@ -2134,7 +2125,7 @@ class BookingPage extends Component {
                             </select>
                         </label>
                         <br />
-                        <div className="datetime">
+                        <div className="datetime date">
                             <p>Due By Date</p>
                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                             <DatePicker
@@ -2144,7 +2135,7 @@ class BookingPage extends Component {
                             />
                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                         </div>
-                        <div className="datetime">
+                        <div className="datetime time">
                             <p>Due By Time</p>
                             <Select
                                 value={due_by_time}
