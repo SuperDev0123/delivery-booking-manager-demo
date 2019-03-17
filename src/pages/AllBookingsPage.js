@@ -517,8 +517,9 @@ class AllBookingsPage extends React.Component {
 
             if (downloadOption === 'label') {
                 const options = {
-                    method: 'get',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/' + '?ids=' + selectedBookingIds,
+                    method: 'post',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
+                    data: {ids: selectedBookingIds},
                     responseType: 'blob', // important
                 };
 
@@ -533,8 +534,12 @@ class AllBookingsPage extends React.Component {
                 });
             } else if (downloadOption === 'pod') {
                 const options = {
-                    method: 'get',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/' + '?ids=' + selectedBookingIds + '&onlyNew=ALL',
+                    method: 'post',
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                    data: {
+                        ids: selectedBookingIds,
+                        onlyNew: 'ALL',
+                    },
                     responseType: 'blob', // important
                 };
 
@@ -566,8 +571,12 @@ class AllBookingsPage extends React.Component {
 
                 if (hasNewPod) {
                     const options = {
-                        method: 'get',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/' + '?ids=' + selectedBookingIds + '&onlyNew=NEW',
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        data: {
+                            ids: selectedBookingIds,
+                            onlyNew: 'NEW',
+                        },
                         responseType: 'blob', // important
                     };
 
