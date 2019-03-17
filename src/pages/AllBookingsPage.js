@@ -553,7 +553,7 @@ class AllBookingsPage extends React.Component {
                     this.props.setGetBookingsFilter('date', {startDate, endDate});
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 });
-            } else if (downloadOption === 'pod_new') {
+            } else if (downloadOption === 'new_pod') {
                 let bookingIdsWithNewPOD = [];
 
                 for (let j = 0; j < selectedBookingIds.length; j++) {
@@ -730,9 +730,9 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownloadOptionChange(e) {
-        if (e.target.value === 'pod_new') {
+        if (e.target.value === 'new_pod') {
             this.props.setGetBookingsFilter('newPod', true);
-        } else if (e.target.value !== 'pod_new' && this.state.downloadOption === 'pod_new') {
+        } else if (e.target.value !== 'new_pod' && this.state.downloadOption === 'new_pod') {
             this.props.setGetBookingsFilter('newPod', false);
         }
 
@@ -1191,7 +1191,7 @@ class AllBookingsPage extends React.Component {
                                             <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)}>
                                                 <option value="label">Label</option>
                                                 <option value="pod">Pod</option>
-                                                <option value="pod_new">New Pod</option>
+                                                <option value="new_pod">New Pod</option>
                                             </select>
                                         </div>
                                         <LoadingOverlay
@@ -1495,9 +1495,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        getBookings: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) => dispatch(setAllGetBookingsFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword)),
+        setAllGetBookingsFilter: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(setAllGetBookingsFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),

@@ -31,8 +31,8 @@ export const setGetBookingsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetBookingsFilter = (startDate, endDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='') => {
-    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword));
+export const setAllGetBookingsFilter = (startDate, endDate, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', newPod=false) => {
+    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod));
 };
 
 export const setNeedUpdateBookingsState = (boolFlag) => {

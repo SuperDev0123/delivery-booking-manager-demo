@@ -23,6 +23,7 @@ const defaultState = {
     columnFilters: {},
     prefilterInd: 0,
     simpleSearchKeyword: '',
+    newPod: false,
 };
 
 export const BookingReducer = (state = defaultState, { attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod }) => {

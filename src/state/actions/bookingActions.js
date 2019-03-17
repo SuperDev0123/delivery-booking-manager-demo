@@ -55,7 +55,7 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword) {
+export function setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
@@ -66,6 +66,7 @@ export function setAllLocalFilter(startDate, endDate, warehouseId, itemCountPerP
         columnFilters: columnFilters,
         prefilterInd: prefilterInd,
         simpleSearchKeyword: simpleSearchKeyword,
+        newPod: newPod,
     };
 }
 
