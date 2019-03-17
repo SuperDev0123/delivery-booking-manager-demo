@@ -698,8 +698,9 @@ class AllBookingsPage extends React.Component {
 
             this.setState({loadingDownload: true});
             const options = {
-                method: 'get',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/?bookingIds=' + bookingIds,
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/',
+                data: {bookingIds: bookingIds},
                 responseType: 'blob', // important
             };
 
