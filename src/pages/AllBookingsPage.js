@@ -554,27 +554,27 @@ class AllBookingsPage extends React.Component {
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 });
             } else if (downloadOption === 'pod_new') {
-                let hasNewPod = false;
+                let bookingIdsWithNewPOD = [];
 
-                for (let i = 0; i < bookings.length; i++) {
-                    for (let j = 0; j < selectedBookingIds.length; j++) {
+                for (let j = 0; j < selectedBookingIds.length; j++) {
+                    for (let i = 0; i < bookings.length; i++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
                             if (bookings[i].z_downloaded_pod_timestamp === null &&
                                 bookings[i].z_pod_url &&
                                 bookings[i].z_pod_url.length > 0 &&
                                 bookings[i].z_pod_signed_url &&
                                 bookings[i].z_pod_signed_url.length > 0)
-                                hasNewPod = true;
+                                bookingIdsWithNewPOD.push(bookings[i].id);
                         }
                     }
                 }
 
-                if (hasNewPod) {
+                if (bookingIdsWithNewPOD.length > 0) {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
                         data: {
-                            ids: selectedBookingIds,
+                            ids: bookingIdsWithNewPOD,
                             onlyNew: 'NEW',
                         },
                         responseType: 'blob', // important
