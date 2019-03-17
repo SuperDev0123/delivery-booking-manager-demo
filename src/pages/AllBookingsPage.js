@@ -560,10 +560,10 @@ class AllBookingsPage extends React.Component {
                     for (let i = 0; i < bookings.length; i++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
                             if (bookings[i].z_downloaded_pod_timestamp === null &&
-                                bookings[i].z_pod_url &&
-                                bookings[i].z_pod_url.length > 0 &&
-                                bookings[i].z_pod_signed_url &&
-                                bookings[i].z_pod_signed_url.length > 0)
+                                ((bookings[i].z_pod_url &&
+                                bookings[i].z_pod_url.length > 0) ||
+                                (bookings[i].z_pod_signed_url &&
+                                bookings[i].z_pod_signed_url.length > 0)))
                                 bookingIdsWithNewPOD.push(bookings[i].id);
                         }
                     }
