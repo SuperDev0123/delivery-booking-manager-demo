@@ -3,7 +3,7 @@ import axios from 'axios';
 import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getCommsWithBookingId = (bookingId, sortField='-id', columnFilters={}) => {
+export const getCommsWithBookingId = (bookingId, sortField='id', columnFilters={}) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',

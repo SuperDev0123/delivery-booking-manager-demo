@@ -166,4 +166,23 @@
 	.tab-inner {
 		height: 300px;
 	}
+
+	.tab {
+		max-height: 54px;
+	}
+}
+
+.comm-id-cell {
+	height: 36px;
+	width: 100%;
+	text-align: center;
+	padding-top: 10px;
+}
+
+.comm-update-cell {
+	padding: 0px;
+
+	i {
+	 	color: white !important;
+	}
 }

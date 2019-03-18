@@ -10,17 +10,21 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import SlidingPane from 'react-sliding-pane';
+import 'react-sliding-pane/dist/react-sliding-pane.css';
+import Modal from 'react-modal';
 
 import user from '../public/images/user.png';
+import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getCommsWithBookingId } from '../state/services/commService';
+import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -81,10 +85,18 @@ class BookingPage extends Component {
             AdditionalServices: [],
             bookingTotals: [],
             isShowDuplicateBookingOptionsModal: false,
-            isShowCreateCommModal: false,
+            isShowCommModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
             comms: [],
+            notes: [],
+            isNotePaneOpen: false,
+            selectedCommId: null,
+            selectedNoteId: null,
+            isShowNoteForm: false,
+            noteFormMode: 'create',
+            commFormMode: 'create',
+            noteFormInputs: {},
             isShowAdditionalActionTaskInput: false,
             isShowAssignedToInput: false,
         };
@@ -105,6 +117,7 @@ class BookingPage extends Component {
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
+        this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
     }
 
     static propTypes = {
@@ -133,6 +146,11 @@ class BookingPage extends Component {
         resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
         createComm: PropTypes.func.isRequired,
         getCommsWithBookingId: PropTypes.func.isRequired,
+        updateComm: PropTypes.func.isRequired,
+        setGetCommsFilter: PropTypes.func.isRequired,
+        getNotes: PropTypes.func.isRequired,
+        createNote: PropTypes.func.isRequired,
+        updateNote: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -155,44 +173,14 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.history.push('/');
         }
-    }
 
-    getTime(country, city) {
-        const timeZoneTable =
-        {
-            'Australia':
-            {
-                'ACT': 'Australia/Currie',
-                'NT': 'Australia/Darwin',
-                'SA': 'Australia/Adelaide',
-                'WA': 'Australia/Perth',
-                'NSW': 'Australia/Sydney',
-                'QLD': 'Australia/Brisbane',
-                'VIC': 'Australia/Melbourne',
-                'TAS': 'Australia/Hobart',
-            },
-            'AU':
-            {
-                'ACT': 'Australia/Currie',
-                'NT': 'Australia/Darwin',
-                'SA': 'Australia/Adelaide',
-                'WA': 'Australia/Perth',
-                'NSW': 'Australia/Sydney',
-                'QLD': 'Australia/Brisbane',
-                'VIC': 'Australia/Melbourne',
-                'TAS': 'Australia/Hobart',
-            }
-        };
-        if (timeZoneTable[country] == undefined || timeZoneTable[country] == 'undefined'  || timeZoneTable[country][city] == 'undefined' || timeZoneTable[country][city] == undefined) {
-            return 'Australia/Currie';
-        } else {
-            return timeZoneTable[country][city];
-        }
+        Modal.setAppElement(this.el);
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes } = newProps;
         const currentRoute = this.props.location.pathname;
+        const { selectedCommId } = this.state;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -202,6 +190,18 @@ class BookingPage extends Component {
 
         if (comms) {
             this.setState({comms});
+        }
+
+        if (notes) {
+            this.setState({notes});
+        }
+
+        if (needUpdateComms) {
+            this.props.getCommsWithBookingId(booking.id);
+        }
+
+        if (needUpdateNotes) {
+            this.props.getNotes(selectedCommId);
         }
 
         if (bookingLines) {
@@ -562,6 +562,39 @@ class BookingPage extends Component {
             });
 
             this.setState({attachmentsHistory: bookingLineDetailsProduct});
+        }
+    }
+
+    getTime(country, city) {
+        const timeZoneTable =
+        {
+            'Australia':
+            {
+                'ACT': 'Australia/Currie',
+                'NT': 'Australia/Darwin',
+                'SA': 'Australia/Adelaide',
+                'WA': 'Australia/Perth',
+                'NSW': 'Australia/Sydney',
+                'QLD': 'Australia/Brisbane',
+                'VIC': 'Australia/Melbourne',
+                'TAS': 'Australia/Hobart',
+            },
+            'AU':
+            {
+                'ACT': 'Australia/Currie',
+                'NT': 'Australia/Darwin',
+                'SA': 'Australia/Adelaide',
+                'WA': 'Australia/Perth',
+                'NSW': 'Australia/Sydney',
+                'QLD': 'Australia/Brisbane',
+                'VIC': 'Australia/Melbourne',
+                'TAS': 'Australia/Hobart',
+            }
+        };
+        if (timeZoneTable[country] == undefined || timeZoneTable[country] == 'undefined'  || timeZoneTable[country][city] == 'undefined' || timeZoneTable[country][city] == undefined) {
+            return 'Australia/Currie';
+        } else {
+            return timeZoneTable[country][city];
         }
     }
 
@@ -986,12 +1019,11 @@ class BookingPage extends Component {
     }
 
     toggleCreateCommModal() {
-        this.setState(prevState => ({isShowCreateCommModal: !prevState.isShowCreateCommModal}));
+        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'create'}));
     }
 
-    onCreateComm() {
-        const {commFormInputs, booking} = this.state;
-        commFormInputs['fk_booking_id'] = booking.pk_booking_id;
+    onSubmitComm() {
+        const {commFormMode, commFormInputs} = this.state;
 
         if (commFormInputs['dme_action'] === 'Other')
             commFormInputs['dme_action'] = commFormInputs['additional_action_task'];
@@ -999,9 +1031,18 @@ class BookingPage extends Component {
         if (commFormInputs['assigned_to'] === 'edit…')
             commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
 
+        if (commFormMode === 'create') {
+            const {booking} = this.state;
+            commFormInputs['fk_booking_id'] = booking.pk_booking_id;
 
-        this.props.createComm(commFormInputs);
-        this.toggleCreateCommModal();
+            this.props.createComm(commFormInputs);
+            this.toggleCreateCommModal();
+        } else if (commFormMode === 'update') {
+            const {selectedCommId} = this.state;
+
+            this.props.updateComm(selectedCommId, commFormInputs);
+            this.toggleUpdateCommModal();
+        }
     }
 
     onDateChange(date) {
@@ -1025,8 +1066,121 @@ class BookingPage extends Component {
         this.setState({commFormInputs});
     }
 
+    handleModalInputChange(type, event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        if (type === 'comm') {
+            let commFormInputs = this.state.commFormInputs;
+            commFormInputs[name] = value;
+            this.setState({commFormInputs});
+        } else if (type === 'note') {
+            let noteFormInputs = this.state.noteFormInputs;
+            noteFormInputs[name] = value;
+            this.setState({noteFormInputs});
+        }
+    }
+
+    toggleUpdateCommModal() {
+        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'update'}));
+    }
+
+    onSubmitNote() {
+        const {noteFormInputs, selectedNoteId, selectedCommId, notes, noteFormMode} = this.state;
+        
+        if (noteFormMode === 'create') {
+            noteFormInputs['comm'] = selectedCommId;
+            noteFormInputs['username'] = 'Stephen';
+            noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
+            this.props.createNote(noteFormInputs);
+        } else if (noteFormMode === 'update') {
+            noteFormInputs['comm'] = selectedCommId;
+            delete noteFormInputs.z_modifiedTimeStamp;
+            this.props.updateNote(selectedNoteId, noteFormInputs);
+        }
+
+        this.setState({isShowNoteForm: false, noteFormInputs: {}});
+    }
+
+    onUpdateBtnClick(type, data) {
+        console.log('Click update comm button');
+        
+        const {comms, notes} = this.state;
+        if (type === 'comm') {
+            let comm = {};
+
+            for (let i = 0; i < comms.length; i++) {
+                if (comms[i].id === data.id) {
+                    comm = comms[i];
+                }
+            }
+
+            const commFormInputs = comm;
+            commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
+
+            if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
+                commFormInputs['new_assigned_to'] = comm.assigned_to;
+                commFormInputs['assigned_to'] = 'edit…';
+                this.setState({isShowAssignedToInput: true});
+            }
+
+            this.setState({selectedCommId: comm.id, commFormInputs});
+            this.toggleUpdateCommModal();
+        } else if (type === 'note') {
+            let note = {};
+
+            for (let i = 0; i < notes.length; i++) {
+                if (notes[i].id === data.id) {
+                    note = notes[i];
+                }
+            }
+
+            const noteFormInputs = note;
+            this.setState({selectedNoteId: note.id, noteFormInputs});
+            this.setState({isShowNoteForm: true, noteFormMode: 'update'});
+        }
+    }
+
+    onCancelNoteForm() {
+        this.setState({isShowNoteForm: false});
+    }
+
+    onCheck(e, id, index) {
+        if (e.target.name === 'closed') {
+            let updatedComm = {};
+
+            if (e.target.checked)
+                updatedComm = {
+                    closed: e.target.checked,
+                    status_log_closed_time: moment(),
+                };
+            else
+                updatedComm = {
+                    closed: e.target.checked,
+                    status_log_closed_time: null,
+                };
+
+            let updatedComms = this.state.comms;
+            updatedComms[index].closed = e.target.checked;
+            this.props.updateComm(id, updatedComm);
+            this.setState({comms: updatedComms});
+        }
+    }
+
+    onClickCommIdCell(id) {
+        console.log('Comm ID: ', id);
+
+        this.setState({ isNotePaneOpen: true, selectedCommId: id });
+        this.props.getNotes(id);
+    }
+    
+    onCreateNoteButton() {
+        this.setState({isShowNoteForm: true, noteFormMode: 'create'});
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, isShowCreateCommModal, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1169,13 +1323,30 @@ class BookingPage extends Component {
             );
         };
 
+        const commIdCell = (cell, row) => {
+            let that = this;
+            return (
+                <div className="comm-id-cell" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
+            );
+        };
+
+        const commUpdateCell = (cell, row) => {
+            let that = this;
+            return (
+                <Button className="comm-update-cell" color="primary" onClick={() => that.onUpdateBtnClick('comm', row)}>
+                    <i className="icon icon-edit"></i>
+                </Button>
+            );
+        };
+
         const columnCommunication = [
             {
-                dataField: 'id',
-                text: 'Comm No',
+                dataField: 'index',
+                text: 'No',
                 style: {
                     width: '30px',
                 },
+                formatter: commIdCell,
             }, {
                 dataField: 'dme_notes_type',
                 text: 'Type',
@@ -1184,7 +1355,7 @@ class BookingPage extends Component {
                 },
             }, {
                 dataField: 'assigned_to',
-                text: 'Assined',
+                text: 'Assigned',
                 style: {
                     width: '40px',
                 },
@@ -1208,6 +1379,13 @@ class BookingPage extends Component {
                 style: {
                     width: '300px',
                 },
+            }, {
+                dataField: 'id',
+                text: 'Update',
+                style: {
+                    width: '20px',
+                },
+                formatter: commUpdateCell,
             },
         ];
 
@@ -1337,6 +1515,23 @@ class BookingPage extends Component {
         ];
 
         const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
+
+        const notesList = notes.map((note, index) => {
+            return (
+                <tr key={index}>
+                    <td>{note.dme_notes_no}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('DD MMM YYYY')}</td>
+                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
+                    <td>{note.username}</td>
+                    <td>{note.dme_notes_type}</td>
+                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
+                        {note.dme_notes}
+                        <NoteDetailTooltipItem note={note} />
+                    </td>
+                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note)}>Update</Button></td>
+                </tr>
+            );
+        });
 
         return (
             <div>
@@ -1939,7 +2134,7 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab04" className="tab-contents">
-                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Go to all comms">
+                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
                                             <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Create a comm">
@@ -1978,7 +2173,7 @@ class BookingPage extends Component {
                     </section>
                 </LoadingOverlay>
 
-                <Modal isOpen={this.state.isShowDuplicateBookingOptionsModal} toggle={this.toggleDuplicateBookingOptionsModal} className="duplicate-option-modal">
+                <ReactstrapModal isOpen={this.state.isShowDuplicateBookingOptionsModal} toggle={this.toggleDuplicateBookingOptionsModal} className="duplicate-option-modal">
                     <ModalHeader toggle={this.toggleDuplicateBookingOptionsModal}>Duplicate Booking Options</ModalHeader>
                     <ModalBody>
                         <label>
@@ -2003,10 +2198,10 @@ class BookingPage extends Component {
                         <Button color="primary" onClick={() => this.onClickDuplicate(3)}>Duplicate</Button>{' '}
                         <Button color="secondary" onClick={this.toggleDuplicateBookingOptionsModal}>Cancel</Button>
                     </ModalFooter>
-                </Modal>
+                </ReactstrapModal>
 
-                <Modal isOpen={isShowCreateCommModal} toggle={this.toggleCreateCommModal} className="create-comm-modal">
-                    <ModalHeader toggle={this.toggleCreateCommModal}>Create Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
+                <ReactstrapModal isOpen={isShowCommModal} toggle={this.toggleCreateCommModal} className="create-comm-modal">
+                    <ModalHeader toggle={this.toggleCreateCommModal}>{(commFormMode === 'create') ? 'Create' : 'Update'} Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
                     <ModalBody>
                         <label>
                             <p>Assigned To</p>
@@ -2121,32 +2316,39 @@ class BookingPage extends Component {
                                 null
                         }
                         <br />
-                        <label>
-                            <p>First Note</p>
-                            <textarea 
-                                className="form-control" 
-                                placeholder="" 
-                                name="dme_notes" 
-                                value = {commFormInputs['dme_notes']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                        <br />
-                        <label>
-                            <p>Note Type</p>
-                            <select
-                                required 
-                                name="notes_type" 
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['notes_type']} >
-                                <option value="Call">Call</option>
-                                <option value="Email">Email</option>
-                                <option value="SMS">SMS</option>
-                                <option value="Letter">Letter</option>
-                                <option value="Note">Note</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </label>
-                        <br />
+                        {
+                            (commFormMode === 'create') ?
+                                <div>
+                                    <label>
+                                        <p>First Note</p>
+                                        <textarea 
+                                            className="form-control" 
+                                            placeholder="" 
+                                            name="dme_notes" 
+                                            value = {commFormInputs['dme_notes']}
+                                            onChange={(e) => this.handleCommModalInputChange(e)} />
+                                    </label>
+                                    <br />
+                                    <label>
+                                        <p>Note Type</p>
+                                        <select
+                                            required 
+                                            name="notes_type" 
+                                            onChange={(e) => this.handleCommModalInputChange(e)}
+                                            value = {commFormInputs['notes_type']} >
+                                            <option value="Call">Call</option>
+                                            <option value="Email">Email</option>
+                                            <option value="SMS">SMS</option>
+                                            <option value="Letter">Letter</option>
+                                            <option value="Note">Note</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </label>
+                                    <br />
+                                </div>
+                                :
+                                null
+                        }
                         <div className="datetime date">
                             <p>Due By Date</p>
                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
@@ -2168,10 +2370,91 @@ class BookingPage extends Component {
                         </div>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => this.onCreateComm()}>Create</Button>{' '}
+                        <Button color="primary" onClick={() => this.onSubmitComm()}>{(commFormMode === 'create') ? 'Create' : 'Update'}</Button>{' '}
                         <Button color="secondary" onClick={this.toggleCreateCommModal}>Cancel</Button>
                     </ModalFooter>
-                </Modal>
+                </ReactstrapModal>
+
+                <SlidingPane
+                    className='note-pan'
+                    overlayClassName='note-pan-overlay'
+                    isOpen={isNotePaneOpen}
+                    title='Note Panel'
+                    subtitle={!isShowNoteForm ? 'List view' : 'Form view'}
+                    onRequestClose={() => {this.setState({ isNotePaneOpen: false });}}>
+                    <div className="slider-content">
+                        {
+                            !isShowNoteForm ?
+                                <div className="table-view">
+                                    <div className="table-responsive">
+                                        <table className="table table-hover table-bordered sortable fixed_headers">
+                                            <tr>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note No</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Date Entered</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Time Entered</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>User</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note Type</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Note</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Update</p>
+                                                </th>
+                                            </tr>
+                                            { notesList }
+                                        </table>
+                                    </div>
+                                    <div className="button-group">
+                                        <Button color="primary" onClick={() => this.onCreateNoteButton()}>Create</Button>
+                                    </div>
+                                </div>
+                                :
+                                <div className="form-view">
+                                    <h2>Create a note</h2>
+                                    <label>
+                                        <p>Note Type</p>
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            placeholder="" 
+                                            name="dme_notes_type" 
+                                            value = {noteFormInputs['dme_notes_type']}
+                                            onChange={(e) => this.handleModalInputChange('note', e)} />
+                                    </label>
+                                    <br />
+                                    <label>
+                                        <p>Note</p>
+                                        <input 
+                                            className="form-control" 
+                                            type="text" 
+                                            placeholder="" 
+                                            name="dme_notes" 
+                                            value = {noteFormInputs['dme_notes']}
+                                            onChange={(e) => this.handleModalInputChange('note', e)} />
+                                    </label>
+                                    <br />
+                                    <div className="button-group">
+                                        <Button color="primary" onClick={() => this.onSubmitNote()}>
+                                            {
+                                                (noteFormMode === 'create') ? 'Create' : 'Update'
+                                            }
+                                        </Button>{' '}
+                                        <Button color="secondary" onClick={() => this.onCancelNoteForm()}>Cancel</Button>
+                                    </div>
+                                </div>
+                        }
+                    </div>
+                </SlidingPane>
             </div>
         );
     }
@@ -2195,6 +2478,8 @@ const mapStateToProps = (state) => {
         attachments: state.booking.attachments,
         comms: state.comm.comms,
         needUpdateComms: state.comm.needUpdateComms,
+        notes: state.comm.notes,
+        needUpdateNotes: state.comm.needUpdateNotes,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
@@ -2225,6 +2510,11 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
         getCommsWithBookingId: (id, sortField, columnFilters) => dispatch(getCommsWithBookingId(id, sortField, columnFilters)),
+        updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
+        setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
+        getNotes: (commId) => dispatch(getNotes(commId)),
+        createNote: (note) => dispatch(createNote(note)),
+        updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
     };
 };
 
