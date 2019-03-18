@@ -186,3 +186,98 @@
 	 	color: white !important;
 	}
 }
+
+input.orange-color {
+	color: orange;
+}
+
+.orange-color {
+	input {
+		color: orange;		
+	}
+
+	div.css-xp4uvy {
+		color: orange;
+	}
+}
+
+.note-pan .form-view {
+	text-align: left !important;
+
+	label {
+		width: 80%;
+
+		p {
+			width: 20%;
+			text-align: left;
+			vertical-align: top;
+		}
+
+		input, select{
+			width: 40%;
+			display: inline-block;
+		}
+
+		textarea  {
+			width: 80%;
+			display: inline-block;
+		}
+
+		select {
+			height: 25px;
+		}
+	}
+
+	.datetime {
+		display: inline-block;
+		width: 80%;
+		margin: 10px 0;
+
+		p {
+			width: 20%;
+			font-size: 12px;
+			font-weight: bold;
+			display: inline-block;
+			text-align: left;
+			vertical-align: top;
+		}
+
+		input {
+			width: 100%;
+		}
+
+		.date-adjust {
+			width: 24px !important;
+			height: 24px !important;
+			text-align: center;
+			padding-top: 4px;
+		}
+
+		.date-adjust:hover {
+			background: grey;
+		}
+	}
+
+	.date {
+		>div {
+			width: 60%;
+			display: inline-block;
+			text-align: left;
+
+			>div {
+				display: inline-block;
+			}
+		}
+	}
+
+	.time {
+		>div {
+			width: 60%;
+			display: inline-block;
+
+			>div {
+				width: 60%;
+			}
+		}
+	}
+}

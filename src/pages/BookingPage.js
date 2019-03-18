@@ -93,6 +93,7 @@ class BookingPage extends Component {
             isNotePaneOpen: false,
             selectedCommId: null,
             selectedNoteId: null,
+            selectedNoteNo: 0,
             isShowNoteForm: false,
             noteFormMode: 'create',
             commFormMode: 'create',
@@ -121,6 +122,7 @@ class BookingPage extends Component {
                 'Confirm FP has not invoiced this booking',
                 'Other',
             ],
+            username: null,
         };
 
         this.djsConfig = {
@@ -200,7 +202,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username } = newProps;
         const currentRoute = this.props.location.pathname;
         const { selectedCommId } = this.state;
 
@@ -208,6 +210,10 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (username) {
+            this.setState({username});
         }
 
         if (comms) {
@@ -1079,25 +1085,32 @@ class BookingPage extends Component {
         }
     }
 
-    onDateChange(date) {
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-        this.setState({commFormInputs});
+    onDateChange(type='comm', date) {
+        if (type === 'comm') {
+            let commFormInputs = this.state.commFormInputs;
+            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+            this.setState({commFormInputs});
+        } else if (type === 'note') {
+            let noteFormInputs = this.state.noteFormInputs;
+            noteFormInputs['note_date_updated'] = moment(date).format('YYYY-MM-DD');
+            this.setState({noteFormInputs});
+        }
     }
 
-    onTimeChange(time) {
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs['due_by_time'] = time;
-        this.setState({commFormInputs});
-    }
-
-    onDatePlusOrMinus(number) {
+    onDatePlusOrMinus(type='comm', number) {
         console.log('number - ', number);
 
-        let commFormInputs = this.state.commFormInputs;
-        const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
-        commFormInputs['due_by_date'] = date;
-        this.setState({commFormInputs});
+        if (type === 'comm') {
+            let commFormInputs = this.state.commFormInputs;
+            const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
+            commFormInputs['due_by_date'] = date;
+            this.setState({commFormInputs});
+        } else if (type === 'note') {
+            let noteFormInputs = this.state.noteFormInputs;
+            const date = moment(noteFormInputs['note_date_updated']).add(number, 'd').format('YYYY-MM-DD');
+            noteFormInputs['note_date_updated'] = date;
+            this.setState({noteFormInputs});
+        }
     }
 
     handleModalInputChange(type, event) {
@@ -1127,6 +1140,8 @@ class BookingPage extends Component {
             noteFormInputs['comm'] = selectedCommId;
             noteFormInputs['username'] = 'Stephen';
             noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
+            noteFormInputs['note_date_created'] = noteFormInputs['note_date_updated'];
+            noteFormInputs['note_time_created'] = noteFormInputs['note_time_updated'];
             this.props.createNote(noteFormInputs);
         } else if (noteFormMode === 'update') {
             noteFormInputs['comm'] = selectedCommId;
@@ -1137,7 +1152,7 @@ class BookingPage extends Component {
         this.setState({isShowNoteForm: false, noteFormInputs: {}});
     }
 
-    onUpdateBtnClick(type, data) {
+    onUpdateBtnClick(type, data, index=0) {
         console.log('Click update comm button');
         
         const {comms, notes, actionTaskOptions} = this.state;
@@ -1177,7 +1192,7 @@ class BookingPage extends Component {
             }
 
             const noteFormInputs = note;
-            this.setState({selectedNoteId: note.id, noteFormInputs});
+            this.setState({selectedNoteNo: index, selectedNoteId: note.id, noteFormInputs});
             this.setState({isShowNoteForm: true, noteFormMode: 'update'});
         }
     }
@@ -1220,7 +1235,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1555,20 +1570,21 @@ class BookingPage extends Component {
         ];
 
         const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
+        const note_time_updated = {value: noteFormInputs['note_time_updated'], label: noteFormInputs['note_time_updated']};
 
         const notesList = notes.map((note, index) => {
             return (
                 <tr key={index}>
                     <td>{note.dme_notes_no}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('DD MMM YYYY')}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
+                    <td>{(note.note_date_updated && !_.isEmpty(note.note_date_updated)) ? moment(note.note_date_updated).format('DD MMM YYYY') : ''}</td>
+                    <td>{(note.note_time_updated && !_.isEmpty(note.note_time_updated)) ? note.note_time_updated : ''}</td>
                     <td>{note.username}</td>
                     <td>{note.dme_notes_type}</td>
                     <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
                         {note.dme_notes}
                         <NoteDetailTooltipItem note={note} />
                     </td>
-                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note)}>Update</Button></td>
+                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
                 </tr>
             );
         });
@@ -2376,13 +2392,13 @@ class BookingPage extends Component {
                         }
                         <div className="datetime date">
                             <p>Due By Date</p>
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('comm', -1)}><i className="fa fa-minus"></i></div>
                             <DatePicker
                                 selected={commFormInputs['due_by_date']}
-                                onChange={(e) => this.onDateChange(e)}
+                                onChange={(e) => this.onDateChange('comm', e)}
                                 dateFormat="dd MMM yyyy"
                             />
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
+                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('comm', 1)}><i className="fa fa-plus"></i></div>
                         </div>
                         <div className="datetime time">
                             <p>Due By Time</p>
@@ -2445,21 +2461,68 @@ class BookingPage extends Component {
                                 </div>
                                 :
                                 <div className="form-view">
-                                    <h2>Create a note</h2>
+                                    <h2>{(noteFormMode === 'create') ? 'Create' : 'Update'} a note</h2>
                                     <label>
-                                        <p>Note Type</p>
+                                        <p>Note No</p>
                                         <input 
                                             className="form-control" 
                                             type="text" 
+                                            disabled="disabled"
+                                            name="dme_no" 
+                                            value={(noteFormMode === 'create') ? notes.length + 1 : selectedNoteNo + 1} />
+                                    </label>
+                                    <br />
+                                    <div className={(noteFormMode === 'update' && noteFormInputs['note_date_created'] !== noteFormInputs['note_date_updated']) ? 'datetime date orange-color' : 'datetime date' } >
+                                        <p>Date</p>
+                                        <div >
+                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', -1)}><i className="fa fa-minus"></i></div>
+                                            <DatePicker
+                                                selected={noteFormInputs['note_date_updated']}
+                                                onChange={(e) => this.onDateChange('note', e)}
+                                                dateFormat="dd MMM yyyy"
+                                            />
+                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', 1)}><i className="fa fa-plus"></i></div>
+                                        </div>
+                                    </div>
+                                    <div className={(noteFormMode === 'update' && noteFormInputs['note_time_created'] !== noteFormInputs['note_time_updated']) ? 'datetime time orange-color' : 'datetime time' }>
+                                        <p>Time</p>
+                                        <Select
+                                            value={note_time_updated}
+                                            onChange={(e) => this.handleModalInputChange('note', {target: {name: 'note_time_updated', value: e.value, type: 'input'}})}
+                                            options={timeSelectOptions}
+                                            placeholder='Select time'
+                                        />
+                                    </div>
+                                    <label>
+                                        <p>User</p>
+                                        <input 
+                                            className={(noteFormMode === 'update' && username !== noteFormInputs['username']) ? 'form-control orange-color' : 'form-control'}
+                                            type="text" 
                                             placeholder="" 
-                                            name="dme_notes_type" 
-                                            value = {noteFormInputs['dme_notes_type']}
+                                            name="username" 
+                                            value = {noteFormInputs['username']}
                                             onChange={(e) => this.handleModalInputChange('note', e)} />
                                     </label>
                                     <br />
                                     <label>
+                                        <p>Note Type</p>
+                                        <select
+                                            required 
+                                            name="dme_notes_type" 
+                                            onChange={(e) => this.handleModalInputChange('note', e)}
+                                            value = {noteFormInputs['dme_notes_type']} >
+                                            <option value="Call">Call</option>
+                                            <option value="Email">Email</option>
+                                            <option value="SMS">SMS</option>
+                                            <option value="Letter">Letter</option>
+                                            <option value="Note">Note</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </label>
+                                    <br />
+                                    <label>
                                         <p>Note</p>
-                                        <input 
+                                        <textarea 
                                             className="form-control" 
                                             type="text" 
                                             placeholder="" 
@@ -2508,6 +2571,7 @@ const mapStateToProps = (state) => {
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
+        username: state.auth.username,
     };
 };
 
