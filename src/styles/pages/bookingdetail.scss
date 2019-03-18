@@ -303,7 +303,7 @@ input.orange-color {
 
 .tooltip { pointer-events: none; }
 
-.comm-tooltip {
+.comm-tooltip, .note-detail-tooltip {
 	.tooltip-inner {
 	    max-width: 550px;
 	    width: 550px; 
