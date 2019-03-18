@@ -295,3 +295,17 @@ input.orange-color {
 .cur-pointer {
 	cursor: pointer;
 }
+
+.max-height-45 {
+	max-height: 45px;
+	overflow: hidden;
+}
+
+.tooltip { pointer-events: none; }
+
+.comm-tooltip {
+	.tooltip-inner {
+	    max-width: 550px;
+	    width: 550px; 
+	}
+}

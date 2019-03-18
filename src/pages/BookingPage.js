@@ -19,6 +19,7 @@ import Modal from 'react-modal';
 
 import user from '../public/images/user.png';
 import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
+import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
@@ -1417,6 +1418,29 @@ class BookingPage extends Component {
             );
         };
 
+        const limitedHeightTitle = (cell, row) => {
+            return (
+                <div>
+                    <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_com_title' + '-tooltip-' + row.id}>
+                        {cell}
+                    </div>
+                    <CommTooltipItem comm={row} field={'dme_com_title'} />
+                </div>
+            );
+        };
+
+        const limitedHeightAction = (cell, row) => {
+            return (
+                <div>
+                    <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_action' + '-tooltip-' + row.id}>
+                        {cell}
+                    </div>
+                    <CommTooltipItem comm={row} field={'dme_action'} />
+                </div>
+            );
+        };
+
+
         const columnCommunication = [
             {
                 dataField: 'index',
@@ -1443,6 +1467,7 @@ class BookingPage extends Component {
                 style: {
                     width: '300px',
                 },
+                formatter: limitedHeightTitle,
             }, {
                 dataField: 'z_createdTimeStamp',
                 text: 'Date/Time Created',
@@ -1457,6 +1482,7 @@ class BookingPage extends Component {
                 style: {
                     width: '300px',
                 },
+                formatter: limitedHeightAction,
             }, {
                 dataField: 'id',
                 text: 'Update',
