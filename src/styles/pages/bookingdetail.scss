@@ -272,12 +272,26 @@ input.orange-color {
 
 	.time {
 		>div {
-			width: 60%;
+			width: 25%;
 			display: inline-block;
 
 			>div {
-				width: 60%;
+				width: 100%;
 			}
 		}
 	}
+}
+
+.button-clear {
+	margin-left: 20px;
+	border: none;
+	background: none;
+
+	i {
+		color: red;
+	}
+}
+
+.cur-pointer {
+	cursor: pointer;
 }

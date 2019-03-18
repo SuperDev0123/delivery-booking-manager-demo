@@ -1234,6 +1234,29 @@ class BookingPage extends Component {
         this.setState({isShowNoteForm: true, noteFormMode: 'create', noteFormInputs: {}});
     }
 
+    clearDateOrTime(type, dateOrTime) {
+        let noteFormInputs = this.state.noteFormInputs;
+        let commFormInputs = this.state.commFormInputs;
+
+        if (type === 'comm') {
+            if (dateOrTime === 'date') {
+                commFormInputs['due_by_date'] = null;
+            } else if (dateOrTime === 'time') {
+                commFormInputs['due_by_time'] = null;
+            }
+
+            this.setState({commFormInputs});
+        } else if (type === 'note') {
+            if (dateOrTime === 'date') {
+                noteFormInputs['note_date_updated'] = null;
+            } else if (dateOrTime === 'time') {
+                noteFormInputs['note_time_updated'] = null;
+            }
+
+            this.setState({noteFormInputs});
+        }
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username} = this.state;
 
@@ -1381,7 +1404,7 @@ class BookingPage extends Component {
         const commIdCell = (cell, row) => {
             let that = this;
             return (
-                <div className="comm-id-cell" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
+                <div className="comm-id-cell, cur-pointer" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
             );
         };
 
@@ -2399,6 +2422,7 @@ class BookingPage extends Component {
                                 dateFormat="dd MMM yyyy"
                             />
                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('comm', 1)}><i className="fa fa-plus"></i></div>
+                            <button className="button-clear" onClick={() => this.clearDateOrTime('comm', 'date')}><i className="fa fa-times-circle"></i></button>
                         </div>
                         <div className="datetime time">
                             <p>Due By Time</p>
@@ -2408,6 +2432,7 @@ class BookingPage extends Component {
                                 options={timeSelectOptions}
                                 placeholder='Select time'
                             />
+                            <button className="button-clear" onClick={() => this.clearDateOrTime('comm', 'time')}><i className="fa fa-times-circle"></i></button>
                         </div>
                     </ModalBody>
                     <ModalFooter>
@@ -2482,6 +2507,7 @@ class BookingPage extends Component {
                                                 dateFormat="dd MMM yyyy"
                                             />
                                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', 1)}><i className="fa fa-plus"></i></div>
+                                            <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'date')}><i className="fa fa-times-circle"></i></button>
                                         </div>
                                     </div>
                                     <div className={(noteFormMode === 'update' && noteFormInputs['note_time_created'] !== noteFormInputs['note_time_updated']) ? 'datetime time orange-color' : 'datetime time' }>
@@ -2492,6 +2518,7 @@ class BookingPage extends Component {
                                             options={timeSelectOptions}
                                             placeholder='Select time'
                                         />
+                                        <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'time')}><i className="fa fa-times-circle"></i></button>
                                     </div>
                                     <label>
                                         <p>User</p>
