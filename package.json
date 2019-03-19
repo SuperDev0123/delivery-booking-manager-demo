@@ -60,6 +60,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.0.0",
     "city-timezones": "^1.0.7",
+    "ckeditor4-react": "^0.1.0",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
     "moment": "^2.22.2",

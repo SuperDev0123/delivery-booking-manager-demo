@@ -16,11 +16,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import Modal from 'react-modal';
+import CKEditor from 'ckeditor4-react';
 
 import user from '../public/images/user.png';
-import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
-import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
+import EditorPreview from '../components/EditorPreview/EditorPreview';
+
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
@@ -1259,6 +1261,18 @@ class BookingPage extends Component {
         }
     }
 
+    onEditorChange(type, from, event) {
+        if (type === 'note' && from === 'comm') {
+            let commFormInputs = this.state.commFormInputs;
+            commFormInputs['dme_notes'] = event.editor.getData();
+            this.setState({commFormInputs});
+        } else if (type === 'note' && from === 'note') {
+            let noteFormInputs = this.state.noteFormInputs;
+            noteFormInputs['dme_notes'] = event.editor.getData();
+            this.setState({noteFormInputs});
+        }
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username} = this.state;
 
@@ -1440,7 +1454,6 @@ class BookingPage extends Component {
                 </div>
             );
         };
-
 
         const columnCommunication = [
             {
@@ -1631,8 +1644,7 @@ class BookingPage extends Component {
                     <td>{note.username}</td>
                     <td>{note.dme_notes_type}</td>
                     <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
-                        {note.dme_notes}
-                        <NoteDetailTooltipItem note={note} />
+                        <EditorPreview data={note.dme_notes} />
                     </td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
                 </tr>
@@ -2310,7 +2322,10 @@ class BookingPage extends Component {
                     </ModalFooter>
                 </ReactstrapModal>
 
-                <ReactstrapModal isOpen={isShowCommModal} toggle={this.toggleCreateCommModal} className="create-comm-modal">
+                <ReactstrapModal 
+                    isOpen={isShowCommModal} 
+                    toggle={this.toggleCreateCommModal} 
+                    className="create-comm-modal">
                     <ModalHeader toggle={this.toggleCreateCommModal}>{(commFormMode === 'create') ? 'Create' : 'Update'} Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
                     <ModalBody>
                         <label>
@@ -2326,7 +2341,6 @@ class BookingPage extends Component {
                                 <option value="edit…">edit…</option>
                             </select>
                         </label>
-                        <br />
                         {
                             (isShowAssignedToInput) ?
                                 <label>
@@ -2355,7 +2369,6 @@ class BookingPage extends Component {
                                 <option value="Critical">Critical</option>
                             </select>
                         </label>
-                        <br />
                         <label>
                             <p>DME Comm Title</p>
                             <input 
@@ -2366,7 +2379,6 @@ class BookingPage extends Component {
                                 value = {commFormInputs['dme_com_title']}
                                 onChange={(e) => this.handleCommModalInputChange(e)} />
                         </label>
-                        <br />
                         <label>
                             <p>Type</p>
                             <select
@@ -2380,7 +2392,6 @@ class BookingPage extends Component {
                                 <option value="Other">Other</option>
                             </select>
                         </label>
-                        <br />
                         <label>
                             <p>Action Task</p>
                             <select
@@ -2406,20 +2417,9 @@ class BookingPage extends Component {
                                 :
                                 null
                         }
-                        <br />
                         {
                             (commFormMode === 'create') ?
                                 <div>
-                                    <label>
-                                        <p>First Note</p>
-                                        <textarea 
-                                            className="form-control" 
-                                            placeholder="" 
-                                            name="dme_notes" 
-                                            value = {commFormInputs['dme_notes']}
-                                            onChange={(e) => this.handleCommModalInputChange(e)} />
-                                    </label>
-                                    <br />
                                     <label>
                                         <p>Note Type</p>
                                         <select
@@ -2435,7 +2435,12 @@ class BookingPage extends Component {
                                             <option value="Other">Other</option>
                                         </select>
                                     </label>
-                                    <br />
+                                    <div className="editor">
+                                        <p>First Note</p>
+                                        <CKEditor
+                                            data={commFormInputs['dme_notes']}
+                                            onChange={(e) => this.onEditorChange('note', 'comm', e)} />
+                                    </div>
                                 </div>
                                 :
                                 null
@@ -2574,15 +2579,11 @@ class BookingPage extends Component {
                                         </select>
                                     </label>
                                     <br />
-                                    <label>
+                                    <label className="editor">
                                         <p>Note</p>
-                                        <textarea 
-                                            className="form-control" 
-                                            type="text" 
-                                            placeholder="" 
-                                            name="dme_notes" 
-                                            value = {noteFormInputs['dme_notes']}
-                                            onChange={(e) => this.handleModalInputChange('note', e)} />
+                                        <CKEditor
+                                            data={noteFormInputs['dme_notes']}
+                                            onChange={(e) => this.onEditorChange('note', 'note', e)} />
                                     </label>
                                     <br />
                                     <div className="button-group">

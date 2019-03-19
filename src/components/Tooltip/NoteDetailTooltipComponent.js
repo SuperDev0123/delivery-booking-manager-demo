@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tooltip } from 'reactstrap';
+import EditorPreview from '../EditorPreview/EditorPreview';
 import PropTypes from 'prop-types';
 
 class NoteDetailTooltipItem extends React.Component {
@@ -31,7 +32,7 @@ class NoteDetailTooltipItem extends React.Component {
                     toggle={() => this.toggleTooltip()}
                     hideArrow={true}
                     className='note-detail-tooltip'>
-                    {note.dme_notes}
+                    <EditorPreview data={note.dme_notes} />
                 </Tooltip>
             </div>
         );

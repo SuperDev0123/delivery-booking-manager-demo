@@ -83,6 +83,8 @@
 
 .create-comm-modal {
 	margin-top: 200px;
+	width: 80%;
+	max-width: none;
 
 	.modal-title {
 		font-size: 20px !important;
@@ -90,7 +92,7 @@
 	}
 
 	label {
-		width: 100%;
+		width: 51%;
 
 		p {
 			width: 30%;
@@ -110,7 +112,7 @@
 	
 	.datetime {
 		display: inline-block;
-		width: 100%;
+		width: 51%;
 
 		p {
 			width: 27%;
@@ -145,6 +147,21 @@
 		>div {
 			width: 39%;
 			margin-left: 16px;
+		}
+	}
+
+	.editor {
+		p {
+			width: 15%;
+			font-size: 12px;
+			font-weight: bold;
+			display: inline-block;
+			vertical-align: top;
+		}
+
+		>div{
+			width: 84%;
+			display: inline-block;
 		}
 	}
 }
@@ -305,7 +322,35 @@ input.orange-color {
 
 .comm-tooltip, .note-detail-tooltip {
 	.tooltip-inner {
-	    max-width: 550px;
-	    width: 550px; 
+	    max-width: 700px;
+	    width: 700px; 
 	}
+}
+
+.slider-content .form-view {
+	table-responsive {
+		overflow-y: auto;
+	}
+
+	.editor {
+		width: 100%;
+
+		p {
+			width: 15%;
+			font-size: 12px;
+			font-weight: bold;
+			display: inline-block;
+			vertical-align: top;
+		}
+
+		>div{
+			width: 84%;
+			display: inline-block;
+		}
+	}
+}
+
+.editor-preview {
+	max-height: 100px;
+	overflow-y: auto;
 }
