@@ -225,9 +225,9 @@ export function failedGetUserDateFilterField(error) {
 
 export function successAlliedBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-        // alert('Failed book allied: ' + data[0]['Error']);
+        alert('Failed book allied: ' + data[0]['Error']);
     } else {
-        // alert('Successfully book allied: ' + data[0]['Created Booking ID']);
+        alert('Successfully book allied: ' + data[0]['Created Booking ID']);
         getAlliedLabel(data[0]['Created Booking ID']);
     }
 
@@ -238,7 +238,7 @@ export function successAlliedBook(data) {
 }
 
 export function failedAlliedBook(error) {
-    // alert('Failed book allied: ' + error);
+    alert('Failed book allied: ' + error);
     console.log('Failed book allied: ' + error);
     return {
         type: BOOK_FAILED,
@@ -248,9 +248,9 @@ export function failedAlliedBook(error) {
 
 export function successStBook(data) {
     if (!data[0].hasOwnProperty('Created Booking ID')) {
-    //     alert('Failed book STARTRACK: ' + data[0]['Error']);
+        alert('Failed book STARTRACK: ' + data[0]['Error']);
     } else {
-    //     alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
+        alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
         getSTLabel(data[0]['Created Booking ID']);
     }
 
@@ -261,7 +261,7 @@ export function successStBook(data) {
 }
 
 export function failedStBook(error) {
-    // alert('Failed book STARTRACK: ' + error);
+    alert('Failed book STARTRACK: ' + error);
     console.log('Failed book STARTRACK: ' + error);
     return {
         type: BOOK_FAILED,
