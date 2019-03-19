@@ -776,6 +776,7 @@ class BookingPage extends Component {
         const st_name = 'startrack';
         const allied_name = 'allied';
         if (booking.id && (booking.id != undefined)) {
+            this.setState({ loading: true });
             if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
                 this.props.stBooking(booking.id);
             } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
@@ -2125,7 +2126,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>
