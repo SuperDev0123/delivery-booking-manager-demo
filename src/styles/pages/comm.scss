@@ -164,13 +164,13 @@ $column_07_width: 30px;
   td:nth-child(2), th:nth-child(2) { width: $column_02_width; }
   td:nth-child(3), th:nth-child(3) { width: $column_03_width; }
   td:nth-child(4), th:nth-child(4) { width: $column_04_width; }
-  td:nth-child(4) p, th:nth-child(4) p { width: 70px; }
+  th:nth-child(4) >p { width: 70px; }
   td:nth-child(5), th:nth-child(5) { width: $column_05_width; }
-  td:nth-child(5) p, th:nth-child(5) p { width: 70px }
+  th:nth-child(5) >p { width: 70px }
   td:nth-child(6), th:nth-child(6) { width: $column_06_width; }
-  td:nth-child(6) p, th:nth-child(6) p { width: 70px }
+  th:nth-child(6) >p { width: 70px }
   td:nth-child(7), th:nth-child(7) { width: $column_07_width; }
-  td:nth-child(7) p, th:nth-child(7) p { width: 70px }
+  th:nth-child(7) >p { width: 70px }
 
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
