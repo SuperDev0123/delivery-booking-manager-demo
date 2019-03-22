@@ -36,7 +36,7 @@ export const getUser = (token) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data: { username, clientname } }) => dispatch(setUser(username, clientname)))
+            .then(({ data: { username, clientname, clientId } }) => dispatch(setUser(username, clientname, clientId)))
             .catch((error) => dispatch(failedGetUser(error)) );
 };
 

@@ -28,6 +28,7 @@ import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDelive
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
+import { getWarehouses } from '../state/services/warehouseService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -61,7 +62,6 @@ class BookingPage extends Component {
             bookingLineDetailsProduct: [],
             deletedBookingLine: -1,
             bBooking: null,
-            selectedBookingIds: [],
             isGoing: false,
             checkBoxStatus: [],
             selectedOption: null,
@@ -126,6 +126,8 @@ class BookingPage extends Component {
                 'Other',
             ],
             username: null,
+            isSelectedBooking: false,
+            warehouses: [],
         };
 
         this.djsConfig = {
@@ -178,21 +180,12 @@ class BookingPage extends Component {
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
+        getWarehouses: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const token = localStorage.getItem('token');
         var urlParams = new URLSearchParams(window.location.search);
-        var bookingId = urlParams.get('bookingid');
-
-        if (bookingId != null) {
-            this.props.getBookingWithFilter(bookingId, 'id');
-            this.props.getCommsWithBookingId(bookingId);
-            this.setState({loading: true});
-        } else {
-            this.props.getSuburbStrings('state', undefined);
-            this.props.getDeliverySuburbStrings('state', undefined);
-        }
 
         if (token && token.length > 0) {
             this.props.verifyToken();
@@ -201,11 +194,22 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
+        var bookingId = urlParams.get('bookingid');
+        if (bookingId != null) {
+            this.props.getBookingWithFilter(bookingId, 'id');
+            this.props.getCommsWithBookingId(bookingId);
+            this.setState({loading: true});
+        } else {
+            this.props.getSuburbStrings('state', undefined);
+            this.props.getDeliverySuburbStrings('state', undefined);
+            this.props.getWarehouses();
+        }
+
         Modal.setAppElement(this.el);
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses } = newProps;
         const currentRoute = this.props.location.pathname;
         const { selectedCommId } = this.state;
 
@@ -217,6 +221,14 @@ class BookingPage extends Component {
 
         if (username) {
             this.setState({username});
+        }
+
+        if (clientname) {
+            this.setState({clientname});
+        }
+
+        if (clientId) {
+            this.setState({clientId});
         }
 
         if (comms) {
@@ -233,6 +245,10 @@ class BookingPage extends Component {
 
         if (needUpdateNotes) {
             this.props.getNotes(selectedCommId);
+        }
+
+        if (warehouses) {
+            this.setState({warehouses});
         }
 
         if (bookingLines) {
@@ -433,7 +449,7 @@ class BookingPage extends Component {
                     this.props.getCommsWithBookingId(booking.id);
                 }
 
-                this.setState({ AdditionalServices: AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false });
+                this.setState({ AdditionalServices: AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isSelectedBooking: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 alert('There is no such booking with that DME/CON number.');
@@ -753,26 +769,6 @@ class BookingPage extends Component {
         return newBookingLines;
     }
 
-    onCheckLine(e, row) {
-        // if (!e.target.checked) {
-        //     this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [row.pk_id_lines_data])});
-        // } else {
-        //     this.setState({selectedBookingIds: _.union(this.state.selectedBookingIds, [row.pk_id_lines_data])});
-
-        // }
-        const { products } = this.state;
-        let clonedProducts = _.clone(products);
-        clonedProducts = _.difference(clonedProducts, [row]);
-        this.setState({products: clonedProducts});
-    }
-
-    onCheckLine1(e, row) {
-        const { bookingLineDetailsProduct } = this.state;
-        let clonedProducts = _.clone(bookingLineDetailsProduct);
-        clonedProducts = _.difference(clonedProducts, [row]);
-        this.setState({bookingLineDetailsProduct: clonedProducts});
-    }
-
     onClickBook() {
         const {booking } = this.state;
         const st_name = 'startrack';
@@ -787,35 +783,6 @@ class BookingPage extends Component {
         } else {
             alert('Please Find any booking and then click this!');
         }
-    }
-
-    deleteRow() {
-        // const {deletedBookingLine, bookingLinesListProduct} = this.state;
-        const { selectedBookingIds, products } = this.state;
-
-        if (selectedBookingIds.length == 0) {
-            alert('No delete booking id');
-            return;
-        }
-        let clonedProducts = _.clone(products);
-        for (let i = 0; i < selectedBookingIds.length; i++) {
-            for (let j = 0; j < products.length; j++) {
-                if ( products[j].pk_lines_id === selectedBookingIds[i] ) {
-                    clonedProducts = _.difference(clonedProducts, [products[j]]);
-                    break;
-                }
-            }
-        }
-
-        this.setState({products: clonedProducts});
-        this.setState({selectedBookingIds: []});
-    }
-
-    deleteRowDetails() {
-        const {deletedBookingLine, bookingLineDetailsProduct} = this.state;
-        let tempBooking = bookingLineDetailsProduct;
-        tempBooking.splice(deletedBookingLine, 1);
-        this.setState({bookingLineDetailsProduct: tempBooking, deletedBookingLine: -1});
     }
 
     onKeyPress(e) {
@@ -886,6 +853,27 @@ class BookingPage extends Component {
             }
         }
     };
+
+    handleChangeWarehouse = (selectedOption) => {
+        let formInputs = this.state.formInputs;
+        formInputs['b_client_warehouse_code'] = selectedOption.value;
+        formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+        this.setState({formInputs});
+    }
+
+    getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
+        const warehouses = this.state.warehouses;
+
+        for (let i = 0; i < warehouses.length; i++) {
+            if (warehouses[i].client_warehouse_code === warehouseCode) {
+                if (infoField === 'name') {
+                    return warehouses[i].warehousename;
+                } else if (infoField === 'id') {
+                    return warehouses[i].pk_id_client_warehouses;
+                }
+            }
+        }
+    }
 
     handlePost(e) {
         e.preventDefault();
@@ -1273,8 +1261,28 @@ class BookingPage extends Component {
         }
     }
 
+    onClickNewBooking(e) {
+        e.preventDefault();
+        const {isSelectedBooking, formInputs, username, clientname, clientId} = this.state;
+
+        if (isSelectedBooking) {
+            location.reload();
+        } else {
+            if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
+                alert('Please select one warehouse code');
+            } else {
+                formInputs['z_CreatedByAccount'] = username;
+                formInputs['b_client_name'] = clientname;
+                formInputs['kf_client_id'] = clientId;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+                formInputs['b_status'] = 'Entered';
+                this.props.saveBooking(formInputs);
+            }
+        }
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1655,6 +1663,13 @@ class BookingPage extends Component {
             return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
         });
 
+        let warehouseCodeOptions = [];
+        for (let i = 0; i < warehouses.length; i++) {
+            warehouseCodeOptions.push({value: warehouses[i].client_warehouse_code, label: warehouses[i].client_warehouse_code});
+        }
+
+        const currentWarehouseCodeOption = {value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null, label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null};
+
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -1667,7 +1682,7 @@ class BookingPage extends Component {
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
-                        <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <a onClick={(e) => this.onClickNewBooking(e)}><i className="icon-plus" aria-hidden="true"></i></a>
                         <div className="popup">
                             <i className="icon-search3" aria-hidden="true"></i>
                         </div>
@@ -1742,9 +1757,15 @@ class BookingPage extends Component {
                                                 <input className="form-control" type="text" placeholder="BioPAK" name="b_client_name" value = {formInputs['b_client_name']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
                                                 <input className="form-control" type="text" placeholder="api status" name="b_status_API" value = {formInputs['b_status_API']} disabled="true" />
                                             </div>
-                                            <div className="col-sm-4 form-group">
-                                                <input className="form-control" type="text" placeholder="warehouse code" name="b_client_warehouse_code" value = {formInputs['b_client_warehouse_code']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
-                                                <input className="form-control" type="text" placeholder="warehouse" name="b_clientPU_Warehouse" value = {formInputs['b_clientPU_Warehouse']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                            <div className={(bAllComboboxViewOnlyonBooking) ? 'col-sm-4 form-group not-editable' : 'col-sm-4 form-group'}>
+                                                <Select
+                                                    value={currentWarehouseCodeOption}
+                                                    onChange={(e) => this.handleChangeWarehouse(e)}
+                                                    options={warehouseCodeOptions}
+                                                    placeholder='select warehouse'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
+                                                <input className="form-control" type="text" placeholder="warehouse" name="b_clientPU_Warehouse" value = {formInputs['b_clientPU_Warehouse']} disabled={true} />
                                             </div>
                                             <div className="col-sm-4 form-group">
                                                 <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
@@ -2627,6 +2648,9 @@ const mapStateToProps = (state) => {
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
         username: state.auth.username,
+        clientname: state.auth.clientname,
+        clientId: state.auth.clientId,
+        warehouses: state.warehouse.warehouses,
     };
 };
 
@@ -2659,6 +2683,7 @@ const mapDispatchToProps = (dispatch) => {
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
+        getWarehouses: () => dispatch(getWarehouses()),
     };
 };
 

@@ -124,7 +124,7 @@ export const saveBooking = (booking) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/create_booking/`,
         data: booking
     };
     return dispatch =>

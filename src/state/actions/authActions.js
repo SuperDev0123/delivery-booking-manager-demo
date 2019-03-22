@@ -48,12 +48,13 @@ export function failedVerifiyToken(error) {
     };
 }
 
-export function setUser(username, clientname) {
+export function setUser(username, clientname, clientId) {
     localStorage.setItem('isLoggedIn', 'true');
     return {
         type: SET_USER,
         username,
         clientname,
+        clientId,
         isLoggedIn: 'true'
     };
 }
