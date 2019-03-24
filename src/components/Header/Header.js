@@ -99,10 +99,6 @@ class Header extends Component {
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/allbookings">All Bookings</a>
                                                 <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/bookinglines">Booking Lines</a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/bookinglinedatas">Booking Line Datas</a>
-                                                <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
                                             </div>
                                         </li>
