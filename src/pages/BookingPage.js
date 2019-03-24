@@ -97,6 +97,7 @@ class BookingPage extends Component {
             selectedCommId: null,
             selectedNoteId: null,
             selectedNoteNo: 0,
+            selectedNoteDetail: null,
             isShowNoteForm: false,
             noteFormMode: 'create',
             commFormMode: 'create',
@@ -128,6 +129,7 @@ class BookingPage extends Component {
             username: null,
             isSelectedBooking: false,
             warehouses: [],
+            isShowNoteDetailModal: false,
         };
 
         this.djsConfig = {
@@ -147,6 +149,7 @@ class BookingPage extends Component {
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
+        this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
     }
 
     static propTypes = {
@@ -1281,8 +1284,17 @@ class BookingPage extends Component {
         }
     }
 
+    onClickNoteDetailCell(note) {
+        this.setState({selectedNoteDetail: note.dme_notes});
+        this.toggleNoteDetailModal();
+    }
+
+    toggleNoteDetailModal() {
+        this.setState(prevState => ({isShowNoteDetailModal: !prevState.isShowNoteDetailModal}));
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory,booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail} = this.state;
 
         const iconTrashBookingLine = (cell, row) => {
             return (
@@ -1651,7 +1663,7 @@ class BookingPage extends Component {
                     <td>{(note.note_time_updated && !_.isEmpty(note.note_time_updated)) ? note.note_time_updated : ''}</td>
                     <td>{note.username}</td>
                     <td>{note.dme_notes_type}</td>
-                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
+                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id} onClick={() => this.onClickNoteDetailCell(note)}>
                         <EditorPreview data={note.dme_notes} />
                     </td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
@@ -2619,6 +2631,16 @@ class BookingPage extends Component {
                         }
                     </div>
                 </SlidingPane>
+
+                <ReactstrapModal isOpen={this.state.isShowNoteDetailModal} toggle={this.toggleNoteDetailModal} className="note-detail-modal">
+                    <ModalHeader toggle={this.toggleNoteDetailModal}>Note Detail</ModalHeader>
+                    <ModalBody>
+                        <EditorPreview data={selectedNoteDetail} />
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="secondary" onClick={this.toggleNoteDetailModal}>Cancel</Button>
+                    </ModalFooter>
+                </ReactstrapModal>
             </div>
         );
     }

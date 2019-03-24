@@ -81,6 +81,12 @@
 	}
 }
 
+.note-detail-modal {
+	margin-top: 200px;
+	width: 80%;
+	max-width: none;
+}
+
 .create-comm-modal {
 	margin-top: 200px;
 	width: 80%;
@@ -350,7 +356,11 @@ input.orange-color {
 	}
 }
 
-.editor-preview {
+.note-detail-modal .editor-preview {
+	max-height: none;
+}
+
+.fixed_headers .editor-preview {
 	max-height: 100px;
 	overflow-y: auto;
 }
