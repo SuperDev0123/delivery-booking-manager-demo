@@ -59,7 +59,19 @@ export const getBookingWithFilter = (id, filter) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_booking/?id=` + id + '&filter=' + filter,
     };
-    console.log('@options--', options, id, filter);
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetBooking(data)))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};
+
+export const getLatestBooking = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_latest_booking/`,
+    };
     return dispatch =>
         axios(options)
             .then(({ data }) => dispatch(successGetBooking(data)))

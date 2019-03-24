@@ -24,7 +24,7 @@ import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import EditorPreview from '../components/EditorPreview/EditorPreview';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
@@ -184,11 +184,11 @@ class BookingPage extends Component {
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
+        getLatestBooking: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-        var urlParams = new URLSearchParams(window.location.search);
 
         if (token && token.length > 0) {
             this.props.verifyToken();
@@ -197,17 +197,19 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
+        var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
             this.props.getCommsWithBookingId(bookingId);
             this.setState({loading: true});
         } else {
-            this.props.getSuburbStrings('state', undefined);
-            this.props.getDeliverySuburbStrings('state', undefined);
-            this.props.getWarehouses();
+            this.props.getLatestBooking();
+            // this.props.getSuburbStrings('state', undefined);
+            // this.props.getDeliverySuburbStrings('state', undefined);
         }
 
+        this.props.getWarehouses();
         Modal.setAppElement(this.el);
     }
 
@@ -2706,6 +2708,7 @@ const mapDispatchToProps = (dispatch) => {
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
         getWarehouses: () => dispatch(getWarehouses()),
+        getLatestBooking: () => dispatch(getLatestBooking()),
     };
 };
 
