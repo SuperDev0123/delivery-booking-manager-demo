@@ -12,7 +12,7 @@ import Clock from 'react-live-clock';
 import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 
-import { verifyToken, cleanRedirectState } from '../state/services/authService';
+import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
@@ -60,6 +60,9 @@ class AllBookingsPage extends React.Component {
             total_kgs: 0,
             total_cubic_meter: 0,
             linkPopoverOpens: [],
+            dmeClients: [],
+            username: null,
+            selectedClientId: null, 
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -89,6 +92,7 @@ class AllBookingsPage extends React.Component {
         setNeedUpdateBookingsState: PropTypes.func.isRequired,
         stOrder: PropTypes.func.isRequired,
         getExcel: PropTypes.func.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -120,6 +124,7 @@ class AllBookingsPage extends React.Component {
         });
 
         this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
+        this.props.getDMEClients();
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
     }
@@ -133,7 +138,7 @@ class AllBookingsPage extends React.Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, errorMessage } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, errorMessage, dmeClients, username, clientPK } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -164,7 +169,7 @@ class AllBookingsPage extends React.Component {
 
         if (needUpdateBookings) {
             this.setState({loading: true});
-            this.props.getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
         } else {
             this.setState({loading: false});
         }
@@ -175,6 +180,13 @@ class AllBookingsPage extends React.Component {
             this.onAfterBook();
         }
 
+        if (dmeClients) {
+            this.setState({dmeClients});
+        }
+
+        if (username) {
+            this.setState({username});
+        }
     }
 
     handleClickOutside(event) {
@@ -277,14 +289,20 @@ class AllBookingsPage extends React.Component {
         this.props.setGetBookingsFilter('columnFilters', {});
     }
 
-    onWarehouseSelected(e) {
-        const selectedWarehouseId = e.target.value;
-        let warehouseId = 0;
+    onSelected(e, src) {
+        if (src === 'warehouse') {
+            const selectedWarehouseId = e.target.value;
+            let warehouseId = 0;
 
-        if (selectedWarehouseId !== 'all')
-            warehouseId = selectedWarehouseId;
+            if (selectedWarehouseId !== 'all')
+                warehouseId = selectedWarehouseId;
 
-        this.props.setGetBookingsFilter('warehouseId', warehouseId);
+            this.props.setGetBookingsFilter('warehouseId', warehouseId);
+        } else if (src === 'client') {
+            const selectedClientId = e.target.value;
+            this.props.setGetBookingsFilter('clientPK', selectedClientId);
+        }
+
         this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
@@ -747,12 +765,14 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId } = this.state;
 
         const warehousesList = warehouses.map((warehouse, index) => {
-            return (
-                <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
-            );
+            return (<option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>);
+        });
+
+        const clientOptionsList = dmeClients.map((client, index) => {
+            return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
         });
 
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
@@ -1097,8 +1117,27 @@ class AllBookingsPage extends React.Component {
                                                 dateFormat="dd MMM yyyy"
                                             />
                                             <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
-                                            <label className="left-30px right-10px">Warehouse/Client:</label>
-                                            <select id="warehouse" required onChange={(e) => this.onWarehouseSelected(e)} value={selectedWarehouseId}>
+                                            {
+                                                (username === 'dme') ?
+                                                    <label className="left-30px right-10px">
+                                                        Client: 
+                                                        <select 
+                                                            id="client-select" 
+                                                            required 
+                                                            onChange={(e) => this.onSelected(e, 'client')} 
+                                                            value={selectedClientId}>
+                                                            { clientOptionsList }
+                                                        </select>
+                                                    </label>
+                                                    :
+                                                    null
+                                            }
+                                            <label className={(username === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
+                                            <select 
+                                                id="warehouse" 
+                                                required 
+                                                onChange={(e) => this.onSelected(e, 'warehouse')} 
+                                                value={selectedWarehouseId}>
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
@@ -1489,15 +1528,18 @@ const mapStateToProps = (state) => {
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
         newPod: state.booking.newPod,
         errorMessage: state.booking.errorMessage,
+        dmeClients: state.auth.dmeClients,
+        username: state.auth.username,
+        clientPK: state.booking.clientPK,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(getBookings(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(setAllGetBookingsFilter(startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
@@ -1512,6 +1554,7 @@ const mapDispatchToProps = (dispatch) => {
         stOrder: () => dispatch(stOrder()),
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
+        getDMEClients: () => dispatch(getDMEClients()),
     };
 };
 
