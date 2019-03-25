@@ -25,7 +25,7 @@ import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
@@ -193,6 +193,7 @@ class BookingPage extends Component {
         getLatestBooking: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         setClientPK: PropTypes.func.isRequired,
+        cancelBook: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -213,6 +214,7 @@ class BookingPage extends Component {
             this.setState({loading: true});
         } else {
             this.props.getLatestBooking();
+            this.setState({loading: true});
             // this.props.getSuburbStrings('state', undefined);
             // this.props.getDeliverySuburbStrings('state', undefined);
         }
@@ -450,12 +452,12 @@ class BookingPage extends Component {
                 AdditionalServices.push(tempAdditionalServices);
 
                 this.setState({
-                    puPostalCode: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
-                    puSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null,'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
-                    puState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null,'label': booking.pu_Address_State ? booking.pu_Address_State : null},
-                    deToPostalCode: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
-                    deToSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null,'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
-                    deToState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null,'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                    puPostalCode: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null, 'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
+                    puSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null, 'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
+                    puState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null, 'label': booking.pu_Address_State ? booking.pu_Address_State : null},
+                    deToPostalCode: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null, 'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
+                    deToSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null, 'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
+                    deToState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
                 });
 
                 if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
@@ -1364,6 +1366,16 @@ class BookingPage extends Component {
     onSwitchClient(clientPK) {
         this.props.setClientPK(clientPK);
         this.toggleSwitchClientModal();
+    }
+
+    onClickCancelBook() {
+        const {booking} = this.state;
+
+        if (!booking) {
+            alert('Please select booking to cancel');
+        } else {
+            this.props.cancelBook(booking.id);
+        }
     }
 
     render() {
@@ -2392,7 +2404,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-backspace"></i> Cancel Request</button>
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickCancelBook()}><i className="fas fa-backspace"></i> Cancel Request</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
@@ -2934,6 +2946,7 @@ const mapDispatchToProps = (dispatch) => {
         getLatestBooking: () => dispatch(getLatestBooking()),
         getDMEClients: () => dispatch(getDMEClients()),
         setClientPK: (clientId) => dispatch(setClientPK(clientId)),
+        cancelBook: (bookingId) => dispatch(cancelBook(bookingId)),
     };
 };
 
