@@ -1,4 +1,4 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, FAILED_VERIFY_TOKEN, SET_USER, FAILED_GET_USER, RESET_REDIRECT_STATE } from '../constants/authConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, FAILED_VERIFY_TOKEN, SET_USER, FAILED_GET_USER, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK } from '../constants/authConstants';
 
 export function setToken(token) {
     console.log('Token set: ', token);
@@ -70,5 +70,27 @@ export function failedGetUser(error) {
 export function resetRedirectState() {
     return {
         type: RESET_REDIRECT_STATE,
+    };
+}
+
+export function setDMEClients(data) {
+    return {
+        type: SET_DME_CLIENTS,
+        dmeClients: data.dme_clients,
+    };
+}
+
+export function failedGetDMEClients(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_DME_CLIENTS,
+        errorMessage: 'Unable to get dme clients.'
+    };
+}
+
+export function setCurrentClientPK(clientPK) {
+    return {
+        type: SET_CLIENT_PK,
+        clientPK: clientPK,
     };
 }

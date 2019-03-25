@@ -364,3 +364,24 @@ input.orange-color {
 	max-height: 100px;
 	overflow-y: auto;
 }
+
+.switch-user-modal {
+	margin-top: 200px;
+	
+	label {
+		width: 100%;
+
+		p, select {
+		 	display: inline-block;
+		}
+
+		select {
+			width: 30%;
+			margin-left: 10px;
+		}
+	}
+}
+
+.height-40p {
+	height: 40px !important;
+}

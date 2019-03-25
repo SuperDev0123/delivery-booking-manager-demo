@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState } from '../actions/authActions';
+import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState, setDMEClients, failedGetDMEClients, setCurrentClientPK } from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getToken = (username, password) => {
@@ -15,7 +15,6 @@ export const getToken = (username, password) => {
 
 export const verifyToken = () => {
     const token = localStorage.getItem('token');
-    // console.log('Current token: ', token);
 
     return dispatch =>
         axios.post(`${HTTP_PROTOCOL}://${API_HOST}/api-token-verify/` , {
@@ -40,6 +39,27 @@ export const getUser = (token) => {
             .catch((error) => dispatch(failedGetUser(error)) );
 };
 
+export const getDMEClients = () => {
+    const token = localStorage.getItem('token');
+
+    const options = {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_clients/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setDMEClients(data)))
+            .catch((error) => dispatch(failedGetDMEClients(error)) );
+};
+
 export const cleanRedirectState = () => {
     return dispatch => dispatch(resetRedirectState());
+};
+
+export const setClientPK = (clientPK) => {
+    return dispatch => dispatch(setCurrentClientPK(clientPK));
 };

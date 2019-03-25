@@ -1,4 +1,4 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE } from '../constants/authConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK  } from '../constants/authConstants';
 
 const defaultState = {
     token: '',
@@ -7,10 +7,12 @@ const defaultState = {
     clientname: null,
     clientId: null,
     isLoggedIn: 'false',
-    redirect: false
+    redirect: false,
+    dmeClients: [],
+    clientPK: null,
 };
 
-export const AuthReducer = (state = defaultState, { type, token, errorMessage, username, clientname, clientId, isLoggedIn }) => {
+export const AuthReducer = (state = defaultState, { type, token, errorMessage, username, clientname, clientId, isLoggedIn, dmeClients, clientPK }) => {
     switch (type) {
         case SET_TOKEN:
             return {
@@ -49,6 +51,23 @@ export const AuthReducer = (state = defaultState, { type, token, errorMessage, u
             return {
                 ...state,
                 redirect: false,
+            };
+        case SET_DME_CLIENTS:
+            return {
+                ...state,
+                dmeClients: dmeClients,
+                redirect : false,
+            };
+        case FAILED_GET_DME_CLIENTS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                redirect : false,
+            };
+        case SET_CLIENT_PK:
+            return {
+                ...state,
+                clientPK: clientPK,
             };
         default:
             return state;
