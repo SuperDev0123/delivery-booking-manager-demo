@@ -12,6 +12,7 @@ export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemC
         params: {
             startDate: startDate,
             endDate: endDate,
+            clientPK: clientPK,
             warehouseId: warehouseId,
             itemCountPerPage: itemCountPerPage,
             sortField: sortField,
@@ -19,7 +20,6 @@ export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemC
             prefilterInd: prefilterInd,
             simpleSearchKeyword: simpleSearchKeyword,
             newPod: newPod,
-            clientPK: clientPK,
         }
     };
     return dispatch =>

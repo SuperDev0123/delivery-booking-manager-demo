@@ -665,7 +665,7 @@ class AllBookingsPage extends React.Component {
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, 0, '-id', {}, 0, simpleSearchKeyword);
             this.setState({activeTabInd: 0});
         }
 
