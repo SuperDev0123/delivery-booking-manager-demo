@@ -89,13 +89,13 @@ $column_3_width: 20px;
 $column_4_width: 90px;
 $column_5_width: 110px;
 $column_6_width: 110px;
-$column_7_width: 70px;
-$column_8_width: 100px;
+$column_7_width: 250px;
+$column_8_width: 250px;
 $column_9_width: 70px;
 $column_10_width: 70px;
 
 $column_11_width: 250px;
-$column_12_width: 100px;
+$column_12_width: 250px;
 $column_13_width: 70px;
 $column_14_width: 70px;
 $column_15_width: 30px;
@@ -132,9 +132,9 @@ $column_26_width: 150px;
   td:nth-child(6), th:nth-child(6) { width: $column_6_width; }
   td:nth-child(6) p, th:nth-child(6) p { width: 90px }
   td:nth-child(7), th:nth-child(7) { width: $column_7_width; }
-  td:nth-child(7) p, th:nth-child(7) p { width: 50px }
+  td:nth-child(7) p, th:nth-child(7) p { width: 120px }
   td:nth-child(8), th:nth-child(8) { width: $column_8_width; }
-  td:nth-child(8) p, th:nth-child(8) p { width: 80px }
+  td:nth-child(8) p, th:nth-child(8) p { width: 120px }
   td:nth-child(9), th:nth-child(9) { width: $column_9_width; }
   td:nth-child(9) p, th:nth-child(9) p { width: 50px }
   td:nth-child(10), th:nth-child(10) { width: $column_10_width; }
@@ -143,7 +143,7 @@ $column_26_width: 150px;
   td:nth-child(11), th:nth-child(11) { width: $column_11_width; }
   td:nth-child(11) p, th:nth-child(11) p { width: 120px }
   td:nth-child(12), th:nth-child(12) { width: $column_12_width; }
-  td:nth-child(12) p, th:nth-child(12) p { width: 80px }
+  td:nth-child(12) p, th:nth-child(12) p { width: 120px }
   td:nth-child(13), th:nth-child(13) { width: $column_13_width; }
   td:nth-child(13) p, th:nth-child(13) p { width: 50px }
   td:nth-child(14), th:nth-child(14) { width: $column_14_width; }
