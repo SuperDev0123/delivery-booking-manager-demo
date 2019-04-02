@@ -444,6 +444,8 @@ class AllBookingsPage extends React.Component {
 
         if (selectedBookingIds.length < 1) {
             alert('Please select at least one booking!');
+        } else if (selectedBookingIds.length > 10) {
+            alert('Please select less than 10 booking! 10+ bookings takes 5 minutes to book');
         } else {
             this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
             let ind = -1;
@@ -530,7 +532,7 @@ class AllBookingsPage extends React.Component {
     onDownload() {
         const { selectedBookingIds, downloadOption, bookings, startDate, endDate } = this.state;
 
-        if (selectedBookingIds.length > 0) {
+        if (selectedBookingIds.length > 0 && selectedBookingIds.length < 501) {
             this.setState({loadingDownload: true});
 
             if (downloadOption === 'label') {
@@ -613,6 +615,8 @@ class AllBookingsPage extends React.Component {
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 }
             }
+        } else if (selectedBookingIds.length > 100) {
+            alert('Please selected less than 500 bookings to download.');
         } else {
             alert('No matching booking id');
         }
