@@ -978,8 +978,7 @@ class AllBookingsPage extends React.Component {
                         <PopoverBody>
                             <div className="links-div">
                                 <Button color="primary" onClick={() => this.onClickLink(0, booking.id)}>Go to Detail</Button>
-                                <br />
-                                <Button color="primary" onClick={() => this.onClickLink(1, booking.id)}>Go to Comms</Button>
+                                <Button className="none" color="primary" onClick={() => this.onClickLink(1, booking.id)}>Go to Comms</Button>
                             </div>
                         </PopoverBody>
                     </Popover>
