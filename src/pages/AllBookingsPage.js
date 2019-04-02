@@ -445,7 +445,7 @@ class AllBookingsPage extends React.Component {
         if (selectedBookingIds.length < 1) {
             alert('Please select at least one booking!');
         } else if (selectedBookingIds.length > 10) {
-            alert('Please select less than 10 booking! 10+ bookings takes 5 minutes to book');
+            alert('Please select less than 10 booking! 10+ bookings takes 5+ minutes to book');
         } else {
             this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
             let ind = -1;
