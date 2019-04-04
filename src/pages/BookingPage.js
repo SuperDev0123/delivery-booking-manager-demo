@@ -25,7 +25,7 @@ import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook, getBookingHistoryStatus } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
@@ -195,6 +195,7 @@ class BookingPage extends Component {
         getDMEClients: PropTypes.func.isRequired,
         setClientPK: PropTypes.func.isRequired,
         cancelBook: PropTypes.func.isRequired,
+        getBookingHistoryStatus: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -1463,7 +1464,7 @@ class BookingPage extends Component {
             },
         ];
 
-        status_history = getBookingHistoryStatus(booking.id);
+        // const status_history = this.props.getBookingHistoryStatus(booking.id);
         const status_history_items = [];
 
         for (const [index,value] of this.state.status_history.entries()) {
@@ -2943,6 +2944,7 @@ const mapDispatchToProps = (dispatch) => {
         getDMEClients: () => dispatch(getDMEClients()),
         setClientPK: (clientId) => dispatch(setClientPK(clientId)),
         cancelBook: (bookingId) => dispatch(cancelBook(bookingId)),
+        getBookingHistoryStatus: (bookingId) => dispatch(getBookingHistoryStatus(bookingId)),
     };
 };
 
