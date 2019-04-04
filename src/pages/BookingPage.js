@@ -136,6 +136,7 @@ class BookingPage extends Component {
             status_history: [],
             clientPK: null,
             typed: null,
+            isCreateBooking: false,
         };
 
         this.djsConfig = {
@@ -221,6 +222,7 @@ class BookingPage extends Component {
             // this.props.getDeliverySuburbStrings('state', undefined);
         }
 
+        this.props.getDMEClients();
         this.props.getWarehouses();
         Modal.setAppElement(this.el);
     }
@@ -281,18 +283,18 @@ class BookingPage extends Component {
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
                 let result = [];
-                result.pk_lines_id = bookingLine.pk_lines_id;
-                result.e_type_of_packaging = bookingLine.e_type_of_packaging;
-                result.e_item = bookingLine.e_item;
-                result.e_qty = bookingLine.e_qty;
-                result.e_weightUOM = bookingLine.e_weightUOM;
-                result.e_weightPerEach = bookingLine.e_weightPerEach;
-                result.e_Total_KG_weight = bookingLine.e_Total_KG_weight;
-                result.e_dimUOM = bookingLine.e_dimUOM;
-                result.e_dimLength = bookingLine.e_dimLength;
-                result.e_dimWidth = bookingLine.e_dimWidth;
-                result.e_dimHeight = bookingLine.e_dimHeight;
-                result.e_1_Total_dimCubicMeter = bookingLine.e_1_Total_dimCubicMeter;
+                result.pk_lines_id = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
+                result.e_type_of_packaging = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
+                result.e_item = bookingLine.e_item ? bookingLine.e_item : '';
+                result.e_qty = bookingLine.e_qty ? bookingLine.e_qty : '';
+                result.e_weightUOM = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : '';
+                result.e_weightPerEach = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : '';
+                result.e_Total_KG_weight = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight : '';
+                result.e_dimUOM = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
+                result.e_dimLength = bookingLine.e_dimLength ? bookingLine.e_dimLength : '';
+                result.e_dimWidth = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : '';
+                result.e_dimHeight = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
+                result.e_1_Total_dimCubicMeter = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter : '';
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
@@ -302,14 +304,14 @@ class BookingPage extends Component {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = [];
-                result.pk_id_lines_data = bookingLineDetail.pk_id_lines_data;
-                result.modelNumber = bookingLineDetail.modelNumber;
-                result.itemDescription = bookingLineDetail.itemDescription;
-                result.quantity = bookingLineDetail.quantity;
-                result.itemFaultDescription = bookingLineDetail.itemFaultDescription;
-                result.insuranceValueEach = bookingLineDetail.insuranceValueEach;
-                result.gap_ra = bookingLineDetail.gap_ra;
-                result.clientRefNumber = bookingLineDetail.clientRefNumber;
+                result.pk_id_lines_data = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
+                result.modelNumber = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
+                result.itemDescription = bookingLineDetail.itemDescription ? bookingLineDetail.itemDescription : '';
+                result.quantity = bookingLineDetail.quantity ? bookingLineDetail.quantity : '';
+                result.itemFaultDescription = bookingLineDetail.itemFaultDescription ? bookingLineDetail.itemFaultDescription : '';
+                result.insuranceValueEach = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
+                result.gap_ra = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
+                result.clientRefNumber = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
                 return result;
             });
 
@@ -345,8 +347,8 @@ class BookingPage extends Component {
             }
         }
 
-        if ((booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0) || 
-            (booking && !bAllComboboxViewOnlyonBooking && this.state.loading)) {
+        if ((booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0 && !this.state.isCreateBooking) || 
+            (booking && !bAllComboboxViewOnlyonBooking && this.state.loading && !this.state.isCreateBooking)) {
             if (booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
 
@@ -764,26 +766,34 @@ class BookingPage extends Component {
         let cubic_meter = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
-            if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-            else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'TONS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            if (bookingLine.e_weightUOM) {
+                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                else
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            } else {
+                bookingLine['total_kgs'] = 0;
+            }
 
-            if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-            else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-            else
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+            if (bookingLine.e_dimUOM) {
+                if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+                else
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+            } else {
+                bookingLine['cubic_meter'] = 0;
+            }
 
             qty += bookingLine.e_qty;
             total_kgs += bookingLine['total_kgs'];
@@ -1293,6 +1303,7 @@ class BookingPage extends Component {
         
         if (isSelectedBooking) {
             this.clearInputs();
+            this.setState({bAllComboboxViewOnlyonBooking: false, isCreateBooking: true});
         } else {
             if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
                 alert('Please select one warehouse code');
@@ -1326,6 +1337,7 @@ class BookingPage extends Component {
                 formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
                 formInputs['b_status'] = 'Entered';
                 this.props.saveBooking(formInputs);
+                this.setState({isCreateBooking: false});
             }
         }
     }
