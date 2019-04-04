@@ -278,7 +278,7 @@ class BookingPage extends Component {
             this.setState({warehouses});
         }
 
-        if (bookingLines) {
+        if (bookingLines && !this.state.isCreateBooking) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
@@ -300,7 +300,7 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
         }
 
-        if (bookingLineDetails) {
+        if (bookingLineDetails && !this.state.isCreateBooking) {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = [];
@@ -1303,7 +1303,12 @@ class BookingPage extends Component {
         
         if (isSelectedBooking) {
             this.clearInputs();
-            this.setState({bAllComboboxViewOnlyonBooking: false, isCreateBooking: true});
+            this.setState({
+                bAllComboboxViewOnlyonBooking: false,
+                isCreateBooking: true,
+                bookingLineDetailsProduct: [],
+                products: [],
+            });
         } else {
             if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
                 alert('Please select one warehouse code');
