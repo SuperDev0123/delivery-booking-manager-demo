@@ -1313,7 +1313,7 @@ class BookingPage extends Component {
             if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
                 alert('Please select one warehouse code');
             } else {
-                if (clientPK === 0) {
+                if (clientPK === 0 || username !== 'dme') {
                     formInputs['z_CreatedByAccount'] = username;
                     formInputs['b_client_name'] = clientname;
                     formInputs['kf_client_id'] = clientId;
