@@ -318,19 +318,19 @@ class BookingPage extends Component {
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
-        if (needUpdateLineAndLineDetail && booking) {
+        if (needUpdateLineAndLineDetail && booking && booking.pk_booking_id) {
             this.setState({loadingBookingLine: true});
             this.props.resetNeedUpdateLineAndLineDetail();
             this.props.getBookingLines(booking.pk_booking_id);
             this.props.getBookingLineDetails(booking.pk_booking_id);
         }
 
-        if (needUpdateBookingLines && booking) {
+        if (needUpdateBookingLines && booking && booking.pk_booking_id) {
             this.setState({loadingBookingLine: true});
             this.props.getBookingLines(booking.pk_booking_id);
         }
 
-        if (needUpdateBookingLineDetails && booking) {
+        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
         }
@@ -470,7 +470,7 @@ class BookingPage extends Component {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
-                if (this.state.loading) {
+                if (this.state.loading && booking.pk_booking_id) {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                     this.props.getCommsWithBookingId(booking.id);
