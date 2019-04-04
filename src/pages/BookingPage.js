@@ -318,7 +318,7 @@ class BookingPage extends Component {
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
-        if (needUpdateLineAndLineDetail) {
+        if (needUpdateLineAndLineDetail && booking) {
             this.setState({loadingBookingLine: true});
             this.props.resetNeedUpdateLineAndLineDetail();
             this.props.getBookingLines(booking.pk_booking_id);
