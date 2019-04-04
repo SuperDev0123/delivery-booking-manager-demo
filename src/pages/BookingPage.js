@@ -133,6 +133,7 @@ class BookingPage extends Component {
             isShowNoteDetailModal: false,
             isShowSwitchClientModal: false,
             dmeClients: [],
+            status_history: [],
             clientPK: null,
             typed: null,
         };
@@ -1462,6 +1463,12 @@ class BookingPage extends Component {
             },
         ];
 
+        status_history = getBookingHistoryStatus(booking.id);
+        const status_history_items = [];
+
+        for (const [index,value] of this.state.status_history.entries()) {
+            status_history_items.push(<div className=" well wellafter" id={index}><small><b>{value.status_last}</b></small><br/><small>Status info :</small><br/><small>{value.notes}</small><br/><small className="red"> Create : {booking.z_createdTimeStamp} </small> <br/><small className="red"> Event : {value.api_status_time_stamp} </small></div>);
+        }
         const bookingLineDetailsColumns = [
             {
                 dataField: 'pk_id_lines_data',
@@ -2380,18 +2387,7 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="status-log">
                                                     <h4>Status log</h4>
-                                                    <p>01 March Entered</p>
-                                                    <p>01 March Booked</p>
-                                                    <p>01 March Picked Up</p>
-                                                    <p>01 March Delivered</p>
-                                                    <p>01 March Entered</p>
-                                                    <p>01 March Booked</p>
-                                                    <p>01 March Picked Up</p>
-                                                    <p>01 March Delivered</p>
-                                                    <p>01 March Entered</p>
-                                                    <p>01 March Booked</p>
-                                                    <p>01 March Picked Up</p>
-                                                    <p>01 March Delivered</p>
+                                                    {status_history_items}
                                                 </div>
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height">

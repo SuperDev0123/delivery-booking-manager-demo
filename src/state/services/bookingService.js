@@ -66,6 +66,19 @@ export const getBookingWithFilter = (id, filter) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
+export const getBookingHistoryStatus = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_booking_history/?id=` + id,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(data))
+            .catch((error) => dispatch(failedGetBookings(error)));
+};
+
 export const getLatestBooking = () => {
     const token = localStorage.getItem('token');
     const options = {
