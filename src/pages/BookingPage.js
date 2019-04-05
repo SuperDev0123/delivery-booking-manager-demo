@@ -1310,40 +1310,41 @@ class BookingPage extends Component {
                 products: [],
             });
         } else {
-            if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
-                alert('Please select one warehouse code');
+            if (clientPK === 0 || username !== 'dme') {
+                formInputs['z_CreatedByAccount'] = username;
+                formInputs['b_client_name'] = clientname;
+                formInputs['kf_client_id'] = clientId;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+
+                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
+                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+                    formInputs['fk_client_warehouse'] = 100;
+                }
             } else {
-                if (clientPK === 0 || username !== 'dme') {
-                    formInputs['z_CreatedByAccount'] = username;
-                    formInputs['b_client_name'] = clientname;
-                    formInputs['kf_client_id'] = clientId;
-                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-                } else {
-                    formInputs['z_CreatedByAccount'] = 'dme';
+                formInputs['z_CreatedByAccount'] = 'dme';
 
-                    let ind = 0;
-                    for (let i = 0; i < dmeClients.length; i++) {
-                        if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
-                            ind = i;
-                            break;
-                        }
+                let ind = 0;
+                for (let i = 0; i < dmeClients.length; i++) {
+                    if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
+                        ind = i;
+                        break;
                     }
-
-                    formInputs['b_client_name'] = dmeClients[ind].company_name;
-                    formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
-                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
                 }
 
-                formInputs['pu_Address_State'] = puState ? puState.label : '';
-                formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
-                formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
-                formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
-                formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
-                formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
-                formInputs['b_status'] = 'Entered';
-                this.props.saveBooking(formInputs);
-                this.setState({isCreateBooking: false});
+                formInputs['b_client_name'] = dmeClients[ind].company_name;
+                formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
+
+            formInputs['pu_Address_State'] = puState ? puState.label : '';
+            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
+            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
+            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
+            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
+            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+            formInputs['b_status'] = 'Entered';
+            this.props.saveBooking(formInputs);
+            this.setState({isCreateBooking: false});
         }
     }
 
