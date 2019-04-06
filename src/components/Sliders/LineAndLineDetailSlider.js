@@ -74,6 +74,7 @@ class LineAndLineDetailSlider extends React.Component {
             lineFormInputs[name] = value;
             lineFormInputs['e_1_Total_dimCubicMeter'] = this.props.getCubicMeter(lineFormInputs);
             lineFormInputs['e_Total_KG_weight'] = this.props.getTotalWeight(lineFormInputs);
+            lineFormInputs['total_2_cubic_mass_factor_calc'] = Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 4;
             this.setState({lineFormInputs});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
@@ -136,6 +137,7 @@ class LineAndLineDetailSlider extends React.Component {
                     <td>{line.e_dimWidth}</td>
                     <td>{line.e_dimHeight}</td>
                     <td>{line.e_1_Total_dimCubicMeter}</td>
+                    <td>{line.total_2_cubic_mass_factor_calc}</td>
                     <td className="show" onClick={() => this.onClickShowLine(index)}><Button color="primary">Show</Button></td>
                     <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 1, index)}>Edit</Button></td>
                     <td className="duplicate">
@@ -236,6 +238,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                 </th>
                                                 <th className="" scope="col" nowrap>
                                                     <p>Cubic Meter</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap>
+                                                    <p>Cubic KG</p>
                                                 </th>
                                                 <th className="" scope="col" nowrap>
                                                     <p>Show</p>
@@ -371,7 +376,6 @@ class LineAndLineDetailSlider extends React.Component {
                                                     disabled="disabled"
                                                     name="e_Total_KG_weight" 
                                                     value={lineFormInputs['e_Total_KG_weight']} 
-                                                    onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
                                             <label>
@@ -422,7 +426,16 @@ class LineAndLineDetailSlider extends React.Component {
                                                     disabled="disabled"
                                                     name="e_1_Total_dimCubicMeter" 
                                                     value={lineFormInputs['e_1_Total_dimCubicMeter']} 
-                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Cubic KG</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    disabled="disabled"
+                                                    name="total_2_cubic_mass_factor_calc" 
+                                                    value={lineFormInputs['total_2_cubic_mass_factor_calc']} 
                                                 />
                                             </label>
                                             <label>
