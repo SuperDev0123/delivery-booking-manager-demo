@@ -2414,10 +2414,10 @@ class BookingPage extends Component {
                                         <div className="tab-button-outer">
                                             <ul id="tab-button">
                                                 <li><a href="#tab01">Shipment Packages / Goods</a></li>
-                                                <li><a href="#tab02">Additional Information</a></li>
-                                                <li><a href="#tab03">Freight Options</a></li>
-                                                <li><a href="#tab04">Communication Log</a></li>
-                                                <li><a href="#tab05">Attachments</a></li>
+                                                <li className="none"><a href="#tab02">Additional Information</a></li>
+                                                <li className="none"><a href="#tab03">Freight Options</a></li>
+                                                <li className="none"><a href="#tab04">Communication Log</a></li>
+                                                <li className="none"><a href="#tab05">Attachments</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer">
