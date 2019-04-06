@@ -112,7 +112,7 @@ $column_24_width: 130px;
 $column_25_width: 150px;
 $column_26_width: 150px;
 
-.allbookings .fixed_headers {
+#all_booking .fixed_headers {
   table-layout: fixed;
 
   th { text-decoration: none; }
@@ -555,4 +555,8 @@ header > .qbootstrap-nav {
 
 #client-select {
   margin-left: 10px;
+}
+
+.edit-lld-btn {
+  margin-bottom: 10px;
 }

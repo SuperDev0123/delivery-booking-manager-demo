@@ -23,6 +23,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
+import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook, getBookingHistoryStatus } from '../state/services/bookingService';
@@ -137,6 +138,8 @@ class BookingPage extends Component {
             clientPK: null,
             typed: null,
             isCreateBooking: false,
+            isShowLineSlider: true,
+            selectedLineIndex: -1,
         };
 
         this.djsConfig = {
@@ -158,6 +161,7 @@ class BookingPage extends Component {
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
         this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
         this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
+        this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
     }
 
     static propTypes = {
@@ -312,6 +316,7 @@ class BookingPage extends Component {
                 result.insuranceValueEach = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
                 result.gap_ra = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
                 result.clientRefNumber = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
+                result.fk_id_booking_lines = bookingLineDetail.fk_id_booking_lines ? bookingLineDetail.fk_id_booking_lines : '';
                 return result;
             });
 
@@ -946,25 +951,25 @@ class BookingPage extends Component {
         this.props.getAttachmentHistory(this.state.booking.id);
     }
 
-    onClickDuplicate(num, row={}) {
-        console.log('onDuplicate: ', num, row);
+    onClickDuplicate(typeNum, row={}) {
+        console.log('onDuplicate: ', typeNum, row);
         const {booking} = this.state;
 
-        if (num === 0) { // Duplicate line
+        if (typeNum === 0) { // Duplicate line
             let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.createBookingLine(duplicatedBookingLine);
             this.setState({loadingBookingLine: true});
-        } else if (num === 1) { // Duplicate line detail
+        } else if (typeNum === 1) { // Duplicate line detail
             let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.createBookingLineDetail(duplicatedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
-        } else if (num === 2) { // On click `Duplicate Booking` button
+        } else if (typeNum === 2) { // On click `Duplicate Booking` button
             if (!booking.hasOwnProperty('id')) {
                 alert('Please select a booking.');
             } else {
                 this.toggleDuplicateBookingOptionsModal();
             }
-        } else if (num === 3) { // On click `Duplicate` on modal
+        } else if (typeNum === 3) { // On click `Duplicate` on modal
             const {switchInfo, dupLineAndLineDetail} = this.state;
             this.props.duplicateBooking(booking.id, switchInfo, dupLineAndLineDetail);
             this.toggleDuplicateBookingOptionsModal();
@@ -972,14 +977,14 @@ class BookingPage extends Component {
         }
     }
 
-    onClickDelete(num, row) {
-        console.log('onDelete: ', num, row);
+    onClickDelete(typeNum, row) {
+        console.log('onDelete: ', typeNum, row);
 
-        if (num === 0) {
+        if (typeNum === 0) { // Duplicate line
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.deleteBookingLine(deletedBookingLine);
             this.setState({loadingBookingLine: true});
-        } else if (num === 1) {
+        } else if (typeNum === 1) { // Duplicate line detail
             let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
@@ -1377,6 +1382,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
     }
 
+    toggleShowLineSlider() {
+        this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
+    }
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -1398,48 +1407,15 @@ class BookingPage extends Component {
         }
     }
 
+    onClickShowLine(index) {
+        this.setState({selectedLineIndex: index});
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK} = this.state;
-
-        const iconTrashBookingLine = (cell, row) => {
-            return (
-                <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(0, row);}}><i className="icon icon-trash"></i></button>
-            );
-        };
-
-        const iconDoublePlusBookingLine = (cell, row) => {
-            let that = this;
-            return (
-                <button className="btn btn-light btn-theme" onClick={() => {that.onClickDuplicate(0, row);}}>
-                    <i className="icon icon-plus"></i>
-                    <i className="icon icon-plus"></i>
-                </button>
-            );
-        };
-
-        const iconTrashBookingLineDetail = (cell, row) => {
-            return (
-                <button className="btn btn-light btn-theme" onClick={() => {this.onClickDelete(1, row);}}><i className="icon icon-trash"></i></button>
-            );
-        };
-
-        const iconDoublePlusBookingLineDetail = (cell, row) => {
-            let that = this;
-            return (
-                <button className="btn btn-light btn-theme" onClick={() => {that.onClickDuplicate(1, row);}}>
-                    <i className="icon icon-plus"></i>
-                    <i className="icon icon-plus"></i>
-                </button>
-            );
-        };
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider} = this.state;
 
         const bookingLineColumns = [
             {
-                dataField: 'pk_lines_id',
-                text: 'Delete',
-                formatter: iconTrashBookingLine,
-                editable: false,
-            }, {
                 dataField: 'e_type_of_packaging',
                 text: 'Packaging',
             }, {
@@ -1474,12 +1450,7 @@ class BookingPage extends Component {
                 dataField: 'e_1_Total_dimCubicMeter',
                 text: 'Cubic Meter',
                 editable: false,
-            }, {
-                dataField: 'pk_lines_id0',
-                text: 'Duplicate',
-                formatter: iconDoublePlusBookingLine,
-                editable: false,
-            },
+            }
         ];
 
         // const status_history = this.props.getBookingHistoryStatus(booking.id);
@@ -1488,13 +1459,9 @@ class BookingPage extends Component {
         for (const [index,value] of this.state.status_history.entries()) {
             status_history_items.push(<div className=" well wellafter" id={index}><small><b>{value.status_last}</b></small><br/><small>Status info :</small><br/><small>{value.notes}</small><br/><small className="red"> Create : {booking.z_createdTimeStamp} </small> <br/><small className="red"> Event : {value.api_status_time_stamp} </small></div>);
         }
+
         const bookingLineDetailsColumns = [
             {
-                dataField: 'pk_id_lines_data',
-                text: 'Delete',
-                formatter: iconTrashBookingLineDetail,
-                editable: false
-            }, {
                 dataField: 'modelNumber',
                 text: 'Model'
             }, {
@@ -1515,12 +1482,7 @@ class BookingPage extends Component {
             }, {
                 dataField: 'clientRefNumber',
                 text: 'Client Reference #'
-            }, {
-                dataField: 'pk_id_lines_data0',
-                text: 'Duplicate',
-                formatter: iconDoublePlusBookingLineDetail,
-                editable: false
-            },
+            }
         ];
 
         const columnFreight = [
@@ -2465,6 +2427,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab01" className="tab-contents">
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
+                                                <Button className="edit-lld-btn btn-primary" onClick={this.toggleShowLineSlider}>Edit</Button>
                                                 <BootstrapTable
                                                     keyField="id"
                                                     data={ bookingTotals }
@@ -2890,6 +2853,19 @@ class BookingPage extends Component {
                     onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
                     clients={dmeClients}
                     selectedClientPK={clientPK}
+                />
+
+                <LineAndLineDetailSlider
+                    isOpen={isShowLineSlider}
+                    toggleShowLineSlider={this.toggleShowLineSlider}
+                    lines={products}
+                    lineDetails={bookingLineDetailsProduct}
+                    onClickDuplicate={(typeNum, data) => this.onClickDuplicate(typeNum, data)}
+                    onClickDelete={(typeNum, data) => this.onClickDelete(typeNum, data)}
+                    loadingBookingLine={this.state.loadingBookingLine}
+                    loadingBookingLineDetail={this.state.loadingBookingLineDetail}
+                    selectedLineIndex={this.state.selectedLineIndex}
+                    onClickShowLine={(index) => this.onClickShowLine(index)}
                 />
             </div>
         );
