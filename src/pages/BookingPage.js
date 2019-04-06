@@ -1830,10 +1830,17 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-5">
                                             <ul className="grid-head">
-                                                <li><button className="btn btn-light btn-theme"> Preview</button></li>
-                                                <li><button className="btn btn-light btn-theme">Email</button></li>
-                                                <li><button className="btn btn-light btn-theme">Print PDF</button></li>
-                                                <li><button className="btn btn-light btn-theme">Undo</button></li>
+                                                <li><button className="btn btn-light btn-theme none"> Preview</button></li>
+                                                <li><button className="btn btn-light btn-theme none">Email</button></li>
+                                                <li><button className="btn btn-light btn-theme none">Print PDF</button></li>
+                                                <li><button className="btn btn-light btn-theme none">Undo</button></li>
+                                                <button 
+                                                    onClick={(e) => this.onUpdateBooking(e)} 
+                                                    disabled={(!this.state.isSelectedBooking || bAllComboboxViewOnlyonBooking)} 
+                                                    className={(this.state.isSelectedBooking && !bAllComboboxViewOnlyonBooking) ? 'btn bg-lgreen btn-update' : 'btn bg-gray btn-update'}
+                                                >
+                                                    Update
+                                                </button>
                                             </ul>
                                         </div>
                                     </div>
@@ -1886,13 +1893,6 @@ class BookingPage extends Component {
                                                     <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">Prev</button>
                                                     <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0}  className="btn btn-theme next-btn">Next</button>
                                                     <button type="submit" className="btn btn-theme submit none">Submit</button>
-                                                </div>
-                                            </div>
-                                            <div className="row">
-                                                <div className="col-sm-8">
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <button onClick={(e) => this.onUpdateBooking(e)} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard btn-update">Update</button>
                                                 </div>
                                             </div>
                                         </div>
