@@ -27,8 +27,8 @@ import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlid
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook, getBookingHistoryStatus } from '../state/services/bookingService';
-import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine } from '../state/services/bookingLinesService';
-import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail } from '../state/services/bookingLineDetailsService';
+import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine } from '../state/services/bookingLinesService';
+import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 
@@ -169,9 +169,11 @@ class BookingPage extends Component {
         saveBooking: PropTypes.func.isRequired,
         duplicateBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
+        duplicateBookingLine: PropTypes.func.isRequired,
         deleteBookingLine: PropTypes.func.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
         createBookingLineDetail: PropTypes.func.isRequired,
+        duplicateBookingLineDetail: PropTypes.func.isRequired,
         deleteBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
@@ -286,19 +288,19 @@ class BookingPage extends Component {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
-                let result = [];
-                result.pk_lines_id = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
-                result.e_type_of_packaging = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
-                result.e_item = bookingLine.e_item ? bookingLine.e_item : '';
-                result.e_qty = bookingLine.e_qty ? bookingLine.e_qty : '';
-                result.e_weightUOM = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : '';
-                result.e_weightPerEach = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : '';
-                result.e_Total_KG_weight = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight : '';
-                result.e_dimUOM = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
-                result.e_dimLength = bookingLine.e_dimLength ? bookingLine.e_dimLength : '';
-                result.e_dimWidth = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : '';
-                result.e_dimHeight = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
-                result.e_1_Total_dimCubicMeter = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter : '';
+                let result = {};
+                result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
+                result['e_type_of_packaging'] = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
+                result['e_item'] = bookingLine.e_item ? bookingLine.e_item : '';
+                result['e_qty'] = bookingLine.e_qty ? bookingLine.e_qty : '';
+                result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : '';
+                result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : '';
+                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight : '';
+                result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
+                result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : '';
+                result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : '';
+                result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
+                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter : '';
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
@@ -307,16 +309,16 @@ class BookingPage extends Component {
         if (bookingLineDetails && !this.state.isCreateBooking) {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
-                let result = [];
-                result.pk_id_lines_data = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
-                result.modelNumber = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
-                result.itemDescription = bookingLineDetail.itemDescription ? bookingLineDetail.itemDescription : '';
-                result.quantity = bookingLineDetail.quantity ? bookingLineDetail.quantity : '';
-                result.itemFaultDescription = bookingLineDetail.itemFaultDescription ? bookingLineDetail.itemFaultDescription : '';
-                result.insuranceValueEach = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
-                result.gap_ra = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
-                result.clientRefNumber = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
-                result.fk_id_booking_lines = bookingLineDetail.fk_id_booking_lines ? bookingLineDetail.fk_id_booking_lines : '';
+                let result = {};
+                result['pk_id_lines_data'] = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
+                result['modelNumber'] = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
+                result['itemDescription'] = bookingLineDetail.itemDescription ? bookingLineDetail.itemDescription : '';
+                result['quantity'] = bookingLineDetail.quantity ? bookingLineDetail.quantity : '';
+                result['itemFaultDescription'] = bookingLineDetail.itemFaultDescription ? bookingLineDetail.itemFaultDescription : '';
+                result['insuranceValueEach'] = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
+                result['gap_ra'] = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
+                result['clientRefNumber'] = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
+                result['fk_id_booking_lines'] = bookingLineDetail.fk_id_booking_lines ? bookingLineDetail.fk_id_booking_lines : '';
                 return result;
             });
 
@@ -957,11 +959,11 @@ class BookingPage extends Component {
 
         if (typeNum === 0) { // Duplicate line
             let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
-            this.props.createBookingLine(duplicatedBookingLine);
+            this.props.duplicateBookingLine(duplicatedBookingLine);
             this.setState({loadingBookingLine: true});
         } else if (typeNum === 1) { // Duplicate line detail
             let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
-            this.props.createBookingLineDetail(duplicatedBookingLineDetail);
+            this.props.duplicateBookingLineDetail(duplicatedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
         } else if (typeNum === 2) { // On click `Duplicate Booking` button
             if (!booking.hasOwnProperty('id')) {
@@ -1383,7 +1385,13 @@ class BookingPage extends Component {
     }
 
     toggleShowLineSlider() {
-        this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
+        const { isSelectedBooking } = this.state;
+
+        if (isSelectedBooking) {
+            this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
+        } else {
+            alert('Please select a booking.');
+        }
     }
 
     onClickSwitchClientNavIcon(e) {
@@ -1405,10 +1413,6 @@ class BookingPage extends Component {
         } else {
             this.props.cancelBook(booking.id);
         }
-    }
-
-    onClickShowLine(index) {
-        this.setState({selectedLineIndex: index});
     }
 
     render() {
@@ -2866,6 +2870,13 @@ class BookingPage extends Component {
                     loadingBookingLineDetail={this.state.loadingBookingLineDetail}
                     selectedLineIndex={this.state.selectedLineIndex}
                     onClickShowLine={(index) => this.onClickShowLine(index)}
+                    getCubicMeter={(row) => this.getCubicMeter(row)}
+                    getTotalWeight={(row) => this.getTotalWeight(row)}
+                    booking={booking}
+                    createBookingLine={(bookingLine) => this.props.createBookingLine(bookingLine)}
+                    updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
+                    createBookingLineDetail={(bookingLine) => this.props.createBookingLineDetail(bookingLine)}
+                    updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                 />
             </div>
         );
@@ -2916,10 +2927,12 @@ const mapDispatchToProps = (dispatch) => {
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),
+        duplicateBookingLine: (bookingLine) => dispatch(duplicateBookingLine(bookingLine)),
         deleteBookingLine: (bookingLine) => dispatch(deleteBookingLine(bookingLine)),
         updateBookingLine: (bookingLine) => dispatch(updateBookingLine(bookingLine)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         createBookingLineDetail: (bookingLineDetail) => dispatch(createBookingLineDetail(bookingLineDetail)),
+        duplicateBookingLineDetail: (bookingLineDetail) => dispatch(duplicateBookingLineDetail(bookingLineDetail)),
         deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
         updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),

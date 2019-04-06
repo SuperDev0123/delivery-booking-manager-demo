@@ -1,8 +1,48 @@
-.lld-slider .table-view th p {
-  padding: 0;
-  margin: 0;
-}
+.lld-slider {
+  .table-view th p {
+    padding: 0;
+    margin: 0;
+  }
 
-.lld-slider .table-view td button {
-  padding: 5px;
+  .table-view td button {
+    padding: 5px;
+  }
+
+  .line-section {
+    tr.current {
+      background: #9cf;
+    }
+  }
+
+  h3 {
+    display: inline;
+  }
+
+  .new-btn {
+    padding: 5px;
+    margin-left: 20px;
+    margin-bottom: 10px;
+  }
+
+  .form-view {
+    label {
+      display: block;
+      width: 40%;
+      margin-top: 10px;
+
+      &:last-child {
+        text-align: center;
+      }
+
+      p {
+        display: inline-block;
+        margin-top: 10px;
+      }
+
+      input {
+        width: 70%;
+        float: right;
+      }
+    }
+  }
 }

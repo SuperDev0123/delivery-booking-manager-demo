@@ -30,6 +30,19 @@ export const createBookingLineDetail = (bookingLineDetail) => {
             .catch((error) => dispatch(failedCreateBookingLineDetail(error)));
 };
 
+export const duplicateBookingLineDetail = (bookingLineDetail) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglinedetails/duplicate_booking_line_detail/`,
+        data: bookingLineDetail
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateBookingLineDetail(data)))
+            .catch((error) => dispatch(failedCreateBookingLineDetail(error)));
+};
 
 export const updateBookingLineDetail = (bookingLineDetail) => {
     const token = localStorage.getItem('token');
