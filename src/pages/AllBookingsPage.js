@@ -204,26 +204,34 @@ class AllBookingsPage extends React.Component {
         let total_cubic_meter = 0;
 
         let newBookingLines = bookingLines.map((bookingLine) => {
-            if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-            else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
-                bookingLine.e_weightUOM.toUpperCase() === 'TONS')
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            else
-                bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            if (bookingLine.e_weightUOM) {
+                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                else
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            } else {
+                bookingLine['total_kgs'] = 0;
+            }
 
-            if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-            else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-            else
-                bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+            if (bookingLine.e_dimUOM) {
+                if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+                else
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+            } else {
+                bookingLine['cubic_meter'] = 0;
+            }
 
             total_qty += bookingLine.e_qty;
             total_kgs += bookingLine['total_kgs'];
