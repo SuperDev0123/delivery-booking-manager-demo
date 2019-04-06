@@ -2091,8 +2091,7 @@ class BookingPage extends Component {
                                                                     name="vx_fp_pu_eta_time" 
                                                                     className="form-control" 
                                                                     value = {formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                    onChange={(e) => this.onHandleInput(e)} />
+                                                                    disabled='disabled' />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2106,8 +2105,7 @@ class BookingPage extends Component {
                                                                     type="text" 
                                                                     name="s_20_Actual_Pickup_TimeStamp" 
                                                                     className="form-control" value = {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                    onChange={(e) => this.onHandleInput(e)} />
+                                                                    disabled='disabled' />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2137,8 +2135,7 @@ class BookingPage extends Component {
                                                                 name="b_clientReference_RA_Numbers" 
                                                                 className="form-control" 
                                                                 value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                                disabled='disabled'/>
                                                         </div>
                                                     </div>
                                                     <div className="clearfix"></div>
@@ -2325,8 +2322,7 @@ class BookingPage extends Component {
                                                                     name="vx_fp_del_eta_time" 
                                                                     className="form-control" 
                                                                     value = {formInputs['vx_fp_del_eta_time'] ? moment(formInputs['vx_fp_del_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                    onChange={(e) => this.onHandleInput(e)} />
+                                                                    disabled='disabled' />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -2341,8 +2337,7 @@ class BookingPage extends Component {
                                                                     name="s_21_Actual_Delivery_TimeStamp" 
                                                                     className="form-control" 
                                                                     value = {formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                    onChange={(e) => this.onHandleInput(e)} />
+                                                                    disabled='disabled' />
                                                             </div>
 
                                                         </div>
