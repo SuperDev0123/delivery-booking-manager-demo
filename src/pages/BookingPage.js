@@ -138,7 +138,7 @@ class BookingPage extends Component {
             clientPK: null,
             typed: null,
             isCreateBooking: false,
-            isShowLineSlider: true,
+            isShowLineSlider: false,
             selectedLineIndex: -1,
         };
 
