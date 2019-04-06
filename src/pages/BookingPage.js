@@ -1448,7 +1448,7 @@ class BookingPage extends Component {
                 text: 'Width',
             }, {
                 dataField: 'e_dimHeight',
-                text: 'Hegiht',
+                text: 'Height',
             }, {
                 dataField: 'e_1_Total_dimCubicMeter',
                 text: 'Cubic Meter',
