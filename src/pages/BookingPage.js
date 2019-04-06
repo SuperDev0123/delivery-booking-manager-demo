@@ -140,6 +140,7 @@ class BookingPage extends Component {
             isCreateBooking: false,
             isShowLineSlider: false,
             selectedLineIndex: -1,
+            isBookingModified: false,
         };
 
         this.djsConfig = {
@@ -682,25 +683,12 @@ class BookingPage extends Component {
 
     onHandleInput(e) {
         if (this.state.bAllComboboxViewOnlyonBooking === false) {
-            let formInputs = this.state.formInputs;
-            let booking = this.state.booking;
+            let {formInputs, booking} = this.state;
 
             formInputs[e.target.name] = e.target.value;
             booking[e.target.name] = e.target.value;
 
-            this.setState({ formInputs });
-            this.setState({ booking });
-        } else {
-            let formInputs = this.state.formInputs;
-            let booking = this.state.booking;
-
-            if (booking[e.target.name] == null) {
-                formInputs[e.target.name] = '';
-            } else {
-                formInputs[e.target.name] = booking[e.target.name];
-            }
-
-            this.setState({ formInputs });
+            this.setState({ formInputs, booking, isBookingModified: true });
         }
     }
 
@@ -763,7 +751,7 @@ class BookingPage extends Component {
             bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
 
             this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-            this.setState({loading: true});
+            this.setState({loading: true, isBookingModified: false});
         }
     }
 
@@ -1415,6 +1403,17 @@ class BookingPage extends Component {
         }
     }
 
+    onClickGoToAllBookings(e) {
+        e.preventDefault();
+        const {isBookingModified} = this.state;
+
+        if (isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            this.props.history.push('/allbookings');
+        }
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider} = this.state;
 
@@ -1765,7 +1764,7 @@ class BookingPage extends Component {
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
                             <li className="active"><a href="/booking">Header</a></li>
-                            <li><a href="/allbookings">All Bookings</a></li>
+                            <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
@@ -1820,13 +1819,15 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-2">
-                                            <p className="text-white">Booking Details :  {this.state.booking.b_bookingID_Visual}</p>
+                                            <p className="text-white">Booking Details : {this.state.booking.b_bookingID_Visual}</p>
                                         </div>
                                         <div className="col-sm-2">
-                                            <p className="text-white text-center"> <a href=""><i className="fas fa-file-alt text-white"></i></a></p>
+                                            <p className="text-white text-center">
+                                                <a href=""><i className="fas fa-file-alt text-white"></i></a>
+                                            </p>
                                         </div>
                                         <div className="col-sm-3">
-                                            <p className="text-white text-right">AUS Mon 18:00 2018-02-04 </p>
+                                            <p className="text-white text-right">AUS Mon 18:00 2018-02-04</p>
                                         </div>
                                         <div className="col-sm-5">
                                             <ul className="grid-head">
