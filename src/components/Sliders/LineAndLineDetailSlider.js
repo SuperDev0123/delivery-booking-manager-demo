@@ -74,7 +74,7 @@ class LineAndLineDetailSlider extends React.Component {
             lineFormInputs[name] = value;
             lineFormInputs['e_1_Total_dimCubicMeter'] = this.props.getCubicMeter(lineFormInputs);
             lineFormInputs['e_Total_KG_weight'] = this.props.getTotalWeight(lineFormInputs);
-            lineFormInputs['total_2_cubic_mass_factor_calc'] = Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 4;
+            lineFormInputs['total_2_cubic_mass_factor_calc'] = Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250;
             this.setState({lineFormInputs});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;

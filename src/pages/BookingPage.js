@@ -989,7 +989,7 @@ class BookingPage extends Component {
         let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
         updatedBookingLine[column.dataField] = newValue;
         updatedBookingLine['e_1_Total_dimCubicMeter'] = this.getCubicMeter(row);
-        updatedBookingLine['total_2_cubic_mass_factor_calc'] = Number.parseFloat(updatedBookingLine['e_1_Total_dimCubicMeter']).toFixed(4) * 4;
+        updatedBookingLine['total_2_cubic_mass_factor_calc'] = Number.parseFloat(updatedBookingLine['e_1_Total_dimCubicMeter']).toFixed(4) * 250;
         updatedBookingLine['e_Total_KG_weight'] = this.getTotalWeight(row);
 
         for (let i = 0; i < products.length; i++) {
