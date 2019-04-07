@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 
 import Clock from 'react-live-clock';
 import _ from 'lodash';
@@ -237,7 +238,6 @@ class BookingPage extends Component {
     componentWillReceiveProps(newProps) {
         const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK } = newProps;
         const currentRoute = this.props.location.pathname;
-        const { selectedCommId } = this.state;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -274,11 +274,11 @@ class BookingPage extends Component {
         }
 
         if (needUpdateComms) {
-            this.props.getCommsWithBookingId(booking.id);
+        //     this.props.getCommsWithBookingId(booking.id);
         }
 
         if (needUpdateNotes) {
-            this.props.getNotes(selectedCommId);
+        //     this.props.getNotes(selectedCommId);
         }
 
         if (warehouses) {
@@ -342,10 +342,6 @@ class BookingPage extends Component {
         if (needUpdateBookingLineDetails && booking && booking.pk_booking_id) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
-        }
-
-        if (needUpdateComms) {
-            this.props.getCommsWithBookingId(booking.id);
         }
 
         if (bBooking) {
@@ -1770,7 +1766,7 @@ class BookingPage extends Component {
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
-                            <li className="active"><a href="/booking">Header</a></li>
+                            <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
@@ -2958,4 +2954,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(BookingPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(BookingPage));

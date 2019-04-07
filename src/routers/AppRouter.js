@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 import Header from '../components/Header/Header';
 import { Footer } from '../components/Footer/Footer';
@@ -14,7 +15,7 @@ import CommPage from '../pages/CommPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 
 export const AppRouter = () => (
-    <BrowserRouter>
+    <BrowserRouter history={createBrowserHistory()}>
         <Fragment>
             <Header />
             <Switch>

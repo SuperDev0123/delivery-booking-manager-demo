@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -113,17 +114,19 @@ class AllBookingsPage extends React.Component {
         if (today) {
             startDate = moment(today, 'YYYY-MM-DD').toDate();
             dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
+            this.props.setNeedUpdateBookingsState(true);
         } else {
             startDate = moment().tz('Australia/Sydney').toDate();
             dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+
+            this.setState({ 
+                startDate: moment(startDate).format('YYYY-MM-DD'),
+                endDate: moment(startDate).format('YYYY-MM-DD'),
+            });
+
+            this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
         }
 
-        this.setState({ 
-            startDate: moment(startDate).format('YYYY-MM-DD'),
-            endDate: moment(startDate).format('YYYY-MM-DD'),
-        });
-
-        this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
         this.props.getDMEClients();
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
@@ -167,13 +170,6 @@ class AllBookingsPage extends React.Component {
             this.setState({ userDateFilterField });
         }
 
-        if (needUpdateBookings) {
-            this.setState({loading: true});
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
-        } else {
-            this.setState({loading: false});
-        }
-
         if ((errorMessage === 'Book success' || 
             errorMessage === 'book failed') && 
             needUpdateBookings) {
@@ -186,6 +182,55 @@ class AllBookingsPage extends React.Component {
 
         if (username) {
             this.setState({username});
+        }
+
+        if (needUpdateBookings) {
+            this.setState({loading: true});
+
+            // startDate
+            if (_.isEmpty(startDate)) {
+                const startDate = moment().tz('Australia/Sydney').toDate();
+                const dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                this.props.setGetBookingsFilter('date', {startDate: dateParam});
+                this.setState({startDate});
+                return;
+            } else {
+                this.setState({startDate});
+            }
+
+            // endDate
+            if (_.isEmpty(endDate)) {
+                const endDate = startDate;
+                const dateParam = moment(startDate).format('YYYY-MM-DD');
+                this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
+                this.setState({endDate});
+                return;
+            } else {
+                this.setState({endDate});
+            }
+
+            // sortField
+            if (!_.isEmpty(sortField)) {
+                if (sortField[0] === '-') {
+                    this.setState({sortDirection: -1, sortField: sortField.substring(1)});
+                } else {
+                    this.setState({sortDirection: 1, sortField});
+                }
+            }
+
+            this.setState({
+                selectedClientId: clientPK, 
+                selectedWarehouseId: warehouseId, 
+                filterInputs: columnFilters, 
+                activeTabInd: prefilterInd,
+                simpleSearchKeyword,
+                downloadOption: newPod,
+            });
+
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
+            
+        } else {
+            this.setState({loading: false});
         }
     }
 
@@ -689,7 +734,7 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter('*');
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
-            this.props.setAllGetBookingsFilter(startDate, endDate);
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, '-id', {}, activeTabInd);
         } else {
             this.onClickPrefilter(activeTabInd);
         }
@@ -1071,8 +1116,8 @@ class AllBookingsPage extends React.Component {
                     <div id="headr" className="col-md-12">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                             <ul className="nav nav-tabs">
-                                <li><a href="/booking">Header</a></li>
-                                <li className="active"><a href="/allbookings">All Bookings</a></li>
+                                <li><Link to="/booking">Header</Link></li>
+                                <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                                 <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                             </ul>
@@ -1569,4 +1614,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AllBookingsPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AllBookingsPage));
