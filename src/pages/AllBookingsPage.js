@@ -194,7 +194,7 @@ class AllBookingsPage extends React.Component {
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
                 this.setState({startDate});
                 return;
-            } else {
+            } else if (startDate !== '*') {
                 this.setState({startDate});
             }
 
