@@ -1821,10 +1821,10 @@ class BookingPage extends Component {
                                 </div>
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-2">
+                                        <div className="col-sm-3">
                                             <p className="text-white">Booking Details : {this.state.booking.b_bookingID_Visual}</p>
                                         </div>
-                                        <div className="col-sm-2">
+                                        <div className="col-sm-1">
                                             <p className="text-white text-center">
                                                 <a href=""><i className="fas fa-file-alt text-white"></i></a>
                                             </p>
