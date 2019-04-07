@@ -199,14 +199,14 @@ class AllBookingsPage extends React.Component {
             }
 
             // endDate
-            if (_.isEmpty(endDate)) {
+            if (startDate !== '*' && _.isEmpty(endDate)) {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
                 this.setState({endDate});
                 return;
             } else {
-                this.setState({endDate});
+                this.setState({endDate: ''});
             }
 
             // sortField
