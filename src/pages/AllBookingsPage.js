@@ -218,11 +218,19 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
+            // prefilterInd
+            if (startDate === '*') {
+                this.setState({activeTabInd: 0});
+            } else if (startDate !== '*' && prefilterInd === 0) {
+                this.setState({activeTabInd: 7});
+            } else {
+                this.setState({activeTabInd: prefilterInd});
+            }
+
             this.setState({
                 selectedClientId: clientPK, 
                 selectedWarehouseId: warehouseId, 
                 filterInputs: columnFilters, 
-                activeTabInd: prefilterInd,
                 simpleSearchKeyword,
                 downloadOption: newPod,
             });
