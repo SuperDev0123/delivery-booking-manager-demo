@@ -1367,6 +1367,8 @@ class BookingPage extends Component {
                 deToSuburb: null,
                 deToPostalCode: null,
                 formInputs: {
+                    pu_Address_Country: 'AU',
+                    de_To_Address_Country: 'AU',
                 }, 
             });
         }
