@@ -24,9 +24,10 @@ const defaultState = {
     prefilterInd: 0,
     simpleSearchKeyword: '',
     newPod: false,
+    noBooking: null,
 };
 
-export const BookingReducer = (state = defaultState, { attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, clientPK }) => {
+export const BookingReducer = (state = defaultState, { noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, clientPK }) => {
     switch (type) {
         case SET_ATTACHMENTS:
             return {
@@ -90,17 +91,20 @@ export const BookingReducer = (state = defaultState, { attachments, type, errorM
                 ...state,
                 booking: booking,
                 nextBookingId: nextBookingId,
-                prevBookingId: prevBookingId
+                prevBookingId: prevBookingId,
+                noBooking: noBooking,
             };
         case SUCCESS_UPDATE_BOOKING:
             return {
                 ...state,
                 booking: booking,
+                noBooking: false,
             };
         case SUCCESS_CREATE_BOOKING:
             return {
                 ...state,
                 booking: booking,
+                noBooking: false,
             };
         case SUCCESS_DUPLICATE_BOOKING:
             return {

@@ -84,11 +84,19 @@ export function setNeedUpdateBookingsFlag(boolFlag) {
 }
 
 export function successGetBooking(data) {
+    if (!data['booking']['id']) {
+        return {
+            type: SET_BOOKING_WITH_FILTER,
+            noBooking: true,
+        };
+    }
+
     return {
         type: SET_BOOKING_WITH_FILTER,
         booking: data['booking'],
         nextBookingId: data['nextid'],
         prevBookingId: data['previd'],
+        noBooking: false,
     };
 }
 
@@ -96,6 +104,7 @@ export function successCreateBooking(data) {
     return {
         type: SUCCESS_CREATE_BOOKING,
         booking: data,
+        noBooking: false,
     };
 }
 
@@ -103,6 +112,7 @@ export function successUpdateBooking(data) {
     return {
         type: SUCCESS_UPDATE_BOOKING,
         booking: data,
+        noBooking: false,
     };
 }
 

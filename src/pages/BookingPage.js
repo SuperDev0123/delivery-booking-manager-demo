@@ -68,21 +68,22 @@ class BookingPage extends Component {
             isGoing: false,
             checkBoxStatus: [],
             selectedOption: null,
-            puPostalCode: null,
-            puSuburb: null,
             puStates: [],
             puPostalCodes: [],
             puSuburbs: [],
             loadedPostal: false,
             loadedSuburb: false,
-            deToState: null,
-            deToPostalCode: null,
-            deToSuburb: null,
             deToStates: [],
             deToPostalCodes: [],
             deToSuburbs: [],
             deLoadedPostal: false,
             deLoadedSuburb: false,
+            puState: {value: ''},
+            puSuburb: {value: ''},
+            puPostalCode: {value: ''},
+            deToState: {value: ''},
+            deToSuburb: {value: ''},
+            deToPostalCode: {value: ''},
             bAllComboboxViewOnlyonBooking: false,
             puTimeZone: null,
             deTimeZone: null,
@@ -130,7 +131,7 @@ class BookingPage extends Component {
                 'Other',
             ],
             username: null,
-            isSelectedBooking: false,
+            isBookingSelected: false,
             warehouses: [],
             isShowNoteDetailModal: false,
             isShowSwitchClientModal: false,
@@ -138,10 +139,10 @@ class BookingPage extends Component {
             status_history: [],
             clientPK: null,
             typed: null,
-            isCreateBooking: false,
             isShowLineSlider: false,
             selectedLineIndex: -1,
             isBookingModified: false,
+            curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
         };
 
         this.djsConfig = {
@@ -236,7 +237,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -285,7 +286,7 @@ class BookingPage extends Component {
             this.setState({warehouses});
         }
 
-        if (bookingLines && !this.state.isCreateBooking) {
+        if (bookingLines && parseInt(this.state.curViewMode) === 0) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
@@ -308,7 +309,7 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
         }
 
-        if (bookingLineDetails && !this.state.isCreateBooking) {
+        if (bookingLineDetails && parseInt(this.state.curViewMode) === 0) {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = {};
@@ -352,8 +353,13 @@ class BookingPage extends Component {
             }
         }
 
-        if ((booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0 && !this.state.isCreateBooking) || 
-            (booking && !bAllComboboxViewOnlyonBooking && this.state.loading && !this.state.isCreateBooking)) {
+        if (noBooking) {
+            this.setState({loading: false, curViewMode: 1});
+            this.showCreateView();
+        }
+
+        if ((!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
+            (!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
                 let formInputs = this.state.formInputs;
 
@@ -481,7 +487,7 @@ class BookingPage extends Component {
                     this.props.getCommsWithBookingId(booking.id);
                 }
 
-                this.setState({ AdditionalServices: AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isSelectedBooking: true });
+                this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 if (!_.isNull(this.state.typed))
@@ -733,23 +739,6 @@ class BookingPage extends Component {
         }
 
         this.setState({loading: true});
-    }
-
-    onUpdateBooking(e) {
-        e.preventDefault();
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
-            let bookingToUpdate = this.state.booking;
-
-            bookingToUpdate.pu_Address_State = this.state.puState.label;
-            bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
-            bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
-            bookingToUpdate.de_To_Address_State = this.state.deToState.label;
-            bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
-            bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
-
-            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-            this.setState({loading: true, isBookingModified: false});
-        }
     }
 
     calcBookingLine(bookingLines) {
@@ -1291,73 +1280,6 @@ class BookingPage extends Component {
         }
     }
 
-    onClickNewBooking(e) {
-        e.preventDefault();
-        const {isSelectedBooking, formInputs, username, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode} = this.state;
-        
-        if (isSelectedBooking) {
-            this.clearInputs();
-            this.setState({
-                bAllComboboxViewOnlyonBooking: false,
-                isCreateBooking: true,
-                bookingLineDetailsProduct: [],
-                products: [],
-            });
-        } else {
-            if (clientPK === 0 || username !== 'dme') {
-                formInputs['z_CreatedByAccount'] = username;
-                formInputs['b_client_name'] = clientname;
-                formInputs['kf_client_id'] = clientId;
-                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-
-                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
-                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
-                    formInputs['fk_client_warehouse'] = 100;
-                }
-            } else {
-                formInputs['z_CreatedByAccount'] = 'dme';
-
-                let ind = 0;
-                for (let i = 0; i < dmeClients.length; i++) {
-                    if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
-                        ind = i;
-                        break;
-                    }
-                }
-
-                formInputs['b_client_name'] = dmeClients[ind].company_name;
-                formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
-                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-            }
-
-            formInputs['pu_Address_State'] = puState ? puState.label : '';
-            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
-            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
-            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
-            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
-            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
-            formInputs['b_status'] = 'Entered';
-            this.props.saveBooking(formInputs);
-            this.setState({isCreateBooking: false});
-        }
-    }
-
-    clearInputs() {
-        this.setState({
-            isSelectedBooking: false, 
-            formInputs: {}, 
-            products: [], 
-            bookingLineDetailsProduct: [],
-            bookingTotals: [],
-            puState: null,
-            puSuburb: null,
-            puPostalCode: null,
-            deToState: null,
-            deToSuburb: null,
-            deToPostalCode: null,
-        });
-    }
-
     onClickNoteDetailCell(note) {
         this.setState({selectedNoteDetail: note.dme_notes});
         this.toggleNoteDetailModal();
@@ -1372,9 +1294,9 @@ class BookingPage extends Component {
     }
 
     toggleShowLineSlider() {
-        const { isSelectedBooking } = this.state;
+        const { isBookingSelected } = this.state;
 
-        if (isSelectedBooking) {
+        if (isBookingSelected) {
             this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
         } else {
             alert('Please select a booking.');
@@ -1413,8 +1335,93 @@ class BookingPage extends Component {
         }
     }
 
+    onChangeViewMode(e) {
+        if (parseInt(e.target.value) === 1) {
+            this.showCreateView();
+        }
+
+        this.setState({curViewMode: e.target.value});
+    }
+
+    showCreateView() {
+        const {isBookingSelected} = this.state;
+        
+        if (isBookingSelected) {
+            this.setState({
+                isBookingSelected: false, 
+                products: [], 
+                bookingLineDetailsProduct: [],
+                bookingTotals: [],
+                puState: null,
+                puSuburb: null,
+                puPostalCode: null,
+                deToState: null,
+                deToSuburb: null,
+                deToPostalCode: null,
+                formInputs: {
+                }, 
+            });
+        }
+    }
+
+    onClickCreateBooking() {
+        const {formInputs, username, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode} = this.state;
+
+        if (clientPK === 0 || username !== 'dme') {
+            formInputs['z_CreatedByAccount'] = username;
+            formInputs['b_client_name'] = clientname;
+            formInputs['kf_client_id'] = clientId;
+            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+
+            if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
+                formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+                formInputs['fk_client_warehouse'] = 100;
+            }
+        } else {
+            formInputs['z_CreatedByAccount'] = 'dme';
+
+            let ind = 0;
+            for (let i = 0; i < dmeClients.length; i++) {
+                if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
+                    ind = i;
+                    break;
+                }
+            }
+
+            formInputs['b_client_name'] = dmeClients[ind].company_name;
+            formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
+            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+        }
+
+        formInputs['pu_Address_State'] = puState ? puState.label : '';
+        formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
+        formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
+        formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
+        formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
+        formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+        formInputs['b_status'] = 'Entered';
+        this.props.saveBooking(formInputs);
+        this.setState({curViewMode: 0});
+    }
+
+    onClickUpdateBooking() {
+        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+            let bookingToUpdate = this.state.booking;
+
+            bookingToUpdate.pu_Address_State = this.state.puState.label;
+            bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
+            bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
+            bookingToUpdate.de_To_Address_State = this.state.deToState.label;
+            bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
+            bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+
+            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+            this.setState({loading: true, isBookingModified: false, curViewMode: 0});
+        }
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1773,7 +1780,7 @@ class BookingPage extends Component {
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
-                        <a onClick={(e) => this.onClickNewBooking(e)}><i className="icon-plus" aria-hidden="true"></i></a>
+                        <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
                         <div className="popup">
                             <i className="icon-search3" aria-hidden="true"></i>
                         </div>
@@ -1791,8 +1798,15 @@ class BookingPage extends Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-6">
-                                <div className="text-left content">
-                                    <a className="user-menu" href=""><i className="fas fa-bars"></i></a>
+                                <div className="text-left content view-select">
+                                    <select
+                                        onChange = {(e) => this.onChangeViewMode(e)}
+                                        value = {curViewMode}
+                                    >
+                                        <option value="0">Show</option>
+                                        <option value="1">Create</option>
+                                        <option value="2">Update</option>
+                                    </select>
                                 </div>
                             </div>
                             <div className="col-sm-6">
@@ -1822,7 +1836,7 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-3">
-                                            <p className="text-white">Booking Details : {this.state.booking.b_bookingID_Visual}</p>
+                                            <p className="text-white">Booking Details : {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
                                         </div>
                                         <div className="col-sm-1">
                                             <p className="text-white text-center">
@@ -1838,13 +1852,6 @@ class BookingPage extends Component {
                                                 <li><button className="btn btn-light btn-theme none">Email</button></li>
                                                 <li><button className="btn btn-light btn-theme none">Print PDF</button></li>
                                                 <li><button className="btn btn-light btn-theme none">Undo</button></li>
-                                                <button 
-                                                    onClick={(e) => this.onUpdateBooking(e)} 
-                                                    disabled={(!this.state.isSelectedBooking || bAllComboboxViewOnlyonBooking)} 
-                                                    className={(this.state.isSelectedBooking && !bAllComboboxViewOnlyonBooking) ? 'btn bg-lgreen btn-update' : 'btn bg-gray btn-update'}
-                                                >
-                                                    Update
-                                                </button>
                                             </ul>
                                         </div>
                                     </div>
@@ -1855,33 +1862,58 @@ class BookingPage extends Component {
                                     <form action="">
                                         <div className="row col-sm-6">
                                             <div className="col-sm-4 form-group">
-                                                <input 
-                                                    className="form-control height-40p" 
-                                                    type="text" 
-                                                    placeholder="BioPAK" 
-                                                    name="b_client_name" 
-                                                    value = {formInputs['b_client_name']} 
-                                                    disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
-                                                <input 
-                                                    className="form-control height-40p" 
-                                                    type="text" 
-                                                    placeholder="api status" 
-                                                    name="b_status_API" 
-                                                    value = {formInputs['b_status_API']} disabled="true" />
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_client_name']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="BioPAK" 
+                                                            name="b_client_name" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
+                                                            disabled='disabled' />
+                                                }
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_status_API']}</p>
+                                                        :
+                                                        <p className="show-mode disabled">API status</p>
+                                                }
                                             </div>
                                             <div className={(bAllComboboxViewOnlyonBooking) ? 'col-sm-4 form-group not-editable' : 'col-sm-4 form-group'}>
-                                                <Select
-                                                    value={currentWarehouseCodeOption}
-                                                    onChange={(e) => this.handleChangeWarehouse(e)}
-                                                    options={warehouseCodeOptions}
-                                                    placeholder='select warehouse'
-                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                />
-                                                <input className="form-control" type="text" placeholder="warehouse" name="b_clientPU_Warehouse" value = {formInputs['b_clientPU_Warehouse']} disabled={true} />
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                        :
+                                                        <Select
+                                                            value={currentWarehouseCodeOption}
+                                                            onChange={(e) => this.handleChangeWarehouse(e)}
+                                                            options={warehouseCodeOptions}
+                                                            placeholder='select warehouse'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
+                                                        :
+                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
+                                                }
                                             </div>
                                             <div className="col-sm-4 form-group">
-                                                <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
-                                                <input className="form-control" type="text" placeholder="contact mail" name="booking_Created_For_Email" value = {formInputs['booking_Created_For_Email']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['booking_Created_For']}</p>
+                                                        :
+                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                }
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
+                                                        :
+                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                }
                                             </div>
                                         </div>
                                         <div className="container">
@@ -1925,14 +1957,19 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pick Up Entity</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                placeholder="Tempo Pty Ltd" 
-                                                                name="puCompany" 
-                                                                type="text" 
-                                                                value={formInputs['puCompany'] ? formInputs['puCompany'] : ''} 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['puCompany']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        placeholder="Tempo Pty Ltd" 
+                                                                        name="puCompany" 
+                                                                        type="text" 
+                                                                        value={formInputs['puCompany'] ? formInputs['puCompany'] : ''} 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -1940,13 +1977,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Street 1</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Address_Street_1" 
-                                                                className="form-control" 
-                                                                value = {formInputs['pu_Address_Street_1'] ? formInputs['pu_Address_Street_1'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''}
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Address_Street_1']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Address_Street_1" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['pu_Address_Street_1'] ? formInputs['pu_Address_Street_1'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -1954,13 +1996,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Street 2</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Address_street_2" 
-                                                                className="form-control" 
-                                                                value = {formInputs['pu_Address_street_2'] ? formInputs['pu_Address_street_2'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Address_street_2']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Address_street_2" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['pu_Address_street_2'] ? formInputs['pu_Address_street_2'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <LoadingOverlay
@@ -1973,14 +2020,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={puState}
-                                                                    onChange={(e) => this.handleChangeState(0, e)}
-                                                                    options={puStates}
-                                                                    placeholder='select your state'
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                    openMenuOnClick={bAllComboboxViewOnlyonBooking ? false : true}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{puState.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={puState}
+                                                                            onChange={(e) => this.handleChangeState(0, e)}
+                                                                            options={puStates}
+                                                                            placeholder='select your state'
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                            openMenuOnClick={bAllComboboxViewOnlyonBooking ? false : true}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                         <div className="row mt-1">
@@ -1988,14 +2040,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={puPostalCode}
-                                                                    onChange={(e) => this.handleChangePostalCode(0, e)}
-                                                                    options={puPostalCodes}
-                                                                    placeholder='select your postal code'
-                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{puPostalCode.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={puPostalCode}
+                                                                            onChange={(e) => this.handleChangePostalCode(0, e)}
+                                                                            options={puPostalCodes}
+                                                                            placeholder='select your postal code'
+                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                         <div className="row mt-1">
@@ -2003,14 +2060,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={puSuburb}
-                                                                    onChange={(e) => this.handleChangeSuburb(0, e)}
-                                                                    options={puSuburbs}
-                                                                    placeholder='select your suburb'
-                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{puSuburb.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={puSuburb}
+                                                                            onChange={(e) => this.handleChangeSuburb(0, e)}
+                                                                            options={puSuburbs}
+                                                                            placeholder='select your suburb'
+                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                     </LoadingOverlay>
@@ -2019,13 +2081,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Country</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Address_Country" 
-                                                                className="form-control" 
-                                                                value = {formInputs['pu_Address_Country'] ? formInputs['pu_Address_Country'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Address_Country']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Address_Country" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['pu_Address_Country'] ? formInputs['pu_Address_Country'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2033,13 +2100,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Contact_F_L_Name" 
-                                                                className="form-control" 
-                                                                value = {formInputs['pu_Contact_F_L_Name'] ? formInputs['pu_Contact_F_L_Name'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Contact_F_L_Name']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Contact_F_L_Name" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['pu_Contact_F_L_Name'] ? formInputs['pu_Contact_F_L_Name'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2047,13 +2119,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Tel</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Phone_Main" 
-                                                                className="form-control" 
-                                                                value = {formInputs['pu_Phone_Main'] ? formInputs['pu_Phone_Main'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Phone_Main']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Phone_Main" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['pu_Phone_Main'] ? formInputs['pu_Phone_Main'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2061,13 +2138,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Email</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="pu_Email" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['pu_Email'] ? formInputs['pu_Email'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Email']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="pu_Email" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['pu_Email'] ? formInputs['pu_Email'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1 none">
@@ -2117,15 +2199,20 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Pickup Instructions<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <textarea 
-                                                                width="100%" 
-                                                                className="textarea-width" 
-                                                                name="pu_pickup_instructions_address" 
-                                                                rows="1" 
-                                                                cols="9" 
-                                                                value={formInputs['pu_pickup_instructions_address'] ? formInputs['pu_pickup_instructions_address'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)}/>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_pickup_instructions_address']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%" 
+                                                                        className="textarea-width" 
+                                                                        name="pu_pickup_instructions_address" 
+                                                                        rows="1" 
+                                                                        cols="9" 
+                                                                        value={formInputs['pu_pickup_instructions_address'] ? formInputs['pu_pickup_instructions_address'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="mt-1 additional-pickup-div">
@@ -2167,14 +2254,19 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Delivery Entity</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                placeholder="Tempo Pty Ltd" 
-                                                                type="text" 
-                                                                name="deToCompanyName" 
-                                                                value = {formInputs['deToCompanyName'] ? formInputs['deToCompanyName'] : ''} 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['deToCompanyName']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        placeholder="Tempo Pty Ltd" 
+                                                                        type="text" 
+                                                                        name="deToCompanyName" 
+                                                                        value = {formInputs['deToCompanyName'] ? formInputs['deToCompanyName'] : ''} 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2182,12 +2274,17 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Street 1</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_To_Address_Street_1" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['de_To_Address_Street_1'] ? formInputs['de_To_Address_Street_1'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_To_Address_Street_1']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_To_Address_Street_1" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['de_To_Address_Street_1'] ? formInputs['de_To_Address_Street_1'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2195,13 +2292,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Street 2</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_To_Address_Street_2" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['de_To_Address_Street_2'] ? formInputs['de_To_Address_Street_2'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_To_Address_Street_2']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_To_Address_Street_2" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['de_To_Address_Street_2'] ? formInputs['de_To_Address_Street_2'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <LoadingOverlay
@@ -2214,14 +2316,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={deToState}
-                                                                    onChange={(e) => this.handleChangeState(1, e)}
-                                                                    options={deToStates}
-                                                                    placeholder='select your state'
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{deToState.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={deToState}
+                                                                            onChange={(e) => this.handleChangeState(1, e)}
+                                                                            options={deToStates}
+                                                                            placeholder='select your state'
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                         <div className="row mt-1">
@@ -2229,14 +2336,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={deToPostalCode}
-                                                                    onChange={(e) => this.handleChangePostalCode(1, e)}
-                                                                    options={deToPostalCodes}
-                                                                    placeholder='select your postal code'
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{deToPostalCode.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={deToPostalCode}
+                                                                            onChange={(e) => this.handleChangePostalCode(1, e)}
+                                                                            options={deToPostalCodes}
+                                                                            placeholder='select your postal code'
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                         <div className="row mt-1">
@@ -2244,14 +2356,19 @@ class BookingPage extends Component {
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
                                                             <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
-                                                                <Select
-                                                                    value={deToSuburb}
-                                                                    onChange={(e) => this.handleChangeSuburb(1, e)}
-                                                                    options={deToSuburbs}
-                                                                    placeholder='select your suburb'
-                                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                    openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
-                                                                />
+                                                                {
+                                                                    (parseInt(curViewMode) === 0) ?
+                                                                        <p className="show-mode">{deToSuburb.value}</p>
+                                                                        :
+                                                                        <Select
+                                                                            value={deToSuburb}
+                                                                            onChange={(e) => this.handleChangeSuburb(1, e)}
+                                                                            options={deToSuburbs}
+                                                                            placeholder='select your suburb'
+                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                        />
+                                                                }
                                                             </div>
                                                         </div>
                                                     </LoadingOverlay>
@@ -2260,13 +2377,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Country</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_To_Address_Country" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['de_To_Address_Country'] ? formInputs['de_To_Address_Country'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_To_Address_Country']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_To_Address_Country" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['de_To_Address_Country'] ? formInputs['de_To_Address_Country'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2274,13 +2396,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_to_Contact_F_LName" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['de_to_Contact_F_LName'] ? formInputs['de_to_Contact_F_LName'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_to_Contact_F_LName']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_to_Contact_F_LName" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['de_to_Contact_F_LName'] ? formInputs['de_to_Contact_F_LName'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2288,13 +2415,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Tel</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_to_Phone_Main" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['de_to_Phone_Main'] ? formInputs['de_to_Phone_Main'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_to_Phone_Main']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_to_Phone_Main" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['de_to_Phone_Main'] ? formInputs['de_to_Phone_Main'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2302,13 +2434,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Email</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="de_Email" 
-                                                                className="form-control" 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                value = {formInputs['de_Email'] ? formInputs['de_Email'] : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)} />
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_Email']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text" 
+                                                                        name="de_Email" 
+                                                                        className="form-control" 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        value = {formInputs['de_Email'] ? formInputs['de_Email'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="head text-white panel-title">
@@ -2350,15 +2487,20 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Delivery Instructions <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <textarea 
-                                                                width="100%" 
-                                                                className="textarea-width" 
-                                                                name="de_to_PickUp_Instructions_Address" 
-                                                                rows="1" 
-                                                                cols="9" 
-                                                                value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
-                                                                disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
-                                                                onChange={(e) => this.onHandleInput(e)}/>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_to_PickUp_Instructions_Address']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%" 
+                                                                        className="textarea-width" 
+                                                                        name="de_to_PickUp_Instructions_Address" 
+                                                                        rows="1" 
+                                                                        cols="9" 
+                                                                        value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
+                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </form>
@@ -2374,6 +2516,10 @@ class BookingPage extends Component {
                                                     {status_history_items}
                                                 </div>
                                                 <div className="buttons">
+                                                    <div className="text-center mt-2 fixed-height form-view-btns">
+                                                        <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
+                                                        <button className={(parseInt(curViewMode) === 2) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                     </div>
@@ -2911,6 +3057,7 @@ const mapStateToProps = (state) => {
         warehouses: state.warehouse.warehouses,
         dmeClients: state.auth.dmeClients,
         clientPK: state.auth.clientPK,
+        noBooking: state.booking.noBooking,
     };
 };
 
