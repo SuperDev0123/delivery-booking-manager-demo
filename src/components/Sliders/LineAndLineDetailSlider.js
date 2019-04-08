@@ -19,8 +19,8 @@ class LineAndLineDetailSlider extends React.Component {
                 e_dimLength: 0,
                 e_dimWidth: 0,
                 e_dimHeight: 0,
-                e_dimUOM: 'Meter',
-                e_weightUOM: 'Kgs',
+                e_dimUOM: 'CM',
+                e_weightUOM: 'Kilogram',
                 e_weightPerEach: '0',
             },
             lineDetailFormInputs: {},
@@ -43,6 +43,7 @@ class LineAndLineDetailSlider extends React.Component {
         updateBookingLine: PropTypes.func.isRequired,
         createBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
+        packageTypes: PropTypes.array.isRequired,
     };
 
     onClickShowLine(index) {
@@ -120,7 +121,7 @@ class LineAndLineDetailSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, lineDetails, loadingBookingLine, loadingBookingLineDetail } = this.props;
+        const { isOpen, lines, lineDetails, loadingBookingLine, loadingBookingLineDetail, packageTypes } = this.props;
         const { selectedLineIndex, editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs } = this.state;
 
         const lineList = lines.map((line, index) => {
@@ -180,6 +181,10 @@ class LineAndLineDetailSlider extends React.Component {
                     </tr>
                 );
             }
+        });
+
+        const packageTypesOptions = packageTypes.map((packageType, key) => {
+            return (<option key={key} value={packageType.dmePackageTypeDesc}>{packageType.dmePackageTypeDesc}</option>);
         });
 
         return (
@@ -320,13 +325,13 @@ class LineAndLineDetailSlider extends React.Component {
                                         <div className="line-form">
                                             <label>
                                                 <p>Packaging</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
+                                                <select
                                                     name="e_type_of_packaging" 
-                                                    value={lineFormInputs['e_type_of_packaging']} 
                                                     onChange={(e) => this.onInputChange(e)}
-                                                />
+                                                    value = {lineFormInputs['e_type_of_packaging']}
+                                                >
+                                                    {packageTypesOptions}
+                                                </select>
                                             </label>
                                             <label>
                                                 <p>Item Description</p>
@@ -350,13 +355,14 @@ class LineAndLineDetailSlider extends React.Component {
                                             </label>
                                             <label>
                                                 <p>Wgt UOM</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
+                                                <select
                                                     name="e_weightUOM" 
-                                                    value={lineFormInputs['e_weightUOM']} 
                                                     onChange={(e) => this.onInputChange(e)}
-                                                />
+                                                    value = {lineFormInputs['e_weightUOM']} >
+                                                    <option value="Gram">Gram</option>
+                                                    <option value="Kilogram">Kilogram</option>
+                                                    <option value="Ton">Ton</option>
+                                                </select>
                                             </label>
                                             <label>
                                                 <p>Wgt Each</p>
@@ -380,13 +386,14 @@ class LineAndLineDetailSlider extends React.Component {
                                             </label>
                                             <label>
                                                 <p>Dim UOM</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
+                                                <select
                                                     name="e_dimUOM" 
-                                                    value={lineFormInputs['e_dimUOM']} 
                                                     onChange={(e) => this.onInputChange(e)}
-                                                />
+                                                    value = {lineFormInputs['e_dimUOM']} >
+                                                    <option value="MM">MM</option>
+                                                    <option value="CM">CM</option>
+                                                    <option value="METER">METER</option>
+                                                </select>
                                             </label>
                                             <label>
                                                 <p>Length</p>

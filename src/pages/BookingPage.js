@@ -32,6 +32,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
+import { getPackageTypes } from '../state/services/extraService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -143,6 +144,7 @@ class BookingPage extends Component {
             selectedLineIndex: -1,
             isBookingModified: false,
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
+            packageTypes: [],
         };
 
         this.djsConfig = {
@@ -206,6 +208,7 @@ class BookingPage extends Component {
         setClientPK: PropTypes.func.isRequired,
         cancelBook: PropTypes.func.isRequired,
         getBookingHistoryStatus: PropTypes.func.isRequired,
+        getPackageTypes: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -233,11 +236,12 @@ class BookingPage extends Component {
 
         this.props.getDMEClients();
         this.props.getWarehouses();
+        this.props.getPackageTypes();
         Modal.setAppElement(this.el);
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -284,6 +288,10 @@ class BookingPage extends Component {
 
         if (warehouses) {
             this.setState({warehouses});
+        }
+
+        if (packageTypes) {
+            this.setState({packageTypes});
         }
 
         if (bookingLines && parseInt(this.state.curViewMode) === 0) {
@@ -3022,6 +3030,7 @@ class BookingPage extends Component {
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                     createBookingLineDetail={(bookingLine) => this.props.createBookingLineDetail(bookingLine)}
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
+                    packageTypes={this.state.packageTypes}
                 />
             </div>
         );
@@ -3058,6 +3067,7 @@ const mapStateToProps = (state) => {
         dmeClients: state.auth.dmeClients,
         clientPK: state.auth.clientPK,
         noBooking: state.booking.noBooking,
+        packageTypes: state.extra.packageTypes,
     };
 };
 
@@ -3098,6 +3108,7 @@ const mapDispatchToProps = (dispatch) => {
         setClientPK: (clientId) => dispatch(setClientPK(clientId)),
         cancelBook: (bookingId) => dispatch(cancelBook(bookingId)),
         getBookingHistoryStatus: (bookingId) => dispatch(getBookingHistoryStatus(bookingId)),
+        getPackageTypes: () => dispatch(getPackageTypes()),
     };
 };
 

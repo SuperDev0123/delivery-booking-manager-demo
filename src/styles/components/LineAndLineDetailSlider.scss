@@ -39,9 +39,14 @@
         margin-top: 10px;
       }
 
-      input {
+      input, select {
         width: 70%;
         float: right;
+      }
+
+      select {
+        height: 30px;
+        margin-top: 7px;
       }
     }
   }
