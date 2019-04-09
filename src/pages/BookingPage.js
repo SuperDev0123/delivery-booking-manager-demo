@@ -1813,9 +1813,12 @@ class BookingPage extends Component {
                                         onChange = {(e) => this.onChangeViewMode(e)}
                                         value = {curViewMode}
                                     >
-                                        <option value="0">Show</option>
+                                        <option value="0">View</option>
                                         <option value="1">Create</option>
-                                        <option value="2">Update</option>
+                                        {
+                                            (isBookingSelected && !bAllComboboxViewOnlyonBooking) &&
+                                                <option value="2">Edit</option>
+                                        }
                                     </select>
                                 </div>
                             </div>
@@ -2629,7 +2632,7 @@ class BookingPage extends Component {
                                                 </LoadingOverlay>
                                             </div>
                                         </div>
-                                        <div id="tab02" className="tab-contents">
+                                        <div id="tab02" className="tab-contents none">
                                             <div className="tab-inner">
                                                 <p className="font-24px float-left">Additional Services & Options</p>
                                                 <BootstrapTable
@@ -2641,7 +2644,7 @@ class BookingPage extends Component {
                                                 <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
-                                        <div id="tab03" className="tab-contents">
+                                        <div id="tab03" className="tab-contents none">
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
@@ -2652,7 +2655,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab04" className="tab-contents">
+                                        <div id="tab04" className="tab-contents none">
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
@@ -2668,7 +2671,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab05" className="tab-contents">
+                                        <div id="tab05" className="tab-contents none">
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e)}>
                                                     <DropzoneComponent id="myDropzone" config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
