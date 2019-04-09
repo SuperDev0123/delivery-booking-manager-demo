@@ -1809,6 +1809,8 @@ class BookingPage extends Component {
                         <div className="row">
                             <div className="col-sm-6">
                                 <div className="text-left content view-select">
+                                    <span>Booking Mode</span>
+                                    <br />
                                     <select
                                         onChange = {(e) => this.onChangeViewMode(e)}
                                         value = {curViewMode}
