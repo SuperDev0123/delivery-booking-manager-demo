@@ -89,7 +89,7 @@ class LoginPage extends Component {
                             <div className="col-md-5 col-sm-12 bg-light login-info-center rounded-right rounded-sm-0">
                                 <div className="login-info-center">
                                     <div className="login-info-divider mt-5"></div>
-                                    <h1 className="login-info-title">Freight Your Delivery</h1>
+                                    <h1 className="login-info-title">Your Freight - Your Delivery</h1>
                                     <div className="login-info-divider mb-5"></div>
                                 </div>
                             </div>
