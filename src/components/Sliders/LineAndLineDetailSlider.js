@@ -163,10 +163,10 @@ class LineAndLineDetailSlider extends React.Component {
                         <td>{lineDetail.modelNumber}</td>
                         <td>{lineDetail.itemDescription}</td>
                         <td>{lineDetail.quantity}</td>
-                        <td>{lineDetail.itemFaultDescription}</td>
-                        <td>{lineDetail.insuranceValueEach}</td>
-                        <td>{lineDetail.gap_ra}</td>
                         <td>{lineDetail.clientRefNumber}</td>
+                        <td>{lineDetail.gap_ra}</td>
+                        <td>{lineDetail.insuranceValueEach}</td>
+                        <td>{lineDetail.itemFaultDescription}</td>
                         <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 2, index)}>Edit</Button></td>
                         <td className="duplicate">
                             <Button color="primary" onClick={() => this.props.onClickDuplicate(1, {pk_id_lines_data: lineDetail.pk_id_lines_data})}>
@@ -487,22 +487,12 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Fault Description</p>
+                                                <p>Client Reference #</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
-                                                    name="itemFaultDescription" 
-                                                    value={lineDetailFormInputs['itemFaultDescription']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Insurance Value</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="insuranceValueEach" 
-                                                    value={lineDetailFormInputs['insuranceValueEach']} 
+                                                    name="clientRefNumber" 
+                                                    value={lineDetailFormInputs['clientRefNumber']} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -517,12 +507,22 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Client Reference #</p>
+                                                <p>Insurance Value</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
-                                                    name="clientRefNumber" 
-                                                    value={lineDetailFormInputs['clientRefNumber']} 
+                                                    name="insuranceValueEach" 
+                                                    value={lineDetailFormInputs['insuranceValueEach']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Fault Description</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="itemFaultDescription" 
+                                                    value={lineDetailFormInputs['itemFaultDescription']} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
