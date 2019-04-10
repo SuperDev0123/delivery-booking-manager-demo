@@ -1896,7 +1896,7 @@ class BookingPage extends Component {
                                                         <p className="show-mode disabled">API status</p>
                                                 }
                                             </div>
-                                            <div className={(bAllComboboxViewOnlyonBooking) ? 'col-sm-4 form-group not-editable' : 'col-sm-4 form-group'}>
+                                            <div className='col-sm-4 form-group main-form-group'>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{currentWarehouseCodeOption.value}</p>
@@ -1916,18 +1916,18 @@ class BookingPage extends Component {
                                                         <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
                                                 }
                                             </div>
-                                            <div className="col-sm-4 form-group">
+                                            <div className="col-sm-4 form-group main-form-group">
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['booking_Created_For']}</p>
                                                         :
-                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
                                                 }
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
                                                         :
-                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} />
+                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
                                                 }
                                             </div>
                                         </div>
@@ -1982,7 +1982,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         value={formInputs['puCompany'] ? formInputs['puCompany'] : ''} 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2001,7 +2000,6 @@ class BookingPage extends Component {
                                                                         name="pu_Address_Street_1" 
                                                                         className="form-control" 
                                                                         value = {formInputs['pu_Address_Street_1'] ? formInputs['pu_Address_Street_1'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''}
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2020,7 +2018,6 @@ class BookingPage extends Component {
                                                                         name="pu_Address_street_2" 
                                                                         className="form-control" 
                                                                         value = {formInputs['pu_Address_street_2'] ? formInputs['pu_Address_street_2'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2034,7 +2031,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{puState.value}</p>
@@ -2054,7 +2051,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{puPostalCode.value}</p>
@@ -2074,7 +2071,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{puSuburb.value}</p>
@@ -2105,7 +2102,6 @@ class BookingPage extends Component {
                                                                         name="pu_Address_Country" 
                                                                         className="form-control" 
                                                                         value = {formInputs['pu_Address_Country'] ? formInputs['pu_Address_Country'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2124,7 +2120,6 @@ class BookingPage extends Component {
                                                                         name="pu_Contact_F_L_Name" 
                                                                         className="form-control" 
                                                                         value = {formInputs['pu_Contact_F_L_Name'] ? formInputs['pu_Contact_F_L_Name'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2143,7 +2138,6 @@ class BookingPage extends Component {
                                                                         name="pu_Phone_Main" 
                                                                         className="form-control" 
                                                                         value = {formInputs['pu_Phone_Main'] ? formInputs['pu_Phone_Main'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2161,7 +2155,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="pu_Email" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['pu_Email'] ? formInputs['pu_Email'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2171,7 +2164,7 @@ class BookingPage extends Component {
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Pickup Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
-                                                        <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 not-editable' : 'col-sm-8'}>
+                                                        <div className='col-sm-8'>
                                                             <div className="input-group pad-left-20px">
                                                                 {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}
                                                             </div>
@@ -2225,7 +2218,6 @@ class BookingPage extends Component {
                                                                         rows="1" 
                                                                         cols="9" 
                                                                         value={formInputs['pu_pickup_instructions_address'] ? formInputs['pu_pickup_instructions_address'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -2278,8 +2270,7 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="deToCompanyName" 
                                                                         value = {formInputs['deToCompanyName'] ? formInputs['deToCompanyName'] : ''} 
-                                                                        className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
+                                                                        className="form-control"  
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2297,7 +2288,7 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_To_Address_Street_1" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} value = {formInputs['de_To_Address_Street_1'] ? formInputs['de_To_Address_Street_1'] : ''} 
+                                                                        value = {formInputs['de_To_Address_Street_1'] ? formInputs['de_To_Address_Street_1'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
                                                         </div>
@@ -2315,7 +2306,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_To_Address_Street_2" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['de_To_Address_Street_2'] ? formInputs['de_To_Address_Street_2'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2330,7 +2320,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">State</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{deToState.value}</p>
@@ -2350,7 +2340,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Postal Code</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{deToPostalCode.value}</p>
@@ -2370,7 +2360,7 @@ class BookingPage extends Component {
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Suburb</label>
                                                             </div>
-                                                            <div className={bAllComboboxViewOnlyonBooking ? 'col-sm-8 select-margin not-editable' : 'col-sm-8 select-margin'}>
+                                                            <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
                                                                         <p className="show-mode">{deToSuburb.value}</p>
@@ -2400,7 +2390,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_To_Address_Country" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['de_To_Address_Country'] ? formInputs['de_To_Address_Country'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2419,7 +2408,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_to_Contact_F_LName" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['de_to_Contact_F_LName'] ? formInputs['de_to_Contact_F_LName'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2438,7 +2426,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_to_Phone_Main" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['de_to_Phone_Main'] ? formInputs['de_to_Phone_Main'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2457,7 +2444,6 @@ class BookingPage extends Component {
                                                                         type="text" 
                                                                         name="de_Email" 
                                                                         className="form-control" 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         value = {formInputs['de_Email'] ? formInputs['de_Email'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
                                                             }
@@ -2513,7 +2499,6 @@ class BookingPage extends Component {
                                                                         rows="1" 
                                                                         cols="9" 
                                                                         value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
-                                                                        disabled={bAllComboboxViewOnlyonBooking ? 'disabled' : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -2591,7 +2576,13 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab01" className="tab-contents">
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
-                                                <Button className="edit-lld-btn btn-primary" onClick={this.toggleShowLineSlider}>Edit</Button>
+                                                <Button 
+                                                    className="edit-lld-btn btn-primary" 
+                                                    onClick={this.toggleShowLineSlider} 
+                                                    disabled={!isBookingSelected || bAllComboboxViewOnlyonBooking}
+                                                >
+                                                    Edit
+                                                </Button>
                                                 <BootstrapTable
                                                     keyField="id"
                                                     data={ bookingTotals }

@@ -433,3 +433,11 @@ input.orange-color {
 	background: lightgray;
 	cursor: not-allowed;
 }
+
+.main-form-group {
+	>div, >input {
+		height: 40px;	
+	}
+
+
+}
