@@ -152,13 +152,11 @@ class AllBookingsPage extends React.Component {
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
-        console.log('@00 - ', columnFilters);
+
         if (bookings) {
             this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
 
-            console.log('@0 - ', bookings.length, needUpdateBookings);
             if (bookings.length > 0 && !needUpdateBookings) {
-                console.log('@1 - ', startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
                 this.setState({
                     successSearchFilterOptions: {
                         startDate,
@@ -175,7 +173,6 @@ class AllBookingsPage extends React.Component {
                     hasSuccessSearchAndFilterOptions: true,
                 });
             } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
-                console.log('@2 - ', successSearchFilterOptions);
                 this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.newPod );
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
             }
