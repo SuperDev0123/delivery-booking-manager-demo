@@ -63,7 +63,9 @@ class AllBookingsPage extends React.Component {
             linkPopoverOpens: [],
             dmeClients: [],
             username: null,
-            selectedClientId: null, 
+            selectedClientId: null,
+            hasSuccessSearchAndFilterOptions: false,
+            successSearchFilterOptions: {},
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -142,6 +144,7 @@ class AllBookingsPage extends React.Component {
 
     componentWillReceiveProps(newProps) {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, errorMessage, dmeClients, username, clientPK } = newProps;
+        let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -149,9 +152,33 @@ class AllBookingsPage extends React.Component {
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
-
+        console.log('@00 - ', columnFilters);
         if (bookings) {
             this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
+
+            console.log('@0 - ', bookings.length, needUpdateBookings);
+            if (bookings.length > 0 && !needUpdateBookings) {
+                console.log('@1 - ', startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
+                this.setState({
+                    successSearchFilterOptions: {
+                        startDate,
+                        endDate,
+                        warehouseId,
+                        sortField,
+                        itemCountPerPage,
+                        columnFilters: {...columnFilters},
+                        prefilterInd,
+                        simpleSearchKeyword,
+                        newPod,
+                        clientPK,
+                    },
+                    hasSuccessSearchAndFilterOptions: true,
+                });
+            } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
+                console.log('@2 - ', successSearchFilterOptions);
+                this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.newPod );
+                this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
+            }
         }
 
         if (bookingLineDetails) {
@@ -236,7 +263,6 @@ class AllBookingsPage extends React.Component {
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
-            
         } else {
             this.setState({loading: false});
         }

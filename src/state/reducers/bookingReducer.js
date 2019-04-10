@@ -149,21 +149,25 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 ...state,
                 errorMessage: errorMessage,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case BOOK_FAILED:
             return {
                 ...state,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case GET_LABEL_SUCCESS:
             return {
                 ...state,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case GET_LABEL_FAILED:
             return {
                 ...state,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_ALL:
             return {
@@ -176,6 +180,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 prefilterInd: prefilterInd,
                 simpleSearchKeyword: simpleSearchKeyword,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_SELECTEDATE:
             return {
@@ -183,48 +188,56 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 startDate: startDate,
                 endDate: endDate,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_WAREHOUSEID:
             return {
                 ...state,
                 warehouseId: warehouseId,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_SORTFIELD:
             return {
                 ...state,
                 sortField: sortField,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_COLUMNFILTER:
             return {
                 ...state,
                 columnFilters: columnFilters,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_PREFILTERIND:
             return {
                 ...state,
                 prefilterInd: prefilterInd,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD:
             return {
                 ...state,
                 simpleSearchKeyword: simpleSearchKeyword,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_NEWPOD:
             return {
                 ...state,
                 newPod: newPod,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_LOCAL_FILTER_CLIENTPK:
             return {
                 ...state,
                 clientPK: clientPK,
                 needUpdateBookings: true,
+                bookings: [],
             };
         case SET_FETCH_BOOKINGS_FLAG:
             return {
