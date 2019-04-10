@@ -1825,7 +1825,7 @@ class BookingPage extends Component {
                                 </div>
                             </div>
                             <div className="col-sm-6">
-                                <div className="user content">
+                                <div className="user content none">
                                     <ul>
                                         <li><img src={user} alt="" /></li>
                                         <li>Stephen Madeisky</li>
@@ -1859,7 +1859,7 @@ class BookingPage extends Component {
                                             </p>
                                         </div>
                                         <div className="col-sm-3">
-                                            <p className="text-white text-right">AUS Mon 18:00 2018-02-04</p>
+                                            <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
                                         <div className="col-sm-5">
                                             <ul className="grid-head">
