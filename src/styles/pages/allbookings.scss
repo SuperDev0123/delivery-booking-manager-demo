@@ -204,8 +204,9 @@ $column_26_width: 150px;
     height: $table_body_height;
   }
 
-  td.active {
-    background-color: whitesmoke;
+  td.current,
+  th.current {
+    background-color: lightgray;
   }
 }
 
