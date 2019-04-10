@@ -368,7 +368,7 @@ class BookingPage extends Component {
 
         if ((!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
             (!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
-            if (booking.puCompany || booking.deToCompanyName || booking.de_Email || booking.pu_Email) {
+            if (booking.b_bookingID_Visual) {
                 let formInputs = this.state.formInputs;
 
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
@@ -1430,6 +1430,15 @@ class BookingPage extends Component {
         }
     }
 
+    onClickConfirmBooking() {
+        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+            let bookingToUpdate = this.state.booking;
+            bookingToUpdate.z_manual_booking_set_to_confirm = moment();
+            bookingToUpdate.b_status = 'Ready for booking';
+            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+        }
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname} = this.state;
 
@@ -2034,7 +2043,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puState.value}</p>
+                                                                        <p className="show-mode">{puState ? puState.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={puState}
@@ -2054,7 +2063,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puPostalCode.value}</p>
+                                                                        <p className="show-mode">{puPostalCode ? puPostalCode.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={puPostalCode}
@@ -2074,7 +2083,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puSuburb.value}</p>
+                                                                        <p className="show-mode">{puSuburb ? puSuburb.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={puSuburb}
@@ -2323,7 +2332,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToState.value}</p>
+                                                                        <p className="show-mode">{deToState ? deToState.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={deToState}
@@ -2343,7 +2352,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToPostalCode.value}</p>
+                                                                        <p className="show-mode">{deToPostalCode ? deToPostalCode.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={deToPostalCode}
@@ -2363,7 +2372,7 @@ class BookingPage extends Component {
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
                                                                     (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToSuburb.value}</p>
+                                                                        <p className="show-mode">{deToSuburb ? deToSuburb.value : ''}</p>
                                                                         :
                                                                         <Select
                                                                             value={deToSuburb}
@@ -2524,7 +2533,13 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i className="fas fa-clipboard-check"></i> Confirm Booking</button>
+                                                        <button 
+                                                            className="btn btn-theme custom-theme" 
+                                                            onClick={() => this.onClickConfirmBooking()}
+                                                            disabled={!isBookingSelected || bAllComboboxViewOnlyonBooking}
+                                                        >
+                                                            <i className="fas fa-clipboard-check"></i>Confirm Booking
+                                                        </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme"><i className="fas fa-undo-alt"></i> Amend Booking</button>
