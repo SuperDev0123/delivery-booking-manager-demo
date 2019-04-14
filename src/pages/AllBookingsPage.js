@@ -844,6 +844,35 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickDownloadCSV() {
+        const { selectedBookingIds } = this.state;
+
+        if (selectedBookingIds && selectedBookingIds.length === 0) {
+            alert('There is no filtered bookings to build Excel.');
+        } else {
+            // for (let i = 0; i < selectedBookingIds.length; i++)
+            //     bookingIds.push(bookings[i].id);
+
+            // this.setState({loadingDownload: true});
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-csv/',
+                data: {bookingIds: selectedBookingIds},
+                responseType: 'blob', // important
+            };
+
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'SEATEMP_' + selectedBookingIds.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
+                document.body.appendChild(link);
+                link.click();
+                // this.setState({loadingDownload: false});
+            });
+        }
+    }
+
     onClickGear() {
         this.setState({showGearMenu: true});
     }
@@ -1212,6 +1241,7 @@ class AllBookingsPage extends React.Component {
                             </div>
                             <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
+                            <a onClick={() => this.onClickDownloadCSV()}>CSV</a>
                             <a href="">?</a>
                         </div>
                     </div>
