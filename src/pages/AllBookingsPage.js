@@ -722,12 +722,14 @@ class AllBookingsPage extends React.Component {
     onClickPrinter(booking) {
         const st_name = 'startrack';
         const allied_name = 'allied';
+        const cope_name = 'cope';
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
                 const win = window.open(booking.z_label_url);
                 win.focus();
-            } else if (booking.vx_freight_provider.toLowerCase() === allied_name) {
+            } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
+                booking.vx_freight_provider.toLowerCase() === cope_name) {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             }
