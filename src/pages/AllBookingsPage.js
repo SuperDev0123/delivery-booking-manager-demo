@@ -261,7 +261,6 @@ class AllBookingsPage extends React.Component {
                 selectedWarehouseId: warehouseId, 
                 filterInputs: columnFilters, 
                 simpleSearchKeyword,
-                downloadOption: newPod,
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod);
