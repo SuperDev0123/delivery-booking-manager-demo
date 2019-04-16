@@ -846,15 +846,19 @@ class AllBookingsPage extends React.Component {
 
     onClickDownloadCSV() {
         const { bookings } = this.state;
+        let bookingIds = [];
 
         if (bookings && bookings.length === 0) {
             alert('There is no bookings to build Excel.');
         } else {
+            for (let i = 0; i < bookings.length; i++)
+                bookingIds.push(bookings[i].id);
+
             this.setState({loadingDownload: true});
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-csv/',
-                data: {bookingIds: bookings},
+                data: {bookingIds},
                 responseType: 'blob', // important
             };
 
