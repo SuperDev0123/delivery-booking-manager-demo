@@ -1178,6 +1178,7 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
+                    <td className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
                     <td className={(sortField === 'vx_serviceName') ? 'current' : ''}>{booking.vx_serviceName}</td>
                     <td className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
@@ -1582,6 +1583,21 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
+                                                                className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_client_sales_inv_num')} 
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Client Sales Inv Num</p>
+                                                                {
+                                                                    (sortField === 'b_client_sales_inv_num') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
+                                                            </th>
+                                                            <th 
                                                                 className={(sortField === 'vx_freight_provider') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('vx_freight_provider')} 
                                                                 scope="col" 
@@ -1733,6 +1749,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="narrow-column"><i className="icon icon-printer"></i></th>
                                                             <th className="narrow-column"><i className="icon icon-image"></i></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
