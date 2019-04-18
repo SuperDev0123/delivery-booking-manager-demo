@@ -850,7 +850,7 @@ class AllBookingsPage extends React.Component {
         let bookingIds = [];
 
         if (bookings && bookings.length === 0) {
-            alert('There is no bookings to build Excel.');
+            alert('There is no bookings to build CSV.');
         } else {
             for (let i = 0; i < bookings.length; i++)
                 bookingIds.push(bookings[i].id);
@@ -870,6 +870,36 @@ class AllBookingsPage extends React.Component {
                 link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
                 document.body.appendChild(link);
                 link.click();
+                this.setState({loadingDownload: false});
+            });
+        }
+    }
+
+    onClickXML() {
+        const { bookings } = this.state;
+        let bookingIds = [];
+
+        if (bookings && bookings.length === 0) {
+            alert('There is no bookings to build XML.');
+        } else if (bookings.length > 100) {
+            alert('You can generate xml with 100 bookings at most.');
+        } else {
+            for (let i = 0; i < bookings.length; i++)
+                bookingIds.push(bookings[i].id);
+
+            this.setState({loadingDownload: true});
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                data: {bookingIds},
+            };
+
+            axios(options).then((response) => {
+                if (response.data.error) {
+                    alert('XMLs are not generated successfully');
+                } else {
+                    alert('XMLs are generated successfully');
+                }
                 this.setState({loadingDownload: false});
             });
         }
@@ -1245,6 +1275,7 @@ class AllBookingsPage extends React.Component {
                             <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickDownloadCSV()}>CSV</a>
+                            <a onClick={() => this.onClickXML()}>XML</a>
                             <a href="">?</a>
                         </div>
                     </div>
