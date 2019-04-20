@@ -1890,16 +1890,19 @@ class BookingPage extends Component {
                                                 <a href=""><i className="fas fa-file-alt text-white"></i></a>
                                             </p>
                                         </div>
-                                        <div className="col-sm-3">
+                                        <div className="col-sm-5">
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
-                                        <div className="col-sm-5">
+                                        <div className="col-sm-3">
                                             <ul className="grid-head none">
                                                 <li><button className="btn btn-light btn-theme"> Preview</button></li>
                                                 <li><button className="btn btn-light btn-theme">Email</button></li>
                                                 <li><button className="btn btn-light btn-theme">Print PDF</button></li>
                                                 <li><button className="btn btn-light btn-theme">Undo</button></li>
                                             </ul>
+                                            <label className="color-white">
+                                                {isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}
+                                            </label>
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
