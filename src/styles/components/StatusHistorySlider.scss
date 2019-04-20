@@ -1,0 +1,56 @@
+.sh-slider {
+	width: 55% !important;
+
+	.list-view {
+		button {
+			font-size: 30px;
+			padding: 0px 10px;
+			margin-bottom: 20px;
+		}
+
+		.list {
+			height: 700px;
+			overflow-y: auto;
+		}
+
+		.item {
+			padding: 10px;
+			border: 1px solid gray;
+			border-bottom: 0px;
+
+			&:last-child {
+				border-bottom: 1px solid gray;
+			}
+
+			p {
+				width: 80%;
+				border: 1px solid gray;
+				margin-left: 10%;
+			}
+
+			.text {
+				height: 50px;
+				overflow-y: scroll;
+			}
+		}
+	}
+
+	.form-view {
+		text-align: center;
+
+	    label {
+	      display: block;
+
+	      p {
+	      	width: 100px;
+	      	display: inline-block;
+	      }
+
+	      select, input, textarea {
+	      	width: 60%;
+	      	display: inline-block;
+	      	vertical-align: top;
+	      }
+	    }
+	}
+}

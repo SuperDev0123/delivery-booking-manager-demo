@@ -25,6 +25,7 @@ import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
+import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook, getBookingStatusHistory } from '../state/services/bookingService';
@@ -32,7 +33,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus } from '../state/services/extraService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -137,14 +138,16 @@ class BookingPage extends Component {
             isShowNoteDetailModal: false,
             isShowSwitchClientModal: false,
             dmeClients: [],
-            status_history: [],
+            statusHistories: [],
             clientPK: null,
             typed: null,
             isShowLineSlider: false,
+            isShowStatusHistorySlider: false,
             selectedLineIndex: -1,
             isBookingModified: false,
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
             packageTypes: [],
+            allBookingStatus: [],
         };
 
         this.djsConfig = {
@@ -167,6 +170,7 @@ class BookingPage extends Component {
         this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
         this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
+        this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
     }
 
     static propTypes = {
@@ -209,6 +213,7 @@ class BookingPage extends Component {
         cancelBook: PropTypes.func.isRequired,
         getBookingStatusHistory: PropTypes.func.isRequired,
         getPackageTypes: PropTypes.func.isRequired,
+        getAllBookingStatus: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -234,6 +239,7 @@ class BookingPage extends Component {
             // this.props.getDeliverySuburbStrings('state', undefined);
         }
 
+        this.props.getAllBookingStatus();
         this.props.getDMEClients();
         this.props.getWarehouses();
         this.props.getPackageTypes();
@@ -241,7 +247,7 @@ class BookingPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, status_history } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -294,8 +300,12 @@ class BookingPage extends Component {
             this.setState({packageTypes});
         }
 
-        if (status_history) {
-            this.setState({status_history});
+        if (statusHistories) {
+            this.setState({statusHistories});
+        }
+
+        if (allBookingStatus) {
+            this.setState({allBookingStatus});
         }
 
         if (bookingLines && parseInt(this.state.curViewMode) === 0) {
@@ -1316,6 +1326,16 @@ class BookingPage extends Component {
         }
     }
 
+    toggleShowStatusHistorySlider() {
+        const { isBookingSelected } = this.state;
+
+        if (isBookingSelected) {
+            this.setState(prevState => ({isShowStatusHistorySlider: !prevState.isShowStatusHistorySlider}));
+        } else {
+            alert('Please select a booking.');
+        }
+    }
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -1444,8 +1464,13 @@ class BookingPage extends Component {
         }
     }
 
+    onClickOpenSlide(e) {
+        e.preventDefault();
+        this.toggleShowStatusHistorySlider();
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, status_history} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1489,18 +1514,6 @@ class BookingPage extends Component {
                 editable: false,
             }
         ];
-
-        const status_history_items = status_history.map((value, index) => {
-            return (
-                <div className="well wellafter" id={index} key={index}>
-                    <small><b>{value.status_last}</b></small><br/>
-                    <small>Status info :</small><br/>
-                    <small>{value.notes}</small><br/>
-                    <small className="red"> Create : {booking.z_createdTimeStamp} </small><br/>
-                    <small className="red"> Event : {value.api_status_time_stamp} </small>
-                </div>
-            );
-        });
 
         const bookingLineDetailsColumns = [
             {
@@ -1870,7 +1883,7 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-3">
-                                            <p className="text-white">Booking Details : {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
+                                            <p className="text-white">Booking Details: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
                                         </div>
                                         <div className="col-sm-1">
                                             <p className="text-white text-center">
@@ -1881,12 +1894,13 @@ class BookingPage extends Component {
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
                                         <div className="col-sm-5">
-                                            <ul className="grid-head">
-                                                <li><button className="btn btn-light btn-theme none"> Preview</button></li>
-                                                <li><button className="btn btn-light btn-theme none">Email</button></li>
-                                                <li><button className="btn btn-light btn-theme none">Print PDF</button></li>
-                                                <li><button className="btn btn-light btn-theme none">Undo</button></li>
+                                            <ul className="grid-head none">
+                                                <li><button className="btn btn-light btn-theme"> Preview</button></li>
+                                                <li><button className="btn btn-light btn-theme">Email</button></li>
+                                                <li><button className="btn btn-light btn-theme">Print PDF</button></li>
+                                                <li><button className="btn btn-light btn-theme">Undo</button></li>
                                             </ul>
+                                            <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
@@ -2528,11 +2542,6 @@ class BookingPage extends Component {
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
                                                 <div className="head">
-                                                    <a className="text-white">Control</a>
-                                                </div>
-                                                <div className="status-log">
-                                                    <h4>Status log</h4>
-                                                    {status_history_items}
                                                 </div>
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height form-view-btns">
@@ -3055,6 +3064,14 @@ class BookingPage extends Component {
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                     packageTypes={this.state.packageTypes}
                 />
+
+                <StatusHistorySlider
+                    isOpen={isShowStatusHistorySlider}
+                    statusHistories={statusHistories}
+                    booking={booking}
+                    toggleStatusHistorySlider={this.toggleShowStatusHistorySlider}
+                    allBookingStatus={allBookingStatus}
+                />
             </div>
         );
     }
@@ -3091,7 +3108,8 @@ const mapStateToProps = (state) => {
         clientPK: state.auth.clientPK,
         noBooking: state.booking.noBooking,
         packageTypes: state.extra.packageTypes,
-        status_history: state.booking.status_history,
+        allBookingStatus: state.extra.allBookingStatus,
+        statusHistories: state.booking.statusHistories,
     };
 };
 
@@ -3133,6 +3151,7 @@ const mapDispatchToProps = (dispatch) => {
         cancelBook: (bookingId) => dispatch(cancelBook(bookingId)),
         getBookingStatusHistory: (bookingId) => dispatch(getBookingStatusHistory(bookingId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
+        getAllBookingStatus: () => dispatch(getAllBookingStatus()),
     };
 };
 

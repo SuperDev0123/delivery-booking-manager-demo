@@ -25,10 +25,10 @@ const defaultState = {
     simpleSearchKeyword: '',
     newPod: false,
     noBooking: null,
-    status_history: null,
+    statusHistories: null,
 };
 
-export const BookingReducer = (state = defaultState, { noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, clientPK, status_history }) => {
+export const BookingReducer = (state = defaultState, { noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, clientPK, statusHistories }) => {
     switch (type) {
         case SET_ATTACHMENTS:
             return {
@@ -263,7 +263,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
         case SUCCESS_GET_BOOKING_STATUS_HISTORY:
             return {
                 ...state,
-                status_history: status_history,
+                statusHistories: statusHistories,
             };
         case FAILED_GET_BOOKING_STATUS_HISTORY:
             return {

@@ -344,12 +344,12 @@ export function failedCancelBook(error) {
 export function successGetBookingStatusHistory(data) {
     return {
         type: SUCCESS_GET_BOOKING_STATUS_HISTORY,
-        status_history: data.history,
+        statusHistories: data.history,
     };
 }
 
 export function failedGetBookingStatusHistory(error) {
-    alert('Failed get booking history status : ' + error);
+    console.log('Failed get booking history status : ' + error);
 
     return {
         type: FAILED_GET_BOOKING_STATUS_HISTORY,

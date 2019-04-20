@@ -408,6 +408,7 @@ input.orange-color {
 	select {
 		width: 100px;
 		height: 22px;
+		margin-bottom: 5px;
 	}
 }
 
@@ -438,6 +439,20 @@ input.orange-color {
 	>div, >input {
 		height: 40px;	
 	}
+}
 
+.pickup-detail .buttons {
+	margin-top: 10px !important;
+}
 
+.open-slide {
+	float: right;
+	margin-right: 20px;
+	padding: 0 !important;
+	margin-top: 5px;
+
+	i {
+		color: white;
+		font-size: 25px;
+	}
 }
