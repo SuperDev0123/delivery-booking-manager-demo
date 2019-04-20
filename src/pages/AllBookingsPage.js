@@ -1136,7 +1136,7 @@ class AllBookingsPage extends React.Component {
                     </Popover>
                     <td 
                         id={'link-popover-' + booking.id} 
-                        onClick={() => this.showLinkPopover(booking.id)}
+                        onClick={() => this.onClickLink(0, booking.id)}
                         className={(sortField === 'b_bookingID_Visual') ? 'visualID-box current' : 'visualID-box'}
                     >
                         <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span>
