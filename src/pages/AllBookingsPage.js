@@ -926,6 +926,18 @@ class AllBookingsPage extends React.Component {
             window.location.assign('/comm?bookingid=' + bookingId);
     }
 
+    onClickStatusLock(booking) {
+        const { username } = this.state;
+
+        if (username === 'dme') {
+            booking.z_lock_status = !booking.z_lock_status;
+            booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+            this.props.updateBooking(booking.id, booking);
+        } else {
+            alert('Only DME can change this status');
+        }
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft } = this.state;
 
@@ -1213,6 +1225,9 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
                     <td className={(sortField === 'vx_serviceName') ? 'current' : ''}>{booking.vx_serviceName}</td>
                     <td className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
+                    <td className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                        <i className="fa fa-lock"></i>
+                    </td>
                     <td className={(sortField === 'b_status') ? 'current' : ''}>{booking.b_status}</td>
                     <td className={(sortField === 'b_status_API') ? 'current' : ''}>{booking.b_status_API}</td>
                     <td className={(sortField === 's_05_LatestPickUpDateTimeFinal') ? 'current' : ''}>
@@ -1674,6 +1689,7 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
+                                                            <th className=""></th>
                                                             <th 
                                                                 className={(sortField === 'b_status') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_status')} 
@@ -1785,6 +1801,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th className="narrow-column"><i className="fa fa-lock"></i></th>
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_status_API" value={filterInputs['b_status_API'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>

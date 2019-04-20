@@ -100,6 +100,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 ...state,
                 booking: booking,
                 noBooking: false,
+                needUpdateBookings: true,
             };
         case SUCCESS_CREATE_BOOKING:
             return {
