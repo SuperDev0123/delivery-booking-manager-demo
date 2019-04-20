@@ -1481,6 +1481,11 @@ class BookingPage extends Component {
         this.props.saveStatusHistory(statusHistory);
     }
 
+    onClickComms(e) {
+        e.preventDefault();
+        window.location.assign('/comm?bookingid=' + this.state.booking.id);
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus} = this.state;
 
@@ -1990,8 +1995,8 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="col-sm-4">
                                                     <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">Prev</button>
-                                                    <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0}  className="btn btn-theme next-btn">Next</button>
-                                                    <button type="submit" className="btn btn-theme submit none">Submit</button>
+                                                    <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">Next</button>
+                                                    <button onClick={(e) => this.onClickComms(e)} disabled={!this.state.isBookingSelected} className="btn btn-primary btn-comms">comms</button>
                                                 </div>
                                             </div>
                                         </div>

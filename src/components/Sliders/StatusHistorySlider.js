@@ -43,7 +43,7 @@ class StatusHistorySlider extends React.Component {
     onClickSave() {
         const {booking} = this.props;
         let statusHistory = this.state.formInputs;
-        statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+        statusHistory['notes'] = booking.b_status_API + ' ---> ' + statusHistory['status_last'];
         statusHistory['fk_booking_id'] = booking.pk_booking_id;
         this.props.OnSaveStatusHistory(statusHistory);
         this.setState({viewMode: 0});
