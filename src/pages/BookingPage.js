@@ -1890,10 +1890,10 @@ class BookingPage extends Component {
                                                 <a href=""><i className="fas fa-file-alt text-white"></i></a>
                                             </p>
                                         </div>
-                                        <div className="col-sm-5">
+                                        <div className="col-sm-3">
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
-                                        <div className="col-sm-3">
+                                        <div className="col-sm-5">
                                             <ul className="grid-head none">
                                                 <li><button className="btn btn-light btn-theme"> Preview</button></li>
                                                 <li><button className="btn btn-light btn-theme">Email</button></li>
