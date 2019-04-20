@@ -66,12 +66,12 @@ export const getBookingWithFilter = (id, filter) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
-export const getBookingStatusHistory = (b_clientReference_RA_Numbers) => {
+export const getBookingStatusHistory = (pk_booking_id) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_booking_history/?b_clientReference_RA_Numbers=` + b_clientReference_RA_Numbers,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_booking_history/?pk_booking_id=` + pk_booking_id,
     };
     return dispatch =>
         axios(options)

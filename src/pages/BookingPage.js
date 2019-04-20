@@ -507,7 +507,7 @@ class BookingPage extends Component {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                     this.props.getCommsWithBookingId(booking.id);
-                    this.props.getBookingStatusHistory(booking.b_clientReference_RA_Numbers);
+                    this.props.getBookingStatusHistory(booking.pk_booking_id);
                 }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
