@@ -6,7 +6,6 @@ import { Button } from 'reactstrap';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-// import { Button } from 'reactstrap';
 // import LoadingOverlay from 'react-loading-overlay';
 
 class StatusHistorySlider extends React.Component {
@@ -15,6 +14,9 @@ class StatusHistorySlider extends React.Component {
 
         this.state = {
             viewMode: 0, // 0: List, 1: Form
+            formInputs: {
+                status_last: 'Entered',
+            },
         };
     }
 
@@ -24,13 +26,26 @@ class StatusHistorySlider extends React.Component {
         statusHistories: PropTypes.array.isRequired,
         booking: PropTypes.object.isRequired,
         allBookingStatus: PropTypes.array.isRequired,
+        username: PropTypes.string.isRequired,
+        OnSaveStatusHistory: PropTypes.func.isRequired,
     };
 
     onClickPlus() {
-        this.setState({viewMode: 1});
+        const {booking} = this.props;
+
+        if (booking.z_lock_status) {
+            alert('This booking is locked, so `update status` is not available.');
+        } else {
+            this.setState({viewMode: 1});
+        }
     }
 
     onClickSave() {
+        const {booking} = this.props;
+        let statusHistory = this.state.formInputs;
+        statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+        statusHistory['fk_booking_id'] = booking.pk_booking_id;
+        this.props.OnSaveStatusHistory(statusHistory);
         this.setState({viewMode: 0});
     }
 
@@ -38,9 +53,19 @@ class StatusHistorySlider extends React.Component {
         this.setState({viewMode: 0});
     }
 
+    onInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        let formInputs = this.state.formInputs;
+        formInputs[name] = value;
+        this.setState({formInputs});
+    }
+
     render() {
-        const { isOpen, statusHistories, allBookingStatus } = this.props;
-        const { viewMode } = this.state;
+        const { isOpen, statusHistories, allBookingStatus, username } = this.props;
+        const { viewMode, formInputs } = this.state;
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -70,9 +95,14 @@ class StatusHistorySlider extends React.Component {
                     {
                         viewMode === 0 ?
                             <div className="list-view">
-                                <Button color="primary" onClick={() => this.onClickPlus()}>
-                                    +
-                                </Button>
+                                {
+                                    username === 'dme' ?
+                                        <Button color="primary" onClick={() => this.onClickPlus()}>
+                                            +
+                                        </Button>
+                                        :
+                                        null
+                                }
                                 <div className="list">
                                     {statusHistoryItems}
                                 </div>
@@ -83,22 +113,18 @@ class StatusHistorySlider extends React.Component {
                                     <p>Status</p>
                                     <select
                                         name="status_last"
+                                        onChange={(e) => this.onInputChange(e)}
+                                        value = {formInputs['status_last']}
                                     >
                                         {statusOptions}
                                     </select>
                                 </label>
                                 <label>
-                                    <p>Note</p>
-                                    <input 
-                                        className="form-control" 
-                                        type="text" 
-                                        name="notes"
-                                    />
-                                </label>
-                                <label>
                                     <p>DME note</p>
                                     <textarea
                                         name="dme_notes"
+                                        value={formInputs['dme_notes']} 
+                                        onChange={(e) => this.onInputChange(e)}
                                     />
                                 </label>
                                 <Button color="primary" onClick={() => this.onClickSave()}>

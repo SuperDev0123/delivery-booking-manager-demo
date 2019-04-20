@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGetBookingStatusHistory, failedGetBookingStatusHistory } from '../actions/bookingActions';
+import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', newPod=false) => {
@@ -64,19 +64,6 @@ export const getBookingWithFilter = (id, filter) => {
         axios(options)
             .then(({ data }) => dispatch(successGetBooking(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
-};
-
-export const getBookingStatusHistory = (pk_booking_id) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_booking_history/?pk_booking_id=` + pk_booking_id,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetBookingStatusHistory(data)))
-            .catch((error) => dispatch(failedGetBookingStatusHistory(error)));
 };
 
 export const getLatestBooking = () => {
