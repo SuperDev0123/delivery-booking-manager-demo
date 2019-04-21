@@ -372,6 +372,10 @@ class BookingPage extends Component {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
         }
 
+        if (needUpdateBookings && booking && booking.pk_booking_id) {
+            this.props.getBookingWithFilter(booking.pk_booking_id, 'id');
+        }
+
         if (bBooking) {
             if (bBooking === false) {
                 alert('There is no such booking with that DME`/CON` number.');
@@ -1476,7 +1480,7 @@ class BookingPage extends Component {
 
     OnSaveStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
-        newBooking.b_status_API = statusHistory['status_last'];
+        newBooking.b_status = statusHistory['status_last'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.props.saveStatusHistory(statusHistory);
     }
@@ -3133,6 +3137,7 @@ const mapStateToProps = (state) => {
         allBookingStatus: state.extra.allBookingStatus,
         statusHistories: state.extra.statusHistories,
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
+        needUpdateBookings: state.booking.needUpdateBookings,
     };
 };
 
