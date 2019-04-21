@@ -2615,12 +2615,7 @@ class BookingPage extends Component {
                                                 <li><a href="#tab01">Shipment Packages / Goods</a></li>
                                                 <li><a href="#tab02">Additional Information</a></li>
                                                 <li><a href="#tab03">Freight Options</a></li>
-                                                {
-                                                    username === 'dme' ?
-                                                        <li><a href="#tab04">Communication Log</a></li>
-                                                        :
-                                                        null
-                                                }
+                                                <li><a href="#tab04">Communication Log</a></li>
                                                 <li><a href="#tab05">Attachments</a></li>
                                             </ul>
                                         </div>
