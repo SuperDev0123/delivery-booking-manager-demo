@@ -1476,7 +1476,7 @@ class BookingPage extends Component {
 
     OnSaveStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
-        newBooking.b_status = statusHistory['status_last'];
+        newBooking.b_status_API = statusHistory['status_last'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.props.saveStatusHistory(statusHistory);
     }

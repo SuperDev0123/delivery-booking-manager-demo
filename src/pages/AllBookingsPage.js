@@ -178,6 +178,7 @@ class AllBookingsPage extends React.Component {
                     hasSuccessSearchAndFilterOptions: true,
                 });
             } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
+                alert('Your search/filter has returned 0 records - Returning to your last found set.');
                 this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.newPod );
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
             }

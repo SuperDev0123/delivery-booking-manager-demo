@@ -74,7 +74,7 @@ class StatusHistorySlider extends React.Component {
                     <p className="note">{statusHistory.notes}</p>
                     <p className="text">{statusHistory.dme_notes}</p>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
-                    <small> Create Time: {statusHistory.api_status_time_stamp ? moment(statusHistory.api_status_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
+                    <small> Create Time: {statusHistory.z_CreatedTimestamp ? moment(statusHistory.z_CreatedTimestamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
                 </div>
             );
         });
