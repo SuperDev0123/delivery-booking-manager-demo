@@ -372,10 +372,6 @@ class BookingPage extends Component {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
         }
 
-        if (needUpdateBookings && booking && booking.pk_booking_id) {
-            this.props.getBookingWithFilter(booking.pk_booking_id, 'id');
-        }
-
         if (bBooking) {
             if (bBooking === false) {
                 alert('There is no such booking with that DME`/CON` number.');
@@ -2683,7 +2679,7 @@ class BookingPage extends Component {
                                                 </LoadingOverlay>
                                             </div>
                                         </div>
-                                        <div id="tab02" className="tab-contents none">
+                                        <div id="tab02" className="tab-contents">
                                             <div className="tab-inner">
                                                 <p className="font-24px float-left">Additional Services & Options</p>
                                                 <BootstrapTable
@@ -2695,7 +2691,7 @@ class BookingPage extends Component {
                                                 <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
-                                        <div id="tab03" className="tab-contents none">
+                                        <div id="tab03" className="tab-contents">
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
@@ -2706,7 +2702,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab04" className="tab-contents none">
+                                        <div id="tab04" className="tab-contents">
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
@@ -2722,7 +2718,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab05" className="tab-contents none">
+                                        <div id="tab05" className="tab-contents">
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e)}>
                                                     <DropzoneComponent id="myDropzone" config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
@@ -3137,7 +3133,6 @@ const mapStateToProps = (state) => {
         allBookingStatus: state.extra.allBookingStatus,
         statusHistories: state.extra.statusHistories,
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
-        needUpdateBookings: state.booking.needUpdateBookings,
     };
 };
 
