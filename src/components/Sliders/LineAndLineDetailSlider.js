@@ -139,7 +139,7 @@ class LineAndLineDetailSlider extends React.Component {
                     <td>{line.e_dimHeight}</td>
                     <td>{line.e_1_Total_dimCubicMeter}</td>
                     <td>{line.total_2_cubic_mass_factor_calc}</td>
-                    <td className="show" onClick={() => this.onClickShowLine(index)}><Button color="primary">Show</Button></td>
+                    <td className="show" onClick={() => this.onClickShowLine(index)}><Button color="primary">LineDetail</Button></td>
                     <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 1, index)}>Edit</Button></td>
                     <td className="duplicate">
                         <Button color="primary" onClick={() => this.props.onClickDuplicate(0, {pk_lines_id: line.pk_lines_id})}>
@@ -205,10 +205,10 @@ class LineAndLineDetailSlider extends React.Component {
                                     text='Loading...'
                                 >
                                     <div className="line-section">
-                                        <h3>Lines</h3>
                                         <Button color="primary new-btn" onClick={() => this.onClickNew(1, 1)}>
-                                            New
+                                            +
                                         </Button>
+                                        <h3>Lines</h3>
                                         <table className="table table-hover table-bordered sortable fixed_headers">
                                             <tr>
                                                 <th className="" scope="col" nowrap>
@@ -272,10 +272,10 @@ class LineAndLineDetailSlider extends React.Component {
                                             text='Loading...'
                                         >
                                             <div className="line-detail-section">
-                                                <h3>Line Details</h3>
                                                 <Button color="primary new-btn" onClick={() => this.onClickNew(1, 2)}>
-                                                    New
+                                                    +
                                                 </Button>
+                                                <h3>Line Details</h3>
                                                 <table className="table table-hover table-bordered sortable fixed_headers">
                                                     <tr>
                                                         <th className="" scope="col" nowrap>
