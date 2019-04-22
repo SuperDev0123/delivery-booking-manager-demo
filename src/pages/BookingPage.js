@@ -232,10 +232,10 @@ class BookingPage extends Component {
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
             this.props.getCommsWithBookingId(bookingId);
-            this.setState({loading: true});
+            this.setState({loading: true, curViewMode: 0});
         } else {
             this.props.getLatestBooking();
-            this.setState({loading: true});
+            this.setState({loading: true, curViewMode: 0});
             // this.props.getSuburbStrings('state', undefined);
             // this.props.getDeliverySuburbStrings('state', undefined);
         }
@@ -309,7 +309,7 @@ class BookingPage extends Component {
             this.setState({allBookingStatus});
         }
 
-        if (bookingLines && parseInt(this.state.curViewMode) === 0) {
+        if (bookingLines) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
@@ -332,7 +332,7 @@ class BookingPage extends Component {
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
         }
 
-        if (bookingLineDetails && parseInt(this.state.curViewMode) === 0) {
+        if (bookingLineDetails) {
             const tempBookings = bookingLineDetails;
             const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = {};
@@ -736,7 +736,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(prevBookingId, 'id');
         }
 
-        this.setState({loading: true});
+        this.setState({loading: true, curViewMode: 0});
     }
 
     onClickPrinter(booking) {
@@ -767,7 +767,7 @@ class BookingPage extends Component {
             this.props.getBookingWithFilter(nextBookingId, 'id');
         }
 
-        this.setState({loading: true});
+        this.setState({loading: true, curViewMode: 0});
     }
 
     calcBookingLine(bookingLines) {
@@ -825,7 +825,7 @@ class BookingPage extends Component {
         const st_name = 'startrack';
         const allied_name = 'allied';
         if (booking.id && (booking.id != undefined)) {
-            this.setState({ loading: true });
+            this.setState({ loading: true, curViewMode: 0});
             if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
                 this.props.stBooking(booking.id);
             } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
@@ -852,7 +852,7 @@ class BookingPage extends Component {
                 return;
             }
             this.props.getBookingWithFilter(typed, selected);
-            this.setState({loading: true});
+            this.setState({loading: true, curViewMode: 0});
         }
 
         this.setState({typed});
@@ -2681,6 +2681,7 @@ class BookingPage extends Component {
                                                         bootstrap4={ true }
                                                     />
                                                 </LoadingOverlay>
+                                                <hr />
                                                 <LoadingOverlay
                                                     active={this.state.loadingBookingLineDetail}
                                                     spinner

@@ -21,7 +21,7 @@ class LineAndLineDetailSlider extends React.Component {
                 e_dimHeight: 0,
                 e_dimUOM: 'CM',
                 e_weightUOM: 'Kilogram',
-                e_weightPerEach: '0',
+                e_weightPerEach: 0,
             },
             lineDetailFormInputs: {},
         };
@@ -165,7 +165,7 @@ class LineAndLineDetailSlider extends React.Component {
                         <td>{lineDetail.quantity}</td>
                         <td>{lineDetail.clientRefNumber}</td>
                         <td>{lineDetail.gap_ra}</td>
-                        <td>{lineDetail.insuranceValueEach}</td>
+                        <td>${lineDetail.insuranceValueEach}</td>
                         <td>{lineDetail.itemFaultDescription}</td>
                         <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 2, index)}>Edit</Button></td>
                         <td className="duplicate">
@@ -288,7 +288,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                             <p>Qty</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
-                                                            <p>Fault Description</p>
+                                                            <p>Client Reference #</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
                                                             <p>Insurance Value</p>
@@ -297,7 +297,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                             <p>Gap / RA</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
-                                                            <p>Client Reference #</p>
+                                                            <p>Fault Description</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
                                                             <p>Edit</p>
