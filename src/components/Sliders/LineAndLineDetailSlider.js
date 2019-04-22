@@ -416,7 +416,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Hegiht</p>
+                                                <p>Height</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
@@ -448,7 +448,7 @@ class LineAndLineDetailSlider extends React.Component {
                                             <label>
                                                 <Button color="primary" onClick={() => this.onSubmit()}>
                                                     {
-                                                        (editMode === 1) ? 'Create' : 'Update'
+                                                        (editMode === 1) ? 'Submit' : 'Update'
                                                     }
                                                 </Button>{' '}
                                                 <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
@@ -529,7 +529,7 @@ class LineAndLineDetailSlider extends React.Component {
                                             <label>
                                                 <Button color="primary" onClick={() => this.onSubmit()}>
                                                     {
-                                                        (editMode === 1) ? 'Create' : 'Update'
+                                                        (editMode === 1) ? 'Submit' : 'Update'
                                                     }
                                                 </Button>{' '}
                                                 <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
