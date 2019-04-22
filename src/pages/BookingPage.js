@@ -786,7 +786,7 @@ class BookingPage extends Component {
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
                 else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
                     bookingLine.e_weightUOM.toUpperCase() === 'TONS')
-                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach * 1000;
                 else
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
             } else {
@@ -794,12 +794,17 @@ class BookingPage extends Component {
             }
 
             if (bookingLine.e_dimUOM) {
-                if (bookingLine.e_dimUOM.toUpperCase() === 'CM')
+                if (bookingLine.e_dimUOM.toUpperCase() === 'CM' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'CENTIMETER')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER')
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'M')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-                else
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'MILIMETER' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'MM')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+                else
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
             } else {
                 bookingLine['cubic_meter'] = 0;
             }
