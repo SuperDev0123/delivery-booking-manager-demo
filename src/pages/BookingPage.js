@@ -500,6 +500,7 @@ class BookingPage extends Component {
                     deToPostalCode: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null, 'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
                     deToSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null, 'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
                     deToState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                    curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
                 if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
@@ -1383,7 +1384,7 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
-        this.setState({curViewMode: e.target.value});
+        this.setState({curViewMode: e.target.value, isBookingModified: false});
     }
 
     showCreateView() {
@@ -1882,11 +1883,11 @@ class BookingPage extends Component {
                                         value = {curViewMode}
                                     >
                                         <option value="0">View</option>
-                                        <option value="1">Create</option>
                                         {
                                             (isBookingSelected && !bAllComboboxViewOnlyonBooking) &&
                                                 <option value="2">Edit</option>
                                         }
+                                        <option value="1">New Form</option>
                                     </select>
                                 </div>
                             </div>
