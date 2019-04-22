@@ -18,6 +18,10 @@ class UploadPage extends Component {
             uploadStatus: 0,
             intervalId: '',
             xlsxErrors: [],
+            formInputs: {
+                uploader: 'Seaway',
+            },
+            username: '',
         };
 
         this.djsConfig = {
@@ -56,13 +60,17 @@ class UploadPage extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, username } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (username) {
+            this.setState({username});
         }
     }
 
@@ -108,8 +116,27 @@ class UploadPage extends Component {
         this.dropzone.processQueue();
     }
 
+    onInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        let formInputs = this.state.formInputs;
+        formInputs[name] = value;
+        this.setState({formInputs});
+    }
+
+    handleFileSending(data, xhr, formData) {
+        const {username, formInputs} = this.state;
+        formData.append('username', username);
+
+        if (username === 'dme') {
+            formData.append('uploader', formInputs['uploader']);
+        }
+    }
+
     render() {
-        const { uploadedFileName, uploaded, uploadStatus, xlsxErrors } = this.state;
+        const { uploadedFileName, uploaded, uploadStatus, xlsxErrors, username, formInputs } = this.state;
         let xlsx_errors_list = [];
         let statusText = '';
 
@@ -138,15 +165,30 @@ class UploadPage extends Component {
         const djsConfig = this.djsConfig;
         const eventHandlers = {
             init: dz => this.dropzone = dz,
+            sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
 
         return (
-            <div className="container h-100vh">
+            <div className="container h-100vh upload">
                 <div className="row justify-content-md-center mt-5 mb-5">
                     <div className="col-12">
                         <form onSubmit={(e) => this.handlePost(e)}>
                             <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
+                            {
+                                (username === 'dme') ?
+                                    <select
+                                        className="uploader"
+                                        name="uploader"
+                                        onChange={(e) => this.onInputChange(e)}
+                                        value = {formInputs['uploader']}
+                                    >
+                                        <option value='Seaway'>Seaway-Tempo</option>
+                                        <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
+                                    </select>
+                                    :
+                                    null
+                            }
                             <button id="submit-upload" type="submit">upload</button>
                         </form>
                     </div>
@@ -173,6 +215,7 @@ class UploadPage extends Component {
 const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
+        username: state.auth.username,
     };
 };
 
