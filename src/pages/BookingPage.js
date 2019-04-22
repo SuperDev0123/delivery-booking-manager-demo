@@ -1491,6 +1491,18 @@ class BookingPage extends Component {
         window.location.assign('/comm?bookingid=' + this.state.booking.id);
     }
 
+    onClickStatusLock(booking) {
+        const { username } = this.state;
+
+        if (username === 'dme') {
+            booking.z_lock_status = !booking.z_lock_status;
+            booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+            this.props.updateBooking(booking.id, booking);
+        } else {
+            alert('Only DME can change this status');
+        }
+    }
+
     render() {
         const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus} = this.state;
 
@@ -1922,6 +1934,9 @@ class BookingPage extends Component {
                                                 <li><button className="btn btn-light btn-theme">Print PDF</button></li>
                                                 <li><button className="btn btn-light btn-theme">Undo</button></li>
                                             </ul>
+                                            <label className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                                                <i className="fa fa-lock"></i>
+                                            </label>
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
                                                 {isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}

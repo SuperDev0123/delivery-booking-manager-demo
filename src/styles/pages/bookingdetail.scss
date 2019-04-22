@@ -467,3 +467,27 @@ input.orange-color {
 	padding: 8px 12px;
 	margin-top: 2px;
 }
+
+label.lock-status {
+	background: white;
+	border-radius: 20px;
+	padding-left: 7px;
+	padding-right: 7px;
+	padding-top: 3px;
+
+	&.status-active {
+	  color: red;
+	  cursor: pointer;
+	}
+
+	&.status-inactive {
+	  color: gray;
+	  cursor: pointer;
+	}
+
+	&.status-active,
+	&.status-inactive {
+	  font-size: 18px;
+	  text-align: center;
+	}
+}
