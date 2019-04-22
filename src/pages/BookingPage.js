@@ -1891,7 +1891,14 @@ class BookingPage extends Component {
                                     </select>
                                 </div>
                             </div>
-                            <div className="col-sm-6">
+                            <div className="col-sm-6 pad-top-8">
+                                <div className="col-sm-3" onChange={this.getRadioValue.bind(this)}>
+                                    <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #<br />
+                                    <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
+                                </div>
+                                <div className="col-sm-6 form-group">
+                                    <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                </div>
                                 <div className="user content none">
                                     <ul>
                                         <li><img src={user} alt="" /></li>
@@ -1913,12 +1920,12 @@ class BookingPage extends Component {
                         <div className="container">
                             <div className="grid">
                                 <div className="userclock">
-                                    <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
+                                    Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                 </div>
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-3">
-                                            <p className="text-white">Booking Details: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
+                                            <p className="text-white">DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
                                         </div>
                                         <div className="col-sm-1">
                                             <p className="text-white text-center">
@@ -1935,12 +1942,18 @@ class BookingPage extends Component {
                                                 <li><button className="btn btn-light btn-theme">Print PDF</button></li>
                                                 <li><button className="btn btn-light btn-theme">Undo</button></li>
                                             </ul>
-                                            <label className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
-                                                <i className="fa fa-lock"></i>
-                                            </label>
+                                            
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
-                                                {isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}
+                                                <p>{isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}</p>
+                                                {
+                                                    username === 'dme' ?
+                                                        <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                                                            <i className="fa fa-lock"></i>
+                                                        </p>
+                                                        :
+                                                        null
+                                                }
                                             </label>
                                         </div>
                                     </div>
@@ -1965,14 +1978,6 @@ class BookingPage extends Component {
                                                 }
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_status_API']}</p>
-                                                        :
-                                                        <p className="show-mode disabled">API status</p>
-                                                }
-                                            </div>
-                                            <div className='col-sm-4 form-group main-form-group'>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{currentWarehouseCodeOption.value}</p>
                                                         :
                                                         <Select
@@ -1983,6 +1988,8 @@ class BookingPage extends Component {
                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                         />
                                                 }
+                                            </div>
+                                            <div className='col-sm-4 form-group main-form-group'>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
@@ -2005,21 +2012,10 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="container">
-                                            <div className="row">
-                                                <div className="col-sm-2" onChange={this.getRadioValue.bind(this)}>
-                                                    <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #
-                                                    <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
-                                                </div>
-                                                <div className="col-sm-6 form-group">
-                                                    <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">Prev</button>
-                                                    <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">Next</button>
-                                                    <button onClick={(e) => this.onClickComms(e)} disabled={!this.state.isBookingSelected} className="btn btn-primary btn-comms">comms</button>
-                                                </div>
-                                            </div>
+                                        <div className="col-sm-3 float-right">
+                                            <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0}   className="btn btn-theme prev-btn">Prev</button>
+                                            <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">Next</button>
+                                            <button onClick={(e) => this.onClickComms(e)} disabled={!this.state.isBookingSelected} className="btn btn-primary btn-comms">comms</button>
                                         </div>
                                     </form>
                                     <div className="clearfix"></div>

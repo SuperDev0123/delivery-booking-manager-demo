@@ -468,12 +468,14 @@ input.orange-color {
 	margin-top: 2px;
 }
 
-label.lock-status {
+p.lock-status {
 	background: white;
 	border-radius: 20px;
 	padding-left: 7px;
 	padding-right: 7px;
-	padding-top: 3px;
+	padding-top: 3px !important;
+	margin-left: 15px;
+	margin-top: 3px;
 
 	&.status-active {
 	  color: red;
@@ -495,4 +497,25 @@ label.lock-status {
 #tab01 hr {
 	border-color: darkgray;
 	margin-bottom: 15px;
+}
+
+.booking {
+	.head {
+		label {
+			margin-top: 0px !important;
+
+			p {
+				vertical-align: top;
+				display: inline-block;
+
+				&.lock-status {
+
+				}
+			}
+		}
+	}
+}
+
+.pad-top-8 {
+	padding-top: 8px;
 }
