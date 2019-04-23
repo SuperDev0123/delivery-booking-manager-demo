@@ -935,7 +935,7 @@ class AllBookingsPage extends React.Component {
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
             this.props.updateBooking(booking.id, booking);
         } else {
-            alert('Only DME can change this status');
+            alert('Locked status only allowed by dme user');
         }
     }
 
