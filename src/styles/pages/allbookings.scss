@@ -601,3 +601,11 @@ header > .qbootstrap-nav {
     cursor: pointer;
   }
 }
+
+p.status {
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}

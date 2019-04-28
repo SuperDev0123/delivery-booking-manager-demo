@@ -19,6 +19,7 @@ import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLab
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
+import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
@@ -941,7 +942,7 @@ class AllBookingsPage extends React.Component {
 
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft } = this.state;
-
+        console.log('@1 - ', startDate, endDate);
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
@@ -1229,8 +1230,24 @@ class AllBookingsPage extends React.Component {
                     <td className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                         <i className="fa fa-lock"></i>
                     </td>
-                    <td className={(sortField === 'b_status') ? 'current' : ''}>{booking.b_status}</td>
-                    <td className={(sortField === 'b_status_API') ? 'current' : ''}>{booking.b_status_API}</td>
+                    <td className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
+                        <p className="status">{booking.b_status}</p>
+                        {
+                            !_.isEmpty(booking.b_status) ?
+                                <BookingTooltipItem booking={booking} field={'b_status'} />
+                                :
+                                null
+                        }
+                    </td>
+                    <td className={(sortField === 'b_status_API') ? 'current' : ''} id={'booking-' + 'b_status_API' + '-tooltip-' + booking.id}>
+                        <p className="status">{booking.b_status_API}</p>
+                        {
+                            !_.isEmpty(booking.b_status_API) ?
+                                <BookingTooltipItem booking={booking} field={'b_status_API'} />
+                                :
+                                null
+                        }
+                    </td>
                     <td className={(sortField === 's_05_LatestPickUpDateTimeFinal') ? 'current' : ''}>
                         {booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
