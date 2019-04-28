@@ -19,7 +19,7 @@ class UploadPage extends Component {
             intervalId: '',
             xlsxErrors: [],
             formInputs: {
-                uploader: 'Seaway',
+                uploader: '',
             },
             username: '',
         };
@@ -113,7 +113,12 @@ class UploadPage extends Component {
 
     handlePost(e) {
         e.preventDefault();
-        this.dropzone.processQueue();
+
+        if (this.state.formInputs.uploader === '') {
+            alert('Please select a uploader');
+        } else {
+            this.dropzone.processQueue();
+        }
     }
 
     onInputChange(event) {
@@ -183,6 +188,7 @@ class UploadPage extends Component {
                                         onChange={(e) => this.onInputChange(e)}
                                         value = {formInputs['uploader']}
                                     >
+                                        <option value="" selected disabled hidden>Select Uploader</option>
                                         <option value='Seaway'>Seaway-Tempo</option>
                                         <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
                                     </select>
