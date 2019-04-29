@@ -20,6 +20,7 @@ import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
+import EditablePopover from '../components/Popovers/EditablePopover';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class AllBookingsPage extends React.Component {
@@ -39,6 +40,8 @@ class AllBookingsPage extends React.Component {
             selectedBookingIds: [],
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
+            linkPopoverOpens: [],
+            editCellPopoverOpens: [],
             bookingLinesQtyTotal: 0,
             bookingLineDetailsQtyTotal: 0,
             prefilterInd: 0,
@@ -61,7 +64,6 @@ class AllBookingsPage extends React.Component {
             total_qty: 0,
             total_kgs: 0,
             total_cubic_meter: 0,
-            linkPopoverOpens: [],
             dmeClients: [],
             username: null,
             selectedClientId: null,
@@ -467,7 +469,7 @@ class AllBookingsPage extends React.Component {
         else
             additionalInfoOpens['additional-info-popup-' + bookingId] = true;
 
-        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
+        this.setState({ additionalInfoOpens, bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
     }
 
     showLinkPopover(bookingId) {
@@ -480,7 +482,7 @@ class AllBookingsPage extends React.Component {
         else
             linkPopoverOpens['link-popover-' + bookingId] = true;
 
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens });
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens, editCellPopoverOpens: [] });
     }
 
     getPKBookingIdFromId(id) {
@@ -512,11 +514,11 @@ class AllBookingsPage extends React.Component {
         else
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
 
-        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
     }
 
     clearActivePopoverVar() {
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [] });
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
     }
 
     togglePopover() {
@@ -942,9 +944,22 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickEditCell(bookingId) {
+        let editCellPopoverOpens = this.state.editCellPopoverOpens;
+        let flag = editCellPopoverOpens['edit-cell-popover-' + bookingId];
+        editCellPopoverOpens = [];
+
+        if (flag)
+            editCellPopoverOpens['edit-cell-popover-' + bookingId] = false;
+        else
+            editCellPopoverOpens['edit-cell-popover-' + bookingId] = true;
+
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft } = this.state;
-        console.log('@1 - ', startDate, endDate);
+
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
@@ -1163,9 +1178,26 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
-                    <td className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}>
+                    <td 
+                        id={'edit-cell-popover-' + booking.id} 
+                        className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}
+                    >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
+                        {
+                            booking.b_dateBookedDate ?
+                                null
+                                :
+                                <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
+                        }
                     </td>
+                    <EditablePopover 
+                        isOpen={this.state.editCellPopoverOpens['edit-cell-popover-' + booking.id]}
+                        booking={booking}
+                        onCancel={this.togglePopover}
+                        onChange={(bookingId, booking) => this.props.updateBooking(bookingId, booking)}
+                        inputType={'datepicker'}
+                        fieldName={'puPickUpAvailFrom_Date'}
+                    />
                     <td className={(sortField === 'b_dateBookedDate') ? 'current' : ''}>
                         {booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}
                     </td>
