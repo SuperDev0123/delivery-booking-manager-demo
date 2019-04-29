@@ -898,7 +898,7 @@ class AllBookingsPage extends React.Component {
 
             axios(options).then((response) => {
                 if (response.data.error && response.data.error === 'Found set has booked bookings') {
-                    alert('Listed are some bookings that should not be processed because they have already been booked');
+                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
                 } else if (response.data.success && response.data.success === 'success') {
                     alert('XMLs are generated successfully');
                 } else {
