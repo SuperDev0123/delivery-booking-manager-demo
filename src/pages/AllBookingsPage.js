@@ -897,10 +897,12 @@ class AllBookingsPage extends React.Component {
             };
 
             axios(options).then((response) => {
-                if (response.data.error) {
-                    alert('XMLs are not generated successfully');
-                } else {
+                if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                    alert('Listed are some bookings that should not be processed because they have already been booked');
+                } else if (response.data.success && response.data.success === 'success') {
                     alert('XMLs are generated successfully');
+                } else {
+                    alert('XMLs are not generated successfully');
                 }
                 this.setState({loadingDownload: false});
             });
