@@ -60,7 +60,8 @@ class Header extends Component {
                     currentRoute === '/allbookings' ||
                     currentRoute === '/bookinglines' ||
                     currentRoute === '/bookinglinedetails' ||
-                    currentRoute === '/comm' ?
+                    currentRoute === '/comm' ||
+                    currentRoute === '/pods' ?
                         <nav className="qbootstrap-nav" role="navigation">
                             <div className="col-md-12" id="headr">
                                 <div className="top">

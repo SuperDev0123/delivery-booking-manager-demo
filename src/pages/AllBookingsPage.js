@@ -1312,6 +1312,7 @@ class AllBookingsPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
+                                <li className=""><Link to="/pods">PODs</Link></li>
                                 <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                                 <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                             </ul>

@@ -1852,6 +1852,7 @@ class BookingPage extends Component {
                         <ul className="nav nav-tabs">
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
+                            <li className=""><Link to="/pods">PODs</Link></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
