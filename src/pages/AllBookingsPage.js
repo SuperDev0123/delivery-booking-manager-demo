@@ -362,10 +362,8 @@ class AllBookingsPage extends React.Component {
             if (moment(startDate, 'YYYY-MM-DD') > moment(this.state.endDate)) {
                 endDate = startDate;
                 this.setState({startDate, endDate});    
-                this.props.setGetBookingsFilter('date', {startDate, endDate});
             } else {
                 this.setState({startDate});
-                this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: this.state.endDate});
             }
 
             localStorage.setItem('today', startDate);
@@ -379,12 +377,16 @@ class AllBookingsPage extends React.Component {
             if (moment(endDate, 'YYYY-MM-DD') < moment(this.state.startDate)) {
                 startDate = endDate;
                 this.setState({startDate, endDate});    
-                this.props.setGetBookingsFilter('date', {startDate, endDate});
             } else {
                 this.setState({endDate});
-                this.props.setGetBookingsFilter('date', {startDate: this.state.startDate, endDate});
             }
         }
+    }
+
+    onClickDateFilter() {
+        const { startDate, endDate } = this.state;
+
+        this.props.setGetBookingsFilter('date', {startDate, endDate});
         this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
         this.props.setGetBookingsFilter('columnFilters', {});
     }
@@ -1366,6 +1368,7 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
+                                            <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                                             <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                                             {
                                                 (username === 'dme') ?
