@@ -114,7 +114,7 @@ class UploadPage extends Component {
     handlePost(e) {
         e.preventDefault();
 
-        if (this.state.formInputs.uploader === '') {
+        if (this.state.formInputs.uploader === '' && this.state.username === 'dme') {
             alert('Please select a uploader');
         } else {
             this.dropzone.processQueue();
