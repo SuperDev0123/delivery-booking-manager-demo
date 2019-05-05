@@ -76,6 +76,9 @@ class LineAndLineDetailSlider extends React.Component {
             lineFormInputs['e_1_Total_dimCubicMeter'] = this.props.getCubicMeter(lineFormInputs);
             lineFormInputs['e_Total_KG_weight'] = this.props.getTotalWeight(lineFormInputs);
             lineFormInputs['total_2_cubic_mass_factor_calc'] = Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250;
+            lineFormInputs['e_1_Total_dimCubicMeter'] = lineFormInputs['e_1_Total_dimCubicMeter'].toFixed(2);
+            lineFormInputs['e_Total_KG_weight'] = lineFormInputs['e_Total_KG_weight'].toFixed(2);
+            lineFormInputs['total_2_cubic_mass_factor_calc'] = lineFormInputs['total_2_cubic_mass_factor_calc'].toFixed(2);
             this.setState({lineFormInputs});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
@@ -125,6 +128,9 @@ class LineAndLineDetailSlider extends React.Component {
         const { selectedLineIndex, editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs } = this.state;
 
         const lineList = lines.map((line, index) => {
+            line.e_Total_KG_weight = parseFloat(line.e_Total_KG_weight).toFixed(2);
+            line.e_1_Total_dimCubicMeter = parseFloat(line.e_1_Total_dimCubicMeter).toFixed(2);
+            line.total_2_cubic_mass_factor_calc = parseFloat(line.total_2_cubic_mass_factor_calc).toFixed(2);
             return (
                 <tr key={index} className={(index === selectedLineIndex) ? 'current' : ''}>
                     <td>{line.e_type_of_packaging}</td>

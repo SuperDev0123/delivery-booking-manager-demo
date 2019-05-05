@@ -320,13 +320,13 @@ class BookingPage extends Component {
                 result['e_qty'] = bookingLine.e_qty ? bookingLine.e_qty : '';
                 result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : '';
                 result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : '';
-                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight : '';
+                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight.toFixed(2) : '';
                 result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
                 result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : '';
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : '';
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
-                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter : '';
-                result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc ? bookingLine.total_2_cubic_mass_factor_calc : '';
+                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : '';
+                result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc ? bookingLine.total_2_cubic_mass_factor_calc.toFixed(2) : '';
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
@@ -816,7 +816,7 @@ class BookingPage extends Component {
             return bookingLine;
         });
 
-        this.setState({bookingTotals: [{id: 0, qty, total_kgs, cubic_meter}]});
+        this.setState({bookingTotals: [{id: 0, qty, total_kgs: total_kgs.toFixed(2), cubic_meter: cubic_meter.toFixed(2)}]});
         return newBookingLines;
     }
 
@@ -1013,9 +1013,9 @@ class BookingPage extends Component {
 
         for (let i = 0; i < products.length; i++) {
             if (products[i].pk_lines_id === row.pk_lines_id) {
-                products[i]['e_Total_KG_weight'] = updatedBookingLine['e_Total_KG_weight'];
-                products[i]['e_1_Total_dimCubicMeter'] = updatedBookingLine['e_1_Total_dimCubicMeter'];
-                products[i]['total_2_cubic_mass_factor_calc'] = updatedBookingLine['total_2_cubic_mass_factor_calc'];
+                products[i]['e_Total_KG_weight'] = updatedBookingLine['e_Total_KG_weight'].toFixed(2);
+                products[i]['e_1_Total_dimCubicMeter'] = updatedBookingLine['e_1_Total_dimCubicMeter'].toFixed(2);
+                products[i]['total_2_cubic_mass_factor_calc'] = updatedBookingLine['total_2_cubic_mass_factor_calc'].toFixed(2);
             }
         }
         
