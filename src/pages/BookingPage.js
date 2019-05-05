@@ -25,6 +25,7 @@ import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
+import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
@@ -148,6 +149,7 @@ class BookingPage extends Component {
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
             packageTypes: [],
             allBookingStatus: [],
+            isShowLineTrackingSlider: false,
         };
 
         this.djsConfig = {
@@ -170,6 +172,7 @@ class BookingPage extends Component {
         this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
         this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
+        this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
         this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
     }
 
@@ -327,6 +330,14 @@ class BookingPage extends Component {
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
                 result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : '';
                 result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc ? bookingLine.total_2_cubic_mass_factor_calc.toFixed(2) : '';
+                result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
+                result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
+                result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;
+                result['e_qty_delivered'] = bookingLine.e_qty_delivered ? bookingLine.e_qty_delivered : 0;
+                result['e_qty_adjusted_delivered'] = bookingLine.e_qty_adjusted_delivered ? bookingLine.e_qty_adjusted_delivered : 0;
+                result['e_qty_damaged'] = bookingLine.e_qty_damaged ? bookingLine.e_qty_damaged : 0;
+                result['e_qty_returned'] = bookingLine.e_qty_returned ? bookingLine.e_qty_returned : 0;
+                result['e_qty_shortages'] = bookingLine.e_qty_shortages ? bookingLine.e_qty_shortages : 0;
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
@@ -1337,6 +1348,10 @@ class BookingPage extends Component {
         }
     }
 
+    toggleShowLineTrackingSlider() {
+        this.setState(prevState => ({isShowLineTrackingSlider: !prevState.isShowLineTrackingSlider}));
+    }
+
     toggleShowStatusHistorySlider() {
         const { isBookingSelected } = this.state;
 
@@ -1505,7 +1520,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider} = this.state;
 
         const bookingLineColumns = [
             {
@@ -2655,6 +2670,13 @@ class BookingPage extends Component {
                                                 >
                                                     Edit
                                                 </Button>
+                                                <Button 
+                                                    className="edit-lld-btn btn-primary" 
+                                                    onClick={this.toggleShowLineTrackingSlider} 
+                                                    disabled={!isBookingSelected || !bAllComboboxViewOnlyonBooking}
+                                                >
+                                                    Edit Tracking
+                                                </Button>
                                                 <BootstrapTable
                                                     keyField="id"
                                                     data={ bookingTotals }
@@ -3112,6 +3134,13 @@ class BookingPage extends Component {
                     allBookingStatus={allBookingStatus}
                     username={username}
                     OnSaveStatusHistory={(statusHistory) => this.OnSaveStatusHistory(statusHistory)}
+                />
+
+                <LineTrackingSlider
+                    isOpen={isShowLineTrackingSlider}
+                    toggleShowLineTrackingSlider={this.toggleShowLineTrackingSlider}
+                    lines={products}
+                    updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                 />
             </div>
         );
