@@ -128,6 +128,10 @@ $column_28_width: 150px;
     font-weight: lighter;
     padding: 3px;
     text-align: left;
+
+    input {
+      margin: 0 !important;
+    }
   }
 
   td:nth-child(1), th:nth-child(1) { width: $column_1_width; }

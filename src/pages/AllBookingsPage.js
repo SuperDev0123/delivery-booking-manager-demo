@@ -1213,15 +1213,15 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
                     <td className={
                         (booking.b_error_Capture) ?
-                            'dark-blue warning pad-top-12px'
+                            'dark-blue warning'
                             :
                             (booking.z_downloaded_shipping_label_timestamp != null) ?
-                                'bg-yellow pad-top-12px'
+                                'bg-yellow'
                                 :
                                 (booking.z_label_url && booking.z_label_url.length > 0) ?
-                                    'bg-green pad-top-12px'
+                                    'bg-green'
                                     :
-                                    'bg-gray pad-top-12px'
+                                    'bg-gray'
                     }>
                         {
                             (booking.b_error_Capture) ?
@@ -1230,22 +1230,20 @@ class AllBookingsPage extends React.Component {
                                 </div>
                                 :
                                 <div className="booking-status">
-                                    <div className="disp-inline-block">
-                                        {
-                                            <a href="#" onClick={() => this.onClickPrinter(booking)}>
-                                                <i className="icon icon-printer"></i>
-                                            </a>
-                                        }
-                                    </div>
+                                    {
+                                        <a href="#" onClick={() => this.onClickPrinter(booking)}>
+                                            <i className="icon icon-printer"></i>
+                                        </a>
+                                    }
                                 </div>
                         }
                     </td>
                     <td className={
                         (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
                             (!_.isEmpty(booking.z_downloaded_pod_timestamp)) ?
-                                'bg-yellow pad-top-12px'
+                                'bg-yellow'
                                 :
-                                'dark-blue pad-top-12px'
+                                'dark-blue'
                             :
                             null
                     }>
