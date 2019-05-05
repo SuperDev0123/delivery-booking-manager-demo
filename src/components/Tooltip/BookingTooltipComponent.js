@@ -24,17 +24,15 @@ class BookingTooltipItem extends React.Component {
         const { booking, field } = this.props;
 
         return (
-            <div className="disp-inline-block">
-                <Tooltip
-                    placement='top'
-                    isOpen={this.state.tooltipOpen}
-                    target={'booking-' + field + '-tooltip-' + booking.id}
-                    toggle={() => this.toggleTooltip()}
-                    hideArrow={true}
-                    className={'booking-tooltip'}>
-                    {booking[field]}
-                </Tooltip>
-            </div>
+            <Tooltip
+                placement='top'
+                isOpen={this.state.tooltipOpen}
+                target={'booking-' + field + '-tooltip-' + booking.id}
+                toggle={() => this.toggleTooltip()}
+                hideArrow={true}
+                className={'booking-tooltip'}>
+                {booking[field]}
+            </Tooltip>
         );
     }
 }
