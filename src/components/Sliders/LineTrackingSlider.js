@@ -13,6 +13,7 @@ class LineTrackingSlider extends React.Component {
         lines: PropTypes.array.isRequired,
         booking: PropTypes.object.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
+        isBooked: PropTypes.bool.isRequired,
     };
 
     onClickEdit(oldValue, newValue, row, column) {
@@ -24,7 +25,7 @@ class LineTrackingSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, toggleShowLineTrackingSlider, booking } = this.props;
+        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked } = this.props;
 
         const qtyDeliveryCell = (cell, row) => {
             return (
@@ -39,6 +40,13 @@ class LineTrackingSlider extends React.Component {
             );
         };
 
+        const qtyStyle = {
+            'backgroundColor': isBooked ? 'gray' : 'white',
+            'cursor': isBooked ? 'not-allowed' : 'default',
+        };
+
+        console.log('@1 - ', qtyStyle);
+
         const bookingLineColumns = [
             {
                 dataField: 'e_item',
@@ -51,6 +59,8 @@ class LineTrackingSlider extends React.Component {
             }, {
                 dataField: 'e_qty',
                 text: 'Qty',
+                editable: !isBooked,
+                style: qtyStyle,
             }, {
                 dataField: 'e_qty_awaiting_inventory',
                 text: 'Qty Awaiting Inventory',

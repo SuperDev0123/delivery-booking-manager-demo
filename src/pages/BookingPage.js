@@ -2673,7 +2673,7 @@ class BookingPage extends Component {
                                                 <Button 
                                                     className="edit-lld-btn btn-primary" 
                                                     onClick={this.toggleShowLineTrackingSlider} 
-                                                    disabled={!isBookingSelected || !bAllComboboxViewOnlyonBooking}
+                                                    disabled={!isBookingSelected}
                                                 >
                                                     Edit Tracking
                                                 </Button>
@@ -3142,6 +3142,7 @@ class BookingPage extends Component {
                     lines={products}
                     booking={booking}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
+                    isBooked={bAllComboboxViewOnlyonBooking}
                 />
             </div>
         );
