@@ -15,7 +15,7 @@ class LineTrackingSlider extends React.Component {
     };
 
     onClickEdit(oldValue, newValue, row, column) {
-        console.log('@1 - ', oldValue, newValue, row, column);
+        console.log('Old val: ', oldValue);
         let line = row;
         line[column.dataField] = parseInt(line[column.dataField]);
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
@@ -25,11 +25,23 @@ class LineTrackingSlider extends React.Component {
     render() {
         const { isOpen, lines, toggleShowLineTrackingSlider } = this.props;
 
+        // const grayCell = (cell) => {
+        //     return (
+        //         <div className='bg-gray'>
+        //             {cell}
+        //         </div>
+        //     );
+        // };
+
         const bookingLineColumns = [
             {
                 dataField: 'e_item',
                 text: 'Item Description',
                 editable: false,
+                style: {
+                    backgroundColor: 'gray',
+                    cursor: 'not-allowed',
+                },
             }, {
                 dataField: 'e_qty',
                 text: 'Qty',
@@ -46,10 +58,18 @@ class LineTrackingSlider extends React.Component {
                 dataField: 'e_qty_delivered',
                 text: 'Qty Delivered',
                 editable: false,
+                style: {
+                    backgroundColor: 'gray',
+                    cursor: 'not-allowed',
+                },
             }, {
                 dataField: 'e_qty_adjusted_delivered',
                 text: 'Qty Adjusted Delivered',
                 editable: false,
+                style: {
+                    backgroundColor: 'gray',
+                    cursor: 'not-allowed',
+                },
             }, {
                 dataField: 'e_qty_damaged',
                 text: 'Qty Damaged',
@@ -84,6 +104,9 @@ class LineTrackingSlider extends React.Component {
                         }
                         bootstrap4={ true }
                     />
+                    <label>
+                        **Note any change to a fields value will be saved automatically upon exiting the field
+                    </label>
                 </div>
             </SlidingPane>
         );
