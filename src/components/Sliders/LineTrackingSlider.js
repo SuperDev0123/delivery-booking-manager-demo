@@ -11,6 +11,7 @@ class LineTrackingSlider extends React.Component {
         isOpen: PropTypes.bool.isRequired,
         toggleShowLineTrackingSlider: PropTypes.func.isRequired,
         lines: PropTypes.array.isRequired,
+        booking: PropTypes.object.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
     };
 
@@ -23,15 +24,20 @@ class LineTrackingSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, toggleShowLineTrackingSlider } = this.props;
+        const { isOpen, lines, toggleShowLineTrackingSlider, booking } = this.props;
 
-        // const grayCell = (cell) => {
-        //     return (
-        //         <div className='bg-gray'>
-        //             {cell}
-        //         </div>
-        //     );
-        // };
+        const qtyDeliveryCell = (cell, row) => {
+            return (
+                <div>
+                    {
+                        (booking.b_status === 'Delivered') ?
+                            row.e_qty
+                            :
+                            cell
+                    }
+                </div>
+            );
+        };
 
         const bookingLineColumns = [
             {
@@ -57,6 +63,7 @@ class LineTrackingSlider extends React.Component {
             }, {
                 dataField: 'e_qty_delivered',
                 text: 'Qty Delivered',
+                formatter: qtyDeliveryCell,
                 editable: false,
                 style: {
                     backgroundColor: 'gray',

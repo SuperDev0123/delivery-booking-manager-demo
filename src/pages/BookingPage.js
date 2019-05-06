@@ -3140,6 +3140,7 @@ class BookingPage extends Component {
                     isOpen={isShowLineTrackingSlider}
                     toggleShowLineTrackingSlider={this.toggleShowLineTrackingSlider}
                     lines={products}
+                    booking={booking}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                 />
             </div>
