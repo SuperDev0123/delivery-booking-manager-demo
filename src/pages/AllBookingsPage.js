@@ -13,15 +13,18 @@ import Clock from 'react-live-clock';
 import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
+
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
-import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import XLSModal from '../components/CommonModals/XLSModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -70,12 +73,14 @@ class AllBookingsPage extends React.Component {
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
             scrollLeft: 0,
+            isShowXLSModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
+        this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -102,6 +107,7 @@ class AllBookingsPage extends React.Component {
         stOrder: PropTypes.func.isRequired,
         getExcel: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        generateXLS: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -527,6 +533,10 @@ class AllBookingsPage extends React.Component {
         this.clearActivePopoverVar();
     }
 
+    toggleShowXLSModal() {
+        this.setState(prevState => ({isShowXLSModal: !prevState.isShowXLSModal}));
+    }
+
     onCheck(e, id) {
         if (!e.target.checked) {
             this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
@@ -822,33 +832,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickDownloadExcel() {
-        const { bookings } = this.state;
-        let bookingIds = [];
-
-        if (bookings && bookings.length === 0) {
-            alert('There is no filtered bookings to build Excel.');
-        } else {
-            for (let i = 0; i < bookings.length; i++)
-                bookingIds.push(bookings[i].id);
-
-            this.setState({loadingDownload: true});
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/excel/',
-                data: {bookingIds: bookingIds},
-                responseType: 'blob', // important
-            };
-
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'bookings_seaway.xlsx');
-                document.body.appendChild(link);
-                link.click();
-                this.setState({loadingDownload: false});
-            });
-        }
+        this.toggleShowXLSModal();
     }
 
     onClickDownloadCSV() {
@@ -960,7 +944,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft, isShowXLSModal } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2127,6 +2111,12 @@ class AllBookingsPage extends React.Component {
                         </div>
                     </div>
                 </LoadingOverlay>
+
+                <XLSModal
+                    isShowXLSModal={isShowXLSModal}
+                    toggleShowXLSModal={this.toggleShowXLSModal}
+                    generateXLS={(startDate, endDate, emailAddr) => this.props.generateXLS(startDate, endDate, emailAddr)}
+                />
             </div>            
         );
     }
@@ -2183,6 +2173,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
+        generateXLS: (startDate, endDate, emailAddr) => dispatch(generateXLS(startDate, endDate, emailAddr)),
     };
 };
 
