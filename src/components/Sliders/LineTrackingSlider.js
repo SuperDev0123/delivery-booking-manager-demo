@@ -52,11 +52,6 @@ class LineTrackingSlider extends React.Component {
             'cursor': isBooked ? 'not-allowed' : 'default',
         };
 
-        const qtyCollectedStyle = {
-            'backgroundColor': booking.b_status === 'Collected' ? 'gray' : 'white',
-            'cursor': booking.b_status === 'Collected' ? 'not-allowed' : 'default',
-        };
-
         const bookingLineColumns = [
             {
                 dataField: 'e_item',
@@ -78,7 +73,10 @@ class LineTrackingSlider extends React.Component {
                 dataField: 'e_qty_collected',
                 text: 'Qty Collected',
                 editable: false,
-                style: qtyCollectedStyle,
+                style: {
+                    backgroundColor: 'gray',
+                    cursor: 'not-allowed',
+                },
             }, {
                 dataField: 'e_qty_scanned_depot',
                 text: 'Qty Scanned Depot',
