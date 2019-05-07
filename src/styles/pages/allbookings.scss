@@ -119,6 +119,8 @@ $column_25_width: 130px;
 $column_26_width: 130px;
 $column_27_width: 150px;
 $column_28_width: 150px;
+$column_29_width: 150px;
+$column_30_width: 150px;
 
 #all_booking .fixed_headers{
   table-layout: fixed;
@@ -189,6 +191,10 @@ $column_28_width: 150px;
   td:nth-child(27) p, th:nth-child(27) p { width: 100px }
   td:nth-child(28), th:nth-child(28) { width: $column_28_width; }
   td:nth-child(28) p, th:nth-child(28) p { width: 100px }
+  td:nth-child(29), th:nth-child(29) { width: $column_29_width; }
+  td:nth-child(29) p, th:nth-child(29) p { width: 100px }
+  td:nth-child(30), th:nth-child(30) { width: $column_30_width; }
+  td:nth-child(30) p, th:nth-child(30) p { width: 100px }
   
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;

@@ -1297,6 +1297,12 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
                         {booking.s_21_Actual_Delivery_TimeStamp}
                     </td>
+                    <td>
+                        {booking.de_Deliver_From_Date}
+                    </td>
+                    <td>
+                        {booking.de_Deliver_By_Date}
+                    </td>
                 </tr>
             );
         });
@@ -1848,6 +1854,8 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
+                                                            <th className="" scope="col"><p>Deliver_From_Date</p></th>
+                                                            <th className="" scope="col"><p>Deliver_By_Date</p></th>
                                                         </tr>
                                                         <tr className="filter-tr">
                                                             <th><input type="checkbox" className="checkall" checked={this.state.checkedAll ? 'checked' : ''} onChange={() => this.onCheckAll()} /></th>
@@ -1878,6 +1886,8 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
+                                                            <th scope="col"></th>
                                                         </tr>
                                                     </table>
                                                 </div>
@@ -2103,6 +2113,8 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
+                                                            <th className="" scope="col"><p>Deliver_From_Date</p></th>
+                                                            <th className="" scope="col"><p>Deliver_By_Date</p></th>
                                                         </tr>
                                                         <tr className="filter-tr none">
                                                             <th><input type="checkbox" className="checkall" checked={this.state.checkedAll ? 'checked' : ''} onChange={() => this.onCheckAll()} /></th>
@@ -2131,6 +2143,8 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
+                                                            <th scope="col"></th>
                                                         </tr>
                                                         { bookingsList }
                                                     </table>
