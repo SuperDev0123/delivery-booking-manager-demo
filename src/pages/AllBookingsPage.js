@@ -17,7 +17,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 
@@ -74,6 +74,7 @@ class AllBookingsPage extends React.Component {
             successSearchFilterOptions: {},
             scrollLeft: 0,
             isShowXLSModal: false,
+            selectedStatusValue: null,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -108,6 +109,7 @@ class AllBookingsPage extends React.Component {
         getExcel: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         generateXLS: PropTypes.func.isRequired,
+        changeBookingsStatus: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -406,12 +408,14 @@ class AllBookingsPage extends React.Component {
                 warehouseId = selectedWarehouseId;
 
             this.props.setGetBookingsFilter('warehouseId', warehouseId);
+            this.setState({selectedBookingIds: [], checkedAll: false});
         } else if (src === 'client') {
             const selectedClientId = e.target.value;
             this.props.setGetBookingsFilter('clientPK', selectedClientId);
+            this.setState({selectedBookingIds: [], checkedAll: false});
+        } else if (src === 'status') {
+            this.setState({selectedStatusValue: e.target.value});
         }
-
-        this.setState({selectedBookingIds: [], checkedAll: false});
     }
 
     onItemCountPerPageChange(e) {
@@ -943,6 +947,21 @@ class AllBookingsPage extends React.Component {
         this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
     }
 
+    onClickChangeStatusButton() {
+        const {selectedStatusValue, selectedBookingIds} = this.state;
+
+        if (!selectedStatusValue) {
+            alert('Please select a status.');
+        } else if (selectedBookingIds.length === 0) {
+            alert('Please select at least one booking.');
+        } else if (selectedBookingIds.length > 25) {
+            alert('You can change 25 bookings status at a time.');
+        } else {
+            this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
+            this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
+        }
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, selectedClientId, scrollLeft, isShowXLSModal } = this.state;
 
@@ -1373,10 +1392,23 @@ class AllBookingsPage extends React.Component {
                                                 id="warehouse" 
                                                 required 
                                                 onChange={(e) => this.onSelected(e, 'warehouse')} 
-                                                value={selectedWarehouseId}>
+                                                value={selectedWarehouseId}
+                                            >
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
+                                            <label className='right-10px'>Status: </label>
+                                            <select 
+                                                id="status" 
+                                                required 
+                                                onChange={(e) => this.onSelected(e, 'status')} 
+                                            >
+                                                <option value="" selected disabled hidden>Select a status</option>
+                                                <option value="Collected">Collected</option>
+                                                <option value="Status 01">Status 01</option>
+                                                <option value="Status 02">Status 02</option>
+                                            </select>
+                                            <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
                                             <div className="disp-inline-block">
                                                 <LoadingOverlay
                                                     active={loadingBooking}
@@ -2174,6 +2206,7 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
         generateXLS: (startDate, endDate, emailAddr) => dispatch(generateXLS(startDate, endDate, emailAddr)),
+        changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
     };
 };
 

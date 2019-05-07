@@ -356,7 +356,11 @@ table {
 
 #warehouse {
   width: 250px;
-  margin-right: 50px;
+  margin-right: 10px;
+}
+
+#status {
+  margin-right: 10px;
 }
 
 .tooltipitem {
@@ -633,4 +637,8 @@ p.status {
       margin-left: 5px;
     }
   }
+}
+
+.right-50px {
+  margin-right: 50px;
 }

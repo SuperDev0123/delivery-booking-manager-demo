@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS } from '../actions/bookingActions';
+import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', newPod=false) => {
@@ -298,7 +298,6 @@ export const resetNeedUpdateLineAndLineDetail = () => {
     return dispatch => dispatch(setNeedUpdateLineAndLineDetail());
 };
 
-
 export const generateXLS = (startDate, endDate, emailAddr) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -311,4 +310,18 @@ export const generateXLS = (startDate, endDate, emailAddr) => {
         axios(options)
             .then(({ data }) => dispatch(successGenerateXLS(data)))
             .catch(( error ) => dispatch(failedGenerateXLS(error)));
+};
+
+export const changeBookingsStatus = (status, bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/change_bookings_status/`,
+        data: {status, bookingIds},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successChangeBookingsStatus(data)))
+            .catch((error) => dispatch(failedChangeBookingsStatus(error)));
 };

@@ -18,9 +18,16 @@ class LineTrackingSlider extends React.Component {
 
     onClickEdit(oldValue, newValue, row, column) {
         console.log('Old val: ', oldValue);
+        const { booking } = this.props;
+
         let line = row;
         line[column.dataField] = parseInt(line[column.dataField]);
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
+
+        if (booking.b_status === 'Collected') {
+            line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
+        }
+
         this.props.updateBookingLine(line);
     }
 
@@ -45,7 +52,10 @@ class LineTrackingSlider extends React.Component {
             'cursor': isBooked ? 'not-allowed' : 'default',
         };
 
-        console.log('@1 - ', qtyStyle);
+        const qtyCollectedStyle = {
+            'backgroundColor': booking.b_status === 'Collected' ? 'gray' : 'white',
+            'cursor': booking.b_status === 'Collected' ? 'not-allowed' : 'default',
+        };
 
         const bookingLineColumns = [
             {
@@ -67,6 +77,8 @@ class LineTrackingSlider extends React.Component {
             }, {
                 dataField: 'e_qty_collected',
                 text: 'Qty Collected',
+                editable: false,
+                style: qtyCollectedStyle,
             }, {
                 dataField: 'e_qty_scanned_depot',
                 text: 'Qty Scanned Depot',
