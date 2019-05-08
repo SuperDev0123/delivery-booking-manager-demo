@@ -75,6 +75,7 @@ class AllBookingsPage extends React.Component {
             scrollLeft: 0,
             isShowXLSModal: false,
             selectedStatusValue: null,
+            selectedWarehouseName: 'All',
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -427,7 +428,7 @@ class AllBookingsPage extends React.Component {
                 warehouseId = selectedWarehouseId;
 
             this.props.setGetBookingsFilter('warehouseId', warehouseId);
-            this.setState({selectedBookingIds: [], checkedAll: false});
+            this.setState({selectedBookingIds: [], checkedAll: false, selectedWarehouseName: e.target.name});
         } else if (src === 'client') {
             this.props.setGetBookingsFilter('clientPK', e.target.value);
             this.setState({selectedBookingIds: [], checkedAll: false});
@@ -664,7 +665,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownload() {
-        const { selectedBookingIds, downloadOption, bookings, startDate, endDate } = this.state;
+        const { selectedBookingIds, downloadOption, bookings, startDate, endDate, selectedWarehouseName } = this.state;
 
         if (selectedBookingIds.length > 0 && selectedBookingIds.length < 501) {
             this.setState({loadingDownload: true});
@@ -681,34 +682,13 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'labels.zip');
+                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false, loading: true});
                 });
-            } else if (downloadOption === 'pod') {
-                const options = {
-                    method: 'post',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                    data: {
-                        ids: selectedBookingIds,
-                        onlyNew: 'ALL',
-                    },
-                    responseType: 'blob', // important
-                };
-
-                axios(options).then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'pod_and_pod_signed.zip');
-                    document.body.appendChild(link);
-                    link.click();
-                    this.props.setGetBookingsFilter('date', {startDate, endDate});
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
-                });
-            } else if (downloadOption === 'new_pod') {
+            } else if (downloadOption === 'pod' || downloadOption === 'new_pod') {
                 let bookingIdsWithNewPOD = [];
 
                 for (let j = 0; j < selectedBookingIds.length; j++) {
@@ -724,13 +704,13 @@ class AllBookingsPage extends React.Component {
                     }
                 }
 
-                if (bookingIdsWithNewPOD.length > 0) {
+                if (downloadOption === 'new_pod' && bookingIdsWithNewPOD.length !== 0) {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
                         data: {
-                            ids: bookingIdsWithNewPOD,
-                            onlyNew: 'NEW',
+                            ids: downloadOption === 'pod' ? selectedBookingIds : bookingIdsWithNewPOD,
+                            onlyNew: downloadOption === 'pod' ? 'ALL' : 'NEW',
                         },
                         responseType: 'blob', // important
                     };
@@ -739,12 +719,11 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_and_pod_signed.zip');
+                        link.setAttribute('download', 'pod_and_pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.props.setNeedUpdateBookingsState(true);
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false, loading: true});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                     });
                 } else {
                     alert('No new POD info');
