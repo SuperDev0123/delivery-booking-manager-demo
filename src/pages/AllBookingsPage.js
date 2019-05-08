@@ -785,12 +785,12 @@ class AllBookingsPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {simpleSearchKeyword} = this.state;
+        const {simpleSearchKeyword, newPod, newLabel} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, 0, '-id', {}, 0, simpleSearchKeyword);
+            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, 0, '-id', {}, 0, simpleSearchKeyword, newPod, newLabel);
             this.setState({activeTabInd: 0});
         }
 
@@ -798,8 +798,10 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickTab(activeTabInd) {
+        const {newPod, newLabel} = this.state;
+
         if (activeTabInd === 0) {
-            this.props.setAllGetBookingsFilter('*');
+            this.props.setAllGetBookingsFilter('*', '2019-01-01', 0, 0, 0, '-id', {}, 0, '', newPod, newLabel);
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, '-id', {}, activeTabInd);
@@ -915,14 +917,17 @@ class AllBookingsPage extends React.Component {
     onDownloadOptionChange(e) {
         if (e.target.value === 'new_pod') {
             this.props.setGetBookingsFilter('newPod', true);
+            this.setState({newPod: true});
         } else if (e.target.value === 'new_label') {
             this.props.setGetBookingsFilter('newLabel', true);
+            this.setState({newPod: true});
         } else if ((e.target.value !== 'new_pod' ||
             e.target.value !== 'new_label') && 
             (this.state.downloadOption === 'new_pod' ||
             this.state.downloadOption === 'new_label')) {
             this.props.setGetBookingsFilter('newPod', false);
             this.props.setGetBookingsFilter('newLabel', false);
+            this.setState({newPod: false, newLabel: false});
         }
 
         this.setState({downloadOption: e.target.value});
