@@ -682,7 +682,7 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
@@ -719,7 +719,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_and_pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_and_pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
