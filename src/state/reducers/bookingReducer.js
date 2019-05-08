@@ -183,6 +183,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 simpleSearchKeyword: simpleSearchKeyword,
                 newPod: newPod,
                 newLabel: newLabel,
+                clientPK: clientPK,
                 bookings: [],
                 needUpdateBookings: true,
             };
