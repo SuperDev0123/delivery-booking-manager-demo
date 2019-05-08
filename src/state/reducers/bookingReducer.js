@@ -1,4 +1,4 @@
-import { SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, RESET_UPDATE_LINE_AND_LINEDETAIL, SUCCESS_DUPLICATE_BOOKING, SET_LOCAL_FILTER_NEWPOD, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED } from '../constants/bookingConstants';
+import { SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, RESET_UPDATE_LINE_AND_LINEDETAIL, SUCCESS_DUPLICATE_BOOKING, SET_LOCAL_FILTER_NEWPOD, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SET_LOCAL_FILTER_NEWLABEL } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
@@ -24,10 +24,11 @@ const defaultState = {
     prefilterInd: 0,
     simpleSearchKeyword: '',
     newPod: false,
+    newLabel: false,
     noBooking: null,
 };
 
-export const BookingReducer = (state = defaultState, { noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, clientPK }) => {
+export const BookingReducer = (state = defaultState, { noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, newPod, newLabel, clientPK }) => {
     switch (type) {
         case SET_ATTACHMENTS:
             return {
@@ -180,8 +181,10 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 columnFilters: columnFilters,
                 prefilterInd: prefilterInd,
                 simpleSearchKeyword: simpleSearchKeyword,
-                needUpdateBookings: true,
+                newPod: newPod,
+                newLabel: newLabel,
                 bookings: [],
+                needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SELECTEDATE:
             return {
@@ -230,6 +233,13 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
             return {
                 ...state,
                 newPod: newPod,
+                needUpdateBookings: true,
+                bookings: [],
+            };
+        case SET_LOCAL_FILTER_NEWLABEL:
+            return {
+                ...state,
+                newLabel: newLabel,
                 needUpdateBookings: true,
                 bookings: [],
             };
