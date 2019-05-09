@@ -2182,7 +2182,7 @@ class AllBookingsPage extends React.Component {
                 <XLSModal
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
-                    generateXLS={(startDate, endDate, emailAddr) => this.props.generateXLS(startDate, endDate, emailAddr)}
+                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider)}
                 />
             </div>            
         );
@@ -2241,7 +2241,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        generateXLS: (startDate, endDate, emailAddr) => dispatch(generateXLS(startDate, endDate, emailAddr)),
+        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
     };
 };

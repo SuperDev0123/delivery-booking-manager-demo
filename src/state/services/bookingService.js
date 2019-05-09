@@ -299,13 +299,13 @@ export const resetNeedUpdateLineAndLineDetail = () => {
     return dispatch => dispatch(setNeedUpdateLineAndLineDetail());
 };
 
-export const generateXLS = (startDate, endDate, emailAddr) => {
+export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/generate_xls/`,
-        params: {'startDate': startDate, 'endDate': endDate, 'emailAddr': emailAddr},
+        params: {'startDate': startDate, 'endDate': endDate, 'emailAddr': emailAddr, 'vx_freight_provider': vx_freight_provider},
     };
     return dispatch =>
         axios(options)

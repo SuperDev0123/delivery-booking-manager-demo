@@ -15,6 +15,7 @@ class XLSModal extends Component {
             startDate: '', 
             endDate: '',
             emailAddr: '',
+            vx_freight_provider: '',
             errorMessage: '',
         };
     }
@@ -73,11 +74,27 @@ class XLSModal extends Component {
         }
     }
 
-    onInputChange(e) {
-        if (this.validateEmail( e.target.value)) {
-            this.setState({emailAddr: e.target.value, errorMessage: ''});
-        } else {
-            this.setState({emailAddr: e.target.value, errorMessage: 'Please input correct email address'});
+    onInputChange(e, type) {
+        if (type === 'email') {
+            if (this.validateEmail(e.target.value)) {
+                let errorMessage = '';
+
+                if (this.state.vx_freight_provider === '') {
+                    errorMessage = 'Please select Freight Provider.';
+                }
+
+                this.setState({emailAddr: e.target.value, errorMessage});
+            } else {
+                this.setState({emailAddr: e.target.value, errorMessage: 'Please input correct email address.'});
+            }
+        } else if (type === 'fp') {
+            let errorMessage = '';
+
+            if (!this.validateEmail(this.state.emailAddr)) {
+                errorMessage = 'Please input correct email address.';
+            }
+
+            this.setState({vx_freight_provider: e.target.value, errorMessage});
         }
     }
 
@@ -94,20 +111,36 @@ class XLSModal extends Component {
     }
 
     onClickBuildAndSend() {
-        const {startDate, endDate, emailAddr} = this.state;
-        this.props.generateXLS(startDate, endDate, emailAddr);
+        const {startDate, endDate, emailAddr, vx_freight_provider} = this.state;
+        this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider);
         this.props.toggleShowXLSModal();
     }
 
     render() {
         const {isShowXLSModal} = this.props;
-        const {startDate, endDate, emailAddr, errorMessage} = this.state;
-        const buttonStatus = this.validateEmail(emailAddr);
+        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider} = this.state;
+        let buttonStatus = false;
+
+        if (this.validateEmail(emailAddr) && vx_freight_provider !== '') {
+            buttonStatus = true;
+        }
 
         return (
             <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleShowXLSModal()} className="xls-modal">
                 <ModalHeader toggle={() => this.props.toggleShowXLSModal()}>XLS Download</ModalHeader>
                 <ModalBody>
+                    <label>
+                        <p>Freight Provider: </p>
+                        <select
+                            required 
+                            name="vx_freight_provider" 
+                            onChange={(e) => this.onInputChange(e, 'fp')}
+                            value = {vx_freight_provider} >
+                            <option value="" selected disabled hidden>Select a FP</option>
+                            <option value="allied">Allied</option>
+                            <option value="cope">Cope</option>
+                        </select>
+                    </label>
                     <label>
                         <p>Start Date: </p>
                         <DatePicker
@@ -126,7 +159,7 @@ class XLSModal extends Component {
                     </label>
                     <label>
                         <p>Email address: </p>
-                        <input type="text" placeholder="Email to send xls" name="emailAddr" value={emailAddr} onChange={(e) => this.onInputChange(e)} />
+                        <input type="text" placeholder="Email to send xls" name="emailAddr" value={emailAddr} onChange={(e) => this.onInputChange(e, 'email')} />
                     </label>
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
