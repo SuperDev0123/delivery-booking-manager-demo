@@ -161,7 +161,6 @@ class AllBookingsPage extends React.Component {
 
     componentWillReceiveProps(newProps) {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK } = newProps;
-        console.log('@000 - ', startDate, endDate);
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -236,12 +235,10 @@ class AllBookingsPage extends React.Component {
             if (_.isEmpty(startDate)) {
                 const startDate = moment().tz('Australia/Sydney').toDate();
                 const dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
-                console.log('@ - 0', startDate, dateParam);
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
                 this.setState({startDate});
                 return;
             } else if (startDate !== '*') {
-                console.log('@ - 1', startDate);
                 this.setState({startDate});
             }
 
@@ -249,12 +246,10 @@ class AllBookingsPage extends React.Component {
             if (startDate !== '*' && _.isEmpty(endDate)) {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
-                console.log('@ - 2', startDate, endDate, dateParam);
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
                 this.setState({endDate});
                 return;
             } else {
-                console.log('@ - 3', endDate);
                 this.setState({endDate});
             }
 
@@ -704,7 +699,7 @@ class AllBookingsPage extends React.Component {
                     }
                 }
 
-                if (downloadOption === 'new_pod' && bookingIdsWithNewPOD.length !== 0) {
+                if ((downloadOption === 'new_pod' && bookingIdsWithNewPOD.length !== 0) || (downloadOption === 'pod')) {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
