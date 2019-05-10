@@ -30,7 +30,7 @@ class HomePage extends Component {
         }
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const {redirect} = newProps;
 
         if (redirect) {

@@ -39,7 +39,7 @@ class PodsPage extends React.Component {
         this.props.getDMEClients();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { bookings, redirect, dmeClients } = newProps;
         const currentRoute = this.props.location.pathname;
 

@@ -36,7 +36,7 @@ class BookingLineDetailsPage extends React.Component {
         this.props.getBookingLineDetails();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { bookingLineDetails, redirect } = newProps;
         const currentRoute = this.props.location.pathname;
 

@@ -81,7 +81,7 @@ class CommPage extends React.Component {
         Modal.setAppElement(this.el);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, booking, comms, needUpdateComms, sortField, columnFilters, notes, needUpdateNotes } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;

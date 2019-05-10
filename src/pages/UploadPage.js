@@ -59,7 +59,7 @@ class UploadPage extends Component {
         }
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, username } = newProps;
         const currentRoute = this.props.location.pathname;
 

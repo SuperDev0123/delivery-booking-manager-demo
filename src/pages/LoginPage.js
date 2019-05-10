@@ -22,7 +22,7 @@ class LoginPage extends Component {
         history: PropTypes.object.isRequired,
     };
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { token, username, errorMessage } = newProps;
 
         if (token)

@@ -30,7 +30,7 @@ class Header extends Component {
             this.props.getUser(token);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { username, clientname, isLoggedIn } = newProps;
 
         if (username)

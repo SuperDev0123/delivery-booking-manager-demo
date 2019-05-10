@@ -149,7 +149,7 @@ class AllBookingsPage extends React.Component {
         this.props.getUserDateFilterField();
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
         // document.addEventListener('scroll', this.handleScroll);
     }
@@ -159,7 +159,7 @@ class AllBookingsPage extends React.Component {
         // document.removeEventListener('scroll', this.handleScroll);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
