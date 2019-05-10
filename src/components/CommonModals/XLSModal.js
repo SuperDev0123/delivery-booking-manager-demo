@@ -35,8 +35,8 @@ class XLSModal extends Component {
         startDate = moment().tz('Australia/Sydney').toDate();
 
         this.setState({ 
-            startDate: moment(startDate).format('YYYY-MM-DD'),
-            endDate: moment(startDate).format('YYYY-MM-DD'),
+            startDate: moment(startDate).toDate(),
+            endDate: moment(startDate).toDate(),
             errorMessage: '',
         });
     }
@@ -47,12 +47,12 @@ class XLSModal extends Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                startDate = moment().tz('Australia/Sydney').toDate();
             } else {
-                startDate = moment(date).format('YYYY-MM-DD');
+                startDate = moment(date).toDate();
             }
 
-            if (moment(startDate, 'YYYY-MM-DD') > moment(this.state.endDate)) {
+            if (moment(startDate) > moment(this.state.endDate)) {
                 endDate = startDate;
                 this.setState({startDate, endDate});    
             } else {
@@ -60,12 +60,12 @@ class XLSModal extends Component {
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                endDate = moment().tz('Australia/Sydney').toDate();
             } else {
-                endDate = moment(date).format('YYYY-MM-DD');
+                endDate = moment(date).toDate();
             }
 
-            if (moment(endDate, 'YYYY-MM-DD') < moment(this.state.startDate)) {
+            if (moment(endDate) < moment(this.state.startDate)) {
                 startDate = endDate;
                 this.setState({startDate, endDate});    
             } else {

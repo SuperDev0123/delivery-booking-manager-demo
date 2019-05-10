@@ -1158,12 +1158,12 @@ class BookingPage extends Component {
 
         if (type === 'comm') {
             let commFormInputs = this.state.commFormInputs;
-            const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
+            const date = moment(commFormInputs['due_by_date']).add(number, 'd').toDate();
             commFormInputs['due_by_date'] = date;
             this.setState({commFormInputs});
         } else if (type === 'note') {
             let noteFormInputs = this.state.noteFormInputs;
-            const date = moment(noteFormInputs['note_date_updated']).add(number, 'd').format('YYYY-MM-DD');
+            const date = moment(noteFormInputs['note_date_updated']).add(number, 'd').toDate();
             noteFormInputs['note_date_updated'] = date;
             this.setState({noteFormInputs});
         }

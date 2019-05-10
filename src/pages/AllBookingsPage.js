@@ -129,16 +129,14 @@ class AllBookingsPage extends React.Component {
         let dateParam = '';
 
         if (today) {
-            startDate = moment(today, 'YYYY-MM-DD').toDate();
-            dateParam = moment(today, 'YYYY-MM-DD').format('YYYY-MM-DD');
             this.props.setNeedUpdateBookingsState(true);
         } else {
             startDate = moment().tz('Australia/Sydney').toDate();
             dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
 
             this.setState({ 
-                startDate: moment(startDate).format('YYYY-MM-DD'),
-                endDate: moment(startDate).format('YYYY-MM-DD'),
+                startDate: moment(startDate).toDate(),
+                endDate: moment(startDate).toDate(),
             });
 
             this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
@@ -236,10 +234,10 @@ class AllBookingsPage extends React.Component {
                 const startDate = moment().tz('Australia/Sydney').toDate();
                 const dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
-                this.setState({startDate});
+                this.setState({startDate: moment(startDate).toDate()});
                 return;
             } else if (startDate !== '*') {
-                this.setState({startDate});
+                this.setState({startDate: moment(startDate).toDate()});
             }
 
             // endDate
@@ -247,10 +245,10 @@ class AllBookingsPage extends React.Component {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
-                this.setState({endDate});
+                this.setState({endDate: moment(endDate).toDate()});
                 return;
             } else {
-                this.setState({endDate});
+                this.setState({endDate: moment(endDate).toDate()});
             }
 
             // sortField
@@ -377,12 +375,12 @@ class AllBookingsPage extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                startDate = moment().tz('Australia/Sydney').toDate();
             } else {
-                startDate = moment(date).format('YYYY-MM-DD');
+                startDate = moment(date).toDate();
             }
 
-            if (moment(startDate, 'YYYY-MM-DD') > moment(this.state.endDate)) {
+            if (moment(startDate) > moment(this.state.endDate)) {
                 endDate = startDate;
                 this.setState({startDate, endDate});    
             } else {
@@ -392,12 +390,12 @@ class AllBookingsPage extends React.Component {
             localStorage.setItem('today', startDate);
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                endDate = moment().tz('Australia/Sydney').toDate();
             } else {
-                endDate = moment(date).format('YYYY-MM-DD');
+                endDate = moment(date).toDate();
             }
 
-            if (moment(endDate, 'YYYY-MM-DD') < moment(this.state.startDate)) {
+            if (moment(endDate) < moment(this.state.startDate)) {
                 startDate = endDate;
                 this.setState({startDate, endDate});    
             } else {
@@ -1631,7 +1629,7 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                cclassName={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}
+                                                                className={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('pu_Address_PostalCode')} 
                                                                 scope="col" 
                                                                 nowrap
