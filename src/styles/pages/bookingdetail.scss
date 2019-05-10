@@ -519,3 +519,15 @@ p.lock-status {
 .pad-top-8 {
 	padding-top: 8px;
 }
+
+.tabs {
+	.selected {
+		opacity: 0.8;
+	}
+
+	#tab-button {
+		li {
+			cursor: pointer;
+		}
+	}
+}

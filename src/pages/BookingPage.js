@@ -150,6 +150,7 @@ class BookingPage extends Component {
             packageTypes: [],
             allBookingStatus: [],
             isShowLineTrackingSlider: false,
+            activeTabInd: 0,
         };
 
         this.djsConfig = {
@@ -1519,8 +1520,13 @@ class BookingPage extends Component {
         }
     }
 
+    onClickBottomTap(e, activeTabInd) {
+        e.preventDefault();
+        this.setState({activeTabInd});
+    }
+
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd} = this.state;
 
         const bookingLineColumns = [
             {
@@ -2645,14 +2651,14 @@ class BookingPage extends Component {
                                     <div className="tabs">
                                         <div className="tab-button-outer">
                                             <ul id="tab-button">
-                                                <li><a href="#tab01">Shipment Packages / Goods</a></li>
-                                                <li><a href="#tab02">Additional Information</a></li>
-                                                <li><a href="#tab03">Freight Options</a></li>
-                                                <li><a href="#tab04">Communication Log</a></li>
-                                                <li><a href="#tab05">Attachments</a></li>
+                                                <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods</a></li>
+                                                <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
+                                                <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Freight Options</a></li>
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log</a></li>
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments</a></li>
                                             </ul>
                                         </div>
-                                        <div className="tab-select-outer">
+                                        <div className="tab-select-outer none">
                                             <select id="tab-select">
                                                 <option value="#tab01">Shipment Packages / Goods</option>
                                                 <option value="#tab02">Additional Services & Options</option>
@@ -2661,7 +2667,7 @@ class BookingPage extends Component {
                                                 <option value="#tab05">Attachments</option>
                                             </select>
                                         </div>
-                                        <div id="tab01" className="tab-contents">
+                                        <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
                                                 <Button 
                                                     className="edit-lld-btn btn-primary" 
@@ -2720,7 +2726,7 @@ class BookingPage extends Component {
                                                 </LoadingOverlay>
                                             </div>
                                         </div>
-                                        <div id="tab02" className="tab-contents">
+                                        <div id="tab02" className={activeTabInd === 1 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="tab-inner">
                                                 <p className="font-24px float-left">Additional Services & Options</p>
                                                 <BootstrapTable
@@ -2732,7 +2738,7 @@ class BookingPage extends Component {
                                                 <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
-                                        <div id="tab03" className="tab-contents">
+                                        <div id="tab03" className={activeTabInd === 2 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="tab-inner">
                                                 <BootstrapTable
                                                     keyField="modelNumber"
@@ -2743,7 +2749,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab04" className="tab-contents">
+                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
@@ -2759,7 +2765,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab05" className="tab-contents">
+                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e)}>
                                                     <DropzoneComponent id="myDropzone" config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />

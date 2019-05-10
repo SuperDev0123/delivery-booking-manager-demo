@@ -13,39 +13,4 @@
 <body>
     <div id="app"></div>
 </body>
-
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script>
-	$(function() {
-		var $tabButtonItem = $('#tab-button li'),
-		$tabSelect = $('#tab-select'),
-		$tabContents = $('.tab-contents'),
-		activeClass = 'is-active';
-
-		$tabButtonItem.first().addClass(activeClass);
-		$tabContents.not(':first').hide(1000);
-
-		$tabButtonItem.find('a').on('click', function(e) {
-			var target = $(this).attr('href');
-
-			$tabButtonItem.removeClass(activeClass);
-			$(this).parent().addClass(activeClass);
-			$tabSelect.val(target);
-			$tabContents.hide(1000);
-			$(target).show(1000);
-			e.preventDefault();
-		});
-
-		$tabSelect.on('change', function() {
-			var target = $(this).val(),
-			targetSelectNum = $(this).prop('selectedIndex');
-
-			$tabButtonItem.removeClass(activeClass);
-			$tabButtonItem.eq(targetSelectNum).addClass(activeClass);
-			$tabContents.hide(1000);
-			$(target).show(1000);
-		});
-	});
-</script>
-
 </html>
