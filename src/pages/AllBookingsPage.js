@@ -1439,7 +1439,7 @@ class AllBookingsPage extends React.Component {
                                                     text=''
                                                 >
                                                     <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                    <button className="btn btn-primary allied-booking" onClick={() => this.onClickBook()}>Book</button>
+                                                    <button className="btn btn-primary allied-booking none" onClick={() => this.onClickBook()}>Book</button>
                                                     {
                                                         loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingsCnt + ') ' : ''
                                                     }
