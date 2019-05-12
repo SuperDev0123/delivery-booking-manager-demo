@@ -112,7 +112,7 @@ class XLSModal extends Component {
 
     onClickBuildAndSend() {
         const {startDate, endDate, emailAddr, vx_freight_provider} = this.state;
-        this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider);
+        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider);
         this.props.toggleShowXLSModal();
     }
 
