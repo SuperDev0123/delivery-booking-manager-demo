@@ -10,11 +10,12 @@ import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter }
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
+import LoadingOverlay from 'react-loading-overlay';
 
 import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
-import { getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
+import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 
 class CommPage extends React.Component {
     constructor(props) {
@@ -28,6 +29,7 @@ class CommPage extends React.Component {
             showSimpleSearchBox: false,
             sortDirection: -1,
             sortField: 'id',
+            sortType: 'comms',
             filterInputs: {},
             isNotePaneOpen: false,
             selectedCommId: null,
@@ -37,9 +39,12 @@ class CommPage extends React.Component {
             noteFormMode: 'create',
             noteFormInputs: {},
             commFormInputs: {},
+            loading: false,
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
+        this.handleScroll = this.handleScroll.bind(this);
+        this.myRef = React.createRef();
     }
 
     static propTypes = {
@@ -49,9 +54,10 @@ class CommPage extends React.Component {
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getBookingWithFilter: PropTypes.func.isRequired,
-        getCommsWithBookingId: PropTypes.func.isRequired,
+        getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
         setGetCommsFilter: PropTypes.func.isRequired,
+        setAllGetCommsFilter: PropTypes.func.isRequired,
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
@@ -73,16 +79,16 @@ class CommPage extends React.Component {
 
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
-            this.props.getCommsWithBookingId(bookingId);
         } else {
-            console.log('Booking ID is null');
+            console.log('No Booking Id');
         }
 
+        this.props.getComms(null);
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, columnFilters, notes, needUpdateNotes } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -105,11 +111,23 @@ class CommPage extends React.Component {
         }
 
         if (needUpdateComms) {
-            this.props.getCommsWithBookingId(booking.id, sortField, columnFilters);
+            this.setState({loading: true});
+            this.props.getComms(null, sortField, sortType, columnFilters);
+        } else {
+            this.setState({loading: false});
         }
 
         if (needUpdateNotes) {
             this.props.getNotes(selectedCommId);
+        }
+    }
+
+    handleScroll(event) {
+        let scrollLeft = event.target.scrollLeft;
+        const tblContent = this.myRef.current;
+
+        if (scrollLeft !== this.state.scrollLeft) {
+            this.setState({scrollLeft: tblContent.scrollLeft});
         }
     }
 
@@ -125,24 +143,32 @@ class CommPage extends React.Component {
         e.preventDefault();
     }
 
-    onChangeSortField(fieldName) {
+    onChangeSortField(fieldName, sortType) {
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
+        const {columnFilters} = this.state;
 
         if (fieldName === sortField)
             sortDirection = -1 * sortDirection;
         else
             sortDirection = -1;
 
-        this.setState({sortField: fieldName, sortDirection});
+        this.setState({sortField: fieldName, sortDirection, sortType});
 
-        if (sortDirection < 0)
-            this.props.setGetCommsFilter('sortField', '-' + fieldName);
-        else
-            this.props.setGetCommsFilter('sortField', fieldName);
+        if (sortType === 'comms') {
+            if (sortDirection < 0)
+                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters);
+            else
+                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters);
+        } else if (sortType === 'bookings') {
+            if (sortDirection < 0)
+                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters);
+            else
+                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters);
+        }
     }
 
-    onCheck(e, id, index) {
+    onCheckClosed(e, id, index) {
         if (e.target.name === 'closed') {
             let updatedComm = {};
 
@@ -214,7 +240,11 @@ class CommPage extends React.Component {
 
     onClickHeader(e) {
         e.preventDefault();
-        window.location.assign('/booking?bookingid=' + this.state.booking.id);
+        if (this.state.booking) {
+            window.location.assign('/booking?bookingid=' + this.state.booking.id);
+        } else {
+            window.location.assign('/booking');
+        }
     }
 
     onUpdateBtnClick(type, data) {
@@ -286,24 +316,27 @@ class CommPage extends React.Component {
     }
 
     render() {
-        const { showSimpleSearchBox, simpleSearchKeyword, comms, booking, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode } = this.state;
+        const { showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode, scrollLeft, loading } = this.state;
+
+        const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
+        const tblContentWidth = {width: tblContentWidthVal};
 
         const commsList = comms.map((comm, index) => {
             return (
                 <tr key={index}>
                     <td onClick={() => this.onClickCommIdCell(comm)}>{comm.id}</td>
-                    <td>{booking.b_bookingID_Visual}</td>
-                    <td>{booking.b_status}</td>
-                    <td>{booking.vx_freight_Provider}</td>
-                    <td>{booking.puCompany}</td>
-                    <td>{booking.deToCompanyName}</td>
-                    <td>{booking.v_FPBookingNumber}</td>
+                    <td>{comm.b_bookingID_Visual}</td>
+                    <td>{comm.b_status}</td>
+                    <td>{comm.vx_freight_Provider}</td>
+                    <td>{comm.puCompany}</td>
+                    <td>{comm.deToCompanyName}</td>
+                    <td>{comm.v_FPBookingNumber}</td>
                     <td>{comm.priority_of_log}</td>
                     <td>{comm.assigned_to}</td>
                     <td>{comm.dme_notes_type}</td>
                     <td>{comm.query}</td>
-                    <td>{comm.dme_action}</td>
-                    <td><input type="checkbox" checked={comm.closed} name="closed" onChange={(e) => this.onCheck(e, comm.id, index)} /></td>
+                    <td><div>{comm.dme_action}</div></td>
+                    <td><input type="checkbox" checked={comm.closed} name="closed" onChange={(e) => this.onCheckClosed(e, comm.id, index)} /></td>
                     <td>{comm.status_log_closed_time ? moment(comm.status_log_closed_time).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td>{comm.dme_detail}</td>
                     <td>{comm.dme_notes_external}</td>
@@ -410,82 +443,351 @@ class CommPage extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div className='content'>
-                    <div className="table-responsive">
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <tr>
-                                <th className="" onClick={() => this.onChangeSortField('id')} scope="col" nowrap>
-                                    <p>ID</p>
-                                    {
-                                        (sortField === 'id') ?
-                                            (sortDirection > 0) ?
-                                                <i className="fa fa-sort-up"></i>
-                                                : <i className="fa fa-sort-down"></i>
-                                            : <i className="fa fa-sort"></i>
-                                    }
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Booking ID</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Status</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Freight Provider</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>From</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>To</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>FP Booking No</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Priority</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Assiged To</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Notes Type</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Query</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Action</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Closed</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Closed Time</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Detail</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Notes External</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Date</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Time</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Update</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th scope="col"><input type="text" name="id" value={filterInputs['id'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                            </tr>
-                            { commsList }
-                        </table>
+                <LoadingOverlay
+                    active={loading}
+                    spinner
+                    text='Loading...'
+                >
+                    <div className='content'>
+                        <div className="table-responsive" onScroll={this.handleScroll} ref={this.myRef}>
+                            <div className="tbl-header">
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <tr>
+                                        <th className="" onClick={() => this.onChangeSortField('id', 'comms')} scope="col" nowrap>
+                                            <p>Comm ID</p>
+                                            {
+                                                (sortField === 'id') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('b_bookingID_Visual', 'bookings')} scope="col" nowrap>
+                                            <p>Booking ID</p>
+                                            {
+                                                (sortField === 'b_bookingID_Visual') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('b_status', 'bookings')} scope="col" nowrap>
+                                            <p>Status</p>
+                                            {
+                                                (sortField === 'b_status') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('vx_freight_Provider', 'bookings')} scope="col" nowrap>
+                                            <p>Freight Provider</p>
+                                            {
+                                                (sortField === 'vx_freight_Provider') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('puCompany', 'bookings')} scope="col" nowrap>
+                                            <p>From</p>
+                                            {
+                                                (sortField === 'puCompany') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('deToCompanyName', 'bookings')} scope="col" nowrap>
+                                            <p>To</p>
+                                            {
+                                                (sortField === 'deToCompanyName') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('v_FPBookingNumber', 'bookings')} scope="col" nowrap>
+                                            <p>FP Booking No</p>
+                                            {
+                                                (sortField === 'v_FPBookingNumber') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('priority_of_log', 'comms')} scope="col" nowrap>
+                                            <p>Priority</p>
+                                            {
+                                                (sortField === 'priority_of_log') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('assigned_to', 'comms')} scope="col" nowrap>
+                                            <p>Assiged To</p>
+                                            {
+                                                (sortField === 'assigned_to') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('dme_notes_type', 'comms')} scope="col" nowrap>
+                                            <p>Notes Type</p>
+                                            {
+                                                (sortField === 'dme_notes_type') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('query', 'comms')} scope="col" nowrap>
+                                            <p>Query</p>
+                                            {
+                                                (sortField === 'query') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('action', 'comms')} scope="col" nowrap>
+                                            <p>Action</p>
+                                            {
+                                                (sortField === 'action') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" scope="col" nowrap>
+                                            <p>Closed</p>
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('status_log_closed_time', 'comms')} scope="col" nowrap>
+                                            <p>Closed Time</p>
+                                            {
+                                                (sortField === 'status_log_closed_time') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('dme_detail', 'comms')} scope="col" nowrap>
+                                            <p>Detail</p>
+                                            {
+                                                (sortField === 'dme_detail') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('dme_notes_external', 'comms')} scope="col" nowrap>
+                                            <p>Notes External</p>
+                                            {
+                                                (sortField === 'dme_notes_external') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('due_by_date', 'comms')} scope="col" nowrap>
+                                            <p>Date</p>
+                                            {
+                                                (sortField === 'due_by_date') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" onClick={() => this.onChangeSortField('due_by_time', 'comms')} scope="col" nowrap>
+                                            <p>Time</p>
+                                            {
+                                                (sortField === 'due_by_time') ?
+                                                    (sortDirection > 0) ?
+                                                        <i className="fa fa-sort-up"></i>
+                                                        : <i className="fa fa-sort-down"></i>
+                                                    : <i className="fa fa-sort"></i>
+                                            }
+                                        </th>
+                                        <th className="" scope="col" nowrap>
+                                            <p>Update</p>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="id" 
+                                                value={filterInputs['id'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="b_bookingID_Visual" 
+                                                value={filterInputs['b_bookingID_Visual'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="b_status" 
+                                                value={filterInputs['b_status'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="vx_freight_Provider" 
+                                                value={filterInputs['vx_freight_Provider'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="puCompany" 
+                                                value={filterInputs['puCompany'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="deToCompanyName" 
+                                                value={filterInputs['deToCompanyName'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="priority_of_log" 
+                                                value={filterInputs['priority_of_log'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="assigned_to" 
+                                                value={filterInputs['assigned_to'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="dme_notes_type" 
+                                                value={filterInputs['dme_notes_type'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="query" 
+                                                value={filterInputs['query'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="dme_action" 
+                                                value={filterInputs['dme_action'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col"></th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="status_log_closed_time" 
+                                                value={filterInputs['status_log_closed_time'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="dme_detail" 
+                                                value={filterInputs['dme_detail'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="dme_notes_external" 
+                                                value={filterInputs['dme_notes_external'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="due_by_date" 
+                                                value={filterInputs['due_by_date'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
+                                                name="due_by_time" 
+                                                value={filterInputs['due_by_time'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div className="tbl-content" style={tblContentWidth} onScroll={this.handleScroll}>
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    { commsList }
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </LoadingOverlay>
+
                 <SlidingPane
                     className='note-pan'
                     overlayClassName='note-pan-overlay'
@@ -566,8 +868,9 @@ class CommPage extends React.Component {
                         }
                     </div>
                 </SlidingPane>
+
                 <ReactstrapModal isOpen={isShowUpdateCommModal} toggle={this.toggleUpdateCommModal} className="create-comm-modal">
-                    <ModalHeader toggle={this.toggleUpdateCommModal}>Update Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
+                    <ModalHeader toggle={this.toggleUpdateCommModal}>Update Communication Log: *SHOW VISUAL ID*</ModalHeader>
                     <ModalBody>
                         <label>
                             <p>Assigned To</p>
@@ -669,6 +972,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         comms: state.comm.comms,
         sortField: state.comm.sortField,
+        sortType: state.comm.sortType,
         columnFilters: state.comm.columnFilters,
         needUpdateComms: state.comm.needUpdateComms,
         notes: state.comm.notes,
@@ -681,12 +985,13 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
-        getCommsWithBookingId: (id, sortField, columnFilters) => dispatch(getCommsWithBookingId(id, sortField, columnFilters)),
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
+        setAllGetCommsFilter: (bookingId, sortField, sortType, columnFilters) => dispatch(setAllGetCommsFilter(bookingId, sortField, sortType, columnFilters)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
+        getComms: (bookingId, sortField, sortType, columnFilters) => dispatch(getComms(bookingId, sortField, sortType, columnFilters)),
     };
 };
 

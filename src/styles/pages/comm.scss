@@ -1,11 +1,50 @@
 .comm {
 	height: calc(100% - 70px);
 
+  #headr {
+    z-index: 10;
+  }
+
+  ._loading_overlay_wrapper {
+    z-index: 0;
+  }
+  
 	.content {
 		height: 100%;
 		padding-top: 60px;
 		padding-left: 20px;
 		padding-right: 20px;
+
+    .table-responsive {
+      width: 100%;
+      padding-left: 10px;
+      padding-right: 10px;
+      height: calc(100% - 50px);
+      overflow-x: auto;
+
+      .tbl-content {
+        height: calc(100% - 70px);
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      th {
+        white-space: nowrap;
+        padding: 3px !important;
+
+        p {
+          display: inline-block;
+          width: calc(100% - 10px);
+          overflow: hidden;
+          margin: 0px;
+        }
+
+        i {
+          vertical-align: top;
+          float: right;
+        }
+      }
+    }
 	}
 
   table {
@@ -16,11 +55,11 @@
 }
 
 $table_body_height: 100%;
-$column_1_width: 70px;
-$column_2_width: 70px;
+$column_1_width: 80px;
+$column_2_width: 80px;
 $column_3_width: 120px;
 $column_4_width: 90px;
-$column_5_width: 90px;
+$column_5_width: 250px;
 $column_6_width: 250px;
 $column_7_width: 90px;
 $column_8_width: 70px;
@@ -28,7 +67,7 @@ $column_9_width: 90px;
 $column_10_width: 70px;
 
 $column_11_width: 70px;
-$column_12_width: 100px;
+$column_12_width: 250px;
 $column_13_width: 70px;
 $column_14_width: 120px;
 $column_15_width: 70px;
@@ -45,6 +84,15 @@ $column_19_width: 70px;
     font-weight: lighter;
     padding: 3px;
     text-align: left;
+
+    div {
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    input {
+      margin: 0 !important;
+    }
   }
 
   td:nth-child(1), th:nth-child(1) { width: $column_1_width; }
@@ -59,14 +107,14 @@ $column_19_width: 70px;
   td:nth-child(7), th:nth-child(7) { width: $column_7_width; }
   td:nth-child(7) p, th:nth-child(7) p { width: 70px }
   td:nth-child(8), th:nth-child(8) { width: $column_8_width; }
-  td:nth-child(8) p, th:nth-child(8) p { width: 70px }
+  td:nth-child(8) p, th:nth-child(8) p { width: 50px }
   td:nth-child(9), th:nth-child(9) { width: $column_9_width; }
   td:nth-child(9) p, th:nth-child(9) p { width: 70px }
   td:nth-child(10), th:nth-child(10) { width: $column_10_width; }
-  td:nth-child(10) p, th:nth-child(10) p { width: 70px }
+  td:nth-child(10) p, th:nth-child(10) p { width: 50px }
 
   td:nth-child(11), th:nth-child(11) { width: $column_11_width; }
-  td:nth-child(11) p, th:nth-child(11) p { width: 70px }
+  td:nth-child(11) p, th:nth-child(11) p { width: 50px }
   td:nth-child(12), th:nth-child(12) { width: $column_12_width; }
   td:nth-child(12) p, th:nth-child(12) p { width: 70px }
   td:nth-child(13), th:nth-child(13) { width: $column_13_width; }
@@ -74,15 +122,15 @@ $column_19_width: 70px;
   td:nth-child(14), th:nth-child(14) { width: $column_14_width; }
   td:nth-child(14) p, th:nth-child(14) p { width: 100px }
   td:nth-child(15), th:nth-child(15) { width: $column_15_width; }
-  td:nth-child(15) p, th:nth-child(15) p { width: 70px }
+  td:nth-child(15) p, th:nth-child(15) p { width: 50px }
   td:nth-child(16), th:nth-child(16) { width: $column_16_width; }
-  td:nth-child(16) p, th:nth-child(16) p { width: 70px }
+  td:nth-child(16) p, th:nth-child(16) p { width: 50px }
   td:nth-child(17), th:nth-child(17) { width: $column_17_width; }
-  td:nth-child(17) p, th:nth-child(17) p { width: 70px }
+  td:nth-child(17) p, th:nth-child(17) p { width: 50px }
   td:nth-child(18), th:nth-child(18) { width: $column_18_width; }
-  td:nth-child(18) p, th:nth-child(18) p { width: 70px }
+  td:nth-child(18) p, th:nth-child(18) p { width: 50px }
   td:nth-child(19), th:nth-child(19) { width: $column_19_width; }
-  td:nth-child(19) p, th:nth-child(19) p { width: 70px }
+  td:nth-child(19) p, th:nth-child(19) p { width: 50px }
 
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
@@ -111,6 +159,10 @@ $column_19_width: 70px;
   td.active {
     background-color: whitesmoke;
   }
+}
+
+.tbl-header > table {
+  margin-bottom: 0 !important;
 }
 
 td.update {

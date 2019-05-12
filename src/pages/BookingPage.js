@@ -32,7 +32,7 @@ import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getCommsWithBookingId, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
+import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, saveStatusHistory, getBookingStatusHistory } from '../state/services/extraService';
 
@@ -51,6 +51,7 @@ class BookingPage extends Component {
                 dme_action: 'No follow up required, noted for info purposes',
                 additional_action_task: '',
                 notes_type: 'Call',
+                dme_notes: '',
             },
             selected: 'dme',
             booking: {},
@@ -204,7 +205,7 @@ class BookingPage extends Component {
         getAttachmentHistory: PropTypes.func.isRequired,
         resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
         createComm: PropTypes.func.isRequired,
-        getCommsWithBookingId: PropTypes.func.isRequired,
+        getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
         setGetCommsFilter: PropTypes.func.isRequired,
         getNotes: PropTypes.func.isRequired,
@@ -235,7 +236,7 @@ class BookingPage extends Component {
         var bookingId = urlParams.get('bookingid');
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
-            this.props.getCommsWithBookingId(bookingId);
+            this.props.getComms(bookingId);
             this.setState({loading: true, curViewMode: 0});
         } else {
             this.props.getLatestBooking();
@@ -290,7 +291,7 @@ class BookingPage extends Component {
         }
 
         if (needUpdateComms) {
-        //     this.props.getCommsWithBookingId(booking.id);
+            this.props.getComms(booking.id);
         }
 
         if (needUpdateNotes) {
@@ -524,7 +525,7 @@ class BookingPage extends Component {
                 if (this.state.loading && booking.pk_booking_id) {
                     this.props.getBookingLines(booking.pk_booking_id);
                     this.props.getBookingLineDetails(booking.pk_booking_id);
-                    this.props.getCommsWithBookingId(booking.id);
+                    this.props.getComms(booking.id);
                     this.props.getBookingStatusHistory(booking.pk_booking_id);
                 }
 
@@ -1112,6 +1113,7 @@ class BookingPage extends Component {
             dme_action: 'No follow up required, noted for info purposes',
             additional_action_task: '',
             notes_type: 'Call',
+            dme_notes: '',
         }});
     }
 
@@ -1129,15 +1131,21 @@ class BookingPage extends Component {
             commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
 
         if (commFormMode === 'create') {
-            const {booking} = this.state;
-            commFormInputs['fk_booking_id'] = booking.pk_booking_id;
+            const {booking} = this.state;            
+            let newComm = commFormInputs;
+            this.resetCommForm();
+            newComm['fk_booking_id'] = booking.pk_booking_id;
+            newComm['due_by_date'] = moment(newComm['due_by_date']).format('YYYY-MM-DD');
 
-            this.props.createComm(commFormInputs);
+            this.props.createComm(newComm);
             this.toggleCreateCommModal();
         } else if (commFormMode === 'update') {
             const {selectedCommId} = this.state;
+            let newComm = commFormInputs;
+            this.resetCommForm();
+            newComm['due_by_date'] = moment(newComm['due_by_date']).format('YYYY-MM-DD');
 
-            this.props.updateComm(selectedCommId, commFormInputs);
+            this.props.updateComm(selectedCommId, newComm);
             this.toggleUpdateCommModal();
         }
     }
@@ -1145,11 +1153,11 @@ class BookingPage extends Component {
     onDateChange(type='comm', date) {
         if (type === 'comm') {
             let commFormInputs = this.state.commFormInputs;
-            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+            commFormInputs['due_by_date'] = moment(date).toDate();
             this.setState({commFormInputs});
         } else if (type === 'note') {
             let noteFormInputs = this.state.noteFormInputs;
-            noteFormInputs['note_date_updated'] = moment(date).format('YYYY-MM-DD');
+            noteFormInputs['note_date_updated'] = moment(date).toDate();
             this.setState({noteFormInputs});
         }
     }
@@ -3217,7 +3225,7 @@ const mapDispatchToProps = (dispatch) => {
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
-        getCommsWithBookingId: (id, sortField, columnFilters) => dispatch(getCommsWithBookingId(id, sortField, columnFilters)),
+        getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
         getNotes: (commId) => dispatch(getNotes(commId)),

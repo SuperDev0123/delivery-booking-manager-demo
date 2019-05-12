@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER } from '../constants/commConstants';
 
 export function setComms(data) {
     return {
@@ -31,8 +31,13 @@ export function failedUpdateComm(error) {
 export function setLocalFilter(key, value) {
     if (key === 'sortField') {
         return {
-            type: SET_LOCAL_FILTER_SORTFIELD,
+            type: SET_LOCAL_FILTER_SORT_FIELD,
             sortField: value,
+        };
+    } else if (key === 'sortType') {
+        return {
+            type: SET_LOCAL_FILTER_SORT_TYPE,
+            sortType: value,
         };
     } else if (key === 'columnFilters') {
         return {
@@ -40,6 +45,16 @@ export function setLocalFilter(key, value) {
             columnFilters: value,
         };
     }
+}
+
+export function setAllLocalFilter(bookingId, sortField, sortType, columnFilters) {
+    return {
+        type: SET_ALL_LOCAL_FILTER,
+        bookingId,
+        sortField,
+        sortType,
+        columnFilters,
+    };
 }
 
 export function successGetNotes(data) {

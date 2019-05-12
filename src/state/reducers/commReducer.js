@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER } from '../constants/commConstants';
 
 const defaultState = {
     comms: [],
@@ -8,9 +8,11 @@ const defaultState = {
     errorMessage: null,
     needUpdateComms: false,
     needUpdateNotes: false,
+    sortCommsField: 'id',
+    sortBookingsField: '',
 };
 
-export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, sortField, columnFilters, notes, note }) => {
+export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, bookingId, sortField, sortType, columnFilters, notes, note }) => {
     switch (type) {
         case SET_COMMS:
             return { 
@@ -34,10 +36,25 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 ...state, 
                 errorMessage: errorMessage 
             };
-        case SET_LOCAL_FILTER_SORTFIELD:
+        case SET_LOCAL_FILTER_SORT_FIELD:
             return {
                 ...state,
                 sortField: sortField,
+                needUpdateComms: true,
+            };
+        case SET_LOCAL_FILTER_SORT_TYPE:
+            return {
+                ...state,
+                sortType: sortType,
+                needUpdateComms: true,
+            };
+        case SET_ALL_LOCAL_FILTER:
+            return {
+                ...state,
+                bookingId,
+                sortField,
+                sortType,
+                columnFilters,
                 needUpdateComms: true,
             };
         case SET_LOCAL_FILTER_COLUMNFILTER:

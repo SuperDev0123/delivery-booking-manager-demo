@@ -1,19 +1,20 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote } from '../actions/commActions';
+import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getCommsWithBookingId = (bookingId, sortField='id', columnFilters={}) => {
+export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/comm/get_comms/`,
         params: {
-            bookingId: bookingId,
+            bookingId: bookingId ? bookingId : '',
             sortField: sortField,
+            sortType: sortType,
             columnFilters: columnFilters,
-        }
+        },
     };
     return dispatch =>
         axios(options)
@@ -51,6 +52,10 @@ export const updateComm = (id, updatedComm) => {
 
 export const setGetCommsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
+};
+
+export const setAllGetCommsFilter = (bookingId='', sortField='id', sortType='comms', columnFilters={}) => {
+    return dispatch => dispatch(setAllLocalFilter(bookingId, sortField, sortType, columnFilters));
 };
 
 export const getNotes = (commId) => {
