@@ -688,6 +688,15 @@ class CommPage extends React.Component {
                                         <th scope="col">
                                             <input 
                                                 type="text" 
+                                                name="v_FPBookingNumber" 
+                                                value={filterInputs['v_FPBookingNumber'] || ''} 
+                                                onChange={(e) => this.onChangeFilterInput(e)} 
+                                                onKeyPress={(e) => this.onKeyPress(e)}
+                                            />
+                                        </th>
+                                        <th scope="col">
+                                            <input 
+                                                type="text" 
                                                 name="priority_of_log" 
                                                 value={filterInputs['priority_of_log'] || ''} 
                                                 onChange={(e) => this.onChangeFilterInput(e)} 
