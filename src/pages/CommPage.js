@@ -84,6 +84,7 @@ class CommPage extends React.Component {
         }
 
         this.props.getComms(null);
+        this.setState({loading: true});
         Modal.setAppElement(this.el);
     }
 
