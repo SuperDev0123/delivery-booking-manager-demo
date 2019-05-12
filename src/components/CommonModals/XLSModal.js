@@ -90,7 +90,7 @@ class XLSModal extends Component {
         } else if (type === 'fp') {
             let errorMessage = '';
 
-            if (!this.validateEmail(this.state.emailAddr)) {
+            if (!this.validateEmail(this.state.emailAddr) && this.state.emailAddr.length > 0) {
                 errorMessage = 'Please input correct email address.';
             }
 
