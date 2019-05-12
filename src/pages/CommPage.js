@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import moment from 'moment-timezone';
 import Modal from 'react-modal';
 import SlidingPane from 'react-sliding-pane';
@@ -254,7 +255,8 @@ class CommPage extends React.Component {
         if (type === 'comm') {
             const comm = data;
             const commFormInputs = comm;
-            commFormInputs['due_by_time'] = comm.due_by_time.substring(0, 5);
+            commFormInputs['due_by_date'] = comm.due_by_date ? moment(comm.due_by_date).toDate() : comm.due_by_date;
+            commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
             this.setState({selectedCommId: comm.id, commFormInputs});
             this.toggleUpdateCommModal();
         } else if (type === 'note') {
@@ -274,8 +276,9 @@ class CommPage extends React.Component {
 
         if (type === 'comm') {
             const {selectedCommId, commFormInputs} = this.state;
-
-            this.props.updateComm(selectedCommId, commFormInputs);
+            let newComm = _.clone(commFormInputs);
+            newComm['due_by_date'] = moment(commFormInputs['due_by_date']).format('YYYY-MM-DD');
+            this.props.updateComm(selectedCommId, newComm);
             this.toggleUpdateCommModal();
         } else if (type === 'note') {
             const {selectedNoteId, noteFormInputs} = this.state;
@@ -289,8 +292,7 @@ class CommPage extends React.Component {
         console.log('number - ', number);
 
         let commFormInputs = this.state.commFormInputs;
-        const date = moment(commFormInputs['due_by_date']).add(number, 'd').format('YYYY-MM-DD');
-        commFormInputs['due_by_date'] = date;
+        commFormInputs['due_by_date'] = moment(commFormInputs['due_by_date']).add(number, 'd').toDate();
         this.setState({commFormInputs});
     }
 
@@ -312,7 +314,7 @@ class CommPage extends React.Component {
 
     onDateChange(date) {
         let commFormInputs = this.state.commFormInputs;
-        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+        commFormInputs['due_by_date'] = moment(date).toDate();
         this.setState({commFormInputs});
     }
 
@@ -341,7 +343,7 @@ class CommPage extends React.Component {
                     <td>{comm.status_log_closed_time ? moment(comm.status_log_closed_time).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
                     <td>{comm.dme_detail}</td>
                     <td>{comm.dme_notes_external}</td>
-                    <td>{comm.due_by_date}</td>
+                    <td>{moment(comm.due_by_date).format('YYYY-MM-DD')}</td>
                     <td>{comm.due_by_time}</td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('comm', comm)}>Update</Button></td>
                 </tr>
