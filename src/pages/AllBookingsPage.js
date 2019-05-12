@@ -20,6 +20,7 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
+import { getAllBookingStatus } from '../state/services/extraService';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
@@ -76,6 +77,7 @@ class AllBookingsPage extends React.Component {
             isShowXLSModal: false,
             selectedStatusValue: null,
             selectedWarehouseName: 'All',
+            allBookingStatus: [],
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -111,6 +113,7 @@ class AllBookingsPage extends React.Component {
         getDMEClients: PropTypes.func.isRequired,
         generateXLS: PropTypes.func.isRequired,
         changeBookingsStatus: PropTypes.func.isRequired,
+        getAllBookingStatus: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -145,6 +148,7 @@ class AllBookingsPage extends React.Component {
         this.props.getDMEClients();
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
+        this.props.getAllBookingStatus();
     }
 
     UNSAFE_componentWillMount() {
@@ -158,7 +162,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK, allBookingStatus } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -210,6 +214,10 @@ class AllBookingsPage extends React.Component {
 
         if (userDateFilterField) {
             this.setState({ userDateFilterField });
+        }
+
+        if (allBookingStatus) {
+            this.setState({ allBookingStatus });
         }
 
         if ((errorMessage === 'Book success' || 
@@ -980,7 +988,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -991,6 +999,10 @@ class AllBookingsPage extends React.Component {
 
         const clientOptionsList = dmeClients.map((client, index) => {
             return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
+        });
+
+        const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
+            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
 
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
@@ -1427,9 +1439,7 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onSelected(e, 'status')} 
                                             >
                                                 <option value="" selected disabled hidden>Select a status</option>
-                                                <option value="Collected">Collected</option>
-                                                <option value="Status 01">Status 01</option>
-                                                <option value="Status 02">Status 02</option>
+                                                { bookingStatusList }
                                             </select>
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
                                             <div className="disp-inline-block">
@@ -2214,6 +2224,7 @@ const mapStateToProps = (state) => {
         dmeClients: state.auth.dmeClients,
         username: state.auth.username,
         clientPK: state.booking.clientPK,
+        allBookingStatus: state.extra.allBookingStatus,
     };
 };
 
@@ -2240,6 +2251,7 @@ const mapDispatchToProps = (dispatch) => {
         getDMEClients: () => dispatch(getDMEClients()),
         generateXLS: (startDate, endDate, emailAddr, vx_freight_provider) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
+        getAllBookingStatus: () => dispatch(getAllBookingStatus()),
     };
 };
 
