@@ -407,7 +407,10 @@ class AllBookingsPage extends React.Component {
     onClickDateFilter() {
         const { startDate, endDate } = this.state;
 
-        this.props.setGetBookingsFilter('date', {startDate, endDate});
+        this.props.setGetBookingsFilter('date', {
+            startDate: moment(startDate).format('YYYY-MM-DD'), 
+            endDate: moment(endDate).format('YYYY-MM-DD'),
+        });
         this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
         this.props.setGetBookingsFilter('columnFilters', {});
     }
