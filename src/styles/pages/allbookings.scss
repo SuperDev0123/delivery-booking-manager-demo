@@ -114,13 +114,15 @@ $column_20_width: 70px;
 $column_21_width: 90px;
 $column_22_width: 30px;
 $column_23_width: 120px;
-$column_24_width: 95px;
-$column_25_width: 130px;
+$column_24_width: 120px;
+$column_25_width: 95px;
 $column_26_width: 130px;
-$column_27_width: 150px;
+$column_27_width: 130px;
 $column_28_width: 150px;
 $column_29_width: 150px;
 $column_30_width: 150px;
+
+$column_31_width: 150px;
 
 #all_booking .fixed_headers{
   table-layout: fixed;
@@ -182,19 +184,22 @@ $column_30_width: 150px;
   td:nth-child(23), th:nth-child(23) { width: $column_23_width; }
   td:nth-child(23) p, th:nth-child(23) p { width: 100px }
   td:nth-child(24), th:nth-child(24) { width: $column_24_width; }
-  td:nth-child(24) p, th:nth-child(24) p { width: 70px }
+  td:nth-child(24) p, th:nth-child(24) p { width: 100px }
   td:nth-child(25), th:nth-child(25) { width: $column_25_width; }
-  td:nth-child(25) p, th:nth-child(25) p { width: 110px }
+  td:nth-child(25) p, th:nth-child(25) p { width: 70px }
   td:nth-child(26), th:nth-child(26) { width: $column_26_width; }
   td:nth-child(26) p, th:nth-child(26) p { width: 110px }
   td:nth-child(27), th:nth-child(27) { width: $column_27_width; }
-  td:nth-child(27) p, th:nth-child(27) p { width: 100px }
+  td:nth-child(27) p, th:nth-child(27) p { width: 110px }
   td:nth-child(28), th:nth-child(28) { width: $column_28_width; }
   td:nth-child(28) p, th:nth-child(28) p { width: 100px }
   td:nth-child(29), th:nth-child(29) { width: $column_29_width; }
-  td:nth-child(29) p, th:nth-child(29) p { width: 140px }
+  td:nth-child(29) p, th:nth-child(29) p { width: 100px }
   td:nth-child(30), th:nth-child(30) { width: $column_30_width; }
   td:nth-child(30) p, th:nth-child(30) p { width: 140px }
+
+  td:nth-child(31), th:nth-child(31) { width: $column_31_width; }
+  td:nth-child(31) p, th:nth-child(31) p { width: 140px }
   
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
