@@ -16,7 +16,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
-import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
+import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms } from '../state/services/commService';
 
 class CommPage extends React.Component {
     constructor(props) {
@@ -45,6 +45,7 @@ class CommPage extends React.Component {
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
+        this.setWrapperRef = this.setWrapperRef.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -62,6 +63,7 @@ class CommPage extends React.Component {
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
+        setNeedUpdateComms: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -84,13 +86,12 @@ class CommPage extends React.Component {
             console.log('No Booking Id');
         }
 
-        this.props.getComms(null);
-        this.setState({loading: true});
+        this.props.setNeedUpdateComms(true);
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -114,7 +115,7 @@ class CommPage extends React.Component {
 
         if (needUpdateComms) {
             this.setState({loading: true});
-            this.props.getComms(null, sortField, sortType, columnFilters);
+            this.props.getComms(null, sortField, sortType, columnFilters, simpleSearchKeyword);
         } else {
             this.setState({loading: false});
         }
@@ -122,6 +123,10 @@ class CommPage extends React.Component {
         if (needUpdateNotes) {
             this.props.getNotes(selectedCommId);
         }
+    }
+
+    setWrapperRef(node) {
+        this.wrapperRef = node;
     }
 
     handleScroll(event) {
@@ -134,7 +139,7 @@ class CommPage extends React.Component {
     }
 
     onClickSimpleSearch() {
-
+        this.setState({showSimpleSearchBox: true});
     }
 
     onSimpleSarchInputChange(e) {
@@ -143,6 +148,15 @@ class CommPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
+        const {simpleSearchKeyword} = this.state;
+
+        if (simpleSearchKeyword.length === 0) {
+            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, '');
+        } else {
+            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, simpleSearchKeyword);
+        }
+
+        this.setState({columnFilters: {}, sortType: 'comms', sortField: 'id'});
     }
 
     onChangeSortField(fieldName, sortType) {
@@ -432,7 +446,7 @@ class CommPage extends React.Component {
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
-                        <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                         <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                             <i className="icon-search3" aria-hidden="true"></i>
                             {
@@ -566,10 +580,10 @@ class CommPage extends React.Component {
                                                     : <i className="fa fa-sort"></i>
                                             }
                                         </th>
-                                        <th className="" onClick={() => this.onChangeSortField('action', 'comms')} scope="col" nowrap>
+                                        <th className="" onClick={() => this.onChangeSortField('dme_action', 'comms')} scope="col" nowrap>
                                             <p>Action</p>
                                             {
-                                                (sortField === 'action') ?
+                                                (sortField === 'dme_action') ?
                                                     (sortDirection > 0) ?
                                                         <i className="fa fa-sort-up"></i>
                                                         : <i className="fa fa-sort-down"></i>
@@ -985,6 +999,7 @@ const mapStateToProps = (state) => {
         comms: state.comm.comms,
         sortField: state.comm.sortField,
         sortType: state.comm.sortType,
+        simpleSearchKeyword: state.comm.simpleSearchKeyword,
         columnFilters: state.comm.columnFilters,
         needUpdateComms: state.comm.needUpdateComms,
         notes: state.comm.notes,
@@ -999,11 +1014,12 @@ const mapDispatchToProps = (dispatch) => {
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
-        setAllGetCommsFilter: (bookingId, sortField, sortType, columnFilters) => dispatch(setAllGetCommsFilter(bookingId, sortField, sortType, columnFilters)),
+        setAllGetCommsFilter: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) => dispatch(setAllGetCommsFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
-        getComms: (bookingId, sortField, sortType, columnFilters) => dispatch(getComms(bookingId, sortField, sortType, columnFilters)),
+        getComms: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) => dispatch(getComms(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword)),
+        setNeedUpdateComms: (boolFlag) => dispatch(setNeedUpdateComms(boolFlag))
     };
 };
 

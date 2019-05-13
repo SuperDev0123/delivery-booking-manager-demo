@@ -52,6 +52,11 @@
       width: 100%;
     }
   }
+
+  form input {
+    right: 0px !important;
+    left: unset !important;
+  }
 }
 
 $table_body_height: 100%;

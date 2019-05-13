@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter } from '../actions/commActions';
+import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}) => {
+export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}, simpleSearchKeyword='') => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -14,6 +14,7 @@ export const getComms = (bookingId='', sortField='-id', sortType='comms', column
             sortField: sortField,
             sortType: sortType,
             columnFilters: columnFilters,
+            simpleSearchKeyword: simpleSearchKeyword,
         },
     };
     return dispatch =>
@@ -54,8 +55,8 @@ export const setGetCommsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetCommsFilter = (bookingId='', sortField='id', sortType='comms', columnFilters={}) => {
-    return dispatch => dispatch(setAllLocalFilter(bookingId, sortField, sortType, columnFilters));
+export const setAllGetCommsFilter = (bookingId='', sortField='id', sortType='comms', columnFilters={}, simpleSearchKeyword='') => {
+    return dispatch => dispatch(setAllLocalFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword));
 };
 
 export const getNotes = (commId) => {
@@ -100,4 +101,8 @@ export const updateNote = (id, updatedNote) => {
         axios(options)
             .then(({ data }) => dispatch(successUpdateNote(data)))
             .catch((error) => dispatch(failedUpdateNote(error)));
+};
+
+export const setNeedUpdateComms = (boolFlag) => {
+    return dispatch => dispatch(setNeedUpdateCommsFlag(boolFlag));
 };

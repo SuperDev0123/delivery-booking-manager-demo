@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS } from '../constants/commConstants';
 
 export function setComms(data) {
     return {
@@ -47,13 +47,14 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(bookingId, sortField, sortType, columnFilters) {
+export function setAllLocalFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) {
     return {
         type: SET_ALL_LOCAL_FILTER,
         bookingId,
         sortField,
         sortType,
         columnFilters,
+        simpleSearchKeyword,
     };
 }
 
@@ -96,5 +97,12 @@ export function failedUpdateNote(error) {
     return {
         type: FAILED_UPDATE_NOTE,
         errorMessage: 'Unable to update Note. Error:' + error,
+    };
+}
+
+export function setNeedUpdateCommsFlag(boolFlag) {
+    return {
+        type: SET_NEEDUPDATECOMMS,
+        needUpdateComms: boolFlag,
     };
 }
