@@ -16,6 +16,7 @@ class XLSModal extends Component {
             endDate: '',
             emailAddr: '',
             vx_freight_provider: '',
+            report_type: '',
             errorMessage: '',
         };
     }
@@ -81,6 +82,8 @@ class XLSModal extends Component {
 
                 if (this.state.vx_freight_provider === '') {
                     errorMessage = 'Please select Freight Provider.';
+                } else if (this.state.report_type === '') {
+                    errorMessage = 'Please select Report Type.';
                 }
 
                 this.setState({emailAddr: e.target.value, errorMessage});
@@ -88,13 +91,9 @@ class XLSModal extends Component {
                 this.setState({emailAddr: e.target.value, errorMessage: 'Please input correct email address.'});
             }
         } else if (type === 'fp') {
-            let errorMessage = '';
-
-            if (!this.validateEmail(this.state.emailAddr) && this.state.emailAddr.length > 0) {
-                errorMessage = 'Please input correct email address.';
-            }
-
-            this.setState({vx_freight_provider: e.target.value, errorMessage});
+            this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
+        } else if (type === 'report_type') {
+            this.setState({report_type: e.target.value, errorMessage: ''});
         }
     }
 
@@ -111,17 +110,17 @@ class XLSModal extends Component {
     }
 
     onClickBuildAndSend() {
-        const {startDate, endDate, emailAddr, vx_freight_provider} = this.state;
-        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider);
+        const {startDate, endDate, emailAddr, vx_freight_provider, report_type} = this.state;
+        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type);
         this.props.toggleShowXLSModal();
     }
 
     render() {
         const {isShowXLSModal} = this.props;
-        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider} = this.state;
+        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type} = this.state;
         let buttonStatus = false;
 
-        if (this.validateEmail(emailAddr) && vx_freight_provider !== '') {
+        if (this.validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
             buttonStatus = true;
         }
 
@@ -129,6 +128,19 @@ class XLSModal extends Component {
             <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleShowXLSModal()} className="xls-modal">
                 <ModalHeader toggle={() => this.props.toggleShowXLSModal()}>XLS Download</ModalHeader>
                 <ModalBody>
+                    <label>
+                        <p>Report Type: </p>
+                        <select
+                            required 
+                            name="report_type" 
+                            onChange={(e) => this.onInputChange(e, 'report_type')}
+                            value = {report_type} >
+                            <option value="" selected disabled hidden>Select a Report Type</option>
+                            <option value="booking">Booking Report</option>
+                            <option value="booking_line">Booking Line Report</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </label>
                     <label>
                         <p>Freight Provider: </p>
                         <select
