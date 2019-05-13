@@ -755,10 +755,6 @@ class AllBookingsPage extends React.Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             }
-
-            booking.is_printed = true;
-            booking.z_downloaded_shipping_label_timestamp = new Date();
-            this.props.updateBooking(booking.id, booking);
         } else {
             alert('This booking has no label');
         }
