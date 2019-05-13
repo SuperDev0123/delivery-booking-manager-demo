@@ -865,13 +865,13 @@ class AllBookingsPage extends React.Component {
             };
 
             axios(options).then((response) => {
-                // console.log('download-csv response: ', response);
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
-                document.body.appendChild(link);
-                link.click();
+                console.log('download-csv response: ', response);
+                // const url = window.URL.createObjectURL(new Blob([response.data]));
+                // const link = document.createElement('a');
+                // link.href = url;
+                // link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
+                // document.body.appendChild(link);
+                // link.click();
                 this.setState({loadingDownload: false});
             });
         }
