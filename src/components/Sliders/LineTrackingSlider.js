@@ -25,7 +25,7 @@ class LineTrackingSlider extends React.Component {
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
         line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
 
-        if (_.isNan(line['e_1_Total_dimCubicMeter'])) {
+        if (_.isNaN(line['e_1_Total_dimCubicMeter'])) {
             line['e_1_Total_dimCubicMeter'] = 0;
         }
 
