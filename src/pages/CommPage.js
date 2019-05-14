@@ -979,7 +979,7 @@ class CommPage extends React.Component {
                             />
                             <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                         </div>
-                        <div className="datetime">
+                        <div className="datetime time">
                             <p>Due By Time</p>
                             <Select
                                 value={due_by_time}

@@ -2,7 +2,7 @@
 	height: calc(100% - 70px);
 
   #headr {
-    z-index: 10;
+    z-index: 0;
   }
 
   ._loading_overlay_wrapper {
@@ -56,6 +56,12 @@
   form input {
     right: 0px !important;
     left: unset !important;
+  }
+
+  .time {
+    >div {
+      width: 39%;
+    }
   }
 }
 
