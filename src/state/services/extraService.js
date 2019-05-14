@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory } from '../actions/extraActions';
+import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -55,3 +55,17 @@ export const saveStatusHistory = (statusHistory) => {
             .then(({ data }) => dispatch(successSaveStatusHistory(data)))
             .catch((error) => dispatch(failedSaveStatusHistory(error)));
 };
+
+export const getAllFPs = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp/get_all/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAllFPs(data)))
+            .catch((error) => dispatch(failedGetAllFPs(error)));
+};
+

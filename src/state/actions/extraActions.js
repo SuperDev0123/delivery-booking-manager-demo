@@ -1,4 +1,4 @@
-import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY } from '../constants/extraConstants';
+import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY, SUCCESS_GET_FPS, FAILED_GET_FPS } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
     return {
@@ -55,5 +55,19 @@ export function failedSaveStatusHistory(error) {
     return {
         type: FAILED_SAVE_STATUS_STATUS,
         errorMessage: 'Unable to save status history. Error:' + error,
+    };
+}
+
+export function successGetAllFPs(data) {
+    return {
+        type: SUCCESS_GET_FPS,
+        allFPs: data.results,
+    };
+}
+
+export function failedGetAllFPs(error) {
+    return {
+        type: FAILED_GET_FPS,
+        errorMessage: 'Unable to get all FPs. Error:' + error,
     };
 }

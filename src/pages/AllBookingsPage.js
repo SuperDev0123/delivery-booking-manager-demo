@@ -20,7 +20,7 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import { getAllBookingStatus } from '../state/services/extraService';
+import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
 
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
@@ -78,6 +78,7 @@ class AllBookingsPage extends React.Component {
             selectedStatusValue: null,
             selectedWarehouseName: 'All',
             allBookingStatus: [],
+            allFPs: [],
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -114,6 +115,7 @@ class AllBookingsPage extends React.Component {
         generateXLS: PropTypes.func.isRequired,
         changeBookingsStatus: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
+        getAllFPs: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -149,6 +151,7 @@ class AllBookingsPage extends React.Component {
         this.props.getWarehouses();
         this.props.getUserDateFilterField();
         this.props.getAllBookingStatus();
+        this.props.getAllFPs();
     }
 
     UNSAFE_componentWillMount() {
@@ -162,7 +165,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK, allBookingStatus } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK, allBookingStatus, allFPs } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -218,6 +221,10 @@ class AllBookingsPage extends React.Component {
 
         if (allBookingStatus) {
             this.setState({ allBookingStatus });
+        }
+
+        if (allFPs) {
+            this.setState({ allFPs });
         }
 
         if ((errorMessage === 'Book success' || 
@@ -984,7 +991,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2210,6 +2217,7 @@ class AllBookingsPage extends React.Component {
                 <XLSModal
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
+                    allFPs={allFPs}
                     generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type)}
                 />
             </div>
@@ -2246,6 +2254,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
+        allFPs: state.extra.allFPs,
     };
 };
 
@@ -2273,6 +2282,7 @@ const mapDispatchToProps = (dispatch) => {
         generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
+        getAllFPs: () => dispatch(getAllFPs()),
     };
 };
 

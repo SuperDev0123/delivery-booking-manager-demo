@@ -25,6 +25,7 @@ class XLSModal extends Component {
         isShowXLSModal: PropTypes.bool,
         toggleShowXLSModal: PropTypes.func,
         generateXLS: PropTypes.func.isRequired,
+        allFPs: PropTypes.array.isRequired,
     };
 
     static defaultProps = {
@@ -116,13 +117,17 @@ class XLSModal extends Component {
     }
 
     render() {
-        const {isShowXLSModal} = this.props;
+        const {isShowXLSModal, allFPs} = this.props;
         const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type} = this.state;
         let buttonStatus = false;
 
         if (this.validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
             buttonStatus = true;
         }
+
+        const fpList = allFPs.map((fp, index) => {
+            return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+        });
 
         return (
             <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleShowXLSModal()} className="xls-modal">
@@ -149,8 +154,8 @@ class XLSModal extends Component {
                             onChange={(e) => this.onInputChange(e, 'fp')}
                             value = {vx_freight_provider} >
                             <option value="" selected disabled hidden>Select a FP</option>
-                            <option value="allied">Allied</option>
-                            <option value="cope">Cope</option>
+                            <option value="All">All</option>
+                            {fpList}
                         </select>
                     </label>
                     <label>

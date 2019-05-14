@@ -1,4 +1,4 @@
-import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY } from '../constants/extraConstants';
+import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY, SUCCESS_GET_FPS, FAILED_GET_FPS } from '../constants/extraConstants';
 
 const defaultState = {
     packageTypes: [],
@@ -7,7 +7,7 @@ const defaultState = {
     needUpdateStatusHistories: false,
 };
 
-export const ExtraReducer = (state = defaultState, { type, packageTypes, allBookingStatus, statusHistory, statusHistories, errorMessage }) => {
+export const ExtraReducer = (state = defaultState, { type, packageTypes, allBookingStatus, statusHistory, statusHistories, errorMessage, allFPs }) => {
     switch (type) {
         case SUCCESS_GET_PACKAGETYPES:
             return {
@@ -47,6 +47,16 @@ export const ExtraReducer = (state = defaultState, { type, packageTypes, allBook
                 needUpdateStatusHistories: true,
             };
         case FAILED_SAVE_STATUS_STATUS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+            };
+        case SUCCESS_GET_FPS:
+            return {
+                ...state,
+                allFPs: allFPs,
+            };
+        case FAILED_GET_FPS:
             return {
                 ...state,
                 errorMessage: errorMessage,
