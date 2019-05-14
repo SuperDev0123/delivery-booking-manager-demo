@@ -331,6 +331,8 @@ class BookingPage extends Component {
                 result['e_qty_damaged'] = bookingLine.e_qty_damaged ? bookingLine.e_qty_damaged : 0;
                 result['e_qty_returned'] = bookingLine.e_qty_returned ? bookingLine.e_qty_returned : 0;
                 result['e_qty_shortages'] = bookingLine.e_qty_shortages ? bookingLine.e_qty_shortages : 0;
+                result['e_qty_scanned_fp'] = bookingLine.e_qty_scanned_fp ? bookingLine.e_qty_scanned_fp : 0;
+                result['is_scanned'] = bookingLine.is_scanned;
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});

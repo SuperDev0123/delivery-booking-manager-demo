@@ -27,7 +27,6 @@ class LineTrackingSlider extends React.Component {
         if (line['e_1_Total_dimCubicMeter'] == 'NaN') {
             line['e_1_Total_dimCubicMeter'] = 0;
         }
-        console.log('@ - ', line['e_1_Total_dimCubicMeter']);
 
         this.props.updateBookingLine(line);
     }
@@ -48,9 +47,28 @@ class LineTrackingSlider extends React.Component {
             );
         };
 
-        const qtyStyle = {
-            'backgroundColor': isBooked ? 'gray' : 'white',
-            'cursor': isBooked ? 'not-allowed' : 'default',
+        const editableStyle = (cell, row) => {
+            console.log('cell - ', cell);
+            if (row.is_scanned) {
+                return {
+                    backgroundColor: 'lightgray',
+                    cursor: 'not-allowed',
+                };
+            } else {
+                return {
+                    backgroundColor: 'white',
+                    cursor: 'default',
+                };
+            }
+        };
+
+        const isEditable = (cell, row) => {
+            console.log('cell - ', cell);
+            if (row.is_scanned) {
+                return false;
+            } else {
+                return true;
+            }
         };
 
         const bookingLineColumns = [
@@ -59,35 +77,52 @@ class LineTrackingSlider extends React.Component {
                 text: 'Item Description',
                 editable: false,
                 style: {
-                    backgroundColor: 'gray',
+                    backgroundColor: 'lightgray',
                     cursor: 'not-allowed',
                 },
             }, {
                 dataField: 'e_qty',
                 text: 'Qty',
                 editable: !isBooked,
-                style: qtyStyle,
+                style: (cell, row) => {
+                    console.log('cell - ', cell);
+                    if (row.is_scanned || isBooked) {
+                        return {
+                            backgroundColor: 'lightgray',
+                            cursor: 'not-allowed',
+                        };
+                    } else {
+                        return {
+                            backgroundColor: 'white',
+                            cursor: 'default',
+                        };
+                    }
+                }
             }, {
                 dataField: 'e_qty_awaiting_inventory',
                 text: 'Qty Awaiting Inventory',
+                editable: isEditable,
+                style: editableStyle,
             }, {
                 dataField: 'e_qty_collected',
                 text: 'Qty Collected',
                 editable: false,
                 style: {
-                    backgroundColor: 'gray',
+                    backgroundColor: 'lightgray',
                     cursor: 'not-allowed',
                 },
             }, {
                 dataField: 'e_qty_scanned_depot',
                 text: 'Qty Scanned Depot',
+                editable: isEditable,
+                style: editableStyle,
             }, {
                 dataField: 'e_qty_delivered',
                 text: 'Qty Delivered',
                 formatter: qtyDeliveryCell,
                 editable: false,
                 style: {
-                    backgroundColor: 'gray',
+                    backgroundColor: 'lightgray',
                     cursor: 'not-allowed',
                 },
             }, {
@@ -95,18 +130,32 @@ class LineTrackingSlider extends React.Component {
                 text: 'Qty Adjusted Delivered',
                 editable: false,
                 style: {
-                    backgroundColor: 'gray',
+                    backgroundColor: 'lightgray',
                     cursor: 'not-allowed',
                 },
             }, {
                 dataField: 'e_qty_damaged',
                 text: 'Qty Damaged',
+                editable: isEditable,
+                style: editableStyle,
             }, {
                 dataField: 'e_qty_returned',
                 text: 'Qty Returned',
+                editable: isEditable,
+                style: editableStyle,
             }, {
                 dataField: 'e_qty_shortages',
                 text: 'Qty Shortages',
+                editable: isEditable,
+                style: editableStyle,
+            }, {
+                dataField: 'e_qty_scanned_fp',
+                text: 'Scanned',
+                editable: false,
+                style: {
+                    backgroundColor: 'lightgray',
+                    cursor: 'not-allowed',
+                },
             }
         ];
 
