@@ -2,16 +2,16 @@
 	height: calc(100% - 70px);
 
   #headr {
-    z-index: 0;
+    margin-top: -50px;
   }
 
   ._loading_overlay_wrapper {
-    z-index: 0;
+    margin-top: 50px;
   }
   
 	.content {
 		height: 100%;
-		padding-top: 60px;
+		padding-top: 30px;
 		padding-left: 20px;
 		padding-right: 20px;
 

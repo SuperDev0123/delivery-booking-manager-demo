@@ -14,19 +14,17 @@ import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import SlidingPane from 'react-sliding-pane';
-import 'react-sliding-pane/dist/react-sliding-pane.css';
 import Modal from 'react-modal';
 import CKEditor from 'ckeditor4-react';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
-import EditorPreview from '../components/EditorPreview/EditorPreview';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
+import NoteSlider from '../components/Sliders/NoteSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
@@ -103,13 +101,7 @@ class BookingPage extends Component {
             notes: [],
             isNotePaneOpen: false,
             selectedCommId: null,
-            selectedNoteId: null,
-            selectedNoteNo: 0,
-            selectedNoteDetail: null,
-            isShowNoteForm: false,
-            noteFormMode: 'create',
             commFormMode: 'create',
-            noteFormInputs: {},
             isShowAdditionalActionTaskInput: false,
             isShowAssignedToInput: false,
             actionTaskOptions: [
@@ -137,7 +129,6 @@ class BookingPage extends Component {
             username: null,
             isBookingSelected: false,
             warehouses: [],
-            isShowNoteDetailModal: false,
             isShowSwitchClientModal: false,
             dmeClients: [],
             statusHistories: [],
@@ -171,7 +162,7 @@ class BookingPage extends Component {
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
+        this.toggleShowNoteSlider = this.toggleShowNoteSlider.bind(this);
         this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
         this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
@@ -295,7 +286,7 @@ class BookingPage extends Component {
         }
 
         if (needUpdateNotes) {
-        //     this.props.getNotes(selectedCommId);
+            this.props.getNotes(this.state.selectedCommId);
         }
 
         if (warehouses) {
@@ -1155,27 +1146,16 @@ class BookingPage extends Component {
             let commFormInputs = this.state.commFormInputs;
             commFormInputs['due_by_date'] = moment(date).toDate();
             this.setState({commFormInputs});
-        } else if (type === 'note') {
-            let noteFormInputs = this.state.noteFormInputs;
-            noteFormInputs['note_date_updated'] = moment(date).toDate();
-            this.setState({noteFormInputs});
         }
     }
 
     onDatePlusOrMinus(type='comm', number) {
-        console.log('number - ', number);
+        console.log('number - ', number, type);
 
-        if (type === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            const date = moment(commFormInputs['due_by_date']).add(number, 'd').toDate();
-            commFormInputs['due_by_date'] = date;
-            this.setState({commFormInputs});
-        } else if (type === 'note') {
-            let noteFormInputs = this.state.noteFormInputs;
-            const date = moment(noteFormInputs['note_date_updated']).add(number, 'd').toDate();
-            noteFormInputs['note_date_updated'] = date;
-            this.setState({noteFormInputs});
-        }
+        let commFormInputs = this.state.commFormInputs;
+        const date = moment(commFormInputs['due_by_date']).add(number, 'd').toDate();
+        commFormInputs['due_by_date'] = date;
+        this.setState({commFormInputs});
     }
 
     handleModalInputChange(type, event) {
@@ -1198,73 +1178,36 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'update'}));
     }
 
-    onSubmitNote() {
-        const {noteFormInputs, selectedNoteId, selectedCommId, notes, noteFormMode} = this.state;
+    onUpdateBtnClick(type, data) {
+        console.log('Click update comm button: ', type);
         
-        if (noteFormMode === 'create') {
-            noteFormInputs['comm'] = selectedCommId;
-            noteFormInputs['username'] = 'Stephen';
-            noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
-            noteFormInputs['note_date_created'] = noteFormInputs['note_date_updated'];
-            noteFormInputs['note_time_created'] = noteFormInputs['note_time_updated'];
-            this.props.createNote(noteFormInputs);
-        } else if (noteFormMode === 'update') {
-            noteFormInputs['comm'] = selectedCommId;
-            delete noteFormInputs.z_modifiedTimeStamp;
-            this.props.updateNote(selectedNoteId, noteFormInputs);
+        const {comms, actionTaskOptions} = this.state;
+        let comm = {};
+
+        for (let i = 0; i < comms.length; i++) {
+            if (comms[i].id === data.id) {
+                comm = comms[i];
+            }
         }
 
-        this.setState({isShowNoteForm: false, noteFormInputs: {}});
-    }
+        const commFormInputs = comm;
+        commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
+        commFormInputs['due_by_date'] = moment(commFormInputs['due_by_date']).toDate();
 
-    onUpdateBtnClick(type, data, index=0) {
-        console.log('Click update comm button');
-        
-        const {comms, notes, actionTaskOptions} = this.state;
-        if (type === 'comm') {
-            let comm = {};
-
-            for (let i = 0; i < comms.length; i++) {
-                if (comms[i].id === data.id) {
-                    comm = comms[i];
-                }
-            }
-
-            const commFormInputs = comm;
-            commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
-            commFormInputs['due_by_date'] = moment(commFormInputs['due_by_date']).toDate();
-
-            if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
-                commFormInputs['new_assigned_to'] = comm.assigned_to;
-                commFormInputs['assigned_to'] = 'edit…';
-                this.setState({isShowAssignedToInput: true});
-            }
-
-            if (_.intersection([comm.dme_action], actionTaskOptions).length === 0) {
-                commFormInputs['additional_action_task'] = comm.dme_action;
-                commFormInputs['dme_action'] = 'Other';
-                this.setState({isShowAdditionalActionTaskInput: true});
-            }
-
-            this.setState({selectedCommId: comm.id, commFormInputs});
-            this.toggleUpdateCommModal();
-        } else if (type === 'note') {
-            let note = {};
-
-            for (let i = 0; i < notes.length; i++) {
-                if (notes[i].id === data.id) {
-                    note = notes[i];
-                }
-            }
-
-            const noteFormInputs = note;
-            this.setState({selectedNoteNo: index, selectedNoteId: note.id, noteFormInputs});
-            this.setState({isShowNoteForm: true, noteFormMode: 'update'});
+        if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
+            commFormInputs['new_assigned_to'] = comm.assigned_to;
+            commFormInputs['assigned_to'] = 'edit…';
+            this.setState({isShowAssignedToInput: true});
         }
-    }
 
-    onCancelNoteForm() {
-        this.setState({isShowNoteForm: false});
+        if (_.intersection([comm.dme_action], actionTaskOptions).length === 0) {
+            commFormInputs['additional_action_task'] = comm.dme_action;
+            commFormInputs['dme_action'] = 'Other';
+            this.setState({isShowAdditionalActionTaskInput: true});
+        }
+
+        this.setState({selectedCommId: comm.id, commFormInputs});
+        this.toggleUpdateCommModal();
     }
 
     onCheck(e, id, index) {
@@ -1295,13 +1238,8 @@ class BookingPage extends Component {
         this.setState({ isNotePaneOpen: true, selectedCommId: id });
         this.props.getNotes(id);
     }
-    
-    onCreateNoteButton() {
-        this.setState({isShowNoteForm: true, noteFormMode: 'create', noteFormInputs: {}});
-    }
 
     clearDateOrTime(type, dateOrTime) {
-        let noteFormInputs = this.state.noteFormInputs;
         let commFormInputs = this.state.commFormInputs;
 
         if (type === 'comm') {
@@ -1312,14 +1250,6 @@ class BookingPage extends Component {
             }
 
             this.setState({commFormInputs});
-        } else if (type === 'note') {
-            if (dateOrTime === 'date') {
-                noteFormInputs['note_date_updated'] = null;
-            } else if (dateOrTime === 'time') {
-                noteFormInputs['note_time_updated'] = null;
-            }
-
-            this.setState({noteFormInputs});
         }
     }
 
@@ -1335,13 +1265,8 @@ class BookingPage extends Component {
         }
     }
 
-    onClickNoteDetailCell(note) {
-        this.setState({selectedNoteDetail: note.dme_notes});
-        this.toggleNoteDetailModal();
-    }
-
-    toggleNoteDetailModal() {
-        this.setState(prevState => ({isShowNoteDetailModal: !prevState.isShowNoteDetailModal}));
+    toggleShowNoteSlider() {
+        this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
     toggleSwitchClientModal() {
@@ -1540,7 +1465,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowNoteForm, noteFormInputs, isShowCommModal, noteFormMode, isNotePaneOpen, commFormMode, actionTaskOptions, selectedNoteNo, username, warehouses, selectedNoteDetail, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, username, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1851,23 +1776,6 @@ class BookingPage extends Component {
         ];
 
         const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
-        const note_time_updated = {value: noteFormInputs['note_time_updated'], label: noteFormInputs['note_time_updated']};
-
-        const notesList = notes.map((note, index) => {
-            return (
-                <tr key={index}>
-                    <td>{note.dme_notes_no}</td>
-                    <td>{(note.note_date_updated && !_.isEmpty(note.note_date_updated)) ? moment(note.note_date_updated).format('DD MMM YYYY') : ''}</td>
-                    <td>{(note.note_time_updated && !_.isEmpty(note.note_time_updated)) ? note.note_time_updated : ''}</td>
-                    <td>{note.username}</td>
-                    <td>{note.dme_notes_type}</td>
-                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id} onClick={() => this.onClickNoteDetailCell(note)}>
-                        <EditorPreview data={note.dme_notes} />
-                    </td>
-                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
-                </tr>
-            );
-        });
 
         const actionTaskOptionsList = actionTaskOptions.map((actionTaskOption, key) => {
             return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
@@ -2982,148 +2890,22 @@ class BookingPage extends Component {
                     </ModalFooter>
                 </ReactstrapModal>
 
-                <SlidingPane
-                    className='note-pan'
-                    overlayClassName='note-pan-overlay'
-                    isOpen={isNotePaneOpen}
-                    title='Note Panel'
-                    subtitle={!isShowNoteForm ? 'List view' : 'Form view'}
-                    onRequestClose={() => {this.setState({ isNotePaneOpen: false });}}>
-                    <div className="slider-content">
-                        {
-                            !isShowNoteForm ?
-                                <div className="table-view">
-                                    <div className="table-responsive">
-                                        <table className="table table-hover table-bordered sortable fixed_headers">
-                                            <tr>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note No</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Date Entered</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Time Entered</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>User</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note Type</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Update</p>
-                                                </th>
-                                            </tr>
-                                            { notesList }
-                                        </table>
-                                    </div>
-                                    <div className="button-group">
-                                        <Button color="primary" onClick={() => this.onCreateNoteButton()}>Create</Button>
-                                    </div>
-                                </div>
-                                :
-                                <div className="form-view">
-                                    <h2>{(noteFormMode === 'create') ? 'Create' : 'Update'} a note</h2>
-                                    <label>
-                                        <p>Note No</p>
-                                        <input 
-                                            className="form-control" 
-                                            type="text" 
-                                            disabled="disabled"
-                                            name="dme_no" 
-                                            value={(noteFormMode === 'create') ? notes.length + 1 : selectedNoteNo + 1} />
-                                    </label>
-                                    <br />
-                                    <div className={(noteFormMode === 'update' && noteFormInputs['note_date_created'] !== noteFormInputs['note_date_updated']) ? 'datetime date orange-color' : 'datetime date' } >
-                                        <p>Date</p>
-                                        <div >
-                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', -1)}><i className="fa fa-minus"></i></div>
-                                            <DatePicker
-                                                selected={noteFormInputs['note_date_updated']}
-                                                onChange={(e) => this.onDateChange('note', e)}
-                                                dateFormat="dd MMM yyyy"
-                                            />
-                                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', 1)}><i className="fa fa-plus"></i></div>
-                                            <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'date')}><i className="fa fa-times-circle"></i></button>
-                                        </div>
-                                    </div>
-                                    <div className={(noteFormMode === 'update' && noteFormInputs['note_time_created'] !== noteFormInputs['note_time_updated']) ? 'datetime time orange-color' : 'datetime time' }>
-                                        <p>Time</p>
-                                        <Select
-                                            value={note_time_updated}
-                                            onChange={(e) => this.handleModalInputChange('note', {target: {name: 'note_time_updated', value: e.value, type: 'input'}})}
-                                            options={timeSelectOptions}
-                                            placeholder='Select time'
-                                        />
-                                        <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'time')}><i className="fa fa-times-circle"></i></button>
-                                    </div>
-                                    <label>
-                                        <p>User</p>
-                                        <input 
-                                            className={(noteFormMode === 'update' && username !== noteFormInputs['username']) ? 'form-control orange-color' : 'form-control'}
-                                            type="text" 
-                                            placeholder="" 
-                                            name="username" 
-                                            value = {noteFormInputs['username']}
-                                            onChange={(e) => this.handleModalInputChange('note', e)} />
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <p>Note Type</p>
-                                        <select
-                                            required 
-                                            name="dme_notes_type" 
-                                            onChange={(e) => this.handleModalInputChange('note', e)}
-                                            value = {noteFormInputs['dme_notes_type']} >
-                                            <option value="Call">Call</option>
-                                            <option value="Email">Email</option>
-                                            <option value="SMS">SMS</option>
-                                            <option value="Letter">Letter</option>
-                                            <option value="Note">Note</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </label>
-                                    <br />
-                                    <label className="editor">
-                                        <p>Note</p>
-                                        <CKEditor
-                                            data={noteFormInputs['dme_notes']}
-                                            onChange={(e) => this.onEditorChange('note', 'note', e)} />
-                                    </label>
-                                    <br />
-                                    <div className="button-group">
-                                        <Button color="primary" onClick={() => this.onSubmitNote()}>
-                                            {
-                                                (noteFormMode === 'create') ? 'Create' : 'Update'
-                                            }
-                                        </Button>{' '}
-                                        <Button color="secondary" onClick={() => this.onCancelNoteForm()}>Cancel</Button>
-                                    </div>
-                                </div>
-                        }
-                    </div>
-                </SlidingPane>
-
-                <ReactstrapModal isOpen={this.state.isShowNoteDetailModal} toggle={this.toggleNoteDetailModal} className="note-detail-modal">
-                    <ModalHeader toggle={this.toggleNoteDetailModal}>Note Detail</ModalHeader>
-                    <ModalBody>
-                        <EditorPreview data={selectedNoteDetail} />
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="secondary" onClick={this.toggleNoteDetailModal}>Cancel</Button>
-                    </ModalFooter>
-                </ReactstrapModal>
-
                 <SwitchClientModal
                     isShowSwitchClientModal={isShowSwitchClientModal}
                     toggleSwitchClientModal={this.toggleSwitchClientModal}
                     onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
                     clients={dmeClients}
                     selectedClientPK={clientPK}
+                />
+
+                <NoteSlider
+                    isOpen={isNotePaneOpen}
+                    toggleShowNoteSlider={this.toggleShowNoteSlider}
+                    notes={notes}
+                    createNote={(newNote) => this.props.createNote(newNote)} 
+                    updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
+                    username={username}
+                    selectedCommId={selectedCommId}
                 />
 
                 <LineAndLineDetailSlider

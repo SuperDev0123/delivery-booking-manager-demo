@@ -5,15 +5,15 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import moment from 'moment-timezone';
 import Modal from 'react-modal';
-import SlidingPane from 'react-sliding-pane';
-import 'react-sliding-pane/dist/react-sliding-pane.css';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
 import LoadingOverlay from 'react-loading-overlay';
 
-import NoteDetailTooltipItem from '../components/Tooltip/NoteDetailTooltipComponent';
+import NoteSlider from '../components/Sliders/NoteSlider';
+
+import {timeSelectOptions} from '../commons/constants';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
 import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms } from '../state/services/commService';
@@ -339,10 +339,12 @@ class CommPage extends React.Component {
     }
 
     render() {
-        const { username, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode, scrollLeft, loading } = this.state;
+        const { username, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
+
+        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
 
         const commsList = comms.map((comm, index) => {
             return (
@@ -366,76 +368,6 @@ class CommPage extends React.Component {
                     <td>{moment(comm.due_by_date).format('YYYY-MM-DD')}</td>
                     <td>{comm.due_by_time}</td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('comm', comm)}>Update</Button></td>
-                </tr>
-            );
-        });
-
-        const timeSelectOptions = [
-            {value: '06:00', label: '06:00'},
-            {value: '06:30', label: '06:30'},
-            {value: '07:00', label: '07:00'},
-            {value: '07:30', label: '07:30'},
-            {value: '08:00', label: '08:00'},
-            {value: '08:30', label: '08:30'},
-            {value: '09:00', label: '09:00'},
-            {value: '09:30', label: '09:30'},
-            {value: '10:00', label: '10:00'},
-            {value: '10:30', label: '10:30'},
-            {value: '11:00', label: '11:00'},
-            {value: '11:30', label: '11:30'},
-            {value: '12:00', label: '12:00'},
-            {value: '12:30', label: '12:30'},
-            {value: '13:00', label: '13:00'},
-            {value: '13:30', label: '13:30'},
-            {value: '14:00', label: '14:00'},
-            {value: '14:30', label: '14:30'},
-            {value: '15:00', label: '15:00'},
-            {value: '15:30', label: '15:30'},
-            {value: '16:00', label: '16:00'},
-            {value: '16:30', label: '16:30'},
-            {value: '17:00', label: '17:00'},
-            {value: '17:30', label: '17:30'},
-            {value: '18:00', label: '18:00'},
-            {value: '18:30', label: '18:30'},
-            {value: '19:00', label: '19:00'},
-            {value: '19:30', label: '19:30'},
-            {value: '20:00', label: '20:00'},
-            {value: '20:30', label: '20:30'},
-            {value: '21:00', label: '21:00'},
-            {value: '21:30', label: '21:30'},
-            {value: '22:00', label: '22:00'},
-            {value: '22:30', label: '22:30'},
-            {value: '23:00', label: '23:00'},
-            {value: '23:30', label: '23:30'},
-            {value: '00:00', label: '00:00'},
-            {value: '00:30', label: '00:30'},
-            {value: '01:00', label: '01:00'},
-            {value: '01:30', label: '01:30'},
-            {value: '02:00', label: '02:00'},
-            {value: '02:30', label: '02:30'},
-            {value: '03:00', label: '03:00'},
-            {value: '03:30', label: '03:30'},
-            {value: '04:00', label: '04:00'},
-            {value: '04:30', label: '04:30'},
-            {value: '05:00', label: '05:00'},
-            {value: '05:30', label: '05:30'},
-        ];
-
-        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
-
-        const notesList = notes.map((note, index) => {
-            return (
-                <tr key={index}>
-                    <td>{note.dme_notes_no}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('DD MMM YYYY')}</td>
-                    <td>{moment(note.z_modifiedTimeStamp).format('hh:mm:ss')}</td>
-                    <td>{note.username}</td>
-                    <td>{note.dme_notes_type}</td>
-                    <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id}>
-                        {note.dme_notes}
-                        <NoteDetailTooltipItem note={note} />
-                    </td>
-                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note)}>Update</Button></td>
                 </tr>
             );
         });
@@ -821,86 +753,15 @@ class CommPage extends React.Component {
                     </div>
                 </LoadingOverlay>
 
-                <SlidingPane
-                    className='note-pan'
-                    overlayClassName='note-pan-overlay'
+                <NoteSlider
                     isOpen={isNotePaneOpen}
-                    title='Note Panel'
-                    subtitle={!isShowNoteForm ? 'List view' : 'Form view'}
-                    onRequestClose={() => {this.setState({ isNotePaneOpen: false });}}>
-                    <div className="slider-content">
-                        {
-                            !isShowNoteForm ?
-                                <div className="table-view">
-                                    <div className="table-responsive">
-                                        <table className="table table-hover table-bordered sortable fixed_headers">
-                                            <tr>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note No</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Date Entered</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Time Entered</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>User</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note Type</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Note</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Update</p>
-                                                </th>
-                                            </tr>
-                                            { notesList }
-                                        </table>
-                                    </div>
-                                    <div className="button-group">
-                                        <Button color="primary" onClick={() => this.onCreateNoteButton()}>Create</Button>
-                                    </div>
-                                </div>
-                                :
-                                <div className="form-view">
-                                    <h2>Create a note</h2>
-                                    <label>
-                                        <p>Note Type</p>
-                                        <input 
-                                            className="form-control" 
-                                            type="text" 
-                                            placeholder="" 
-                                            name="dme_notes_type" 
-                                            value = {noteFormInputs['dme_notes_type']}
-                                            onChange={(e) => this.handleModalInputChange('note', e)} />
-                                    </label>
-                                    <br />
-                                    <label>
-                                        <p>Note</p>
-                                        <input 
-                                            className="form-control" 
-                                            type="text" 
-                                            placeholder="" 
-                                            name="dme_notes" 
-                                            value = {noteFormInputs['dme_notes']}
-                                            onChange={(e) => this.handleModalInputChange('note', e)} />
-                                    </label>
-                                    <br />
-                                    <div className="button-group">
-                                        <Button color="primary" onClick={() => this.onSubmitNote()}>
-                                            {
-                                                (noteFormMode === 'create') ? 'Create' : 'Update'
-                                            }
-                                        </Button>{' '}
-                                        <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                                    </div>
-                                </div>
-                        }
-                    </div>
-                </SlidingPane>
+                    toggleShowNoteSlider={this.toggleShowNoteSlider}
+                    notes={notes}
+                    createNote={(newNote) => this.props.createNote(newNote)} 
+                    updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
+                    username={username}
+                    selectedCommId={selectedCommId}
+                />
 
                 <ReactstrapModal isOpen={isShowUpdateCommModal} toggle={this.toggleUpdateCommModal} className="create-comm-modal">
                     <ModalHeader toggle={this.toggleUpdateCommModal}>Update Communication Log: *SHOW VISUAL ID*</ModalHeader>
