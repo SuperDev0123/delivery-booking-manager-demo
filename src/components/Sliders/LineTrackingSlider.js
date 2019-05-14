@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -25,9 +24,10 @@ class LineTrackingSlider extends React.Component {
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
         line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
 
-        if (_.isNaN(line['e_1_Total_dimCubicMeter'])) {
+        if (line['e_1_Total_dimCubicMeter'] == 'NaN') {
             line['e_1_Total_dimCubicMeter'] = 0;
         }
+        console.log('@ - ', line['e_1_Total_dimCubicMeter']);
 
         this.props.updateBookingLine(line);
     }
