@@ -1232,6 +1232,7 @@ class BookingPage extends Component {
 
             const commFormInputs = comm;
             commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
+            commFormInputs['due_by_date'] = moment(commFormInputs['due_by_date']).toDate();
 
             if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
                 commFormInputs['new_assigned_to'] = comm.assigned_to;
@@ -1513,7 +1514,12 @@ class BookingPage extends Component {
 
     onClickComms(e) {
         e.preventDefault();
-        window.location.assign('/comm?bookingid=' + this.state.booking.id);
+
+        if (this.state.isBookingSelected) {
+            window.location.assign('/comm?bookingid=' + this.state.booking.id);
+        } else {
+            window.location.assign('/comm');
+        }
     }
 
     onClickStatusLock(booking) {
@@ -1882,6 +1888,7 @@ class BookingPage extends Component {
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
+                            <li className={username === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
@@ -2045,7 +2052,7 @@ class BookingPage extends Component {
                                         <div className="col-sm-3 float-right">
                                             <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0}   className="btn btn-theme prev-btn">Prev</button>
                                             <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">Next</button>
-                                            <button onClick={(e) => this.onClickComms(e)} disabled={!this.state.isBookingSelected} className="btn btn-primary btn-comms">comms</button>
+                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
                                         </div>
                                     </form>
                                     <div className="clearfix"></div>

@@ -23,6 +23,7 @@ class CommPage extends React.Component {
         super(props);
 
         this.state = {
+            username: '',
             booking: {},
             comms: [],
             notes: [],
@@ -91,7 +92,7 @@ class CommPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, username } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -99,6 +100,10 @@ class CommPage extends React.Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (username) {
+            this.setState({username});
         }
 
         if (booking) {
@@ -256,7 +261,8 @@ class CommPage extends React.Component {
 
     onClickHeader(e) {
         e.preventDefault();
-        if (this.state.booking) {
+
+        if (this.state.booking.hasOwnProperty('id')) {
             window.location.assign('/booking?bookingid=' + this.state.booking.id);
         } else {
             window.location.assign('/booking');
@@ -333,7 +339,7 @@ class CommPage extends React.Component {
     }
 
     render() {
-        const { showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode, scrollLeft, loading } = this.state;
+        const { username, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, isShowNoteForm, noteFormInputs, commFormInputs, isShowUpdateCommModal, noteFormMode, scrollLeft, loading } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -441,6 +447,7 @@ class CommPage extends React.Component {
                         <ul className="nav nav-tabs">
                             <li><a onClick={(e) => this.onClickHeader(e)}>Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
+                            <li className={username === 'dme' ? 'active ' : 'none'}><a href="/comm">Comms</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
@@ -994,6 +1001,7 @@ class CommPage extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        username: state.auth.username,
         booking: state.booking.booking,
         redirect: state.auth.redirect,
         comms: state.comm.comms,

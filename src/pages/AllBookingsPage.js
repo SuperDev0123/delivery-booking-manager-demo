@@ -1361,6 +1361,7 @@ class AllBookingsPage extends React.Component {
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
+                                <li className={username === 'dme' ? '' : 'none'}><Link to="/comm">Comm</Link></li>
                                 <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                                 <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                             </ul>
