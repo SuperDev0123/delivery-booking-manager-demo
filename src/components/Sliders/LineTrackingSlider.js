@@ -18,7 +18,6 @@ class LineTrackingSlider extends React.Component {
 
     onClickEdit(oldValue, newValue, row, column) {
         console.log('Old val: ', oldValue);
-        const { booking } = this.props;
 
         let line = row;
         line[column.dataField] = parseInt(line[column.dataField]);
