@@ -23,10 +23,7 @@ class LineTrackingSlider extends React.Component {
         let line = row;
         line[column.dataField] = parseInt(line[column.dataField]);
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
-
-        if (booking.b_status === 'Collected') {
-            line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
-        }
+        line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
 
         this.props.updateBookingLine(line);
     }
