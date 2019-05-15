@@ -13,7 +13,7 @@ class BookingTooltipItem extends React.Component {
 
     static propTypes = {
         booking: PropTypes.object.isRequired,
-        field: PropTypes.string.isRequired,
+        fields: PropTypes.array.isRequired,
     };
 
     toggleTooltip() {
@@ -21,17 +21,25 @@ class BookingTooltipItem extends React.Component {
     }
 
     render() {
-        const { booking, field } = this.props;
+        const { booking, fields } = this.props;
 
         return (
             <Tooltip
                 placement='top'
                 isOpen={this.state.tooltipOpen}
-                target={'booking-' + field + '-tooltip-' + booking.id}
+                target={'booking-' + fields[0] + '-tooltip-' + booking.id}
                 toggle={() => this.toggleTooltip()}
                 hideArrow={true}
                 className={'booking-tooltip'}>
-                {booking[field]}
+                {
+                    (fields.length === 2) ?
+                        <label>
+                            <small>{fields[0]}: {booking[fields[0]]}</small><br />
+                            <small>{fields[1]}: {booking[fields[1]]}</small>
+                        </label>
+                        :
+                        booking[fields[0]]
+                }
             </Tooltip>
         );
     }
