@@ -1449,6 +1449,9 @@ class BookingPage extends Component {
     OnCreateStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
         newBooking.b_status = statusHistory['status_last'];
+        newBooking.dme_status_detail = statusHistory['dme_status_detail'];
+        newBooking.dme_status_action = statusHistory['dme_status_action'];
+        newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.props.createStatusHistory(statusHistory);
     }

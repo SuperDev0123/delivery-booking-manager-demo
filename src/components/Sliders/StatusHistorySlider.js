@@ -63,7 +63,11 @@ class StatusHistorySlider extends React.Component {
             statusHistory['fk_booking_id'] = booking.pk_booking_id;
             statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
             this.props.OnCreateStatusHistory(statusHistory);
-            this.setState({viewMode: 0});
+            this.setState({viewMode: 0, formInputs: {
+                status_last: '',
+                dme_status_detail: '',
+                dme_status_action: '',
+            }});
         }
     }
 
