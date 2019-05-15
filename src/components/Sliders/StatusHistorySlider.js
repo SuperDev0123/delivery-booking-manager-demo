@@ -101,6 +101,9 @@ class StatusHistorySlider extends React.Component {
                     <small><b>{statusHistory.status_last}</b>{statusHistory.notes_type}</small><br/>
                     <p className="note">{statusHistory.notes}</p>
                     <p className="text">{statusHistory.dme_notes}</p>
+                    <small> Status Detail: {statusHistory.dme_status_detail} </small><br/>
+                    <small> Status Action: {statusHistory.dme_status_action} </small><br/>
+                    <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
                     <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
                 </div>
