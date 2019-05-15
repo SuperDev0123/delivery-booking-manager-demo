@@ -1,11 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import moment from 'moment-timezone';
+import _ from 'lodash';
+import moment from 'moment';
 import { Button } from 'reactstrap';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import DateTimePicker from 'react-datetime-picker';
 // import LoadingOverlay from 'react-loading-overlay';
 
 class StatusHistorySlider extends React.Component {
@@ -15,8 +17,12 @@ class StatusHistorySlider extends React.Component {
         this.state = {
             viewMode: 0, // 0: List, 1: Form
             formInputs: {
-                status_last: 'Entered',
+                status_last: '',
+                dme_status_detail: '',
+                dme_status_action: '',
             },
+            event_time_stamp: new Date(),
+            errorMessage: '',
         };
     }
 
@@ -27,7 +33,9 @@ class StatusHistorySlider extends React.Component {
         booking: PropTypes.object.isRequired,
         allBookingStatus: PropTypes.array.isRequired,
         username: PropTypes.string.isRequired,
-        OnSaveStatusHistory: PropTypes.func.isRequired,
+        OnCreateStatusHistory: PropTypes.func.isRequired,
+        statusDetails: PropTypes.array.isRequired,
+        statusActions: PropTypes.array.isRequired,
     };
 
     onClickPlus() {
@@ -42,11 +50,21 @@ class StatusHistorySlider extends React.Component {
 
     onClickSave() {
         const {booking} = this.props;
-        let statusHistory = this.state.formInputs;
-        statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
-        statusHistory['fk_booking_id'] = booking.pk_booking_id;
-        this.props.OnSaveStatusHistory(statusHistory);
-        this.setState({viewMode: 0});
+        let statusHistory = _.clone(this.state.formInputs);
+
+        if (statusHistory['status_last'] === '') {
+            this.setState({errorMessage: 'Please select a status'});
+        } else if (statusHistory['dme_status_action'] === '') {
+            this.setState({errorMessage: 'Please select a status action'});
+        } else if (statusHistory['dme_status_detail'] === '') {
+            this.setState({errorMessage: 'Please select a status detail'});
+        } else {
+            statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+            statusHistory['fk_booking_id'] = booking.pk_booking_id;
+            statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+            this.props.OnCreateStatusHistory(statusHistory);
+            this.setState({viewMode: 0});
+        }
     }
 
     onClickCancel() {
@@ -63,9 +81,15 @@ class StatusHistorySlider extends React.Component {
         this.setState({formInputs});
     }
 
+    onChangeDate(date, fieldName) {
+        if (fieldName === 'event_time_stamp') {
+            this.setState({event_time_stamp: date});
+        }
+    }
+
     render() {
-        const { isOpen, statusHistories, allBookingStatus, username } = this.props;
-        const { viewMode, formInputs } = this.state;
+        const { isOpen, statusHistories, allBookingStatus, username, statusActions, statusDetails } = this.props;
+        const { viewMode, formInputs, event_time_stamp, errorMessage } = this.state;
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -74,13 +98,21 @@ class StatusHistorySlider extends React.Component {
                     <p className="note">{statusHistory.notes}</p>
                     <p className="text">{statusHistory.dme_notes}</p>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
-                    <small> Create Time: {statusHistory.z_CreatedTimestamp ? moment(statusHistory.z_CreatedTimestamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
+                    <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
                 </div>
             );
         });
 
         const statusOptions = allBookingStatus.map((bookingStatus, key) => {
             return (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        });
+
+        const statusActionOptions = statusActions.map((statusAction, key) => {
+            return (<option key={key} value={statusAction.dme_status_action}>{statusAction.dme_status_action}</option>);
+        });
+
+        const statusDetailOptions = statusDetails.map((statusDetail, key) => {
+            return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
         });
 
         return (
@@ -116,6 +148,7 @@ class StatusHistorySlider extends React.Component {
                                         onChange={(e) => this.onInputChange(e)}
                                         value = {formInputs['status_last']}
                                     >
+                                        <option value="" selected disabled hidden>Select a status</option>
                                         {statusOptions}
                                     </select>
                                 </label>
@@ -127,6 +160,51 @@ class StatusHistorySlider extends React.Component {
                                         onChange={(e) => this.onInputChange(e)}
                                     />
                                 </label>
+                                <label>
+                                    <p>Event time</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDate(date, 'event_time_stamp')}
+                                        value={event_time_stamp}
+                                    />
+                                </label>
+                                <label>
+                                    <p>Status detail</p>
+                                    <select
+                                        name="dme_status_detail"
+                                        onChange={(e) => this.onInputChange(e)}
+                                        value = {formInputs['dme_status_detail']}
+                                    >
+                                        <option value="" selected disabled hidden>Select a status detail</option>
+                                        {statusDetailOptions}
+                                    </select>
+                                </label>
+                                <label>
+                                    <p>Status Action</p>
+                                    <select
+                                        name="dme_status_action"
+                                        onChange={(e) => this.onInputChange(e)}
+                                        value = {formInputs['dme_status_action']}
+                                    >
+                                        <option value="" selected disabled hidden>Select a status action</option>
+                                        {statusActionOptions}
+                                    </select>
+                                </label>
+                                <label>
+                                    <p>Linked reference</p>
+                                    <input
+                                        name="dme_status_linked_reference_from_fp"
+                                        value={formInputs['dme_status_linked_reference_from_fp']} 
+                                        onChange={(e) => this.onInputChange(e)}
+                                    />
+                                </label>
+                                {
+                                    (errorMessage === '') ?
+                                        <label></label>
+                                        :
+                                        <label>
+                                            <p className='red'>{errorMessage}</p>
+                                        </label>
+                                }
                                 <Button color="primary" onClick={() => this.onClickSave()}>
                                     Save
                                 </Button>

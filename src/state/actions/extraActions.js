@@ -1,4 +1,4 @@
-import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY, SUCCESS_GET_FPS, FAILED_GET_FPS } from '../constants/extraConstants';
+import { SUCCESS_GET_PACKAGETYPES, FAILED_GET_PACKAGETYPES, SUCCESS_GET_ALL_BOOKING_STATUS, FAILED_GET_ALL_BOOKING_STATUS, SUCCESS_SAVE_STATUS_STATUS, FAILED_SAVE_STATUS_STATUS, SUCCESS_GET_BOOKING_STATUS_HISTORY, FAILED_GET_BOOKING_STATUS_HISTORY, SUCCESS_GET_FPS, FAILED_GET_FPS, SUCCESS_GET_STATUS_ACTIONS, SUCCESS_GET_STATUS_DETAILS, FAILED_GET_STATUS_ACTIONS, FAILED_GET_STATUS_DETAILS } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
     return {
@@ -69,5 +69,33 @@ export function failedGetAllFPs(error) {
     return {
         type: FAILED_GET_FPS,
         errorMessage: 'Unable to get all FPs. Error:' + error,
+    };
+}
+
+export function successStatusActions(data) {
+    return {
+        type: SUCCESS_GET_STATUS_ACTIONS,
+        statusActions: data.results,
+    };
+}
+
+export function failedStatusActions(error) {
+    return {
+        type: FAILED_GET_STATUS_ACTIONS,
+        errorMessage: 'Unable to get status actions. Error:' + error,
+    };
+}
+
+export function successGetStatusDetails(data) {
+    return {
+        type: SUCCESS_GET_STATUS_DETAILS,
+        statusDetails: data.results,
+    };
+}
+
+export function failedStatusDetails(error) {
+    return {
+        type: FAILED_GET_STATUS_DETAILS,
+        errorMessage: 'Unable to get status details. Error:' + error,
     };
 }

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs } from '../actions/extraActions';
+import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -42,7 +42,7 @@ export const getBookingStatusHistory = (pk_booking_id) => {
             .catch((error) => dispatch(failedGetBookingStatusHistory(error)));
 };
 
-export const saveStatusHistory = (statusHistory) => {
+export const createStatusHistory = (statusHistory) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
@@ -69,3 +69,28 @@ export const getAllFPs = () => {
             .catch((error) => dispatch(failedGetAllFPs(error)));
 };
 
+export const getStatusActions = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/status/get_status_actions/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successStatusActions(data)))
+            .catch((error) => dispatch(failedStatusActions(error)));
+};
+
+export const getStatusDetails = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/status/get_status_details/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetStatusDetails(data)))
+            .catch((error) => dispatch(failedStatusDetails(error)));
+};
