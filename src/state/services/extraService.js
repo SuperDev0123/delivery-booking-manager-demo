@@ -56,6 +56,20 @@ export const createStatusHistory = (statusHistory) => {
             .catch((error) => dispatch(failedSaveStatusHistory(error)));
 };
 
+export const updateStatusHistory = (statusHistory) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory` + statusHistory.id + '/update_status_history/',
+        data: statusHistory,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSaveStatusHistory(data)))
+            .catch((error) => dispatch(failedSaveStatusHistory(error)));
+};
+
 export const getAllFPs = () => {
     const token = localStorage.getItem('token');
     const options = {

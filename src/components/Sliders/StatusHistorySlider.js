@@ -16,6 +16,7 @@ class StatusHistorySlider extends React.Component {
 
         this.state = {
             viewMode: 0, // 0: List, 1: Form
+            saveMode: 0, // 0: Create, 2: Update
             formInputs: {
                 status_last: '',
                 dme_status_detail: '',
@@ -23,6 +24,7 @@ class StatusHistorySlider extends React.Component {
             },
             event_time_stamp: new Date(),
             errorMessage: '',
+            selectedStatusHistoryInd: -1,
         };
     }
 
@@ -34,6 +36,7 @@ class StatusHistorySlider extends React.Component {
         allBookingStatus: PropTypes.array.isRequired,
         username: PropTypes.string.isRequired,
         OnCreateStatusHistory: PropTypes.func.isRequired,
+        OnUpdateStatusHistory: PropTypes.func.isRequired,
         statusDetails: PropTypes.array.isRequired,
         statusActions: PropTypes.array.isRequired,
     };
@@ -44,30 +47,57 @@ class StatusHistorySlider extends React.Component {
         if (booking.z_lock_status) {
             alert('This booking is locked, so `update status` is not available.');
         } else {
-            this.setState({viewMode: 1});
+            this.setState({viewMode: 1, saveMode: 0});
         }
     }
 
     onClickSave() {
         const {booking} = this.props;
+        const {saveMode, selectedStatusHistoryInd} = this.state;
         let statusHistory = _.clone(this.state.formInputs);
 
-        if (statusHistory['status_last'] === '') {
-            this.setState({errorMessage: 'Please select a status'});
-        } else if (statusHistory['dme_status_action'] === '') {
-            this.setState({errorMessage: 'Please select a status action'});
-        } else if (statusHistory['dme_status_detail'] === '') {
-            this.setState({errorMessage: 'Please select a status detail'});
-        } else {
-            statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
-            statusHistory['fk_booking_id'] = booking.pk_booking_id;
-            statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
-            this.props.OnCreateStatusHistory(statusHistory);
-            this.setState({viewMode: 0, formInputs: {
-                status_last: '',
-                dme_status_detail: '',
-                dme_status_action: '',
-            }});
+        if (saveMode === 0) {        
+            if (statusHistory['status_last'] === '') {
+                this.setState({errorMessage: 'Please select a status'});
+            } else if (statusHistory['dme_status_action'] === '') {
+                this.setState({errorMessage: 'Please select a status action'});
+            } else if (statusHistory['dme_status_detail'] === '') {
+                this.setState({errorMessage: 'Please select a status detail'});
+            } else {
+                statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+                statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+                this.props.OnCreateStatusHistory(statusHistory);
+                this.setState({viewMode: 0, formInputs: {
+                    status_last: '',
+                    dme_status_detail: '',
+                    dme_status_action: '',
+                }});
+            }
+        } else if (saveMode === 1) {
+            if (statusHistory['status_last'] === '') {
+                this.setState({errorMessage: 'Please select a status'});
+            } else if (statusHistory['dme_status_action'] === '') {
+                this.setState({errorMessage: 'Please select a status action'});
+            } else if (statusHistory['dme_status_detail'] === '') {
+                this.setState({errorMessage: 'Please select a status detail'});
+            } else {
+                statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+                statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+
+                if (selectedStatusHistoryInd === 0) {
+                    this.props.OnUpdateStatusHistory(statusHistory, true);
+                } else {
+                    this.props.OnUpdateStatusHistory(statusHistory, false);
+                }
+
+                this.setState({viewMode: 0, formInputs: {
+                    status_last: '',
+                    dme_status_detail: '',
+                    dme_status_action: '',
+                }});
+            }
         }
     }
 
@@ -91,9 +121,16 @@ class StatusHistorySlider extends React.Component {
         }
     }
 
+    onClickEditButton(index) {
+        const statusHistories = this.props.statusHistories;
+        let formInputs = statusHistories[index];
+        formInputs['event_time_stamp'] = moment(formInputs['event_time_stamp']).toDate();
+        this.setState({formInputs, viewMode: 1, saveMode: 1, selectedStatusHistoryInd: index});
+    }
+
     render() {
         const { isOpen, statusHistories, allBookingStatus, username, statusActions, statusDetails } = this.props;
-        const { viewMode, formInputs, event_time_stamp, errorMessage } = this.state;
+        const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage } = this.state;
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -106,6 +143,7 @@ class StatusHistorySlider extends React.Component {
                     <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
                     <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
+                    <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
                 </div>
             );
         });
@@ -148,6 +186,9 @@ class StatusHistorySlider extends React.Component {
                             </div>
                             :
                             <div className="form-view">
+                                <label>
+                                    <h1>{saveMode===0 ? 'New' : 'Edit'} Status History</h1>
+                                </label>
                                 <label>
                                     <p>Status</p>
                                     <select
@@ -213,7 +254,7 @@ class StatusHistorySlider extends React.Component {
                                         </label>
                                 }
                                 <Button color="primary" onClick={() => this.onClickSave()}>
-                                    Save
+                                    {saveMode===0 ? 'Create' : 'Update'}
                                 </Button>
                                 <Button color="primary" onClick={() => this.onClickCancel()}>
                                     Cancel

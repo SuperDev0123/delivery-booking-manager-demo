@@ -32,7 +32,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions } from '../state/services/extraService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -213,6 +213,7 @@ class BookingPage extends Component {
         getPackageTypes: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
         createStatusHistory: PropTypes.func.isRequired,
+        updateStatusHistory: PropTypes.func.isRequired,
         getStatusActions: PropTypes.func.isRequired,
         getStatusDetails: PropTypes.func.isRequired,
     };
@@ -1454,6 +1455,19 @@ class BookingPage extends Component {
         newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.props.createStatusHistory(statusHistory);
+    }
+
+    OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
+        if (needToUpdateBooking) {
+            let newBooking = this.state.booking;
+            newBooking.b_status = statusHistory['status_last'];
+            newBooking.dme_status_detail = statusHistory['dme_status_detail'];
+            newBooking.dme_status_action = statusHistory['dme_status_action'];
+            newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
+            this.props.updateBooking(this.state.booking.id, newBooking);
+        }
+
+        this.props.updateStatusHistory(statusHistory);
     }
 
     onClickComms(e) {
@@ -2956,6 +2970,7 @@ class BookingPage extends Component {
                     allBookingStatus={allBookingStatus}
                     username={username}
                     OnCreateStatusHistory={(statusHistory) => this.OnCreateStatusHistory(statusHistory)}
+                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking) => this.OnCreateStatusHistory(statusHistory, needToUpdateBooking)}
                     statusDetails={statusDetails}
                     statusActions={statusActions}
                 />
@@ -3052,6 +3067,7 @@ const mapDispatchToProps = (dispatch) => {
         getPackageTypes: () => dispatch(getPackageTypes()),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         createStatusHistory: (statusHistory) => dispatch(createStatusHistory(statusHistory)),
+        updateStatusHistory: (statusHistory) => dispatch(updateStatusHistory(statusHistory)),
         getStatusDetails: () => dispatch(getStatusDetails()),
         getStatusActions: () => dispatch(getStatusActions()),
     };
