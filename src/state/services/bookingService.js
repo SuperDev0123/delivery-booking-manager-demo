@@ -299,7 +299,7 @@ export const resetNeedUpdateLineAndLineDetail = () => {
     return dispatch => dispatch(setNeedUpdateLineAndLineDetail());
 };
 
-export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type) => {
+export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -311,6 +311,7 @@ export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, 
             'emailAddr': emailAddr, 
             'vx_freight_provider': vx_freight_provider,
             'report_type': report_type,
+            'showFieldName': showFieldName,
         },
     };
     return dispatch =>

@@ -1957,7 +1957,7 @@ class AllBookingsPage extends React.Component {
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
                     allFPs={allFPs}
-                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type)}
+                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)}
                 />
             </div>
         );
@@ -2018,7 +2018,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type)),
+        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),

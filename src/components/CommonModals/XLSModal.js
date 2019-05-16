@@ -18,6 +18,7 @@ class XLSModal extends Component {
             vx_freight_provider: '',
             report_type: '',
             errorMessage: '',
+            showFieldName: false,
         };
     }
 
@@ -95,6 +96,8 @@ class XLSModal extends Component {
             this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
         } else if (type === 'report_type') {
             this.setState({report_type: e.target.value, errorMessage: ''});
+        } else if (type === 'showFieldName') {
+            this.setState({showFieldName: e.target.checked, errorMessage: ''});
         }
     }
 
@@ -111,14 +114,15 @@ class XLSModal extends Component {
     }
 
     onClickBuildAndSend() {
-        const {startDate, endDate, emailAddr, vx_freight_provider, report_type} = this.state;
-        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type);
+        const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName} = this.state;
+        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type, showFieldName);
+        this.setState({startDate: '', endDate: '', emailAddr: '', vx_freight_provider: '', showFieldName: false, report_type: ''});
         this.props.toggleShowXLSModal();
     }
 
     render() {
         const {isShowXLSModal, allFPs} = this.props;
-        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type} = this.state;
+        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName} = this.state;
         let buttonStatus = false;
 
         if (this.validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
@@ -177,6 +181,10 @@ class XLSModal extends Component {
                     <label>
                         <p>Email address: </p>
                         <input type="text" placeholder="Email to send xls" name="emailAddr" value={emailAddr} onChange={(e) => this.onInputChange(e, 'email')} />
+                    </label>
+                    <label>
+                        <p>Show Field Names: </p>
+                        <input type="checkbox" name="showFieldName" className="checkbox" value={showFieldName} onChange={(e) => this.onInputChange(e, 'showFieldName')} />
                     </label>
                     <p className="red">{errorMessage}</p>
                 </ModalBody>

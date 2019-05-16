@@ -18,6 +18,12 @@
 
 		>input, .react-datepicker-wrapper, select {
 			float: right;
+
+			&.checkbox {
+				float: unset !important;
+				margin-left: 24px;
+				display: inline-block;
+			}
 		}
 
 		select {
