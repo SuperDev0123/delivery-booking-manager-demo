@@ -1,4 +1,4 @@
-.xml-modal {
+.xls-modal {
 	top: 100px;
 
 	.modal-header h5 {
@@ -16,10 +16,18 @@
 			margin-top: 5px;
 		}
 
-		select {
+		>input, .react-datepicker-wrapper, select {
 			float: right;
-			width: 60%;
-			height: 25px;
+
+			&.checkbox {
+				float: unset !important;
+				margin-left: 24px;
+				display: inline-block;
+			}
+		}
+
+		select {
+			width: 53%;
 		}
 	}
 

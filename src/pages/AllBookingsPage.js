@@ -26,6 +26,7 @@ import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
+import XMLModal from '../components/CommonModals/XMLModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -75,6 +76,7 @@ class AllBookingsPage extends React.Component {
             successSearchFilterOptions: {},
             scrollLeft: 0,
             isShowXLSModal: false,
+            isShowXMLModal: false,
             selectedStatusValue: null,
             selectedWarehouseName: 'All',
             allBookingStatus: [],
@@ -86,6 +88,7 @@ class AllBookingsPage extends React.Component {
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
+        this.toggleShowXMLModal = this.toggleShowXMLModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -571,6 +574,10 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowXLSModal: !prevState.isShowXLSModal}));
     }
 
+    toggleShowXMLModal() {
+        this.setState(prevState => ({isShowXMLModal: !prevState.isShowXMLModal}));    
+    }
+
     onCheck(e, id) {
         if (!e.target.checked) {
             this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
@@ -882,37 +889,13 @@ class AllBookingsPage extends React.Component {
 
     onClickXML() {
         const { bookings } = this.state;
-        let bookingIds = [];
 
         if (bookings && bookings.length === 0) {
             alert('There is no bookings to build XML.');
         } else if (bookings.length > 100) {
             alert('You can generate xml with 100 bookings at most.');
         } else {
-            for (let i = 0; i < bookings.length; i++)
-                bookingIds.push(bookings[i].id);
-
-            this.setState({loadingDownload: true});
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {bookingIds},
-            };
-
-            axios(options).then((response) => {
-                if (response.data.error && response.data.error === 'Found set has booked bookings') {
-                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-                } else if (response.data.success && response.data.success === 'success') {
-                    alert('XML’s are *not generated successfully.');
-                    this.setState({loading: true});
-                    this.props.setNeedUpdateBookingsState(true);
-                } else {
-                    alert('XML’s have been generated successfully.');
-                    this.setState({loading: true});
-                    this.props.setNeedUpdateBookingsState(true);
-                }
-                this.setState({loadingDownload: false});
-            });
+            this.toggleShowXMLModal();
         }
     }
 
@@ -990,8 +973,38 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickBuildXML(vx_freight_provider) {
+        const {bookings} = this.state;
+        let bookingIds = [];
+
+        for (let i = 0; i < bookings.length; i++)
+            bookingIds.push(bookings[i].id);
+
+        this.setState({loadingDownload: true});
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options).then((response) => {
+            if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+            } else if (response.data.success && response.data.success === 'success') {
+                alert('XML’s are *not generated successfully.');
+                this.setState({loading: true});
+                this.props.setNeedUpdateBookingsState(true);
+            } else {
+                alert('XML’s have been generated successfully.');
+                this.setState({loading: true});
+                this.props.setNeedUpdateBookingsState(true);
+            }
+            this.setState({loadingDownload: false});
+        });
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1958,6 +1971,12 @@ class AllBookingsPage extends React.Component {
                     toggleShowXLSModal={this.toggleShowXLSModal}
                     allFPs={allFPs}
                     generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)}
+                />
+
+                <XMLModal
+                    isOpen={isShowXMLModal}
+                    toggleShowXMLModal={this.toggleShowXMLModal}
+                    onClickBuildXML={(vx_freight_provider) => this.onClickBuildXML(vx_freight_provider)}
                 />
             </div>
         );
