@@ -32,7 +32,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction } from '../state/services/extraService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -216,6 +216,8 @@ class BookingPage extends Component {
         updateStatusHistory: PropTypes.func.isRequired,
         getStatusActions: PropTypes.func.isRequired,
         getStatusDetails: PropTypes.func.isRequired,
+        createStatusAction: PropTypes.func.isRequired,
+        createStatusDetail: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -1447,23 +1449,43 @@ class BookingPage extends Component {
         this.toggleShowStatusHistorySlider();
     }
 
-    OnCreateStatusHistory(statusHistory) {
+    OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) {
         let newBooking = this.state.booking;
         newBooking.b_status = statusHistory['status_last'];
         newBooking.dme_status_detail = statusHistory['dme_status_detail'];
         newBooking.dme_status_action = statusHistory['dme_status_action'];
         newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
+        
+        if (isShowStatusDetailInput) {
+            statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
+            this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
+        }
+        if (isShowStatusActionInput) {
+            statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
+            this.props.createStatusAction(statusHistory['new_dme_status_action']);
+        }
+
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.props.createStatusHistory(statusHistory);
     }
 
-    OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
+    OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) {
         if (needToUpdateBooking) {
             let newBooking = this.state.booking;
             newBooking.b_status = statusHistory['status_last'];
             newBooking.dme_status_detail = statusHistory['dme_status_detail'];
             newBooking.dme_status_action = statusHistory['dme_status_action'];
             newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
+
+            if (isShowStatusDetailInput) {
+                statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
+                this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
+            }
+            if (isShowStatusActionInput) {
+                statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
+                this.props.createStatusAction(statusHistory['new_dme_status_action']);
+            }
+
             this.props.updateBooking(this.state.booking.id, newBooking);
         }
 
@@ -2969,8 +2991,8 @@ class BookingPage extends Component {
                     toggleStatusHistorySlider={this.toggleShowStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
                     username={username}
-                    OnCreateStatusHistory={(statusHistory) => this.OnCreateStatusHistory(statusHistory)}
-                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking) => this.OnCreateStatusHistory(statusHistory, needToUpdateBooking)}
+                    OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
+                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
                     statusDetails={statusDetails}
                     statusActions={statusActions}
                 />
@@ -3070,6 +3092,8 @@ const mapDispatchToProps = (dispatch) => {
         updateStatusHistory: (statusHistory) => dispatch(updateStatusHistory(statusHistory)),
         getStatusDetails: () => dispatch(getStatusDetails()),
         getStatusActions: () => dispatch(getStatusActions()),
+        createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
+        createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
     };
 };
 

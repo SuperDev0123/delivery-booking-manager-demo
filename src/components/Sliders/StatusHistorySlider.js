@@ -25,6 +25,8 @@ class StatusHistorySlider extends React.Component {
             event_time_stamp: new Date(),
             errorMessage: '',
             selectedStatusHistoryInd: -1,
+            isShowStatusDetailInput: false,
+            isShowStatusActionInput: false,
         };
     }
 
@@ -52,51 +54,85 @@ class StatusHistorySlider extends React.Component {
     }
 
     onClickSave() {
-        const {booking} = this.props;
-        const {saveMode, selectedStatusHistoryInd} = this.state;
+        const {booking, statusDetails, statusActions} = this.props;
+        const {saveMode, selectedStatusHistoryInd, isShowStatusActionInput, isShowStatusDetailInput} = this.state;
         let statusHistory = _.clone(this.state.formInputs);
 
-        if (saveMode === 0) {        
-            if (statusHistory['status_last'] === '') {
-                this.setState({errorMessage: 'Please select a status'});
-            } else if (statusHistory['dme_status_action'] === '') {
-                this.setState({errorMessage: 'Please select a status action'});
-            } else if (statusHistory['dme_status_detail'] === '') {
-                this.setState({errorMessage: 'Please select a status detail'});
-            } else {
-                statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
-                statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
-                this.props.OnCreateStatusHistory(statusHistory);
-                this.setState({viewMode: 0, formInputs: {
-                    status_last: '',
-                    dme_status_detail: '',
-                    dme_status_action: '',
-                }});
-            }
-        } else if (saveMode === 1) {
-            if (statusHistory['status_last'] === '') {
-                this.setState({errorMessage: 'Please select a status'});
-            } else if (statusHistory['dme_status_action'] === '') {
-                this.setState({errorMessage: 'Please select a status action'});
-            } else if (statusHistory['dme_status_detail'] === '') {
-                this.setState({errorMessage: 'Please select a status detail'});
-            } else {
-                statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
-                statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+        if (isShowStatusDetailInput && _.isEmpty(statusHistory['new_dme_status_detail'])) {
+            alert('Please input new dme status detail');
+        } else if (isShowStatusActionInput && _.isEmpty(statusHistory['new_dme_status_action'])) {
+            alert('Please input new dme status action');
+        } else {
+            let canSubmit = true;
 
-                if (selectedStatusHistoryInd === 0) {
-                    this.props.OnUpdateStatusHistory(statusHistory, true);
-                } else {
-                    this.props.OnUpdateStatusHistory(statusHistory, false);
+            if (isShowStatusDetailInput || isShowStatusActionInput) {
+                if (isShowStatusDetailInput) {
+                    for (let i = 0; i < statusDetails.length; i++) {
+                        if (statusDetails[i].dme_status_detail === statusHistory['new_dme_status_detail']) {
+                            canSubmit = false;
+                        }
+                    }
                 }
 
-                this.setState({viewMode: 0, formInputs: {
-                    status_last: '',
-                    dme_status_detail: '',
-                    dme_status_action: '',
-                }});
+                if (isShowStatusActionInput) {
+                    for (let i = 0; i < statusActions.length; i++) {
+                        if (statusActions[i].dme_status_action === statusHistory['new_dme_status_action']) {
+                            canSubmit = false;
+                        }
+                    }
+                }
+            }
+
+            if (!canSubmit) {
+                alert('You input already exist value into Status Action or Status Detail.');
+            } else {
+                if (saveMode === 0) {        
+                    if (statusHistory['status_last'] === '') {
+                        this.setState({errorMessage: 'Please select a status'});
+                    } else if (statusHistory['dme_status_action'] === '') {
+                        this.setState({errorMessage: 'Please select a status action'});
+                    } else if (statusHistory['dme_status_detail'] === '') {
+                        this.setState({errorMessage: 'Please select a status detail'});
+                    } else {
+                        statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+                        statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                        statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+                        this.props.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput);
+                        this.setState({viewMode: 0, formInputs: {
+                            status_last: '',
+                            dme_status_detail: '',
+                            dme_status_action: '',
+                            isShowStatusActionInput: false,
+                            isShowStatusDetailInput: false,
+                        }});
+                    }
+                } else if (saveMode === 1) {
+                    if (statusHistory['status_last'] === '') {
+                        this.setState({errorMessage: 'Please select a status'});
+                    } else if (statusHistory['dme_status_action'] === '') {
+                        this.setState({errorMessage: 'Please select a status action'});
+                    } else if (statusHistory['dme_status_detail'] === '') {
+                        this.setState({errorMessage: 'Please select a status detail'});
+                    } else {
+                        statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
+                        statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                        statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
+
+                        if (selectedStatusHistoryInd === 0) {
+                            this.props.OnUpdateStatusHistory(statusHistory, true, isShowStatusDetailInput, isShowStatusActionInput);
+                        } else {
+                            this.props.OnUpdateStatusHistory(statusHistory, false, isShowStatusDetailInput, isShowStatusActionInput);
+                        }
+
+                        this.setState({viewMode: 0, formInputs: {
+                            status_last: '',
+                            dme_status_detail: '',
+                            dme_status_action: '',
+                            isShowStatusActionInput: false,
+                            isShowStatusDetailInput: false,
+                        }});
+                    }
+                }
             }
         }
     }
@@ -110,9 +146,19 @@ class StatusHistorySlider extends React.Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
+        if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
+            this.setState({isShowStatusDetailInput: true});
+        } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
+            this.setState({isShowStatusDetailInput: false});
+        } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+            this.setState({isShowStatusActionInput: true});
+        } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+            this.setState({isShowStatusDetailInput: false});
+        }
+
         let formInputs = this.state.formInputs;
         formInputs[name] = value;
-        this.setState({formInputs});
+        this.setState({formInputs, errorMessage: ''});
     }
 
     onChangeDate(date, fieldName) {
@@ -130,7 +176,7 @@ class StatusHistorySlider extends React.Component {
 
     render() {
         const { isOpen, statusHistories, allBookingStatus, username, statusActions, statusDetails } = this.props;
-        const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage } = this.state;
+        const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage, isShowStatusDetailInput, isShowStatusActionInput } = this.state;
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -143,7 +189,12 @@ class StatusHistorySlider extends React.Component {
                     <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
                     <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
-                    <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
+                    {
+                        (username === 'dme') ?
+                            <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
+                            :
+                            null
+                    }
                 </div>
             );
         });
@@ -224,8 +275,24 @@ class StatusHistorySlider extends React.Component {
                                     >
                                         <option value="" selected disabled hidden>Select a status detail</option>
                                         {statusDetailOptions}
+                                        <option value={'other'}>Other</option>
                                     </select>
                                 </label>
+                                {
+                                    (isShowStatusDetailInput) ?
+                                        <label>
+                                            <p>New Status Detail</p>
+                                            <input 
+                                                className="form-control" 
+                                                type="text" 
+                                                placeholder=""
+                                                name="new_dme_status_detail" 
+                                                value = {formInputs['new_dme_status_detail']}
+                                                onChange={(e) => this.onInputChange(e)} />    
+                                        </label>
+                                        :
+                                        null
+                                }
                                 <label>
                                     <p>Status Action</p>
                                     <select
@@ -235,8 +302,24 @@ class StatusHistorySlider extends React.Component {
                                     >
                                         <option value="" selected disabled hidden>Select a status action</option>
                                         {statusActionOptions}
+                                        <option value={'other'}>Other</option>
                                     </select>
                                 </label>
+                                {
+                                    (isShowStatusActionInput) ?
+                                        <label>
+                                            <p>New Status Action</p>
+                                            <input 
+                                                className="form-control" 
+                                                type="text" 
+                                                placeholder=""
+                                                name="new_dme_status_action" 
+                                                value = {formInputs['new_dme_status_action']}
+                                                onChange={(e) => this.onInputChange(e)} />    
+                                        </label>
+                                        :
+                                        null
+                                }
                                 <label>
                                     <p>Linked reference</p>
                                     <input

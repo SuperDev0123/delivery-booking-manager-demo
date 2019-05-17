@@ -108,3 +108,32 @@ export const getStatusDetails = () => {
             .then(({ data }) => dispatch(successGetStatusDetails(data)))
             .catch((error) => dispatch(failedStatusDetails(error)));
 };
+
+export const createStatusDetail = (newStatusDetail) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/status/create_status_detail/`,
+        data: {'newStatusDetail': newStatusDetail},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('#300 - create_status_detail: ', data)))
+            .catch((error) => dispatch(console.log('#301 - create_status_detail: ', error)));
+};
+
+export const createStatusAction = (newStatusAction) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/status/create_status_action/`,
+        data: {'newStatusAction': newStatusAction},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(console.log('#300 - create_status_action: ', data)))
+            .catch((error) => dispatch(console.log('#301 - create_status_action: ', error)));
+};
+
