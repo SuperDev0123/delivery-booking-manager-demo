@@ -253,7 +253,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -296,6 +296,14 @@ class BookingPage extends Component {
 
         if (needUpdateNotes) {
             this.props.getNotes(this.state.selectedCommId);
+        }
+
+        if (needUpdateStatusDetails) {
+            this.props.getStatusDetails();
+        }
+
+        if (needUpdateStatusActions) {
+            this.props.getStatusActions();
         }
 
         if (warehouses) {
@@ -3046,6 +3054,8 @@ const mapStateToProps = (state) => {
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
+        needUpdateStatusActions: state.extra.needUpdateStatusActions,
+        needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
     };
 };
 

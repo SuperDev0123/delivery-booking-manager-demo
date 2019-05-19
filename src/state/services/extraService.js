@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails } from '../actions/extraActions';
+import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -119,8 +119,8 @@ export const createStatusDetail = (newStatusDetail) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(console.log('#300 - create_status_detail: ', data)))
-            .catch((error) => dispatch(console.log('#301 - create_status_detail: ', error)));
+            .then(({ data }) => dispatch(successCreateStatusDetail(data)))
+            .catch((error) => dispatch(failedCreateStatusDetail(error)));
 };
 
 export const createStatusAction = (newStatusAction) => {
@@ -133,7 +133,7 @@ export const createStatusAction = (newStatusAction) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(console.log('#300 - create_status_action: ', data)))
-            .catch((error) => dispatch(console.log('#301 - create_status_action: ', error)));
+            .then(({ data }) => dispatch(successCreateStatusAction(data)))
+            .catch((error) => dispatch(failedCreateStatusAction(error)));
 };
 
