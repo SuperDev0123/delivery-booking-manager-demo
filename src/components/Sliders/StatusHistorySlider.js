@@ -36,11 +36,11 @@ class StatusHistorySlider extends React.Component {
         statusHistories: PropTypes.array.isRequired,
         booking: PropTypes.object.isRequired,
         allBookingStatus: PropTypes.array.isRequired,
-        username: PropTypes.string.isRequired,
         OnCreateStatusHistory: PropTypes.func.isRequired,
         OnUpdateStatusHistory: PropTypes.func.isRequired,
         statusDetails: PropTypes.array.isRequired,
         statusActions: PropTypes.array.isRequired,
+        clientname: PropTypes.string.isRequired,
     };
 
     onClickPlus() {
@@ -175,7 +175,7 @@ class StatusHistorySlider extends React.Component {
     }
 
     render() {
-        const { isOpen, statusHistories, allBookingStatus, username, statusActions, statusDetails } = this.props;
+        const { isOpen, statusHistories, allBookingStatus, statusActions, statusDetails, clientname } = this.props;
         const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage, isShowStatusDetailInput, isShowStatusActionInput } = this.state;
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
@@ -190,7 +190,7 @@ class StatusHistorySlider extends React.Component {
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
                     <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
                     {
-                        (username === 'dme') ?
+                        (clientname === 'dme') ?
                             <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
                             :
                             null
@@ -224,7 +224,7 @@ class StatusHistorySlider extends React.Component {
                         viewMode === 0 ?
                             <div className="list-view">
                                 {
-                                    username === 'dme' ?
+                                    clientname === 'dme' ?
                                         <Button color="primary" onClick={() => this.onClickPlus()}>
                                             +
                                         </Button>

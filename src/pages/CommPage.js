@@ -23,7 +23,7 @@ class CommPage extends React.Component {
         super(props);
 
         this.state = {
-            username: '',
+            clientname: '',
             booking: {},
             comms: [],
             notes: [],
@@ -92,7 +92,7 @@ class CommPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, username } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -102,8 +102,8 @@ class CommPage extends React.Component {
             this.props.history.push('/');
         }
 
-        if (username) {
-            this.setState({username});
+        if (clientname) {
+            this.setState({clientname});
         }
 
         if (booking) {
@@ -247,7 +247,7 @@ class CommPage extends React.Component {
         
         if (noteFormMode === 'create') {
             noteFormInputs['comm'] = selectedCommId;
-            noteFormInputs['username'] = 'Stephen';
+            noteFormInputs['clientname'] = 'Stephen';
             noteFormInputs['dme_notes_no'] = (notes.length > 0) ? parseInt(notes[notes.length - 1]['dme_notes_no']) + 1 : 1;
             this.props.createNote(noteFormInputs);
         } else if (noteFormMode === 'update') {
@@ -339,7 +339,7 @@ class CommPage extends React.Component {
     }
 
     render() {
-        const { username, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId } = this.state;
+        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -379,7 +379,7 @@ class CommPage extends React.Component {
                         <ul className="nav nav-tabs">
                             <li><a onClick={(e) => this.onClickHeader(e)}>Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
-                            <li className={username === 'dme' ? 'active ' : 'none'}><a href="/comm">Comms</a></li>
+                            <li className={clientname === 'dme' ? 'active ' : 'none'}><a href="/comm">Comms</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
@@ -759,7 +759,7 @@ class CommPage extends React.Component {
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
-                    username={username}
+                    clientname={clientname}
                     selectedCommId={selectedCommId}
                 />
 
@@ -862,7 +862,7 @@ class CommPage extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        username: state.auth.username,
+        clientname: state.auth.clientname,
         booking: state.booking.booking,
         redirect: state.auth.redirect,
         comms: state.comm.comms,

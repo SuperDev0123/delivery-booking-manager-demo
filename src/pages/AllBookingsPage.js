@@ -70,7 +70,7 @@ class AllBookingsPage extends React.Component {
             total_kgs: 0,
             total_cubic_meter: 0,
             dmeClients: [],
-            username: null,
+            clientname: null,
             clientPK: 'dme',
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
@@ -168,7 +168,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, username, clientPK, allBookingStatus, allFPs } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -240,8 +240,8 @@ class AllBookingsPage extends React.Component {
             this.setState({dmeClients});
         }
 
-        if (username) {
-            this.setState({username});
+        if (clientname) {
+            this.setState({clientname});
         }
 
         if (needUpdateBookings) {
@@ -934,9 +934,9 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickStatusLock(booking) {
-        const { username } = this.state;
+        const { clientname } = this.state;
 
-        if (username === 'dme') {
+        if (clientname === 'dme') {
             booking.z_lock_status = !booking.z_lock_status;
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
             this.props.updateBooking(booking.id, booking);
@@ -1004,7 +1004,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, username, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1336,12 +1336,6 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 's_06_LatestDeliveryDateTimeFinal') ? 'current' : ''}>
                         {booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
-                    <td className={(sortField === 's_20_Actual_Pickup_TimeStamp') ? 'current' : ''}>
-                        {booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
-                    </td>
-                    <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
-                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
-                    </td>
                     <td  id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}>
                         <p>{booking.de_Deliver_By_Date}</p>
                         {
@@ -1350,6 +1344,12 @@ class AllBookingsPage extends React.Component {
                                 :
                                 null
                         }
+                    </td>
+                    <td className={(sortField === 's_20_Actual_Pickup_TimeStamp') ? 'current' : ''}>
+                        {booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
+                    </td>
+                    <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
+                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 'dme_status_detail') ? 'current' : ''}>
                         {booking.dme_status_detail}
@@ -1377,7 +1377,7 @@ class AllBookingsPage extends React.Component {
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                <li className={username === 'dme' ? '' : 'none'}><Link to="/comm">Comm</Link></li>
+                                <li className={clientname === 'dme' ? '' : 'none'}><Link to="/comm">Comm</Link></li>
                                 <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                                 <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                             </ul>
@@ -1437,7 +1437,7 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                                             <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                                             {
-                                                (username === 'dme') ?
+                                                (clientname === 'dme') ?
                                                     <label className="left-30px right-10px">
                                                         Client: 
                                                         <select 
@@ -1451,7 +1451,7 @@ class AllBookingsPage extends React.Component {
                                                     :
                                                     null
                                             }
-                                            <label className={(username === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
+                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
                                             <select 
                                                 id="warehouse" 
                                                 required 
@@ -1883,6 +1883,7 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
+                                                            <th className="" scope="col"><p>Delivery Booking</p></th>
                                                             <th 
                                                                 className={(sortField === 's_20_Actual_Pickup_TimeStamp') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('s_20_Actual_Pickup_TimeStamp')} 
@@ -1911,7 +1912,6 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th className="" scope="col"><p>Delivery Booking</p></th>
                                                             <th className="" scope="col"><p>Status Detail</p></th>
                                                             <th className="" scope="col"><p>Status Action</p></th>
                                                             <th className="" scope="col"><p>FP Del ETA</p></th>
@@ -1943,9 +1943,9 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
@@ -2009,7 +2009,7 @@ const mapStateToProps = (state) => {
         newLabel: state.booking.newLabel,
         errorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
-        username: state.auth.username,
+        clientname: state.auth.clientname,
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
         allFPs: state.extra.allFPs,

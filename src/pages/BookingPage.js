@@ -126,7 +126,7 @@ class BookingPage extends Component {
                 'Confirm FP has not invoiced this booking',
                 'Other',
             ],
-            username: null,
+            clientname: null,
             isBookingSelected: false,
             warehouses: [],
             isShowSwitchClientModal: false,
@@ -253,7 +253,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, username, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -262,8 +262,8 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (username) {
-            this.setState({username});
+        if (clientname) {
+            this.setState({clientname});
         }
 
         if (clientPK) {
@@ -272,10 +272,6 @@ class BookingPage extends Component {
 
         if (dmeClients) {
             this.setState({dmeClients});
-        }
-
-        if (clientname) {
-            this.setState({clientname});
         }
 
         if (clientId) {
@@ -1388,10 +1384,10 @@ class BookingPage extends Component {
     }
 
     onClickCreateBooking() {
-        const {formInputs, username, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode} = this.state;
+        const {formInputs, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode} = this.state;
 
-        if (clientPK === 0 || username !== 'dme') {
-            formInputs['z_CreatedByAccount'] = username;
+        if (clientPK === 0 || clientname !== 'dme') {
+            formInputs['z_CreatedByAccount'] = clientname;
             formInputs['b_client_name'] = clientname;
             formInputs['kf_client_id'] = clientId;
             formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
@@ -1511,9 +1507,9 @@ class BookingPage extends Component {
     }
 
     onClickStatusLock(booking) {
-        const { username } = this.state;
+        const { clientname } = this.state;
 
-        if (username === 'dme') {
+        if (clientname === 'dme') {
             booking.z_lock_status = !booking.z_lock_status;
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
             this.props.updateBooking(booking.id, booking);
@@ -1528,7 +1524,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, username, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected, clientname, statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1859,7 +1855,7 @@ class BookingPage extends Component {
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            <li className={username === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
+                            <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
                             <li><a href="/bookinglines" className="none">Booking Lines</a></li>
                             <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
                         </ul>
@@ -1875,7 +1871,7 @@ class BookingPage extends Component {
                         <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                         <a href="">?</a>
-                        <a onClick={(e) => this.onClickSwitchClientNavIcon(e)} className={username === 'dme' ? 'cur-pointer' : 'none'}><i className="fa fa-users" aria-hidden="true"></i></a>
+                        <a onClick={(e) => this.onClickSwitchClientNavIcon(e)} className={clientname === 'dme' ? 'cur-pointer' : 'none'}><i className="fa fa-users" aria-hidden="true"></i></a>
                     </div>
                 </div>
 
@@ -1955,7 +1951,7 @@ class BookingPage extends Component {
                                             <label className="color-white float-right">
                                                 <p>{isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}</p>
                                                 {
-                                                    username === 'dme' ?
+                                                    clientname === 'dme' ?
                                                         <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                                                             <i className="fa fa-lock"></i>
                                                         </p>
@@ -2967,7 +2963,7 @@ class BookingPage extends Component {
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
-                    username={username}
+                    clientname={clientname}
                     selectedCommId={selectedCommId}
                 />
 
@@ -2998,11 +2994,11 @@ class BookingPage extends Component {
                     booking={booking}
                     toggleStatusHistorySlider={this.toggleShowStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
-                    username={username}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
                     statusDetails={statusDetails}
                     statusActions={statusActions}
+                    clientname={clientname}
                 />
 
                 <LineTrackingSlider
@@ -3041,7 +3037,6 @@ const mapStateToProps = (state) => {
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
-        username: state.auth.username,
         clientname: state.auth.clientname,
         clientId: state.auth.clientId,
         warehouses: state.warehouse.warehouses,

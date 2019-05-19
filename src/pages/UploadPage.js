@@ -22,6 +22,7 @@ class UploadPage extends Component {
                 uploader: '',
             },
             username: '',
+            clientname: '',
         };
 
         this.djsConfig = {
@@ -60,7 +61,7 @@ class UploadPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username } = newProps;
+        const { redirect, username, clientname } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -71,6 +72,10 @@ class UploadPage extends Component {
 
         if (username) {
             this.setState({username});
+        }
+
+        if (clientname) {
+            this.setState({clientname});
         }
     }
 
@@ -114,7 +119,7 @@ class UploadPage extends Component {
     handlePost(e) {
         e.preventDefault();
 
-        if (this.state.formInputs.uploader === '' && this.state.username === 'dme') {
+        if (this.state.formInputs.uploader === '' && this.state.clientname === 'dme') {
             alert('Please select a uploader');
         } else {
             this.dropzone.processQueue();
@@ -132,16 +137,16 @@ class UploadPage extends Component {
     }
 
     handleFileSending(data, xhr, formData) {
-        const {username, formInputs} = this.state;
+        const {clientname, formInputs, username} = this.state;
         formData.append('username', username);
 
-        if (username === 'dme') {
+        if (clientname === 'dme') {
             formData.append('uploader', formInputs['uploader']);
         }
     }
 
     render() {
-        const { uploadedFileName, uploaded, uploadStatus, xlsxErrors, username, formInputs } = this.state;
+        const { uploadedFileName, uploaded, uploadStatus, xlsxErrors, formInputs, clientname } = this.state;
         let xlsx_errors_list = [];
         let statusText = '';
 
@@ -181,7 +186,7 @@ class UploadPage extends Component {
                         <form onSubmit={(e) => this.handlePost(e)}>
                             <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
                             {
-                                (username === 'dme') ?
+                                (clientname === 'dme') ?
                                     <select
                                         className="uploader"
                                         name="uploader"
@@ -222,6 +227,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
+        clientname: state.auth.clientname,
     };
 };
 
