@@ -1512,7 +1512,11 @@ class BookingPage extends Component {
         if (clientname === 'dme') {
             booking.z_lock_status = !booking.z_lock_status;
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
-            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+
+            if (!booking.z_lock_status) {
+                booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            }
+
             this.props.updateBooking(booking.id, booking);
         } else {
             alert('Locked status only allowed by dme user');
