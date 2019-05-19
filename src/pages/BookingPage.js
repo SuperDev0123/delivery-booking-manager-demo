@@ -1512,6 +1512,7 @@ class BookingPage extends Component {
         if (clientname === 'dme') {
             booking.z_lock_status = !booking.z_lock_status;
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
             this.props.updateBooking(booking.id, booking);
         } else {
             alert('Locked status only allowed by dme user');
@@ -1950,14 +1951,9 @@ class BookingPage extends Component {
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
                                                 <p>{isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}</p>
-                                                {
-                                                    clientname === 'dme' ?
-                                                        <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
-                                                            <i className="fa fa-lock"></i>
-                                                        </p>
-                                                        :
-                                                        null
-                                                }
+                                                <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                                                    <i className="fa fa-lock"></i>
+                                                </p>
                                             </label>
                                         </div>
                                     </div>

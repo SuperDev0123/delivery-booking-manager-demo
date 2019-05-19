@@ -660,3 +660,8 @@ p.status {
 .show {
   opacity: 1;
 }
+
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+}

@@ -939,6 +939,7 @@ class AllBookingsPage extends React.Component {
         if (clientname === 'dme') {
             booking.z_lock_status = !booking.z_lock_status;
             booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
             this.props.updateBooking(booking.id, booking);
         } else {
             alert('Locked status only allowed by dme user');
@@ -1251,11 +1252,11 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'b_dateBookedDate') ? 'current' : ''}>
                         {booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}
                     </td>
-                    <td className={(sortField === 'puCompany') ? 'current' : ''}>{booking.puCompany}</td>
+                    <td className={(sortField === 'puCompany') ? 'current nowrap' : ' nowrap'}>{booking.puCompany}</td>
                     <td className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}>{booking.pu_Address_Suburb}</td>
                     <td className={(sortField === 'pu_Address_State') ? 'current' : ''}>{booking.pu_Address_State}</td>
                     <td className={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}>{booking.pu_Address_PostalCode}</td>
-                    <td className={(sortField === 'deToCompanyName') ? 'current' : ''}>{booking.deToCompanyName}</td>
+                    <td className={(sortField === 'deToCompanyName') ? 'current nowrap' : ' nowrap'}>{booking.deToCompanyName}</td>
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
@@ -1336,7 +1337,7 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 's_06_LatestDeliveryDateTimeFinal') ? 'current' : ''}>
                         {booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
-                    <td  id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}>
+                    <td id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}>
                         <p>{booking.de_Deliver_By_Date}</p>
                         {
                             !_.isEmpty(booking.de_Deliver_From_Date) && !_.isEmpty(booking.de_Deliver_By_Date) ?
@@ -1351,8 +1352,17 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
                         {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
-                    <td className={(sortField === 'dme_status_detail') ? 'current' : ''}>
+                    <td 
+                        id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                        className={(sortField === 'dme_status_detail') ? 'current nowrap' : 'nowrap'}
+                    >
                         {booking.dme_status_detail}
+                        {
+                            !_.isEmpty(booking.dme_status_detail) && !_.isEmpty(booking.dme_status_detail) ?
+                                <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
+                                :
+                                null
+                        }
                     </td>
                     <td className={(sortField === 'dme_status_action') ? 'current' : ''}>
                         {booking.dme_status_action}
