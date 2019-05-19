@@ -1368,8 +1368,17 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
-                    <td className={(sortField === 'dme_status_action') ? 'current' : ''}>
+                    <td 
+                        id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
+                        className={(sortField === 'dme_status_action') ? 'current' : ''}
+                    >
                         {booking.dme_status_action}
+                        {
+                            !_.isEmpty(booking.dme_status_action) && !_.isEmpty(booking.dme_status_action) ?
+                                <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
+                                :
+                                null
+                        }
                     </td>
                     <td className={(sortField === 'vx_fp_del_eta_time') ? 'current' : ''}>
                         {booking.vx_fp_del_eta_time ? moment(booking.vx_fp_del_eta_time).format('DD/MM/YYYY hh:mm:ss') : ''}
