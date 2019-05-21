@@ -14,6 +14,7 @@ class LineTrackingSlider extends React.Component {
         booking: PropTypes.object.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
         isBooked: PropTypes.bool.isRequired,
+        clientname: PropTypes.string.isRequired,
     };
 
     onClickEdit(oldValue, newValue, row, column) {
@@ -32,7 +33,7 @@ class LineTrackingSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked } = this.props;
+        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked, clientname } = this.props;
 
         const qtyDeliveryCell = (cell, row) => {
             return (
@@ -48,8 +49,23 @@ class LineTrackingSlider extends React.Component {
         };
 
         const editableStyle = (cell, row) => {
+            console.log('cell - ', cell, clientname);
+            if (row.is_scanned && clientname !== 'dme') {
+                return {
+                    backgroundColor: 'lightgray',
+                    cursor: 'not-allowed',
+                };
+            } else {
+                return {
+                    backgroundColor: 'white',
+                    cursor: 'default',
+                };
+            }
+        };
+
+        const qtyEditableStyle = (cell, row) => {
             console.log('cell - ', cell);
-            if (row.is_scanned) {
+            if ((row.is_scanned || isBooked) && clientname !== 'dme') {
                 return {
                     backgroundColor: 'lightgray',
                     cursor: 'not-allowed',
@@ -64,7 +80,7 @@ class LineTrackingSlider extends React.Component {
 
         const isEditable = (cell, row) => {
             console.log('cell - ', cell);
-            if (row.is_scanned) {
+            if (row.is_scanned && clientname !== 'dme') {
                 return false;
             } else {
                 return true;
@@ -84,20 +100,7 @@ class LineTrackingSlider extends React.Component {
                 dataField: 'e_qty',
                 text: 'Qty',
                 editable: !isBooked,
-                style: (cell, row) => {
-                    console.log('cell - ', cell);
-                    if (row.is_scanned || isBooked) {
-                        return {
-                            backgroundColor: 'lightgray',
-                            cursor: 'not-allowed',
-                        };
-                    } else {
-                        return {
-                            backgroundColor: 'white',
-                            cursor: 'default',
-                        };
-                    }
-                }
+                style: qtyEditableStyle,
             }, {
                 dataField: 'e_qty_awaiting_inventory',
                 text: 'Qty Awaiting Inventory',

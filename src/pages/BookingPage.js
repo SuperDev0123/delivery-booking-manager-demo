@@ -3041,6 +3041,7 @@ class BookingPage extends Component {
                     toggleShowLineTrackingSlider={this.toggleShowLineTrackingSlider}
                     lines={products}
                     booking={booking}
+                    clientname={clientname}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                     isBooked={bAllComboboxViewOnlyonBooking}
                 />
