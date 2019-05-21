@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS } from '../constants/commConstants';
 
 const defaultState = {
     comms: [],
@@ -10,9 +10,10 @@ const defaultState = {
     needUpdateNotes: false,
     sortCommsField: 'id',
     sortBookingsField: '',
+    availableCreators: [],
 };
 
-export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, bookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword }) => {
+export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, bookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword, availableCreators }) => {
     switch (type) {
         case SET_COMMS:
             return { 
@@ -101,6 +102,16 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
             return {
                 ...state,
                 needUpdateComms: needUpdateComms,
+            };
+        case SUCCESS_GET_AVAILABLE_CREATORS:
+            return { 
+                ...state, 
+                availableCreators: availableCreators 
+            };
+        case FAILED_GET_AVAILABLE_CREATORS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         default:
             return state;

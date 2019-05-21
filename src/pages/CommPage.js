@@ -16,7 +16,7 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 import {timeSelectOptions} from '../commons/constants';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
-import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms } from '../state/services/commService';
+import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms, getAvailableCreators } from '../state/services/commService';
 
 class CommPage extends React.Component {
     constructor(props) {
@@ -42,6 +42,7 @@ class CommPage extends React.Component {
             noteFormInputs: {},
             commFormInputs: {},
             loading: false,
+            availableCreators: [],
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
@@ -65,6 +66,7 @@ class CommPage extends React.Component {
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
         setNeedUpdateComms: PropTypes.func.isRequired,
+        getAvailableCreators: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -88,11 +90,12 @@ class CommPage extends React.Component {
         }
 
         this.props.setNeedUpdateComms(true);
+        this.props.getAvailableCreators();
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -104,6 +107,10 @@ class CommPage extends React.Component {
 
         if (clientname) {
             this.setState({clientname});
+        }
+
+        if (username) {
+            this.setState({username});
         }
 
         if (booking) {
@@ -127,6 +134,10 @@ class CommPage extends React.Component {
 
         if (needUpdateNotes) {
             this.props.getNotes(selectedCommId);
+        }
+
+        if (availableCreators) {
+            this.setState({availableCreators});
         }
     }
 
@@ -339,7 +350,7 @@ class CommPage extends React.Component {
     }
 
     render() {
-        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId } = this.state;
+        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId, availableCreators, username } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -369,6 +380,12 @@ class CommPage extends React.Component {
                     <td>{comm.due_by_time}</td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('comm', comm)}>Update</Button></td>
                 </tr>
+            );
+        });
+
+        const availableCreatorsList = availableCreators.map((availableCreator, index) => {
+            return (
+                <option key={index} value={availableCreator.username} selected={availableCreator.username===username ? 'selected' : ''}>{availableCreator.first_name} {availableCreator.last_name}</option>
             );
         });
 
@@ -773,10 +790,7 @@ class CommPage extends React.Component {
                                 name="assigned_to" 
                                 onChange={(e) => this.handleModalInputChange('comm', e)}
                                 value = {commFormInputs['assigned_to']} >
-                                <option value="emadeisky">emadeisky</option>
-                                <option value="nlimbauan">nlimbauan</option>
-                                <option value="status query">status query</option>
-                                <option value="edit…">edit…</option>
+                                {availableCreatorsList}
                             </select>
                         </label>
                         <br />
@@ -873,6 +887,8 @@ const mapStateToProps = (state) => {
         needUpdateComms: state.comm.needUpdateComms,
         notes: state.comm.notes,
         needUpdateNotes: state.comm.needUpdateNotes,
+        availableCreators: state.comm.availableCreators,
+        username: state.auth.username,
     };
 };
 
@@ -888,7 +904,8 @@ const mapDispatchToProps = (dispatch) => {
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
         getComms: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) => dispatch(getComms(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword)),
-        setNeedUpdateComms: (boolFlag) => dispatch(setNeedUpdateComms(boolFlag))
+        setNeedUpdateComms: (boolFlag) => dispatch(setNeedUpdateComms(boolFlag)),
+        getAvailableCreators: () => dispatch(getAvailableCreators()),
     };
 };
 

@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS } from '../constants/commConstants';
 
 export function setComms(data) {
     return {
@@ -104,5 +104,19 @@ export function setNeedUpdateCommsFlag(boolFlag) {
     return {
         type: SET_NEEDUPDATECOMMS,
         needUpdateComms: boolFlag,
+    };
+}
+
+export function successGetAvailableCreators(data) {
+    return {
+        type: SUCCESS_GET_AVAILABLE_CREATORS,
+        availableCreators: data.creators,
+    };
+}
+
+export function failedGetAvailableCreators(error) {
+    return {
+        type: FAILED_GET_AVAILABLE_CREATORS,
+        errorMessage: error,
     };
 }

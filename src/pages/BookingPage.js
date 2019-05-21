@@ -21,6 +21,7 @@ import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
+import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
@@ -30,7 +31,7 @@ import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote } from '../state/services/commService';
+import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction } from '../state/services/extraService';
 
@@ -43,7 +44,7 @@ class BookingPage extends Component {
             isShowBookingCntAndTot: false,
             formInputs: {},
             commFormInputs: {
-                assigned_to: 'emadeisky', 
+                assigned_to: '', 
                 priority_of_log: 'Standard',
                 dme_notes_type: 'Delivery',
                 dme_action: 'No follow up required, noted for info purposes',
@@ -145,6 +146,8 @@ class BookingPage extends Component {
             activeTabInd: 0,
             statusDetails: [],
             statusActions: [],
+            availableCreators: [],
+            isShowStatusLockModal: false,
         };
 
         this.djsConfig = {
@@ -169,6 +172,7 @@ class BookingPage extends Component {
         this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
         this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
         this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
+        this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
     }
 
     static propTypes = {
@@ -218,6 +222,7 @@ class BookingPage extends Component {
         getStatusDetails: PropTypes.func.isRequired,
         createStatusAction: PropTypes.func.isRequired,
         createStatusDetail: PropTypes.func.isRequired,
+        getAvailableCreators: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -249,11 +254,12 @@ class BookingPage extends Component {
         this.props.getPackageTypes();
         this.props.getStatusDetails();
         this.props.getStatusActions();
+        this.props.getAvailableCreators();
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -264,6 +270,16 @@ class BookingPage extends Component {
 
         if (clientname) {
             this.setState({clientname});
+        }
+
+        if (username) {
+            let commFormInputs = this.state.commFormInputs;
+            commFormInputs['assigned_to'] = username;
+            this.setState({username, commFormInputs});
+        }
+
+        if (availableCreators) {
+            this.setState({availableCreators});
         }
 
         if (clientPK) {
@@ -1121,7 +1137,7 @@ class BookingPage extends Component {
 
     resetCommForm() {
         this.setState({commFormInputs: {
-            assigned_to: 'emadeisky', 
+            assigned_to: this.state.username, 
             priority_of_log: 'Standard',
             dme_notes_type: 'Delivery',
             dme_action: 'No follow up required, noted for info purposes',
@@ -1308,6 +1324,10 @@ class BookingPage extends Component {
 
     toggleShowLineTrackingSlider() {
         this.setState(prevState => ({isShowLineTrackingSlider: !prevState.isShowLineTrackingSlider}));
+    }
+
+    toggleShowStatusLockModal() {
+        this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
     toggleShowStatusHistorySlider() {
@@ -1510,17 +1530,29 @@ class BookingPage extends Component {
         const { clientname } = this.state;
 
         if (clientname === 'dme') {
-            booking.z_lock_status = !booking.z_lock_status;
-            booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
-
-            if (!booking.z_lock_status) {
-                booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            if (booking.b_status_API === 'POD Delivered') {
+                this.toggleShowStatusLockModal();
+            } else {
+                this.onChangeStatusLock(booking);
             }
-
-            this.props.updateBooking(booking.id, booking);
         } else {
             alert('Locked status only allowed by dme user');
         }
+    }
+
+    onChangeStatusLock(booking) {
+        if (booking.b_status_API === 'POD Delivered') {
+            this.toggleShowStatusLockModal();
+        }
+
+        booking.z_lock_status = !booking.z_lock_status;
+        booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+
+        if (!booking.z_lock_status) {
+            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+        }
+
+        this.props.updateBooking(booking.id, booking);
     }
 
     onClickBottomTap(e, activeTabInd) {
@@ -1529,7 +1561,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails} = this.state;
+        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1852,6 +1884,12 @@ class BookingPage extends Component {
 
         const currentWarehouseCodeOption = {value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null, label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null};
 
+        const availableCreatorsList = availableCreators.map((availableCreator, index) => {
+            return (
+                <option key={index} value={availableCreator.username}>{availableCreator.first_name} {availableCreator.last_name}</option>
+            );
+        });
+
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -1954,7 +1992,7 @@ class BookingPage extends Component {
                                             
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
-                                                <p>{isBookingSelected ? booking.b_status : '***'} - {isBookingSelected ? booking.b_status_API : '***'}</p>
+                                                <p>{isBookingSelected ? booking.b_status : '***'}</p>
                                                 <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                                                     <i className="fa fa-lock"></i>
                                                 </p>
@@ -2811,10 +2849,7 @@ class BookingPage extends Component {
                                 name="assigned_to" 
                                 onChange={(e) => this.handleCommModalInputChange(e)}
                                 value = {commFormInputs['assigned_to']} >
-                                <option value="emadeisky">emadeisky</option>
-                                <option value="nlimbauan">nlimbauan</option>
-                                <option value="status query">status query</option>
-                                <option value="edit…">edit…</option>
+                                {availableCreatorsList}
                             </select>
                         </label>
                         {
@@ -3009,6 +3044,13 @@ class BookingPage extends Component {
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                     isBooked={bAllComboboxViewOnlyonBooking}
                 />
+
+                <StatusLockModal
+                    isOpen={isShowStatusLockModal}
+                    toggleShowStatusLockModal={this.toggleShowStatusLockModal}
+                    booking={booking}
+                    onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
+                />
             </div>
         );
     }
@@ -3038,6 +3080,7 @@ const mapStateToProps = (state) => {
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
         clientname: state.auth.clientname,
+        username: state.auth.username,
         clientId: state.auth.clientId,
         warehouses: state.warehouse.warehouses,
         dmeClients: state.auth.dmeClients,
@@ -3049,6 +3092,7 @@ const mapStateToProps = (state) => {
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
+        availableCreators: state.comm.availableCreators,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
     };
@@ -3099,6 +3143,7 @@ const mapDispatchToProps = (dispatch) => {
         getStatusActions: () => dispatch(getStatusActions()),
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
+        getAvailableCreators: () => dispatch(getAvailableCreators()),
     };
 };
 

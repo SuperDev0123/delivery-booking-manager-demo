@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag } from '../actions/commActions';
+import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}, simpleSearchKeyword='') => {
@@ -105,4 +105,17 @@ export const updateNote = (id, updatedNote) => {
 
 export const setNeedUpdateComms = (boolFlag) => {
     return dispatch => dispatch(setNeedUpdateCommsFlag(boolFlag));
+};
+
+export const getAvailableCreators = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/comm/get_available_creators/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAvailableCreators(data)))
+            .catch((error) => dispatch(failedGetAvailableCreators(error)));
 };

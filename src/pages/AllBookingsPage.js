@@ -27,6 +27,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
 import XMLModal from '../components/CommonModals/XMLModal';
+import StatusLockModal from '../components/CommonModals/StatusLockModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -81,6 +82,8 @@ class AllBookingsPage extends React.Component {
             selectedWarehouseName: 'All',
             allBookingStatus: [],
             allFPs: [],
+            isShowStatusLockModal: false,
+            selectedBooking4StatusLock: null,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -89,6 +92,7 @@ class AllBookingsPage extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.toggleShowXMLModal = this.toggleShowXMLModal.bind(this);
+        this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -578,6 +582,10 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowXMLModal: !prevState.isShowXMLModal}));    
     }
 
+    toggleShowStatusLockModal() {
+        this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
+    }
+
     onCheck(e, id) {
         if (!e.target.checked) {
             this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
@@ -937,17 +945,29 @@ class AllBookingsPage extends React.Component {
         const { clientname } = this.state;
 
         if (clientname === 'dme') {
-            booking.z_lock_status = !booking.z_lock_status;
-            booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
-
-            if (!booking.z_lock_status) {
-                booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            if (booking.b_status_API === 'POD Delivered') {
+                this.setState({selectedBooking4StatusLock: booking}, () => this.toggleShowStatusLockModal());
+            } else {
+                this.onChangeStatusLock(booking);
             }
-
-            this.props.updateBooking(booking.id, booking);
         } else {
             alert('Locked status only allowed by dme user');
         }
+    }
+
+    onChangeStatusLock(booking) {
+        if (booking.b_status_API === 'POD Delivered') {
+            this.toggleShowStatusLockModal();
+        }
+
+        booking.z_lock_status = !booking.z_lock_status;
+        booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss');
+
+        if (!booking.z_lock_status) {
+            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+        }
+
+        this.props.updateBooking(booking.id, booking);
     }
 
     onClickEditCell(bookingId) {
@@ -1009,7 +1029,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname, isShowStatusLockModal, selectedBooking4StatusLock } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2000,6 +2020,13 @@ class AllBookingsPage extends React.Component {
                     isOpen={isShowXMLModal}
                     toggleShowXMLModal={this.toggleShowXMLModal}
                     onClickBuildXML={(vx_freight_provider) => this.onClickBuildXML(vx_freight_provider)}
+                />
+
+                <StatusLockModal
+                    isOpen={isShowStatusLockModal}
+                    toggleShowStatusLockModal={this.toggleShowStatusLockModal}
+                    booking={selectedBooking4StatusLock}
+                    onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
             </div>
         );
