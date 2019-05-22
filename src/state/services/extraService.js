@@ -61,7 +61,7 @@ export const updateStatusHistory = (statusHistory) => {
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory` + statusHistory.id + '/update_status_history/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/` + statusHistory.id + '/update_status_history/',
         data: statusHistory,
     };
     return dispatch =>

@@ -1499,21 +1499,21 @@ class BookingPage extends Component {
     }
 
     OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) {
+        if (isShowStatusDetailInput) {
+            statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
+            this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
+        }
+        if (isShowStatusActionInput) {
+            statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
+            this.props.createStatusAction(statusHistory['new_dme_status_action']);
+        }
+            
         if (needToUpdateBooking) {
             let newBooking = this.state.booking;
             newBooking.b_status = statusHistory['status_last'];
             newBooking.dme_status_detail = statusHistory['dme_status_detail'];
             newBooking.dme_status_action = statusHistory['dme_status_action'];
             newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
-
-            if (isShowStatusDetailInput) {
-                statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
-                this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
-            }
-            if (isShowStatusActionInput) {
-                statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
-                this.props.createStatusAction(statusHistory['new_dme_status_action']);
-            }
 
             this.props.updateBooking(this.state.booking.id, newBooking);
         }
@@ -3035,7 +3035,7 @@ class BookingPage extends Component {
                     toggleStatusHistorySlider={this.toggleShowStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
-                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
+                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
                     statusDetails={statusDetails}
                     statusActions={statusActions}
                     clientname={clientname}

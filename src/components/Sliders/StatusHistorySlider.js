@@ -98,13 +98,17 @@ class StatusHistorySlider extends React.Component {
                         statusHistory['fk_booking_id'] = booking.pk_booking_id;
                         statusHistory['event_time_stamp'] = moment(this.state.event_time_stamp).format('YYYY-MM-DD hh:mm:ss');
                         this.props.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput);
-                        this.setState({viewMode: 0, formInputs: {
-                            status_last: '',
-                            dme_status_detail: '',
-                            dme_status_action: '',
+                        this.setState({
+                            viewMode: 0, 
+                            saveMode: 0,
+                            formInputs: {
+                                status_last: '',
+                                dme_status_detail: '',
+                                dme_status_action: '',
+                            },
                             isShowStatusActionInput: false,
                             isShowStatusDetailInput: false,
-                        }});
+                        });
                     }
                 } else if (saveMode === 1) {
                     if (statusHistory['status_last'] === '') {
@@ -124,13 +128,17 @@ class StatusHistorySlider extends React.Component {
                             this.props.OnUpdateStatusHistory(statusHistory, false, isShowStatusDetailInput, isShowStatusActionInput);
                         }
 
-                        this.setState({viewMode: 0, formInputs: {
-                            status_last: '',
-                            dme_status_detail: '',
-                            dme_status_action: '',
+                        this.setState({
+                            viewMode: 0,
+                            saveMode: 0, 
+                            formInputs: {
+                                status_last: '',
+                                dme_status_detail: '',
+                                dme_status_action: '',
+                            },
                             isShowStatusActionInput: false,
                             isShowStatusDetailInput: false,
-                        }});
+                        });
                     }
                 }
             }
