@@ -370,6 +370,11 @@ class BookingPage extends Component {
                 result['e_qty_shortages'] = bookingLine.e_qty_shortages ? bookingLine.e_qty_shortages : 0;
                 result['e_qty_scanned_fp'] = bookingLine.e_qty_scanned_fp ? bookingLine.e_qty_scanned_fp : 0;
                 result['is_scanned'] = bookingLine.is_scanned;
+
+                // Calc
+                result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
+                result['e_qty_collected'] = result['e_qty'] - result['e_qty_awaiting_inventory'];
+
                 return result;
             });
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
