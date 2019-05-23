@@ -219,6 +219,7 @@ class LineTrackingSlider extends React.Component {
                 subtitle='Table view'
                 onRequestClose={toggleShowLineTrackingSlider}>
                 <div className="slider-content">
+                    <h1>Booking ID: {booking.b_bookingID_Visual}</h1>
                     <BootstrapTable
                         keyField='pk_lines_id'
                         data={ lines }
@@ -234,7 +235,7 @@ class LineTrackingSlider extends React.Component {
                         bootstrap4={ true }
                     />
                     <label>
-                        **Note any change to a fields value will be saved automatically upon exiting the field
+                        **Select lines and click button below to perform action
                     </label>
                     <br />
                     {

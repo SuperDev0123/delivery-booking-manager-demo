@@ -51,6 +51,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 toProcess: toProcess,
                 closed: closed,
                 missingLabels: missingLabels,
+                needUpdateLineAndLineDetail: true,
             };
         case SET_STATE:
             return {
