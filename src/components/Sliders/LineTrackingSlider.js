@@ -76,7 +76,7 @@ class LineTrackingSlider extends React.Component {
 
         const selectRow = {
             mode: 'checkbox',
-            clickToSelect: true,
+            clickToSelect: false,
             clickToEdit: true,
             selected: this.state.selected,
             onSelect: this.handleOnSelect,
