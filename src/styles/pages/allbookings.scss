@@ -665,3 +665,34 @@ p.status {
   white-space: nowrap;
   overflow: hidden;
 }
+
+/* The actual popup */
+.popup { 
+  .popuptext1 {
+    width: 110px;
+    background-color: #f4f5f6;
+    color: black;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    left: 50%;
+    margin-left: -42px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    button {
+      width: 100%;
+      padding: 2px;
+      margin-bottom: 5px;
+    }
+  }
+
+  /* Popup arrow */
+  .popuptext::after,
+  .popuptext1::after {
+
+  }
+}

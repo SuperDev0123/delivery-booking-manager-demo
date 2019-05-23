@@ -252,34 +252,6 @@ div.popup i
     margin-left: -60px;
 }
 
-/* The actual popup */
-.popup .popuptext1 {
-    width: 80px;
-    background-color: #f4f5f6;
-    color: black;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
-    top: 150%;
-    left: 50%;
-    margin-left: -42px;
-}
-
-/* Popup arrow */
-.popup .popuptext::after,
-.popup .popuptext1::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: transparent transparent black transparent;
-}
-
 /* Toggle this class - hide and show the popup */
 .popup .show {
     visibility: visible;

@@ -136,4 +136,3 @@ export const createStatusAction = (newStatusAction) => {
             .then(({ data }) => dispatch(successCreateStatusAction(data)))
             .catch((error) => dispatch(failedCreateStatusAction(error)));
 };
-

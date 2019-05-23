@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus } from '../actions/bookingActions';
+import { successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, setNeedUpdateLineAndLineDetail, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', newPod=false, newLabel=false) => {
@@ -332,4 +332,18 @@ export const changeBookingsStatus = (status, bookingIds) => {
         axios(options)
             .then(({ data }) => dispatch(successChangeBookingsStatus(data)))
             .catch((error) => dispatch(failedChangeBookingsStatus(error)));
+};
+
+export const calcCollected = (bookingIds, type) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/calc_collected/`,
+        data: {'bookignIds': bookingIds, 'type': type},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCalcCollected(data)))
+            .catch((error) => dispatch(failedCalcCollected(error)));
 };

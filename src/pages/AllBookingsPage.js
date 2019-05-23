@@ -17,7 +17,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
@@ -123,6 +123,7 @@ class AllBookingsPage extends React.Component {
         changeBookingsStatus: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
+        calcCollected: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -1028,6 +1029,20 @@ class AllBookingsPage extends React.Component {
         });
     }
 
+    onClickCalcCollected(type) {
+        const {selectedBookingIds} = this.state;
+
+        if (selectedBookingIds.length === 0) {
+            alert('Please select at least one booking!');
+        } else {
+            if (type === 'Calc') {
+                this.props.calcCollected(selectedBookingIds, 'Calc');
+            } else if (type === 'Clear') {
+                this.props.calcCollected(selectedBookingIds, 'Clear');
+            }
+        }
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname, isShowStatusLockModal, selectedBooking4StatusLock } = this.state;
 
@@ -1446,7 +1461,23 @@ class AllBookingsPage extends React.Component {
                                 {
                                     this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
-                                        <button className="popuptext1 btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                        <div className="popuptext1">
+                                            <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                            <button 
+                                                className="btn btn-primary" 
+                                                onClick={() => this.onClickCalcCollected('Calc')}
+                                                disabled={(selectedBookingIds.length > 0) ? '' : true}
+                                            >
+                                                Calc Collected
+                                            </button>
+                                            <button 
+                                                className="btn btn-primary" 
+                                                onClick={() => this.onClickCalcCollected('Clear')}
+                                                disabled={(selectedBookingIds.length > 0) ? '' : true}
+                                            >
+                                                Clear Collected
+                                            </button>
+                                        </div>
                                     </div>
                                 }
                             </div>
@@ -2091,6 +2122,7 @@ const mapDispatchToProps = (dispatch) => {
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
+        calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
     };
 };
 
