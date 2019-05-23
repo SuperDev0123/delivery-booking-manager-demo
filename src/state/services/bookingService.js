@@ -339,7 +339,7 @@ export const calcCollected = (bookingIds, type) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/calc_collected/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/calc_collected/`,
         data: {'bookignIds': bookingIds, 'type': type},
     };
     return dispatch =>
