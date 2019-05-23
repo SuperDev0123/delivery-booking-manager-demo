@@ -551,7 +551,7 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
-                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
+                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
                     this.setState({bAllComboboxViewOnlyonBooking: true});
                 } else {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
@@ -1936,7 +1936,7 @@ class BookingPage extends Component {
                                     >
                                         <option value="0">View</option>
                                         {
-                                            (isBookingSelected && !bAllComboboxViewOnlyonBooking) &&
+                                            (isBookingSelected && !bAllComboboxViewOnlyonBooking) && 
                                                 <option value="2">Edit</option>
                                         }
                                         <option value="1">New Form</option>
