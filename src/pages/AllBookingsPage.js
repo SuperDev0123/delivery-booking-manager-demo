@@ -1041,6 +1041,8 @@ class AllBookingsPage extends React.Component {
                 this.props.calcCollected(selectedBookingIds, 'Clear');
             }
         }
+
+        this.setState({selectedBookingIds: []});
     }
 
     render() {
@@ -1462,7 +1464,7 @@ class AllBookingsPage extends React.Component {
                                     this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
                                         <div className="popuptext1">
-                                            <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                            <button className="btn btn-primary none" onClick={() => this.onClickSTOrder()}>ST temp</button>
                                             <button 
                                                 className="btn btn-primary" 
                                                 onClick={() => this.onClickCalcCollected('Calc')}
