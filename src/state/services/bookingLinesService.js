@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine } from '../actions/bookingLineActions';
+import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine, successCalcCollected, failedCalcCollected } from '../actions/bookingLineActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookingLines = (pk_booking_id) => {
@@ -70,4 +70,18 @@ export const deleteBookingLine = (bookingLine) => {
         axios(options)
             .then(({ data }) => dispatch(successDeleteBookingLine(data)))
             .catch((error) => dispatch(failedDeleteBookingLine(error)));
+};
+
+export const calcCollected = (ids, type) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/calc_collected/`,
+        data: {'ids': ids, 'type': type},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCalcCollected(data)))
+            .catch((error) => dispatch(failedCalcCollected(error)));
 };

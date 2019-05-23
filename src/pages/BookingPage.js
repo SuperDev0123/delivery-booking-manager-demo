@@ -29,7 +29,7 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
-import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine } from '../state/services/bookingLinesService';
+import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -223,6 +223,7 @@ class BookingPage extends Component {
         createStatusAction: PropTypes.func.isRequired,
         createStatusDetail: PropTypes.func.isRequired,
         getAvailableCreators: PropTypes.func.isRequired,
+        calcCollected: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -373,7 +374,6 @@ class BookingPage extends Component {
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
-                result['e_qty_collected'] = result['e_qty'] - result['e_qty_awaiting_inventory'];
 
                 return result;
             });
@@ -3049,6 +3049,7 @@ class BookingPage extends Component {
                     clientname={clientname}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                     isBooked={bAllComboboxViewOnlyonBooking}
+                    calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
                 />
 
                 <StatusLockModal
@@ -3146,6 +3147,7 @@ const mapDispatchToProps = (dispatch) => {
         createStatusHistory: (statusHistory) => dispatch(createStatusHistory(statusHistory)),
         updateStatusHistory: (statusHistory) => dispatch(updateStatusHistory(statusHistory)),
         getStatusDetails: () => dispatch(getStatusDetails()),
+        calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         getStatusActions: () => dispatch(getStatusActions()),
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),

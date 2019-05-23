@@ -2122,7 +2122,7 @@ const mapDispatchToProps = (dispatch) => {
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
-        calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
+        calcCollected: (src, bookingIds, type) => dispatch(calcCollected(src, bookingIds, type)),
     };
 };
 

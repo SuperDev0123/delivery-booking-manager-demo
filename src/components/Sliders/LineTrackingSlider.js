@@ -5,8 +5,17 @@ import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import { Button } from 'reactstrap';
 
 class LineTrackingSlider extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected: [],
+        };
+    }
+
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         toggleShowLineTrackingSlider: PropTypes.func.isRequired,
@@ -15,6 +24,7 @@ class LineTrackingSlider extends React.Component {
         updateBookingLine: PropTypes.func.isRequired,
         isBooked: PropTypes.bool.isRequired,
         clientname: PropTypes.string.isRequired,
+        calcCollected: PropTypes.func.isRequired,
     };
 
     onClickEdit(oldValue, newValue, row, column) {
@@ -23,7 +33,6 @@ class LineTrackingSlider extends React.Component {
         let line = row;
         line[column.dataField] = parseInt(line[column.dataField]);
         line['e_qty_adjusted_delivered'] = line['e_qty_delivered'] - line['e_qty_damaged'] - line['e_qty_returned'] - line['e_qty_shortages'];
-        line['e_qty_collected'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
 
         if (line['e_1_Total_dimCubicMeter'] == 'NaN') {
             line['e_1_Total_dimCubicMeter'] = 0;
@@ -32,8 +41,47 @@ class LineTrackingSlider extends React.Component {
         this.props.updateBookingLine(line);
     }
 
+    handleBtnClick = (type) => {
+        this.props.calcCollected(this.state.selected, type);
+        this.setState({selected: []});
+    }
+
+    handleOnSelect = (row, isSelect) => {
+        if (isSelect) {
+            this.setState(() => ({
+                selected: [...this.state.selected, row.pk_lines_id]
+            }));
+        } else {
+            this.setState(() => ({
+                selected: this.state.selected.filter(x => x !== row.pk_lines_id)
+            }));
+        }
+    }
+
+    handleOnSelectAll = (isSelect, rows) => {
+        const ids = rows.map(r => r.pk_lines_id);
+        if (isSelect) {
+            this.setState(() => ({
+                selected: ids
+            }));
+        } else {
+            this.setState(() => ({
+                selected: []
+            }));
+        }
+    }
+
     render() {
         const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked, clientname } = this.props;
+
+        const selectRow = {
+            mode: 'checkbox',
+            clickToSelect: true,
+            clickToEdit: true,
+            selected: this.state.selected,
+            onSelect: this.handleOnSelect,
+            onSelectAll: this.handleOnSelectAll,
+        };
 
         const qtyDeliveryCell = (cell, row) => {
             return (
@@ -182,11 +230,32 @@ class LineTrackingSlider extends React.Component {
                                 afterSaveCell: (oldValue, newValue, row, column) => this.onClickEdit(oldValue, newValue, row, column)
                             })
                         }
+                        selectRow={ selectRow }
                         bootstrap4={ true }
                     />
                     <label>
                         **Note any change to a fields value will be saved automatically upon exiting the field
                     </label>
+                    <br />
+                    {
+                        (lines.length > 0) ?
+                            <label>
+                                <Button 
+                                    onClick={() => this.handleBtnClick('Calc')} 
+                                    disabled={(this.state.selected.length === 0) ? 'disabled' : ''}
+                                >
+                                    Set Collected Qty
+                                </Button>
+                                <Button 
+                                    onClick={() => this.handleBtnClick('Clear')}
+                                    disabled={(this.state.selected.length === 0) ? 'disabled' : ''}
+                                >
+                                    Set Collected 0
+                                </Button>
+                            </label>
+                            :
+                            null
+                    }
                 </div>
             </SlidingPane>
         );
