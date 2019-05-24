@@ -223,6 +223,7 @@ class BookingPage extends Component {
         createStatusDetail: PropTypes.func.isRequired,
         getAvailableCreators: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
+        bookingId: null,
     };
 
     componentDidMount() {
@@ -237,10 +238,10 @@ class BookingPage extends Component {
 
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
+
         if (bookingId != null) {
             this.props.getBookingWithFilter(bookingId, 'id');
-            this.props.getComms(bookingId);
-            this.setState({loading: true, curViewMode: 0});
+            this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
             this.props.getLatestBooking();
             this.setState({loading: true, curViewMode: 0});
@@ -248,13 +249,17 @@ class BookingPage extends Component {
             // this.props.getDeliverySuburbStrings('state', undefined);
         }
 
-        this.props.getAllBookingStatus();
-        this.props.getDMEClients();
-        this.props.getWarehouses();
-        this.props.getPackageTypes();
-        this.props.getStatusDetails();
-        this.props.getStatusActions();
-        this.props.getAvailableCreators();
+        let that = this;
+        setTimeout(() => { 
+            that.props.getAllBookingStatus();
+            that.props.getDMEClients();
+            that.props.getWarehouses();
+            that.props.getPackageTypes();
+            that.props.getStatusDetails();
+            that.props.getStatusActions();
+            that.props.getAvailableCreators();
+        }, 1000);
+
         Modal.setAppElement(this.el);
     }
 
@@ -346,7 +351,8 @@ class BookingPage extends Component {
         if (bookingLines) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
-            const bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
+            let bookingLinesListProduct = [];
+            bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
                 let result = {};
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
                 result['e_type_of_packaging'] = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
@@ -382,7 +388,8 @@ class BookingPage extends Component {
 
         if (bookingLineDetails) {
             const tempBookings = bookingLineDetails;
-            const bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
+            let bookingLineDetailsProduct = [];
+            bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
                 let result = {};
                 result['pk_id_lines_data'] = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
                 result['modelNumber'] = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
@@ -399,12 +406,12 @@ class BookingPage extends Component {
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
-        if (needUpdateBookingLines && booking && booking.pk_booking_id && !this.state.loading) {
+        if (needUpdateBookingLines && booking && booking.pk_booking_id) {
             this.setState({loadingBookingLine: true});
             this.props.getBookingLines(booking.pk_booking_id);
         }
 
-        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id && !this.state.loading) {
+        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
         }
@@ -426,8 +433,8 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
-        if ((!noBooking && booking && !isBookedBooking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
-            (!noBooking && booking && !isBookedBooking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
+        if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
+            (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
                 let formInputs = this.state.formInputs;
 
