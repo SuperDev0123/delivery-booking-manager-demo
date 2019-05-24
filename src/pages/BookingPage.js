@@ -351,15 +351,15 @@ class BookingPage extends Component {
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
                 result['e_type_of_packaging'] = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
                 result['e_item'] = bookingLine.e_item ? bookingLine.e_item : '';
-                result['e_qty'] = bookingLine.e_qty ? bookingLine.e_qty : '';
-                result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : '';
-                result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : '';
-                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight.toFixed(2) : '';
-                result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
-                result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : '';
-                result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : '';
-                result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : '';
-                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : '';
+                result['e_qty'] = bookingLine.e_qty ? bookingLine.e_qty : 0;
+                result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : 'Kgs';
+                result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : 0;
+                result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight.toFixed(2) : 0;
+                result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : 'CM';
+                result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : 0;
+                result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
+                result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
+                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : 0;
                 result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc ? bookingLine.total_2_cubic_mass_factor_calc.toFixed(2) : 0;
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
@@ -557,12 +557,12 @@ class BookingPage extends Component {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
-                if (this.state.loading && booking.pk_booking_id) {
-                    this.props.getBookingLines(booking.pk_booking_id);
-                    this.props.getBookingLineDetails(booking.pk_booking_id);
-                    this.props.getComms(booking.id);
-                    this.props.getBookingStatusHistory(booking.pk_booking_id);
-                }
+                // if (this.state.loading && booking.pk_booking_id) {
+                //     this.props.getBookingLines(booking.pk_booking_id);
+                //     this.props.getBookingLineDetails(booking.pk_booking_id);
+                //     this.props.getComms(booking.id);
+                //     this.props.getBookingStatusHistory(booking.pk_booking_id);
+                // }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
             } else {
@@ -1955,7 +1955,7 @@ class BookingPage extends Component {
                                         onChange={this.onChangeText.bind(this)} 
                                         onKeyPress={(e) => this.onKeyPress(e)} 
                                         placeholder="Enter Number(Enter)"
-                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail) ? 'disabled' : ''} 
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading) ? 'disabled' : ''} 
                                     />
                                 </div>
                                 <div className="user content none">

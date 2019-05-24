@@ -83,19 +83,6 @@ class LineTrackingSlider extends React.Component {
             onSelectAll: this.handleOnSelectAll,
         };
 
-        const qtyDeliveryCell = (cell, row) => {
-            return (
-                <div>
-                    {
-                        (booking.b_status === 'Delivered') ?
-                            row.e_qty
-                            :
-                            cell
-                    }
-                </div>
-            );
-        };
-
         const editableStyle = (cell, row) => {
             console.log('cell - ', cell, clientname);
             if (row.is_scanned && clientname !== 'dme') {
@@ -170,7 +157,6 @@ class LineTrackingSlider extends React.Component {
             }, {
                 dataField: 'e_qty_delivered',
                 text: 'Qty Delivered',
-                formatter: qtyDeliveryCell,
                 editable: false,
                 style: {
                     backgroundColor: 'lightgray',
