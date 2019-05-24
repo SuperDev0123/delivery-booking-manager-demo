@@ -1949,7 +1949,14 @@ class BookingPage extends Component {
                                     <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                 </div>
                                 <div className="col-sm-6 form-group">
-                                    <input className="form-control" type="text" onChange={this.onChangeText.bind(this)} onKeyPress={(e) => this.onKeyPress(e)} placeholder="Enter Number(Enter)" />
+                                    <input 
+                                        className="form-control" 
+                                        type="text" 
+                                        onChange={this.onChangeText.bind(this)} 
+                                        onKeyPress={(e) => this.onKeyPress(e)} 
+                                        placeholder="Enter Number(Enter)"
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail) ? 'disabled' : ''} 
+                                    />
                                 </div>
                                 <div className="user content none">
                                     <ul>
