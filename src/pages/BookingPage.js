@@ -557,12 +557,12 @@ class BookingPage extends Component {
                     this.setState({bAllComboboxViewOnlyonBooking: false});
                 }
 
-                // if (this.state.loading && booking.pk_booking_id) {
-                //     this.props.getBookingLines(booking.pk_booking_id);
-                //     this.props.getBookingLineDetails(booking.pk_booking_id);
-                //     this.props.getComms(booking.id);
-                //     this.props.getBookingStatusHistory(booking.pk_booking_id);
-                // }
+                if (this.state.loading && booking.pk_booking_id) {
+                    this.props.getBookingLines(booking.pk_booking_id);
+                    this.props.getBookingLineDetails(booking.pk_booking_id);
+                    this.props.getComms(booking.id);
+                    this.props.getBookingStatusHistory(booking.pk_booking_id);
+                }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
             } else {
