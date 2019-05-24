@@ -1,4 +1,4 @@
-import { SET_BOOKINGLINEDETAILS, FAILED_GET_BOOKINGLINEDETAILS, SUCCESS_CREATE_BOOKING_LINE_DETAIL, FAILED_CREATE_BOOKING_LINE_DETAIL, SUCCESS_UPDATE_BOOKING_LINE_DETAIL, FAILED_UPDATE_BOOKING_LINE_DETAIL, SUCCESS_DELETE_BOOKING_LINE_DETAIL, FAILED_DELETE_BOOKING_LINE_DETAIL } from '../constants/bookingLineDetailConstants';
+import { SET_BOOKINGLINEDETAILS, FAILED_GET_BOOKINGLINEDETAILS, SUCCESS_CREATE_BOOKING_LINE_DETAIL, FAILED_CREATE_BOOKING_LINE_DETAIL, SUCCESS_UPDATE_BOOKING_LINE_DETAIL, FAILED_UPDATE_BOOKING_LINE_DETAIL, SUCCESS_DELETE_BOOKING_LINE_DETAIL, FAILED_DELETE_BOOKING_LINE_DETAIL, RESET_FLAG_LINEDETAILS } from '../constants/bookingLineDetailConstants';
 
 const defaultState = {
     errorMessage: '',
@@ -7,6 +7,11 @@ const defaultState = {
 
 export const BookingLineDetailReducer = (state = defaultState, { type, errorMessage, bookingLineDetails }) => {
     switch (type) {
+        case RESET_FLAG_LINEDETAILS:
+            return {
+                ...state,
+                needUpdateBookingLineDetails: false,
+            };
         case SET_BOOKINGLINEDETAILS:
             return {
                 ...state,

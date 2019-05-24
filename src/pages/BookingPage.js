@@ -87,7 +87,7 @@ class BookingPage extends Component {
             deToState: {value: ''},
             deToSuburb: {value: ''},
             deToPostalCode: {value: ''},
-            bAllComboboxViewOnlyonBooking: false,
+            isBookedBooking: false,
             puTimeZone: null,
             deTimeZone: null,
             attachmentsHistory: [],
@@ -259,7 +259,8 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
+        const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -398,12 +399,12 @@ class BookingPage extends Component {
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
-        if (needUpdateBookingLines && booking && booking.pk_booking_id) {
+        if (needUpdateBookingLines && booking && booking.pk_booking_id && !this.state.loading) {
             this.setState({loadingBookingLine: true});
             this.props.getBookingLines(booking.pk_booking_id);
         }
 
-        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id) {
+        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id && !this.state.loading) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
         }
@@ -425,8 +426,8 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
-        if ((!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
-            (!noBooking && booking && !bAllComboboxViewOnlyonBooking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
+        if ((!noBooking && booking && !isBookedBooking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
+            (!noBooking && booking && !isBookedBooking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
                 let formInputs = this.state.formInputs;
 
@@ -544,9 +545,9 @@ class BookingPage extends Component {
                 });
 
                 if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
-                    this.setState({bAllComboboxViewOnlyonBooking: true});
+                    this.setState({isBookedBooking: true});
                 } else {
-                    this.setState({bAllComboboxViewOnlyonBooking: false});
+                    this.setState({isBookedBooking: false});
                 }
 
                 if (this.state.loading && booking.pk_booking_id) {
@@ -564,7 +565,7 @@ class BookingPage extends Component {
             }
         }
 
-        if (!bAllComboboxViewOnlyonBooking) {
+        if (!isBookedBooking) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -754,7 +755,7 @@ class BookingPage extends Component {
     }
 
     onHandleInput(e) {
-        if (this.state.bAllComboboxViewOnlyonBooking === false) {
+        if (this.state.isBookedBooking === false) {
             let {formInputs, booking} = this.state;
 
             formInputs[e.target.name] = e.target.value;
@@ -912,7 +913,7 @@ class BookingPage extends Component {
     }
 
     handleChangeState = (num, selectedOption) => {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+        if (this.state.isBookedBooking == false) {
             if (num === 0) {
                 this.props.getSuburbStrings('postalcode', selectedOption.label);
                 this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
@@ -924,7 +925,7 @@ class BookingPage extends Component {
     };
 
     handleChangePostalCode = (num, selectedOption) => {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+        if (this.state.isBookedBooking == false) {
             if (num === 0) {
                 this.props.getSuburbStrings('suburb', selectedOption.label);
                 this.setState({puPostalCode: selectedOption, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
@@ -936,7 +937,7 @@ class BookingPage extends Component {
     };
 
     handleChangeSuburb = (num, selectedOption) => {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+        if (this.state.isBookedBooking == false) {
             if (num === 0) {
                 this.setState({ puSuburb: selectedOption});    
             } else if (num === 1) {
@@ -977,7 +978,7 @@ class BookingPage extends Component {
     }
 
     displayNoOptionsMessage() {
-        if (this.state.bAllComboboxViewOnlyonBooking == true) {
+        if (this.state.isBookedBooking == true) {
             return 'No Editable';
         }
     }
@@ -1441,7 +1442,7 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+        if (this.state.isBookedBooking == false) {
             let bookingToUpdate = this.state.booking;
 
             bookingToUpdate.pu_Address_State = this.state.puState.label;
@@ -1457,7 +1458,7 @@ class BookingPage extends Component {
     }
 
     onClickConfirmBooking() {
-        if (this.state.bAllComboboxViewOnlyonBooking == false) {
+        if (this.state.isBookedBooking == false) {
             let bookingToUpdate = this.state.booking;
             bookingToUpdate.z_manual_booking_set_to_confirm = moment();
             bookingToUpdate.b_status = 'Ready for booking';
@@ -1558,7 +1559,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {bAllComboboxViewOnlyonBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1928,7 +1929,7 @@ class BookingPage extends Component {
                                     >
                                         <option value="0">View</option>
                                         {
-                                            (isBookingSelected && !bAllComboboxViewOnlyonBooking) && 
+                                            (isBookingSelected && !isBookedBooking) && 
                                                 <option value="2">Edit</option>
                                         }
                                         <option value="1">New Form</option>
@@ -1947,7 +1948,7 @@ class BookingPage extends Component {
                                         onChange={this.onChangeText.bind(this)} 
                                         onKeyPress={(e) => this.onKeyPress(e)} 
                                         placeholder="Enter Number(Enter)"
-                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading) ? 'disabled' : ''} 
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
                                     />
                                 </div>
                                 <div className="user content none">
@@ -2158,7 +2159,7 @@ class BookingPage extends Component {
                                                                             options={puStates}
                                                                             placeholder='select your state'
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick={bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick={isBookedBooking ? false : true}
                                                                         />
                                                                 }
                                                             </div>
@@ -2177,7 +2178,7 @@ class BookingPage extends Component {
                                                                             onChange={(e) => this.handleChangePostalCode(0, e)}
                                                                             options={puPostalCodes}
                                                                             placeholder='select your postal code'
-                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick = {isBookedBooking ? false : true}
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                                         />
                                                                 }
@@ -2197,7 +2198,7 @@ class BookingPage extends Component {
                                                                             onChange={(e) => this.handleChangeSuburb(0, e)}
                                                                             options={puSuburbs}
                                                                             placeholder='select your suburb'
-                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick = {isBookedBooking ? false : true}
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                                         />
                                                                 }
@@ -2447,7 +2448,7 @@ class BookingPage extends Component {
                                                                             options={deToStates}
                                                                             placeholder='select your state'
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick = {isBookedBooking ? false : true}
                                                                         />
                                                                 }
                                                             </div>
@@ -2467,7 +2468,7 @@ class BookingPage extends Component {
                                                                             options={deToPostalCodes}
                                                                             placeholder='select your postal code'
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick = {isBookedBooking ? false : true}
                                                                         />
                                                                 }
                                                             </div>
@@ -2487,7 +2488,7 @@ class BookingPage extends Component {
                                                                             options={deToSuburbs}
                                                                             placeholder='select your suburb'
                                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {bAllComboboxViewOnlyonBooking ? false : true}
+                                                                            openMenuOnClick = {isBookedBooking ? false : true}
                                                                         />
                                                                 }
                                                             </div>
@@ -2638,7 +2639,7 @@ class BookingPage extends Component {
                                                         <button 
                                                             className="btn btn-theme custom-theme" 
                                                             onClick={() => this.onClickConfirmBooking()}
-                                                            disabled={!isBookingSelected || bAllComboboxViewOnlyonBooking}
+                                                            disabled={!isBookingSelected || isBookedBooking}
                                                         >
                                                             <i className="fas fa-clipboard-check"></i>Confirm Booking
                                                         </button>
@@ -2692,11 +2693,11 @@ class BookingPage extends Component {
                                             </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <div className={bAllComboboxViewOnlyonBooking ? 'tab-inner not-editable' : 'tab-inner'}>
+                                            <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
                                                 <Button 
                                                     className="edit-lld-btn btn-primary" 
                                                     onClick={this.toggleShowLineSlider} 
-                                                    disabled={!isBookingSelected || bAllComboboxViewOnlyonBooking}
+                                                    disabled={!isBookingSelected || isBookedBooking}
                                                 >
                                                     Edit
                                                 </Button>
@@ -3047,7 +3048,7 @@ class BookingPage extends Component {
                     booking={booking}
                     clientname={clientname}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
-                    isBooked={bAllComboboxViewOnlyonBooking}
+                    isBooked={isBookedBooking}
                     calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
                 />
 

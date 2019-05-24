@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine, successCalcCollected, failedCalcCollected } from '../actions/bookingLineActions';
+import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine, successCalcCollected, failedCalcCollected, resetFlag } from '../actions/bookingLineActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookingLines = (pk_booking_id) => {
@@ -10,10 +10,12 @@ export const getBookingLines = (pk_booking_id) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/get_booking_lines/?pk_booking_id=` + pk_booking_id,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetFlag());
         axios(options)
             .then(({ data }) => dispatch(setBookingLines(data.booking_lines)))
             .catch((error) => dispatch(failedGetBookingLines(error)));
+    };
 };
 
 export const createBookingLine = (bookingLine) => {
