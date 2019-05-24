@@ -937,9 +937,9 @@ class AllBookingsPage extends React.Component {
 
     onClickLink(num, bookingId) {
         if (num === 0)
-            window.location.assign('/booking?bookingid=' + bookingId);
+            this.props.history.push('/booking?bookingid=' + bookingId);
         else if (num === 1)
-            window.location.assign('/comm?bookingid=' + bookingId);
+            this.props.history.push('/booking?bookingid=' + bookingId);
     }
 
     onClickStatusLock(booking) {

@@ -26,6 +26,10 @@ class EditablePopover extends React.Component {
         fieldName: PropTypes.string.isRequired,
     };
 
+    static defaultProps = {
+        isOpen: false,
+    };
+
     componentDidMount() {
         const { inputType, fieldName, booking } = this.props;
 

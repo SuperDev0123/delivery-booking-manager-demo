@@ -28,7 +28,7 @@ import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, resetNeedUpdateLineAndLineDetail, getLatestBooking, cancelBook } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, getAvailableCreators } from '../state/services/commService';
@@ -200,7 +200,6 @@ class BookingPage extends Component {
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
-        resetNeedUpdateLineAndLineDetail: PropTypes.func.isRequired,
         createComm: PropTypes.func.isRequired,
         getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
@@ -260,7 +259,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, needUpdateLineAndLineDetail, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, bAllComboboxViewOnlyonBooking, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -303,7 +302,7 @@ class BookingPage extends Component {
             this.setState({notes});
         }
 
-        if (needUpdateComms) {
+        if (needUpdateComms && booking) {
             this.props.getComms(booking.id);
         }
 
@@ -397,13 +396,6 @@ class BookingPage extends Component {
             });
 
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
-        }
-
-        if (needUpdateLineAndLineDetail && booking && booking.pk_booking_id) {
-            this.setState({loadingBookingLine: true});
-            this.props.resetNeedUpdateLineAndLineDetail();
-            this.props.getBookingLines(booking.pk_booking_id);
-            this.props.getBookingLineDetails(booking.pk_booking_id);
         }
 
         if (needUpdateBookingLines && booking && booking.pk_booking_id) {
@@ -3117,7 +3109,6 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
-        resetNeedUpdateLineAndLineDetail: () => dispatch(resetNeedUpdateLineAndLineDetail()),
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),
