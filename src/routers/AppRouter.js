@@ -13,7 +13,6 @@ import AllBookingsPage from '../pages/AllBookingsPage';
 import UploadPage from '../pages/UploadPage';
 import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
-import ReportsPage from '../pages/ReportsPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 
 export const AppRouter = () => (
@@ -31,7 +30,6 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/upload' component={UploadPage} />
                 <PrivateRoute exact path='/comm' component={CommPage} />
                 <PrivateRoute exact path='/pods' component={PodsPage} />
-                <PrivateRoute exact path='/reports' component={ReportsPage} />
                 <Redirect to='/' />
             </Switch>
             <Footer />
