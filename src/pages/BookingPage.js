@@ -1380,6 +1380,8 @@ class BookingPage extends Component {
     onChangeViewMode(e) {
         if (parseInt(e.target.value) === 1) {
             this.showCreateView();
+        }else{
+            window.location.reload();
         }
 
         this.setState({curViewMode: e.target.value, isBookingModified: false});
