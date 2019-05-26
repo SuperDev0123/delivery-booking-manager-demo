@@ -3055,6 +3055,7 @@ class BookingPage extends Component {
                     booking={booking}
                     clientname={clientname}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
+                    updateBooking={(id, booking) => this.props.updateBooking(id, booking)}
                     isBooked={isBookedBooking}
                     calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
                 />

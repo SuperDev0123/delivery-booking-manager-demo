@@ -2,7 +2,8 @@ import { SET_BOOKINGLINEDETAILS, FAILED_GET_BOOKINGLINEDETAILS, SUCCESS_CREATE_B
 
 const defaultState = {
     errorMessage: '',
-    needUpdateBookingLineDetails: true,
+    bookingLineDetails: null,
+    needUpdateBookingLineDetails: false,
 };
 
 export const BookingLineDetailReducer = (state = defaultState, { type, errorMessage, bookingLineDetails }) => {
@@ -10,6 +11,7 @@ export const BookingLineDetailReducer = (state = defaultState, { type, errorMess
         case RESET_FLAG_LINEDETAILS:
             return {
                 ...state,
+                bookingLineDetails: null,
                 needUpdateBookingLineDetails: false,
             };
         case SET_BOOKINGLINEDETAILS:

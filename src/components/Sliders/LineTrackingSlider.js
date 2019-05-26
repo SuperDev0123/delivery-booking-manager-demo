@@ -6,6 +6,7 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { Button } from 'reactstrap';
+import UpdateDeliveredConfirmModal from '../CommonModals/UpdateDeliveredConfirmModal';
 
 class LineTrackingSlider extends React.Component {
     constructor(props) {
@@ -13,7 +14,12 @@ class LineTrackingSlider extends React.Component {
 
         this.state = {
             selected: [],
+            isOpenUpdateDeliveredConfirmModal: false,
+            currentLine: null,
+            old_e_qty_awaiting_inventory: 0,
         };
+
+        this.toggleUpdateDeliveredConfirmModal = this.toggleUpdateDeliveredConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -22,6 +28,7 @@ class LineTrackingSlider extends React.Component {
         lines: PropTypes.array.isRequired,
         booking: PropTypes.object.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
+        updateBooking: PropTypes.func.isRequired,
         isBooked: PropTypes.bool.isRequired,
         clientname: PropTypes.string.isRequired,
         calcCollected: PropTypes.func.isRequired,
@@ -38,7 +45,12 @@ class LineTrackingSlider extends React.Component {
             line['e_1_Total_dimCubicMeter'] = 0;
         }
 
-        this.props.updateBookingLine(line);
+        if (column.dataField === 'e_qty_awaiting_inventory' && this.props.booking.tally_delivered > 0) {
+            this.setState({currentLine: line, old_e_qty_awaiting_inventory: oldValue});
+            this.toggleUpdateDeliveredConfirmModal();
+        } else {
+            this.props.updateBookingLine(line);
+        }
     }
 
     handleBtnClick = (type) => {
@@ -69,6 +81,27 @@ class LineTrackingSlider extends React.Component {
                 selected: []
             }));
         }
+    }
+
+    toggleUpdateDeliveredConfirmModal() {
+        this.setState(prevState => ({isOpenUpdateDeliveredConfirmModal: !prevState.isOpenUpdateDeliveredConfirmModal}));
+    }
+
+    onConfirmUpdateDelivered = () => {
+        let line = this.state.currentLine;
+        line['e_qty_delivered'] = line['e_qty'] - line['e_qty_awaiting_inventory'];
+        this.props.updateBookingLine(line);
+        let booking = this.props.booking;
+        booking['tally_delivered'] += 1;
+        this.props.updateBooking(booking.id, booking);
+        this.toggleUpdateDeliveredConfirmModal();
+    }
+
+    onCancelUpdateDelivered = () => {
+        let line = this.state.currentLine;
+        line['e_qty_awaiting_inventory'] = this.state.old_e_qty_awaiting_inventory;
+        this.props.updateBookingLine(line);
+        this.toggleUpdateDeliveredConfirmModal();
     }
 
     render() {
@@ -205,7 +238,7 @@ class LineTrackingSlider extends React.Component {
                 subtitle='Table view'
                 onRequestClose={toggleShowLineTrackingSlider}>
                 <div className="slider-content">
-                    <h1>Booking ID: {booking.b_bookingID_Visual}</h1>
+                    <h1>Booking ID: {booking.b_bookingID_Visual}{booking.tally_delivered > 0 ? ' - Delivered' : ''}</h1>
                     <BootstrapTable
                         keyField='pk_lines_id'
                         data={ lines }
@@ -244,6 +277,13 @@ class LineTrackingSlider extends React.Component {
                             null
                     }
                 </div>
+
+                <UpdateDeliveredConfirmModal
+                    isOpen={this.state.isOpenUpdateDeliveredConfirmModal}
+                    toggleUpdateDeliveredConfirmModal={this.toggleUpdateDeliveredConfirmModal}
+                    onConfirm={() => this.onConfirmUpdateDelivered()}
+                    onCancel={() => this.onCancelUpdateDelivered()}
+                />
             </SlidingPane>
         );
     }
