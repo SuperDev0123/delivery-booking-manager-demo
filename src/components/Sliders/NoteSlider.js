@@ -97,6 +97,11 @@ class NoteSlider extends React.Component {
         console.log('Type - ', type);
 
         let noteFormInputs = this.state.noteFormInputs;
+
+        if (_.isNull(noteFormInputs['note_date_updated'])) {
+            noteFormInputs['note_date_updated'] = moment().format('YYYY-MM-DD');
+        }
+
         noteFormInputs['note_date_updated'] = moment(noteFormInputs['note_date_updated']).add(number, 'd').toDate();
         this.setState({noteFormInputs});
     }
@@ -169,9 +174,9 @@ class NoteSlider extends React.Component {
         const notesList = notes.map((note, index) => {
             return (
                 <tr key={index}>
-                    <td>{note.dme_notes_no}</td>
-                    <td>{(note.note_date_updated && !_.isEmpty(note.note_date_updated)) ? moment(note.note_date_updated).format('DD MMM YYYY') : ''}</td>
-                    <td>{(note.note_time_updated && !_.isEmpty(note.note_time_updated)) ? note.note_time_updated : ''}</td>
+                    <td>{notes.length - index}</td>
+                    <td>{(note.note_date_updated && !_.isEmpty(note.note_date_updated)) ? moment(note.note_date_updated).format('DD MMM YYYY') : null}</td>
+                    <td>{(note.note_time_updated && !_.isEmpty(note.note_time_updated)) ? note.note_time_updated : null}</td>
                     <td>{note.username}</td>
                     <td>{note.dme_notes_type}</td>
                     <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id} onClick={() => this.onClickNoteDetailCell(note)}>
@@ -245,7 +250,7 @@ class NoteSlider extends React.Component {
                                     <div >
                                         <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', -1)}><i className="fa fa-minus"></i></div>
                                         <DatePicker
-                                            selected={moment(noteFormInputs['note_date_updated']).toDate()}
+                                            selected={noteFormInputs['note_date_updated'] ? moment(noteFormInputs['note_date_updated']).toDate() : null}
                                             onChange={(e) => this.onDateChange('note', e)}
                                             dateFormat="dd MMM yyyy"
                                         />
@@ -280,7 +285,9 @@ class NoteSlider extends React.Component {
                                         required 
                                         name="dme_notes_type" 
                                         onChange={(e) => this.handleModalInputChange('note', e)}
-                                        value = {noteFormInputs['dme_notes_type']} >
+                                        value = {noteFormInputs['dme_notes_type']}
+                                    >
+                                        <option value="" selected disabled hidden>Select a note type</option>
                                         <option value="Call">Call</option>
                                         <option value="Email">Email</option>
                                         <option value="SMS">SMS</option>
