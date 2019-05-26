@@ -615,7 +615,7 @@ class BookingPage extends Component {
                         postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
                     this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
                 } else {
-                    this.setState({puPostalCodes, loadingGeoPU: false});                    
+                    this.setState({puPostalCodes, loadingGeoPU: false});
                 }
             }
 
@@ -935,10 +935,10 @@ class BookingPage extends Component {
         if (this.state.isBookedBooking == false) {
             if (num === 0) {
                 this.props.getSuburbStrings('suburb', selectedOption.label);
-                this.setState({puPostalCode: selectedOption, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
+                this.setState({puPostalCode: selectedOption, puSuburb: null, puSuburbs: [], selectionChanged: 1, loadingGeoPU: true});
             } else if (num === 1) {
                 this.props.getDeliverySuburbStrings('suburb', selectedOption.label);
-                this.setState({deToPostalCode: selectedOption, deToSuburb: null, selectionChanged: 2, loadingGeoDeTo: true});
+                this.setState({deToPostalCode: selectedOption, deToSuburb: null, deToSuburbs: [], selectionChanged: 2, loadingGeoDeTo: true});
             }
         }
     };
