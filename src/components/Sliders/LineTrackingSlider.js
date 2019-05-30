@@ -183,10 +183,13 @@ class LineTrackingSlider extends React.Component {
                     cursor: 'not-allowed',
                 },
             }, {
-                dataField: 'e_qty_scanned_depot',
+                dataField: 'e_qty_scanned_fp',
                 text: 'Qty Scanned Depot',
                 editable: isEditable,
-                style: editableStyle,
+                style: {
+                    backgroundColor: 'lightgray',
+                    cursor: 'not-allowed',
+                },
             }, {
                 dataField: 'e_qty_delivered',
                 text: 'Qty Delivered',
@@ -218,14 +221,6 @@ class LineTrackingSlider extends React.Component {
                 text: 'Qty Shortages',
                 editable: isEditable,
                 style: editableStyle,
-            }, {
-                dataField: 'e_qty_scanned_fp',
-                text: 'Scanned',
-                editable: false,
-                style: {
-                    backgroundColor: 'lightgray',
-                    cursor: 'not-allowed',
-                },
             }
         ];
 
