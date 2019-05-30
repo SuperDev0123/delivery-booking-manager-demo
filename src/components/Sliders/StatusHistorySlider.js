@@ -89,10 +89,6 @@ class StatusHistorySlider extends React.Component {
                 if (saveMode === 0) {        
                     if (statusHistory['status_last'] === '') {
                         this.setState({errorMessage: 'Please select a status'});
-                    } else if (statusHistory['dme_status_action'] === '') {
-                        this.setState({errorMessage: 'Please select a status action'});
-                    } else if (statusHistory['dme_status_detail'] === '') {
-                        this.setState({errorMessage: 'Please select a status detail'});
                     } else {
                         statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                         statusHistory['fk_booking_id'] = booking.pk_booking_id;
