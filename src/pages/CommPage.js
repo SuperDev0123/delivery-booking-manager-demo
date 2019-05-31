@@ -43,6 +43,7 @@ class CommPage extends React.Component {
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
+        this.toggleShowNoteSlider = this.toggleShowNoteSlider.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.myRef = React.createRef();
@@ -296,6 +297,10 @@ class CommPage extends React.Component {
 
     toggleUpdateCommModal() {
         this.setState(prevState => ({isShowUpdateCommModal: !prevState.isShowUpdateCommModal}));
+    }
+
+    toggleShowNoteSlider() {
+        this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
     onUpdate(type) {
