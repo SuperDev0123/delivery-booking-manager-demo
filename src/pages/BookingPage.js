@@ -12,10 +12,9 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import Modal from 'react-modal';
 import CKEditor from 'ckeditor4-react';
+import DateTimePicker from 'react-datetime-picker';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
@@ -1168,37 +1167,25 @@ class BookingPage extends Component {
         if (commFormMode === 'create') {
             const {booking} = this.state;            
             let newComm = commFormInputs;
+
             this.resetCommForm();
             newComm['fk_booking_id'] = booking.pk_booking_id;
-            newComm['due_by_date'] = moment(newComm['due_by_date']).format('YYYY-MM-DD');
-
             this.props.createComm(newComm);
             this.toggleCreateCommModal();
         } else if (commFormMode === 'update') {
             const {selectedCommId} = this.state;
-            let newComm = commFormInputs;
             this.resetCommForm();
-            newComm['due_by_date'] = moment(newComm['due_by_date']).format('YYYY-MM-DD');
-
-            this.props.updateComm(selectedCommId, newComm);
+            this.props.updateComm(selectedCommId, commFormInputs);
             this.toggleUpdateCommModal();
         }
     }
 
-    onDateChange(type='comm', date) {
-        if (type === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs['due_by_date'] = moment(date).toDate();
-            this.setState({commFormInputs});
-        }
-    }
+    onChangeDateTime(date) {
+        const commFormInputs = this.state.commFormInputs;
 
-    onDatePlusOrMinus(type='comm', number) {
-        console.log('number - ', number, type);
-
-        let commFormInputs = this.state.commFormInputs;
-        const date = moment(commFormInputs['due_by_date']).add(number, 'd').toDate();
-        commFormInputs['due_by_date'] = date;
+        commFormInputs['due_date_time'] = date;
+        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+        commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
         this.setState({commFormInputs});
     }
 
@@ -1235,9 +1222,7 @@ class BookingPage extends Component {
         }
 
         const commFormInputs = comm;
-        commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
-        commFormInputs['due_by_date'] = moment(commFormInputs['due_by_date']).toDate();
-
+        commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
         if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
             commFormInputs['new_assigned_to'] = comm.assigned_to;
             commFormInputs['assigned_to'] = 'edit…';
@@ -1281,20 +1266,6 @@ class BookingPage extends Component {
 
         this.setState({ isNotePaneOpen: true, selectedCommId: id });
         this.props.getNotes(id);
-    }
-
-    clearDateOrTime(type, dateOrTime) {
-        let commFormInputs = this.state.commFormInputs;
-
-        if (type === 'comm') {
-            if (dateOrTime === 'date') {
-                commFormInputs['due_by_date'] = null;
-            } else if (dateOrTime === 'time') {
-                commFormInputs['due_by_time'] = null;
-            }
-
-            this.setState({commFormInputs});
-        }
     }
 
     onEditorChange(type, from, event) {
@@ -1824,59 +1795,6 @@ class BookingPage extends Component {
             success: this.handleUploadSuccess.bind(this),
             queuecomplete: this.handleUploadFinish.bind(this),
         };
-
-        const timeSelectOptions = [
-            {value: '06:00', label: '06:00'},
-            {value: '06:30', label: '06:30'},
-            {value: '07:00', label: '07:00'},
-            {value: '07:30', label: '07:30'},
-            {value: '08:00', label: '08:00'},
-            {value: '08:30', label: '08:30'},
-            {value: '09:00', label: '09:00'},
-            {value: '09:30', label: '09:30'},
-            {value: '10:00', label: '10:00'},
-            {value: '10:30', label: '10:30'},
-            {value: '11:00', label: '11:00'},
-            {value: '11:30', label: '11:30'},
-            {value: '12:00', label: '12:00'},
-            {value: '12:30', label: '12:30'},
-            {value: '13:00', label: '13:00'},
-            {value: '13:30', label: '13:30'},
-            {value: '14:00', label: '14:00'},
-            {value: '14:30', label: '14:30'},
-            {value: '15:00', label: '15:00'},
-            {value: '15:30', label: '15:30'},
-            {value: '16:00', label: '16:00'},
-            {value: '16:30', label: '16:30'},
-            {value: '17:00', label: '17:00'},
-            {value: '17:30', label: '17:30'},
-            {value: '18:00', label: '18:00'},
-            {value: '18:30', label: '18:30'},
-            {value: '19:00', label: '19:00'},
-            {value: '19:30', label: '19:30'},
-            {value: '20:00', label: '20:00'},
-            {value: '20:30', label: '20:30'},
-            {value: '21:00', label: '21:00'},
-            {value: '21:30', label: '21:30'},
-            {value: '22:00', label: '22:00'},
-            {value: '22:30', label: '22:30'},
-            {value: '23:00', label: '23:00'},
-            {value: '23:30', label: '23:30'},
-            {value: '00:00', label: '00:00'},
-            {value: '00:30', label: '00:30'},
-            {value: '01:00', label: '01:00'},
-            {value: '01:30', label: '01:30'},
-            {value: '02:00', label: '02:00'},
-            {value: '02:30', label: '02:30'},
-            {value: '03:00', label: '03:00'},
-            {value: '03:30', label: '03:30'},
-            {value: '04:00', label: '04:00'},
-            {value: '04:30', label: '04:30'},
-            {value: '05:00', label: '05:00'},
-            {value: '05:30', label: '05:30'},
-        ];
-
-        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
 
         const actionTaskOptionsList = actionTaskOptions.map((actionTaskOption, key) => {
             return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
@@ -2968,27 +2886,13 @@ class BookingPage extends Component {
                                 :
                                 null
                         }
-                        <div className="datetime date">
-                            <p>Due By Date</p>
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('comm', -1)}><i className="fa fa-minus"></i></div>
-                            <DatePicker
-                                selected={commFormInputs['due_by_date']}
-                                onChange={(e) => this.onDateChange('comm', e)}
-                                dateFormat="dd MMM yyyy"
+                        <label>
+                            <p>Due Date Time</p>
+                            <DateTimePicker
+                                onChange={(date) => this.onChangeDateTime(date)}
+                                value={commFormInputs['due_date_time']}
                             />
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('comm', 1)}><i className="fa fa-plus"></i></div>
-                            <button className="button-clear" onClick={() => this.clearDateOrTime('comm', 'date')}><i className="fa fa-times-circle"></i></button>
-                        </div>
-                        <div className="datetime time">
-                            <p>Due By Time</p>
-                            <Select
-                                value={due_by_time}
-                                onChange={(e) => this.handleCommModalInputChange({target: {name: 'due_by_time', value: e.value, type: 'input'}})}
-                                options={timeSelectOptions}
-                                placeholder='Select time'
-                            />
-                            <button className="button-clear" onClick={() => this.clearDateOrTime('comm', 'time')}><i className="fa fa-times-circle"></i></button>
-                        </div>
+                        </label>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onSubmitComm()}>{(commFormMode === 'create') ? 'Create' : 'Update'}</Button>{' '}

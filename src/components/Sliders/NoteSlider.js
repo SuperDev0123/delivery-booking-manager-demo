@@ -4,14 +4,11 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 import _ from 'lodash';
-import Select from 'react-select';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import CKEditor from 'ckeditor4-react';
+import DateTimePicker from 'react-datetime-picker';
 
-import {timeSelectOptions} from '../../commons/constants';
 import EditorPreview from '../EditorPreview/EditorPreview';
 import NoteDetailModal from '../CommonModals/NoteDetailModal';
 
@@ -89,43 +86,18 @@ class NoteSlider extends React.Component {
         }
 
         const noteFormInputs = note;
+        noteFormInputs['updated_timestamp'] = note.note_date_updated ? moment(note.note_date_updated + ' ' + note.note_time_updated, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
         this.setState({selectedNoteNo: index, selectedNoteId: note.id, noteFormInputs});
         this.setState({isShowNoteForm: true, noteFormMode: 'update'});
     }
 
-    onDatePlusOrMinus(type='comm', number) {
-        console.log('Type - ', type);
+    onChangeDateTime(date) {
+        const noteFormInputs = this.state.noteFormInputs;
 
-        let noteFormInputs = this.state.noteFormInputs;
-
-        if (_.isNull(noteFormInputs['note_date_updated'])) {
-            noteFormInputs['note_date_updated'] = moment().format('YYYY-MM-DD');
-        }
-
-        noteFormInputs['note_date_updated'] = moment(noteFormInputs['note_date_updated']).add(number, 'd').toDate();
+        noteFormInputs['updated_timestamp'] = date;
+        noteFormInputs['note_date_updated'] = moment(date).format('YYYY-MM-DD');
+        noteFormInputs['note_time_updated'] = moment(date).format('hh:mm:ss');
         this.setState({noteFormInputs});
-    }
-
-    clearDateOrTime(type, dateOrTime) {
-        let noteFormInputs = this.state.noteFormInputs;
-
-        if (type === 'note') {
-            if (dateOrTime === 'date') {
-                noteFormInputs['note_date_updated'] = null;
-            } else if (dateOrTime === 'time') {
-                noteFormInputs['note_time_updated'] = null;
-            }
-
-            this.setState({noteFormInputs});
-        }
-    }
-
-    onDateChange(type='comm', date) {
-        if (type === 'note') {
-            let noteFormInputs = this.state.noteFormInputs;
-            noteFormInputs['note_date_updated'] = moment(date).toDate();
-            this.setState({noteFormInputs});
-        }
     }
 
     onEditorChange(type, from, event) {
@@ -168,8 +140,6 @@ class NoteSlider extends React.Component {
     render() {
         const {selectedNoteNo, isShowNoteForm, noteFormInputs, noteFormMode, isShowNoteDetailModal, selectedNoteDetail} = this.state;
         const {isOpen, notes, username} = this.props;
-
-        const note_time_updated = {value: noteFormInputs['note_time_updated'], label: noteFormInputs['note_time_updated']};
 
         const notesList = notes.map((note, index) => {
             return (
@@ -245,29 +215,13 @@ class NoteSlider extends React.Component {
                                         value={(noteFormMode === 'create') ? notes.length + 1 : selectedNoteNo + 1} />
                                 </label>
                                 <br />
-                                <div className={(noteFormMode === 'update' && noteFormInputs['note_date_created'] !== noteFormInputs['note_date_updated']) ? 'datetime date orange-color' : 'datetime date' } >
-                                    <p>Date</p>
-                                    <div >
-                                        <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', -1)}><i className="fa fa-minus"></i></div>
-                                        <DatePicker
-                                            selected={noteFormInputs['note_date_updated'] ? moment(noteFormInputs['note_date_updated']).toDate() : null}
-                                            onChange={(e) => this.onDateChange('note', e)}
-                                            dateFormat="dd MMM yyyy"
-                                        />
-                                        <div className="date-adjust" onClick={() => this.onDatePlusOrMinus('note', 1)}><i className="fa fa-plus"></i></div>
-                                        <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'date')}><i className="fa fa-times-circle"></i></button>
-                                    </div>
-                                </div>
-                                <div className={(noteFormMode === 'update' && noteFormInputs['note_time_created'] !== noteFormInputs['note_time_updated']) ? 'datetime time orange-color' : 'datetime time' }>
-                                    <p>Time</p>
-                                    <Select
-                                        value={note_time_updated}
-                                        onChange={(e) => this.handleModalInputChange('note', {target: {name: 'note_time_updated', value: e.value, type: 'input'}})}
-                                        options={timeSelectOptions}
-                                        placeholder='Select time'
+                                <label>
+                                    <p>Updated Timestamp</p>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date)}
+                                        value={noteFormInputs['updated_timestamp']}
                                     />
-                                    <button className="button-clear" onClick={() => this.clearDateOrTime('note', 'time')}><i className="fa fa-times-circle"></i></button>
-                                </div>
+                                </label>
                                 <label>
                                     <p>User</p>
                                     <input 

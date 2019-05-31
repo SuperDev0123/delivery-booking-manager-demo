@@ -6,14 +6,11 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 import Modal from 'react-modal';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import Select from 'react-select';
 import LoadingOverlay from 'react-loading-overlay';
+import DateTimePicker from 'react-datetime-picker';
 
 import NoteSlider from '../components/Sliders/NoteSlider';
 
-import {timeSelectOptions} from '../commons/constants';
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
 import { getBookingWithFilter } from '../state/services/bookingService';
 import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms, getAvailableCreators } from '../state/services/commService';
@@ -286,8 +283,7 @@ class CommPage extends React.Component {
         if (type === 'comm') {
             const comm = data;
             const commFormInputs = comm;
-            commFormInputs['due_by_date'] = comm.due_by_date ? moment(comm.due_by_date).toDate() : comm.due_by_date;
-            commFormInputs['due_by_time'] = comm.due_by_time ? comm.due_by_time.substring(0, 5) : null;
+            commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
             this.setState({selectedCommId: comm.id, commFormInputs});
             this.toggleUpdateCommModal();
         } else if (type === 'note') {
@@ -343,9 +339,12 @@ class CommPage extends React.Component {
         }
     }
 
-    onDateChange(date) {
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs['due_by_date'] = moment(date).toDate();
+    onChangeDateTime(date) {
+        const commFormInputs = this.state.commFormInputs;
+
+        commFormInputs['due_date_time'] = date;
+        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+        commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
         this.setState({commFormInputs});
     }
 
@@ -354,8 +353,6 @@ class CommPage extends React.Component {
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
-
-        const due_by_time = {value: commFormInputs['due_by_time'], label: commFormInputs['due_by_time']};
 
         const commsList = comms.map((comm, index) => {
             return (
@@ -844,25 +841,13 @@ class CommPage extends React.Component {
                                 onChange={(e) => this.handleModalInputChange('comm', e)} />
                         </label>
                         <br />
-                        <div className="datetime">
-                            <p>Due By Date</p>
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
-                            <DatePicker
-                                selected={commFormInputs['due_by_date']}
-                                onChange={(e) => this.onDateChange(e)}
-                                dateFormat="dd MMM yyyy"
+                        <label>
+                            <p>Due Date Time</p>
+                            <DateTimePicker
+                                onChange={(date) => this.onChangeDateTime(date)}
+                                value={commFormInputs['due_date_time']}
                             />
-                            <div className="date-adjust" onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
-                        </div>
-                        <div className="datetime time">
-                            <p>Due By Time</p>
-                            <Select
-                                value={due_by_time}
-                                onChange={(e) => this.handleModalInputChange('comm', {target: {name: 'due_by_time', value: e.value, type: 'input'}})}
-                                options={timeSelectOptions}
-                                placeholder='Select time'
-                            />
-                        </div>
+                        </label>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onUpdate('comm')}>Update</Button>{' '}
