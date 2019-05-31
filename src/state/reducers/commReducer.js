@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS, FAILED_DELETE_NOTE, SUCCESS_DELETE_NOTE } from '../constants/commConstants';
 
 const defaultState = {
     comms: [],
@@ -93,6 +93,11 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 note: note,
                 needUpdateNotes: true,
             };
+        case SUCCESS_DELETE_NOTE:
+            return { 
+                ...state,
+                needUpdateNotes: true,
+            };
         case FAILED_UPDATE_NOTE:
             return { 
                 ...state, 
@@ -109,6 +114,7 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 availableCreators: availableCreators 
             };
         case FAILED_GET_AVAILABLE_CREATORS:
+        case FAILED_DELETE_NOTE:
             return {
                 ...state,
                 errorMessage: errorMessage,

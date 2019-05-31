@@ -36,6 +36,7 @@ class NoteSlider extends React.Component {
         toggleShowNoteSlider: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
+        deleteNote: PropTypes.func.isRequired,
         notes: PropTypes.array.isRequired,
         username: PropTypes.string.isRequired,
         selectedCommId: PropTypes.number.isRequired,
@@ -89,6 +90,11 @@ class NoteSlider extends React.Component {
         noteFormInputs['updated_timestamp'] = note.note_date_updated ? moment(note.note_date_updated + ' ' + note.note_time_updated, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
         this.setState({selectedNoteNo: index, selectedNoteId: note.id, noteFormInputs});
         this.setState({isShowNoteForm: true, noteFormMode: 'update'});
+    }
+
+    onDeleteBtnClick(type, data) {
+        console.log('Update type: ', type);
+        this.props.deleteNote(data.id);
     }
 
     onChangeDateTime(date) {
@@ -153,6 +159,7 @@ class NoteSlider extends React.Component {
                         <EditorPreview data={note.dme_notes} />
                     </td>
                     <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
+                    <td className="update"><Button color="danger" onClick={() => this.onDeleteBtnClick('note', note)}>Delete</Button></td>
                 </tr>
             );
         });
@@ -193,6 +200,9 @@ class NoteSlider extends React.Component {
                                             </th>
                                             <th className="" scope="col" nowrap>
                                                 <p>Update</p>
+                                            </th>
+                                            <th className="" scope="col" nowrap>
+                                                <p>Delete</p>
                                             </th>
                                         </tr>
                                         { notesList }

@@ -30,7 +30,7 @@ import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, getAvailableCreators } from '../state/services/commService';
+import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction } from '../state/services/extraService';
 
@@ -206,6 +206,7 @@ class BookingPage extends Component {
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
+        deleteNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getLatestBooking: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
@@ -2914,6 +2915,7 @@ class BookingPage extends Component {
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
+                    deleteNote={(id) => this.props.deleteNote(id)}
                     clientname={clientname}
                     selectedCommId={selectedCommId}
                 />
@@ -3047,6 +3049,7 @@ const mapDispatchToProps = (dispatch) => {
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
+        deleteNote: (id) => dispatch(deleteNote(id)),
         getWarehouses: () => dispatch(getWarehouses()),
         getLatestBooking: () => dispatch(getLatestBooking()),
         getDMEClients: () => dispatch(getDMEClients()),
