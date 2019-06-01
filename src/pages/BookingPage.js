@@ -86,7 +86,7 @@ class BookingPage extends Component {
             deToState: {value: ''},
             deToSuburb: {value: ''},
             deToPostalCode: {value: ''},
-            isBookedBooking: false,
+            isBookedBooking: null,
             puTimeZone: null,
             deTimeZone: null,
             attachmentsHistory: [],
@@ -572,7 +572,7 @@ class BookingPage extends Component {
             }
         }
 
-        if (!isBookedBooking) {
+        if (!_.isNull(isBookedBooking) && !isBookedBooking) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -597,8 +597,8 @@ class BookingPage extends Component {
 
                 this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
             } else {
-                this.props.getSuburbStrings('state', undefined);
                 this.setState({loadingGeoPU: true});
+                this.props.getSuburbStrings('state', undefined);
             }
 
             if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
