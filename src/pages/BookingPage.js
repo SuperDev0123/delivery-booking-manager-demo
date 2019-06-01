@@ -147,6 +147,8 @@ class BookingPage extends Component {
             statusActions: [],
             availableCreators: [],
             isShowStatusLockModal: false,
+            isShowStatusDetailInput: false,
+            isShowStatusActionInput: false,
         };
 
         this.djsConfig = {
@@ -511,6 +513,14 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
                 if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
                 else formInputs['b_status_API'] = '';
+                if (booking.dme_status_history_notes != null) formInputs['dme_status_history_notes'] = booking.dme_status_history_notes;
+                else formInputs['dme_status_history_notes'] = '';
+                if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
+                else formInputs['dme_status_detail'] = '';
+                if (booking.dme_status_action != null) formInputs['dme_status_action'] = booking.dme_status_action;
+                else formInputs['dme_status_action'] = '';
+                if (booking.dme_status_linked_reference_from_fp != null) formInputs['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
+                else formInputs['dme_status_linked_reference_from_fp'] = '';
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -764,6 +774,16 @@ class BookingPage extends Component {
     onHandleInput(e) {
         if (this.state.isBookedBooking === false) {
             let {formInputs, booking} = this.state;
+
+            if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
+                this.setState({isShowStatusDetailInput: true});
+            } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
+                this.setState({isShowStatusDetailInput: false});
+            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+                this.setState({isShowStatusActionInput: true});
+            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+                this.setState({isShowStatusDetailInput: false});
+            }
 
             formInputs[e.target.name] = e.target.value;
             booking[e.target.name] = e.target.value;
@@ -1381,58 +1401,95 @@ class BookingPage extends Component {
     }
 
     onClickCreateBooking() {
-        const {formInputs, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode} = this.state;
+        const {formInputs, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
 
-        if (clientPK === 0 || clientname !== 'dme') {
-            formInputs['z_CreatedByAccount'] = clientname;
-            formInputs['b_client_name'] = clientname;
-            formInputs['kf_client_id'] = clientId;
-            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-
-            if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
-                formInputs['b_client_warehouse_code'] = 'No - Warehouse';
-                formInputs['fk_client_warehouse'] = 100;
-            }
+        if (isShowStatusDetailInput && 
+            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) {
+            alert('Please select or input Status Detail');
+        } else if (isShowStatusActionInput && 
+            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
+            alert('Please select or input Status Action');
         } else {
-            formInputs['z_CreatedByAccount'] = 'dme';
-
-            let ind = 0;
-            for (let i = 0; i < dmeClients.length; i++) {
-                if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
-                    ind = i;
-                    break;
-                }
+            if (isShowStatusDetailInput) {
+                formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
+                this.props.createStatusDetail(formInputs['dme_status_detail']);
             }
 
-            formInputs['b_client_name'] = dmeClients[ind].company_name;
-            formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
-            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-        }
+            if (isShowStatusActionInput) {
+                formInputs['dme_status_action'] = formInputs['new_dme_status_action'];
+                this.props.createStatusAction(formInputs['dme_status_action']);
+            }
 
-        formInputs['pu_Address_State'] = puState ? puState.label : '';
-        formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
-        formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
-        formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
-        formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
-        formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
-        formInputs['b_status'] = 'Entered';
-        this.props.saveBooking(formInputs);
-        this.setState({curViewMode: 0});
+            if (clientPK === 0 || clientname !== 'dme') {
+                formInputs['z_CreatedByAccount'] = clientname;
+                formInputs['b_client_name'] = clientname;
+                formInputs['kf_client_id'] = clientId;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+
+                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
+                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+                    formInputs['fk_client_warehouse'] = 100;
+                }
+            } else {
+                formInputs['z_CreatedByAccount'] = 'dme';
+
+                let ind = 0;
+                for (let i = 0; i < dmeClients.length; i++) {
+                    if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
+                        ind = i;
+                        break;
+                    }
+                }
+
+                formInputs['b_client_name'] = dmeClients[ind].company_name;
+                formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+            }
+
+            formInputs['pu_Address_State'] = puState ? puState.label : '';
+            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
+            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
+            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
+            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
+            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+            formInputs['b_status'] = 'Entered';
+            this.props.saveBooking(formInputs);
+            this.setState({curViewMode: 0});
+        }
     }
 
     onClickUpdateBooking() {
         if (this.state.isBookedBooking == false) {
+            const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
             let bookingToUpdate = this.state.booking;
 
-            bookingToUpdate.pu_Address_State = this.state.puState.label;
-            bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
-            bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
-            bookingToUpdate.de_To_Address_State = this.state.deToState.label;
-            bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
-            bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+            if (isShowStatusDetailInput && 
+                (_.isNull(bookingToUpdate.new_dme_status_detail) || _.isEmpty(bookingToUpdate.new_dme_status_detail))) {
+                alert('Please select or input Status Detail');
+            } else if (isShowStatusActionInput && 
+                (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
+                alert('Please select or input Status Action');
+            } else {
+                if (isShowStatusDetailInput) {
+                    bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
+                    this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
+                }
 
-            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-            this.setState({loading: true, isBookingModified: false, curViewMode: 0});
+                if (isShowStatusActionInput) {
+                    bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
+                    this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
+                }
+
+                bookingToUpdate.pu_Address_State = this.state.puState.label;
+                bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
+                bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
+                bookingToUpdate.de_To_Address_State = this.state.deToState.label;
+                bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
+                bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+
+                this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+                this.setState({loading: true, isBookingModified: false, curViewMode: 0});
+            }
         }
     }
 
@@ -1450,46 +1507,29 @@ class BookingPage extends Component {
         this.toggleShowStatusHistorySlider();
     }
 
-    OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) {
+    OnCreateStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
-        newBooking.b_status = statusHistory['status_last'];
-        newBooking.dme_status_detail = statusHistory['dme_status_detail'];
-        newBooking.dme_status_action = statusHistory['dme_status_action'];
-        newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
-        
-        if (isShowStatusDetailInput) {
-            statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
-            this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
-        }
-        if (isShowStatusActionInput) {
-            statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
-            this.props.createStatusAction(statusHistory['new_dme_status_action']);
-        }
 
+        newBooking.b_status = statusHistory['status_last'];
         this.props.updateBooking(this.state.booking.id, newBooking);
+
+        statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
+        statusHistory['dme_status_action'] = newBooking.dme_status_action;
+        statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.createStatusHistory(statusHistory);
     }
 
-    OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) {
-        if (isShowStatusDetailInput) {
-            statusHistory['dme_status_detail'] = statusHistory['new_dme_status_detail'];
-            this.props.createStatusDetail(statusHistory['new_dme_status_detail']);
-        }
-        if (isShowStatusActionInput) {
-            statusHistory['dme_status_action'] = statusHistory['new_dme_status_action'];
-            this.props.createStatusAction(statusHistory['new_dme_status_action']);
-        }
-            
-        if (needToUpdateBooking) {
-            let newBooking = this.state.booking;
-            newBooking.b_status = statusHistory['status_last'];
-            newBooking.dme_status_detail = statusHistory['dme_status_detail'];
-            newBooking.dme_status_action = statusHistory['dme_status_action'];
-            newBooking.dme_status_linked_reference_from_fp = statusHistory['dme_status_linked_reference_from_fp'];
+    OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
+        let newBooking = this.state.booking;
 
+        if (needToUpdateBooking) {
+            newBooking.b_status = statusHistory['status_last'];
             this.props.updateBooking(this.state.booking.id, newBooking);
         }
 
+        // statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
+        // statusHistory['dme_status_action'] = newBooking.dme_status_action;
+        // statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.updateStatusHistory(statusHistory);
     }
 
@@ -1538,7 +1578,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
 
         const bookingLineColumns = [
             {
@@ -1814,6 +1854,14 @@ class BookingPage extends Component {
             );
         });
 
+        const statusActionOptions = statusActions.map((statusAction, key) => {
+            return (<option key={key} value={statusAction.dme_status_action}>{statusAction.dme_status_action}</option>);
+        });
+
+        const statusDetailOptions = statusDetails.map((statusDetail, key) => {
+            return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
+        });
+
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -1863,11 +1911,7 @@ class BookingPage extends Component {
                                 </div>
                             </div>
                             <div className="col-sm-6 pad-top-8">
-                                <div className="col-sm-3" onChange={this.getRadioValue.bind(this)}>
-                                    <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #<br />
-                                    <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
-                                </div>
-                                <div className="col-sm-6 form-group">
+                                <div className="float-r disp-inline-block form-group">
                                     <input 
                                         className="form-control" 
                                         type="text" 
@@ -1876,6 +1920,10 @@ class BookingPage extends Component {
                                         placeholder="Enter Number(Enter)"
                                         disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
                                     />
+                                </div>
+                                <div className="float-r disp-inline-block mar-right-20" onChange={this.getRadioValue.bind(this)}>
+                                    <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #<br />
+                                    <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                 </div>
                                 <div className="user content none">
                                     <ul>
@@ -1903,7 +1951,14 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-3">
-                                            <p className="text-white">DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
+                                            <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">
+                                                <i className="fa fa-caret-left"></i>
+                                            </button>
+                                            <p className="text-white disp-inline-block dme-id">DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
+                                            <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">
+                                                <i className="fa fa-caret-right"></i>
+                                            </button>
+                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
                                         </div>
                                         <div className="col-sm-1">
                                             <p className="text-white text-center">
@@ -1915,7 +1970,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-5">
                                             <ul className="grid-head none">
-                                                <li><button className="btn btn-light btn-theme"> Preview</button></li>
+                                                <li><button className="btn btn-light btn-theme">Preview</button></li>
                                                 <li><button className="btn btn-light btn-theme">Email</button></li>
                                                 <li><button className="btn btn-light btn-theme">Print PDF</button></li>
                                                 <li><button className="btn btn-light btn-theme">Undo</button></li>
@@ -1934,63 +1989,142 @@ class BookingPage extends Component {
                                 </div>
 
                                 <div className="inner-text">
-                                    <form action="">
-                                        <div className="row col-sm-6">
-                                            <div className="col-sm-4 form-group">
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_client_name']}</p>
-                                                        :
-                                                        <input 
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="BioPAK" 
-                                                            name="b_client_name" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
-                                                            disabled='disabled' />
-                                                }
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                        :
-                                                        <Select
-                                                            value={currentWarehouseCodeOption}
-                                                            onChange={(e) => this.handleChangeWarehouse(e)}
-                                                            options={warehouseCodeOptions}
-                                                            placeholder='select warehouse'
-                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                        />
-                                                }
-                                            </div>
-                                            <div className='col-sm-4 form-group main-form-group'>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
-                                                        :
-                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
-                                                }
-                                            </div>
-                                            <div className="col-sm-4 form-group main-form-group">
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['booking_Created_For']}</p>
-                                                        :
-                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
-                                                }
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
-                                                        :
-                                                        <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
-                                                }
-                                            </div>
+                                    <div className="row col-sm-6">
+                                        <div className="col-sm-4 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_client_name']}</p>
+                                                    :
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="BioPAK" 
+                                                        name="b_client_name" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
+                                                        disabled='disabled' />
+                                            }
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                    :
+                                                    <Select
+                                                        value={currentWarehouseCodeOption}
+                                                        onChange={(e) => this.handleChangeWarehouse(e)}
+                                                        options={warehouseCodeOptions}
+                                                        placeholder='select warehouse'
+                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                    />
+                                            }
                                         </div>
-                                        <div className="col-sm-3 float-right">
-                                            <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0}   className="btn btn-theme prev-btn">Prev</button>
-                                            <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">Next</button>
-                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
+                                        <div className='col-sm-4 form-group main-form-group'>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
+                                                    :
+                                                    <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
+                                            }
                                         </div>
-                                    </form>
+                                        <div className="col-sm-4 form-group main-form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['booking_Created_For']}</p>
+                                                    :
+                                                    <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
+                                            }
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
+                                                    :
+                                                    <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div className="row col-sm-6 status-history-form">
+                                        <div className="col-sm-4 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['dme_status_history_notes']}</p>
+                                                    :
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="Status History Notes" 
+                                                        name="dme_status_history_notes" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            }
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
+                                                    :
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="Linked Reference" 
+                                                        name="dme_status_linked_reference_from_fp" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            }     
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['dme_status_detail']}</p>
+                                                    :
+                                                    <select
+                                                        name="dme_status_detail"
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        value = {formInputs['dme_status_detail']}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a status detail</option>
+                                                        {statusDetailOptions}
+                                                        <option value={'other'}>Other</option>
+                                                    </select>
+                                            }
+                                            {
+                                                (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="New Status Detail"
+                                                        name="new_dme_status_detail" 
+                                                        value = {formInputs['new_dme_status_detail']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />    
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['dme_status_action']}</p>
+                                                    :
+                                                    <select
+                                                        name="dme_status_action"
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        value = {formInputs['dme_status_action']}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a status action</option>
+                                                        {statusActionOptions}
+                                                        <option value={'other'}>Other</option>
+                                                    </select>
+                                            }
+                                            {
+                                                (isShowStatusActionInput && parseInt(curViewMode) !== 0) ?
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="New Status Action"
+                                                        name="new_dme_status_action" 
+                                                        value = {formInputs['new_dme_status_action']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />    
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                    </div>
                                     <div className="clearfix"></div>
                                 </div>
 
@@ -2949,8 +3083,6 @@ class BookingPage extends Component {
                     allBookingStatus={allBookingStatus}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
-                    statusDetails={statusDetails}
-                    statusActions={statusActions}
                     clientname={clientname}
                 />
 

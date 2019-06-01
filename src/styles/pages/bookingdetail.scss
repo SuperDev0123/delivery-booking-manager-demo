@@ -1,6 +1,13 @@
 .prev-btn,
 .next-btn {
     border: 1px solid grey;
+    padding: 0px 12px;
+	font-size: 23px;
+}
+
+p.dme-id {
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 .not-editable {
@@ -537,5 +544,26 @@ p.lock-status {
 		li {
 			cursor: pointer;
 		}
+	}
+}
+
+.float-r {
+	float: right;
+}
+
+.float-l {
+	float: left;
+}
+
+.mar-right-20 {
+	margin-right: 20px;
+}
+
+.status-history-form {
+	select {
+		height: 30px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+		width: 175px;
 	}
 }
