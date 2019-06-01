@@ -63,6 +63,19 @@
       width: 39%;
     }
   }
+
+  .condition-div {
+    z-index: 1;
+    margin-bottom: 10px;
+
+    select {
+      margin-left: 15px;
+    }
+
+    button {
+      margin-left: 20px;
+    }
+  }
 }
 
 $table_body_height: 100%;

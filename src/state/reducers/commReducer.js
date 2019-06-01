@@ -1,4 +1,4 @@
-import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS, FAILED_DELETE_NOTE, SUCCESS_DELETE_NOTE } from '../constants/commConstants';
+import { SET_COMMS, FAILED_GET_COMMS, SUCCESS_UPDATE_COMM, FAILED_UPDATE_COMM, SET_LOCAL_FILTER_SORT_FIELD, SET_LOCAL_FILTER_SORT_TYPE, SET_LOCAL_FILTER_COLUMNFILTER, SUCCESS_GET_NOTES, FAILED_GET_NOTES, SUCCESS_CREATE_NOTE, FAILED_CREATE_NOTE, SUCCESS_UPDATE_NOTE, FAILED_UPDATE_NOTE, SET_ALL_LOCAL_FILTER, SET_NEEDUPDATECOMMS, SUCCESS_GET_AVAILABLE_CREATORS, FAILED_GET_AVAILABLE_CREATORS, FAILED_DELETE_NOTE, SUCCESS_DELETE_NOTE, SET_LOCAL_FILTER_SORTBYDATE, SET_LOCAL_FILTER_DROPDOWN } from '../constants/commConstants';
 
 const defaultState = {
     comms: [],
@@ -11,9 +11,12 @@ const defaultState = {
     sortCommsField: 'id',
     sortBookingsField: '',
     availableCreators: [],
+    simpleSearchKeyword: '',
+    sortByDate: false,
+    dropdownFilter: 'All',
 };
 
-export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, bookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword, availableCreators }) => {
+export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, bookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword, availableCreators, sortByDate, dropdownFilter }) => {
     switch (type) {
         case SET_COMMS:
             return { 
@@ -57,12 +60,26 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 sortType,
                 columnFilters,
                 simpleSearchKeyword,
+                sortByDate,
+                dropdownFilter,
                 needUpdateComms: true,
             };
         case SET_LOCAL_FILTER_COLUMNFILTER:
             return {
                 ...state,
                 columnFilters: columnFilters,
+                needUpdateComms: true,
+            };
+        case SET_LOCAL_FILTER_SORTBYDATE:
+            return {
+                ...state,
+                sortByDate: sortByDate,
+                needUpdateComms: true,
+            };
+        case SET_LOCAL_FILTER_DROPDOWN:
+            return {
+                ...state,
+                dropdownFilter: dropdownFilter,
                 needUpdateComms: true,
             };
         case SUCCESS_GET_NOTES:

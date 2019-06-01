@@ -40,6 +40,8 @@ class CommPage extends React.Component {
             commFormInputs: {},
             loading: false,
             availableCreators: [],
+            dropdownFilter: 'All',
+            sortByDate: false,
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
@@ -93,7 +95,7 @@ class CommPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username } = newProps;
+        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username, sortByDate, dropdownFilter } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -125,7 +127,7 @@ class CommPage extends React.Component {
 
         if (needUpdateComms) {
             this.setState({loading: true});
-            this.props.getComms(null, sortField, sortType, columnFilters, simpleSearchKeyword);
+            this.props.getComms(null, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter);
         } else {
             this.setState({loading: false});
         }
@@ -165,9 +167,9 @@ class CommPage extends React.Component {
         const {simpleSearchKeyword} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
-            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, '');
+            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, '', false, 'All');
         } else {
-            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, simpleSearchKeyword);
+            this.props.setAllGetCommsFilter(null, 'id', 'comms', {}, simpleSearchKeyword, false, 'All');
         }
 
         this.setState({columnFilters: {}, sortType: 'comms', sortField: 'id'});
@@ -176,25 +178,25 @@ class CommPage extends React.Component {
     onChangeSortField(fieldName, sortType) {
         let sortField = this.state.sortField;
         let sortDirection = this.state.sortDirection;
-        const {columnFilters} = this.state;
+        const {columnFilters, dropdownFilter} = this.state;
 
         if (fieldName === sortField)
             sortDirection = -1 * sortDirection;
         else
             sortDirection = -1;
 
-        this.setState({sortField: fieldName, sortDirection, sortType});
+        this.setState({sortField: fieldName, sortDirection, sortType, sortByDate: false});
 
         if (sortType === 'comms') {
             if (sortDirection < 0)
-                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters);
+                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters, '', false, dropdownFilter);
             else
-                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters);
+                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters, '', false, dropdownFilter);
         } else if (sortType === 'bookings') {
             if (sortDirection < 0)
-                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters);
+                this.props.setAllGetCommsFilter(null, '-' + fieldName, sortType, columnFilters, '', false, dropdownFilter);
             else
-                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters);
+                this.props.setAllGetCommsFilter(null, fieldName, sortType, columnFilters, '', false, dropdownFilter);
         }
     }
 
@@ -353,8 +355,18 @@ class CommPage extends React.Component {
         this.setState({commFormInputs});
     }
 
+    onDropdownFilterChange(event) {
+        this.setState({dropdownFilter: event.target.value});
+        this.props.setGetCommsFilter('dropdownFilter', event.target.value);
+    }
+
+    onClickByDate() {
+        this.setState({sortByDate: true});
+        this.props.setGetCommsFilter('sortByDate', true);
+    }
+
     render() {
-        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId, availableCreators, username } = this.state;
+        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId, availableCreators, username, dropdownFilter, sortByDate } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -417,6 +429,25 @@ class CommPage extends React.Component {
                             }
                         </div>
                     </div>
+                </div>
+                <div className="condition-div col-md-12">
+                    <select
+                        className="dropdownFilter"
+                        name="dropdownFilter"
+                        onChange={(e) => this.onDropdownFilterChange(e)}
+                        value = {dropdownFilter}
+                    >
+                        <option value="" selected disabled hidden>Select view option</option>
+                        <option value='All'>All</option>
+                        <option value='Opened'>Opened</option>
+                    </select>
+                    <Button 
+                        color="primary" 
+                        onClick={() => this.onClickByDate()}
+                        disabled={(sortByDate) ? 'disabled' : ''}
+                    >
+                        By Date
+                    </Button>
                 </div>
                 <LoadingOverlay
                     active={loading}
@@ -874,6 +905,8 @@ const mapStateToProps = (state) => {
         sortType: state.comm.sortType,
         simpleSearchKeyword: state.comm.simpleSearchKeyword,
         columnFilters: state.comm.columnFilters,
+        sortByDate: state.comm.sortByDate,
+        dropdownFilter: state.comm.dropdownFilter,
         needUpdateComms: state.comm.needUpdateComms,
         notes: state.comm.notes,
         needUpdateNotes: state.comm.needUpdateNotes,
@@ -889,11 +922,11 @@ const mapDispatchToProps = (dispatch) => {
         getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
-        setAllGetCommsFilter: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) => dispatch(setAllGetCommsFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword)),
+        setAllGetCommsFilter: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter) => dispatch(setAllGetCommsFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
-        getComms: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword) => dispatch(getComms(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword)),
+        getComms: (bookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter) => dispatch(getComms(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter)),
         setNeedUpdateComms: (boolFlag) => dispatch(setNeedUpdateComms(boolFlag)),
         getAvailableCreators: () => dispatch(getAvailableCreators()),
     };
