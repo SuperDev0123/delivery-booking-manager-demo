@@ -21,6 +21,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
+import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
@@ -149,6 +150,7 @@ class BookingPage extends Component {
             isShowStatusLockModal: false,
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
+            isShowStatusNoteModal: false,
         };
 
         this.djsConfig = {
@@ -174,6 +176,7 @@ class BookingPage extends Component {
         this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
         this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
+        this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
     }
 
     static propTypes = {
@@ -1327,6 +1330,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
+    toggleShowStatusNoteModal() {
+        this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal}));
+    }
+
     toggleShowStatusHistorySlider() {
         const { isBookingSelected } = this.state;
 
@@ -1575,6 +1582,16 @@ class BookingPage extends Component {
     onClickBottomTap(e, activeTabInd) {
         e.preventDefault();
         this.setState({activeTabInd});
+    }
+
+    onUpdateStatusNote(note) {
+        let newBooking = this.state.booking;
+        let formInputs = this.state.formInputs;
+
+        newBooking.dme_status_history_notes = note;
+        formInputs['dme_status_history_notes'] = note;
+        this.setState({booking: newBooking, formInputs});
+        this.toggleShowStatusNoteModal();
     }
 
     render() {
@@ -2043,32 +2060,6 @@ class BookingPage extends Component {
                                         <div className="col-sm-4 form-group">
                                             {
                                                 (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['dme_status_history_notes']}</p>
-                                                    :
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="Status History Notes" 
-                                                        name="dme_status_history_notes" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                            }
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
-                                                    :
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="Linked Reference" 
-                                                        name="dme_status_linked_reference_from_fp" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                            }     
-                                        </div>
-                                        <div className="col-sm-4 form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['dme_status_detail']}</p>
                                                     :
                                                     <select
@@ -2123,6 +2114,37 @@ class BookingPage extends Component {
                                                     :
                                                     null
                                             }
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p 
+                                                        className="show-mode" 
+                                                        onClick={() => this.toggleShowStatusNoteModal()}
+                                                    >
+                                                        {formInputs['dme_status_history_notes']}
+                                                    </p>
+                                                    :
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="Linked Reference" 
+                                                        name="dme_status_linked_reference_from_fp" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                        onClick={() => this.toggleShowStatusNoteModal()}/>
+                                            }
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
+                                                    :
+                                                    <input 
+                                                        className="form-control height-40p" 
+                                                        type="text" 
+                                                        placeholder="Linked Reference" 
+                                                        name="dme_status_linked_reference_from_fp" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            }     
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
@@ -3103,6 +3125,14 @@ class BookingPage extends Component {
                     toggleShowStatusLockModal={this.toggleShowStatusLockModal}
                     booking={booking}
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
+                />
+
+                <StatusNoteModal
+                    isShowStatusNoteModal={this.state.isShowStatusNoteModal}
+                    toggleShowStatusNoteModal={this.toggleShowStatusNoteModal}
+                    onUpdateStatusNote={(note) => this.onUpdateStatusNote(note)}
+                    note={booking.dme_status_history_notes}
+                    isEditable={(curViewMode===0) ? false : true}
                 />
             </div>
         );
