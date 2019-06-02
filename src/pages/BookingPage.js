@@ -2006,145 +2006,178 @@ class BookingPage extends Component {
                                 </div>
 
                                 <div className="inner-text">
-                                    <div className="row col-sm-6">
+                                    <div className="row col-sm-6 booking-form-01">
                                         <div className="col-sm-4 form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_client_name']}</p>
-                                                    :
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="BioPAK" 
-                                                        name="b_client_name" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
-                                                        disabled='disabled' />
-                                            }
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                    :
-                                                    <Select
-                                                        value={currentWarehouseCodeOption}
-                                                        onChange={(e) => this.handleChangeWarehouse(e)}
-                                                        options={warehouseCodeOptions}
-                                                        placeholder='select warehouse'
-                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                    />
-                                            }
+                                            <div>
+                                                <span>Client Name</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_client_name']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="BioPAK" 
+                                                            name="b_client_name" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
+                                                            disabled='disabled' />
+                                                }
+                                            </div>
+                                            <div>
+                                                <span>Warehouse Code</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                        :
+                                                        <Select
+                                                            value={currentWarehouseCodeOption}
+                                                            onChange={(e) => this.handleChangeWarehouse(e)}
+                                                            options={warehouseCodeOptions}
+                                                            placeholder='select warehouse'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                            </div>
                                         </div>
-                                        <div className='col-sm-4 form-group main-form-group'>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
-                                                    :
-                                                    <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
-                                            }
+                                        <div className='col-sm-4 form-group'>
+                                            <div>
+                                                <span>Warehouse Name</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
+                                                        :
+                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
+                                                }
+                                            </div>
                                         </div>
-                                        <div className="col-sm-4 form-group main-form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['booking_Created_For']}</p>
-                                                    :
-                                                    <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
-                                            }
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
-                                                    :
-                                                    <input className="form-control" type="text" placeholder="contact" name="booking_Created_For" value = {formInputs['booking_Created_For']} />
-                                            }
+                                        <div className="col-sm-4 form-group">
+                                            <div>
+                                                <span>Contact PU Email</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['pu_Email']}</p>
+                                                        :
+                                                        <input className="form-control" type="text" placeholder="@email.com" name="pu_Email" value = {formInputs['pu_Email']} />
+                                                }
+                                            </div>
+                                            <div>
+                                                <span>Contact DE Email</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['de_Email']}</p>
+                                                        :
+                                                        <input className="form-control" type="text" placeholder="@email.com" name="de_Email" value = {formInputs['de_Email']} />
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="row col-sm-6 status-history-form">
                                         <div className="col-sm-4 form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['dme_status_detail']}</p>
-                                                    :
-                                                    <select
-                                                        name="dme_status_detail"
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        value = {formInputs['dme_status_detail']}
-                                                    >
-                                                        <option value="" selected disabled hidden>Select a status detail</option>
-                                                        {statusDetailOptions}
-                                                        <option value={'other'}>Other</option>
-                                                    </select>
-                                            }
+                                            <div>
+                                                <span>Status Detail</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['dme_status_detail']}</p>
+                                                        :
+                                                        <select
+                                                            name="dme_status_detail"
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            value = {formInputs['dme_status_detail']}
+                                                        >
+                                                            <option value="" selected disabled hidden>Select a status detail</option>
+                                                            {statusDetailOptions}
+                                                            <option value={'other'}>Other</option>
+                                                        </select>
+                                                }
+                                            </div>
                                             {
                                                 (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="New Status Detail"
-                                                        name="new_dme_status_detail" 
-                                                        value = {formInputs['new_dme_status_detail']}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />    
+                                                    <div>
+                                                        <span>New Status Detail</span>
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="New Status Detail"
+                                                            name="new_dme_status_detail" 
+                                                            value = {formInputs['new_dme_status_detail']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                    </div>
                                                     :
                                                     null
                                             }
                                         </div>
                                         <div className="col-sm-4 form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['dme_status_action']}</p>
-                                                    :
-                                                    <select
-                                                        name="dme_status_action"
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        value = {formInputs['dme_status_action']}
-                                                    >
-                                                        <option value="" selected disabled hidden>Select a status action</option>
-                                                        {statusActionOptions}
-                                                        <option value={'other'}>Other</option>
-                                                    </select>
-                                            }
+                                            <div>
+                                                <span>Status Action</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['dme_status_action']}</p>
+                                                        :
+                                                        <select
+                                                            name="dme_status_action"
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            value = {formInputs['dme_status_action']}
+                                                        >
+                                                            <option value="" selected disabled hidden>Select a status action</option>
+                                                            {statusActionOptions}
+                                                            <option value={'other'}>Other</option>
+                                                        </select>
+                                                }
+                                            </div>
                                             {
                                                 (isShowStatusActionInput && parseInt(curViewMode) !== 0) ?
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="New Status Action"
-                                                        name="new_dme_status_action" 
-                                                        value = {formInputs['new_dme_status_action']}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />    
+                                                    <div>
+                                                        <span>New Status Detail</span>
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="New Status Action"
+                                                            name="new_dme_status_action" 
+                                                            value = {formInputs['new_dme_status_action']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                    </div>
                                                     :
                                                     null
                                             }
                                         </div>
                                         <div className="col-sm-4 form-group">
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p 
-                                                        className="show-mode" 
-                                                        onClick={() => this.toggleShowStatusNoteModal()}
-                                                    >
-                                                        {formInputs['dme_status_history_notes']}
-                                                    </p>
-                                                    :
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="Linked Reference" 
-                                                        name="dme_status_linked_reference_from_fp" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                        onClick={() => this.toggleShowStatusNoteModal()}/>
-                                            }
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
-                                                    :
-                                                    <input 
-                                                        className="form-control height-40p" 
-                                                        type="text" 
-                                                        placeholder="Linked Reference" 
-                                                        name="dme_status_linked_reference_from_fp" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                            }     
+                                            <div>
+                                                <span>Status History Note</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p 
+                                                            className="show-mode" 
+                                                            onClick={() => this.toggleShowStatusNoteModal()}
+                                                        >
+                                                            {formInputs['dme_status_history_notes']}
+                                                        </p>
+                                                        :
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="Linked Reference" 
+                                                            name="dme_status_linked_reference_from_fp" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                            onClick={() => this.toggleShowStatusNoteModal()}/>
+                                                }
+                                            </div>
+                                            <div>
+                                                <span>Linked Reference</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="Linked Reference" 
+                                                            name="dme_status_linked_reference_from_fp" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                            onChange={(e) => this.onHandleInput(e)}/>
+                                                }
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>

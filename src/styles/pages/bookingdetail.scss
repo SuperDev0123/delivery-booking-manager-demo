@@ -559,11 +559,22 @@ p.lock-status {
 	margin-right: 20px;
 }
 
-.status-history-form {
+.status-history-form,
+.booking-form-01 {
 	select {
 		height: 30px;
 		margin-top: 5px;
 		margin-bottom: 5px;
 		width: 175px;
+	}
+
+	p {
+		height: 30px !important;
+		padding-top: 0px !important;
+	}
+
+	span {
+		font-size: 7px;
+		color: gray;
 	}
 }
