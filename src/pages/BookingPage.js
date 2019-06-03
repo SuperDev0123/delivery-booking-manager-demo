@@ -32,7 +32,7 @@ import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
+import { createComm, getComms, updateComm, deleteComm, setGetCommsFilter, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs } from '../state/services/extraService';
 
@@ -209,6 +209,7 @@ class BookingPage extends Component {
         createComm: PropTypes.func.isRequired,
         getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
+        deleteComm: PropTypes.func.isRequired,
         setGetCommsFilter: PropTypes.func.isRequired,
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
@@ -1714,6 +1715,15 @@ class BookingPage extends Component {
             );
         };
 
+        const commDeleteCell = (cell, row) => {
+            let that = this;
+            return (
+                <Button className="comm-delete-cell" color="primary" onClick={() => that.props.deleteComm(row.id)}>
+                    <i className="icon icon-trash"></i>
+                </Button>
+            );
+        };
+
         const limitedHeightTitle = (cell, row) => {
             return (
                 <div>
@@ -1785,6 +1795,13 @@ class BookingPage extends Component {
                     width: '20px',
                 },
                 formatter: commUpdateCell,
+            }, {
+                dataField: 'id',
+                text: 'Delete',
+                style: {
+                    width: '20px',
+                },
+                formatter: commDeleteCell,
             },
         ];
 
@@ -3290,8 +3307,9 @@ const mapDispatchToProps = (dispatch) => {
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
-        getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),
+        getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),        
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
+        deleteComm: (id) => dispatch(deleteComm(id)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),

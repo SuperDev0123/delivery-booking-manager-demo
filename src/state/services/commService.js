@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators, successDeleteNote, failedDeleteNote } from '../actions/commActions';
+import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators, successDeleteNote, failedDeleteNote, successDeleteComm, failedDeleteComm } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, dropdownFilter='All') => {
@@ -51,6 +51,19 @@ export const updateComm = (id, updatedComm) => {
         axios(options)
             .then(({ data }) => dispatch(successUpdateComm(data)))
             .catch((error) => dispatch(failedUpdateComm(error)));
+};
+
+export const deleteComm = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/comm/` + id + '/delete_comm/',
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteComm(data)))
+            .catch((error) => dispatch(failedDeleteComm(error)));
 };
 
 export const setGetCommsFilter = (key, value) => {
