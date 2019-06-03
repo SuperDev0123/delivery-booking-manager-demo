@@ -2091,6 +2091,7 @@ class BookingPage extends Component {
                                                         >{formInputs['dme_status_detail']}</p>
                                                         :
                                                         <select
+                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
                                                             name="dme_status_detail"
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             value = {formInputs['dme_status_detail']}
@@ -2137,6 +2138,7 @@ class BookingPage extends Component {
                                                         </p>
                                                         :
                                                         <select
+                                                            id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
                                                             name="dme_status_action"
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             value = {formInputs['dme_status_action']}
@@ -2184,6 +2186,7 @@ class BookingPage extends Component {
                                                         </p>
                                                         :
                                                         <input 
+                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             className="form-control height-40p" 
                                                             type="text" 
                                                             placeholder="Linked Reference" 
@@ -2210,6 +2213,7 @@ class BookingPage extends Component {
                                                         </p>
                                                         :
                                                         <input 
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
                                                             className="form-control height-40p" 
                                                             type="text" 
                                                             placeholder="Linked Reference" 
