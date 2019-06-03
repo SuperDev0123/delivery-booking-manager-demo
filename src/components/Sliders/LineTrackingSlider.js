@@ -228,10 +228,9 @@ class LineTrackingSlider extends React.Component {
         ];
 
         const rowClasses = (row) => {
-            console.log('@1 - ', selected);
             let classes = '';
 
-            if (_.indexOf(selected, row.fk_booking_line_id) !== -1) {
+            if (_.indexOf(selected, parseInt(row.fk_booking_line_id)) !== -1) {
                 classes = 'selected';
             }
 
