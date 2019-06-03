@@ -131,6 +131,13 @@ class StatusHistorySlider extends React.Component {
     render() {
         const { isOpen, statusHistories, allBookingStatus, clientname, booking } = this.props;
         const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage } = this.state;
+        let canSubmit = true;
+        let errMsg = errorMessage;
+
+        if (_.isEmpty(booking.dme_status_action) || _.isEmpty(booking.dme_status_detail)) {
+            canSubmit = false;
+            errMsg = 'Please input status action and status detail before create status history';
+        }
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -237,15 +244,19 @@ class StatusHistorySlider extends React.Component {
                                     />
                                 </label>
                                 {
-                                    (errorMessage === '') ?
+                                    _.isEmpty(errMsg) ?
                                         <label></label>
                                         :
                                         <label>
-                                            <p className='red'>{errorMessage}</p>
+                                            <p className='red'>{errMsg}</p>
                                         </label>
                                 }
-                                <Button color="primary" onClick={() => this.onClickSave()}>
-                                    {saveMode===0 ? 'Create' : 'Update'}
+                                <Button
+                                    color="primary"
+                                    onClick={() => this.onClickSave()}
+                                    disabled={canSubmit ? '' : 'disabled'}
+                                >
+                                    {saveMode === 0 ? 'Create' : 'Update'}
                                 </Button>
                                 <Button color="primary" onClick={() => this.onClickCancel()}>
                                     Cancel
