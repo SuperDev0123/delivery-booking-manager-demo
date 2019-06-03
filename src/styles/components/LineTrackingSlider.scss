@@ -64,4 +64,18 @@
       }
     }
   }
+
+  .slider-content > .react-bootstrap-table {
+    height: 300px;
+    overflow-y: auto;
+  }
+
+  .api-bcl-table {
+    height: 350px;
+    overflow-y: auto;
+
+    .selected {
+      background-color: #008;
+    }
+  }
 }

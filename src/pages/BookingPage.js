@@ -34,7 +34,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, setGetCommsFilter, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs } from '../state/services/extraService';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -152,6 +152,7 @@ class BookingPage extends Component {
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
+            apiBCLs: [],
         };
 
         this.djsConfig = {
@@ -230,6 +231,7 @@ class BookingPage extends Component {
         getAvailableCreators: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
         bookingId: null,
+        getApiBCLs: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -270,7 +272,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators } = newProps;
+        const { attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs } = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -352,6 +354,10 @@ class BookingPage extends Component {
 
         if (statusDetails) {
             this.setState({statusDetails});
+        }
+
+        if (apiBCLs) {
+            this.setState({apiBCLs});
         }
 
         if (bookingLines) {
@@ -576,6 +582,7 @@ class BookingPage extends Component {
                     this.props.getBookingLineDetails(booking.pk_booking_id);
                     this.props.getComms(booking.id);
                     this.props.getBookingStatusHistory(booking.pk_booking_id);
+                    this.props.getApiBCLs(booking.id);
                 }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
@@ -3190,6 +3197,7 @@ class BookingPage extends Component {
                     updateBooking={(id, booking) => this.props.updateBooking(id, booking)}
                     isBooked={isBookedBooking}
                     calcCollected={(ids, type) => this.props.calcCollected(ids, type)}
+                    apiBCLs={this.state.apiBCLs}
                 />
 
                 <StatusLockModal
@@ -3248,6 +3256,7 @@ const mapStateToProps = (state) => {
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
         availableCreators: state.comm.availableCreators,
+        apiBCLs: state.extra.apiBCLs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
     };
@@ -3300,6 +3309,7 @@ const mapDispatchToProps = (dispatch) => {
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
         getAvailableCreators: () => dispatch(getAvailableCreators()),
+        getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
     };
 };
 

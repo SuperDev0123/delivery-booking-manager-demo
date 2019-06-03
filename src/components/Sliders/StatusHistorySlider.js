@@ -74,10 +74,6 @@ class StatusHistorySlider extends React.Component {
         } else if (saveMode === 1) {
             if (statusHistory['status_last'] === '') {
                 this.setState({errorMessage: 'Please select a status'});
-            } else if (statusHistory['dme_status_action'] === '') {
-                this.setState({errorMessage: 'Please select a status action'});
-            } else if (statusHistory['dme_status_detail'] === '') {
-                this.setState({errorMessage: 'Please select a status detail'});
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
@@ -131,13 +127,6 @@ class StatusHistorySlider extends React.Component {
     render() {
         const { isOpen, statusHistories, allBookingStatus, clientname, booking } = this.props;
         const { viewMode, saveMode, formInputs, event_time_stamp, errorMessage } = this.state;
-        let canSubmit = true;
-        let errMsg = errorMessage;
-
-        if (_.isEmpty(booking.dme_status_action) || _.isEmpty(booking.dme_status_detail)) {
-            canSubmit = false;
-            errMsg = 'Please input status action and status detail before create status history';
-        }
 
         const statusHistoryItems = statusHistories.map((statusHistory, index) => {
             return (
@@ -244,17 +233,16 @@ class StatusHistorySlider extends React.Component {
                                     />
                                 </label>
                                 {
-                                    _.isEmpty(errMsg) ?
+                                    _.isEmpty(errorMessage) ?
                                         <label></label>
                                         :
                                         <label>
-                                            <p className='red'>{errMsg}</p>
+                                            <p className='red'>{errorMessage}</p>
                                         </label>
                                 }
                                 <Button
                                     color="primary"
                                     onClick={() => this.onClickSave()}
-                                    disabled={canSubmit ? '' : 'disabled'}
                                 >
                                     {saveMode === 0 ? 'Create' : 'Update'}
                                 </Button>

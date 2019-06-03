@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction } from '../actions/extraActions';
+import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction, successGetApiBCLs, failedGetApiBCLs } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -135,4 +135,18 @@ export const createStatusAction = (newStatusAction) => {
         axios(options)
             .then(({ data }) => dispatch(successCreateStatusAction(data)))
             .catch((error) => dispatch(failedCreateStatusAction(error)));
+};
+
+export const getApiBCLs = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/api_bcl/get_api_bcls/`,
+        params: {'bookingId': bookingId},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetApiBCLs(data)))
+            .catch((error) => dispatch(failedGetApiBCLs(error)));
 };

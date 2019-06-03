@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -32,6 +33,7 @@ class LineTrackingSlider extends React.Component {
         isBooked: PropTypes.bool.isRequired,
         clientname: PropTypes.string.isRequired,
         calcCollected: PropTypes.func.isRequired,
+        apiBCLs: PropTypes.array.isRequired,
     };
 
     onClickEdit(oldValue, newValue, row, column) {
@@ -105,7 +107,8 @@ class LineTrackingSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked, clientname } = this.props;
+        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked, clientname, apiBCLs } = this.props;
+        const { selected } = this.state;
 
         const selectRow = {
             mode: 'checkbox',
@@ -224,6 +227,36 @@ class LineTrackingSlider extends React.Component {
             }
         ];
 
+        const rowClasses = (row) => {
+            console.log('@1 - ', selected);
+            let classes = '';
+
+            if (_.indexOf(selected, row.fk_booking_line_id) !== -1) {
+                classes = 'selected';
+            }
+
+            return classes;
+        };
+
+        const apiBCLColumns = [
+            {
+                dataField: 'fk_booking_id',
+                text: 'Booking ID',
+            }, {
+                dataField: 'label_code',
+                text: 'Label Code',
+            }, {
+                dataField: 'client_item_reference',
+                text: 'Client Item Ref',
+            }, {
+                dataField: 'fp_event_date',
+                text: 'Event Date',
+            }, {
+                dataField: 'fp_event_time',
+                text: 'Event Time',
+            }
+        ];
+
         return (
             <SlidingPane
                 className='lt-slider'
@@ -279,6 +312,16 @@ class LineTrackingSlider extends React.Component {
                     onConfirm={() => this.onConfirmUpdateDelivered()}
                     onCancel={() => this.onCancelUpdateDelivered()}
                 />
+
+                <div className='api-bcl-table'>
+                    <BootstrapTable
+                        keyField='id'
+                        data={ apiBCLs }
+                        columns={ apiBCLColumns }
+                        bootstrap4={ true }
+                        rowClasses={ rowClasses }
+                    />
+                </div>
             </SlidingPane>
         );
     }
