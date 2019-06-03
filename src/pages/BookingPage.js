@@ -26,6 +26,7 @@ import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlid
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
+import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
@@ -2077,7 +2078,10 @@ class BookingPage extends Component {
                                                 <span>Status Detail</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['dme_status_detail']}</p>
+                                                        <p 
+                                                            className="show-mode"
+                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                                                        >{formInputs['dme_status_detail']}</p>
                                                         :
                                                         <select
                                                             name="dme_status_detail"
@@ -2088,6 +2092,12 @@ class BookingPage extends Component {
                                                             {statusDetailOptions}
                                                             <option value={'other'}>Other</option>
                                                         </select>
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_detail']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
+                                                        :
+                                                        null
                                                 }
                                             </div>
                                             {
@@ -2112,7 +2122,12 @@ class BookingPage extends Component {
                                                 <span>Status Action</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['dme_status_action']}</p>
+                                                        <p 
+                                                            className="show-mode"
+                                                            id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
+                                                        >
+                                                            {formInputs['dme_status_action']}
+                                                        </p>
                                                         :
                                                         <select
                                                             name="dme_status_action"
@@ -2123,6 +2138,12 @@ class BookingPage extends Component {
                                                             {statusActionOptions}
                                                             <option value={'other'}>Other</option>
                                                         </select>
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_action']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
+                                                        :
+                                                        null
                                                 }
                                             </div>
                                             {
@@ -2150,6 +2171,7 @@ class BookingPage extends Component {
                                                         <p 
                                                             className="show-mode" 
                                                             onClick={() => this.toggleShowStatusNoteModal()}
+                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         >
                                                             {formInputs['dme_status_history_notes']}
                                                         </p>
@@ -2162,12 +2184,23 @@ class BookingPage extends Component {
                                                             value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
                                                             onClick={() => this.toggleShowStatusNoteModal()}/>
                                                 }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_history_notes']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
+                                                        :
+                                                        null
+                                                }
                                             </div>
                                             <div>
                                                 <span>Linked Reference</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['dme_status_linked_reference_from_fp']}</p>
+                                                        <p 
+                                                            className="show-mode"
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                        >
+                                                            {formInputs['dme_status_linked_reference_from_fp']}
+                                                        </p>
                                                         :
                                                         <input 
                                                             className="form-control height-40p" 
@@ -2176,6 +2209,12 @@ class BookingPage extends Component {
                                                             name="dme_status_linked_reference_from_fp" 
                                                             value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
                                                             onChange={(e) => this.onHandleInput(e)}/>
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
+                                                        :
+                                                        null
                                                 }
                                             </div>
                                         </div>
