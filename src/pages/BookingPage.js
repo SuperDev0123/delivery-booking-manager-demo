@@ -1197,6 +1197,14 @@ class BookingPage extends Component {
         if (commFormInputs['assigned_to'] === 'edit…')
             commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
 
+        if (_.isUndefined(commFormInputs['due_date_time']) || _.isNull(commFormInputs['due_date_time'])) {
+            commFormInputs['due_by_date'] = null;
+            commFormInputs['due_by_time'] = null;
+        } else {
+            commFormInputs['due_by_date'] = moment(commFormInputs['due_date_time']).format('YYYY-MM-DD');
+            commFormInputs['due_by_time'] = moment(commFormInputs['due_date_time']).format('hh:mm:ss');
+        }
+
         if (commFormMode === 'create') {
             const {booking} = this.state;            
             let newComm = commFormInputs;
