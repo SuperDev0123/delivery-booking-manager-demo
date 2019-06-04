@@ -1164,7 +1164,7 @@ class BookingPage extends Component {
     }
 
     onClickGoToCommPage() {
-        window.location.assign('/comm?bookingid=' + this.state.booking.id);
+        this.props.history.push('/comm?bookingid=' + this.state.booking.id);
     }
 
     onClickCreateComm() {

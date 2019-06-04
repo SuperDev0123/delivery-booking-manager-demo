@@ -3,7 +3,7 @@ import axios from 'axios';
 import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators, successDeleteNote, failedDeleteNote, successDeleteComm, failedDeleteComm } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getComms = (bookingId='', sortField='-id', sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, dropdownFilter='All') => {
+export const getComms = (bookingId='', sortField, sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, activeTabInd=0) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -16,7 +16,7 @@ export const getComms = (bookingId='', sortField='-id', sortType='comms', column
             columnFilters: columnFilters,
             simpleSearchKeyword: simpleSearchKeyword,
             sortByDate,
-            dropdownFilter,
+            activeTabInd,
         },
     };
     return dispatch =>
@@ -70,8 +70,8 @@ export const setGetCommsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetCommsFilter = (bookingId='', sortField='id', sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, dropdownFilter='All') => {
-    return dispatch => dispatch(setAllLocalFilter(bookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, dropdownFilter));
+export const setAllGetCommsFilter = (selectedBookingId='', sortField, sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, activeTabInd=0) => {
+    return dispatch => dispatch(setAllLocalFilter(selectedBookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, activeTabInd));
 };
 
 export const getNotes = (commId) => {

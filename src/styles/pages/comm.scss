@@ -1,17 +1,33 @@
 .comm {
-	height: calc(100% - 70px);
+	height: calc(100% - 170px);
 
   #headr {
+    margin-top : -100px;
+  }
+
+  #tab-section {
     margin-top: -50px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    ul {
+      float: left;
+      margin-left: 20px;
+      width: unset;
+    }
+
+    button {
+      padding: 8px;
+    }
   }
 
   ._loading_overlay_wrapper {
-    margin-top: 50px;
+    margin-top: 100px;
   }
   
 	.content {
-		height: 100%;
-		padding-top: 30px;
+		height: calc(100% - 0px);
+		padding-top: 0px;
 		padding-left: 20px;
 		padding-right: 20px;
 
@@ -19,7 +35,7 @@
       width: 100%;
       padding-left: 10px;
       padding-right: 10px;
-      height: calc(100% - 50px);
+      height: calc(100% - 20px);
       overflow-x: auto;
 
       .tbl-content {
