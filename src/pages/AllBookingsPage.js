@@ -84,6 +84,7 @@ class AllBookingsPage extends React.Component {
             allFPs: [],
             isShowStatusLockModal: false,
             selectedBooking4StatusLock: null,
+            activeBookingId: null,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -1045,8 +1046,12 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds: []});
     }
 
+    onClickBooking(booking) {
+        this.setState({activeBookingId: booking.id});
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname, isShowStatusLockModal, selectedBooking4StatusLock } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, isShowXMLModal, clientname, isShowStatusLockModal, selectedBooking4StatusLock, activeBookingId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1098,7 +1103,11 @@ class AllBookingsPage extends React.Component {
 
         const bookingsList = bookings.map((booking, index) => {
             return (
-                <tr key={index}>
+                <tr 
+                    key={index} 
+                    className={(activeBookingId === booking.id || _.indexOf(selectedBookingIds, booking.id) !== -1) ? 'active' : 'inactive'}
+                    onClick={() => this.onClickBooking(booking)}
+                >
                     <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
