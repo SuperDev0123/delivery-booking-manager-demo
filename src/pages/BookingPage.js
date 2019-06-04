@@ -27,6 +27,7 @@ import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
+import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
@@ -152,6 +153,7 @@ class BookingPage extends Component {
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
+            isShowDeleteCommConfirmModal: false,
             apiBCLs: [],
         };
 
@@ -179,6 +181,7 @@ class BookingPage extends Component {
         this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
+        this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -1351,6 +1354,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal}));
     }
 
+    toggleShowDeleteCommConfirmModal() {
+        this.setState(prevState => ({isShowDeleteCommConfirmModal: !prevState.isShowDeleteCommConfirmModal}));
+    }
+
     toggleShowStatusHistorySlider() {
         const { isBookingSelected } = this.state;
 
@@ -1611,6 +1618,16 @@ class BookingPage extends Component {
         this.toggleShowStatusNoteModal();
     }
 
+    onDeleteBtnClick(commId) {
+        this.setState({selectedCommId: commId});
+        this.toggleShowDeleteCommConfirmModal();
+    }
+
+    onClickConfirmDeleteCommBtn() {
+        this.props.deleteComm(this.state.selectedCommId);
+        this.toggleShowDeleteCommConfirmModal();
+    }
+
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
 
@@ -1726,7 +1743,7 @@ class BookingPage extends Component {
         const commDeleteCell = (cell, row) => {
             let that = this;
             return (
-                <Button className="comm-delete-cell" color="primary" onClick={() => that.props.deleteComm(row.id)}>
+                <Button className="comm-delete-cell" color="primary" onClick={() => that.onDeleteBtnClick(row.id)}>
                     <i className="icon icon-trash"></i>
                 </Button>
             );
@@ -3242,6 +3259,15 @@ class BookingPage extends Component {
                     onUpdateStatusNote={(note) => this.onUpdateStatusNote(note)}
                     note={booking.dme_status_history_notes}
                     isEditable={(curViewMode===0) ? false : true}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowDeleteCommConfirmModal}
+                    onOk={() => this.onClickConfirmDeleteCommBtn()}
+                    onCancel={this.toggleShowDeleteCommConfirmModal}
+                    title={'Delete Comm Log'}
+                    text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
+                    okBtnName={'Delete'}
                 />
             </div>
         );

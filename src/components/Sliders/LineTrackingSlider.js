@@ -7,7 +7,7 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import { Button } from 'reactstrap';
-import UpdateDeliveredConfirmModal from '../CommonModals/UpdateDeliveredConfirmModal';
+import ConfirmModal from '../CommonModals/ConfirmModal';
 
 class LineTrackingSlider extends React.Component {
     constructor(props) {
@@ -305,11 +305,13 @@ class LineTrackingSlider extends React.Component {
                     }
                 </div>
 
-                <UpdateDeliveredConfirmModal
+                <ConfirmModal
                     isOpen={this.state.isOpenUpdateDeliveredConfirmModal}
-                    toggleUpdateDeliveredConfirmModal={this.toggleUpdateDeliveredConfirmModal}
-                    onConfirm={() => this.onConfirmUpdateDelivered()}
+                    onOk={() => this.onConfirmUpdateDelivered()}
                     onCancel={() => this.onCancelUpdateDelivered()}
+                    title={'Delivered Booking!'}
+                    text={'There is a delivered status in history / do you want to clear it so that delivered count is not calculated ?'}
+                    okBtnName={'Confirm'}
                 />
 
                 <div className='api-bcl-table'>
