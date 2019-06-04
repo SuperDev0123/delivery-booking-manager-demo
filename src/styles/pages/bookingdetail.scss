@@ -89,9 +89,19 @@ p.dme-id {
 }
 
 .note-detail-modal {
-	margin-top: 200px;
 	width: 80%;
-	max-width: none;
+	height: 90% !important;
+	max-width: unset;
+
+	.modal-content {
+		height: 100%;
+		top: 200px;
+
+		.modal-body {
+			height: 90%;
+			overflow-y: auto;
+		}
+	}
 }
 
 .create-comm-modal {
