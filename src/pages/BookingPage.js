@@ -1743,7 +1743,7 @@ class BookingPage extends Component {
         const commDeleteCell = (cell, row) => {
             let that = this;
             return (
-                <Button className="comm-delete-cell" color="primary" onClick={() => that.onDeleteBtnClick(row.id)}>
+                <Button className="comm-delete-cell" color="danger" onClick={() => that.onDeleteBtnClick(row.id)}>
                     <i className="icon icon-trash"></i>
                 </Button>
             );

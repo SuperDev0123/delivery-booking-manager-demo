@@ -11,6 +11,7 @@ import DateTimePicker from 'react-datetime-picker';
 
 import EditorPreview from '../EditorPreview/EditorPreview';
 import NoteDetailModal from '../CommonModals/NoteDetailModal';
+import ConfirmModal from '../CommonModals/ConfirmModal';
 
 class NoteSlider extends React.Component {
     constructor(props) {
@@ -23,12 +24,14 @@ class NoteSlider extends React.Component {
             selectedNoteNo: 0,
             selectedNoteDetail: null,
             isShowNoteDetailModal: false,
+            isShowDeleteNoteConfirmModal: false,
             formInputs: {
                 status_last: 'Entered',
             },
         };
 
         this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
+        this.toggleDeleteNoteConfirmModal = this.toggleDeleteNoteConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -94,7 +97,13 @@ class NoteSlider extends React.Component {
 
     onDeleteBtnClick(type, data) {
         console.log('Update type: ', type);
-        this.props.deleteNote(data.id);
+        this.setState({selectedNoteId: data.id});
+        this.toggleDeleteNoteConfirmModal();
+    }
+
+    onConfirmDeleteNote() {
+        this.props.deleteNote(this.state.selectedNoteId);
+        this.toggleDeleteNoteConfirmModal();
     }
 
     onChangeDateTime(date) {
@@ -138,6 +147,10 @@ class NoteSlider extends React.Component {
         this.setState(prevState => ({isShowNoteDetailModal: !prevState.isShowNoteDetailModal}));
     }
 
+    toggleDeleteNoteConfirmModal() {
+        this.setState(prevState => ({isShowDeleteNoteConfirmModal: !prevState.isShowDeleteNoteConfirmModal}));
+    }
+
     onClickNoteDetailCell(note) {
         this.setState({selectedNoteDetail: note.dme_notes});
         this.toggleNoteDetailModal();
@@ -158,8 +171,16 @@ class NoteSlider extends React.Component {
                     <td className='overflow-hidden' id={'note-detail-tooltip-' + note.id} onClick={() => this.onClickNoteDetailCell(note)}>
                         <EditorPreview data={note.dme_notes} />
                     </td>
-                    <td className="update"><Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>Update</Button></td>
-                    <td className="update"><Button color="danger" onClick={() => this.onDeleteBtnClick('note', note)}>Delete</Button></td>
+                    <td className="update">
+                        <Button color="primary" onClick={() => this.onUpdateBtnClick('note', note, index)}>
+                            <i className="icon icon-edit"></i>
+                        </Button>
+                    </td>
+                    <td className="update">
+                        <Button color="danger" onClick={() => this.onDeleteBtnClick('note', note)}>
+                            <i className="icon icon-trash"></i>
+                        </Button>
+                    </td>
                 </tr>
             );
         });
@@ -177,6 +198,11 @@ class NoteSlider extends React.Component {
                     {
                         !isShowNoteForm ?
                             <div className="table-view">
+                                <div className="button-group">
+                                    <Button color="primary" onClick={() => this.onCreateNoteButton()}>
+                                        +
+                                    </Button>
+                                </div>
                                 <div className="table-responsive">
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <tr>
@@ -207,9 +233,6 @@ class NoteSlider extends React.Component {
                                         </tr>
                                         { notesList }
                                     </table>
-                                </div>
-                                <div className="button-group">
-                                    <Button color="primary" onClick={() => this.onCreateNoteButton()}>Create</Button>
                                 </div>
                             </div>
                             :
@@ -278,10 +301,20 @@ class NoteSlider extends React.Component {
                                 </div>
                             </div>
                     }
+
                     <NoteDetailModal
                         isOpen={isShowNoteDetailModal}
                         toggleNoteDetailModal={this.toggleNoteDetailModal}
                         selectedNoteDetail={selectedNoteDetail}
+                    />
+
+                    <ConfirmModal
+                        isOpen={this.state.isShowDeleteNoteConfirmModal}
+                        onOk={() => this.onConfirmDeleteNote()}
+                        onCancel={this.toggleDeleteNoteConfirmModal}
+                        title={'Delete Note'}
+                        text={'Are you sure that you are going to delete this Note?'}
+                        okBtnName={'Delete'}
                     />
                 </div>
             </SlidingPane>

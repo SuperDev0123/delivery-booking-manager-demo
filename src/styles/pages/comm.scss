@@ -199,17 +199,17 @@ $column_19_width: 100px;
   td.active {
     background-color: whitesmoke;
   }
+
+  td.update {
+    button {
+      height: 25px !important;
+      padding: 0 8px !important;
+    }
+  }
 }
 
 .tbl-header > table {
   margin-bottom: 0 !important;
-}
-
-td.update {
-  button {
-    height: 25px !important;
-    padding: 0 8px !important;
-  }
 }
 
 .form-view {
