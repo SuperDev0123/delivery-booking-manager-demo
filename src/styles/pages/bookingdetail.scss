@@ -351,7 +351,8 @@ input.orange-color {
 }
 
 .booking {
-	p.show-mode {
+	p.show-mode,
+	label.show-mode {
 		height: 40px;
 		margin: 0 !important;
 		padding-top: 12px;
@@ -501,5 +502,44 @@ p.lock-status {
 	span {
 		font-size: 9px;
 		color: gray;
+	}
+}
+
+.booking {
+	.pu-de-dates {
+		.row {
+			padding-left: 10px;
+			padding-right: 10px;
+
+			label {
+				font-size: 12px;
+			}
+
+			input.date {
+				width: 100px;
+				margin-right: 10px;
+			}
+
+			input.hour, input.time {
+				width: 30px;
+			}
+
+			p.date {
+				margin-right: 10px;
+				width: 60px;
+			}
+
+			p.time {
+				width: 35px;
+			}
+
+			>input {
+				display: inline-block;
+			}
+
+			.col-sm-3, .col-sm-2 {
+				padding: 0px !important;
+			}
+		}
 	}
 }

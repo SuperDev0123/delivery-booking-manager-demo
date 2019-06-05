@@ -15,6 +15,8 @@ import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter }
 import Modal from 'react-modal';
 import CKEditor from 'ckeditor4-react';
 import DateTimePicker from 'react-datetime-picker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
@@ -527,6 +529,7 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
                 if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
                 else formInputs['b_status_API'] = '';
+
                 if (booking.dme_status_history_notes != null) formInputs['dme_status_history_notes'] = booking.dme_status_history_notes;
                 else formInputs['dme_status_history_notes'] = '';
                 if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
@@ -535,6 +538,32 @@ class BookingPage extends Component {
                 else formInputs['dme_status_action'] = '';
                 if (booking.dme_status_linked_reference_from_fp != null) formInputs['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
                 else formInputs['dme_status_linked_reference_from_fp'] = '';
+
+                if (!_.isNull(booking.pu_PickUp_Avail_From_Date_DME)) formInputs['pu_PickUp_Avail_From_Date_DME'] = booking.pu_PickUp_Avail_From_Date_DME;
+                else formInputs['pu_PickUp_Avail_From_Date_DME'] = null;
+                if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
+                else formInputs['pu_PickUp_Avail_Time_Hours'] = 0;
+                if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = booking.pu_PickUp_Avail_Time_Minutes;
+                else formInputs['pu_PickUp_Avail_Time_Minutes'] = 0;
+                if (!_.isNull(booking.pu_PickUp_By_Date_DME)) formInputs['pu_PickUp_By_Date_DME'] = booking.pu_PickUp_By_Date_DME;
+                else formInputs['pu_PickUp_By_Date_DME'] = null;
+                if (!_.isNull(booking.pu_PickUp_By_Time_Hours_DME)) formInputs['pu_PickUp_By_Time_Hours_DME'] = booking.pu_PickUp_By_Time_Hours_DME;
+                else formInputs['pu_PickUp_By_Time_Hours_DME'] = 0;
+                if (!_.isNull(booking.pu_PickUp_By_Time_Minutes_DME)) formInputs['pu_PickUp_By_Time_Minutes_DME'] = booking.pu_PickUp_By_Time_Minutes_DME;
+                else formInputs['pu_PickUp_By_Time_Minutes_DME'] = 0;
+
+                if (!_.isNull(booking.de_Deliver_From_Date)) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
+                else formInputs['de_Deliver_From_Date'] = null;
+                if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = booking.de_Deliver_From_Hours;
+                else formInputs['de_Deliver_From_Hours'] = 0;
+                if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = booking.de_Deliver_From_Minutes;
+                else formInputs['de_Deliver_From_Minutes'] = 0;
+                if (!_.isNull(booking.de_Deliver_By_Date)) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
+                else formInputs['de_Deliver_By_Date'] = null;
+                if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = booking.de_Deliver_By_Hours;
+                else formInputs['de_Deliver_By_Hours'] = 0;
+                if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = booking.de_Deliver_By_Minutes;
+                else formInputs['de_Deliver_By_Minutes'] = 0;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -800,10 +829,40 @@ class BookingPage extends Component {
                 this.setState({isShowStatusDetailInput: false});
             }
 
-            formInputs[e.target.name] = e.target.value;
-            booking[e.target.name] = e.target.value;
+            let canUpdateField = true;
+            if (!_.isEmpty(event.target.value)) {
+                if (event.target.name === 'pu_PickUp_Avail_Time_Hours' ||
+                    event.target.name === 'pu_PickUp_By_Time_Hours_DME' ||
+                    event.target.name === 'de_Deliver_From_Hours' ||
+                    event.target.name === 'de_Deliver_By_Hours') {
+                    if (_.isNaN(parseInt(event.target.value))) {
+                        alert('Please input correct hour!');
+                        canUpdateField = false;
+                    } else if (parseInt(event.target.value) > 23) {
+                        alert('Please input correct hour!');
+                        canUpdateField = false;
+                    }
+                }
 
-            this.setState({ formInputs, booking, isBookingModified: true });
+                if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
+                    event.target.name === 'pu_PickUp_By_Time_Minutes_DME' ||
+                    event.target.name === 'de_Deliver_From_Minutes' ||
+                    event.target.name === 'de_Deliver_By_Minutes') {
+                    if (_.isNaN(parseInt(event.target.value))) {
+                        alert('Please input correct minutes!');
+                        canUpdateField = false;
+                    } else if (parseInt(event.target.value) > 59) {
+                        alert('Please input correct minutes!');
+                        canUpdateField = false;
+                    }
+                }
+            }
+
+            if (canUpdateField) {
+                formInputs[e.target.name] = e.target.value;
+                booking[e.target.name] = e.target.value;
+                this.setState({ formInputs, booking, isBookingModified: true });
+            }
         }
     }
 
@@ -1483,6 +1542,18 @@ class BookingPage extends Component {
             formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+
+            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? 0 : formInputs['pu_PickUp_Avail_Time_Hours'];
+            formInputs['pu_PickUp_By_Time_Hours_DME'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours_DME']) ? 0 : formInputs['pu_PickUp_By_Time_Hours_DME'];
+            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? 0 : formInputs['de_Deliver_From_Hours'];
+            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? 0 : formInputs['pu_PickUp_Avail_Time_Hours'];
+            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? 0 : formInputs['de_Deliver_By_Hours'];
+
+            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? 0 : formInputs['pu_PickUp_Avail_Time_Minutes'];
+            formInputs['pu_PickUp_By_Time_Minutes_DME'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes_DME']) ? 0 : formInputs['pu_PickUp_By_Time_Minutes_DME'];
+            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? 0 : formInputs['de_Deliver_From_Minutes'];
+            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? 0 : formInputs['de_Deliver_By_Minutes'];
+
             formInputs['b_status'] = 'Entered';
             this.props.saveBooking(formInputs);
             this.setState({curViewMode: 0});
@@ -1517,6 +1588,16 @@ class BookingPage extends Component {
                 bookingToUpdate.de_To_Address_State = this.state.deToState.label;
                 bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
                 bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Hours) ? 0 : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
+                bookingToUpdate.pu_PickUp_By_Time_Hours_DME = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Hours_DME) ? 0 : bookingToUpdate.pu_PickUp_By_Time_Hours_DME;
+                bookingToUpdate.de_Deliver_From_Hours = _.isEmpty(bookingToUpdate.de_Deliver_From_Hours) ? 0 : bookingToUpdate.de_Deliver_From_Hours;
+                bookingToUpdate.de_Deliver_By_Hours = _.isEmpty(bookingToUpdate.de_Deliver_By_Hours) ? 0 : bookingToUpdate.de_Deliver_By_Hours;
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Minutes) ? 0 : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
+                bookingToUpdate.pu_PickUp_By_Time_Minutes_DME = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Minutes_DME) ? 0 : bookingToUpdate.pu_PickUp_By_Time_Minutes_DME;
+                bookingToUpdate.de_Deliver_From_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_From_Minutes) ? 0 : bookingToUpdate.de_Deliver_From_Minutes;
+                bookingToUpdate.de_Deliver_By_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_By_Minutes) ? 0 : bookingToUpdate.de_Deliver_By_Minutes;
 
                 this.props.updateBooking(this.state.booking.id, bookingToUpdate);
                 this.setState({loading: true, isBookingModified: false, curViewMode: 0});
@@ -1626,6 +1707,12 @@ class BookingPage extends Component {
     onClickConfirmDeleteCommBtn() {
         this.props.deleteComm(this.state.selectedCommId);
         this.toggleShowDeleteCommConfirmModal();
+    }
+
+    onDateChange(date, fieldName) {
+        let formInputs = this.state.formInputs;
+        formInputs[fieldName] = date;
+        this.setState({formInputs});
     }
 
     render() {
@@ -2833,6 +2920,190 @@ class BookingPage extends Component {
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
                                                 <div className="head">
+                                                </div>
+                                                <div className="pu-de-dates">
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">PU From</label>
+                                                        </div>
+                                                        <div className="col-sm-9">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <label className="show-mode">
+                                                                        <p className="date disp-inline-block">
+                                                                            {formInputs['pu_PickUp_Avail_From_Date_DME'] ? moment(formInputs['pu_PickUp_Avail_From_Date_DME']).format('MM/DD/YYYY') : ''}
+                                                                        </p>
+                                                                        <p className="time disp-inline-block">
+                                                                            {
+                                                                                formInputs['pu_PickUp_Avail_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_Avail_Time_Hours'] + ':'
+                                                                            }
+                                                                            {
+                                                                                formInputs['pu_PickUp_Avail_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_Avail_Time_Minutes']
+                                                                            }
+                                                                        </p>
+                                                                    </label>
+                                                                    :
+                                                                    <div>
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['pu_PickUp_Avail_From_Date_DME'] ? moment(formInputs['pu_PickUp_Avail_From_Date_DME']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_Avail_From_Date_DME')}
+                                                                            dateFormat="dd MMM yyyy"
+                                                                        />
+                                                                        <input
+                                                                            className="hour"
+                                                                            name='pu_PickUp_Avail_Time_Hours'
+                                                                            value={formInputs['pu_PickUp_Avail_Time_Hours']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                        {':'}
+                                                                        <input
+                                                                            className="time"
+                                                                            name='pu_PickUp_Avail_Time_Minutes'
+                                                                            value={formInputs['pu_PickUp_Avail_Time_Minutes']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">PU By</label>
+                                                        </div>
+                                                        <div className="col-sm-9">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <label className="show-mode">
+                                                                        <p className="date disp-inline-block">
+                                                                            {formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).format('MM/DD/YYYY') : ''}
+                                                                        </p>
+                                                                        <p className="time disp-inline-block">
+                                                                            {
+                                                                                formInputs['pu_PickUp_By_Time_Hours_DME'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours_DME'] + ':'
+                                                                            }
+                                                                            {
+                                                                                formInputs['pu_PickUp_By_Time_Minutes_DME'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes_DME']
+                                                                            }
+                                                                        </p>
+                                                                    </label>
+                                                                    :
+                                                                    <div>
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date_DME')}
+                                                                            dateFormat="dd MMM yyyy"
+                                                                        />
+                                                                        <input
+                                                                            className="hour"
+                                                                            name='pu_PickUp_By_Time_Hours_DME'
+                                                                            value={formInputs['pu_PickUp_By_Time_Hours_DME']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                        {':'}
+                                                                        <input
+                                                                            className="time"
+                                                                            name='pu_PickUp_By_Time_Minutes_DME'
+                                                                            value={formInputs['pu_PickUp_By_Time_Minutes_DME']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">DE From</label>
+                                                        </div>
+                                                        <div className="col-sm-9">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <label className="show-mode">
+                                                                        <p className="date disp-inline-block">
+                                                                            {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('MM/DD/YYYY') : ''}
+                                                                        </p>
+                                                                        <p className="time disp-inline-block">
+                                                                            {
+                                                                                formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
+                                                                            }
+                                                                            {
+                                                                                formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
+                                                                            }
+                                                                        </p>
+                                                                    </label>
+                                                                    :
+                                                                    <div>
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
+                                                                            dateFormat="dd MMM yyyy"
+                                                                        />
+                                                                        <input
+                                                                            className="hour"
+                                                                            name='de_Deliver_From_Hours'
+                                                                            value={formInputs['de_Deliver_From_Hours']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                        {':'}
+                                                                        <input
+                                                                            className="time"
+                                                                            name='de_Deliver_From_Minutes'
+                                                                            value={formInputs['de_Deliver_From_Minutes']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">DE By</label>
+                                                        </div>
+                                                        <div className="col-sm-9">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <label className="show-mode">
+                                                                        <p className="date disp-inline-block">
+                                                                            {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('MM/DD/YYYY') : ''}
+                                                                        </p>
+                                                                        <p className="time disp-inline-block">
+                                                                            {
+                                                                                formInputs['de_Deliver_By_Hours'] === 0 ? '00:' : formInputs['de_Deliver_By_Hours'] + ':'
+                                                                            }
+                                                                            {
+                                                                                formInputs['de_Deliver_By_Minutes'] === 0 ? '00' : formInputs['de_Deliver_By_Minutes']
+                                                                            }
+                                                                        </p>
+                                                                    </label>
+                                                                    :
+                                                                    <div>
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
+                                                                            dateFormat="dd MMM yyyy"
+                                                                        />
+                                                                        <input
+                                                                            className="hour"
+                                                                            name='de_Deliver_By_Hours'
+                                                                            value={formInputs['de_Deliver_By_Hours']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                        {':'}
+                                                                        <input
+                                                                            className="time"
+                                                                            name='de_Deliver_By_Minutes'
+                                                                            value={formInputs['de_Deliver_By_Minutes']}
+                                                                            onChange={(e) => this.onHandleInput(e)}
+                                                                        />
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">Gaps</label>
+                                                        </div>
+                                                        <div className="col-sm-9">
+                                                            <label className="show-mode">
+                                                                {booking ? booking.client_item_references : ''}
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height form-view-btns">
