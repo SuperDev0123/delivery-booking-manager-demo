@@ -498,7 +498,7 @@ class BookingPage extends Component {
                 else formInputs['de_To_Address_State'] = '';
                 if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
                 else formInputs['s_20_Actual_Pickup_TimeStamp'] = '';
-                if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp.de_Deliver_From_Date;
+                if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp;
                 else formInputs['s_21_Actual_Delivery_TimeStamp'] = '';
                 if (booking.b_client_name != null) formInputs['b_client_name'] = booking.b_client_name;
                 else formInputs['b_client_name'] = '';
@@ -1283,13 +1283,24 @@ class BookingPage extends Component {
         }
     }
 
-    onChangeDateTime(date) {
+    onChangeDateTime(date, fieldName) {
         const commFormInputs = this.state.commFormInputs;
+        const formInputs = this.state.formInputs;
+        const booking = this.state.booking;
 
-        commFormInputs['due_date_time'] = date;
-        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-        commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
-        this.setState({commFormInputs});
+        if (fieldName === 'due_date_time') {
+            commFormInputs['due_date_time'] = date;
+            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+            commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
+            this.setState({commFormInputs});
+        } else if (fieldName === 'vx_fp_pu_eta_time' || 
+            fieldName === 's_20_Actual_Pickup_TimeStamp' ||
+            fieldName === 'vx_fp_del_eta_time' ||
+            fieldName === 's_21_Actual_Delivery_TimeStamp') {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
+        }
     }
 
     handleModalInputChange(type, event) {
@@ -1710,9 +1721,11 @@ class BookingPage extends Component {
     }
 
     onDateChange(date, fieldName) {
-        let formInputs = this.state.formInputs;
-        formInputs[fieldName] = date;
-        this.setState({formInputs});
+        const formInputs = this.state.formInputs;
+        const booking = this.state.booking;
+        formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
+        booking[fieldName] = moment(date).format('YYYY-MM-DD');
+        this.setState({formInputs, booking});
     }
 
     render() {
@@ -2589,14 +2602,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <div className="input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    name="vx_fp_pu_eta_time" 
-                                                                    className="form-control" 
-                                                                    value = {formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled='disabled' />
-                                                            </div>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['vx_fp_pu_eta_time']}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'vx_fp_pu_eta_time')}
+                                                                            value={formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).toDate() : null}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['vx_fp_pu_eta_time']}</p>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2604,13 +2621,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Actual Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <div className="input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    name="s_20_Actual_Pickup_TimeStamp" 
-                                                                    className="form-control" value = {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled='disabled' />
-                                                            </div>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp']}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
+                                                                            value={formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp']}</p>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2868,14 +2890,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <div className="input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    name="vx_fp_del_eta_time" 
-                                                                    className="form-control" 
-                                                                    value = {formInputs['vx_fp_del_eta_time'] ? moment(formInputs['vx_fp_del_eta_time']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled='disabled' />
-                                                            </div>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['vx_fp_del_eta_time']}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'vx_fp_del_eta_time')}
+                                                                            value={formInputs['vx_fp_del_eta_time'] ? moment(formInputs['vx_fp_del_eta_time']).toDate() : null}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['vx_fp_del_eta_time']}</p>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -2883,15 +2909,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Actual Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <div className="input-group">
-                                                                <input 
-                                                                    type="text" 
-                                                                    name="s_21_Actual_Delivery_TimeStamp" 
-                                                                    className="form-control" 
-                                                                    value = {formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''} 
-                                                                    disabled='disabled' />
-                                                            </div>
-
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp']}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
+                                                                            value={formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp']}</p>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -3442,7 +3471,7 @@ class BookingPage extends Component {
                         <label>
                             <p>Due Date Time</p>
                             <DateTimePicker
-                                onChange={(date) => this.onChangeDateTime(date)}
+                                onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
                                 value={commFormInputs['due_date_time']}
                             />
                         </label>
