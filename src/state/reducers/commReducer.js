@@ -16,14 +16,16 @@ const defaultState = {
     dropdownFilter: 'All',
     selectedBookingId: null,
     activeTabInd: 0,
+    commCnts: null,
 };
 
-export const CommReducer = (state = defaultState, { type, errorMessage, comms, comm, selectedBookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword, availableCreators, sortByDate, activeTabInd }) => {
+export const CommReducer = (state = defaultState, { type, errorMessage, comms, commCnts, comm, selectedBookingId, sortField, sortType, columnFilters, notes, note, needUpdateComms, simpleSearchKeyword, availableCreators, sortByDate, activeTabInd }) => {
     switch (type) {
         case SET_COMMS:
             return { 
                 ...state, 
                 comms: comms,
+                commCnts: commCnts,
                 needUpdateComms: false,
             };
         case FAILED_GET_COMMS:

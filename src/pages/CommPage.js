@@ -43,6 +43,8 @@ class CommPage extends React.Component {
             availableCreators: [],
             sortByDate: false,
             activeTabInd: 0,
+            commCnts: null,
+            activeCommId: null,
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
@@ -97,7 +99,7 @@ class CommPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username, sortByDate, activeTabInd, selectedBookingId } = newProps;
+        const { redirect, booking, comms, commCnts, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username, sortByDate, activeTabInd, selectedBookingId } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -120,7 +122,7 @@ class CommPage extends React.Component {
         }
 
         if (comms) {
-            this.setState({comms});
+            this.setState({comms, commCnts});
         }
 
         if (notes) {
@@ -400,15 +402,23 @@ class CommPage extends React.Component {
         this.setState({activeTabInd});
     }
 
+    onClickComm(comm) {
+        this.setState({activeCommId: comm.id});
+    }
+
     render() {
-        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId, availableCreators, username, sortByDate, activeTabInd } = this.state;
+        const { clientname, showSimpleSearchBox, simpleSearchKeyword, comms, commCnts, sortField, sortDirection, filterInputs, isNotePaneOpen, notes, commFormInputs, isShowUpdateCommModal, scrollLeft, loading, selectedCommId, availableCreators, username, sortByDate, activeTabInd, activeCommId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
         const commsList = comms.map((comm, index) => {
             return (
-                <tr key={index}>
+                <tr 
+                    key={index}
+                    className={(activeCommId === comm.id) ? 'active' : 'inactive'}
+                    onClick={() => this.onClickComm(comm)}
+                >
                     <td onClick={() => this.onClickCommIdCell(comm)}>{comm.id}</td>
                     <td>{comm.b_bookingID_Visual}</td>
                     <td>{comm.b_status}</td>
@@ -472,7 +482,7 @@ class CommPage extends React.Component {
                                 className={parseInt(activeTabInd) === 0 ? 'active' : ''}
                                 onClick={() => this.onClickTab(0)}
                             >
-                                All
+                                All {!_.isNull(commCnts) && !_.isUndefined(commCnts['all_cnt']) && commCnts['all_cnt'] !== -1 ? ' (' + commCnts['all_cnt'] + ')' : ''}
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -480,7 +490,7 @@ class CommPage extends React.Component {
                                 className={parseInt(activeTabInd) === 7 ? 'active' : ''}
                                 onClick={() => this.onClickTab(7)}
                             >
-                                Selected
+                                Selected {!_.isNull(commCnts) && !_.isUndefined(commCnts['selected_cnt']) && commCnts['selected_cnt'] !== -1 ? ' (' + commCnts['selected_cnt'] + ')' : ''}
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -488,7 +498,7 @@ class CommPage extends React.Component {
                                 className={parseInt(activeTabInd) === 1 ? 'active' : ''}
                                 onClick={() => this.onClickTab(1)}
                             >
-                                Opened
+                                Opened {!_.isNull(commCnts) && !_.isUndefined(commCnts['opened_cnt']) && commCnts['opened_cnt'] !== -1 ? ' (' + commCnts['opened_cnt'] + ')' : ''}
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -974,6 +984,7 @@ const mapStateToProps = (state) => {
         availableCreators: state.comm.availableCreators,
         selectedBookingId: state.comm.selectedBookingId,
         username: state.auth.username,
+        commCnts: state.comm.commCnts,
     };
 };
 

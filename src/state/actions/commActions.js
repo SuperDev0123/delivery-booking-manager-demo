@@ -4,6 +4,7 @@ export function setComms(data) {
     return {
         type: SET_COMMS,
         comms: data.comms,
+        commCnts: data.cnts,
     };
 }
 

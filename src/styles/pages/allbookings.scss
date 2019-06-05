@@ -58,6 +58,12 @@ table.booking-lines {
   padding: 10px;
 }
 
+.table-responsive {
+  .tbl-content tr.active {
+    background-color: #bee;
+  }
+}
+
 // Main Table
 #all_booking .table-responsive {
   margin-top: 5px !important;
@@ -69,10 +75,6 @@ table.booking-lines {
     height: calc(100% - 70px);
     overflow-x: hidden;
     overflow-y: auto;
-
-    tr.active {
-      background-color: #bee;
-    }
   }
 
   th {
