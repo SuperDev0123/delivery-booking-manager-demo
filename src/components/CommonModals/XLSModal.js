@@ -148,6 +148,7 @@ class XLSModal extends Component {
                             <option value="booking">Booking Report</option>
                             <option value="booking_line">Booking Line Report</option>
                             <option value="booking_with_gaps">Booking w/gaps</option>
+                            <option value="whse">FP/Whse Report</option>
                             <option value="all">All</option>
                         </select>
                     </label>
