@@ -1008,7 +1008,7 @@ class AllBookingsPage extends React.Component {
             bookingIds.push(bookings[i].id);
 
         this.setState({loadingDownload: true});
-        const options = {
+        let options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
             data: {bookingIds, vx_freight_provider},
@@ -1017,16 +1017,36 @@ class AllBookingsPage extends React.Component {
         axios(options).then((response) => {
             if (response.data.error && response.data.error === 'Found set has booked bookings') {
                 alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                this.setState({loadingDownload: false});
             } else if (response.data.success && response.data.success === 'success') {
-                alert('XML’s are *not generated successfully.');
-                this.setState({loading: true});
+                alert('XML’s have been generated successfully.');
+                this.setState({loading: true, loadingDownload: false});
                 this.props.setNeedUpdateBookingsState(true);
             } else {
-                alert('XML’s have been generated successfully.');
-                this.setState({loading: true});
-                this.props.setNeedUpdateBookingsState(true);
+                if (vx_freight_provider === 'taz') {
+                    alert('XML’s have been generated successfully. Labels will be generated');
+                    options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+                        data: {bookingIds, vx_freight_provider},
+                    };
+
+                    axios(options).then((response) => {
+                        if (response.data.success && response.data.success === 'success') {
+                            alert('PDF(Label)’s have been generated successfully.');
+                        } else {
+                            alert('PDF(Label)’s have *not been generated.');
+                        }
+
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                    });
+                } else {
+                    alert('XML’s have been generated successfully.');
+                    this.setState({loading: true, loadingDownload: false});
+                    this.props.setNeedUpdateBookingsState(true);
+                }
             }
-            this.setState({loadingDownload: false});
         });
     }
 
