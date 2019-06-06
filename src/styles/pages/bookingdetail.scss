@@ -543,4 +543,13 @@ p.lock-status {
 			}
 		}
 	}
+
+	.userclock, .booked-date {
+		width: 40%;
+	}
+
+	.booked-date {
+		float: right;
+		text-align: right;
+	}
 }

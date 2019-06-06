@@ -2112,8 +2112,11 @@ class BookingPage extends Component {
                     <section className="booking">
                         <div className="container">
                             <div className="grid">
-                                <div className="userclock">
+                                <div className="userclock disp-inline-block">
                                     Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
+                                </div>
+                                <div className="booked-date disp-inline-block">
+                                    Booked Date: {!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).format('DD/MM/YYYY hh:mm:ss') : ' Not Booked yet'}
                                 </div>
                                 <div className="head">
                                     <div className="row">
@@ -2199,8 +2202,6 @@ class BookingPage extends Component {
                                                         <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
                                                 }
                                             </div>
-                                        </div>
-                                        <div className="col-sm-4 form-group">
                                             <div>
                                                 <span>Contact PU Email</span>
                                                 {
@@ -2210,6 +2211,8 @@ class BookingPage extends Component {
                                                         <input className="form-control" type="text" placeholder="@email.com" name="pu_Email" value = {formInputs['pu_Email']} />
                                                 }
                                             </div>
+                                        </div>
+                                        <div className="col-sm-4 form-group">
                                             <div>
                                                 <span>Contact DE Email</span>
                                                 {
@@ -2217,6 +2220,33 @@ class BookingPage extends Component {
                                                         <p className="show-mode">{formInputs['de_Email']}</p>
                                                         :
                                                         <input className="form-control" type="text" placeholder="@email.com" name="de_Email" value = {formInputs['de_Email']} />
+                                                }
+                                            </div>
+                                            <div>
+                                                <span>Linked Reference</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p 
+                                                            className="show-mode"
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                        >
+                                                            {formInputs['dme_status_linked_reference_from_fp']}
+                                                        </p>
+                                                        :
+                                                        <input 
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                            className="form-control height-40p" 
+                                                            type="text" 
+                                                            placeholder="Linked Reference" 
+                                                            name="dme_status_linked_reference_from_fp" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                            onChange={(e) => this.onHandleInput(e)}/>
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
+                                                        :
+                                                        null
                                                 }
                                             </div>
                                         </div>
@@ -2319,53 +2349,28 @@ class BookingPage extends Component {
                                                 <span>Status History Note</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p 
+                                                        <textarea 
                                                             className="show-mode" 
                                                             onClick={() => this.toggleShowStatusNoteModal()}
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                        >
-                                                            {formInputs['dme_status_history_notes']}
-                                                        </p>
+                                                            value={formInputs['dme_status_history_notes']}
+                                                            rows="3" 
+                                                            cols="25"
+                                                        />
                                                         :
-                                                        <input 
+                                                        <textarea 
+                                                            className="show-mode" 
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="Linked Reference" 
                                                             name="dme_status_linked_reference_from_fp" 
                                                             value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                            onClick={() => this.toggleShowStatusNoteModal()}/>
+                                                            onClick={() => this.toggleShowStatusNoteModal()}
+                                                            rows="3" 
+                                                            cols="25"
+                                                        />
                                                 }
                                                 {
                                                     !_.isEmpty(formInputs['dme_status_history_notes']) ?
                                                         <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                            <div>
-                                                <span>Linked Reference</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                        >
-                                                            {formInputs['dme_status_linked_reference_from_fp']}
-                                                        </p>
-                                                        :
-                                                        <input 
-                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="Linked Reference" 
-                                                            name="dme_status_linked_reference_from_fp" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
-                                                            onChange={(e) => this.onHandleInput(e)}/>
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
                                                         :
                                                         null
                                                 }
