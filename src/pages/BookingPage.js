@@ -1300,6 +1300,10 @@ class BookingPage extends Component {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             this.setState({formInputs, booking});
+        } else {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
         }
     }
 
@@ -2116,7 +2120,16 @@ class BookingPage extends Component {
                                     Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                 </div>
                                 <div className="booked-date disp-inline-block">
-                                    Booked Date: {!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).format('DD/MM/YYYY hh:mm:ss') : ' Not Booked yet'}
+                                    <span>Booked Date:</span>
+                                    {
+                                        (parseInt(curViewMode) === 0) ?
+                                            <p className="show-mode">{!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                            :
+                                            <DateTimePicker
+                                                onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
+                                                value={!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).toDate() : null}
+                                            />
+                                    }
                                 </div>
                                 <div className="head">
                                     <div className="row">

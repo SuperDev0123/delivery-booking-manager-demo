@@ -546,6 +546,16 @@ p.lock-status {
 
 	.userclock, .booked-date {
 		width: 40%;
+		height: 40px;
+
+		input, p {
+			width: 135px;
+			display: inline-block;
+		}
+	}
+
+	.userclock {
+		padding-top: 15px;
 	}
 
 	.booked-date {
