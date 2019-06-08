@@ -769,6 +769,7 @@ class AllBookingsPage extends React.Component {
         const st_name = 'startrack';
         const allied_name = 'allied';
         const cope_name = 'cope';
+        const taz_name = 'taz';
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
@@ -777,6 +778,9 @@ class AllBookingsPage extends React.Component {
             } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
                 booking.vx_freight_provider.toLowerCase() === cope_name) {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+                win.focus();
+            } else if (booking.vx_freight_provider.toLowerCase() === taz_name) {
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/taz_au/' + booking.z_label_url, '_blank');
                 win.focus();
             }
         } else {
