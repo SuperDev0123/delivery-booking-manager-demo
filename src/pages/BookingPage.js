@@ -2980,14 +2980,19 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['pu_PickUp_Avail_From_Date_DME'] ? moment(formInputs['pu_PickUp_Avail_From_Date_DME']).format('MM/DD/YYYY') : ''}
                                                                         </p>
-                                                                        <p className="time disp-inline-block">
-                                                                            {
-                                                                                formInputs['pu_PickUp_Avail_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_Avail_Time_Hours'] + ':'
-                                                                            }
-                                                                            {
-                                                                                formInputs['pu_PickUp_Avail_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_Avail_Time_Minutes']
-                                                                            }
-                                                                        </p>
+                                                                        {
+                                                                            !_.isNull(formInputs['pu_PickUp_Avail_From_Date_DME']) && !_.isUndefined(formInputs['pu_PickUp_Avail_From_Date_DME'] && !_.isEmpty(formInputs['pu_PickUp_Avail_From_Date_DME'])) ?
+                                                                                <p className="time disp-inline-block">
+                                                                                    {
+                                                                                        formInputs['pu_PickUp_Avail_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_Avail_Time_Hours'] + ':'
+                                                                                    }
+                                                                                    {
+                                                                                        formInputs['pu_PickUp_Avail_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_Avail_Time_Minutes']
+                                                                                    }
+                                                                                </p>
+                                                                                :
+                                                                                null
+                                                                        }
                                                                     </label>
                                                                     :
                                                                     <div>
@@ -3023,14 +3028,19 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).format('MM/DD/YYYY') : ''}
                                                                         </p>
-                                                                        <p className="time disp-inline-block">
-                                                                            {
-                                                                                formInputs['pu_PickUp_By_Time_Hours_DME'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours_DME'] + ':'
-                                                                            }
-                                                                            {
-                                                                                formInputs['pu_PickUp_By_Time_Minutes_DME'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes_DME']
-                                                                            }
-                                                                        </p>
+                                                                        {
+                                                                            !_.isNull(formInputs['pu_PickUp_By_Date_DME']) && !_.isUndefined(formInputs['pu_PickUp_By_Date_DME'] && !_.isEmpty(formInputs['pu_PickUp_By_Date_DME'])) ?
+                                                                                <p className="time disp-inline-block">
+                                                                                    {
+                                                                                        formInputs['pu_PickUp_By_Time_Hours_DME'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours_DME'] + ':'
+                                                                                    }
+                                                                                    {
+                                                                                        formInputs['pu_PickUp_By_Time_Minutes_DME'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes_DME']
+                                                                                    }
+                                                                                </p>
+                                                                                :
+                                                                                null
+                                                                        }
                                                                     </label>
                                                                     :
                                                                     <div>
@@ -3066,14 +3076,19 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('MM/DD/YYYY') : ''}
                                                                         </p>
-                                                                        <p className="time disp-inline-block">
-                                                                            {
-                                                                                formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
-                                                                            }
-                                                                            {
-                                                                                formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
-                                                                            }
-                                                                        </p>
+                                                                        {
+                                                                            !_.isNull(formInputs['de_Deliver_From_Date']) && !_.isUndefined(formInputs['de_Deliver_From_Date'] && !_.isEmpty(formInputs['de_Deliver_From_Date'])) ?
+                                                                                <p className="time disp-inline-block">
+                                                                                    {
+                                                                                        formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
+                                                                                    }
+                                                                                    {
+                                                                                        formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
+                                                                                    }
+                                                                                </p>
+                                                                                :
+                                                                                null
+                                                                        }
                                                                     </label>
                                                                     :
                                                                     <div>
@@ -3109,14 +3124,19 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('MM/DD/YYYY') : ''}
                                                                         </p>
-                                                                        <p className="time disp-inline-block">
-                                                                            {
-                                                                                formInputs['de_Deliver_By_Hours'] === 0 ? '00:' : formInputs['de_Deliver_By_Hours'] + ':'
-                                                                            }
-                                                                            {
-                                                                                formInputs['de_Deliver_By_Minutes'] === 0 ? '00' : formInputs['de_Deliver_By_Minutes']
-                                                                            }
-                                                                        </p>
+                                                                        {
+                                                                            !_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'] && !_.isEmpty(formInputs['de_Deliver_By_Date'])) ?
+                                                                                <p className="time disp-inline-block">
+                                                                                    {
+                                                                                        formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
+                                                                                    }
+                                                                                    {
+                                                                                        formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
+                                                                                    }
+                                                                                </p>
+                                                                                :
+                                                                                null
+                                                                        }
                                                                     </label>
                                                                     :
                                                                     <div>
