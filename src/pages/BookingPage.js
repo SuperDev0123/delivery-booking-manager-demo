@@ -497,9 +497,9 @@ class BookingPage extends Component {
                 if (booking.de_To_Address_State != null) formInputs['de_To_Address_State'] = booking.de_To_Address_State;
                 else formInputs['de_To_Address_State'] = '';
                 if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
-                else formInputs['s_20_Actual_Pickup_TimeStamp'] = '';
+                else formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
                 if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp;
-                else formInputs['s_21_Actual_Delivery_TimeStamp'] = '';
+                else formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
                 if (booking.b_client_name != null) formInputs['b_client_name'] = booking.b_client_name;
                 else formInputs['b_client_name'] = '';
                 if (booking.b_client_warehouse_code != null) formInputs['b_client_warehouse_code'] = booking.b_client_warehouse_code;
@@ -512,9 +512,9 @@ class BookingPage extends Component {
                 else formInputs['booking_Created_For'] = '';
 
                 if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
-                else formInputs['vx_fp_pu_eta_time'] = '';
+                else formInputs['vx_fp_pu_eta_time'] = null;
                 if (booking.vx_fp_del_eta_time != null) formInputs['vx_fp_del_eta_time'] = booking.vx_fp_del_eta_time;
-                else formInputs['vx_fp_del_eta_time'] = '';
+                else formInputs['vx_fp_del_eta_time'] = null;
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -2127,7 +2127,7 @@ class BookingPage extends Component {
                                             :
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).toDate() : null}
+                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ? moment(booking.b_dateBookedDate).toDate() : null}
                                             />
                                     }
                                 </div>
@@ -2627,7 +2627,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'vx_fp_pu_eta_time')}
-                                                                            value={formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['vx_fp_pu_eta_time']) && !_.isUndefined(formInputs['vx_fp_pu_eta_time'])) ? moment(formInputs['vx_fp_pu_eta_time']).toDate() : null}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['vx_fp_pu_eta_time']}</p>
@@ -2646,7 +2646,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
-                                                                            value={formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && _.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp']}</p>
@@ -2915,7 +2915,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'vx_fp_del_eta_time')}
-                                                                            value={formInputs['vx_fp_del_eta_time'] ? moment(formInputs['vx_fp_del_eta_time']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['vx_fp_del_eta_time']) && !_.isUndefined(formInputs['vx_fp_del_eta_time'])) ? moment(formInputs['vx_fp_del_eta_time']).toDate() : null}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['vx_fp_del_eta_time']}</p>
@@ -2934,7 +2934,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp']}</p>
@@ -3490,7 +3490,7 @@ class BookingPage extends Component {
                             <p>Due Date Time</p>
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
-                                value={commFormInputs['due_date_time']}
+                                value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) ? commFormInputs['due_date_time'] : null}
                             />
                         </label>
                     </ModalBody>
