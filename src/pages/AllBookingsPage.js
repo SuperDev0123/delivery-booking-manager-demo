@@ -17,7 +17,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected, queryManifest } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
@@ -28,6 +28,7 @@ import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
 import XMLModal from '../components/CommonModals/XMLModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
+import ManifestModal from '../components/CommonModals/ManifestModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -85,6 +86,8 @@ class AllBookingsPage extends React.Component {
             isShowStatusLockModal: false,
             selectedBooking4StatusLock: null,
             activeBookingId: null,
+            isShowManifestModal: false,
+            manifestStatus: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -94,6 +97,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.toggleShowXMLModal = this.toggleShowXMLModal.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
+        this.toggleShowManifestModal = this.toggleShowManifestModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -125,6 +129,7 @@ class AllBookingsPage extends React.Component {
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
+        queryManifest: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -209,6 +214,12 @@ class AllBookingsPage extends React.Component {
 
                 this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.newPod, successSearchFilterOptions.newLabel);
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
+            }
+
+            if (this.state.manifestStatus === 1) {
+                this.setState({manifestStatus: 2});
+            } else {
+                this.setState({manifestStatus: 0});
             }
         }
 
@@ -588,6 +599,10 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
+    toggleShowManifestModal() {
+        this.setState(prevState => ({isShowManifestModal: !prevState.isShowManifestModal}));
+    }
+
     onCheck(e, id) {
         if (!e.target.checked) {
             this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
@@ -913,6 +928,10 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickMani() {
+        this.toggleShowManifestModal();
+    }
+
     onClickGear() {
         this.setState({showGearMenu: true});
     }
@@ -1072,6 +1091,36 @@ class AllBookingsPage extends React.Component {
 
     onClickBooking(booking) {
         this.setState({activeBookingId: booking.id});
+    }
+
+    onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date) {
+        this.setState({manifestStatus: 1});
+        this.props.queryManifest(vx_freight_provider, puPickUpAvailFrom_Date);
+    }
+
+    onClickCreateManifest() {
+        const {bookings} = this.state;
+        let bookingIds = [];
+
+        for (let i = 0; i < bookings.length; i++)
+            bookingIds.push(bookings[i].id);
+
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-mainifest/',
+            data: {bookingIds},
+        };
+
+        axios(options).then((response) => {
+            if (response.data.error && response.data.error === 'Found set has manifested bookings') {
+                alert('Listed are some bookings that should not be processed because they have already been manifested\n' + response.data.manifested_list);
+            } else if (response.data.success && response.data.success === 'success') {
+                alert('Manifest(s) have been generated successfully.');
+            } else {
+                alert('Manifest(s) have *not been generated.');
+            }
+        });
+        this.setState({manifestStatus: 0});
     }
 
     render() {
@@ -1520,6 +1569,7 @@ class AllBookingsPage extends React.Component {
                             <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickDownloadCSV()}>CSV</a>
                             <a onClick={() => this.onClickXML()}>XML</a>
+                            <a onClick={() => this.onClickMani()}>Mani</a>
                             <a href="">?</a>
                         </div>
                     </div>
@@ -1592,6 +1642,13 @@ class AllBookingsPage extends React.Component {
                                                         loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingsCnt + ') ' : ''
                                                     }
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                    <button
+                                                        className="btn btn-primary create-manifest"
+                                                        onClick={() => this.onClickCreateManifest()}
+                                                        disabled={this.state.manifestStatus === 2 ? '' : 'disabled'}
+                                                    >
+                                                        Manifest
+                                                    </button>
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
                                             </div>
@@ -2094,6 +2151,13 @@ class AllBookingsPage extends React.Component {
                     booking={selectedBooking4StatusLock}
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
+
+                <ManifestModal
+                    isOpen={this.state.isShowManifestModal}
+                    toggleShowManifestModal={this.toggleShowManifestModal}
+                    allFPs={allFPs}
+                    onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date)}
+                />
             </div>
         );
     }
@@ -2158,6 +2222,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
+        queryManifest: (vx_freight_provider, puPickUpAvailFrom_Date) => dispatch(queryManifest(vx_freight_provider, puPickUpAvailFrom_Date)),
     };
 };
 
