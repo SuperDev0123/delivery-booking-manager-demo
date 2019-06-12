@@ -1119,8 +1119,6 @@ class AllBookingsPage extends React.Component {
             link.setAttribute('download', 'manifest_files.zip');
             document.body.appendChild(link);
             link.click();
-            this.props.setNeedUpdateBookingsState(true);
-            this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false, loading: true});
         });
 
         this.setState({manifestStatus: 0});
