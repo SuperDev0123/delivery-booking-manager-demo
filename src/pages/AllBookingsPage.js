@@ -1109,17 +1109,20 @@ class AllBookingsPage extends React.Component {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-mainifest/',
             data: {bookingIds},
+            responseType: 'blob', // important
         };
 
         axios(options).then((response) => {
-            if (response.data.error && response.data.error === 'Found set has manifested bookings') {
-                alert('Listed are some bookings that should not be processed because they have already been manifested\n' + response.data.manifested_list);
-            } else if (response.data.success && response.data.success === 'success') {
-                alert('Manifest(s) have been generated successfully.');
-            } else {
-                alert('Manifest(s) have *not been generated.');
-            }
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'manifest_files.zip');
+            document.body.appendChild(link);
+            link.click();
+            this.props.setNeedUpdateBookingsState(true);
+            this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false, loading: true});
         });
+
         this.setState({manifestStatus: 0});
     }
 
