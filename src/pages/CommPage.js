@@ -83,6 +83,8 @@ class CommPage extends React.Component {
             this.props.history.push('/');
         }
 
+        this.props.getAvailableCreators();
+
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
 
@@ -94,7 +96,6 @@ class CommPage extends React.Component {
             this.props.setNeedUpdateComms(true);
         }
 
-        this.props.getAvailableCreators();
         Modal.setAppElement(this.el);
     }
 
@@ -130,7 +131,7 @@ class CommPage extends React.Component {
         }
 
         if (needUpdateComms) {
-            this.setState({});
+            this.props.setNeedUpdateComms(false);
             this.props.getComms(selectedBookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, activeTabInd);
             this.setState({
                 loading: true, 
