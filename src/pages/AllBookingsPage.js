@@ -73,6 +73,7 @@ class AllBookingsPage extends React.Component {
             total_cubic_meter: 0,
             dmeClients: [],
             clientname: null,
+            username: null,
             clientPK: 'dme',
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
@@ -180,7 +181,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -260,6 +261,10 @@ class AllBookingsPage extends React.Component {
 
         if (clientname) {
             this.setState({clientname});
+        }
+
+        if (username) {
+            this.setState({username});
         }
 
         if (needUpdateBookings) {
@@ -1100,7 +1105,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickCreateManifest() {
-        const {bookings, oneManifestFile} = this.state;
+        const {bookings, oneManifestFile, username} = this.state;
         let bookingIds = [];
 
         for (let i = 0; i < bookings.length; i++)
@@ -1109,7 +1114,7 @@ class AllBookingsPage extends React.Component {
         const options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
-            data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0},
+            data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0, username},
             responseType: 'blob', // important
         };
 
@@ -1647,7 +1652,7 @@ class AllBookingsPage extends React.Component {
                                                     <button
                                                         className="btn btn-primary create-manifest"
                                                         onClick={() => this.onClickCreateManifest()}
-                                                        disabled={this.state.manifestStatus === 2 ? '' : 'disabled'}
+                                                        disabled={(this.state.manifestStatus === 2 && bookings.length > 0) ? '' : 'disabled'}
                                                     >
                                                         Manifest
                                                     </button>
@@ -2192,6 +2197,7 @@ const mapStateToProps = (state) => {
         errorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
+        username: state.auth.username,
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
         allFPs: state.extra.allFPs,
