@@ -88,6 +88,7 @@ class AllBookingsPage extends React.Component {
             activeBookingId: null,
             isShowManifestModal: false,
             manifestStatus: 0,
+            oneManifestFile: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -1093,13 +1094,13 @@ class AllBookingsPage extends React.Component {
         this.setState({activeBookingId: booking.id});
     }
 
-    onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date) {
-        this.setState({manifestStatus: 1});
+    onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) {
+        this.setState({manifestStatus: 1, oneManifestFile});
         this.props.queryManifest(vx_freight_provider, puPickUpAvailFrom_Date);
     }
 
     onClickCreateManifest() {
-        const {bookings} = this.state;
+        const {bookings, oneManifestFile} = this.state;
         let bookingIds = [];
 
         for (let i = 0; i < bookings.length; i++)
@@ -1107,8 +1108,8 @@ class AllBookingsPage extends React.Component {
 
         const options = {
             method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-mainifest/',
-            data: {bookingIds},
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
+            data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0},
             responseType: 'blob', // important
         };
 
@@ -2157,7 +2158,7 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowManifestModal}
                     toggleShowManifestModal={this.toggleShowManifestModal}
                     allFPs={allFPs}
-                    onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date)}
+                    onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile)}
                 />
             </div>
         );

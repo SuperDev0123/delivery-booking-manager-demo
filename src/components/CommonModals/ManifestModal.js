@@ -14,6 +14,7 @@ class ManifestModal extends Component {
         this.state = {
             puFromDate: null, 
             vx_freight_provider: '',
+            oneManifestFile: false,
         };
     }
 
@@ -49,25 +50,29 @@ class ManifestModal extends Component {
     }
 
     onInputChange(e) {
-        this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
+        if (e.target.name === 'vx_freight_provider') {
+            this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
+        } else if (e.target.name === 'oneManifestFile') {
+            this.setState({oneManifestFile: e.target.value});
+        }
     }
 
     onClickQuery() {
-        const {puFromDate, vx_freight_provider} = this.state;
+        const {puFromDate, vx_freight_provider, oneManifestFile} = this.state;
 
         if (_.isNull(puFromDate)) {
             this.setState({errorMessage: 'Please select PU From Date.'});
         } else if (_.isEmpty(vx_freight_provider)) {
             this.setState({errorMessage: 'Please select Freight Provider.'});
         } else {
-            this.props.onClickOk(vx_freight_provider, moment(puFromDate).format('YYYY-MM-DD'));
+            this.props.onClickOk(vx_freight_provider, moment(puFromDate).format('YYYY-MM-DD'), oneManifestFile);
             this.props.toggleShowManifestModal();
         }
     }
 
     render() {
         const {isOpen, allFPs} = this.props;
-        const {puFromDate, vx_freight_provider, errorMessage} = this.state;
+        const {puFromDate, vx_freight_provider, oneManifestFile, errorMessage} = this.state;
 
         const fpList = allFPs.map((fp, index) => {
             return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
@@ -96,6 +101,10 @@ class ManifestModal extends Component {
                             onChange={(e) => this.onDateChange(e)}
                             dateFormat="dd MMM yyyy"
                         />
+                    </label>
+                    <label>
+                        <p>One Manifest File? </p>
+                        <input type="checkbox" name="oneManifestFile" className="checkbox" value={oneManifestFile} onChange={(e) => this.onInputChange(e)} />
                     </label>
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
