@@ -186,7 +186,7 @@ class XLSModal extends Component {
                     </label>
                     <label>
                         <p>Show Field Names: </p>
-                        <input type="checkbox" name="showFieldName" className="checkbox" value={showFieldName} onChange={(e) => this.onInputChange(e, 'showFieldName')} />
+                        <input type="checkbox" name="showFieldName" className="checkbox" checked={showFieldName} onChange={(e) => this.onInputChange(e, 'showFieldName')} />
                     </label>
                     <p className="red">{errorMessage}</p>
                 </ModalBody>

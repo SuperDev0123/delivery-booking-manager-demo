@@ -53,7 +53,7 @@ class ManifestModal extends Component {
         if (e.target.name === 'vx_freight_provider') {
             this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
         } else if (e.target.name === 'oneManifestFile') {
-            this.setState({oneManifestFile: e.target.value});
+            this.setState({oneManifestFile: e.target.checked});
         }
     }
 
@@ -104,7 +104,7 @@ class ManifestModal extends Component {
                     </label>
                     <label>
                         <p>One Manifest File? </p>
-                        <input type="checkbox" name="oneManifestFile" className="checkbox" value={oneManifestFile} onChange={(e) => this.onInputChange(e)} />
+                        <input type="checkbox" name="oneManifestFile" className="checkbox" checked={oneManifestFile} onChange={(e) => this.onInputChange(e)} />
                     </label>
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
