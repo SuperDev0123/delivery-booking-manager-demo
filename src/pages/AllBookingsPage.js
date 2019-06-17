@@ -976,7 +976,8 @@ class AllBookingsPage extends React.Component {
 
     onDownloadOptionChange(e) {
         const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', e.target.value);
+        // this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', e.target.value);
+        this.props.setGetBookingsFilter('downloadOption', e.target.value);
         this.setState({downloadOption: e.target.value});
     }
 
