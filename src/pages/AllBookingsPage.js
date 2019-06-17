@@ -1052,7 +1052,7 @@ class AllBookingsPage extends React.Component {
                 this.setState({loading: true, loadingDownload: false});
                 this.props.setNeedUpdateBookingsState(true);
             } else {
-                if (vx_freight_provider === 'taz') {
+                if (vx_freight_provider === 'TASFR') {
                     alert('XML’s have been generated successfully. Labels will be generated');
                     options = {
                         method: 'post',
