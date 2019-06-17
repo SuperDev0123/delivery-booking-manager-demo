@@ -1057,7 +1057,7 @@ class AllBookingsPage extends React.Component {
                     options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                        data: {bookingIds, vx_freight_provider},
+                        data: {bookingIds, vx_freight_provider: 'TASFR'},
                     };
 
                     axios(options).then((response) => {
