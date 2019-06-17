@@ -51,7 +51,7 @@ class XMLModal extends Component {
                             value = {vx_freight_provider} >
                             <option value="" selected disabled hidden>Select a Freight Provider</option>
                             <option value="allied">Allied</option>
-                            <option value="taz">Taz</option>
+                            <option value="TASFR">Taz</option>
                         </select>
                     </label>
                     <p className="red">{errorMessage}</p>
