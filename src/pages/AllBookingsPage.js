@@ -181,7 +181,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -205,8 +205,7 @@ class AllBookingsPage extends React.Component {
                         columnFilters: {...columnFilters},
                         prefilterInd,
                         simpleSearchKeyword,
-                        newPod,
-                        newLabel,
+                        downloadOption,
                         clientPK,
                     },
                     hasSuccessSearchAndFilterOptions: true,
@@ -214,7 +213,7 @@ class AllBookingsPage extends React.Component {
             } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
                 alert('Your search/filter has returned 0 records - Returning to your last found set.');
 
-                this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.newPod, successSearchFilterOptions.newLabel);
+                this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.downloadOption);
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
             }
 
@@ -311,12 +310,8 @@ class AllBookingsPage extends React.Component {
             }
 
             // downloadOption
-            if (newPod) {
-                this.setState({downloadOption: 'new_pod'});
-            } else if (newLabel) {
-                this.setState({downloadOption: 'new_label'});
-            } else if (!newPod && !newLabel) {
-                this.setState({downloadOption: 'label'});
+            if (downloadOption) {
+                this.setState({downloadOption});
             }
 
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
@@ -329,7 +324,7 @@ class AllBookingsPage extends React.Component {
                 simpleSearchKeyword,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption);
         } else {
             this.setState({loading: false});
         }
@@ -744,10 +739,8 @@ class AllBookingsPage extends React.Component {
                     for (let i = 0; i < bookings.length; i++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
                             if (bookings[i].z_downloaded_pod_timestamp === null &&
-                                ((bookings[i].z_pod_url &&
-                                bookings[i].z_pod_url.length > 0) ||
-                                (bookings[i].z_pod_signed_url &&
-                                bookings[i].z_pod_signed_url.length > 0)))
+                                (bookings[i].z_pod_url &&
+                                bookings[i].z_pod_url.length > 0))
                                 bookingIdsWithNewPOD.push(bookings[i].id);
                         }
                     }
@@ -759,7 +752,7 @@ class AllBookingsPage extends React.Component {
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
                         data: {
                             ids: downloadOption === 'pod' ? selectedBookingIds : bookingIdsWithNewPOD,
-                            onlyNew: downloadOption === 'pod' ? 'ALL' : 'NEW',
+                            downloadOption: downloadOption,
                         },
                         responseType: 'blob', // important
                     };
@@ -768,7 +761,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_and_pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -776,6 +769,45 @@ class AllBookingsPage extends React.Component {
                     });
                 } else {
                     alert('No new POD info');
+                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                }
+            } else if (downloadOption === 'pod_sog' || downloadOption === 'new_pod_sog') {
+                let bookingIdsWithNewPODSOG = [];
+
+                for (let j = 0; j < selectedBookingIds.length; j++) {
+                    for (let i = 0; i < bookings.length; i++) {
+                        if (bookings[i].id === selectedBookingIds[j]) {
+                            if (bookings[i].z_downloaded_pod_sog_timestamp === null &&
+                                (bookings[i].z_pod_signed_url &&
+                                bookings[i].z_pod_signed_url.length > 0))
+                                bookingIdsWithNewPODSOG.push(bookings[i].id);
+                        }
+                    }
+                }
+
+                if ((downloadOption === 'new_pod_sog' && bookingIdsWithNewPODSOG.length !== 0) || (downloadOption === 'pod_sog')) {
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        data: {
+                            ids: downloadOption === 'pod_sog' ? selectedBookingIds : bookingIdsWithNewPODSOG,
+                            downloadOption: downloadOption,
+                        },
+                        responseType: 'blob', // important
+                    };
+
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        this.props.setGetBookingsFilter('date', {startDate, endDate});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    });
+                } else {
+                    alert('No new POD SOG info');
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 }
             }
@@ -830,13 +862,13 @@ class AllBookingsPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {simpleSearchKeyword, newPod, newLabel} = this.state;
+        const {simpleSearchKeyword, downloadOption} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
             const today = moment().format('YYYY-MM-DD');
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, simpleSearchKeyword, newPod, newLabel);
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, simpleSearchKeyword, downloadOption);
             this.setState({activeTabInd: 0});
         }
 
@@ -844,11 +876,11 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickTab(activeTabInd) {
-        const {newPod, newLabel} = this.state;
+        const {downloadOption} = this.state;
 
         if (activeTabInd === 0) {
             const today = moment().format('YYYY-MM-DD');
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', newPod, newLabel);
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', downloadOption);
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, '-id', {}, activeTabInd);
@@ -944,24 +976,7 @@ class AllBookingsPage extends React.Component {
 
     onDownloadOptionChange(e) {
         const today = moment().format('YYYY-MM-DD');
-
-        if (e.target.value === 'new_pod') {
-            const newPod = true;
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', newPod, false);
-            this.setState({newPod});
-        } else if (e.target.value === 'new_label') {
-            const newLabel = true;
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', false, newLabel);
-            this.setState({newLabel});
-        } else if ((e.target.value !== 'new_pod' ||
-            e.target.value !== 'new_label') && 
-            (this.state.downloadOption === 'new_pod' ||
-            this.state.downloadOption === 'new_label')) {
-            this.props.setGetBookingsFilter('newPod', false);
-            this.props.setGetBookingsFilter('newLabel', false);
-            this.setState({newPod: false, newLabel: false});
-        }
-
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', e.target.value);
         this.setState({downloadOption: e.target.value});
     }
 
@@ -1735,6 +1750,8 @@ class AllBookingsPage extends React.Component {
                                                 <option value="new_label">New Label</option>
                                                 <option value="pod">Pod</option>
                                                 <option value="new_pod">New Pod</option>
+                                                <option value="pod_sog">Pod SOG</option>
+                                                <option value="new_pod_sog">New Pod SOG</option>
                                             </select>
                                         </div>
                                         <LoadingOverlay
@@ -2192,8 +2209,7 @@ const mapStateToProps = (state) => {
         columnFilters: state.booking.columnFilters,
         prefilterInd: state.booking.prefilterInd,
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
-        newPod: state.booking.newPod,
-        newLabel: state.booking.newLabel,
+        downloadOption: state.booking.downloadOption,
         errorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
@@ -2207,9 +2223,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, newPod, newLabel)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
