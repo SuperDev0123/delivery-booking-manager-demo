@@ -242,7 +242,7 @@ export const BookingReducer = (state = defaultState, { noBooking, attachments, t
                 needUpdateBookings: true,
                 bookings: [],
             };
-        case SET_LOCAL_FILTER_DOWNLOADOPTION
+        case SET_LOCAL_FILTER_DOWNLOADOPTION:
             return {
                 ...state,
                 downloadOption: downloadOption
