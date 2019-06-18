@@ -1044,7 +1044,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickBuildXML(vx_freight_provider) {
-        const {bookings} = this.state;
+        const {bookings, oneManifestFile} = this.state;
         let bookingIds = [];
 
         for (let i = 0; i < bookings.length; i++)
@@ -1054,7 +1054,7 @@ class AllBookingsPage extends React.Component {
         let options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-            data: {bookingIds, vx_freight_provider},
+            data: {bookingIds, vx_freight_provider, one_manifest_file: oneManifestFile ? 1 : 0},
         };
 
         axios(options).then((response) => {
