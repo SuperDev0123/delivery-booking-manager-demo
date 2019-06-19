@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction, successGetApiBCLs, failedGetApiBCLs } from '../actions/extraActions';
+import { resetFlagApiBCLs, resetFlagStatusHistory, successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction, successGetApiBCLs, failedGetApiBCLs } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -36,10 +36,12 @@ export const getBookingStatusHistory = (pk_booking_id) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/get_all?pk_booking_id=` + pk_booking_id,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetFlagStatusHistory());
         axios(options)
             .then(({ data }) => dispatch(successGetBookingStatusHistory(data)))
             .catch((error) => dispatch(failedGetBookingStatusHistory(error)));
+    };
 };
 
 export const createStatusHistory = (statusHistory) => {
@@ -145,8 +147,10 @@ export const getApiBCLs = (bookingId) => {
         url: `${HTTP_PROTOCOL}://${API_HOST}/api_bcl/get_api_bcls/`,
         params: {'bookingId': bookingId},
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetFlagApiBCLs());
         axios(options)
             .then(({ data }) => dispatch(successGetApiBCLs(data)))
             .catch((error) => dispatch(failedGetApiBCLs(error)));
+    };
 };
