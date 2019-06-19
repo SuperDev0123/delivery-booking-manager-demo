@@ -829,11 +829,9 @@ class AllBookingsPage extends React.Component {
                 const win = window.open(booking.z_label_url);
                 win.focus();
             } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
-                booking.vx_freight_provider.toLowerCase() === cope_name) {
+                booking.vx_freight_provider.toLowerCase() === cope_name ||
+                booking.vx_freight_provider.toLowerCase() === taz_name) {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
-                win.focus();
-            } else if (booking.vx_freight_provider.toLowerCase() === taz_name) {
-                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/taz_au/' + booking.z_label_url, '_blank');
                 win.focus();
             }
         } else {
