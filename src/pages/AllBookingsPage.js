@@ -1057,7 +1057,7 @@ class AllBookingsPage extends React.Component {
             let options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {bookingIds, vx_freight_provider, one_manifest_file: oneManifestFile ? 1 : 0},
+                data: {bookingIds, vx_freight_provider, one_manifest_file: 0}, // `one_manifest_file` is useless here
             };
 
             axios(options).then((response) => {
