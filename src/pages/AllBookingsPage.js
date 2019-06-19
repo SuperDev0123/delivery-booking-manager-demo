@@ -1044,53 +1044,57 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickBuildXML(vx_freight_provider) {
-        const {bookings, oneManifestFile} = this.state;
+        const {bookings} = this.state;
         let bookingIds = [];
 
-        for (let i = 0; i < bookings.length; i++)
-            bookingIds.push(bookings[i].id);
+        if (vx_freight_provider === 'TASFR') {
+            alert('Tas XML only can be generated when build Tas Manifest.');
+        } else {
+            for (let i = 0; i < bookings.length; i++)
+                bookingIds.push(bookings[i].id);
 
-        this.setState({loadingDownload: true});
-        let options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-            data: {bookingIds, vx_freight_provider, one_manifest_file: oneManifestFile ? 1 : 0},
-        };
+            this.setState({loadingDownload: true});
+            let options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                data: {bookingIds, vx_freight_provider, one_manifest_file: oneManifestFile ? 1 : 0},
+            };
 
-        axios(options).then((response) => {
-            if (response.data.error && response.data.error === 'Found set has booked bookings') {
-                alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-                this.setState({loadingDownload: false});
-            } else if (response.data.success && response.data.success === 'success') {
-                alert('XML’s have been generated successfully.');
-                this.setState({loading: true, loadingDownload: false});
-                this.props.setNeedUpdateBookingsState(true);
-            } else {
-                if (vx_freight_provider === 'TASFR') {
-                    alert('XML’s have been generated successfully. Labels will be generated');
-                    options = {
-                        method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                        data: {bookingIds, vx_freight_provider: 'TASFR'},
-                    };
-
-                    axios(options).then((response) => {
-                        if (response.data.success && response.data.success === 'success') {
-                            alert('PDF(Label)’s have been generated successfully.');
-                        } else {
-                            alert('PDF(Label)’s have *not been generated.');
-                        }
-
-                        this.setState({loading: true, loadingDownload: false});
-                        this.props.setNeedUpdateBookingsState(true);
-                    });
-                } else {
+            axios(options).then((response) => {
+                if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                    this.setState({loadingDownload: false});
+                } else if (response.data.success && response.data.success === 'success') {
                     alert('XML’s have been generated successfully.');
                     this.setState({loading: true, loadingDownload: false});
                     this.props.setNeedUpdateBookingsState(true);
+                } else {
+                    if (vx_freight_provider === 'TASFR') {
+                        alert('XML’s have been generated successfully. Labels will be generated');
+                        options = {
+                            method: 'post',
+                            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+                            data: {bookingIds, vx_freight_provider: 'TASFR'},
+                        };
+
+                        axios(options).then((response) => {
+                            if (response.data.success && response.data.success === 'success') {
+                                alert('PDF(Label)’s have been generated successfully.');
+                            } else {
+                                alert('PDF(Label)’s have *not been generated.');
+                            }
+
+                            this.setState({loading: true, loadingDownload: false});
+                            this.props.setNeedUpdateBookingsState(true);
+                        });
+                    } else {
+                        alert('XML’s have been generated successfully.');
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     onClickCalcCollected(type) {
@@ -1121,11 +1125,12 @@ class AllBookingsPage extends React.Component {
     onClickCreateManifest() {
         const {bookings, oneManifestFile, username} = this.state;
         let bookingIds = [];
-
+        this.setState({loadingDownload: true});
+        
         for (let i = 0; i < bookings.length; i++)
             bookingIds.push(bookings[i].id);
 
-        const options = {
+        let options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
             data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0, username},
@@ -1138,7 +1143,46 @@ class AllBookingsPage extends React.Component {
             link.href = url;
             link.setAttribute('download', 'manifest_files.zip');
             document.body.appendChild(link);
-            link.click();
+
+            options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                data: {
+                    bookingIds, 
+                    vx_freight_provider: 'TASFR', 
+                    one_manifest_file: oneManifestFile ? 1 : 0,
+                },
+            };
+
+            axios(options).then((response) => {
+                if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                    this.setState({loadingDownload: false});
+                } else if (response.data.success && response.data.success === 'success') {
+                    alert('XML’s have been generated successfully.');
+                    this.setState({loading: true, loadingDownload: false});
+                    this.props.setNeedUpdateBookingsState(true);
+                } else {
+                    alert('XML’s have been generated successfully. Labels will be generated');
+                    options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+                        data: {bookingIds, vx_freight_provider: 'TASFR'},
+                    };
+
+                    axios(options).then((response) => {
+                        if (response.data.success && response.data.success === 'success') {
+                            alert('PDF(Label)’s have been generated successfully.');
+                        } else {
+                            alert('PDF(Label)’s have *not been generated.');
+                        }
+
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                        link.click(); // Show download Manifest file
+                    });
+                }
+            });
         });
 
         this.setState({manifestStatus: 0});
