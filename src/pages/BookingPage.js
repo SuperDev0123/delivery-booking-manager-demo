@@ -455,6 +455,146 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
+        if (!_.isNull(isBookedBooking) && !isBookedBooking) {
+            if (puStates && puStates.length > 0) {
+                if ( !this.state.loadedPostal ) {
+                    if (puPostalCodes == '' || puPostalCodes == null)
+                        this.props.getSuburbStrings('postalcode', puStates[0].label);
+                }
+
+                if (booking && booking.pu_Address_State) {
+                    let states = _.clone(puStates);
+                    let bHas = false;
+                    for (let i = 0; i < states.length; i++ ){
+                        if (states[i].label == booking.pu_Address_State) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        states.push({'value':booking.pu_Address_State, 'label': booking.pu_Address_State});
+                    this.setState({puStates: states});        
+                } else {
+                    this.setState({puStates});             
+                }
+
+                this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
+            } else if (this.state.loading) {
+                this.setState({loadingGeoPU: true});
+                this.props.getSuburbStrings('state', undefined);
+            }
+
+            if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
+                if (booking && booking.pu_Address_PostalCode) {
+                    let postalcodes = _.clone(puPostalCodes);
+                    let bHas = false;
+                    for (let i = 0; i < postalcodes.length; i++ ){
+                        if (postalcodes[i].label == booking.pu_Address_PostalCode) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
+                    this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
+                } else {
+                    this.setState({puPostalCodes, loadingGeoPU: false});
+                }
+            }
+
+            if (puSuburbs && puSuburbs.length > 0 && this.state.selectionChanged === 1) {
+                if (puSuburbs.length == 1) {
+                    this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
+                } else if (puSuburbs.length > 1) {
+                    if (booking && booking.pu_Address_Suburb) {
+                        let suburbs = _.clone(puSuburbs);
+                        let bHas = false;
+                        for (let i = 0; i < suburbs.length; i++){
+                            if (suburbs[i].label == booking.pu_Address_Suburb) {
+                                bHas = true;
+                                break;
+                            }
+                        }
+                        if (bHas == false)
+                            suburbs.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
+                        this.setState({puSuburbs: suburbs, loadingGeoPU: false});
+                    } else {
+                        this.setState({puSuburbs, loadingGeoPU: false});
+                    }
+                }
+            }
+
+            if (deToStates && deToStates.length > 0) {
+                if ( !this.state.deLoadedPostal ) {
+                    this.props.getDeliverySuburbStrings('postalcode', deToStates[0].label);
+                }
+
+                if (booking && booking.de_To_Address_State) {
+                    let states = _.clone(deToStates);
+                    let bHas = false;
+                    for (let i = 0; i < states.length; i++ ){
+                        if (states[i].label == booking.de_To_Address_State) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        states.push({'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State});
+                    this.setState({deToStates: states});        
+                } else {
+                    this.setState({deToStates});                    
+                }
+
+                this.setState({deToStates, deLoadedPostal: true, loadingGeoDeTo: false});
+            } else if (this.state.loading) {
+                this.props.getDeliverySuburbStrings('state', undefined);
+                this.setState({loadingGeoDeTo: true});
+            }
+
+            if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
+                if (booking && booking.de_To_Address_PostalCode) {
+                    let postalcode = _.clone(deToPostalCodes);
+                    let bHas = false;
+                    for (let i = 0; i < postalcode.length; i++ ){
+                        if (postalcode[i].label == booking.de_To_Address_PostalCode) {
+                            bHas = true;
+                            break;
+                        }
+                    }
+                    if (bHas == false)
+                        postalcode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
+                    this.setState({deToPostalCodes: postalcode, loadingGeoDeTo: false});        
+                } else {
+                    this.setState({deToPostalCodes, loadingGeoDeTo: false});             
+                }
+            }
+
+            if (deToSuburbs && deToSuburbs.length > 0 && this.state.selectionChanged === 2) {
+                if (deToSuburbs.length == 1) {
+                    this.setState({deToSuburb: deToSuburbs[0]});
+                } else if (deToSuburbs.length > 1) {
+                    if (booking && booking.de_To_Address_Suburb) {
+                        let suburbs = _.clone(deToSuburbs);
+                        let bHas = false;
+                        for (let i = 0; i < suburbs.length; i++ ){
+                            if (suburbs[i].label == booking.de_To_Address_Suburb) {
+                                bHas = true;
+                                break;
+                            }
+                        }
+                        if (bHas == false)
+                            suburbs.push({'value':booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb});
+                        this.setState({deToSuburbs: suburbs});        
+                    } else {
+                        this.setState({deToSuburbs});             
+                    }
+                }
+                this.setState({deToSuburbs, loadingGeoDeTo: false});
+            }
+
+            this.setState({selectionChanged: 0});
+        }
+
         if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
             (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
@@ -624,146 +764,6 @@ class BookingPage extends Component {
                 if (!_.isNull(this.state.typed))
                     alert('There is no such booking with that DME/CON number.');
             }
-        }
-
-        if (!_.isNull(isBookedBooking) && !isBookedBooking) {
-            if (puStates && puStates.length > 0) {
-                if ( !this.state.loadedPostal ) {
-                    if (puPostalCodes == '' || puPostalCodes == null)
-                        this.props.getSuburbStrings('postalcode', puStates[0].label);
-                }
-
-                if (booking && booking.pu_Address_State) {
-                    let states = _.clone(puStates);
-                    let bHas = false;
-                    for (let i = 0; i < states.length; i++ ){
-                        if (states[i].label == booking.pu_Address_State) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-                    if (bHas == false)
-                        states.push({'value':booking.pu_Address_State, 'label': booking.pu_Address_State});
-                    this.setState({puStates: states});        
-                } else {
-                    this.setState({puStates});             
-                }
-
-                this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
-            } else {
-                this.setState({loadingGeoPU: true});
-                this.props.getSuburbStrings('state', undefined);
-            }
-
-            if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
-                if (booking && booking.pu_Address_PostalCode) {
-                    let postalcodes = _.clone(puPostalCodes);
-                    let bHas = false;
-                    for (let i = 0; i < postalcodes.length; i++ ){
-                        if (postalcodes[i].label == booking.pu_Address_PostalCode) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-                    if (bHas == false)
-                        postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
-                    this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
-                } else {
-                    this.setState({puPostalCodes, loadingGeoPU: false});
-                }
-            }
-
-            if (puSuburbs && puSuburbs.length > 0 && this.state.selectionChanged === 1) {
-                if (puSuburbs.length == 1) {
-                    this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
-                } else if (puSuburbs.length > 1) {
-                    if (booking && booking.pu_Address_Suburb) {
-                        let suburbs = _.clone(puSuburbs);
-                        let bHas = false;
-                        for (let i = 0; i < suburbs.length; i++){
-                            if (suburbs[i].label == booking.pu_Address_Suburb) {
-                                bHas = true;
-                                break;
-                            }
-                        }
-                        if (bHas == false)
-                            suburbs.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
-                        this.setState({puSuburbs: suburbs, loadingGeoPU: false});
-                    } else {
-                        this.setState({puSuburbs, loadingGeoPU: false});
-                    }
-                }
-            }
-
-            if (deToStates && deToStates.length > 0) {
-                if ( !this.state.deLoadedPostal ) {
-                    this.props.getDeliverySuburbStrings('postalcode', deToStates[0].label);
-                }
-
-                if (booking && booking.de_To_Address_State) {
-                    let states = _.clone(deToStates);
-                    let bHas = false;
-                    for (let i = 0; i < states.length; i++ ){
-                        if (states[i].label == booking.de_To_Address_State) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-                    if (bHas == false)
-                        states.push({'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State});
-                    this.setState({deToStates: states});        
-                } else {
-                    this.setState({deToStates});                    
-                }
-
-                this.setState({deToStates, deLoadedPostal: true, loadingGeoDeTo: false});
-            } else {
-                this.props.getDeliverySuburbStrings('state', undefined);
-                this.setState({loadingGeoDeTo: true});
-            }
-
-            if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
-                if (booking && booking.de_To_Address_PostalCode) {
-                    let postalcode = _.clone(deToPostalCodes);
-                    let bHas = false;
-                    for (let i = 0; i < postalcode.length; i++ ){
-                        if (postalcode[i].label == booking.de_To_Address_PostalCode) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-                    if (bHas == false)
-                        postalcode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
-                    this.setState({deToPostalCodes: postalcode, loadingGeoDeTo: false});        
-                } else {
-                    this.setState({deToPostalCodes, loadingGeoDeTo: false});             
-                }
-            }
-
-            if (deToSuburbs && deToSuburbs.length > 0 && this.state.selectionChanged === 2) {
-                if (deToSuburbs.length == 1) {
-                    this.setState({deToSuburb: deToSuburbs[0]});
-                } else if (deToSuburbs.length > 1) {
-                    if (booking && booking.de_To_Address_Suburb) {
-                        let suburbs = _.clone(deToSuburbs);
-                        let bHas = false;
-                        for (let i = 0; i < suburbs.length; i++ ){
-                            if (suburbs[i].label == booking.de_To_Address_Suburb) {
-                                bHas = true;
-                                break;
-                            }
-                        }
-                        if (bHas == false)
-                            suburbs.push({'value':booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb});
-                        this.setState({deToSuburbs: suburbs});        
-                    } else {
-                        this.setState({deToSuburbs});             
-                    }
-                }
-                this.setState({deToSuburbs, loadingGeoDeTo: false});
-            }
-
-            this.setState({selectionChanged: 0});
         }
 
         if (attachments && attachments.length > 0) {
