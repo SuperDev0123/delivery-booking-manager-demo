@@ -163,7 +163,7 @@ export function failedDeleteNote(error) {
     };
 }
 
-export function resetFlag() {
+export function resetFlagComms() {
     return {
         type: RESET_FLAG_COMMS,
     };

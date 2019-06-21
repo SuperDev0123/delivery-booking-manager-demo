@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators, successDeleteNote, failedDeleteNote, successDeleteComm, failedDeleteComm } from '../actions/commActions';
+import { resetFlagComms, setComms, failedGetComms, successUpdateComm, failedUpdateComm, setLocalFilter, successGetNotes, failedGetNotes, successCreateNote, failedCreateNote, successUpdateNote, failedUpdateNote, setAllLocalFilter, setNeedUpdateCommsFlag, successGetAvailableCreators, failedGetAvailableCreators, successDeleteNote, failedDeleteNote, successDeleteComm, failedDeleteComm } from '../actions/commActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getComms = (bookingId='', sortField, sortType='comms', columnFilters={}, simpleSearchKeyword='', sortByDate=false, activeTabInd=0) => {
@@ -19,10 +19,12 @@ export const getComms = (bookingId='', sortField, sortType='comms', columnFilter
             activeTabInd,
         },
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetFlagComms());
         axios(options)
             .then(({ data }) => dispatch(setComms(data)))
             .catch((error) => dispatch(failedGetComms(error)));
+    };
 };
 
 export const createComm = (comm) => {

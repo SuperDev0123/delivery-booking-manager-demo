@@ -35,7 +35,7 @@ import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../
 import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, deleteComm, setGetCommsFilter, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
+import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs } from '../state/services/extraService';
 
@@ -215,7 +215,6 @@ class BookingPage extends Component {
         getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
         deleteComm: PropTypes.func.isRequired,
-        setGetCommsFilter: PropTypes.func.isRequired,
         getNotes: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
@@ -616,14 +615,10 @@ class BookingPage extends Component {
                 }
 
                 if (this.state.loading && booking.pk_booking_id) {
-                    this.props.getBookingLines(booking.pk_booking_id);
-                    this.props.getBookingLineDetails(booking.pk_booking_id);
-                    this.props.getComms(booking.id);
-                    this.props.getBookingStatusHistory(booking.pk_booking_id);
-                    this.props.getApiBCLs(booking.id);
+                    this.setState({loading: false}, () => this.afterSetState(booking));
                 }
 
-                this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, loading: false, isBookingSelected: true });
+                this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 if (!_.isNull(this.state.typed))
@@ -785,6 +780,14 @@ class BookingPage extends Component {
 
             this.setState({attachmentsHistory: bookingLineDetailsProduct});
         }
+    }
+
+    afterSetState(booking) {
+        this.props.getBookingLines(booking.pk_booking_id);
+        this.props.getBookingLineDetails(booking.pk_booking_id);
+        this.props.getComms(booking.id);
+        this.props.getBookingStatusHistory(booking.pk_booking_id);
+        this.props.getApiBCLs(booking.id);
     }
 
     getTime(country, city) {
@@ -3687,7 +3690,6 @@ const mapDispatchToProps = (dispatch) => {
         getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),        
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         deleteComm: (id) => dispatch(deleteComm(id)),
-        setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
         getNotes: (commId) => dispatch(getNotes(commId)),
         createNote: (note) => dispatch(createNote(note)),
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
