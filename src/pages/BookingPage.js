@@ -598,8 +598,11 @@ class BookingPage extends Component {
         if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
             (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
-                let formInputs = this.state.formInputs;
+                if (this.state.loading && booking.pk_booking_id) {
+                    this.setState({loading: false}, () => this.afterSetState(booking));
+                }
 
+                let formInputs = this.state.formInputs;
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
@@ -752,10 +755,6 @@ class BookingPage extends Component {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
-                }
-
-                if (this.state.loading && booking.pk_booking_id) {
-                    this.setState({loading: false}, () => this.afterSetState(booking));
                 }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, isBookingSelected: true });
@@ -990,7 +989,7 @@ class BookingPage extends Component {
         const {selected} = this.state;
         const typed = e.target.value;
 
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
 
             if((selected == undefined) || (selected == '')){
