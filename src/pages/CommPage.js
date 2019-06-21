@@ -195,7 +195,7 @@ class CommPage extends React.Component {
         let sortDirection = this.state.sortDirection;
         const {selectedBookingId, columnFilters, activeTabInd} = this.state;
 
-        if (fieldName === sortField)
+        if (sortField && sortField.indexOf('-') > -1)
             sortDirection = -1 * sortDirection;
         else
             sortDirection = -1;
