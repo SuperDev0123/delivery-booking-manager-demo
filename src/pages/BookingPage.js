@@ -315,7 +315,12 @@ class BookingPage extends Component {
         }
 
         if (comms) {
-            this.setState({comms});
+            let newComms = _.clone(comms);
+            newComms = _.map(newComms, (comm, index) => {
+                comm['index'] = index + 1;
+                return comm;
+            });
+            this.setState({comms: newComms});
         }
 
         if (notes) {
