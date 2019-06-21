@@ -511,7 +511,8 @@ class CommPage extends React.Component {
                             </NavLink>
                         </NavItem>
                     </Nav>
-                    <Button 
+                    <Button
+                        className="none"
                         color="primary" 
                         onClick={() => this.onClickByDate()}
                         disabled={(sortByDate) ? 'disabled' : ''}
