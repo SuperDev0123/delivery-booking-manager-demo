@@ -123,7 +123,7 @@ class CommPage extends React.Component {
         }
 
         if (comms) {
-            this.setState({comms, commCnts});
+            this.setState({comms, commCnts, loading: false});
         }
 
         if (notes) {
@@ -143,8 +143,6 @@ class CommPage extends React.Component {
                 sortByDate,
                 activeTabInd
             });
-        } else {
-            this.setState({loading: false});
         }
 
         if (needUpdateNotes) {
