@@ -14,7 +14,6 @@ const validateEmail = (email) => {
 };
 
 const isFormValid = (formName, formFields) => {
-    alert(formFields['vx_fp_pu_eta_time']);
     if (formName === 'booking') {
         if (_.isEmpty(formFields['b_client_name']) || _.isNull(formFields['b_client_name'])) {
             return 'Please select client name.';
