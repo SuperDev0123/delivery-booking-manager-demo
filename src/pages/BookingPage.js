@@ -17,6 +17,8 @@ import CKEditor from 'ckeditor4-react';
 import DateTimePicker from 'react-datetime-picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
@@ -38,6 +40,7 @@ import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs } from '../state/services/extraService';
+import {isFormValid} from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -602,6 +605,12 @@ class BookingPage extends Component {
         if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
             (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
+                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
+                    this.setState({isBookedBooking: true});
+                } else {
+                    this.setState({isBookedBooking: false});
+                }
+
                 if (this.state.loading && booking.pk_booking_id) {
                     this.setState({loading: false}, () => this.afterSetState(0, booking));
                 }
@@ -754,12 +763,6 @@ class BookingPage extends Component {
                     deToState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
-
-                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
-                    this.setState({isBookedBooking: true});
-                } else {
-                    this.setState({isBookedBooking: false});
-                }
 
                 this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
@@ -1526,6 +1529,10 @@ class BookingPage extends Component {
         }
     }
 
+    notify = (text) => {
+        toast(text);
+    };
+
     onClickCreateBooking() {
         const {formInputs, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
 
@@ -1590,9 +1597,24 @@ class BookingPage extends Component {
             formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? 0 : formInputs['de_Deliver_From_Minutes'];
             formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? 0 : formInputs['de_Deliver_By_Minutes'];
 
+            if (_.isUndefined(formInputs['vx_fp_pu_eta_time']))
+                formInputs['vx_fp_pu_eta_time'] = null;
+            if (_.isUndefined(formInputs['vx_fp_del_eta_time']))
+                formInputs['vx_fp_del_eta_time'] = null;
+            if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
+                formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
+            if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
+                formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
+
             formInputs['b_status'] = 'Entered';
-            this.props.saveBooking(formInputs);
-            this.setState({curViewMode: 0});
+
+            const res = isFormValid('booking', formInputs);
+            if (res === 'valid') {
+                this.props.saveBooking(formInputs); 
+            } else {
+                this.notify(res);
+            }
+            // this.setState({curViewMode: 0});
         }
     }
 
@@ -2250,7 +2272,14 @@ class BookingPage extends Component {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['pu_Email']}</p>
                                                         :
-                                                        <input className="form-control" type="text" placeholder="@email.com" name="pu_Email" value = {formInputs['pu_Email']} />
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            placeholder="@email.com" 
+                                                            name="pu_Email" 
+                                                            value = {formInputs['pu_Email']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
                                                 }
                                             </div>
                                         </div>
@@ -2261,7 +2290,14 @@ class BookingPage extends Component {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['de_Email']}</p>
                                                         :
-                                                        <input className="form-control" type="text" placeholder="@email.com" name="de_Email" value = {formInputs['de_Email']} />
+                                                        <input 
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            placeholder="@email.com" 
+                                                            name="de_Email" 
+                                                            value = {formInputs['de_Email']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
                                                 }
                                             </div>
                                             <div>
@@ -3639,6 +3675,8 @@ class BookingPage extends Component {
                     text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
                     okBtnName={'Delete'}
                 />
+
+                <ToastContainer />
             </div>
         );
     }

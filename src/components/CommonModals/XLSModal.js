@@ -6,6 +6,7 @@ import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { validateEmail } from '../../commons/validations';
 
 class XLSModal extends Component {
     constructor(props) {
@@ -79,7 +80,7 @@ class XLSModal extends Component {
 
     onInputChange(e, type) {
         if (type === 'email') {
-            if (this.validateEmail(e.target.value)) {
+            if (validateEmail(e.target.value)) {
                 let errorMessage = '';
 
                 if (this.state.vx_freight_provider === '') {
@@ -101,18 +102,6 @@ class XLSModal extends Component {
         }
     }
 
-    validateEmail(email) {
-        let lastAtPos = email.lastIndexOf('@');
-        let lastDotPos = email.lastIndexOf('.');
-        let formIsValid = true;
-
-        if (!(lastAtPos < lastDotPos && lastAtPos > 0 && email.indexOf('@@') == -1 && lastDotPos > 2 && (email.length - lastDotPos) > 2)) {
-            formIsValid = false;
-        }
-
-        return formIsValid;
-    }
-
     onClickBuildAndSend() {
         const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName} = this.state;
         this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type, showFieldName);
@@ -125,7 +114,7 @@ class XLSModal extends Component {
         const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName} = this.state;
         let buttonStatus = false;
 
-        if (this.validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
+        if (validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
             buttonStatus = true;
         }
 
