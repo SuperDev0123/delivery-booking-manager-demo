@@ -32,7 +32,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook, setFetchGeoInfoFlag } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -91,7 +91,7 @@ class BookingPage extends Component {
             deToState: {value: ''},
             deToSuburb: {value: ''},
             deToPostalCode: {value: ''},
-            isBookedBooking: null,
+            isBookedBooking: false,
             puTimeZone: null,
             deTimeZone: null,
             attachmentsHistory: [],
@@ -156,6 +156,7 @@ class BookingPage extends Component {
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
             isShowDeleteCommConfirmModal: false,
+            bookingId: null,
             apiBCLs: [],
         };
 
@@ -235,8 +236,8 @@ class BookingPage extends Component {
         createStatusDetail: PropTypes.func.isRequired,
         getAvailableCreators: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
-        bookingId: null,
         getApiBCLs: PropTypes.func.isRequired,
+        setFetchGeoInfoFlag: PropTypes.bool.isRequired,
     };
 
     componentDidMount() {
@@ -277,7 +278,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs } = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -302,7 +303,9 @@ class BookingPage extends Component {
         }
 
         if (clientPK) {
-            this.setState({clientPK});
+            const formInputs = this.state.formInputs;
+            formInputs['b_client_name'] = this.state.dmeClients[parseInt(clientPK)].company_name;
+            this.setState({clientPK, formInputs});
         }
 
         if (dmeClients) {
@@ -455,7 +458,7 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
-        if (!_.isNull(isBookedBooking) && !isBookedBooking) {
+        if (!isBookedBooking || needToFetchGeoInfo) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -479,7 +482,7 @@ class BookingPage extends Component {
                 }
 
                 this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
-            } else if (this.state.loading) {
+            } else if (this.state.loading || needToFetchGeoInfo) {
                 this.setState({loadingGeoPU: true});
                 this.props.getSuburbStrings('state', undefined);
             }
@@ -546,7 +549,7 @@ class BookingPage extends Component {
                 }
 
                 this.setState({deToStates, deLoadedPostal: true, loadingGeoDeTo: false});
-            } else if (this.state.loading) {
+            } else if (this.state.loading || needToFetchGeoInfo) {
                 this.props.getDeliverySuburbStrings('state', undefined);
                 this.setState({loadingGeoDeTo: true});
             }
@@ -593,13 +596,14 @@ class BookingPage extends Component {
             }
 
             this.setState({selectionChanged: 0});
+            this.props.setFetchGeoInfoFlag(false);
         }
 
         if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
             (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
             if (booking.b_bookingID_Visual) {
                 if (this.state.loading && booking.pk_booking_id) {
-                    this.setState({loading: false}, () => this.afterSetState(booking));
+                    this.setState({loading: false}, () => this.afterSetState(0, booking));
                 }
 
                 let formInputs = this.state.formInputs;
@@ -781,12 +785,16 @@ class BookingPage extends Component {
         }
     }
 
-    afterSetState(booking) {
-        this.props.getBookingLines(booking.pk_booking_id);
-        this.props.getBookingLineDetails(booking.pk_booking_id);
-        this.props.getComms(booking.id);
-        this.props.getBookingStatusHistory(booking.pk_booking_id);
-        this.props.getApiBCLs(booking.id);
+    afterSetState(type, data) {
+        if (type === 0) {
+            this.props.getBookingLines(data.pk_booking_id);
+            this.props.getBookingLineDetails(data.pk_booking_id);
+            this.props.getComms(data.id);
+            this.props.getBookingStatusHistory(data.pk_booking_id);
+            this.props.getApiBCLs(data.id);
+        } else if (type === 1) {
+            this.props.setFetchGeoInfoFlag(true);
+        }
     }
 
     getTime(country, city) {
@@ -1054,10 +1062,16 @@ class BookingPage extends Component {
         }
     };
 
-    handleChangeWarehouse = (selectedOption) => {
-        let formInputs = this.state.formInputs;
-        formInputs['b_client_warehouse_code'] = selectedOption.value;
-        formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+    handleChangeSelect = (selectedOption, fieldName) => {
+        const formInputs = this.state.formInputs;
+
+        if (fieldName === 'warehouse') {
+            formInputs['b_client_warehouse_code'] = selectedOption.value;
+            formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+        } else if (fieldName === 'b_client_name') {
+            formInputs['b_client_name'] = selectedOption.value;
+        }
+
         this.setState({formInputs});
     }
 
@@ -1486,7 +1500,7 @@ class BookingPage extends Component {
             this.showCreateView();
         }
 
-        this.setState({curViewMode: e.target.value, isBookingModified: false});
+        this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
     }
 
     showCreateView() {
@@ -1534,7 +1548,7 @@ class BookingPage extends Component {
 
             if (clientPK === 0 || clientname !== 'dme') {
                 formInputs['z_CreatedByAccount'] = clientname;
-                formInputs['b_client_name'] = clientname;
+                // formInputs['b_client_name'] = clientname;
                 formInputs['kf_client_id'] = clientId;
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
 
@@ -1553,7 +1567,7 @@ class BookingPage extends Component {
                     }
                 }
 
-                formInputs['b_client_name'] = dmeClients[ind].company_name;
+                // formInputs['b_client_name'] = dmeClients[ind].company_name;
                 formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
@@ -2019,12 +2033,20 @@ class BookingPage extends Component {
             return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
         });
 
-        let warehouseCodeOptions = [];
-        for (let i = 0; i < warehouses.length; i++) {
-            warehouseCodeOptions.push({value: warehouses[i].client_warehouse_code, label: warehouses[i].client_warehouse_code});
-        }
+        let warehouseCodeOptions = warehouses.map((warehouse) => {
+            return {value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code};
+        });
 
-        const currentWarehouseCodeOption = {value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null, label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null};
+        const currentWarehouseCodeOption = {
+            value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
+            label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
+        };
+
+        const clientnameOptions = dmeClients.map((client) => {
+            return {value: client.company_name, label: client.company_name};
+        });
+
+        const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
 
         const availableCreatorsList = availableCreators.map((availableCreator, index) => {
             return (
@@ -2187,13 +2209,13 @@ class BookingPage extends Component {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['b_client_name']}</p>
                                                         :
-                                                        <input 
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="BioPAK" 
-                                                            name="b_client_name" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['b_client_name']} 
-                                                            disabled='disabled' />
+                                                        <Select
+                                                            value={currentClientnameOption}
+                                                            onChange={(e) => this.handleChangeSelect(e, 'b_client_name')}
+                                                            options={clientnameOptions}
+                                                            placeholder='Select a client'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
                                                 }
                                             </div>
                                             <div>
@@ -2204,9 +2226,9 @@ class BookingPage extends Component {
                                                         :
                                                         <Select
                                                             value={currentWarehouseCodeOption}
-                                                            onChange={(e) => this.handleChangeWarehouse(e)}
+                                                            onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
                                                             options={warehouseCodeOptions}
-                                                            placeholder='select warehouse'
+                                                            placeholder='Select a warehouse'
                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                         />
                                                 }
@@ -2652,8 +2674,11 @@ class BookingPage extends Component {
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
+                                                                            calendarClassName="s_20_cal"
+                                                                            clockClassName="s_20_clock"
+                                                                            className="s_20_datetimepicker"
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && _.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp']}</p>
@@ -3659,6 +3684,7 @@ const mapStateToProps = (state) => {
         apiBCLs: state.extra.apiBCLs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
+        needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
     };
 };
 
@@ -3710,6 +3736,7 @@ const mapDispatchToProps = (dispatch) => {
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
         getAvailableCreators: () => dispatch(getAvailableCreators()),
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
+        setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
     };
 };
 
