@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction } from '../actions/bookingActions';
+import { resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction, clearErrorMessageAction } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, itemCountPerPage=10, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', downloadOption='label') => {
@@ -161,10 +161,13 @@ export const saveBooking = (booking) => {
         url: `${HTTP_PROTOCOL}://${API_HOST}/booking/create_booking/`,
         data: booking
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(clearErrorMessage());
+        dispatch(resetBooking());
         axios(options)
             .then(({ data }) => dispatch(successCreateBooking(data)))
             .catch((error) => dispatch(failedCreateBooking(error)));
+    };
 };
 
 export const allTrigger = () => {
@@ -368,3 +371,6 @@ export const setFetchGeoInfoFlag = (boolFlag) => {
     return dispatch => dispatch(setFetchGeoInfoFlagAction(boolFlag));
 };
 
+export const clearErrorMessage = () => {
+    return dispatch => dispatch(clearErrorMessageAction());
+};

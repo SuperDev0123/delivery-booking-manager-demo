@@ -34,7 +34,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook, setFetchGeoInfoFlag } from '../state/services/bookingService';
+import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -70,6 +70,8 @@ class BookingPage extends Component {
             loadingGeoDeTo: false,
             loadingBookingLine: false,
             loadingBookingLineDetail: false,
+            loadingSave: false,
+            loadingUpdate: false,
             products: [],
             bookingLinesListProduct: [],
             bookingLineDetailsProduct: [],
@@ -241,6 +243,7 @@ class BookingPage extends Component {
         calcCollected: PropTypes.func.isRequired,
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
+        clearErrorMessage: PropTypes.bool.isRequired,
     };
 
     componentDidMount() {
@@ -281,7 +284,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -434,12 +437,12 @@ class BookingPage extends Component {
             this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
-        if (needUpdateBookingLines && booking && booking.pk_booking_id) {
+        if (needUpdateBookingLines && booking) {
             this.setState({loadingBookingLine: true});
             this.props.getBookingLines(booking.pk_booking_id);
         }
 
-        if (needUpdateBookingLineDetails && booking && booking.pk_booking_id) {
+        if (needUpdateBookingLineDetails && booking) {
             this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
         }
@@ -459,6 +462,11 @@ class BookingPage extends Component {
         if (noBooking) {
             this.setState({loading: false, curViewMode: 1});
             this.showCreateView();
+        }
+
+        if (!_.isEmpty(bookingErrorMessage)) {
+            this.notify(bookingErrorMessage);
+            this.props.clearErrorMessage();
         }
 
         if (!isBookedBooking || needToFetchGeoInfo) {
@@ -602,17 +610,28 @@ class BookingPage extends Component {
             this.props.setFetchGeoInfoFlag(false);
         }
 
-        if ((!noBooking && booking && this.state.selectionChanged === 0 && parseInt(this.state.curViewMode) === 0) || 
-            (!noBooking && booking && this.state.loading && parseInt(this.state.curViewMode) === 0)) {
+        if (
+            (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
+            || (booking && this.state.loadingSave && parseInt(this.state.curViewMode) === 1)
+            || (booking && this.state.loadingUpdate && parseInt(this.state.curViewMode) === 2)
+        ){
             if (booking.b_bookingID_Visual) {
-                if ( (booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
+                if (this.state.loadingSave) {
+                    this.notify('Booking(' + booking.b_bookingID_Visual + ') is saved!');
+                } else if (this.state.loadingUpdate) {
+                    this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
+                } else {
+                    this.notify('Booking(' + booking.b_bookingID_Visual + ') is loaded!');
+                }
+
+                if ((booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
                 }
 
-                if (this.state.loading && booking.pk_booking_id) {
-                    this.setState({loading: false}, () => this.afterSetState(0, booking));
+                if ((this.state.loading || this.state.loadingSave || this.state.loadingUpdate) && booking.pk_booking_id) {
+                    this.setState({loading: false, loadingSave: false, loadingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
                 let formInputs = this.state.formInputs;
@@ -764,7 +783,7 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
-                this.setState({ AdditionalServices, formInputs, booking, nextBookingId, prevBookingId, isBookingSelected: true });
+                this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 if (!_.isNull(this.state.typed))
@@ -1066,16 +1085,19 @@ class BookingPage extends Component {
     };
 
     handleChangeSelect = (selectedOption, fieldName) => {
-        const formInputs = this.state.formInputs;
+        const {formInputs, booking} = this.state;
 
         if (fieldName === 'warehouse') {
             formInputs['b_client_warehouse_code'] = selectedOption.value;
             formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+            booking['b_client_warehouse_code'] = formInputs['b_client_warehouse_code'];
+            booking['b_clientPU_Warehouse'] = formInputs['b_clientPU_Warehouse'];
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
+            booking['b_client_name'] = formInputs['b_client_name'];
         }
 
-        this.setState({formInputs});
+        this.setState({formInputs, booking});
     }
 
     getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
@@ -1542,7 +1564,7 @@ class BookingPage extends Component {
         } else if (isShowStatusActionInput && 
             (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
             alert('Please select or input Status Action');
-        } else {
+        } else if (this.state.curViewMode === 1) {
             if (isShowStatusDetailInput) {
                 formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
                 this.props.createStatusDetail(formInputs['dme_status_detail']);
@@ -1610,11 +1632,11 @@ class BookingPage extends Component {
 
             const res = isFormValid('booking', formInputs);
             if (res === 'valid') {
-                this.props.saveBooking(formInputs); 
+                this.props.saveBooking(formInputs);
+                this.setState({loadingSave: true});
             } else {
                 this.notify(res);
             }
-            // this.setState({curViewMode: 0});
         }
     }
 
@@ -1629,7 +1651,7 @@ class BookingPage extends Component {
             } else if (isShowStatusActionInput && 
                 (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
                 alert('Please select or input Status Action');
-            } else {
+            } else if (this.state.curViewMode === 2) {
                 if (isShowStatusDetailInput) {
                     bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
                     this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
@@ -1657,8 +1679,22 @@ class BookingPage extends Component {
                 bookingToUpdate.de_Deliver_From_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_From_Minutes) ? 0 : bookingToUpdate.de_Deliver_From_Minutes;
                 bookingToUpdate.de_Deliver_By_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_By_Minutes) ? 0 : bookingToUpdate.de_Deliver_By_Minutes;
 
-                this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-                this.setState({loading: true, isBookingModified: false, curViewMode: 0});
+                if (_.isUndefined(bookingToUpdate['vx_fp_pu_eta_time']))
+                    bookingToUpdate['vx_fp_pu_eta_time'] = null;
+                if (_.isUndefined(bookingToUpdate['vx_fp_del_eta_time']))
+                    bookingToUpdate['vx_fp_del_eta_time'] = null;
+                if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
+                    bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
+                if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
+                    bookingToUpdate['s_21_Actual_Delivery_TimeStamp'] = null;
+
+                const res = isFormValid('booking', bookingToUpdate);
+                if (res === 'valid') {
+                    this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+                    this.setState({loadingUpdate: true, isBookingModified: false});
+                } else {
+                    this.notify(res);
+                }
             }
         }
     }
@@ -2160,7 +2196,7 @@ class BookingPage extends Component {
                 </div>
 
                 <LoadingOverlay
-                    active={this.state.loading}
+                    active={this.state.loading || this.state.loadingSave || this.state.loadingUpdate}
                     spinner
                     text='Loading...'
                 >
@@ -3720,6 +3756,7 @@ const mapStateToProps = (state) => {
         statusDetails: state.extra.statusDetails,
         availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
+        bookingErrorMessage: state.booking.errorMessage,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
         needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
@@ -3775,6 +3812,7 @@ const mapDispatchToProps = (dispatch) => {
         getAvailableCreators: () => dispatch(getAvailableCreators()),
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
+        clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
     };
 };
 
