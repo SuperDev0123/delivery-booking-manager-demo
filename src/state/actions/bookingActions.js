@@ -235,7 +235,7 @@ export function failedUpdateBooking(error) {
     console.log('Error: ', error);
     return {
         type: FAILED_UPDATE_BOOKING,
-        errorMessage: 'Unable to update booking.'
+        errorMessage: 'Unable to update booking.' + JSON.stringify(error.response.data),
     };
 }
 

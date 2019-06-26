@@ -469,7 +469,7 @@ class BookingPage extends Component {
             this.props.clearErrorMessage();
         }
 
-        if (!isBookedBooking || needToFetchGeoInfo) {
+        if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -614,11 +614,11 @@ class BookingPage extends Component {
             (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
             || (booking && this.state.loadingSave && parseInt(this.state.curViewMode) === 1)
             || (booking && this.state.loadingUpdate && parseInt(this.state.curViewMode) === 2)
-        ){
+        ) {
             if (booking.b_bookingID_Visual) {
-                if (this.state.loadingSave) {
+                if (this.state.loadingSave && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is saved!');
-                } else if (this.state.loadingUpdate) {
+                } else if (this.state.loadingUpdate && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 } else {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is loaded!');
@@ -630,7 +630,10 @@ class BookingPage extends Component {
                     this.setState({isBookedBooking: false});
                 }
 
-                if ((this.state.loading || this.state.loadingSave || this.state.loadingUpdate) && booking.pk_booking_id) {
+                if (
+                    (this.state.loading || this.state.loadingSave || this.state.loadingUpdate) 
+                    && booking.pk_booking_id
+                ) {
                     this.setState({loading: false, loadingSave: false, loadingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -641,10 +644,6 @@ class BookingPage extends Component {
                 else formInputs['pu_Address_Street_1'] = '';
                 if (booking.pu_Address_street_2 != null) formInputs['pu_Address_street_2'] = booking.pu_Address_street_2;
                 else formInputs['pu_Address_street_2'] = '';
-                if (booking.pu_Address_PostalCode != null) formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
-                else formInputs['pu_Address_PostalCode'] = '';
-                if (booking.pu_Address_Suburb != null) formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
-                else formInputs['pu_Address_Suburb'] = '';
                 if (booking.pu_Address_Country != null) formInputs['pu_Address_Country'] = booking.pu_Address_Country;
                 else formInputs['pu_Address_Country'] = '';
                 if (booking.pu_Contact_F_L_Name != null) formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
@@ -657,10 +656,12 @@ class BookingPage extends Component {
                 else formInputs['de_To_Address_Street_1'] = '';
                 if (booking.de_To_Address_Street_2 != null) {formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;}
                 else formInputs['de_To_Address_Street_2'] = '';
-                if (booking.de_To_Address_PostalCode != null) formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
-                else formInputs['de_To_Address_PostalCode'] = '';
-                if (booking.de_To_Address_Suburb != null) formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
-                else formInputs['de_To_Address_Suburb'] = '';
+                formInputs['pu_Address_State'] = booking.pu_Address_State;
+                formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
+                formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
+                formInputs['de_To_Address_State'] = booking.de_To_Address_State;
+                formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
+                formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
                 if (booking.de_To_Address_Country != null) formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
                 else formInputs['de_To_Address_Country'] = '';
                 if (booking.de_to_Contact_F_LName != null) formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
@@ -671,10 +672,6 @@ class BookingPage extends Component {
                 else formInputs['de_Email'] = '';
                 if (booking.deToCompanyName != null) formInputs['deToCompanyName'] = booking.deToCompanyName;
                 else formInputs['deToCompanyName'] = '';
-                if (booking.pu_Address_State != null) formInputs['pu_Address_State'] = booking.pu_Address_State;
-                else formInputs['pu_Address_State'] = '';
-                if (booking.de_To_Address_State != null) formInputs['de_To_Address_State'] = booking.de_To_Address_State;
-                else formInputs['de_To_Address_State'] = '';
                 if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
                 else formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
                 if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp;
@@ -774,12 +771,30 @@ class BookingPage extends Component {
                 AdditionalServices.push(tempAdditionalServices);
 
                 this.setState({
-                    puPostalCode: {'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null, 'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null},
-                    puSuburb: {'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null, 'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null},
-                    puState: {'value': booking.pu_Address_State ? booking.pu_Address_State : null, 'label': booking.pu_Address_State ? booking.pu_Address_State : null},
-                    deToPostalCode: {'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null, 'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null},
-                    deToSuburb: {'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null, 'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null},
-                    deToState: {'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 'label': booking.de_To_Address_State ? booking.de_To_Address_State : null},
+                    puPostalCode: {
+                        'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null, 
+                        'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,
+                    },
+                    puSuburb: {
+                        'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null, 
+                        'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null
+                    },
+                    puState: {
+                        'value': booking.pu_Address_State ? booking.pu_Address_State : null, 
+                        'label': booking.pu_Address_State ? booking.pu_Address_State : null,
+                    },
+                    deToPostalCode: {
+                        'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null, 
+                        'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,
+                    },
+                    deToSuburb: {
+                        'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null, 
+                        'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null
+                    },
+                    deToState: {
+                        'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 
+                        'label': booking.de_To_Address_State ? booking.de_To_Address_State : null,
+                    },
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
@@ -814,6 +829,7 @@ class BookingPage extends Component {
             this.props.getComms(data.id);
             this.props.getBookingStatusHistory(data.pk_booking_id);
             this.props.getApiBCLs(data.id);
+            this.props.setFetchGeoInfoFlag(true);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
