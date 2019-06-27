@@ -12,6 +12,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
 import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
@@ -327,6 +329,14 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+
+    notify = (text) => {
+        toast(text);
+    };
+
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target))
             this.setState({showSimpleSearchBox: false, showGearMenu: false});
@@ -338,10 +348,6 @@ class AllBookingsPage extends React.Component {
         if (scrollLeft !== this.state.scrollLeft) {
             this.setState({scrollLeft: tblContent.scrollLeft});
         }
-    }
-
-    setWrapperRef(node) {
-        this.wrapperRef = node;
     }
 
     calcBookingLine(bookingLines) {
@@ -932,7 +938,7 @@ class AllBookingsPage extends React.Component {
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     if (bookings[i].id === selectedBookingIds[j]) {
                         if (!_.isNull(bookings[i].b_dateBookedDate)) {
-                            bookedIds.push(bookings.b_bookingID_Visual);
+                            bookedIds.push(bookings[i].id);
                         } else {
                             nonBookedBookings.push(bookings[i]);
                         }
@@ -942,13 +948,15 @@ class AllBookingsPage extends React.Component {
 
             for (let i = 0; i < nonBookedBookings.length; i++) {
                 for (let j = 0; j < dmeClients.length; j++) {
-                    if (nonBookedBookings[i].b_client_name === dmeClients[j].company_name) {
+                    if (nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()) {
                         if (!_.isNull(dmeClients[j].current_freight_provider)
-                            && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[j].vx_freight_provider.toLowerCase()) {
+                            && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
                             if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope') {
                                 ids4csv.push(nonBookedBookings[i].id);
                             } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
                                 ids4xml.push(nonBookedBookings[i].id);
+                            } else {
+                                ids4notMatchFP.push(nonBookedBookings[i].id);    
                             }
                         } else {
                             ids4notMatchFP.push(nonBookedBookings[i].id);
@@ -958,30 +966,47 @@ class AllBookingsPage extends React.Component {
             }
 
             this.setState({loadingDownload: true});
-
-            Promise.all([
-                this.buildCSV(ids4csv),
-                this.buildXML(ids4xml),
-                this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
-                this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight Provider is not match!'),
-            ])
-                .then(() => {
-                    this.setState({loading: true, loadingDownload: false});
-                    this.props.setNeedUpdateBookingsState(true);
-                })
-                .catch((err) => {
-                    this.setState({loading: true, loadingDownload: false});
-                    this.props.setNeedUpdateBookingsState(true);
-                    console.log('#100 - ', err);
-                });
+            if (bookedIds.length || ids4notMatchFP.length) {
+                Promise.all([
+                    this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
+                    this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
+                ])
+                    .then(() => {
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                        this.notify('There was error, please check each booking error');
+                    })
+                    .catch((err) => {
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                        console.log('#100 - ', err);
+                    });
+            } else {
+                Promise.all([
+                    this.buildCSV(ids4csv),
+                    this.buildXML(ids4xml, 'allied'),
+                ])
+                    .then(() => {
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                        this.notify('Successfully created CSV and XML.');
+                    })
+                    .catch((err) => {
+                        this.setState({loading: true, loadingDownload: false});
+                        this.props.setNeedUpdateBookingsState(true);
+                        console.log('#100 - ', err);
+                    });
+            }
         }
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/bulk-booking-update/',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
                 data: {bookingIds, fieldName, fieldContent},
             };
 
@@ -991,7 +1016,7 @@ class AllBookingsPage extends React.Component {
                 })
                 .catch((err) => {
                     reject(err);
-                })
+                });
         });
     }
 
@@ -1018,11 +1043,11 @@ class AllBookingsPage extends React.Component {
                 })
                 .catch((err) => {
                     reject(err);
-                })
+                });
         });
     }
 
-    buildXML(bookingIds) {
+    buildXML(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
             let options = {
                 method: 'post',
@@ -1056,7 +1081,7 @@ class AllBookingsPage extends React.Component {
                                 })
                                 .catch((err) => {
                                     reject(err);
-                                })
+                                });
                         } else {
                             this.notify('XML’s have been generated successfully.');
                             resolve();
@@ -1065,7 +1090,7 @@ class AllBookingsPage extends React.Component {
                 })
                 .catch((err) => {
                     reject(err);
-                })
+                });
         });
     }
 
@@ -1497,17 +1522,8 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
-                    <td className={
-                        (booking.b_error_Capture) ?
-                            'dark-blue warning'
-                            :
-                            (booking.z_downloaded_shipping_label_timestamp != null) ?
-                                'bg-yellow'
-                                :
-                                (booking.z_label_url && booking.z_label_url.length > 0) ?
-                                    'bg-green'
-                                    :
-                                    'bg-gray'
+                    <td className={(booking.b_error_Capture)
+                        ? 'dark-blue warning' : ''
                     }>
                         {
                             (booking.b_error_Capture) ?
@@ -1515,13 +1531,26 @@ class AllBookingsPage extends React.Component {
                                     <TooltipItem booking={booking} />
                                 </div>
                                 :
-                                <div className="booking-status">
-                                    {
-                                        <a href="#" onClick={() => this.onClickPrinter(booking)}>
-                                            <i className="icon icon-printer"></i>
-                                        </a>
-                                    }
-                                </div>
+                                null
+                        }
+                    </td>
+                    <td className={
+                        (booking.z_downloaded_shipping_label_timestamp != null) ?
+                            'bg-yellow'
+                            :
+                            (booking.z_label_url && booking.z_label_url.length > 0) ?
+                                'bg-green'
+                                :
+                                'bg-gray'
+                    }>
+                        {
+                            <div className="booking-status">
+                                {
+                                    <a href="#" onClick={() => this.onClickPrinter(booking)}>
+                                        <i className="icon icon-printer"></i>
+                                    </a>
+                                }
+                            </div>
                         }
                     </td>
                     <td className={
@@ -2028,6 +2057,7 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th className=""></th>
                                                             <th className=""></th>
+                                                            <th className=""></th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
@@ -2212,6 +2242,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th className="narrow-column"><i className="fa fa-exclamation-triangle"></i></th>
                                                             <th className="narrow-column"><i className="icon icon-printer"></i></th>
                                                             <th className="narrow-column"><i className="icon icon-image"></i></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -2267,6 +2298,8 @@ class AllBookingsPage extends React.Component {
                     allFPs={allFPs}
                     onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile)}
                 />
+
+                <ToastContainer />
             </div>
         );
     }
