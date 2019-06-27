@@ -1657,7 +1657,7 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        if (this.state.isBookedBooking == false || this.state.className === 'dme') {
+        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
             const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
             let bookingToUpdate = this.state.booking;
 
