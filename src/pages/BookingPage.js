@@ -1580,7 +1580,7 @@ class BookingPage extends Component {
         } else if (isShowStatusActionInput && 
             (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
             alert('Please select or input Status Action');
-        } else if (this.state.curViewMode === 1) {
+        } else if (parseInt(this.state.curViewMode) === 1) {
             if (isShowStatusDetailInput) {
                 formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
                 this.props.createStatusDetail(formInputs['dme_status_detail']);
@@ -1667,7 +1667,7 @@ class BookingPage extends Component {
             } else if (isShowStatusActionInput && 
                 (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
                 alert('Please select or input Status Action');
-            } else if (this.state.curViewMode === 2) {
+            } else if (parseInt(this.state.curViewMode) === 2) {
                 if (isShowStatusDetailInput) {
                     bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
                     this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
