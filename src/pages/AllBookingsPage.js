@@ -968,6 +968,7 @@ class AllBookingsPage extends React.Component {
             this.setState({loadingDownload: true});
             if (bookedIds.length || ids4notMatchFP.length) {
                 Promise.all([
+                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', ''),
                     this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
                     this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
                 ])
@@ -989,7 +990,11 @@ class AllBookingsPage extends React.Component {
                     .then(() => {
                         this.setState({loading: true, loadingDownload: false});
                         this.props.setNeedUpdateBookingsState(true);
-                        this.notify('Successfully created CSV and XML.');
+
+                        if (ids4csv.length)
+                            this.notify('Successfully created CSV.');
+                        if (ids4xml.length)
+                            this.notify('Successfully created XML.');
                     })
                     .catch((err) => {
                         this.setState({loading: true, loadingDownload: false});
@@ -1038,7 +1043,6 @@ class AllBookingsPage extends React.Component {
                     // link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
                     // document.body.appendChild(link);
                     // link.click();
-                    this.notify('CSV`s have been generated successfully');
                     resolve();
                 })
                 .catch((err) => {
@@ -1058,7 +1062,6 @@ class AllBookingsPage extends React.Component {
             axios(options)
                 .then((response) => {
                     if (response.data.success && response.data.success === 'success') {
-                        this.notify('XML’s have been generated successfully.');
                         resolve();
                     } else {
                         if (vx_freight_provider === 'TASFR') {
@@ -1083,7 +1086,6 @@ class AllBookingsPage extends React.Component {
                                     reject(err);
                                 });
                         } else {
-                            this.notify('XML’s have been generated successfully.');
                             resolve();
                         }
                     }
