@@ -967,20 +967,27 @@ class AllBookingsPage extends React.Component {
 
             this.setState({loadingDownload: true});
             if (bookedIds.length || ids4notMatchFP.length) {
-                Promise.all([
-                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', ''),
-                    this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
-                    this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
-                ])
+                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
                     .then(() => {
-                        this.setState({loading: true, loadingDownload: false});
-                        this.props.setNeedUpdateBookingsState(true);
-                        this.notify('There was error, please check each booking error');
+                        Promise.all([
+                            this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
+                            this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
+                        ])
+                            .then(() => {
+                                this.setState({loading: true, loadingDownload: false});
+                                this.props.setNeedUpdateBookingsState(true);
+                                this.notify('There was error, please check each booking error');
+                            })
+                            .catch((err) => {
+                                this.setState({loading: true, loadingDownload: false});
+                                this.props.setNeedUpdateBookingsState(true);
+                                console.log('#100 - ', err);
+                            });
                     })
                     .catch((err) => {
                         this.setState({loading: true, loadingDownload: false});
                         this.props.setNeedUpdateBookingsState(true);
-                        console.log('#100 - ', err);
+                        console.log('#101 - ', err);
                     });
             } else {
                 Promise.all([
