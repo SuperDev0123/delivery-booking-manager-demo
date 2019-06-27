@@ -990,23 +990,31 @@ class AllBookingsPage extends React.Component {
                         console.log('#101 - ', err);
                     });
             } else {
-                Promise.all([
-                    this.buildCSV(ids4csv),
-                    this.buildXML(ids4xml, 'allied'),
-                ])
+                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
                     .then(() => {
-                        this.setState({loading: true, loadingDownload: false});
-                        this.props.setNeedUpdateBookingsState(true);
+                        Promise.all([
+                            this.buildCSV(ids4csv),
+                            this.buildXML(ids4xml, 'allied'),
+                        ])
+                            .then(() => {
+                                this.setState({loading: true, loadingDownload: false});
+                                this.props.setNeedUpdateBookingsState(true);
 
-                        if (ids4csv.length)
-                            this.notify('Successfully created CSV.');
-                        if (ids4xml.length)
-                            this.notify('Successfully created XML.');
+                                if (ids4csv.length)
+                                    this.notify('Successfully created CSV.');
+                                if (ids4xml.length)
+                                    this.notify('Successfully created XML.');
+                            })
+                            .catch((err) => {
+                                this.setState({loading: true, loadingDownload: false});
+                                this.props.setNeedUpdateBookingsState(true);
+                                console.log('#100 - ', err);
+                            });
                     })
                     .catch((err) => {
                         this.setState({loading: true, loadingDownload: false});
                         this.props.setNeedUpdateBookingsState(true);
-                        console.log('#100 - ', err);
+                        console.log('#101 - ', err);
                     });
             }
         }
