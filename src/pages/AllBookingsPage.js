@@ -925,8 +925,8 @@ class AllBookingsPage extends React.Component {
 
         if (selectedBookingIds && selectedBookingIds.length === 0) {
             alert('There is no bookings to *Book.');
-        } else if (selectedBookingIds.length > 100) {
-            alert('You can generate xml with 100 bookings at most.');
+        } else if (selectedBookingIds.length > 500) {
+            alert('You can generate xml with 500 bookings at most.');
         } else {
             const bookedIds = [];
             const ids4csv = [];
