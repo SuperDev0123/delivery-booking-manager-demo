@@ -35,7 +35,7 @@ p.dme-id {
 }
 
 ._loading_overlay_wrapper {
-	.row {
+	.detail-tab {
 		.col-sm-4 {
 			padding: 0 !important;
 		}
@@ -44,6 +44,19 @@ p.dme-id {
 			padding: 0 !important;
 		}
 	}
+}
+
+.main-fields-section {
+	margin-top: 10px;
+	margin-bottom: 10px;
+
+	.col-sm-6, .col-sm-12 {
+		padding: 0 !important;
+	}
+
+	.col-sm-4, .col-sm-2 {
+  		padding: 0 5px !important;
+  	}
 }
 
 .form-group {

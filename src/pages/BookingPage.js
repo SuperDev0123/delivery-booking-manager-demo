@@ -39,7 +39,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
 import {isFormValid} from '../commons/validations';
 
 class BookingPage extends Component {
@@ -163,6 +163,7 @@ class BookingPage extends Component {
             isShowDeleteCommConfirmModal: false,
             bookingId: null,
             apiBCLs: [],
+            allFPs: [],
         };
 
         this.djsConfig = {
@@ -244,6 +245,7 @@ class BookingPage extends Component {
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
+        getAllFPs: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -278,13 +280,14 @@ class BookingPage extends Component {
             that.props.getStatusDetails();
             that.props.getStatusActions();
             that.props.getAvailableCreators();
+            that.props.getAllFPs();
         }, 1000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -302,6 +305,10 @@ class BookingPage extends Component {
             let commFormInputs = this.state.commFormInputs;
             commFormInputs['assigned_to'] = username;
             this.setState({username, commFormInputs});
+        }
+
+        if (allFPs) {
+            this.setState({ allFPs });
         }
 
         if (availableCreators) {
@@ -748,7 +755,7 @@ class BookingPage extends Component {
                     this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
                 }
 
-                //For Additioan Services
+                //For Additional Services
                 let tempAdditionalServices = this.state.AdditionalServices;
                 if (booking.vx_freight_provider != null) tempAdditionalServices.vx_freight_provider = booking.vx_freight_provider;
                 else tempAdditionalServices.vx_freight_provider = '';
@@ -766,6 +773,20 @@ class BookingPage extends Component {
                 if (booking.b_dateBookedDate != null) tempAdditionalServices.b_dateBookedDate = booking.b_dateBookedDate;
                 else tempAdditionalServices.b_dateBookedDate = '';
                 tempAdditionalServices.Invoiced = '';
+
+                // Added new main fields
+                if (!_.isNull(booking.v_FPBookingNumber)) formInputs['v_FPBookingNumber'] = booking.v_FPBookingNumber;
+                else formInputs['v_FPBookingNumber'] = '';
+                if (!_.isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
+                else formInputs['vx_freight_provider'] = '';
+                if (!_.isNull(booking.vx_serviceName)) formInputs['vx_serviceName'] = booking.vx_serviceName;
+                else formInputs['vx_serviceName'] = '';
+                if (!_.isNull(booking.v_service_Type_2)) formInputs['v_service_Type_2'] = booking.v_service_Type_2;
+                else formInputs['v_service_Type_2'] = '';
+                if (!_.isNull(booking.fk_fp_pickup_id)) formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
+                else formInputs['fk_fp_pickup_id'] = '';
+                if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
+                else formInputs['v_vehicle_Type'] = '';
 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -1111,6 +1132,9 @@ class BookingPage extends Component {
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
             booking['b_client_name'] = formInputs['b_client_name'];
+        } else if (fieldName === 'vx_freight_provider') {
+            formInputs['vx_freight_provider'] = selectedOption.value;
+            booking['vx_freight_provider'] = formInputs['vx_freight_provider'];
         }
 
         this.setState({formInputs, booking});
@@ -1828,7 +1852,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs} = this.state;
 
         const bookingLineColumns = [
             {
@@ -2119,8 +2143,12 @@ class BookingPage extends Component {
         const clientnameOptions = dmeClients.map((client) => {
             return {value: client.company_name, label: client.company_name};
         });
-
         const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
+
+        const fpOptions = allFPs.map((fp) => {
+            return {value: fp.fp_company_name, label: fp.fp_company_name};
+        });
+        const currentFPOption = {value: formInputs['vx_freight_provider'], label: formInputs['vx_freight_provider']};
 
         const availableCreatorsList = availableCreators.map((availableCreator, index) => {
             return (
@@ -2274,7 +2302,7 @@ class BookingPage extends Component {
                                     <div className="clearfix"></div>
                                 </div>
 
-                                <div className="inner-text">
+                                <div className="main-fields-section">
                                     <div className="row col-sm-6 booking-form-01">
                                         <div className="col-sm-4 form-group">
                                             <div>
@@ -2310,15 +2338,6 @@ class BookingPage extends Component {
                                         </div>
                                         <div className='col-sm-4 form-group'>
                                             <div>
-                                                <span>Warehouse Name</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
-                                                        :
-                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
-                                                }
-                                            </div>
-                                            <div>
                                                 <span>Contact PU Email</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
@@ -2332,6 +2351,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['pu_Email']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
+                                                }
+                                            </div>
+                                            <div>
+                                                <span>Warehouse Name</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
+                                                        :
+                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
                                                 }
                                             </div>
                                         </div>
@@ -2503,6 +2531,111 @@ class BookingPage extends Component {
                                                         <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
                                                         :
                                                         null
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Consignment Number</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['v_FPBookingNumber']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            placeholder="" 
+                                                            name="v_FPBookingNumber" 
+                                                            value = {formInputs['v_FPBookingNumber']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Freight Provider</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['vx_freight_provider']}</p>
+                                                        :
+                                                        <Select
+                                                            value={currentFPOption}
+                                                            onChange={(e) => this.handleChangeSelect(e, 'vx_freight_provider')}
+                                                            options={fpOptions}
+                                                            placeholder='Select a FP'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className='col-sm-2 form-group'>
+                                            <div>
+                                                <span>Service Name</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['vx_serviceName']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text"
+                                                            name="vx_serviceName" 
+                                                            value = {formInputs['vx_serviceName']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Service Type 2</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['v_service_Type_2']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="v_service_Type_2" 
+                                                            value = {formInputs['v_service_Type_2']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Tracking ID</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['fk_fp_pickup_id']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="fk_fp_pickup_id" 
+                                                            value = {formInputs['fk_fp_pickup_id']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Vihicle Type</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['v_vehicle_Type']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="v_vehicle_Type" 
+                                                            value = {formInputs['v_vehicle_Type']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
                                                 }
                                             </div>
                                         </div>
@@ -3772,6 +3905,7 @@ const mapStateToProps = (state) => {
         statusDetails: state.extra.statusDetails,
         availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
+        allFPs: state.extra.allFPs,
         bookingErrorMessage: state.booking.errorMessage,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
@@ -3829,6 +3963,7 @@ const mapDispatchToProps = (dispatch) => {
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
+        getAllFPs: () => dispatch(getAllFPs()),
     };
 };
 

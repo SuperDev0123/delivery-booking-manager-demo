@@ -926,7 +926,7 @@ class AllBookingsPage extends React.Component {
         if (selectedBookingIds && selectedBookingIds.length === 0) {
             alert('There is no bookings to *Book.');
         } else if (selectedBookingIds.length > 500) {
-            alert('You can generate xml with 500 bookings at most.');
+            alert('You can generate xml or csv with 500 bookings at most.');
         } else {
             const bookedIds = [];
             const ids4csv = [];
@@ -956,7 +956,7 @@ class AllBookingsPage extends React.Component {
                             } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
                                 ids4xml.push(nonBookedBookings[i].id);
                             } else {
-                                ids4notMatchFP.push(nonBookedBookings[i].id);    
+                                ids4notMatchFP.push(nonBookedBookings[i].id);
                             }
                         } else {
                             ids4notMatchFP.push(nonBookedBookings[i].id);
