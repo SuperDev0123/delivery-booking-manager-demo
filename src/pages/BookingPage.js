@@ -946,13 +946,17 @@ class BookingPage extends Component {
 
     onClickPrev(e){
         e.preventDefault();
-        const {prevBookingId} = this.state;
+        const {prevBookingId, isBookingModified} = this.state;
 
-        if (prevBookingId && prevBookingId > -1) {
-            this.props.getBookingWithFilter(prevBookingId, 'id');
+        if (isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            if (prevBookingId && prevBookingId > -1) {
+                this.props.getBookingWithFilter(prevBookingId, 'id');
+            }
+
+            this.setState({loading: true, curViewMode: 0});
         }
-
-        this.setState({loading: true, curViewMode: 0});
     }
 
     onClickPrinter(booking) {
@@ -977,13 +981,17 @@ class BookingPage extends Component {
 
     onClickNext(e){
         e.preventDefault();
-        const {nextBookingId} = this.state;
+        const {nextBookingId, isBookingModified} = this.state;
 
-        if (nextBookingId && nextBookingId > -1) {
-            this.props.getBookingWithFilter(nextBookingId, 'id');
+        if (isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            if (nextBookingId && nextBookingId > -1) {
+                this.props.getBookingWithFilter(nextBookingId, 'id');
+            }
+
+            this.setState({loading: true, curViewMode: 0});
         }
-
-        this.setState({loading: true, curViewMode: 0});
     }
 
     calcBookingLine(bookingLines) {
@@ -1096,6 +1104,8 @@ class BookingPage extends Component {
                 this.props.getDeliverySuburbStrings('postalcode', selectedOption.label);
                 this.setState({deToState: selectedOption, deToPostalCode: null, deToSuburb: null, selectionChanged: 2, loadingGeoDeTo: true});
             }
+
+            this.setState({isBookingModified: true});
         }
     };
 
@@ -1108,6 +1118,8 @@ class BookingPage extends Component {
                 this.props.getDeliverySuburbStrings('suburb', selectedOption.label);
                 this.setState({deToPostalCode: selectedOption, deToSuburb: null, deToSuburbs: [], selectionChanged: 2, loadingGeoDeTo: true});
             }
+
+            this.setState({isBookingModified: true});
         }
     };
 
@@ -1118,6 +1130,8 @@ class BookingPage extends Component {
             } else if (num === 1) {
                 this.setState({ deToSuburb: selectedOption});
             }
+
+            this.setState({isBookingModified: true});
         }
     };
 
@@ -1137,7 +1151,7 @@ class BookingPage extends Component {
             booking['vx_freight_provider'] = formInputs['vx_freight_provider'];
         }
 
-        this.setState({formInputs, booking});
+        this.setState({formInputs, booking, isBookingModified: true});
     }
 
     getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
@@ -1561,11 +1575,17 @@ class BookingPage extends Component {
     }
 
     onChangeViewMode(e) {
-        if (parseInt(e.target.value) === 1) {
-            this.showCreateView();
-        }
+        const {isBookingModified} = this.state;
 
-        this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
+        if (parseInt(e.target.value) !== 2 && isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            if (parseInt(e.target.value) === 1) {
+                this.showCreateView();
+            }
+
+            this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
+        }
     }
 
     showCreateView() {
