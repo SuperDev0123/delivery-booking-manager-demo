@@ -809,6 +809,45 @@ class AllBookingsPage extends React.Component {
                     alert('No new POD SOG info');
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 }
+            } else if (downloadOption === 'connote' || downloadOption === 'new_connote') {
+                let bookingIdsWithNewConnote = [];
+
+                for (let j = 0; j < selectedBookingIds.length; j++) {
+                    for (let i = 0; i < bookings.length; i++) {
+                        if (bookings[i].id === selectedBookingIds[j]) {
+                            if (bookings[i].z_downloaded_connote_timestamp === null &&
+                                (bookings[i].z_connote_url &&
+                                bookings[i].z_connote_url.length > 0))
+                                bookingIdsWithNewConnote.push(bookings[i].id);
+                        }
+                    }
+                }
+
+                if ((downloadOption === 'new_connote' && bookingIdsWithNewConnote.length !== 0) || (downloadOption === 'connote')) {
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
+                        data: {
+                            ids: downloadOption === 'connote' ? selectedBookingIds : bookingIdsWithNewConnote,
+                            downloadOption: downloadOption,
+                        },
+                        responseType: 'blob', // important
+                    };
+
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        this.props.setGetBookingsFilter('date', {startDate, endDate});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    });
+                } else {
+                    alert('No new Connote info');
+                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                }
             }
         } else if (selectedBookingIds.length > 100) {
             alert('Please selected less than 500 bookings to download.');
@@ -1889,6 +1928,8 @@ class AllBookingsPage extends React.Component {
                                                 <option value="new_pod">New Pod</option>
                                                 <option value="pod_sog">Pod SOG</option>
                                                 <option value="new_pod_sog">New Pod SOG</option>
+                                                <option value="connote">Connote</option>
+                                                <option value="new_connote">New Connote</option>
                                             </select>
                                         </div>
                                         <LoadingOverlay
