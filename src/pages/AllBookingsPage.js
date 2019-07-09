@@ -1013,18 +1013,18 @@ class AllBookingsPage extends React.Component {
                             this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
                         ])
                             .then(() => {
-                                this.setState({loading: true, loadingDownload: false});
+                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                 this.props.setNeedUpdateBookingsState(true);
                                 this.notify('There was error, please check each booking error');
                             })
                             .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false});
+                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                 this.props.setNeedUpdateBookingsState(true);
                                 console.log('#100 - ', err);
                             });
                     })
                     .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false});
+                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                         this.props.setNeedUpdateBookingsState(true);
                         console.log('#101 - ', err);
                     });
@@ -1036,7 +1036,7 @@ class AllBookingsPage extends React.Component {
                             this.buildXML(ids4xml, 'allied'),
                         ])
                             .then(() => {
-                                this.setState({loading: true, loadingDownload: false});
+                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                 this.props.setNeedUpdateBookingsState(true);
 
                                 if (ids4csv.length)
@@ -1045,13 +1045,13 @@ class AllBookingsPage extends React.Component {
                                     this.notify('Successfully created XML.');
                             })
                             .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false});
+                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                 this.props.setNeedUpdateBookingsState(true);
                                 console.log('#100 - ', err);
                             });
                     })
                     .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false});
+                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                         this.props.setNeedUpdateBookingsState(true);
                         console.log('#101 - ', err);
                     });
