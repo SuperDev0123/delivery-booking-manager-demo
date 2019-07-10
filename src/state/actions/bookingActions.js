@@ -1,4 +1,4 @@
-import { RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, GENERATE_XLS_SUCCESS, GENERATE_XLS_FAILED, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG } from '../constants/bookingConstants';
+import { RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, GENERATE_XLS_SUCCESS, GENERATE_XLS_FAILED, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_PAGEITEMCNT, SET_LOCAL_FILTER_PAGEINDEX } from '../constants/bookingConstants';
 
 import { getAlliedLabel, getSTLabel } from '../services/bookingService';
 
@@ -7,6 +7,9 @@ export function successGetBookings(data) {
         type: SET_BOOKINGS,
         bookings: data['bookings'],
         bookingsCnt: data['count'],
+        pageCnt: data['page_cnt'],
+        pageInd: data['page_ind'],
+        pageItemCnt: data['page_item_cnt'],
         toManifest: data['to_manifest'],
         toProcess: data['to_process'],
         closed: data['closed'],
@@ -57,17 +60,28 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_DOWNLOADOPTION,
             downloadOption: value,
         };
-    }
+    } else if (key === 'pageItemCnt') {
+        return {
+            type: SET_LOCAL_FILTER_PAGEITEMCNT,
+            pageItemCnt: value,
+        };
+    } else if (key === 'pageInd') {
+        return {
+            type: SET_LOCAL_FILTER_PAGEINDEX,
+            pageInd: value,
+        };
+    } 
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption) {
+export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
         endDate: endDate,
         warehouseId: warehouseId,
         sortField: sortField,
-        itemCountPerPage: itemCountPerPage,
+        pageItemCnt: pageItemCnt,
+        pageInd: pageInd,
         columnFilters: columnFilters,
         prefilterInd: prefilterInd,
         simpleSearchKeyword: simpleSearchKeyword,
