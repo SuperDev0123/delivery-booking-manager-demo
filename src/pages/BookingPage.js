@@ -164,6 +164,7 @@ class BookingPage extends Component {
             bookingId: null,
             apiBCLs: [],
             allFPs: [],
+            currentNoteModalField: null,
         };
 
         this.djsConfig = {
@@ -788,6 +789,10 @@ class BookingPage extends Component {
                 else formInputs['fk_fp_pickup_id'] = '';
                 if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
                 else formInputs['v_vehicle_Type'] = '';
+                if (!_.isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
+                else formInputs['inv_billing_status'] = '';
+                if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
+                else formInputs['inv_billing_status_note'] = '';
 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -1150,6 +1155,9 @@ class BookingPage extends Component {
         } else if (fieldName === 'vx_freight_provider') {
             formInputs['vx_freight_provider'] = selectedOption.value;
             booking['vx_freight_provider'] = formInputs['vx_freight_provider'];
+        } else if (fieldName === 'inv_billing_status') {
+            formInputs['inv_billing_status'] = selectedOption.value;
+            booking['inv_billing_status'] = formInputs['inv_billing_status'];
         }
 
         this.setState({formInputs, booking, isBookingModified: true});
@@ -1525,8 +1533,8 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
-    toggleShowStatusNoteModal() {
-        this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal}));
+    toggleShowStatusNoteModal(type='dme_status_history_notes') {
+        this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal, currentNoteModalField: type}));
     }
 
     toggleShowDeleteCommConfirmModal() {
@@ -1847,9 +1855,10 @@ class BookingPage extends Component {
     onUpdateStatusNote(note) {
         let newBooking = this.state.booking;
         let formInputs = this.state.formInputs;
+        const {currentNoteModalField} = this.state;
 
-        newBooking.dme_status_history_notes = note;
-        formInputs['dme_status_history_notes'] = note;
+        newBooking[currentNoteModalField] = note;
+        formInputs[currentNoteModalField] = note;
         this.setState({booking: newBooking, formInputs, isBookingModified: true});
         this.toggleShowStatusNoteModal();
     }
@@ -1873,7 +1882,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField} = this.state;
 
         const bookingLineColumns = [
             {
@@ -2170,6 +2179,13 @@ class BookingPage extends Component {
             return {value: fp.fp_company_name, label: fp.fp_company_name};
         });
         const currentFPOption = {value: formInputs['vx_freight_provider'], label: formInputs['vx_freight_provider']};
+
+        const InvBillingOptions = [
+            {value: 'Charge', label: 'Charge'},
+            {value: 'Reduced Charge', label: 'Reduced Charge'},
+            {value: 'Not to Charge', label: 'Not to Charge'},
+        ];
+        const currentInvBillingOption = {value: formInputs['inv_billing_status'], label: formInputs['inv_billing_status']};
 
         const availableCreatorsList = availableCreators.map((availableCreator, index) => {
             return (
@@ -2530,7 +2546,7 @@ class BookingPage extends Component {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <textarea 
                                                             className="show-mode" 
-                                                            onClick={() => this.toggleShowStatusNoteModal()}
+                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             value={formInputs['dme_status_history_notes']}
                                                             rows="3" 
@@ -2542,7 +2558,7 @@ class BookingPage extends Component {
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             name="dme_status_linked_reference_from_fp" 
                                                             value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                            onClick={() => this.toggleShowStatusNoteModal()}
+                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
                                                             rows="3" 
                                                             cols="25"
                                                         />
@@ -2657,6 +2673,48 @@ class BookingPage extends Component {
                                                             value = {formInputs['v_vehicle_Type']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Invoice Billing Status</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_billing_status']}</p>
+                                                        :
+                                                        <Select
+                                                            value={currentInvBillingOption}
+                                                            onChange={(e) => this.handleChangeSelect(e, 'inv_billing_status')}
+                                                            options={InvBillingOptions}
+                                                            placeholder='Select a Inv/Billing status'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <div>
+                                                <span>Invoice Billing Status Note</span>
+                                                {
+                                                    <textarea 
+                                                        className="show-mode" 
+                                                        id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
+                                                        name="inv_billing_status_note" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['inv_billing_status_note']} 
+                                                        onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
+                                                        rows="1" 
+                                                        cols="25"
+                                                    />
+                                                        
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['inv_billing_status_note']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['inv_billing_status_note']} />
+                                                        :
+                                                        null
                                                 }
                                             </div>
                                         </div>
@@ -3869,7 +3927,8 @@ class BookingPage extends Component {
                     isShowStatusNoteModal={this.state.isShowStatusNoteModal}
                     toggleShowStatusNoteModal={this.toggleShowStatusNoteModal}
                     onUpdateStatusNote={(note) => this.onUpdateStatusNote(note)}
-                    note={booking.dme_status_history_notes}
+                    note={booking[currentNoteModalField]}
+                    fieldName={currentNoteModalField}
                     isEditable={(curViewMode===0) ? false : true}
                 />
 
