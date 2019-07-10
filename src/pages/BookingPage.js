@@ -1850,7 +1850,7 @@ class BookingPage extends Component {
 
         newBooking.dme_status_history_notes = note;
         formInputs['dme_status_history_notes'] = note;
-        this.setState({booking: newBooking, formInputs});
+        this.setState({booking: newBooking, formInputs, isBookingModified: true});
         this.toggleShowStatusNoteModal();
     }
 
@@ -1869,7 +1869,7 @@ class BookingPage extends Component {
         const booking = this.state.booking;
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
-        this.setState({formInputs, booking});
+        this.setState({formInputs, booking, isBookingModified: true});
     }
 
     render() {
