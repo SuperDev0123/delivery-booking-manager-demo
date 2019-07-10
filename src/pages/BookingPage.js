@@ -2677,7 +2677,7 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row col-sm-12 booking-form-01">
+                                    <div className={clientname === 'dme' ? 'row col-sm-12 booking-form-01' : 'none'}>
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>Invoice Billing Status</span>
