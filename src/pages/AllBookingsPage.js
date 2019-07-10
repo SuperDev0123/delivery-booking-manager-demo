@@ -265,7 +265,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (pageCnt) {
-            this.setState({ pageCnt });
+            this.setState({ pageCnt: parseInt(pageCnt), pageInd: parseInt(pageInd) });
         }
 
         if ((errorMessage === 'Book success' || 
@@ -494,7 +494,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onpageItemCntChange(e) {
-        const pageItemCnt = e.target.value;
+        const pageItemCnt = parseInt(e.target.value);
 
         this.props.setGetBookingsFilter('pageItemCnt', pageItemCnt);
         this.setState({ pageItemCnt });
@@ -1332,8 +1332,8 @@ class AllBookingsPage extends React.Component {
         this.setState({manifestStatus: 0});
     }
 
-    onClickPagination(type) {
-        alert(type);
+    onClickPagination(pageInd) {
+        this.props.setGetBookingsFilter('pageInd', pageInd);
     }
 
     render() {
@@ -1955,11 +1955,13 @@ class AllBookingsPage extends React.Component {
                                                 </label>
                                                 <select value={this.state.pageItemCnt} onChange={(e) => this.onpageItemCntChange(e)}>
                                                     <option value="10">10</option>
-                                                    <option value="25">20</option>
+                                                    <option value="20">20</option>
                                                     <option value="50">50</option>
                                                 </select>
                                                 <CustomPagination 
                                                     onClickPagination={(type) => this.onClickPagination(type)}
+                                                    pageCnt={this.state.pageCnt}
+                                                    pageInd={this.state.pageInd}
                                                 />
                                             </div>
                                         </div>
