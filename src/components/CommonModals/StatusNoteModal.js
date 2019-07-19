@@ -14,9 +14,11 @@ class StatusNoteModal extends Component {
     static propTypes = {
         isShowStatusNoteModal: PropTypes.bool,
         toggleShowStatusNoteModal: PropTypes.func,
-        onUpdateStatusNote: PropTypes.func.required,
+        onUpdate: PropTypes.func.required,
+        onClear: PropTypes.func.required,
         note: PropTypes.string.required,
         isEditable: PropTypes.bool,
+        fieldName: PropTypes.string.required,
     };
 
     static defaultProps = {
@@ -32,11 +34,20 @@ class StatusNoteModal extends Component {
     
     render() {
         const {note} = this.state;
-        const {isShowStatusNoteModal, isEditable} = this.props;
+        const {isShowStatusNoteModal, isEditable, fieldName} = this.props;
+        let title = '';
+
+        if (fieldName === 'dme_status_history_notes') {
+            title = 'DME Status History Note';
+        } else if (fieldName === 'inv_billing_status_note') {
+            title = 'Invoice Billing Status Note';
+        }
+
+        title = isEditable ? title : title + ' (View Only)';
 
         return (
             <ReactstrapModal isOpen={isShowStatusNoteModal} toggle={() => this.props.toggleShowStatusNoteModal()} className="status-note-modal">
-                <ModalHeader toggle={() => this.props.toggleShowStatusNoteModal()}>{isEditable ? 'Status Note' : 'Status Note (Only View)'}</ModalHeader>
+                <ModalHeader toggle={() => this.props.toggleShowStatusNoteModal()}>{title}</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Status Note: </p>
@@ -49,7 +60,8 @@ class StatusNoteModal extends Component {
                     </label>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={() => this.props.onUpdateStatusNote(note)}>Save</Button>
+                    <Button color="danger" disabled={isEditable ? false : true} onClick={() => this.props.onClear()}>Clear</Button>
+                    <Button color="primary" disabled={isEditable ? false : true} onClick={() => this.props.onUpdate(note)}>Save</Button>
                     <Button color="secondary" onClick={() => this.props.toggleShowStatusNoteModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
