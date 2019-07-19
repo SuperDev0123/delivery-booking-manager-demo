@@ -14,7 +14,8 @@ class StatusNoteModal extends Component {
     static propTypes = {
         isShowStatusNoteModal: PropTypes.bool,
         toggleShowStatusNoteModal: PropTypes.func,
-        onUpdateStatusNote: PropTypes.func.required,
+        onUpdate: PropTypes.func.required,
+        onClear: PropTypes.func.required,
         note: PropTypes.string.required,
         isEditable: PropTypes.bool,
         fieldName: PropTypes.string.required,
@@ -36,7 +37,7 @@ class StatusNoteModal extends Component {
         const {isShowStatusNoteModal, isEditable, fieldName} = this.props;
         let title = '';
 
-        if (fieldName === 'dme_dme_status_history_notes') {
+        if (fieldName === 'dme_status_history_notes') {
             title = 'DME Status History Note';
         } else if (fieldName === 'inv_billing_status_note') {
             title = 'Invoice Billing Status Note';
@@ -59,7 +60,8 @@ class StatusNoteModal extends Component {
                     </label>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="primary" onClick={() => this.props.onUpdateStatusNote(note)}>Save</Button>
+                    <Button color="danger" disabled={isEditable ? false : true} onClick={() => this.props.onClear()}>Clear</Button>
+                    <Button color="primary" disabled={isEditable ? false : true} onClick={() => this.props.onUpdate(note)}>Save</Button>
                     <Button color="secondary" onClick={() => this.props.toggleShowStatusNoteModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>

@@ -40,7 +40,7 @@ import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
-import {isFormValid} from '../commons/validations';
+import { isFormValid } from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -1859,6 +1859,17 @@ class BookingPage extends Component {
 
         newBooking[currentNoteModalField] = note;
         formInputs[currentNoteModalField] = note;
+        this.setState({booking: newBooking, formInputs, isBookingModified: true});
+        this.toggleShowStatusNoteModal();
+    }
+
+    onClearStatusNote() {
+        let newBooking = this.state.booking;
+        let formInputs = this.state.formInputs;
+        const {currentNoteModalField} = this.state;
+
+        newBooking[currentNoteModalField] = '';
+        formInputs[currentNoteModalField] = '';
         this.setState({booking: newBooking, formInputs, isBookingModified: true});
         this.toggleShowStatusNoteModal();
     }
@@ -3926,7 +3937,8 @@ class BookingPage extends Component {
                 <StatusNoteModal
                     isShowStatusNoteModal={this.state.isShowStatusNoteModal}
                     toggleShowStatusNoteModal={this.toggleShowStatusNoteModal}
-                    onUpdateStatusNote={(note) => this.onUpdateStatusNote(note)}
+                    onUpdate={(note) => this.onUpdateStatusNote(note)}
+                    onClear={() => this.onClearStatusNote()}
                     note={booking[currentNoteModalField]}
                     fieldName={currentNoteModalField}
                     isEditable={(curViewMode===0) ? false : true}
