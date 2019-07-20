@@ -11,6 +11,6 @@ export const STATIC_HOST = 'localhost:8000/static'; // Local Static
 // New servers
 export const S3_URL = "dme-pod-api-static.s3-ap-southeast-2.amazonaws.com";
 // export const API_HOST = '3.105.62.128/api';         	// Dev Api
-// export const STATIC_HOST = S3_URL + '/static';   	// Dev Static
+// export const STATIC_HOST = S3_URL;   				// Dev Static
 // export const API_HOST = '13.55.64.102/api';         	// Prod Api
-// export const STATIC_HOST = S3_URL + '/static';   	// Prod Static
+// export const STATIC_HOST = S3_URL;   				// Prod Static
