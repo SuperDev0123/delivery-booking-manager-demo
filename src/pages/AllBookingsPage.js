@@ -47,6 +47,7 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
+            filteredBookingIds: [],
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
             linkPopoverOpens: [],
@@ -65,9 +66,8 @@ class AllBookingsPage extends React.Component {
             loadingBooking: false,
             loadingDownload: false,
             activeTabInd: 7,
-            checkedAll: false,
+            allCheckStatus: 'None',
             showGearMenu: false,
-            selectedBookingsCnt: 0,
             currentBookInd: 0,
             downloadOption: 'label',
             total_qty: 0,
@@ -195,7 +195,8 @@ class AllBookingsPage extends React.Component {
         }
 
         if (bookings) {
-            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
+            const filteredBookingIds = bookings.map(booking => booking.id);
+            this.setState({ bookings, bookingsCnt, filteredBookingIds, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -471,7 +472,7 @@ class AllBookingsPage extends React.Component {
             startDate: moment(startDate).format('YYYY-MM-DD'), 
             endDate: moment(endDate).format('YYYY-MM-DD'),
         });
-        this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
         this.props.setGetBookingsFilter('columnFilters', {});
     }
 
@@ -484,10 +485,10 @@ class AllBookingsPage extends React.Component {
                 warehouseId = selectedWarehouseId;
 
             this.props.setGetBookingsFilter('warehouseId', warehouseId);
-            this.setState({selectedBookingIds: [], checkedAll: false, selectedWarehouseName: e.target.name});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedWarehouseName: e.target.name});
         } else if (src === 'client') {
             this.props.setGetBookingsFilter('clientPK', e.target.value);
-            this.setState({selectedBookingIds: [], checkedAll: false});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
         } else if (src === 'status') {
             this.setState({selectedStatusValue: e.target.value});
         }
@@ -536,7 +537,7 @@ class AllBookingsPage extends React.Component {
     onClickPrefilter(prefilterInd) {
         this.props.setGetBookingsFilter('prefilterInd', prefilterInd);
         this.props.setGetBookingsFilter('columnFilters', {});
-        this.setState({selectedBookingIds: [], checkedAll: false, filterInputs: {}});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
     showAdditionalInfo(bookingId) {
@@ -618,11 +619,25 @@ class AllBookingsPage extends React.Component {
     }
 
     onCheck(e, id) {
+        const { filteredBookingIds } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = '';
+
         if (!e.target.checked) {
-            this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
+            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
         } else {
-            this.setState({selectedBookingIds: _.union(this.state.selectedBookingIds, [id])});
+            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
         }
+
+        if (selectedBookingIds.length === filteredBookingIds.length) {
+            allCheckStatus = 'All';
+        } else if (selectedBookingIds.length === 0) {
+            allCheckStatus = 'None';
+        } else {
+            allCheckStatus = 'Some';
+        }
+
+        this.setState({selectedBookingIds, allCheckStatus});
     }
 
     onClickAllTrigger() {
@@ -639,7 +654,7 @@ class AllBookingsPage extends React.Component {
         } else if (selectedBookingIds.length > 10) {
             alert('Please select less than 10 booking! 10+ bookings takes 5+ minutes to book');
         } else {
-            this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
+            this.setState({loadingBooking: true});
             let ind = -1;
 
             for (let i = 0; i < bookings.length; i++) {
@@ -660,12 +675,12 @@ class AllBookingsPage extends React.Component {
     }
 
     onAfterBook() {
-        const { selectedBookingIds, bookings, selectedBookingsCnt, currentBookInd } = this.state;
+        const { selectedBookingIds, bookings, currentBookInd } = this.state;
         const st_name = 'startrack';
         const allied_name = 'allied';
 
-        if (currentBookInd === selectedBookingsCnt - 1) {
-            this.setState({selectedBookingIds: [], checkedAll: false, loadingBooking: false, selectedBookingsCnt: 0, currentBookInd: 0});
+        if (currentBookInd === selectedBookingIds.length - 1) {
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingBooking: false, currentBookInd: 0});
         } else {
             let ind = -1;
 
@@ -718,7 +733,7 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onDownload() {
@@ -743,7 +758,7 @@ class AllBookingsPage extends React.Component {
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false, loading: true});
+                    this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false, loading: true});
                 });
             } else if (downloadOption === 'pod' || downloadOption === 'new_pod') {
                 let bookingIdsWithNewPOD = [];
@@ -778,11 +793,11 @@ class AllBookingsPage extends React.Component {
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                        this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
                     alert('No new POD info');
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'pod_sog' || downloadOption === 'new_pod_sog') {
                 let bookingIdsWithNewPODSOG = [];
@@ -817,11 +832,11 @@ class AllBookingsPage extends React.Component {
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                        this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
                     alert('No new POD SOG info');
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'connote' || downloadOption === 'new_connote') {
                 let bookingIdsWithNewConnote = [];
@@ -856,11 +871,11 @@ class AllBookingsPage extends React.Component {
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                        this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
                     alert('No new Connote info');
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'label_and_connote') {
                 let bookingIdsWithLabelOrConnote = [];
@@ -907,11 +922,11 @@ class AllBookingsPage extends React.Component {
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                        this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
                     alert('No Booking which has Label or Connote info');
-                    this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             }
         } else if (selectedBookingIds.length > 100) {
@@ -973,7 +988,7 @@ class AllBookingsPage extends React.Component {
             this.setState({activeTabInd: 0});
         }
 
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickTab(activeTabInd) {
@@ -989,7 +1004,7 @@ class AllBookingsPage extends React.Component {
             this.onClickPrefilter(activeTabInd);
         }
 
-        this.setState({activeTabInd, selectedBookingIds: [], checkedAll: false});
+        this.setState({activeTabInd, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onDatePlusOrMinus(number) {
@@ -998,26 +1013,29 @@ class AllBookingsPage extends React.Component {
         // const endDate = moment(this.state.endDate).add(number, 'd').format('YYYY-MM-DD');
         // this.props.setGetBookingsFilter('date', {startDate, endDate});
         // localStorage.setItem('today', startDate);
-        // this.setState({startDate, selectedBookingIds: [], checkedAll: false});
+        // this.setState({startDate, selectedBookingIds: [], allCheckStatus: false});
     }
 
     onCheckAll() {
-        const { bookings, checkedAll } = this.state;
+        const { filteredBookingIds } = this.state;
         let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = this.state.allCheckStatus;
 
-        for (let i = 0; i < bookings.length; i++) {
-            if (!checkedAll) {
-                selectedBookingIds = _.union(selectedBookingIds, [bookings[i].id]);
-            } else {
-                selectedBookingIds = _.difference(selectedBookingIds, [bookings[i].id]);
-            }
+        if ((selectedBookingIds.length > 0 && selectedBookingIds.length < filteredBookingIds.length)
+            || selectedBookingIds.length === filteredBookingIds.length) { // // If selected `All` or `Some`
+            selectedBookingIds = [];
+            allCheckStatus = 'None';
+        } else if (selectedBookingIds.length === 0) { // If selected `None`
+            selectedBookingIds = _.clone(filteredBookingIds);
+            allCheckStatus = 'All';
         }
-        this.setState({checkedAll: !checkedAll, selectedBookingIds});
+
+        this.setState({allCheckStatus, selectedBookingIds});
     }
 
     onClickSTOrder() {
         this.props.stOrder();
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickDownloadExcel() {
@@ -1288,7 +1306,7 @@ class AllBookingsPage extends React.Component {
             alert('You can change 25 bookings status at a time.');
         } else {
             this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
-            this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
+            this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
         }
     }
 
@@ -1388,7 +1406,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedBooking4StatusLock, activeBookingId } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedBooking4StatusLock, activeBookingId, allCheckStatus } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1906,7 +1924,7 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                     <button className="btn btn-primary allied-booking none" onClick={() => this.onClickBook()}>Book</button>
                                                     {
-                                                        loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingsCnt + ') ' : ''
+                                                        loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingIds.length + ') ' : ''
                                                     }
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                                     <button
@@ -1919,7 +1937,8 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
                                             </div>
-                                            <p className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</p>
+                                            <p className="font-24px float-right">Selected: {selectedBookingIds.length}</p>
+                                            <p className="font-24px float-right">Found: {bookingsCnt}</p>
                                         </div>
                                         <ul className="filter-conditions none">
                                             <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
@@ -2371,7 +2390,14 @@ class AllBookingsPage extends React.Component {
                                                             <th className="" scope="col"><p>FP Del ETA</p></th>
                                                         </tr>
                                                         <tr className="filter-tr">
-                                                            <th><input type="checkbox" className="checkall" checked={this.state.checkedAll ? 'checked' : ''} onChange={() => this.onCheckAll()} /></th>
+                                                            <th>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    className={(allCheckStatus === 'All' || allCheckStatus === 'None') ? 'checkall' : 'checkall some'}
+                                                                    checked={allCheckStatus !== 'None' ? 'checked' : ''}
+                                                                    onChange={() => this.onCheckAll()}
+                                                                />
+                                                            </th>
                                                             <th><i className="icon icon-th-list"></i></th>
                                                             <th><i className="icon icon-plus"></i></th>
                                                             <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
