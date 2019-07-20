@@ -1,0 +1,29 @@
+.check-pod-modal {
+	top: 100px;
+
+	.modal-header h5 {
+		font-size: 20px !important;
+		font-weight: bold;
+	}
+
+	label {
+		width: 70%;
+
+		p {
+			width: 40%;
+			display: inline-block;
+			vertical-align: top;
+			margin-top: 5px;
+		}
+
+		>input {
+			float: right;
+
+			&.checkbox {
+				float: unset !important;
+				margin-left: 24px;
+				display: inline-block;
+			}
+		}
+	}
+}

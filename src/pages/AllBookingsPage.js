@@ -1,8 +1,9 @@
+// React Libs
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
-
+// Libs
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
@@ -14,22 +15,23 @@ import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+// Constants
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
-
+// Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected, queryManifest } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
-
+// Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import ManifestModal from '../components/CommonModals/ManifestModal';
+import CheckPodModal from '../components/CommonModals/CheckPodModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -85,11 +87,12 @@ class AllBookingsPage extends React.Component {
             allBookingStatus: [],
             allFPs: [],
             isShowStatusLockModal: false,
-            selectedBooking4StatusLock: null,
+            selectedOneBooking: null,
             activeBookingId: null,
             isShowManifestModal: false,
             manifestStatus: 0,
             oneManifestFile: false,
+            isShowCheckPodModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -99,6 +102,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.toggleShowManifestModal = this.toggleShowManifestModal.bind(this);
+        this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -601,6 +605,10 @@ class AllBookingsPage extends React.Component {
 
     toggleShowManifestModal() {
         this.setState(prevState => ({isShowManifestModal: !prevState.isShowManifestModal}));
+    }
+
+    toggleShowCheckPodModal() {
+        this.setState(prevState => ({isShowCheckPodModal: !prevState.isShowCheckPodModal})); 
     }
 
     onCheck(e, id) {
@@ -1226,7 +1234,7 @@ class AllBookingsPage extends React.Component {
 
         if (clientname === 'dme') {
             if (booking.b_status_API === 'POD Delivered') {
-                this.setState({selectedBooking4StatusLock: booking}, () => this.toggleShowStatusLockModal());
+                this.setState({selectedOneBooking: booking}, () => this.toggleShowStatusLockModal());
             } else {
                 this.onChangeStatusLock(booking);
             }
@@ -1294,7 +1302,14 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds: []});
     }
 
-    onClickBooking(booking) {
+    onClickRow(booking) {
+        const { downloadOption } = this.state;
+
+        if (downloadOption === 'check_pod') {
+            this.setState({selectedOneBooking: booking});
+            this.toggleShowCheckPodModal();
+        }
+
         this.setState({activeBookingId: booking.id});
     }
 
@@ -1370,7 +1385,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedBooking4StatusLock, activeBookingId } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1425,7 +1440,7 @@ class AllBookingsPage extends React.Component {
                 <tr 
                     key={index} 
                     className={(activeBookingId === booking.id || _.indexOf(selectedBookingIds, booking.id) !== -1) ? 'active' : 'inactive'}
-                    onClick={() => this.onClickBooking(booking)}
+                    onClick={() => this.onClickRow(booking)}
                 >
                     <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
@@ -1975,13 +1990,14 @@ class AllBookingsPage extends React.Component {
                                             <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)}>
                                                 <option value="label">Label</option>
                                                 <option value="new_label">New Label</option>
-                                                <option value="pod">Pod</option>
-                                                <option value="new_pod">New Pod</option>
-                                                <option value="pod_sog">Pod SOG</option>
-                                                <option value="new_pod_sog">New Pod SOG</option>
+                                                <option value="pod">POD</option>
+                                                <option value="new_pod">New POD</option>
+                                                <option value="pod_sog">POD SOG</option>
+                                                <option value="new_pod_sog">New POD SOG</option>
                                                 <option value="connote">Connote</option>
                                                 <option value="new_connote">New Connote</option>
                                                 <option value="label_and_connote">Label & Connote</option>
+                                                <option value="check_pod">Check POD</option>
                                             </select>
                                         </div>
                                         <LoadingOverlay
@@ -2398,7 +2414,7 @@ class AllBookingsPage extends React.Component {
                 <StatusLockModal
                     isOpen={isShowStatusLockModal}
                     toggleShowStatusLockModal={this.toggleShowStatusLockModal}
-                    booking={selectedBooking4StatusLock}
+                    booking={selectedOneBooking}
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
 
@@ -2407,6 +2423,13 @@ class AllBookingsPage extends React.Component {
                     toggleShowManifestModal={this.toggleShowManifestModal}
                     allFPs={allFPs}
                     onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile)}
+                />
+
+                <CheckPodModal
+                    isOpen={this.state.isShowCheckPodModal}
+                    toggleShowCheckPodModal={this.toggleShowCheckPodModal}
+                    onClickSave={(id, booking) => this.props.updateBooking(id, booking)}
+                    booking={this.state.selectedOneBooking}
                 />
 
                 <ToastContainer />
