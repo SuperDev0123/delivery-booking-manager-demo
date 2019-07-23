@@ -3,7 +3,7 @@ import axios from 'axios';
 import { resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction, clearErrorMessageAction } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0, sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', downloadOption='label') => {
+export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0, sortField='-id', columnFilters={}, activeTabInd=0, simpleSearchKeyword='', downloadOption='label') => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -18,7 +18,7 @@ export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageI
             pageInd: parseInt(pageInd),
             sortField: sortField,
             columnFilters: columnFilters,
-            prefilterInd: prefilterInd,
+            activeTabInd: activeTabInd,
             simpleSearchKeyword: simpleSearchKeyword,
             downloadOption: downloadOption,
         }
@@ -51,8 +51,8 @@ export const setGetBookingsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetBookingsFilter = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0,  sortField='-id', columnFilters={}, prefilterInd=0, simpleSearchKeyword='', downloadOption='label') => {
-    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption));
+export const setAllGetBookingsFilter = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0,  sortField='-id', columnFilters={}, activeTabInd=0, simpleSearchKeyword='', downloadOption='label') => {
+    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption));
 };
 
 export const setNeedUpdateBookingsState = (boolFlag) => {

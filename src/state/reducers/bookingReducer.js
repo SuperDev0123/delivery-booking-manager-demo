@@ -1,8 +1,9 @@
-import { RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, RESET_FLAG_LINES, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_PAGEITEMCNT, SET_LOCAL_FILTER_PAGEINDEX } from '../constants/bookingConstants';
+import { RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_ACTIVE_TAB_IND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, RESET_FLAG_LINES, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_PAGEITEMCNT, SET_LOCAL_FILTER_PAGEINDEX } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
     bookings: [],
+    filteredBookingIds: [],
     bookingsCnt: 0,
     userDateFilterField: '',
     mappedBookings: [],
@@ -22,14 +23,14 @@ const defaultState = {
     pageInd: 0,
     sortField: '-id',
     columnFilters: {},
-    prefilterInd: 0,
+    activeTabInd: 7,
     simpleSearchKeyword: '',
     downloadOption: 'label',
     noBooking: null,
     needUpdateBookingLines: false,
 };
 
-export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, pageItemCnt, pageInd, pageCnt }) => {
+export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, filteredBookingIds, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, activeTabInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, pageItemCnt, pageInd, pageCnt }) => {
     switch (type) {
         case RESET_FLAG_LINES:
             return {
@@ -55,6 +56,7 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
             return {
                 ...state,
                 bookings: bookings,
+                filteredBookingIds: filteredBookingIds,
                 bookingsCnt: bookingsCnt,
                 pageInd: pageInd,
                 pageItemCnt: pageItemCnt,
@@ -194,7 +196,7 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 warehouseId: warehouseId,
                 sortField: sortField,
                 columnFilters: columnFilters,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 simpleSearchKeyword: simpleSearchKeyword,
                 downloadOption: downloadOption,
                 clientPK: clientPK,
@@ -231,10 +233,10 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 needUpdateBookings: true,
                 bookings: [],
             };
-        case SET_LOCAL_FILTER_PREFILTERIND:
+        case SET_LOCAL_FILTER_ACTIVE_TAB_IND:
             return {
                 ...state,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 needUpdateBookings: true,
                 bookings: [],
             };
