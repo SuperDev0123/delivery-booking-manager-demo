@@ -34,7 +34,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBookingWithFilter, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, getLatestBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -209,7 +209,7 @@ class BookingPage extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
-        getBookingWithFilter: PropTypes.func.isRequired,
+        getBooking: PropTypes.func.isRequired,
         getSuburbStrings: PropTypes.func.isRequired,
         getDeliverySuburbStrings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
@@ -228,7 +228,6 @@ class BookingPage extends Component {
         updateNote: PropTypes.func.isRequired,
         deleteNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
-        getLatestBooking: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         setClientPK: PropTypes.func.isRequired,
         cancelBook: PropTypes.func.isRequired,
@@ -263,10 +262,10 @@ class BookingPage extends Component {
         var bookingId = urlParams.get('bookingid');
 
         if (bookingId != null) {
-            this.props.getBookingWithFilter(bookingId, 'id');
+            this.props.getBooking(bookingId, 'id');
             this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
-            this.props.getLatestBooking();
+            this.props.getBooking();
             this.setState({loading: true, curViewMode: 0});
             // this.props.getSuburbStrings('state', undefined);
             // this.props.getDeliverySuburbStrings('state', undefined);
@@ -288,7 +287,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -825,7 +824,7 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
-                this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
+                this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true, qtyTotal, cntAttachments, cntComms });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 if (!_.isNull(this.state.typed))
@@ -958,7 +957,7 @@ class BookingPage extends Component {
             alert('You can lose modified booking info. Please update it');
         } else {
             if (prevBookingId && prevBookingId > -1) {
-                this.props.getBookingWithFilter(prevBookingId, 'id');
+                this.props.getBooking(prevBookingId, 'id');
             }
 
             this.setState({loading: true, curViewMode: 0});
@@ -993,7 +992,7 @@ class BookingPage extends Component {
             alert('You can lose modified booking info. Please update it');
         } else {
             if (nextBookingId && nextBookingId > -1) {
-                this.props.getBookingWithFilter(nextBookingId, 'id');
+                this.props.getBooking(nextBookingId, 'id');
             }
 
             this.setState({loading: true, curViewMode: 0});
@@ -1081,7 +1080,7 @@ class BookingPage extends Component {
                 alert('id value is empty');
                 return;
             }
-            this.props.getBookingWithFilter(typed, selected);
+            this.props.getBooking(typed, selected);
             this.setState({loading: true, curViewMode: 0});
         }
 
@@ -1893,7 +1892,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, cntComms} = this.state;
 
         const bookingLineColumns = [
             {
@@ -3564,11 +3563,11 @@ class BookingPage extends Component {
                                     <div className="tabs">
                                         <div className="tab-button-outer">
                                             <ul id="tab-button">
-                                                <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods</a></li>
+                                                <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
                                                 <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Freight Options</a></li>
-                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log</a></li>
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments</a></li>
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log({cntComms})</a></li>
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer none">
@@ -3964,6 +3963,9 @@ const mapStateToProps = (state) => {
         booking: state.booking.booking,
         nextBookingId: state.booking.nextBookingId,
         prevBookingId: state.booking.prevBookingId,
+        qtyTotal: state.booking.qtyTotal,
+        cntComms: state.booking.cntComms,
+        cntAttachments: state.booking.cntAttachments,
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -4010,7 +4012,7 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
-        getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
+        getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
@@ -4037,7 +4039,6 @@ const mapDispatchToProps = (dispatch) => {
         updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
         deleteNote: (id) => dispatch(deleteNote(id)),
         getWarehouses: () => dispatch(getWarehouses()),
-        getLatestBooking: () => dispatch(getLatestBooking()),
         getDMEClients: () => dispatch(getDMEClients()),
         setClientPK: (clientId) => dispatch(setClientPK(clientId)),
         cancelBook: (bookingId) => dispatch(cancelBook(bookingId)),

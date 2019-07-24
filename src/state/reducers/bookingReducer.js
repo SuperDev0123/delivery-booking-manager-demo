@@ -28,7 +28,7 @@ const defaultState = {
     needUpdateBookingLines: false,
 };
 
-export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK }) => {
+export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, qtyTotal, cntComms, cntAttachments }) => {
     switch (type) {
         case RESET_FLAG_LINES:
             return {
@@ -104,6 +104,9 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 booking: booking,
                 nextBookingId: nextBookingId,
                 prevBookingId: prevBookingId,
+                qtyTotal,
+                cntComms,
+                cntAttachments,
                 noBooking: noBooking,
             };
         case SUCCESS_UPDATE_BOOKING:

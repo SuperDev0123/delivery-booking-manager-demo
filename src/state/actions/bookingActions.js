@@ -102,6 +102,9 @@ export function successGetBooking(data) {
         booking: data['booking'],
         nextBookingId: data['nextid'],
         prevBookingId: data['previd'],
+        qtyTotal: data['e_qty_total'],
+        cntComms: data['cnt_comms'],
+        cntAttachments: data['cnt_attachments'],
         noBooking: false,
     };
 }

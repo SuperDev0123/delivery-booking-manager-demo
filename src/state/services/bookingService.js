@@ -71,7 +71,7 @@ export const simpleSearch = (keyword) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
-export const getBookingWithFilter = (id, filter) => {
+export const getBooking = (id=null, filter=null) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -85,19 +85,6 @@ export const getBookingWithFilter = (id, filter) => {
             .then(({ data }) => dispatch(successGetBooking(data)))
             .catch((error) => dispatch(failedGetBookings(error)));
     };
-};
-
-export const getLatestBooking = () => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_latest_booking/`,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetBooking(data)))
-            .catch((error) => dispatch(failedGetBookings(error)));
 };
 
 export const getSuburbStrings = (type, name) => {

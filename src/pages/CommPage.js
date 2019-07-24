@@ -12,7 +12,7 @@ import DateTimePicker from 'react-datetime-picker';
 import NoteSlider from '../components/Sliders/NoteSlider';
 
 import { verifyToken, cleanRedirectState } from '../state/services/authService';
-import { getBookingWithFilter } from '../state/services/bookingService';
+import { getBooking } from '../state/services/bookingService';
 import { getComms, updateComm, setGetCommsFilter, setAllGetCommsFilter, getNotes, createNote, updateNote, setNeedUpdateComms, getAvailableCreators } from '../state/services/commService';
 
 class CommPage extends React.Component {
@@ -60,7 +60,7 @@ class CommPage extends React.Component {
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getBookingWithFilter: PropTypes.func.isRequired,
+        getBooking: PropTypes.func.isRequired,
         getComms: PropTypes.func.isRequired,
         updateComm: PropTypes.func.isRequired,
         setGetCommsFilter: PropTypes.func.isRequired,
@@ -91,7 +91,7 @@ class CommPage extends React.Component {
         if (bookingId != null) {
             this.props.setAllGetCommsFilter(bookingId);
             this.props.setGetCommsFilter('activeTabInd', 7);
-            this.props.getBookingWithFilter(bookingId, 'id');
+            this.props.getBooking(bookingId, 'id');
         } else {
             this.props.setNeedUpdateComms(true);
         }
@@ -992,7 +992,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getBookingWithFilter: (id, filter) => dispatch(getBookingWithFilter(id, filter)),
+        getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
         setGetCommsFilter: (key, value) => dispatch(setGetCommsFilter(key, value)),
         setAllGetCommsFilter: (selectedBookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, activeTabInd) => dispatch(setAllGetCommsFilter(selectedBookingId, sortField, sortType, columnFilters, simpleSearchKeyword, sortByDate, activeTabInd)),
