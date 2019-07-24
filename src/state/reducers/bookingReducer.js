@@ -104,9 +104,9 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 booking: booking,
                 nextBookingId: nextBookingId,
                 prevBookingId: prevBookingId,
-                qtyTotal,
-                cntComms,
-                cntAttachments,
+                qtyTotal: qtyTotal,
+                cntComms: cntComms,
+                cntAttachments: cntAttachments,
                 noBooking: noBooking,
             };
         case SUCCESS_UPDATE_BOOKING:
