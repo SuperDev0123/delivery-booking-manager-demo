@@ -686,6 +686,7 @@ class AllBookingsPage extends React.Component {
         const { selectedBookingIds, bookings } = this.state;
         const st_name = 'startrack';
         const allied_name = 'allied';
+        const dhl_name = 'dhl';
 
         if (selectedBookingIds.length == 0) {
             alert('Please check only one booking!');
@@ -708,6 +709,27 @@ class AllBookingsPage extends React.Component {
                 } else if (bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
                     this.props.getAlliedLabel(bookings[ind].id);
                     this.setState({loadingBooking: true});
+                } else if (bookings[ind].vx_freight_provider.toLowerCase() === dhl_name) {
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+                        data: {bookingIds: [bookings[ind].id], vx_freight_provider: bookings[ind].vx_freight_provider},
+                    };
+
+                    axios(options)
+                        .then((response) => {
+                            if (response.data.success && response.data.success === 'success') {
+                                this.notify('PDF(Label)’s have been generated successfully.');
+                                this.props.setNeedUpdateBookingsState(true);
+                            } else {
+                                this.notify('PDF(Label)’s have *not been generated.');
+                                this.props.setNeedUpdateBookingsState(true);
+                            }
+                        })
+                        .catch((err) => {
+                            this.notify('Error: ' + err);
+                            this.props.setNeedUpdateBookingsState(true);
+                        });
                 }
             }
         }
