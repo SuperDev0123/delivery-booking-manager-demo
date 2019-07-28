@@ -95,7 +95,7 @@ class AllBookingsPage extends React.Component {
             manifestStatus: 0,
             oneManifestFile: false,
             isShowCheckPodModal: false,
-            isShowStatusInfoSlider: true,
+            isShowStatusInfoSlider: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -1873,7 +1873,7 @@ class AllBookingsPage extends React.Component {
                             <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickBOOK()}>BOOK</a>
                             <a onClick={() => this.onClickMani()}>Mani</a>
-                            <a href="">?</a>
+                            <a href="" className="help"><i className="fa fa-sliders"></i></a>
                         </div>
                     </div>
                     <div className="top-menu">

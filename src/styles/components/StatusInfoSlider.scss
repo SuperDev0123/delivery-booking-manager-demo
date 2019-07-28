@@ -10,4 +10,16 @@
 			}
 		}
 	}
+
+	.table-section {
+		width: 60%;
+
+		td, th {
+			padding: 3px;
+
+			button {
+				padding: 2px 12px;
+			}
+		}
+	}
 }

@@ -139,7 +139,7 @@ class StatusInfoSlider extends React.Component {
             return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
         });
 
-        const statusInfoList = statusInfo.map((eachItem, index) => {
+        const statusInfoList = _.orderBy(statusInfo, ['count'], ['desc']).map((eachItem, index) => {
             return (
                 <tr key={index}>
                     <td>{eachItem.dme_delivery_status}</td>
@@ -188,20 +188,19 @@ class StatusInfoSlider extends React.Component {
                     </label>
                     <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                 </div>
-                <hr />
                 <div className="table-section">
                     <table className="table table-hover table-bordered sortable fixed_headers">
                         <tr>
-                            <th className="" scope="col" nowrap>
+                            <th className="" width="30%" scope="col" nowrap>
                                 <p>Status Name</p>
                             </th>
-                            <th className="" scope="col" nowrap>
+                            <th className="" width="30%" scope="col" nowrap>
                                 <p>Status Label</p>
                             </th>
-                            <th className="" scope="col" nowrap>
+                            <th className="" width="10%" scope="col" nowrap>
                                 <p>Count</p>
                             </th>
-                            <th className="" scope="col" nowrap>
+                            <th className="" width="10%" scope="col" nowrap>
                             </th>
                         </tr>
                         { statusInfoList }
