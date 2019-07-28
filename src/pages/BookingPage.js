@@ -1208,7 +1208,7 @@ class BookingPage extends Component {
     }
 
     handleUploadFinish() {
-        this.props.getAttachmentHistory(this.state.booking.id);
+        this.props.getAttachmentHistory(this.state.booking.pk_booking_id);
     }
 
     onClickDuplicate(typeNum, row={}) {
@@ -4014,7 +4014,7 @@ const mapDispatchToProps = (dispatch) => {
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
-        getAttachmentHistory: (id) => dispatch(getAttachmentHistory(id)),
+        getAttachmentHistory: (pk_booking_id) => dispatch(getAttachmentHistory(pk_booking_id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),

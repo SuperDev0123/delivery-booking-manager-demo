@@ -137,12 +137,12 @@ export const getSuburbStrings = (type, name) => {
             .catch((error) => dispatch(failedGetSuburbs(error)));
 };
 
-export const getAttachmentHistory = (id) => {
+export const getAttachmentHistory = (fk_booking_id) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/attachments/?id=` + id,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/attachments/?fk_booking_id=` + fk_booking_id,
     };
     return dispatch =>
         axios(options)
