@@ -856,6 +856,7 @@ class BookingPage extends Component {
             this.props.getBookingStatusHistory(data.pk_booking_id);
             this.props.getApiBCLs(data.id);
             this.props.setFetchGeoInfoFlag(true);
+            this.props.getAttachmentHistory(data.pk_booking_id);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
