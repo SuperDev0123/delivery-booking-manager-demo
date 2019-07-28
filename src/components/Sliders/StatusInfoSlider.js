@@ -191,16 +191,16 @@ class StatusInfoSlider extends React.Component {
                 <div className="table-section">
                     <table className="table table-hover table-bordered sortable fixed_headers">
                         <tr>
-                            <th className="" width="30%" scope="col" nowrap>
+                            <th className="" width="40%" scope="col" nowrap>
                                 <p>Status Name</p>
                             </th>
-                            <th className="" width="30%" scope="col" nowrap>
+                            <th className="" width="40%" scope="col" nowrap>
                                 <p>Status Label</p>
                             </th>
-                            <th className="" width="10%" scope="col" nowrap>
+                            <th className="" width="20%" scope="col" nowrap>
                                 <p>Count</p>
                             </th>
-                            <th className="" width="10%" scope="col" nowrap>
+                            <th className="" width="20%" scope="col" nowrap>
                             </th>
                         </tr>
                         { statusInfoList }

@@ -2028,8 +2028,8 @@ class AllBookingsPage extends React.Component {
                                                         onClick={() => this.onClickTab(6)}
                                                     >
                                                         More
-                                                        {this.state.dmeStatus !== null ?
-                                                            ' (' + this.state.dmeStatus + ')' : null
+                                                        {this.state.dmeStatus &&
+                                                            ' (' + this.state.dmeStatus + ')'
                                                         }
                                                     </NavLink>
                                                 </NavItem>
