@@ -386,6 +386,10 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
+        if (qtyTotal && qtyTotal > 0) {
+            this.setState({ qtyTotal, cntAttachments, cntComms });
+        }
+
         if (bookingLines) {
             const calcedbookingLines = this.calcBookingLine(bookingLines);
             this.setState({bookingLines: calcedbookingLines});
@@ -824,7 +828,7 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
-                this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true, qtyTotal, cntAttachments, cntComms });
+                this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
                 if (!_.isNull(this.state.typed))
