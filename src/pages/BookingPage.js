@@ -1209,6 +1209,7 @@ class BookingPage extends Component {
     }
 
     handleUploadFinish() {
+        this.props.getBooking(this.state.booking.id, 'id');
         this.props.getAttachmentHistory(this.state.booking.pk_booking_id);
     }
 
