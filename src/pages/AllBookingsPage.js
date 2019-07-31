@@ -889,38 +889,32 @@ class AllBookingsPage extends React.Component {
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 }
             } else if (downloadOption === 'label_and_connote') {
-                let bookingIdsWithLabelOrConnote = [];
-                let cnt = 0;
+                let bookingIdsWithLabel = [];
+                let bookingIdsWithConnote = [];
 
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     for (let i = 0; i < bookings.length; i++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
-                            if ((bookings[i].z_connote_url &&
-                                bookings[i].z_connote_url.length > 0) ||
-                                (bookings[i].z_label_url &&
-                                bookings[i].z_label_url.length > 0))
-                                bookingIdsWithLabelOrConnote.push(bookings[i].id);
-
                             if (bookings[i].z_connote_url &&
                                 bookings[i].z_connote_url.length > 0) {
-                                cnt ++;
+                                bookingIdsWithConnote.push(bookings[i].id);
                             }
 
                             if (bookings[i].z_label_url &&
                                 bookings[i].z_label_url.length > 0) {
-                                cnt ++;
+                                bookingIdsWithLabel.push(bookings[i].id);
                             }
                         }
                     }
                 }
 
-                if (bookingIdsWithLabelOrConnote.length > 0) {
+                if (bookingIdsWithConnote.length > 0) {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
                         data: {
-                            ids: bookingIdsWithLabelOrConnote,
-                            downloadOption: downloadOption,
+                            ids: bookingIdsWithConnote,
+                            downloadOption: 'connote',
                         },
                         responseType: 'blob', // important
                     };
@@ -929,13 +923,38 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'label_and_connote_' + selectedWarehouseName + '_' + cnt + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
                         this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                     });
-                } else {
+                }
+
+                if (bookingIdsWithLabel.length > 0) {
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
+                        data: {
+                            ids: bookingIdsWithLabel,
+                            downloadOption: 'label',
+                        },
+                        responseType: 'blob', // important
+                    };
+
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        this.props.setGetBookingsFilter('date', {startDate, endDate});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    });
+                }
+
+                if (bookingIdsWithConnote.length === 0 && bookingIdsWithLabel.length === 0) {
                     alert('No Booking which has Label or Connote info');
                     this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
                 }
