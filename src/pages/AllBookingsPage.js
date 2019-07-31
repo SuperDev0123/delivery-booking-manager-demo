@@ -1125,7 +1125,7 @@ class AllBookingsPage extends React.Component {
                 this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
                     .then(() => {
                         Promise.all([
-                            this.buildCSV(ids4csv),
+                            this.buildCSV(ids4csv, 'cope'),
                             this.buildXML(ids4xml, 'allied'),
                         ])
                             .then(() => {
@@ -1172,18 +1172,18 @@ class AllBookingsPage extends React.Component {
         });
     }
 
-    buildCSV(bookingIds) {
+    buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-csv/',
-                data: {bookingIds},
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
+                data: {bookingIds, vx_freight_provider},
                 responseType: 'blob', // important
             };
 
             axios(options)
                 .then((response) => {
-                    console.log('download-csv response: ', response);
+                    console.log('generate-csv response: ', response);
                     // const url = window.URL.createObjectURL(new Blob([response.data]));
                     // const link = document.createElement('a');
                     // link.href = url;
@@ -1416,6 +1416,17 @@ class AllBookingsPage extends React.Component {
         });
 
         this.setState({manifestStatus: 0});
+    }
+
+    onClickGetCSV(vx_freight_provider) {
+        const {selectedBookingIds} = this.state;
+        this.buildCSV(selectedBookingIds, vx_freight_provider)
+            .then(() => {
+                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                this.props.setNeedUpdateBookingsState(true);
+
+                this.notify('Successfully created CSV.');
+            });
     }
 
     onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status) {
@@ -1945,6 +1956,7 @@ class AllBookingsPage extends React.Component {
                                                         loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingsCnt + ') ' : ''
                                                     }
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV('dhl')}>Get CSV</button>
                                                     <button
                                                         className="btn btn-primary create-manifest"
                                                         onClick={() => this.onClickCreateManifest()}
