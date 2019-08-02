@@ -3703,7 +3703,6 @@ class BookingPage extends Component {
                                                     keyField="modelNumber"
                                                     data={ attachmentsHistory }
                                                     columns={ columnAttachments }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
                                                     bootstrap4={ true }
                                                 />
                                             </div>
