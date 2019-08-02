@@ -2466,7 +2466,7 @@ class BookingPage extends Component {
                                         <div className="col-sm-4 form-group">
                                             <div>
                                                 <span>Client Booking Reference</span>
-                                                <p className="show-mode">{formInputs['pk_booking_id']}</p>
+                                                <p className="show-mode">{this.state.booking.pk_booking_id}</p>
                                             </div>
                                         </div>
                                         <div className="col-sm-4 form-group">
