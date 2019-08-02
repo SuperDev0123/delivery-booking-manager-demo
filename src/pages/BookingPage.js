@@ -836,7 +836,7 @@ class BookingPage extends Component {
             }
         }
 
-        if (attachments && attachments.length > 0) {
+        if (attachments) {
             const tempAttachments = attachments;
             const bookingLineDetailsProduct = tempAttachments.map((attach) => {
                 let result = [];
