@@ -1762,6 +1762,24 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
+                    <td className={
+                        !_.isEmpty(booking.z_connote_url) ?
+                            (!_.isEmpty(booking.z_downloaded_connote_timestamp)) ?
+                                'bg-yellow'
+                                :
+                                'dark-blue'
+                            :
+                            null
+                    }>
+                        {
+                            !_.isEmpty(booking.z_connote_url) ?
+                                <div className="pod-status">
+                                    <i className="icon icon-image"></i>
+                                </div>
+                                :
+                                null
+                        }
+                    </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
                     <td className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
@@ -2265,6 +2283,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className=""></th>
                                                             <th className=""></th>
                                                             <th className=""></th>
+                                                            <th className=""></th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
@@ -2451,6 +2470,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th className="narrow-column"><i className="fa fa-exclamation-triangle"></i></th>
                                                             <th className="narrow-column"><i className="icon icon-printer"></i></th>
+                                                            <th className="narrow-column"><i className="icon icon-image"></i></th>
                                                             <th className="narrow-column"><i className="icon icon-image"></i></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
