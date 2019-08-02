@@ -2465,6 +2465,12 @@ class BookingPage extends Component {
                                     <div className="row col-sm-6 status-history-form">
                                         <div className="col-sm-4 form-group">
                                             <div>
+                                                <span>Client Booking Reference</span>
+                                                <p className="show-mode">{formInputs['b_clientReference_RA_Numbers']}</p>
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            <div>
                                                 <span>Status Detail</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
@@ -2554,38 +2560,6 @@ class BookingPage extends Component {
                                                     :
                                                     null
                                             }
-                                        </div>
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Status History Note</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <textarea 
-                                                            className="show-mode" 
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            value={formInputs['dme_status_history_notes']}
-                                                            rows="3" 
-                                                            cols="25"
-                                                        />
-                                                        :
-                                                        <textarea 
-                                                            className="show-mode" 
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            name="dme_status_linked_reference_from_fp" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
-                                                            rows="3" 
-                                                            cols="25"
-                                                        />
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_history_notes']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
                                         </div>
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
@@ -2711,7 +2685,9 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                    </div>
+                                    <div className={clientname === 'dme' ? 'row col-sm-12 booking-form-01' : 'none'}>
+                                        <div className="col-sm-6 form-group">
                                             <div>
                                                 <span>Invoice Billing Status Note</span>
                                                 {
@@ -2721,14 +2697,46 @@ class BookingPage extends Component {
                                                         name="inv_billing_status_note" 
                                                         value={(parseInt(curViewMode) === 1) ? clientname : formInputs['inv_billing_status_note']} 
                                                         onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
-                                                        rows="1" 
-                                                        cols="25"
+                                                        rows="4" 
+                                                        cols="83"
                                                     />
                                                         
                                                 }
                                                 {
                                                     !_.isEmpty(formInputs['inv_billing_status_note']) ?
                                                         <BookingTooltipItem booking={booking} fields={['inv_billing_status_note']} />
+                                                        :
+                                                        null
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-6 form-group">
+                                            <div>
+                                                <span>Status History Note</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <textarea 
+                                                            className="show-mode" 
+                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                            value={formInputs['dme_status_history_notes']}
+                                                            rows="4" 
+                                                            cols="83"
+                                                        />
+                                                        :
+                                                        <textarea 
+                                                            className="show-mode" 
+                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                            name="dme_status_linked_reference_from_fp" 
+                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                            rows="4" 
+                                                            cols="83"
+                                                        />
+                                                }
+                                                {
+                                                    !_.isEmpty(formInputs['dme_status_history_notes']) ?
+                                                        <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
                                                         :
                                                         null
                                                 }
