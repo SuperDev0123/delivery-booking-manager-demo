@@ -256,12 +256,6 @@ class AllBookingsPage extends React.Component {
             this.setState({ allFPs });
         }
 
-        if ((errorMessage === 'Book success' || 
-            errorMessage === 'book failed') && 
-            needUpdateBookings) {
-            this.onAfterBook();
-        }
-
         if (dmeClients) {
             this.setState({dmeClients});
         }
@@ -631,65 +625,6 @@ class AllBookingsPage extends React.Component {
 
     onClickAllTrigger() {
         this.props.allTrigger();
-    }
-
-    onClickBook() {
-        const { selectedBookingIds, bookings } = this.state;
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-
-        if (selectedBookingIds.length < 1) {
-            alert('Please select at least one booking!');
-        } else if (selectedBookingIds.length > 10) {
-            alert('Please select less than 10 booking! 10+ bookings takes 5+ minutes to book');
-        } else {
-            this.setState({loadingBooking: true, selectedBookingsCnt: selectedBookingIds.length});
-            let ind = -1;
-
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[0]) {
-                    ind = i;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
-        }
-    }
-
-    onAfterBook() {
-        const { selectedBookingIds, bookings, selectedBookingsCnt, currentBookInd } = this.state;
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-
-        if (currentBookInd === selectedBookingsCnt - 1) {
-            this.setState({selectedBookingIds: [], checkedAll: false, loadingBooking: false, selectedBookingsCnt: 0, currentBookInd: 0});
-        } else {
-            let ind = -1;
-
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[currentBookInd + 1]) {
-                    ind = i;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
-            
-            this.setState({currentBookInd: currentBookInd + 1});
-        }
     }
 
     onClickGetLabel() {
@@ -1084,10 +1019,15 @@ class AllBookingsPage extends React.Component {
             const ids4xml = [];
             const nonBookedBookings = [];
             const ids4notMatchFP = [];
+            const fps = [];
 
             for (let i = 0; i < bookings.length; i++) {
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     if (bookings[i].id === selectedBookingIds[j]) {
+                        if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                            fps.push(bookings[i].vx_freight_provider);
+                        }
+
                         if (!_.isNull(bookings[i].b_dateBookedDate)) {
                             bookedIds.push(bookings[i].id);
                         } else {
@@ -1097,76 +1037,81 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            for (let i = 0; i < nonBookedBookings.length; i++) {
-                for (let j = 0; j < dmeClients.length; j++) {
-                    if (nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()) {
-                        if (!_.isNull(dmeClients[j].current_freight_provider)
-                            && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
-                            if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope') {
-                                ids4csv.push(nonBookedBookings[i].id);
-                            } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
-                                ids4xml.push(nonBookedBookings[i].id);
+            if (fps.length !== 1) {
+                alert('Please select only one kind `Freight Provider` bookings.');
+            } else {
+                for (let i = 0; i < nonBookedBookings.length; i++) {
+                    for (let j = 0; j < dmeClients.length; j++) {
+                        if (nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()) {
+                            if (!_.isNull(dmeClients[j].current_freight_provider)
+                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
+                                if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
+                                    || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl') {
+                                    ids4csv.push(nonBookedBookings[i].id);
+                                } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
+                                    ids4xml.push(nonBookedBookings[i].id);
+                                } else {
+                                    ids4notMatchFP.push(nonBookedBookings[i].id);
+                                }
                             } else {
                                 ids4notMatchFP.push(nonBookedBookings[i].id);
                             }
-                        } else {
-                            ids4notMatchFP.push(nonBookedBookings[i].id);
                         }
                     }
                 }
-            }
 
-            this.setState({loadingDownload: true});
-            if (bookedIds.length || ids4notMatchFP.length) {
-                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
-                    .then(() => {
-                        Promise.all([
-                            this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
-                            this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
-                        ])
-                            .then(() => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                this.notify('There was error, please check each booking error');
-                            })
-                            .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                console.log('#100 - ', err);
-                            });
-                    })
-                    .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                        this.props.setNeedUpdateBookingsState(true);
-                        console.log('#101 - ', err);
-                    });
-            } else {
-                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
-                    .then(() => {
-                        Promise.all([
-                            this.buildCSV(ids4csv, 'cope'),
-                            this.buildXML(ids4xml, 'allied'),
-                        ])
-                            .then(() => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
+                this.setState({loadingDownload: true});
+                if (bookedIds.length || ids4notMatchFP.length) {
+                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
+                        .then(() => {
+                            Promise.all([
+                                this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
+                                this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
+                            ])
+                                .then(() => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    this.notify('There was error, please check each booking error');
+                                })
+                                .catch((err) => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    console.log('#100 - ', err);
+                                });
+                        })
+                        .catch((err) => {
+                            this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                            this.props.setNeedUpdateBookingsState(true);
+                            console.log('#101 - ', err);
+                        });
+                } else {
+                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
+                        .then(() => {
+                            Promise.all([
+                                this.buildCSV(ids4csv),
+                                this.buildXML(ids4xml, 'allied'),
+                            ])
+                                .then(() => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
 
-                                if (ids4csv.length)
-                                    this.notify('Successfully created CSV.');
-                                if (ids4xml.length)
-                                    this.notify('Successfully created XML.');
-                            })
-                            .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                console.log('#100 - ', err);
-                            });
-                    })
-                    .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                        this.props.setNeedUpdateBookingsState(true);
-                        console.log('#101 - ', err);
-                    });
+                                    if (ids4csv.length)
+                                        this.notify('Successfully created CSV.');
+                                    if (ids4xml.length)
+                                        this.notify('Successfully created XML.');
+                                })
+                                .catch((err) => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    console.log('#100 - ', err);
+                                });
+                        })
+                        .catch((err) => {
+                            this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                            this.props.setNeedUpdateBookingsState(true);
+                            console.log('#101 - ', err);
+                        });
+                }
             }
         }
     }
@@ -1191,12 +1136,12 @@ class AllBookingsPage extends React.Component {
         });
     }
 
-    buildCSV(bookingIds, vx_freight_provider) {
+    buildCSV(bookingIds) {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
-                data: {bookingIds, vx_freight_provider},
+                data: {bookingIds},
                 responseType: 'blob', // important
             };
 
@@ -1437,9 +1382,9 @@ class AllBookingsPage extends React.Component {
         this.setState({manifestStatus: 0});
     }
 
-    onClickGetCSV(vx_freight_provider) {
+    onClickGetCSV() {
         const {selectedBookingIds} = this.state;
-        this.buildCSV(selectedBookingIds, vx_freight_provider)
+        this.buildCSV(selectedBookingIds)
             .then(() => {
                 this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                 this.props.setNeedUpdateBookingsState(true);
@@ -1988,12 +1933,8 @@ class AllBookingsPage extends React.Component {
                                                     text=''
                                                 >
                                                     <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                    <button className="btn btn-primary allied-booking none" onClick={() => this.onClickBook()}>Book</button>
-                                                    {
-                                                        loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingsCnt + ') ' : ''
-                                                    }
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV('dhl')}>Get CSV</button>
+                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
                                                     <button
                                                         className="btn btn-primary create-manifest"
                                                         onClick={() => this.onClickCreateManifest()}
