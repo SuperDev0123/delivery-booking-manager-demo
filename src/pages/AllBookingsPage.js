@@ -655,26 +655,7 @@ class AllBookingsPage extends React.Component {
                     this.props.getAlliedLabel(bookings[ind].id);
                     this.setState({loadingBooking: true});
                 } else if (bookings[ind].vx_freight_provider.toLowerCase() === dhl_name) {
-                    const options = {
-                        method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                        data: {bookingIds: [bookings[ind].id], vx_freight_provider: bookings[ind].vx_freight_provider},
-                    };
-
-                    axios(options)
-                        .then((response) => {
-                            if (response.data.success && response.data.success === 'success') {
-                                this.notify('PDF(Label)’s have been generated successfully.');
-                                this.props.setNeedUpdateBookingsState(true);
-                            } else {
-                                this.notify('PDF(Label)’s have *not been generated.');
-                                this.props.setNeedUpdateBookingsState(true);
-                            }
-                        })
-                        .catch((err) => {
-                            this.notify('Error: ' + err);
-                            this.props.setNeedUpdateBookingsState(true);
-                        });
+                    this.buildPDF([bookings[ind].id], bookings[ind].vx_freight_provider);
                 }
             }
         }
@@ -1088,7 +1069,7 @@ class AllBookingsPage extends React.Component {
                     this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
                         .then(() => {
                             Promise.all([
-                                this.buildCSV(ids4csv),
+                                this.buildCSV(ids4csv, fps[0].toLowerCase()),
                                 this.buildXML(ids4xml, 'allied'),
                             ])
                                 .then(() => {
@@ -1136,12 +1117,12 @@ class AllBookingsPage extends React.Component {
         });
     }
 
-    buildCSV(bookingIds) {
+    buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
-                data: {bookingIds},
+                data: {bookingIds, vx_freight_provider},
                 responseType: 'blob', // important
             };
 
@@ -1154,6 +1135,8 @@ class AllBookingsPage extends React.Component {
                     // link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
                     // document.body.appendChild(link);
                     // link.click();
+
+                    this.buildPDF(bookingIds, vx_freight_provider);
                     resolve();
                 })
                 .catch((err) => {
@@ -1177,25 +1160,8 @@ class AllBookingsPage extends React.Component {
                     } else {
                         if (vx_freight_provider === 'TASFR') {
                             this.notify('XML’s have been generated successfully. Labels will be generated');
-                            options = {
-                                method: 'post',
-                                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                                data: {bookingIds, vx_freight_provider: 'TASFR'},
-                            };
-
-                            axios(options)
-                                .then((response) => {
-                                    if (response.data.success && response.data.success === 'success') {
-                                        this.notify('PDF(Label)’s have been generated successfully.');
-                                        resolve();
-                                    } else {
-                                        this.notify('PDF(Label)’s have *not been generated.');
-                                        reject();
-                                    }
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
+                            
+                            this.buildPDF(bookingIds, vx_freight_provider);
                         } else {
                             resolve();
                         }
@@ -1205,6 +1171,29 @@ class AllBookingsPage extends React.Component {
                     reject(err);
                 });
         });
+    }
+
+    buildPDF(bookingIds, vx_freight_provider) {
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options)
+            .then((response) => {
+                if (response.data.success && response.data.success === 'success') {
+                    this.notify('PDF(Label)’s have been generated successfully.');
+                    this.props.setNeedUpdateBookingsState(true);
+                } else {
+                    this.notify('PDF(Label)’s have *not been generated.');
+                    this.props.setNeedUpdateBookingsState(true);
+                }
+            })
+            .catch((err) => {
+                this.notify('Error: ' + err);
+                this.props.setNeedUpdateBookingsState(true);
+            });
     }
 
     onClickMani() {
@@ -1358,23 +1347,7 @@ class AllBookingsPage extends React.Component {
                     this.props.setNeedUpdateBookingsState(true);
                 } else {
                     alert('XML’s have been generated successfully. Labels will be generated');
-                    options = {
-                        method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                        data: {bookingIds, vx_freight_provider: 'TASFR'},
-                    };
-
-                    axios(options).then((response) => {
-                        if (response.data.success && response.data.success === 'success') {
-                            alert('PDF(Label)’s have been generated successfully.');
-                        } else {
-                            alert('PDF(Label)’s have *not been generated.');
-                        }
-
-                        this.setState({loading: true, loadingDownload: false});
-                        this.props.setNeedUpdateBookingsState(true);
-                        link.click(); // Show download Manifest file
-                    });
+                    this.buildPDF(bookingIds, 'TASFR');
                 }
             });
         });
