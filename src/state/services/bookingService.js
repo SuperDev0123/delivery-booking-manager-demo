@@ -42,23 +42,6 @@ export const getBookings = (
     };
 };
 
-export const queryManifest = (vx_freight_provider, puPickUpAvailFrom_Date) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_bookings_4_manifest/`,
-        params: {
-            vx_freight_provider: vx_freight_provider,
-            puPickUpAvailFrom_Date: puPickUpAvailFrom_Date,
-        }
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetBookings(data)))
-            .catch((error) => dispatch(failedGetBookings(error)));
-};
-
 export const setGetBookingsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };

@@ -20,7 +20,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected, queryManifest } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
@@ -30,7 +30,6 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
-import ManifestModal from '../components/CommonModals/ManifestModal';
 import CheckPodModal from '../components/CommonModals/CheckPodModal';
 import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 
@@ -91,9 +90,6 @@ class AllBookingsPage extends React.Component {
             selectedOneBooking: null,
             activeBookingId: null,
             dmeStatus: null,
-            isShowManifestModal: false,
-            manifestStatus: 0,
-            oneManifestFile: false,
             isShowCheckPodModal: false,
             isShowStatusInfoSlider: false,
         };
@@ -104,7 +100,6 @@ class AllBookingsPage extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
-        this.toggleShowManifestModal = this.toggleShowManifestModal.bind(this);
         this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
         this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
         this.myRef = React.createRef();
@@ -138,7 +133,6 @@ class AllBookingsPage extends React.Component {
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
-        queryManifest: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -223,12 +217,6 @@ class AllBookingsPage extends React.Component {
 
                 this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.downloadOption, successSearchFilterOptions.dmeStatus);
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
-            }
-
-            if (this.state.manifestStatus === 1) {
-                this.setState({manifestStatus: 2});
-            } else {
-                this.setState({manifestStatus: 0});
             }
         }
 
@@ -601,10 +589,6 @@ class AllBookingsPage extends React.Component {
 
     toggleShowStatusLockModal() {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
-    }
-
-    toggleShowManifestModal() {
-        this.setState(prevState => ({isShowManifestModal: !prevState.isShowManifestModal}));
     }
 
     toggleShowCheckPodModal() {
@@ -991,9 +975,9 @@ class AllBookingsPage extends React.Component {
         const { bookings, selectedBookingIds, dmeClients } = this.state;
 
         if (selectedBookingIds && selectedBookingIds.length === 0) {
-            alert('There is no bookings to *Book.');
+            alert('Please select bookings to *Book*.');
         } else if (selectedBookingIds.length > 500) {
-            alert('You can generate xml or csv with 500 bookings at most.');
+            alert('You can generate XML or CSV with 500 bookings at most.');
         } else {
             const bookedIds = [];
             const ids4csv = [];
@@ -1073,24 +1057,28 @@ class AllBookingsPage extends React.Component {
                                 this.buildXML(ids4xml, 'allied'),
                             ])
                                 .then(() => {
+                                    if (ids4csv.length) {
+                                        this.notify('Successfully created CSV.');
+                                        this.buildPDF(ids4csv, fps[0].toLowerCase());
+                                    }
+
+                                    if (ids4xml.length) {
+                                        this.notify('Successfully created XML.');
+                                    }
+
                                     this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                     this.props.setNeedUpdateBookingsState(true);
-
-                                    if (ids4csv.length)
-                                        this.notify('Successfully created CSV.');
-                                    if (ids4xml.length)
-                                        this.notify('Successfully created XML.');
                                 })
                                 .catch((err) => {
                                     this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                     this.props.setNeedUpdateBookingsState(true);
-                                    console.log('#100 - ', err);
+                                    console.log('#107 - ', err);
                                 });
                         })
                         .catch((err) => {
                             this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                             this.props.setNeedUpdateBookingsState(true);
-                            console.log('#101 - ', err);
+                            console.log('#108 - ', err);
                         });
                 }
             }
@@ -1129,14 +1117,6 @@ class AllBookingsPage extends React.Component {
             axios(options)
                 .then((response) => {
                     console.log('generate-csv response: ', response);
-                    // const url = window.URL.createObjectURL(new Blob([response.data]));
-                    // const link = document.createElement('a');
-                    // link.href = url;
-                    // link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
-                    // document.body.appendChild(link);
-                    // link.click();
-
-                    this.buildPDF(bookingIds, vx_freight_provider);
                     resolve();
                 })
                 .catch((err) => {
@@ -1150,22 +1130,12 @@ class AllBookingsPage extends React.Component {
             let options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {bookingIds, vx_freight_provider, one_manifest_file: 0}, // `one_manifest_file` is useless here
+                data: {bookingIds, vx_freight_provider},
             };
 
             axios(options)
                 .then((response) => {
-                    if (response.data.success && response.data.success === 'success') {
-                        resolve();
-                    } else {
-                        if (vx_freight_provider === 'TASFR') {
-                            this.notify('XML’s have been generated successfully. Labels will be generated');
-                            
-                            this.buildPDF(bookingIds, vx_freight_provider);
-                        } else {
-                            resolve();
-                        }
-                    }
+                    resolve(response);
                 })
                 .catch((err) => {
                     reject(err);
@@ -1196,8 +1166,91 @@ class AllBookingsPage extends React.Component {
             });
     }
 
-    onClickMani() {
-        this.toggleShowManifestModal();
+    buildMANIFEST(bookingIds, vx_freight_provider, username) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
+                data: {bookingIds, vx_freight_provider, username},
+                responseType: 'blob', // important
+            };
+
+            axios(options)
+                .then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'Manifests.zip');
+                    document.body.appendChild(link);
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    onClickMANI() {
+        const { bookings, selectedBookingIds, username } = this.state;
+
+        if (selectedBookingIds && selectedBookingIds.length === 0) {
+            alert('Please select bookings to *Book*.');
+        } else if (selectedBookingIds.length > 500) {
+            alert('You can generate Manifest with 500 bookings at most.');
+        } else {
+            const bookingIds = [];
+            const fps = [];
+            let manifestedBookingVisualIds = null;
+
+            for (let i = 0; i < bookings.length; i++) {
+                for (let j = 0; j < selectedBookingIds.length; j++) {
+                    if (bookings[i].id === selectedBookingIds[j]) {
+                        if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                            fps.push(bookings[i].vx_freight_provider);
+                        }
+
+                        if (!bookings[i].has_manifest) {
+                            bookingIds.push(bookings[i].id);
+                        } else {
+                            manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                        }
+                    }
+                }
+            }
+
+            if (fps.length !== 1) {
+                alert('Please select only one kind `Freight Provider` bookings.');
+            } else if (!_.isNull(manifestedBookingVisualIds)) {
+                alert('There are booking which have already `Manifest`:' + manifestedBookingVisualIds);
+            } else {
+                this.setState({loadingDownload: true});
+                
+                this.buildMANIFEST(bookingIds, fps[0], username)
+                    .then(() => {
+                        if (fps[0] === 'TASFR') {
+                            this.buildXML(bookingIds, 'TASFR')
+                                .then((response) => {
+                                    if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                                        alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                                        this.setState({loadingDownload: false});
+                                    } else if (response.data.success && response.data.success === 'success') {
+                                        alert('XML’s have been generated successfully.');
+                                        this.setState({loading: true, loadingDownload: false});
+                                        this.props.setNeedUpdateBookingsState(true);
+                                    } else {
+                                        alert('XML’s have been generated successfully. Labels will be generated');
+                                        this.buildPDF(bookingIds, 'TASFR');
+                                    }
+                                });
+                        }
+
+                        this.props.setNeedUpdateBookingsState(true);
+                    })
+                    .catch((err) => {
+                        this.notify('Error: ' + err);
+                    });
+            }
+        }
     }
 
     onClickGear() {
@@ -1298,61 +1351,6 @@ class AllBookingsPage extends React.Component {
         }
 
         this.setState({activeBookingId: booking.id});
-    }
-
-    onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) {
-        this.setState({manifestStatus: 1, oneManifestFile});
-        this.props.queryManifest(vx_freight_provider, puPickUpAvailFrom_Date);
-    }
-
-    onClickCreateManifest() {
-        const {bookings, oneManifestFile, username} = this.state;
-        let bookingIds = [];
-        this.setState({loadingDownload: true});
-        
-        for (let i = 0; i < bookings.length; i++)
-            bookingIds.push(bookings[i].id);
-
-        let options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
-            data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0, username},
-            responseType: 'blob', // important
-        };
-
-        axios(options).then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'manifest_files.zip');
-            document.body.appendChild(link);
-
-            options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {
-                    bookingIds, 
-                    vx_freight_provider: 'TASFR', 
-                    one_manifest_file: oneManifestFile ? 1 : 0,
-                },
-            };
-
-            axios(options).then((response) => {
-                if (response.data.error && response.data.error === 'Found set has booked bookings') {
-                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-                    this.setState({loadingDownload: false});
-                } else if (response.data.success && response.data.success === 'success') {
-                    alert('XML’s have been generated successfully.');
-                    this.setState({loading: true, loadingDownload: false});
-                    this.props.setNeedUpdateBookingsState(true);
-                } else {
-                    alert('XML’s have been generated successfully. Labels will be generated');
-                    this.buildPDF(bookingIds, 'TASFR');
-                }
-            });
-        });
-
-        this.setState({manifestStatus: 0});
     }
 
     onClickGetCSV() {
@@ -1838,7 +1836,7 @@ class AllBookingsPage extends React.Component {
                             <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
                             <a onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a onClick={() => this.onClickMani()}>Mani</a>
+                            <a onClick={() => this.onClickMANI()}>Mani</a>
                             <a href="" className="help"><i className="fa fa-sliders"></i></a>
                         </div>
                     </div>
@@ -1908,13 +1906,6 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
-                                                    <button
-                                                        className="btn btn-primary create-manifest"
-                                                        onClick={() => this.onClickCreateManifest()}
-                                                        disabled={(this.state.manifestStatus === 2 && bookings.length > 0) ? '' : 'disabled'}
-                                                    >
-                                                        Manifest
-                                                    </button>
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
                                             </div>
@@ -2433,13 +2424,6 @@ class AllBookingsPage extends React.Component {
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
 
-                <ManifestModal
-                    isOpen={this.state.isShowManifestModal}
-                    toggleShowManifestModal={this.toggleShowManifestModal}
-                    allFPs={allFPs}
-                    onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile)}
-                />
-
                 <CheckPodModal
                     isOpen={this.state.isShowCheckPodModal}
                     toggleShowCheckPodModal={this.toggleShowCheckPodModal}
@@ -2521,7 +2505,6 @@ const mapDispatchToProps = (dispatch) => {
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
-        queryManifest: (vx_freight_provider, puPickUpAvailFrom_Date) => dispatch(queryManifest(vx_freight_provider, puPickUpAvailFrom_Date)),
     };
 };
 
