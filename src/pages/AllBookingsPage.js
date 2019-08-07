@@ -1246,9 +1246,10 @@ class AllBookingsPage extends React.Component {
                                         this.buildPDF(bookingIds, 'TASFR');
                                     }
                                 });
+                        } else {
+                            this.setState({loading: true, loadingDownload: false});
+                            this.props.setNeedUpdateBookingsState(true);
                         }
-
-                        this.props.setNeedUpdateBookingsState(true);
                     })
                     .catch((err) => {
                         this.notify('Error: ' + err);
