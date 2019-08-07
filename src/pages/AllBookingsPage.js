@@ -1059,7 +1059,10 @@ class AllBookingsPage extends React.Component {
                                 .then(() => {
                                     if (ids4csv.length) {
                                         this.notify('Successfully created CSV.');
-                                        this.buildPDF(ids4csv, fps[0].toLowerCase());
+
+                                        if (fps[0].toLowerCase() === 'dhl') {
+                                            this.buildPDF(ids4csv, fps[0].toLowerCase());
+                                        }
                                     }
 
                                     if (ids4xml.length) {
