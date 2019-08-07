@@ -1070,6 +1070,7 @@ class AllBookingsPage extends React.Component {
                                     this.props.setNeedUpdateBookingsState(true);
                                 })
                                 .catch((err) => {
+                                    this.notify(err);
                                     this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
                                     this.props.setNeedUpdateBookingsState(true);
                                     console.log('#107 - ', err);
