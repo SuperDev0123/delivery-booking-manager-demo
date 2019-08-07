@@ -1186,6 +1186,8 @@ class AllBookingsPage extends React.Component {
                     link.href = url;
                     link.setAttribute('download', 'Manifests.zip');
                     document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                     resolve(response);
                 })
                 .catch((err) => {
