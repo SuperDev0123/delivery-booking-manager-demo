@@ -1216,7 +1216,7 @@ class AllBookingsPage extends React.Component {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
-                        if (!_.isNull(bookings[i].fk_manifest_id)) {
+                        if (_.isNull(bookings[i].fk_manifest_id)) {
                             bookingIds.push(bookings[i].id);
                         } else {
                             manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
@@ -1711,12 +1711,7 @@ class AllBookingsPage extends React.Component {
                             null
                     }>
                         {
-                            !_.isNull(booking.fk_manifest_id) ?
-                                <div className="pod-status">
-                                    <i className="icon icon-image"></i>
-                                </div>
-                                :
-                                null
+                            !_.isNull(booking.fk_manifest_id) ? <div className="pod-status">M</div> : null
                         }
                     </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
