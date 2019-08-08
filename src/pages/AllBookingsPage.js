@@ -1232,7 +1232,7 @@ class AllBookingsPage extends React.Component {
                 alert('Please select only one kind `Freight Provider` bookings.');
             } else if (!_.isNull(manifestedBookingVisualIds)) {
                 alert('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
-            } else if (!_.isNull(notBookedVisualIds) && vx_freight_provider !== 'TASFR') {
+            } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
                 alert('There are bookings which have not been `Booked`:' + notBookedVisualIds);
             } else {
                 this.setState({loadingDownload: true});
