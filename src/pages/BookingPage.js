@@ -2465,8 +2465,8 @@ class BookingPage extends Component {
                                     <div className="row col-sm-6 status-history-form">
                                         <div className="col-sm-4 form-group">
                                             <div>
-                                                <span>Client Booking Reference</span>
-                                                <p className="show-mode">{this.state.booking.pk_booking_id}</p>
+                                                <span>Client Invoice Number</span>
+                                                <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
                                             </div>
                                         </div>
                                         <div className="col-sm-4 form-group">
@@ -2651,7 +2651,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
-                                                <span>Vihicle Type</span>
+                                                <span>Vehicle Type</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['v_vehicle_Type']}</p>
