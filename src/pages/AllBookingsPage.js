@@ -1216,7 +1216,7 @@ class AllBookingsPage extends React.Component {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
-                        if (!bookings[i].has_manifest) {
+                        if (!_.isNULL(bookings[i].fk_manifest_id)) {
                             bookingIds.push(bookings[i].id);
                         } else {
                             manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
@@ -1250,7 +1250,7 @@ class AllBookingsPage extends React.Component {
                                     }
                                 });
                         } else {
-                            this.setState({loading: true, loadingDownload: false});
+                            this.setState({selectedBookingIds: [], loading: true, loadingDownload: false});
                             this.props.setNeedUpdateBookingsState(true);
                         }
                     })
