@@ -1208,6 +1208,7 @@ class AllBookingsPage extends React.Component {
             const bookingIds = [];
             const fps = [];
             let manifestedBookingVisualIds = null;
+            let notBookedVisualIds = null;
 
             for (let i = 0; i < bookings.length; i++) {
                 for (let j = 0; j < selectedBookingIds.length; j++) {
@@ -1216,10 +1217,12 @@ class AllBookingsPage extends React.Component {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
-                        if (_.isNull(bookings[i].fk_manifest_id)) {
-                            bookingIds.push(bookings[i].id);
-                        } else {
+                        if (!_.isNull(bookings[i].fk_manifest_id)) {
                             manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                        } else if (!_.isNull(bookings[i].b_dateBookedDate)) {
+                            notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                        } else (_.isNull(bookings[i].fk_manifest_id)) {
+                            bookingIds.push(bookings[i].id);
                         }
                     }
                 }
@@ -1228,7 +1231,9 @@ class AllBookingsPage extends React.Component {
             if (fps.length !== 1) {
                 alert('Please select only one kind `Freight Provider` bookings.');
             } else if (!_.isNull(manifestedBookingVisualIds)) {
-                alert('There are booking which have already `Manifest`:' + manifestedBookingVisualIds);
+                alert('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
+            } else if (!_.isNull(notBookedVisualIds) && vx_freight_provider !== 'TASFR') {
+                alert('There are bookings which have not been `Booked`:' + notBookedVisualIds);
             } else {
                 this.setState({loadingDownload: true});
                 
