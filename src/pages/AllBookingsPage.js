@@ -1216,7 +1216,7 @@ class AllBookingsPage extends React.Component {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
-                        if (!_.isNULL(bookings[i].fk_manifest_id)) {
+                        if (!_.isNull(bookings[i].fk_manifest_id)) {
                             bookingIds.push(bookings[i].id);
                         } else {
                             manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
