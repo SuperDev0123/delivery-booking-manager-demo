@@ -1704,6 +1704,21 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
+                    <td className={
+                        !_.isNull(booking.fk_manifest_id) ?
+                            'bg-yellow'
+                            :
+                            null
+                    }>
+                        {
+                            !_.isNull(booking.fk_manifest_id) ?
+                                <div className="pod-status">
+                                    <i className="icon icon-image"></i>
+                                </div>
+                                :
+                                null
+                        }
+                    </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
                     <td className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
@@ -2209,7 +2224,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="narrow-column"
                                                                 id={'booking-column-header-tooltip-POD-or-POD-Signed'}
                                                             >
-                                                                P
+                                                                P|S
                                                                 <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
                                                             </th>
                                                             <th className="narrow-column"
@@ -2217,6 +2232,12 @@ class AllBookingsPage extends React.Component {
                                                             >
                                                                 C
                                                                 <SimpleTooltipComponent text={'Connote'} />
+                                                            </th>
+                                                            <th className="narrow-column"
+                                                                id={'booking-column-header-tooltip-Manifest'}
+                                                            >
+                                                                M
+                                                                <SimpleTooltipComponent text={'Manifest'} />
                                                             </th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
@@ -2402,6 +2423,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th className=""></th>
                                                             <th className=""></th>
                                                             <th className=""></th>
                                                             <th className=""></th>
