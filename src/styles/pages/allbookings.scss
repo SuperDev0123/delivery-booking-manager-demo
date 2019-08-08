@@ -553,7 +553,8 @@ ul.nav-tabs {
 }
 
 .narrow-column {
-  text-align: center;
+  cursor: pointer;
+  text-align: center !important;
 
   i {
     float: none !important;

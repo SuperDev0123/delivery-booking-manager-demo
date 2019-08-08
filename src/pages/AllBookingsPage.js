@@ -27,6 +27,7 @@ import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
+import SimpleTooltipComponent from '../components/Tooltip/SimpleTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
@@ -2192,10 +2193,31 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th className=""></th>
-                                                            <th className=""></th>
-                                                            <th className=""></th>
-                                                            <th className=""></th>
+                                                            <th
+                                                                className="narrow-column"
+                                                                id={'booking-column-header-tooltip-Error'}
+                                                            >
+                                                                <i className="fa fa-exclamation-triangle"></i>
+                                                                <SimpleTooltipComponent text={'Error'} />
+                                                            </th>
+                                                            <th className="narrow-column"
+                                                                id={'booking-column-header-tooltip-Label'}
+                                                            >
+                                                                L
+                                                                <SimpleTooltipComponent text={'Label'} />
+                                                            </th>
+                                                            <th className="narrow-column"
+                                                                id={'booking-column-header-tooltip-POD-or-POD-Signed'}
+                                                            >
+                                                                P
+                                                                <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
+                                                            </th>
+                                                            <th className="narrow-column"
+                                                                id={'booking-column-header-tooltip-Connote'}
+                                                            >
+                                                                C
+                                                                <SimpleTooltipComponent text={'Connote'} />
+                                                            </th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
@@ -2380,10 +2402,10 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th className="narrow-column"><i className="fa fa-exclamation-triangle"></i></th>
-                                                            <th className="narrow-column"><i className="icon icon-printer"></i></th>
-                                                            <th className="narrow-column"><i className="icon icon-image"></i></th>
-                                                            <th className="narrow-column"><i className="icon icon-image"></i></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
