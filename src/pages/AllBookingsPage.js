@@ -1219,9 +1219,9 @@ class AllBookingsPage extends React.Component {
 
                         if (!_.isNull(bookings[i].fk_manifest_id)) {
                             manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-                        } else if (!_.isNull(bookings[i].b_dateBookedDate)) {
+                        } else if (_.isNull(bookings[i].b_dateBookedDate)) {
                             notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-                        } else (_.isNull(bookings[i].fk_manifest_id)) {
+                        } else {
                             bookingIds.push(bookings[i].id);
                         }
                     }
