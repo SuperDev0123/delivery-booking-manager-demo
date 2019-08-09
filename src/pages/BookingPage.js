@@ -2463,15 +2463,9 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div className="row col-sm-6 status-history-form">
-                                        <div className="col-sm-4 form-group">
+                                        <div className="col-sm-8 form-group">
                                             <div>
-                                                <span>Client Invoice Number</span>
-                                                <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Status Detail</span>
+                                                <span>Status Detail</span><br />
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p 
@@ -2497,22 +2491,30 @@ class BookingPage extends Component {
                                                         null
                                                 }
                                             </div>
-                                            {
-                                                (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
+                                            <div>
+                                                <div className="col-sm-6 form-group">
                                                     <div>
-                                                        <span>New Status Detail</span>
-                                                        <input 
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="New Status Detail"
-                                                            name="new_dme_status_detail" 
-                                                            value = {formInputs['new_dme_status_detail']}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
+                                                        <span>Client Invoice Number</span>
+                                                        <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
                                                     </div>
-                                                    :
-                                                    null
-                                            }
+                                                </div>
+                                                {
+                                                    (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
+                                                        <div className="col-sm-6 form-group">
+                                                            <span>New Status Detail</span>
+                                                            <input 
+                                                                className="form-control height-40p" 
+                                                                type="text" 
+                                                                placeholder="New Status Detail"
+                                                                name="new_dme_status_detail" 
+                                                                value = {formInputs['new_dme_status_detail']}
+                                                                onChange={(e) => this.onHandleInput(e)}
+                                                            />
+                                                        </div>
+                                                        :
+                                                        null
+                                                }
+                                            </div>
                                         </div>
                                         <div className="col-sm-4 form-group">
                                             <div>

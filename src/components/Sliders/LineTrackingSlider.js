@@ -221,7 +221,7 @@ class LineTrackingSlider extends React.Component {
                 style: editableStyle,
             }, {
                 dataField: 'e_qty_shortages',
-                text: 'Qty Shortages',
+                text: 'Qty Shortages / Lost',
                 editable: isEditable,
                 style: editableStyle,
             }
