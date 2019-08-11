@@ -2209,32 +2209,41 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th
-                                                                className="narrow-column"
                                                                 id={'booking-column-header-tooltip-Error'}
+                                                                className={(sortField === 'b_error_Capture') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_error_Capture')} 
                                                             >
                                                                 <i className="fa fa-exclamation-triangle"></i>
                                                                 <SimpleTooltipComponent text={'Error'} />
                                                             </th>
-                                                            <th className="narrow-column"
+                                                            <th
                                                                 id={'booking-column-header-tooltip-Label'}
+                                                                className={(sortField === 'z_label_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_label_url')} 
                                                             >
                                                                 L
                                                                 <SimpleTooltipComponent text={'Label'} />
                                                             </th>
-                                                            <th className="narrow-column"
+                                                            <th
                                                                 id={'booking-column-header-tooltip-POD-or-POD-Signed'}
+                                                                className={(sortField === 'z_pod_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_pod_url')} 
                                                             >
                                                                 P|S
                                                                 <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
                                                             </th>
-                                                            <th className="narrow-column"
+                                                            <th
                                                                 id={'booking-column-header-tooltip-Connote'}
+                                                                className={(sortField === 'z_connote_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_connote_url')} 
                                                             >
                                                                 C
                                                                 <SimpleTooltipComponent text={'Connote'} />
                                                             </th>
-                                                            <th className="narrow-column"
+                                                            <th
                                                                 id={'booking-column-header-tooltip-Manifest'}
+                                                                className={(sortField === 'b_clientReference_RA_Numbers') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
                                                             >
                                                                 M
                                                                 <SimpleTooltipComponent text={'Manifest'} />
