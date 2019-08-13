@@ -1933,10 +1933,10 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onSelected(e, 'status')} 
                                             >
                                                 <option value="" selected disabled hidden>Select a status</option>
-                                                <option value="" disabled>-------------     Flags    -------------</option>
-                                                <option value="flag_add_on_services">Flag - add on services</option>
-                                                <option value="unflag_add_on_services">Unflag - add on services</option>
-                                                <option value="" disabled>------------- Booking Status-------------</option>
+                                                <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>-------------     Flags    -------------</option>
+                                                <option value="flag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Flag - add on services</option>
+                                                <option value="unflag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Unflag - add on services</option>
+                                                <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>------------- Booking Status-------------</option>
                                                 { bookingStatusList }
                                             </select>
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
@@ -2045,6 +2045,7 @@ class AllBookingsPage extends React.Component {
                                                 <option value="new_connote">New Connote</option>
                                                 <option value="label_and_connote">Label & Connote</option>
                                                 <option value="check_pod">Check POD</option>
+                                                <option value="flagged">Flagged</option>
                                             </select>
                                         </div>
                                         <LoadingOverlay
