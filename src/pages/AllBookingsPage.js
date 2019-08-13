@@ -20,7 +20,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
@@ -131,6 +131,7 @@ class AllBookingsPage extends React.Component {
         getDMEClients: PropTypes.func.isRequired,
         generateXLS: PropTypes.func.isRequired,
         changeBookingsStatus: PropTypes.func.isRequired,
+        changeBookingsFlagStatus: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
@@ -1334,7 +1335,12 @@ class AllBookingsPage extends React.Component {
         } else if (selectedBookingIds.length > 25) {
             alert('You can change 25 bookings status at a time.');
         } else {
-            this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
+            if (selectedStatusValue.indexOf('flag_add_on_services') > -1) {
+                this.props.changeBookingsFlagStatus(selectedStatusValue, selectedBookingIds);
+            } else {
+                this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
+            }
+
             this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
         }
     }
@@ -1719,6 +1725,16 @@ class AllBookingsPage extends React.Component {
                             !_.isNull(booking.fk_manifest_id) ? <div className="pod-status">M</div> : null
                         }
                     </td>
+                    <td className={
+                        booking.b_is_flagged_add_on_services ?
+                            'bg-yellow'
+                            :
+                            null
+                    }>
+                        {
+                            booking.b_is_flagged_add_on_services ? <div className="pod-status">F</div> : null
+                        }
+                    </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
                     <td className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
@@ -1917,6 +1933,10 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onSelected(e, 'status')} 
                                             >
                                                 <option value="" selected disabled hidden>Select a status</option>
+                                                <option value="" disabled>-------------     Flags    -------------</option>
+                                                <option value="flag_add_on_services">Flag - add on services</option>
+                                                <option value="unflag_add_on_services">Unflag - add on services</option>
+                                                <option value="" disabled>------------- Booking Status-------------</option>
                                                 { bookingStatusList }
                                             </select>
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
@@ -2242,11 +2262,19 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th
                                                                 id={'booking-column-header-tooltip-Manifest'}
-                                                                className={(sortField === 'b_clientReference_RA_Numbers') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
+                                                                className={(sortField === 'fk_manifest_id') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('fk_manifest_id')} 
                                                             >
                                                                 M
                                                                 <SimpleTooltipComponent text={'Manifest'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Flagged'}
+                                                                className={(sortField === 'b_is_flagged_add_on_services') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_is_flagged_add_on_services')} 
+                                                            >
+                                                                F
+                                                                <SimpleTooltipComponent text={'Flagged'} />
                                                             </th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
@@ -2437,6 +2465,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className=""></th>
                                                             <th className=""></th>
                                                             <th className=""></th>
+                                                            <th className=""></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -2562,6 +2591,7 @@ const mapDispatchToProps = (dispatch) => {
         getDMEClients: () => dispatch(getDMEClients()),
         generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
+        changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),

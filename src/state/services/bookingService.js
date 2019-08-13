@@ -362,6 +362,20 @@ export const changeBookingsStatus = (status, bookingIds) => {
             .catch((error) => dispatch(failedChangeBookingsStatus(error)));
 };
 
+export const changeBookingsFlagStatus = (flagStatus, bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/change_bookings_status/`,
+        data: {status: flagStatus, bookingIds},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successChangeBookingsStatus(data)))
+            .catch((error) => dispatch(failedChangeBookingsStatus(error)));
+};
+
 export const calcCollected = (bookingIds, type) => {
     const token = localStorage.getItem('token');
     const options = {
