@@ -1809,6 +1809,18 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'vx_fp_del_eta_time') ? 'current' : ''}>
                         {booking.vx_fp_del_eta_time ? moment(booking.vx_fp_del_eta_time).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
+                    <td 
+                        id={'booking-' + 'de_to_PickUp_Instructions_Address' + '-tooltip-' + booking.id}
+                        className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
+                    >
+                        {booking.de_to_PickUp_Instructions_Address}
+                        {
+                            !_.isEmpty(booking.de_to_PickUp_Instructions_Address) && !_.isEmpty(booking.de_to_PickUp_Instructions_Address) ?
+                                <BookingTooltipItem booking={booking} fields={['de_to_PickUp_Instructions_Address']} />
+                                :
+                                null
+                        }
+                    </td>
                 </tr>
             );
         });
@@ -2445,6 +2457,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="" scope="col"><p>Status Detail</p></th>
                                                             <th className="" scope="col"><p>Status Action</p></th>
                                                             <th className="" scope="col"><p>FP Del ETA</p></th>
+                                                            <th className="" scope="col"><p>DE Instruction</p></th>
                                                         </tr>
                                                         <tr className="filter-tr">
                                                             <th><input type="checkbox" className="checkall" checked={this.state.checkedAll ? 'checked' : ''} onChange={() => this.onCheckAll()} /></th>
@@ -2480,6 +2493,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
