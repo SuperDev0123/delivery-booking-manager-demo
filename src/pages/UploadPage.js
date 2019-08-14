@@ -28,6 +28,7 @@ class UploadPage extends Component {
         this.djsConfig = {
             addRemoveLinks: true,
             autoProcessQueue: false,
+            parallelUploads: 10,
             params: { filename: 'file' }
         };
 
