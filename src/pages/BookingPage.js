@@ -34,7 +34,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage, manualBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -197,6 +197,7 @@ class BookingPage extends Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
+        manualBook: PropTypes.func.isRequired,
         duplicateBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
@@ -636,7 +637,7 @@ class BookingPage extends Component {
                 //     this.notify('Booking(' + booking.b_bookingID_Visual + ') is loaded!');
                 // }
 
-                if ((booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined) && this.state.clientname !== 'dme') {
+                if ((booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
@@ -1055,19 +1056,21 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const {booking } = this.state;
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-        if (booking.id && (booking.id != undefined)) {
-            this.setState({ loading: true, curViewMode: 0});
-            if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
-                this.props.stBooking(booking.id);
-            } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
-                this.props.alliedBooking(booking.id);
-            }
-        } else {
-            alert('Please Find any booking and then click this!');
-        }
+        const {booking} = this.state;
+        this.props.manualBook(booking.id);
+        // const st_name = 'startrack';
+        // const allied_name = 'allied';
+        // if (booking.id && (booking.id != undefined)) {
+        //     this.setState({ loading: true, curViewMode: 0});
+        //     if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
+        //         this.props.stBooking(booking.id);
+        //     } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
+        //         this.props.alliedBooking(booking.id);
+        //     }
+        // } else {
+        //     alert('Please Find any booking and then click this!');
+        // }
+
     }
 
     onKeyPress(e) {
@@ -3557,7 +3560,13 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickBook()}><i ></i> Book</button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickBook()}
+                                                            disabled={(isBookedBooking || clientname !== 'dme') ? true : ''}
+                                                        >
+                                                            Book
+                                                        </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
@@ -4028,6 +4037,7 @@ const mapDispatchToProps = (dispatch) => {
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
+        manualBook: (id) => dispatch(manualBook(id)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (pk_booking_id) => dispatch(getAttachmentHistory(pk_booking_id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
