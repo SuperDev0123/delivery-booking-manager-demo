@@ -1057,6 +1057,7 @@ class BookingPage extends Component {
 
     onClickBook() {
         const {booking} = this.state;
+        this.setState({loadingUpdate: true});
         this.props.manualBook(booking.id);
         // const st_name = 'startrack';
         // const allied_name = 'allied';
