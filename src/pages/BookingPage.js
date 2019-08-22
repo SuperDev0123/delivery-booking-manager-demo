@@ -2261,10 +2261,7 @@ class BookingPage extends Component {
                                         value = {curViewMode}
                                     >
                                         <option value="0">View</option>
-                                        {
-                                            (isBookingSelected && !isBookedBooking) && 
-                                                <option value="2">Edit</option>
-                                        }
+                                        <option value="2">Edit</option>
                                         <option value="1">New Form</option>
                                     </select>
                                 </div>
