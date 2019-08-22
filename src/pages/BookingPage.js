@@ -767,8 +767,8 @@ class BookingPage extends Component {
                 else tempAdditionalServices.vx_freight_provider = '';
                 if (booking.vx_serviceName != null) tempAdditionalServices.vx_serviceName = booking.vx_serviceName;
                 else tempAdditionalServices.vx_serviceName = '';
-                if (booking.consignment_label_link != null) tempAdditionalServices.consignment_label_link = booking.consignment_label_link;
-                else tempAdditionalServices.consignment_label_link = '';
+                if (booking.v_FPBookingNumber != null) tempAdditionalServices.v_FPBookingNumber = booking.v_FPBookingNumber;
+                else tempAdditionalServices.v_FPBookingNumber = '';
                 if (booking.s_02_Booking_Cutoff_Time != null) tempAdditionalServices.s_02_Booking_Cutoff_Time = booking.s_02_Booking_Cutoff_Time;
                 else tempAdditionalServices.s_02_Booking_Cutoff_Time = '';
                 if (booking.puPickUpAvailFrom_Date != null) tempAdditionalServices.puPickUpAvailFrom_Date = booking.puPickUpAvailFrom_Date;
@@ -2130,7 +2130,7 @@ class BookingPage extends Component {
                 dataField: 'vx_serviceName',
                 text: 'Service'
             }, {
-                dataField: 'consignment_label_link',
+                dataField: 'v_FPBookingNumber',
                 text: 'Consignment No'
             }, {
                 dataField: 's_02_Booking_Cutoff_Time',
