@@ -797,6 +797,8 @@ class BookingPage extends Component {
                 else formInputs['inv_billing_status'] = '';
                 if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
                 else formInputs['inv_billing_status_note'] = '';
+                if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
+                else formInputs['b_client_sales_inv_num'] = '';
 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -901,7 +903,9 @@ class BookingPage extends Component {
     }
 
     onHandleInput(e) {
-        if (this.state.isBookedBooking === false) {
+        const {isBookedBooking, clientname} = this.state;
+
+        if (isBookedBooking === false || clientname === 'dme') {
             let {formInputs, booking} = this.state;
 
             if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
@@ -1110,7 +1114,7 @@ class BookingPage extends Component {
     }
 
     handleChangeState = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false) {
+        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
             if (num === 0) {
                 this.props.getSuburbStrings('postalcode', selectedOption.label);
                 this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
@@ -1124,7 +1128,7 @@ class BookingPage extends Component {
     };
 
     handleChangePostalCode = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false) {
+        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
             if (num === 0) {
                 this.props.getSuburbStrings('suburb', selectedOption.label);
                 this.setState({puPostalCode: selectedOption, puSuburb: null, puSuburbs: [], selectionChanged: 1, loadingGeoPU: true});
@@ -1138,7 +1142,7 @@ class BookingPage extends Component {
     };
 
     handleChangeSuburb = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false) {
+        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
             if (num === 0) {
                 this.setState({ puSuburb: selectedOption});    
             } else if (num === 1) {
@@ -1778,7 +1782,7 @@ class BookingPage extends Component {
     }
 
     onClickConfirmBooking() {
-        if (this.state.isBookedBooking == false) {
+        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
             let bookingToUpdate = this.state.booking;
             bookingToUpdate.z_manual_booking_set_to_confirm = moment();
             bookingToUpdate.b_status = 'Ready for booking';
@@ -2494,10 +2498,25 @@ class BookingPage extends Component {
                                             </div>
                                             <div>
                                                 <div className="col-sm-6 form-group">
-                                                    <div>
-                                                        <span>Client Invoice Number</span>
-                                                        <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
-                                                    </div>
+                                                    {
+                                                        (parseInt(curViewMode) === 0) ?
+                                                            <div>
+                                                                <span>Client Invoice Number</span>
+                                                                <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
+                                                            </div>
+                                                            :
+                                                            <div>
+                                                                <span>Client Invoice Number</span>
+                                                                <input 
+                                                                    className="form-control" 
+                                                                    type="text" 
+                                                                    placeholder="Sales Inv Number" 
+                                                                    name="b_client_sales_inv_num" 
+                                                                    value = {formInputs['b_client_sales_inv_num']}
+                                                                    onChange={(e) => this.onHandleInput(e)}
+                                                                />
+                                                            </div>
+                                                    }
                                                 </div>
                                                 {
                                                     (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
