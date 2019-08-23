@@ -1326,8 +1326,14 @@ class BookingPage extends Component {
         const name = target.name;
 
         if (name === 'manualBook') {
-            const {booking} = this.state;
-            this.setState({loadingUpdate: true});
+            const {booking, curViewMode} = this.state;
+
+            if (curViewMode === 0) {
+                this.setState({loading: true});
+            } else if (curViewMode === 2) {
+                this.setState({loadingUpdate: true});
+            }
+
             this.props.manualBook(booking.id);
         } else {
             this.setState({[name]: value});
@@ -3594,7 +3600,6 @@ class BookingPage extends Component {
                                                             type="checkbox"
                                                             checked={this.state.isBookedBooking}
                                                             onChange={(e) => this.handleInputChange(e)}
-                                                            disabled={this.state.isBookedBooking ? 'disabled' : ''}
                                                         />
                                                         <p>Manual Book</p>
                                                     </div>
