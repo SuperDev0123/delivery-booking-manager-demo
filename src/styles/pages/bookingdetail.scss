@@ -576,3 +576,19 @@ p.lock-status {
 		text-align: right;
 	}
 }
+
+
+div.manual-book {
+	input {
+		height: 30px;
+		width: 30px;
+	}
+
+	p {
+		font-size: 16px;
+		display: inline-block;
+		vertical-align: top;
+		margin-top: 10px;
+		margin-left: 10px;
+	}
+}

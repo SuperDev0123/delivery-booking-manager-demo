@@ -1060,9 +1060,6 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const {booking} = this.state;
-        this.setState({loadingUpdate: true});
-        this.props.manualBook(booking.id);
         // const st_name = 'startrack';
         // const allied_name = 'allied';
         // if (booking.id && (booking.id != undefined)) {
@@ -1328,7 +1325,13 @@ class BookingPage extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        this.setState({[name]: value});
+        if (name === 'manualBook') {
+            const {booking} = this.state;
+            this.setState({loadingUpdate: true});
+            this.props.manualBook(booking.id);
+        } else {
+            this.setState({[name]: value});
+        }
     }
 
     handleCommModalInputChange(event) {
@@ -3584,6 +3587,16 @@ class BookingPage extends Component {
                                                         >
                                                             Book
                                                         </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height manual-book">
+                                                        <input
+                                                            name="manualBook"
+                                                            type="checkbox"
+                                                            checked={this.state.isBookedBooking}
+                                                            onChange={(e) => this.handleInputChange(e)}
+                                                            disabled={this.state.isBookedBooking ? 'disabled' : ''}
+                                                        />
+                                                        <p>Manual Book</p>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
