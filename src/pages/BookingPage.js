@@ -1326,15 +1326,19 @@ class BookingPage extends Component {
         const name = target.name;
 
         if (name === 'manualBook') {
-            const {booking, curViewMode} = this.state;
+            const {booking, curViewMode, clientname} = this.state;
 
-            if (curViewMode === 0) {
-                this.setState({loading: true});
-            } else if (curViewMode === 2) {
-                this.setState({loadingUpdate: true});
+            if (clientname === 'dme') {
+                if (curViewMode === 0) {
+                    this.setState({loading: true});
+                } else if (curViewMode === 2) {
+                    this.setState({loadingUpdate: true});
+                }
+
+                this.props.manualBook(booking.id);
+            } else {
+                alert('Only `DME` role users can use this feature');
             }
-
-            this.props.manualBook(booking.id);
         } else {
             this.setState({[name]: value});
         }
@@ -3594,15 +3598,20 @@ class BookingPage extends Component {
                                                             Book
                                                         </button>
                                                     </div>
-                                                    <div className="text-center mt-2 fixed-height manual-book">
-                                                        <input
-                                                            name="manualBook"
-                                                            type="checkbox"
-                                                            checked={this.state.isBookedBooking}
-                                                            onChange={(e) => this.handleInputChange(e)}
-                                                        />
-                                                        <p>Manual Book</p>
-                                                    </div>
+                                                    {
+                                                        (clientname === 'dme') ?
+                                                            <div className="text-center mt-2 fixed-height manual-book">
+                                                                <input
+                                                                    name="manualBook"
+                                                                    type="checkbox"
+                                                                    checked={this.state.isBookedBooking}
+                                                                    onChange={(e) => this.handleInputChange(e)}
+                                                                />
+                                                                <p>Manual Book</p>
+                                                            </div>
+                                                            :
+                                                            null
+                                                    }
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
