@@ -3814,7 +3814,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-6">
                                                             <label>POD upload</label>
-                                                            <form onSubmit={(e) => this.handlePost(e, 'label')}>
+                                                            <form onSubmit={(e) => this.handlePost(e, 'pod')}>
                                                                 <DropzoneComponent
                                                                     id="pod-dz"
                                                                     config={podDzConfig}
