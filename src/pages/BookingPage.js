@@ -191,7 +191,9 @@ class BookingPage extends Component {
             postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/filename',
         };
 
-        this.dropzone = null;
+        this.attachmentsDz = null;
+        this.labelDz = null;
+        this.podDz = null;
         this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
@@ -1198,11 +1200,17 @@ class BookingPage extends Component {
         }
     }
 
-    handlePost(e) {
+    handlePost(e, type) {
         e.preventDefault();
         const {booking} = this.state;
         if ( booking != null && booking.id != null) {
-            this.dropzone.processQueue();
+            if (type === 'attachments') {
+                this.attachmentsDz.processQueue();
+            } else if (type === 'label') {
+                this.labelDz.processQueue();
+            } else if (type === 'pod') {
+                this.podDz.processQueue();
+            }
         } else {
             alert('There is no booking data.');
         }
@@ -2190,23 +2198,25 @@ class BookingPage extends Component {
 
         // DropzoneComponent config
         this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
+        const djsConfig = this.djsConfig;
+
         const attachmentsDzConfig = this.attachmentsDropzoneComponentConfig;
         const labelDzConfig = this.labelDropzoneComponentConfig;
         const podDzConfig = this.podDropzoneComponentConfig;
-        const djsConfig = this.djsConfig;
+
         const attachmentsEventHandlers = {
-            init: dz => this.dropzone = dz,
+            init: dz => this.attachmentsDz = dz,
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
             queuecomplete: this.attachmentsHandleUploadFinish.bind(this),
         };
         const labelEventHandlers = {
-            init: dz => this.dropzone = dz,
+            init: dz => this.labelDz = dz,
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
         const podEventHandlers = {
-            init: dz => this.dropzone = dz,
+            init: dz => this.podDz = dz,
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
@@ -3767,7 +3777,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
-                                                <form onSubmit={(e) => this.handlePost(e)}>
+                                                <form onSubmit={(e) => this.handlePost(e, 'attachments')}>
                                                     <DropzoneComponent
                                                         id="attachments-dz"
                                                         config={attachmentsDzConfig}
@@ -3792,7 +3802,7 @@ class BookingPage extends Component {
                                                     <div className="row">
                                                         <div className="col-6">
                                                             <label>Label upload</label>
-                                                            <form onSubmit={(e) => this.handlePost(e)}>
+                                                            <form onSubmit={(e) => this.handlePost(e, 'label')}>
                                                                 <DropzoneComponent
                                                                     id="label-dz"
                                                                     config={labelDzConfig}
@@ -3804,7 +3814,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-6">
                                                             <label>POD upload</label>
-                                                            <form onSubmit={(e) => this.handlePost(e)}>
+                                                            <form onSubmit={(e) => this.handlePost(e, 'label')}>
                                                                 <DropzoneComponent
                                                                     id="pod-dz"
                                                                     config={podDzConfig}
