@@ -176,19 +176,19 @@ class BookingPage extends Component {
         this.attachmentsDropzoneComponentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/attachments/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/attachments/',
         };
 
         this.labelDropzoneComponentConfig = {
             iconFiletypes: ['.pdf', '.png'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/label/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/label/',
         };
 
         this.podDropzoneComponentConfig = {
             iconFiletypes: ['.pdf', '.png'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/',
         };
 
         this.attachmentsDz = null;
