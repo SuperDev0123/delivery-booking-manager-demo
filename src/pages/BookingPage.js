@@ -173,10 +173,22 @@ class BookingPage extends Component {
             params: { filename: 'file' }
         };
 
-        this.componentConfig = {
+        this.attachmentsDropzoneComponentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
             postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/attachments/filename',
+        };
+
+        this.labelDropzoneComponentConfig = {
+            iconFiletypes: ['.pdf', '.png'],
+            showFiletypeIcon: true,
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/label/filename',
+        };
+
+        this.podDropzoneComponentConfig = {
+            iconFiletypes: ['.pdf', '.png'],
+            showFiletypeIcon: true,
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/filename',
         };
 
         this.dropzone = null;
@@ -1203,21 +1215,14 @@ class BookingPage extends Component {
     }
 
     handleFileSending(data, xhr, formData) {
-        formData.append('warehouse_id', this.state.booking.id);
+        formData.append('booking_id', this.state.booking.id);
     }
 
-    handleUploadSuccess(file) {
-        let uploadedFileName = file.xhr.responseText.substring(file.xhr.responseText.indexOf('"'));
-        uploadedFileName = uploadedFileName.replace(/"/g,'');
-        this.interval = setInterval(() => this.myTimer(), 2000);
-
-        this.setState({
-            uploadedFileName,
-            uploaded: true,
-        });
+    handleUploadSuccess() {
+        this.setState({uploaded: true});
     }
 
-    handleUploadFinish() {
+    attachmentsHandleUploadFinish() {
         this.props.getBooking(this.state.booking.id, 'id');
         this.props.getAttachmentHistory(this.state.booking.pk_booking_id);
     }
@@ -2185,13 +2190,25 @@ class BookingPage extends Component {
 
         // DropzoneComponent config
         this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
-        const config = this.componentConfig;
+        const attachmentsDzConfig = this.attachmentsDropzoneComponentConfig;
+        const labelDzConfig = this.labelDropzoneComponentConfig;
+        const podDzConfig = this.podDropzoneComponentConfig;
         const djsConfig = this.djsConfig;
-        const eventHandlers = {
+        const attachmentsEventHandlers = {
             init: dz => this.dropzone = dz,
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
-            queuecomplete: this.handleUploadFinish.bind(this),
+            queuecomplete: this.attachmentsHandleUploadFinish.bind(this),
+        };
+        const labelEventHandlers = {
+            init: dz => this.dropzone = dz,
+            sending: this.handleFileSending.bind(this),
+            success: this.handleUploadSuccess.bind(this),
+        };
+        const podEventHandlers = {
+            init: dz => this.dropzone = dz,
+            sending: this.handleFileSending.bind(this),
+            success: this.handleUploadSuccess.bind(this),
         };
 
         const actionTaskOptionsList = actionTaskOptions.map((actionTaskOption, key) => {
@@ -3637,6 +3654,7 @@ class BookingPage extends Component {
                                                 <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Freight Options</a></li>
                                                 <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log({cntComms})</a></li>
                                                 <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
+                                                <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer none">
@@ -3646,6 +3664,7 @@ class BookingPage extends Component {
                                                 <option value="#tab03">Freight Options</option>
                                                 <option value="#tab04">Communication Log</option>
                                                 <option value="#tab05">Attachments</option>
+                                                <option value="#tab06">Label & Pod</option>
                                             </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
@@ -3749,7 +3768,12 @@ class BookingPage extends Component {
                                         <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e)}>
-                                                    <DropzoneComponent id="myDropzone" config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
+                                                    <DropzoneComponent
+                                                        id="attachments-dz"
+                                                        config={attachmentsDzConfig}
+                                                        eventHandlers={attachmentsEventHandlers}
+                                                        djsConfig={djsConfig}
+                                                    />
                                                     <button id="submit-upload" type="submit">upload</button>
                                                 </form>
                                             </div>
@@ -3761,6 +3785,39 @@ class BookingPage extends Component {
                                                     bootstrap4={ true }
                                                 />
                                             </div>
+                                        </div>
+                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
+                                            {
+                                                isBookingSelected ?
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            <label>Label upload</label>
+                                                            <form onSubmit={(e) => this.handlePost(e)}>
+                                                                <DropzoneComponent
+                                                                    id="label-dz"
+                                                                    config={labelDzConfig}
+                                                                    eventHandlers={labelEventHandlers}
+                                                                    djsConfig={djsConfig}
+                                                                />
+                                                                <button id="submit-upload" type="submit">upload</button>
+                                                            </form>
+                                                        </div>
+                                                        <div className="col-6">
+                                                            <label>POD upload</label>
+                                                            <form onSubmit={(e) => this.handlePost(e)}>
+                                                                <DropzoneComponent
+                                                                    id="pod-dz"
+                                                                    config={podDzConfig}
+                                                                    eventHandlers={podEventHandlers}
+                                                                    djsConfig={djsConfig}
+                                                                />
+                                                                <button id="submit-upload" type="submit">upload</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                    :
+                                                    <label className='red'>Please select booking first</label>
+                                            }
                                         </div>
                                     </div>
                                 </div>
