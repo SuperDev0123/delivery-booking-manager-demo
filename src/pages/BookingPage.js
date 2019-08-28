@@ -176,7 +176,7 @@ class BookingPage extends Component {
         this.attachmentsDropzoneComponentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/attachments/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/attachments/filename',
         };
 
         this.labelDropzoneComponentConfig = {
