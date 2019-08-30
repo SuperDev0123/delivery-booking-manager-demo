@@ -813,6 +813,21 @@ class BookingPage extends Component {
                 else formInputs['inv_billing_status_note'] = '';
                 if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
                 else formInputs['b_client_sales_inv_num'] = '';
+                if (!_.isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
+                else formInputs['b_client_name_sub'] = '';
+                if (!_.isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
+                else formInputs['inv_dme_invoice_no'] = '';
+                if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
+                else formInputs['fp_invoice_no'] = '';
+                if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = booking.inv_cost_quoted;
+                else formInputs['inv_cost_quoted'] = '';
+                if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = booking.inv_cost_actual;
+                else formInputs['inv_cost_actual'] = '';
+                if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = booking.inv_sell_quoted;
+                else formInputs['inv_sell_quoted'] = '';
+                if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
+                else formInputs['inv_sell_actual'] = '';
+                
 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -2436,17 +2451,17 @@ class BookingPage extends Component {
                                         </div>
                                         <div className='col-sm-4 form-group'>
                                             <div>
-                                                <span>Contact PU Email</span>
+                                                <span>Sub Client</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['pu_Email']}</p>
+                                                        <p className="show-mode">{formInputs['b_client_name_sub']}</p>
                                                         :
                                                         <input
                                                             className="form-control" 
                                                             type="text" 
-                                                            placeholder="@email.com" 
-                                                            name="pu_Email" 
-                                                            value = {formInputs['pu_Email']}
+                                                            placeholder="" 
+                                                            name="b_client_name_sub" 
+                                                            value = {formInputs['b_client_name_sub']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2463,17 +2478,17 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-4 form-group">
                                             <div>
-                                                <span>Contact DE Email</span>
+                                                <span>Contact PU Email</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['de_Email']}</p>
+                                                        <p className="show-mode">{formInputs['pu_Email']}</p>
                                                         :
-                                                        <input 
+                                                        <input
                                                             className="form-control" 
                                                             type="text" 
                                                             placeholder="@email.com" 
-                                                            name="de_Email" 
-                                                            value = {formInputs['de_Email']}
+                                                            name="pu_Email" 
+                                                            value = {formInputs['pu_Email']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2508,7 +2523,46 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div className="row col-sm-6 status-history-form">
-                                        <div className="col-sm-8 form-group">
+                                        <div className="col-sm-4 form-group">
+                                            <div>
+                                                <span>Contact DE Email</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['de_Email']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            placeholder="@email.com" 
+                                                            name="de_Email" 
+                                                            value = {formInputs['de_Email']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                            <div>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <div>
+                                                            <span>Client Invoice Number</span>
+                                                            <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
+                                                        </div>
+                                                        :
+                                                        <div>
+                                                            <span>Client Invoice Number</span>
+                                                            <input 
+                                                                className="form-control" 
+                                                                type="text" 
+                                                                placeholder="Sales Inv Number" 
+                                                                name="b_client_sales_inv_num" 
+                                                                value = {formInputs['b_client_sales_inv_num']}
+                                                                onChange={(e) => this.onHandleInput(e)}
+                                                            />
+                                                        </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-4 form-group">
                                             <div>
                                                 <span>Status Detail</span><br />
                                                 {
@@ -2537,27 +2591,6 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                             <div>
-                                                <div className="col-sm-6 form-group">
-                                                    {
-                                                        (parseInt(curViewMode) === 0) ?
-                                                            <div>
-                                                                <span>Client Invoice Number</span>
-                                                                <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
-                                                            </div>
-                                                            :
-                                                            <div>
-                                                                <span>Client Invoice Number</span>
-                                                                <input 
-                                                                    className="form-control" 
-                                                                    type="text" 
-                                                                    placeholder="Sales Inv Number" 
-                                                                    name="b_client_sales_inv_num" 
-                                                                    value = {formInputs['b_client_sales_inv_num']}
-                                                                    onChange={(e) => this.onHandleInput(e)}
-                                                                />
-                                                            </div>
-                                                    }
-                                                </div>
                                                 {
                                                     (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
                                                         <div className="col-sm-6 form-group">
@@ -2729,8 +2762,8 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={clientname === 'dme' ? 'row col-sm-12 booking-form-01' : 'none'}>
-                                        <div className="col-sm-2 form-group">
+                                    <div className={clientname === 'dme' ? 'row col-sm-6 booking-form-01' : 'none'}>
+                                        <div className="col-sm-3 form-group">
                                             <div>
                                                 <span>Invoice Billing Status</span>
                                                 {
@@ -2743,6 +2776,110 @@ class BookingPage extends Component {
                                                             options={InvBillingOptions}
                                                             placeholder='Select a Inv/Billing status'
                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <div>
+                                                <span>FP Invoice No</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['fp_invoice_no']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="fp_invoice_no" 
+                                                            value = {formInputs['fp_invoice_no']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <div>
+                                                <span>Quoted Cost</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_cost_quoted']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="inv_cost_quoted" 
+                                                            value = {formInputs['inv_cost_quoted']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <div>
+                                                <span>Actual Cost</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_cost_actual']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="inv_cost_actual" 
+                                                            value = {formInputs['inv_cost_actual']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row col-sm-6 booking-form-01">
+                                        <div className="col-sm-4 form-group">
+                                            <div>
+                                                <span>Quoted Sell</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="inv_sell_quoted" 
+                                                            value = {formInputs['inv_sell_quoted']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            <div>
+                                                <span>Actual Cell</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_actual']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="inv_sell_actual" 
+                                                            value = {formInputs['inv_sell_actual']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-4 form-group">
+                                            <div>
+                                                <span>DME Invoice No</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_dme_invoice_no']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control" 
+                                                            type="text" 
+                                                            name="inv_dme_invoice_no" 
+                                                            value = {formInputs['inv_dme_invoice_no']}
+                                                            onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
                                             </div>
