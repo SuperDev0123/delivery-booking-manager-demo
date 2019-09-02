@@ -819,14 +819,14 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = booking.inv_cost_quoted;
-                else formInputs['inv_cost_quoted'] = '';
-                if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = booking.inv_cost_actual;
-                else formInputs['inv_cost_actual'] = '';
-                if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = booking.inv_sell_quoted;
-                else formInputs['inv_sell_quoted'] = '';
-                if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
-                else formInputs['inv_sell_actual'] = '';
+                if (!_.isNaN(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = booking.inv_cost_quoted;
+                else formInputs['inv_cost_quoted'] = 0;
+                if (!_.isNaN(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = booking.inv_cost_actual;
+                else formInputs['inv_cost_actual'] = 0;
+                if (!_.isNaN(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = booking.inv_sell_quoted;
+                else formInputs['inv_sell_quoted'] = 0;
+                if (!_.isNaN(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
+                else formInputs['inv_sell_actual'] = 0;
                 
 
                 let AdditionalServices = [];
