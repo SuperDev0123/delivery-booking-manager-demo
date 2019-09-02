@@ -54,7 +54,7 @@ p.dme-id {
 		padding: 0 !important;
 	}
 
-	.col-sm-4, .col-sm-2 {
+	.col-sm-4, .col-sm-2, .col-sm-3, .col-sm-1 {
   		padding: 0 5px !important;
   	}
 }
@@ -498,12 +498,12 @@ p.lock-status {
 }
 
 .status-history-form,
-.booking-form-01 {
+.booking-form-01, .booking-form-02 {
 	select {
 		height: 30px;
 		margin-top: 5px;
 		margin-bottom: 5px;
-		width: 175px;
+		width: 100%;
 	}
 
 	p {
@@ -516,6 +516,16 @@ p.lock-status {
 	span {
 		font-size: 9px;
 		color: gray;
+	}
+}
+
+.booking-form-02 > .col-sm-6 {
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+
+	> textarea {
+		width: 100%;
+		overflow: auto;
 	}
 }
 
@@ -573,6 +583,7 @@ p.lock-status {
 
 	.booked-date {
 		float: right;
+		padding-right: 15px;
 		text-align: right;
 	}
 }

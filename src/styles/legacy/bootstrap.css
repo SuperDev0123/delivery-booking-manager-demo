@@ -2080,8 +2080,8 @@ output {
 .form-control {
   display: block;
   width: 100%;
-  height: 42px;
-  padding: 10px 20px;
+  height: 38px;
+  padding: 10px 10px;
   font-size: 14px;
   line-height: 1.42857;
   color: #555555;

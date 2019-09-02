@@ -2375,6 +2375,7 @@ class BookingPage extends Component {
                                             />
                                     }
                                 </div>
+
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-3">
@@ -2416,244 +2417,143 @@ class BookingPage extends Component {
                                 </div>
 
                                 <div className="main-fields-section">
-                                    <div className="row col-sm-6 booking-form-01">
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Client Name</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_client_name']}</p>
-                                                        :
-                                                        <Select
-                                                            value={currentClientnameOption}
-                                                            onChange={(e) => this.handleChangeSelect(e, 'b_client_name')}
-                                                            options={clientnameOptions}
-                                                            placeholder='Select a client'
-                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                        />
-                                                }
-                                            </div>
-                                            <div>
-                                                <span>Warehouse Code</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                        :
-                                                        <Select
-                                                            value={currentWarehouseCodeOption}
-                                                            onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
-                                                            options={warehouseCodeOptions}
-                                                            placeholder='Select a warehouse'
-                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                        />
-                                                }
-                                            </div>
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className="col-sm-3 form-group">
+                                            <span>Client Name</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_client_name']}</p>
+                                                    :
+                                                    <Select
+                                                        value={currentClientnameOption}
+                                                        onChange={(e) => this.handleChangeSelect(e, 'b_client_name')}
+                                                        options={clientnameOptions}
+                                                        placeholder='Select a client'
+                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                    />
+                                            }
                                         </div>
-                                        <div className='col-sm-4 form-group'>
-                                            <div>
-                                                <span>Sub Client</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_client_name_sub']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control" 
-                                                            type="text" 
-                                                            placeholder="" 
-                                                            name="b_client_name_sub" 
-                                                            value = {formInputs['b_client_name_sub']}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
-                                                }
-                                            </div>
-                                            <div>
-                                                <span>Warehouse Name</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['b_clientPU_Warehouse']}</p>
-                                                        :
-                                                        <p className="show-mode disabled">{formInputs['b_clientPU_Warehouse']}</p>
-                                                }
-                                            </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Sub Client</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_client_name_sub']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="" 
+                                                        name="b_client_name_sub" 
+                                                        value = {formInputs['b_client_name_sub']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
                                         </div>
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Contact PU Email</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['pu_Email']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control" 
-                                                            type="text" 
-                                                            placeholder="@email.com" 
-                                                            name="pu_Email" 
-                                                            value = {formInputs['pu_Email']}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
-                                                }
-                                            </div>
-                                            <div>
-                                                <span>Linked Reference</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                        >
-                                                            {formInputs['dme_status_linked_reference_from_fp']}
-                                                        </p>
-                                                        :
-                                                        <input 
-                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="Linked Reference" 
-                                                            name="dme_status_linked_reference_from_fp" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
-                                                            onChange={(e) => this.onHandleInput(e)}/>
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Contact PU Email</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['pu_Email']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="@email.com" 
+                                                        name="pu_Email" 
+                                                        value = {formInputs['pu_Email']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Contact DE Email</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['de_Email']}</p>
+                                                    :
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="@email.com" 
+                                                        name="de_Email" 
+                                                        value = {formInputs['de_Email']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
                                         </div>
                                     </div>
-                                    <div className="row col-sm-6 status-history-form">
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Contact DE Email</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['de_Email']}</p>
-                                                        :
+
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className="col-sm-2 form-group">
+                                            <span>Warehouse Code</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                    :
+                                                    <Select
+                                                        value={currentWarehouseCodeOption}
+                                                        onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
+                                                        options={warehouseCodeOptions}
+                                                        placeholder='Select a warehouse'
+                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                    />
+                                            }
+                                        </div>
+                                        <div className='col-sm-2 form-group'>
+                                            <span>Warehouse Name</span><br />
+                                            <input
+                                                className="form-control"
+                                                disabled="disabled"
+                                                type="text"
+                                                value={formInputs['b_clientPU_Warehouse']}
+                                            />
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            <span>Linked Reference</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p 
+                                                        className="show-mode"
+                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                    >
+                                                        {formInputs['dme_status_linked_reference_from_fp']}
+                                                    </p>
+                                                    :
+                                                    <input 
+                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="Linked Reference" 
+                                                        name="dme_status_linked_reference_from_fp" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            }
+                                            {
+                                                !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
+                                                    <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                        <div className="col-sm-2 form-group">
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <div>
+                                                        <span>Client Invoice Number</span>
+                                                        <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
+                                                    </div>
+                                                    :
+                                                    <div>
+                                                        <span>Client Invoice Number</span>
                                                         <input 
                                                             className="form-control" 
                                                             type="text" 
-                                                            placeholder="@email.com" 
-                                                            name="de_Email" 
-                                                            value = {formInputs['de_Email']}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
-                                                }
-                                            </div>
-                                            <div>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <div>
-                                                            <span>Client Invoice Number</span>
-                                                            <p className="show-mode">{this.state.booking.b_client_sales_inv_num}</p>
-                                                        </div>
-                                                        :
-                                                        <div>
-                                                            <span>Client Invoice Number</span>
-                                                            <input 
-                                                                className="form-control" 
-                                                                type="text" 
-                                                                placeholder="Sales Inv Number" 
-                                                                name="b_client_sales_inv_num" 
-                                                                value = {formInputs['b_client_sales_inv_num']}
-                                                                onChange={(e) => this.onHandleInput(e)}
-                                                            />
-                                                        </div>
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Status Detail</span><br />
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
-                                                        >{formInputs['dme_status_detail']}</p>
-                                                        :
-                                                        <select
-                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
-                                                            name="dme_status_detail"
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            value = {formInputs['dme_status_detail']}
-                                                        >
-                                                            <option value="" selected disabled hidden>Select a status detail</option>
-                                                            {statusDetailOptions}
-                                                            <option value={'other'}>Other</option>
-                                                        </select>
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_detail']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                            <div>
-                                                {
-                                                    (isShowStatusDetailInput && parseInt(curViewMode) !== 0) ?
-                                                        <div className="col-sm-6 form-group">
-                                                            <span>New Status Detail</span>
-                                                            <input 
-                                                                className="form-control height-40p" 
-                                                                type="text" 
-                                                                placeholder="New Status Detail"
-                                                                name="new_dme_status_detail" 
-                                                                value = {formInputs['new_dme_status_detail']}
-                                                                onChange={(e) => this.onHandleInput(e)}
-                                                            />
-                                                        </div>
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-4 form-group">
-                                            <div>
-                                                <span>Status Action</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
-                                                        >
-                                                            {formInputs['dme_status_action']}
-                                                        </p>
-                                                        :
-                                                        <select
-                                                            id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
-                                                            name="dme_status_action"
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            value = {formInputs['dme_status_action']}
-                                                        >
-                                                            <option value="" selected disabled hidden>Select a status action</option>
-                                                            {statusActionOptions}
-                                                            <option value={'other'}>Other</option>
-                                                        </select>
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_action']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                            {
-                                                (isShowStatusActionInput && parseInt(curViewMode) !== 0) ?
-                                                    <div>
-                                                        <span>New Status Detail</span>
-                                                        <input 
-                                                            className="form-control height-40p" 
-                                                            type="text" 
-                                                            placeholder="New Status Action"
-                                                            name="new_dme_status_action" 
-                                                            value = {formInputs['new_dme_status_action']}
+                                                            placeholder="Sales Inv Number" 
+                                                            name="b_client_sales_inv_num" 
+                                                            value = {formInputs['b_client_sales_inv_num']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                     </div>
-                                                    :
-                                                    null
                                             }
                                         </div>
                                     </div>
@@ -2762,8 +2662,8 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={clientname === 'dme' ? 'row col-sm-6 booking-form-01' : 'none'}>
-                                        <div className="col-sm-3 form-group">
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
                                             <div>
                                                 <span>Invoice Billing Status</span>
                                                 {
@@ -2780,7 +2680,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
                                             <div>
                                                 <span>FP Invoice No</span>
                                                 {
@@ -2797,7 +2697,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
                                             <div>
                                                 <span>Quoted Cost</span>
                                                 {
@@ -2814,7 +2714,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-3 form-group">
+                                        <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
                                             <div>
                                                 <span>Actual Cost</span>
                                                 {
@@ -2831,9 +2731,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="row col-sm-6 booking-form-01">
-                                        <div className="col-sm-4 form-group">
+                                        <div className="col-sm-1 form-group">
                                             <div>
                                                 <span>Quoted Sell</span>
                                                 {
@@ -2850,9 +2748,9 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-4 form-group">
+                                        <div className="col-sm-1 form-group">
                                             <div>
-                                                <span>Actual Cell</span>
+                                                <span>Actual Sell</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_sell_actual']}</p>
@@ -2867,7 +2765,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-4 form-group">
+                                        <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
                                                 {
@@ -2886,65 +2784,146 @@ class BookingPage extends Component {
                                         </div>
                                     </div>
                                     <div className={clientname === 'dme' ? 'row col-sm-12 booking-form-01' : 'none'}>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Status Detail</span><br />
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p 
+                                                        className="show-mode"
+                                                        id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                                                    >{formInputs['dme_status_detail']}</p>
+                                                    :
+                                                    <select
+                                                        id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                                                        name="dme_status_detail"
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        value = {formInputs['dme_status_detail']}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a status detail</option>
+                                                        {statusDetailOptions}
+                                                        <option value={'other'}>Other</option>
+                                                    </select>
+                                            }
+                                            {
+                                                !_.isEmpty(formInputs['dme_status_detail']) ?
+                                                    <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                        {
+                                            (isShowStatusDetailInput && parseInt(curViewMode) !== 0) &&
+                                                <div className="col-sm-3 form-group">
+                                                    <span>New Status Detail</span><br />
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="New Status Detail"
+                                                        name="new_dme_status_detail" 
+                                                        value = {formInputs['new_dme_status_detail']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                                </div>
+                                        }
+                                        <div className="col-sm-3 form-group">
+                                            <span>Status Action</span><br />
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p 
+                                                        className="show-mode"
+                                                        id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
+                                                    >
+                                                        {formInputs['dme_status_action']}
+                                                    </p>
+                                                    :
+                                                    <select
+                                                        id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
+                                                        name="dme_status_action"
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        value = {formInputs['dme_status_action']}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a status action</option>
+                                                        {statusActionOptions}
+                                                        <option value={'other'}>Other</option>
+                                                    </select>
+                                            }
+                                            {
+                                                !_.isEmpty(formInputs['dme_status_action']) ?
+                                                    <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                        {
+                                            (isShowStatusActionInput && parseInt(curViewMode) !== 0) &&
+                                                <div className="col-sm-3 form-group">
+                                                    <span>New Status Detail</span><br />
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        placeholder="New Status Action"
+                                                        name="new_dme_status_action" 
+                                                        value = {formInputs['new_dme_status_action']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                                </div>
+                                        }
+                                    </div>
+                                    <div className={clientname === 'dme' ? 'row col-sm-12 booking-form-02' : 'none'}>
                                         <div className="col-sm-6 form-group">
-                                            <div>
-                                                <span>Invoice Billing Status Note</span>
-                                                {
+                                            <span>Invoice Billing Status Note</span>
+                                            {
+                                                <textarea 
+                                                    className="show-mode" 
+                                                    id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
+                                                    name="inv_billing_status_note" 
+                                                    value={(parseInt(curViewMode) === 1) ? clientname : formInputs['inv_billing_status_note']} 
+                                                    onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
+                                                    rows="4" 
+                                                    cols="83"
+                                                />
+                                                    
+                                            }
+                                            {
+                                                !_.isEmpty(formInputs['inv_billing_status_note']) ?
+                                                    <BookingTooltipItem booking={booking} fields={['inv_billing_status_note']} />
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                        <div className="col-sm-6 form-group">
+                                            <span>Status History Note</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
                                                     <textarea 
                                                         className="show-mode" 
-                                                        id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
-                                                        name="inv_billing_status_note" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['inv_billing_status_note']} 
-                                                        onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
+                                                        onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                        id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                        value={formInputs['dme_status_history_notes']}
                                                         rows="4" 
                                                         cols="83"
                                                     />
-                                                        
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['inv_billing_status_note']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['inv_billing_status_note']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-6 form-group">
-                                            <div>
-                                                <span>Status History Note</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <textarea 
-                                                            className="show-mode" 
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            value={formInputs['dme_status_history_notes']}
-                                                            rows="4" 
-                                                            cols="83"
-                                                        />
-                                                        :
-                                                        <textarea 
-                                                            className="show-mode" 
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            name="dme_status_linked_reference_from_fp" 
-                                                            value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
-                                                            rows="4" 
-                                                            cols="83"
-                                                        />
-                                                }
-                                                {
-                                                    !_.isEmpty(formInputs['dme_status_history_notes']) ?
-                                                        <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
-                                                        :
-                                                        null
-                                                }
-                                            </div>
+                                                    :
+                                                    <textarea 
+                                                        className="show-mode" 
+                                                        id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                        name="dme_status_linked_reference_from_fp" 
+                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                        onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                        rows="4" 
+                                                        cols="83"
+                                                    />
+                                            }
+                                            {
+                                                !_.isEmpty(formInputs['dme_status_history_notes']) ?
+                                                    <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
+                                                    :
+                                                    null
+                                            }
                                         </div>
                                     </div>
                                     <div className="clearfix"></div>
                                 </div>
-
                                 <div className="detail-tab">
                                     <div className="row">
                                         <div className="col-sm-4">
