@@ -977,8 +977,22 @@ class BookingPage extends Component {
             }
 
             if (canUpdateField) {
-                formInputs[e.target.name] = e.target.value;
-                booking[e.target.name] = e.target.value;
+                if (e.target.name === 'inv_sell_quoted' ||
+                    e.target.name === 'inv_cost_quoted' ||
+                    e.target.name === 'inv_sell_actual' ||
+                    e.target.name === 'inv_cost_actual') {
+                    let value = e.target.value.replace(',', '').replace('$', '');
+                    if (_.isNaN(parseFloat(value))) {
+                        this.notify('Please input float number!');
+                    } else {
+                        formInputs[e.target.name] = value;
+                        booking[e.target.name] = value;
+                    }
+                } else {
+                    formInputs[e.target.name] = e.target.value;
+                    booking[e.target.name] = e.target.value;
+                }
+
                 this.setState({ formInputs, booking, isBookingModified: true });
             }
         }
@@ -2708,7 +2722,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_cost_quoted" 
-                                                            value = {formInputs['inv_cost_quoted']}
+                                                            value = {'$' + parseInt(formInputs['inv_cost_quoted']).toLocaleString(navigator.language, { minimumFractionDigits: 2 })}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2725,7 +2739,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_cost_actual" 
-                                                            value = {formInputs['inv_cost_actual']}
+                                                            value = {'$' + parseInt(formInputs['inv_cost_actual']).toLocaleString(navigator.language, { minimumFractionDigits: 2 })}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2742,7 +2756,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_sell_quoted" 
-                                                            value = {formInputs['inv_sell_quoted']}
+                                                            value = {'$' + parseInt(formInputs['inv_sell_quoted']).toLocaleString(navigator.language, { minimumFractionDigits: 2 })}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2759,7 +2773,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_sell_actual" 
-                                                            value = {formInputs['inv_sell_actual']}
+                                                            value = {'$' + parseInt(formInputs['inv_sell_actual']).toLocaleString(navigator.language, { minimumFractionDigits: 2 })}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
