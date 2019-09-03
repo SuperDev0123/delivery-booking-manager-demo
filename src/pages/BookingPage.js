@@ -3805,7 +3805,7 @@ class BookingPage extends Component {
                                                 <Button 
                                                     className="edit-lld-btn btn-primary" 
                                                     onClick={this.toggleShowLineSlider} 
-                                                    disabled={!isBookingSelected || (isBookedBooking && clientname === 'dme')}
+                                                    disabled={!isBookingSelected || (isBookedBooking && clientname !== 'dme')}
                                                 >
                                                     Edit
                                                 </Button>
