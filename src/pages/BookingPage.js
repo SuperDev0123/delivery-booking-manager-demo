@@ -819,13 +819,13 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = '$' + parseInt(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = '$' + parseFloat(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
                 else formInputs['inv_cost_quoted'] = 0;
-                if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = '$' + parseInt(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = '$' + parseFloat(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
                 else formInputs['inv_cost_actual'] = 0;
-                if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = '$' + parseInt(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = '$' + parseFloat(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
                 else formInputs['inv_sell_quoted'] = 0;
-                if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = '$' + parseInt(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
                 else formInputs['inv_sell_actual'] = 0;
                 
 
@@ -1006,7 +1006,7 @@ class BookingPage extends Component {
             e.target.name === 'inv_sell_actual' ||
             e.target.name === 'inv_cost_actual') {
             let value = e.target.value.replace(',', '').replace('$', '');
-            formInputs[e.target.name] = '$' + parseInt(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+            formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
             booking[e.target.name] = value;
         }
     }
