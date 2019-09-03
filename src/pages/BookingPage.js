@@ -813,6 +813,8 @@ class BookingPage extends Component {
                 else formInputs['inv_billing_status_note'] = '';
                 if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
                 else formInputs['b_client_sales_inv_num'] = '';
+                if (!_.isNull(booking.b_client_order_num)) formInputs['b_client_order_num'] = booking.b_client_order_num;
+                else formInputs['b_client_order_num'] = '';
                 if (!_.isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
                 else formInputs['b_client_name_sub'] = '';
                 if (!_.isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
@@ -2614,33 +2616,31 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
-                                            <span>Contact PU Email</span>
+                                            <span>Your Invoice No</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['pu_Email']}</p>
+                                                    <p className="show-mode">{formInputs['b_client_sales_inv_num']}</p>
                                                     :
                                                     <input
                                                         className="form-control" 
-                                                        type="text" 
-                                                        placeholder="@email.com" 
-                                                        name="pu_Email" 
-                                                        value = {formInputs['pu_Email']}
+                                                        type="text"
+                                                        name="b_client_sales_inv_num"
+                                                        value = {formInputs['b_client_sales_inv_num']}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
-                                            <span>Contact DE Email</span>
+                                            <span>Your PO No</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['de_Email']}</p>
+                                                    <p className="show-mode">{formInputs['b_client_order_num']}</p>
                                                     :
                                                     <input 
                                                         className="form-control" 
-                                                        type="text" 
-                                                        placeholder="@email.com" 
-                                                        name="de_Email" 
-                                                        value = {formInputs['de_Email']}
+                                                        type="text"
+                                                        name="b_client_order_num"
+                                                        value = {formInputs['b_client_order_num']}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
