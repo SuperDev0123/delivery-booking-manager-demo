@@ -2318,11 +2318,12 @@ class BookingPage extends Component {
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
                             <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
-                            <li><a href="/bookinglines" className="none">Booking Lines</a></li>
-                            <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
+                            <li className=""><Link to="/reports">Reports</Link></li>
+                            <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
-                    <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
+                    <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
                         <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
                         <div className="popup">
                             <i className="icon-search3" aria-hidden="true"></i>
