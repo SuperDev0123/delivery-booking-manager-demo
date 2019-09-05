@@ -1,4 +1,4 @@
-import { RESET_ATTACHMENTS, RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, RESET_FLAG_LINES, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_DMESTATUS, SUCCESS_MANUAL_BOOK, FAILED_MANUAL_BOOK } from '../constants/bookingConstants';
+import { RESET_TICK_MANUAL_BOOK, RESET_ATTACHMENTS, RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS,SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED,  GET_LABEL_SUCCESS, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, GET_LABEL_FAILED, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, RESET_FLAG_LINES, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_DMESTATUS, SUCCESS_TICK_MANUAL_BOOK, FAILED_TICK_MANUAL_BOOK, SUCCESS_MANUAL_BOOK, FAILED_MANUAL_BOOK } from '../constants/bookingConstants';
 
 const defaultState = {
     booking: null,
@@ -26,10 +26,16 @@ const defaultState = {
     downloadOption: 'label',
     noBooking: null,
     needUpdateBookingLines: false,
+    isTickedManualBook: null,
 };
 
 export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, qtyTotal, cntComms, cntAttachments, dmeStatus }) => {
     switch (type) {
+        case RESET_TICK_MANUAL_BOOK:
+            return {
+                ...state,
+                isTickedManualBook: null,
+            };
         case RESET_ATTACHMENTS:
             return {
                 ...state,
@@ -121,12 +127,13 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 noBooking: false,
                 needUpdateBookings: true,
             };
-        case SUCCESS_MANUAL_BOOK:
+        case SUCCESS_TICK_MANUAL_BOOK:
         case SUCCESS_CREATE_BOOKING:
             return {
                 ...state,
                 booking: booking,
                 noBooking: false,
+                isManualBook: true,
             };
         case SUCCESS_DUPLICATE_BOOKING:
             return {
@@ -276,25 +283,10 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 ...state,
                 needUpdateBookings: needUpdateBookings,
             };
-        case BOOK_CANCEL_SUCCESS:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-            };
-        case BOOK_CANCEL_FAILED:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-            };
         case CHANGE_STATUS_SUCCESS:
             return {
                 ...state,
                 needUpdateBookings: true,
-                errorMessage: errorMessage,
-            };
-        case CHANGE_STATUS_FAILED:
-            return {
-                ...state,
                 errorMessage: errorMessage,
             };
         case SUCCESS_CALC_COLLECTED:
@@ -302,8 +294,16 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 ...state,
                 needUpdateBookings: true,
             };
-        case FAILED_MANUAL_BOOK:
+        case FAILED_TICK_MANUAL_BOOK:
+            return {
+                ...state,
+                isTickedManualBook: false,
+            };
+        case CHANGE_STATUS_FAILED:
+        case BOOK_CANCEL_FAILED:
+        case BOOK_CANCEL_SUCCESS:
         case FAILED_CALC_COLLECTED:
+        case FAILED_MANUAL_BOOK:
             return {
                 ...state,
                 errorMessage: errorMessage,
@@ -312,6 +312,11 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
             return {
                 ...state,
                 needToFetchGeoInfo: payload,
+            };
+        case SUCCESS_MANUAL_BOOK:
+            return {
+                ...state,
+                booking: booking,
             };
         case CLEAR_ERR_MSG:
             return {

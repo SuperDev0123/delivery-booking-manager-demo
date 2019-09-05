@@ -1,6 +1,50 @@
 import axios from 'axios';
 
-import { resetAttachments, resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction, clearErrorMessageAction, successManualBook, failedManualBook } from '../actions/bookingActions';
+import {
+    resetTickManualBook,
+    resetAttachments,
+    resetBooking,
+    successGetAttachments,
+    failedGetAttachments,
+    successGetBookings,
+    failedGetBookings,
+    successGetSuburbs,
+    failedGetSuburbs,
+    successDeliveryGetSuburbs,
+    failedDeliveryGetSuburbs,
+    successGetBooking,
+    failedUpdateBooking,
+    setMappedBok1ToBooking,
+    setUserDateFilterField,
+    failedGetUserDateFilterField,
+    successAlliedBook,
+    failedAlliedBook,
+    successStBook,
+    failedStBook,
+    successGetLabel,
+    failedGetLabel,
+    setAllLocalFilter,
+    setLocalFilter,
+    setNeedUpdateBookingsFlag,
+    successUpdateBooking,
+    successDuplicateBooking,
+    successCancelBook,
+    failedCancelBook,
+    successCreateBooking,
+    failedCreateBooking,
+    successGenerateXLS,
+    failedGenerateXLS,
+    successChangeBookingsStatus,
+    failedChangeBookingsStatus,
+    successCalcCollected,
+    failedCalcCollected,
+    setFetchGeoInfoFlagAction,
+    clearErrorMessageAction,
+    successTickManualBook,
+    failedTickManualBook,
+    successManualBook,
+    failedManualBook
+} from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (
@@ -121,6 +165,23 @@ export const manualBook = (id) => {
         axios(options)
             .then(({ data }) => dispatch(successManualBook(data)))
             .catch((error) => dispatch(failedManualBook(error)));
+    };
+};
+
+export const tickManualBook = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/tick_manual_book/`,
+        data: {'id': id},
+    };
+
+    return dispatch => {
+        dispatch(resetTickManualBook());
+        axios(options)
+            .then(({ data }) => dispatch(successTickManualBook(data)))
+            .catch((error) => dispatch(failedTickManualBook(error)));
     };
 };
 

@@ -34,7 +34,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage, manualBook } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, saveBooking, updateBooking, duplicateBooking, cancelBook, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -212,6 +212,7 @@ class BookingPage extends Component {
         verifyToken: PropTypes.func.isRequired,
         saveBooking: PropTypes.func.isRequired,
         manualBook: PropTypes.func.isRequired,
+        tickManualBook: PropTypes.func.isRequired,
         duplicateBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
@@ -302,7 +303,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -403,6 +404,14 @@ class BookingPage extends Component {
 
         if (qtyTotal && qtyTotal > 0) {
             this.setState({ qtyTotal, cntAttachments, cntComms });
+        }
+
+        if (isTickedManualBook === false) {
+            let currentBooking = this.state.booking;
+            let formInputs = this.state.formInputs;
+            currentBooking.x_manual_booked_flag = !formInputs['x_manual_booked_flag'];
+            formInputs['x_manual_booked_flag'] = !formInputs['x_manual_booked_flag'];
+            this.setState({booking: currentBooking, formInputs, loadingUpdate: false});
         }
 
         if (bookingLines) {
@@ -829,6 +838,7 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_quoted'] = 0;
                 if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
                 else formInputs['inv_sell_actual'] = 0;
+                formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
 
                 let AdditionalServices = [];
@@ -1118,6 +1128,14 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
+        const { booking } = this.state;
+
+        if (!booking.x_manual_booked_flag) {
+            this.notify('Need to tick `Manual Booking` first');
+        } else {
+            this.props.manualBook(booking.id);
+            this.setState({loadingUpdate: true, curViewMode: 2});
+        }
         // const st_name = 'startrack';
         // const allied_name = 'allied';
         // if (booking.id && (booking.id != undefined)) {
@@ -1382,17 +1400,12 @@ class BookingPage extends Component {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        if (name === 'manualBook') {
-            const {booking, curViewMode, clientname} = this.state;
+        if (name === 'tickManualBook') {
+            const {booking, clientname} = this.state;
 
             if (clientname === 'dme') {
-                if (curViewMode === 0) {
-                    this.setState({loading: true});
-                } else if (curViewMode === 2) {
-                    this.setState({loadingUpdate: true});
-                }
-
-                this.props.manualBook(booking.id);
+                this.props.tickManualBook(booking.id);
+                this.setState({loadingUpdate: true, curViewMode: 2});
             } else {
                 alert('Only `DME` role users can use this feature');
             }
@@ -3743,7 +3756,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickBook()}
-                                                            disabled={(isBookedBooking || clientname !== 'dme') ? true : ''}
+                                                            disabled={(isBookedBooking || clientname !== 'dme') ? 'disabled' : ''}
                                                         >
                                                             Book
                                                         </button>
@@ -3752,10 +3765,11 @@ class BookingPage extends Component {
                                                         (clientname === 'dme') ?
                                                             <div className="text-center mt-2 fixed-height manual-book">
                                                                 <input
-                                                                    name="manualBook"
+                                                                    name="tickManualBook"
                                                                     type="checkbox"
-                                                                    checked={this.state.isBookedBooking}
+                                                                    checked={formInputs['x_manual_booked_flag']}
                                                                     onChange={(e) => this.handleInputChange(e)}
+                                                                    disabled={isBookedBooking ? 'disabled' : ''}
                                                                 />
                                                                 <p>Manual Book</p>
                                                             </div>
@@ -4271,6 +4285,7 @@ const mapStateToProps = (state) => {
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
         needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
+        isTickedManualBook: state.booking.isTickedManualBook,
     };
 };
 
@@ -4281,6 +4296,7 @@ const mapDispatchToProps = (dispatch) => {
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         manualBook: (id) => dispatch(manualBook(id)),
+        tickManualBook: (id) => dispatch(tickManualBook(id)),
         getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (pk_booking_id) => dispatch(getAttachmentHistory(pk_booking_id)),
         getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
