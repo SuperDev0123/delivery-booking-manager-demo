@@ -955,6 +955,15 @@ class CommPage extends React.Component {
                                 value={commFormInputs['due_date_time']}
                             />
                         </label>
+                        <label>
+                            <p>Closed?</p>
+                            <input
+                                className="form-control"
+                                type="checkbox"
+                                name="closed"
+                                checked = {commFormInputs['closed']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onUpdate('comm')}>Update</Button>{' '}

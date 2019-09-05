@@ -4113,6 +4113,15 @@ class BookingPage extends Component {
                                 value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) ? commFormInputs['due_date_time'] : null}
                             />
                         </label>
+                        <label>
+                            <p>Closed?</p>
+                            <input
+                                className="form-control"
+                                type="checkbox"
+                                name="closed"
+                                checked = {commFormInputs['closed']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onSubmitComm()}>{(commFormMode === 'create') ? 'Create' : 'Update'}</Button>{' '}
