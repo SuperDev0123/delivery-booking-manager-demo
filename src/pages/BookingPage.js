@@ -2897,7 +2897,7 @@ class BookingPage extends Component {
                                                     className="show-mode" 
                                                     id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
                                                     name="inv_billing_status_note" 
-                                                    value={(parseInt(curViewMode) === 1) ? clientname : formInputs['inv_billing_status_note']} 
+                                                    value={(parseInt(curViewMode) === 1 && clientname === 'dme') ? formInputs['inv_billing_status_note'] : ''} 
                                                     onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
                                                     rows="4" 
                                                     cols="83"
@@ -2928,7 +2928,7 @@ class BookingPage extends Component {
                                                         className="show-mode" 
                                                         id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         name="dme_status_linked_reference_from_fp" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_history_notes']} 
+                                                        value={(parseInt(curViewMode) === 1 && clientname === 'dme') ? formInputs['dme_status_history_notes'] : ''} 
                                                         onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
                                                         rows="4" 
                                                         cols="83"
