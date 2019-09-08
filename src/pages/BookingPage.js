@@ -58,6 +58,7 @@ class BookingPage extends Component {
                 additional_action_task: '',
                 notes_type: 'Call',
                 dme_notes: '',
+                closed: false,
             },
             selected: 'dme',
             booking: {},
@@ -1448,6 +1449,7 @@ class BookingPage extends Component {
             additional_action_task: '',
             notes_type: 'Call',
             dme_notes: '',
+            closed: false,
         }});
     }
 
@@ -1685,11 +1687,14 @@ class BookingPage extends Component {
         if (parseInt(e.target.value) !== 2 && isBookingModified) {
             alert('You can lose modified booking info. Please update it');
         } else {
-            if (parseInt(e.target.value) === 1) {
+            if (this.state.curViewMode === 2 && parseInt(e.target.value) === 1) {
+                alert('Please update current changes');
+            } else if (this.state.curViewMode !== 2 && parseInt(e.target.value) === 1) {
                 this.showCreateView();
+                this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
+            } else if (this.state.curViewMode !== 1) {
+                this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
             }
-            
-            this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
         }
     }
 
