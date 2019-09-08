@@ -503,6 +503,7 @@ class BookingPage extends Component {
         if (!_.isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
+            this.setState({loading: false, loadingSave: false, loadingUpdate: false});
         }
 
         if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
@@ -1675,26 +1676,38 @@ class BookingPage extends Component {
         const {isBookingModified} = this.state;
 
         if (isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
+            this.notify('You can lose modified booking info. Please update it');
         } else {
             this.props.history.push('/allbookings');
         }
     }
 
     onChangeViewMode(e) {
-        const {isBookingModified} = this.state;
+        const { curViewMode, isBookingModified } = this.state;
+        let newViewMode = parseInt(e.target.value);
 
-        if (parseInt(e.target.value) !== 2 && isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
-        } else {
-            if (this.state.curViewMode === 2 && parseInt(e.target.value) === 1) {
-                alert('Please update current changes');
-            } else if (this.state.curViewMode !== 2 && parseInt(e.target.value) === 1) {
-                this.showCreateView();
-                this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
-            } else if (this.state.curViewMode !== 1) {
-                this.setState({curViewMode: e.target.value, isBookingModified: false}, () => this.afterSetState(1));
-            }
+        if (newViewMode !== 0 && isBookingModified) { // -> Create or Update
+            this.notify('You can lose modified booking info. Please update it');
+        } else if (curViewMode === 1 && newViewMode === 2) { // Create -> Update
+            this.notify('You can only change to `View` mode from `New From`.');
+        } else if (newViewMode === 1) { // -> Create
+            this.showCreateView();
+            this.setState({
+                curViewMode: newViewMode,
+                isBookingModified: false
+            }, () => this.afterSetState(1)); // Reload GEO info
+        } else if (curViewMode === 1 && newViewMode === 0) { // Create -> View
+            this.props.getBooking();
+            this.setState({
+                curViewMode: newViewMode,
+                isBookingModified: false,
+                loading: true
+            }, () => this.afterSetState(1)); // Reload GEO info
+        } else if (curViewMode === 0 && newViewMode === 2) { // View -> Update
+            this.setState({
+                curViewMode: newViewMode,
+                isBookingModified: false
+            }, () => this.afterSetState(1)); // Reload GEO info
         }
     }
 

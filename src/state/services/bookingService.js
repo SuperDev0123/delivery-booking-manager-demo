@@ -135,6 +135,10 @@ export const simpleSearch = (keyword) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
+/*
+ * Service function which retrieve a Booking
+ * if `filter` === null, it will retrieve latest Booking for current User.
+ */
 export const getBooking = (id=null, filter=null) => {
     const token = localStorage.getItem('token');
     const options = {
