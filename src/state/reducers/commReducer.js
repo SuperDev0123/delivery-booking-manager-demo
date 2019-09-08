@@ -40,10 +40,6 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 errorMessage: errorMessage 
             };
         case SUCCESS_UPDATE_COMM:
-            return { 
-                ...state, 
-                comm: comm,
-            };
         case SUCCESS_DELETE_COMM:
             return { 
                 ...state, 
