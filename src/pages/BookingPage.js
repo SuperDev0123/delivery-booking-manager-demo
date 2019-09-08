@@ -1716,7 +1716,7 @@ class BookingPage extends Component {
                 formInputs: {
                     pu_Address_Country: 'AU',
                     de_To_Address_Country: 'AU',
-                }, 
+                },
             });
         }
     }
@@ -2491,7 +2491,7 @@ class BookingPage extends Component {
                                                         type="text" 
                                                         placeholder="" 
                                                         name="b_client_name_sub" 
-                                                        value = {formInputs['b_client_name_sub']}
+                                                        value = {formInputs['b_client_name_sub'] ? formInputs['b_client_name_sub'] : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
@@ -2532,7 +2532,7 @@ class BookingPage extends Component {
                                                         type="text" 
                                                         placeholder="New Status Detail"
                                                         name="new_dme_status_detail" 
-                                                        value = {formInputs['new_dme_status_detail']}
+                                                        value = {formInputs['new_dme_status_detail'] ? formInputs['new_dme_status_detail'] : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                                 </div>
@@ -2575,7 +2575,7 @@ class BookingPage extends Component {
                                                         type="text" 
                                                         placeholder="New Status Action"
                                                         name="new_dme_status_action" 
-                                                        value = {formInputs['new_dme_status_action']}
+                                                        value = {formInputs['new_dme_status_action'] ? formInputs['new_dme_status_action'] : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                                 </div>
@@ -2603,7 +2603,7 @@ class BookingPage extends Component {
                                                 className="form-control"
                                                 disabled="disabled"
                                                 type="text"
-                                                value={formInputs['b_clientPU_Warehouse']}
+                                                value={formInputs['b_clientPU_Warehouse'] ? formInputs['b_clientPU_Warehouse'] : ''}
                                             />
                                         </div>
                                         <div className="col-sm-2 form-group">
@@ -2623,7 +2623,7 @@ class BookingPage extends Component {
                                                         type="text" 
                                                         placeholder="Linked Reference" 
                                                         name="dme_status_linked_reference_from_fp" 
-                                                        value={(parseInt(curViewMode) === 1) ? clientname : formInputs['dme_status_linked_reference_from_fp']} 
+                                                        value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
                                                         onChange={(e) => this.onHandleInput(e)}/>
                                             }
                                             {
@@ -2643,7 +2643,7 @@ class BookingPage extends Component {
                                                         className="form-control" 
                                                         type="text"
                                                         name="b_client_sales_inv_num"
-                                                        value = {formInputs['b_client_sales_inv_num']}
+                                                        value = {formInputs['b_client_sales_inv_num'] ? formInputs['b_client_sales_inv_num'] : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
@@ -2658,7 +2658,7 @@ class BookingPage extends Component {
                                                         className="form-control" 
                                                         type="text"
                                                         name="b_client_order_num"
-                                                        value = {formInputs['b_client_order_num']}
+                                                        value = {formInputs['b_client_order_num'] ? formInputs['b_client_order_num'] : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
@@ -2677,7 +2677,7 @@ class BookingPage extends Component {
                                                             type="text" 
                                                             placeholder="" 
                                                             name="v_FPBookingNumber" 
-                                                            value = {formInputs['v_FPBookingNumber']}
+                                                            value = {formInputs['v_FPBookingNumber'] ? formInputs['v_FPBookingNumber'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2711,7 +2711,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text"
                                                             name="vx_serviceName" 
-                                                            value = {formInputs['vx_serviceName']}
+                                                            value = {formInputs['vx_serviceName'] ? formInputs['vx_serviceName'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2728,7 +2728,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="v_service_Type_2" 
-                                                            value = {formInputs['v_service_Type_2']}
+                                                            value = {formInputs['v_service_Type_2'] ? formInputs['v_service_Type_2'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2745,7 +2745,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="fk_fp_pickup_id" 
-                                                            value = {formInputs['fk_fp_pickup_id']}
+                                                            value = {formInputs['fk_fp_pickup_id'] ? formInputs['fk_fp_pickup_id'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2762,7 +2762,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="v_vehicle_Type" 
-                                                            value = {formInputs['v_vehicle_Type']}
+                                                            value = {formInputs['v_vehicle_Type'] ? formInputs['v_vehicle_Type'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2798,7 +2798,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="fp_invoice_no" 
-                                                            value = {formInputs['fp_invoice_no']}
+                                                            value = {formInputs['fp_invoice_no'] ? formInputs['fp_invoice_no'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2815,7 +2815,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_cost_quoted" 
-                                                            value = {formInputs['inv_cost_quoted']}
+                                                            value = {formInputs['inv_cost_quoted'] ? formInputs['inv_cost_quoted'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -2833,7 +2833,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_cost_actual" 
-                                                            value = {formInputs['inv_cost_actual']}
+                                                            value = {formInputs['inv_cost_actual'] ?  formInputs['inv_cost_actual'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -2851,7 +2851,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_sell_quoted" 
-                                                            value = {formInputs['inv_sell_quoted']}
+                                                            value = {formInputs['inv_sell_quoted'] ? formInputs['inv_sell_quoted'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -2869,7 +2869,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_sell_actual" 
-                                                            value = {formInputs['inv_sell_actual']}
+                                                            value = {formInputs['inv_sell_actual'] ? formInputs['inv_sell_actual'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -2887,7 +2887,7 @@ class BookingPage extends Component {
                                                             className="form-control" 
                                                             type="text" 
                                                             name="inv_dme_invoice_no" 
-                                                            value = {formInputs['inv_dme_invoice_no']}
+                                                            value = {formInputs['inv_dme_invoice_no'] ? formInputs['inv_dme_invoice_no'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -2902,7 +2902,7 @@ class BookingPage extends Component {
                                                     className="show-mode" 
                                                     id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
                                                     name="inv_billing_status_note" 
-                                                    value={(clientname === 'dme') ? formInputs['inv_billing_status_note'] : ''} 
+                                                    value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
                                                     onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
                                                     rows="4" 
                                                     cols="83"
@@ -2933,7 +2933,7 @@ class BookingPage extends Component {
                                                         className="show-mode" 
                                                         id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         name="dme_status_linked_reference_from_fp" 
-                                                        value={(clientname === 'dme') ? formInputs['dme_status_history_notes'] : ''} 
+                                                        value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
                                                         onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
                                                         rows="4" 
                                                         cols="83"
@@ -4224,7 +4224,7 @@ class BookingPage extends Component {
                     toggleShowStatusNoteModal={this.toggleShowStatusNoteModal}
                     onUpdate={(note) => this.onUpdateStatusNote(note)}
                     onClear={() => this.onClearStatusNote()}
-                    note={booking[currentNoteModalField]}
+                    note={formInputs[currentNoteModalField]}
                     fieldName={currentNoteModalField}
                     isEditable={(curViewMode===0) ? false : true}
                 />
