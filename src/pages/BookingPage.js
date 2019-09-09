@@ -71,8 +71,9 @@ class BookingPage extends Component {
             loadingGeoDeTo: false,
             loadingBookingLine: false,
             loadingBookingLineDetail: false,
-            loadingSave: false,
-            loadingUpdate: false,
+            loadingBookingSave: false,
+            loadingBookingUpdate: false,
+            loadingComm: false,
             products: [],
             bookingLinesListProduct: [],
             bookingLineDetailsProduct: [],
@@ -352,7 +353,7 @@ class BookingPage extends Component {
                 comm['index'] = index + 1;
                 return comm;
             });
-            this.setState({comms: newComms, cntComms});
+            this.setState({comms: newComms, cntComms, loadingComm: false});
         }
 
         if (notes) {
@@ -360,6 +361,7 @@ class BookingPage extends Component {
         }
 
         if (needUpdateComms && booking) {
+            this.setState({loadingComm: true});
             this.props.getComms(booking.id);
         }
 
@@ -412,7 +414,7 @@ class BookingPage extends Component {
             let formInputs = this.state.formInputs;
             currentBooking.x_manual_booked_flag = !formInputs['x_manual_booked_flag'];
             formInputs['x_manual_booked_flag'] = !formInputs['x_manual_booked_flag'];
-            this.setState({booking: currentBooking, formInputs, loadingUpdate: false});
+            this.setState({booking: currentBooking, formInputs, loadingBookingUpdate: false});
         }
 
         if (bookingLines) {
@@ -503,7 +505,7 @@ class BookingPage extends Component {
         if (!_.isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
-            this.setState({loading: false, loadingSave: false, loadingUpdate: false});
+            this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
         }
 
         if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
@@ -649,13 +651,13 @@ class BookingPage extends Component {
 
         if (
             (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
-            || (booking && this.state.loadingSave && parseInt(this.state.curViewMode) === 1)
-            || (booking && this.state.loadingUpdate && parseInt(this.state.curViewMode) === 2)
+            || (booking && this.state.loadingBookingSave && parseInt(this.state.curViewMode) === 1)
+            || (booking && this.state.loadingBookingUpdate && parseInt(this.state.curViewMode) === 2)
         ) {
             if (booking.b_bookingID_Visual) {
-                if (this.state.loadingSave && _.isEmpty(bookingErrorMessage)) {
+                if (this.state.loadingBookingSave && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is saved!');
-                } else if (this.state.loadingUpdate && _.isEmpty(bookingErrorMessage)) {
+                } else if (this.state.loadingBookingUpdate && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 } 
                 // else {
@@ -669,10 +671,10 @@ class BookingPage extends Component {
                 }
 
                 if (
-                    (this.state.loading || this.state.loadingSave || this.state.loadingUpdate) 
+                    (this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate) 
                     && booking.pk_booking_id
                 ) {
-                    this.setState({loading: false, loadingSave: false, loadingUpdate: false}, () => this.afterSetState(0, booking));
+                    this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
                 let formInputs = this.state.formInputs;
@@ -1136,7 +1138,7 @@ class BookingPage extends Component {
             this.notify('Need to tick `Manual Booking` first');
         } else {
             this.props.manualBook(booking.id);
-            this.setState({loadingUpdate: true, curViewMode: 2});
+            this.setState({loadingBookingUpdate: true, curViewMode: 2});
         }
         // const st_name = 'startrack';
         // const allied_name = 'allied';
@@ -1407,7 +1409,7 @@ class BookingPage extends Component {
 
             if (clientname === 'dme') {
                 this.props.tickManualBook(booking.id);
-                this.setState({loadingUpdate: true, curViewMode: 2});
+                this.setState({loadingBookingUpdate: true, curViewMode: 2});
             } else {
                 alert('Only `DME` role users can use this feature');
             }
@@ -1816,7 +1818,7 @@ class BookingPage extends Component {
             const res = isFormValid('booking', formInputs);
             if (res === 'valid') {
                 this.props.saveBooking(formInputs);
-                this.setState({loadingSave: true});
+                this.setState({loadingBookingSave: true});
             } else {
                 this.notify(res);
             }
@@ -1874,7 +1876,7 @@ class BookingPage extends Component {
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
                     this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-                    this.setState({loadingUpdate: true, isBookingModified: false});
+                    this.setState({loadingBookingUpdate: true, isBookingModified: false});
                 } else {
                     this.notify(res);
                 }
@@ -2413,7 +2415,7 @@ class BookingPage extends Component {
                 </div>
 
                 <LoadingOverlay
-                    active={this.state.loading || this.state.loadingSave || this.state.loadingUpdate}
+                    active={this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate}
                     spinner
                     text='Loading...'
                 >
@@ -3921,14 +3923,20 @@ class BookingPage extends Component {
                                             <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Create a comm">
                                                 <i className="icon icon-plus"></i>
                                             </button>
-                                            <div className="tab-inner">
-                                                <BootstrapTable
-                                                    keyField="id"
-                                                    data={ comms }
-                                                    columns={ columnCommunication }
-                                                    bootstrap4={ true }
-                                                />
-                                            </div>
+                                            <LoadingOverlay
+                                                active={this.state.loadingComm}
+                                                spinner
+                                                text='Loading Communications...'
+                                            >
+                                                <div className="tab-inner">
+                                                    <BootstrapTable
+                                                        keyField="id"
+                                                        data={ comms }
+                                                        columns={ columnCommunication }
+                                                        bootstrap4={ true }
+                                                    />
+                                                </div>
+                                            </LoadingOverlay>
                                         </div>
                                         <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
