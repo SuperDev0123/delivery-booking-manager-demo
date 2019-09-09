@@ -1323,7 +1323,7 @@ class BookingPage extends Component {
             const {switchInfo, dupLineAndLineDetail} = this.state;
             this.props.duplicateBooking(booking.id, switchInfo, dupLineAndLineDetail);
             this.toggleDuplicateBookingOptionsModal();
-            this.setState({switchInfo: false, dupLineAndLineDetail: false});
+            this.setState({switchInfo: false, dupLineAndLineDetail: false, loading: true, curViewMode: 0});
         }
     }
 
