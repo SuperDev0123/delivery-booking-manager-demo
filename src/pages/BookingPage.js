@@ -1134,25 +1134,25 @@ class BookingPage extends Component {
     onClickBook() {
         const { booking } = this.state;
 
-        if (!booking.x_manual_booked_flag) {
-            this.notify('Need to tick `Manual Booking` first');
-        } else {
+        if (isBookedBooking) {
+            this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
+        } else if (!booking.x_manual_booked_flag) {  // Not manual booking
+            const st_name = 'startrack';
+            const allied_name = 'allied';
+            if (booking.id && (booking.id != undefined)) {
+                this.setState({ loading: true, curViewMode: 0});
+                if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
+                    this.props.stBooking(booking.id);
+                } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
+                    this.props.alliedBooking(booking.id);
+                }
+            } else {
+                alert('Please Find any booking and then click this!');
+            }
+        } else { // Manual booking
             this.props.manualBook(booking.id);
             this.setState({loadingBookingUpdate: true, curViewMode: 2});
         }
-        // const st_name = 'startrack';
-        // const allied_name = 'allied';
-        // if (booking.id && (booking.id != undefined)) {
-        //     this.setState({ loading: true, curViewMode: 0});
-        //     if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
-        //         this.props.stBooking(booking.id);
-        //     } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
-        //         this.props.alliedBooking(booking.id);
-        //     }
-        // } else {
-        //     alert('Please Find any booking and then click this!');
-        // }
-
     }
 
     onKeyPress(e) {
