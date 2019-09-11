@@ -1132,7 +1132,7 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const { booking } = this.state;
+        const { booking, isBookedBooking, clientname } = this.state;
 
         if (isBookedBooking) {
             this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
