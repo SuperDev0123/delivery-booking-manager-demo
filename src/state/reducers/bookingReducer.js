@@ -25,7 +25,7 @@ const defaultState = {
     simpleSearchKeyword: '',
     downloadOption: 'label',
     multiFindField: null,
-    multiFindValues: [],
+    multiFindValues: '',
     noBooking: null,
     needUpdateBookingLines: false,
     isTickedManualBook: null,

@@ -60,7 +60,7 @@ export const getBookings = (
     downloadOption='label',
     dmeStatus='',
     multiFindField=null,
-    multiFindValues=[],
+    multiFindValues='',
 ) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -107,7 +107,7 @@ export const setAllGetBookingsFilter = (
     downloadOption='label',
     dmeStatus='',
     multiFindField=null,
-    multiFindValues=[],
+    multiFindValues='',
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
