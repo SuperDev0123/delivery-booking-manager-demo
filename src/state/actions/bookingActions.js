@@ -65,7 +65,7 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus) {
+export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
@@ -79,6 +79,8 @@ export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, ite
         downloadOption: downloadOption,
         clientPK: clientPK,
         dmeStatus: dmeStatus,
+        multiFindField: multiFindField,
+        multiFindValues: multiFindValues,
     };
 }
 

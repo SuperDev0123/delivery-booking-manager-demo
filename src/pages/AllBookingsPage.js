@@ -33,6 +33,7 @@ import XLSModal from '../components/CommonModals/XLSModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import CheckPodModal from '../components/CommonModals/CheckPodModal';
 import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
+import FindModal from '../components/CommonModals/FindModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -93,6 +94,7 @@ class AllBookingsPage extends React.Component {
             dmeStatus: null,
             isShowCheckPodModal: false,
             isShowStatusInfoSlider: false,
+            isShowFindModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -103,6 +105,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
         this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
+        this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -184,7 +187,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -211,13 +214,29 @@ class AllBookingsPage extends React.Component {
                         downloadOption,
                         clientPK,
                         dmeStatus,
+                        multiFindField,
+                        multiFindValues,
                     },
                     hasSuccessSearchAndFilterOptions: true,
                 });
             } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
                 alert('Your search/filter has returned 0 records - Returning to your last found set.');
 
-                this.props.setAllGetBookingsFilter(successSearchFilterOptions.startDate, successSearchFilterOptions.endDate, successSearchFilterOptions.clientPK, successSearchFilterOptions.warehouseId, successSearchFilterOptions.itemCountPerPage, successSearchFilterOptions.sortField, successSearchFilterOptions.columnFilters, successSearchFilterOptions.prefilterInd, successSearchFilterOptions.simpleSearchKeyword, successSearchFilterOptions.downloadOption, successSearchFilterOptions.dmeStatus);
+                this.props.setAllGetBookingsFilter(
+                    successSearchFilterOptions.startDate,
+                    successSearchFilterOptions.endDate,
+                    successSearchFilterOptions.clientPK,
+                    successSearchFilterOptions.warehouseId,
+                    successSearchFilterOptions.itemCountPerPage,
+                    successSearchFilterOptions.sortField,
+                    successSearchFilterOptions.columnFilters,
+                    successSearchFilterOptions.prefilterInd,
+                    successSearchFilterOptions.simpleSearchKeyword,
+                    successSearchFilterOptions.downloadOption,
+                    successSearchFilterOptions.dmeStatus,
+                    successSearchFilterOptions.multiFindField,
+                    successSearchFilterOptions.multiFindValues
+                );
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
             }
         }
@@ -317,7 +336,7 @@ class AllBookingsPage extends React.Component {
                 dmeStatus,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues);
         } else {
             this.setState({loading: false});
         }
@@ -599,7 +618,11 @@ class AllBookingsPage extends React.Component {
 
     toggleShowStatusInfoSlider() {
         this.setState(prevState => ({isShowStatusInfoSlider: !prevState.isShowStatusInfoSlider})); 
-    }    
+    }
+
+    toggleShowFindModal() {
+        this.setState(prevState => ({isShowFindModal: !prevState.isShowFindModal})); 
+    }
 
     onCheck(e, id) {
         if (!e.target.checked) {
@@ -921,6 +944,12 @@ class AllBookingsPage extends React.Component {
         }
 
         this.setState({selectedBookingIds: [], checkedAll: false});
+    }
+
+    onMultiFind(FieldName, valueSet) {
+        const today = moment().format('YYYY-MM-DD');
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
+        this.setState({activeTabInd: 0, selectedBookingIds: [], checkedAll: false});
     }
 
     onClickTab(activeTabInd) {
@@ -1856,6 +1885,9 @@ class AllBookingsPage extends React.Component {
                                     </div>
                                 }
                             </div>
+                            <a onClick={() => this.toggleShowFindModal()}>
+                                <i className="fa fa-search-plus" aria-hidden="true"></i>
+                            </a>
                             <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
                                 <i className="icon icon-th-list" aria-hidden="true"></i>
                             </div>
@@ -2543,6 +2575,12 @@ class AllBookingsPage extends React.Component {
                     endDate={endDate}
                 />
 
+                <FindModal
+                    isOpen={this.state.isShowFindModal}
+                    toggleShowFindModal={this.toggleShowFindModal}
+                    onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -2573,6 +2611,8 @@ const mapStateToProps = (state) => {
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
         downloadOption: state.booking.downloadOption,
         dmeStatus: state.booking.dmeStatus,
+        multiFindField: state.booking.multiFindField,
+        multiFindValues: state.booking.multiFindValues,
         errorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
@@ -2586,9 +2626,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),

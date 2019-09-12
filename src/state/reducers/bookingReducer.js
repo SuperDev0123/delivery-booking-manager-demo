@@ -24,12 +24,14 @@ const defaultState = {
     prefilterInd: 0,
     simpleSearchKeyword: '',
     downloadOption: 'label',
+    multiFindField: null,
+    multiFindValues: [],
     noBooking: null,
     needUpdateBookingLines: false,
     isTickedManualBook: null,
 };
 
-export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, qtyTotal, cntComms, cntAttachments, dmeStatus }) => {
+export const BookingReducer = (state = defaultState, { payload, noBooking, attachments, type, errorMessage, bBooking, bookings, bookingsCnt, booking, mappedBookings, userDateFilterField, nextBookingId, prevBookingId, toManifest, errorsToCorrect, toProcess, closed, missingLabels, startDate, endDate, warehouseId, sortField, columnFilters, prefilterInd, simpleSearchKeyword, needUpdateBookings, puStates, puPostalCodes, puSuburbs, deToStates, deToPostalCodes, deToSuburbs, downloadOption, clientPK, qtyTotal, cntComms, cntAttachments, dmeStatus, multiFindField, multiFindValues }) => {
     switch (type) {
         case RESET_TICK_MANUAL_BOOK:
             return {
@@ -212,6 +214,8 @@ export const BookingReducer = (state = defaultState, { payload, noBooking, attac
                 clientPK: clientPK,
                 bookings: [],
                 dmeStatus: dmeStatus,
+                multiFindField: multiFindField,
+                multiFindValues: multiFindValues,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SELECTEDATE:

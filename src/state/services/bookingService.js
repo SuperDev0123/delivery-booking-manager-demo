@@ -58,7 +58,9 @@ export const getBookings = (
     prefilterInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
-    dmeStatus=''
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues=[],
 ) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -77,6 +79,8 @@ export const getBookings = (
             simpleSearchKeyword: simpleSearchKeyword,
             downloadOption: downloadOption,
             dmeStatus: dmeStatus,
+            multiFindField: multiFindField,
+            multiFindValues: multiFindValues,
         }
     };
     return dispatch => {
@@ -101,7 +105,9 @@ export const setAllGetBookingsFilter = (
     prefilterInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
-    dmeStatus=''
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues=[],
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
@@ -114,7 +120,9 @@ export const setAllGetBookingsFilter = (
         prefilterInd,
         simpleSearchKeyword,
         downloadOption,
-        dmeStatus
+        dmeStatus,
+        multiFindField,
+        multiFindValues,
     ));
 };
 
