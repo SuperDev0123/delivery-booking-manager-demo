@@ -1,6 +1,6 @@
-import { RESET_TICK_MANUAL_BOOK, RESET_ATTACHMENTS, RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, GENERATE_XLS_SUCCESS, GENERATE_XLS_FAILED, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_DMESTATUS, SUCCESS_TICK_MANUAL_BOOK, FAILED_TICK_MANUAL_BOOK, SUCCESS_MANUAL_BOOK, FAILED_MANUAL_BOOK } from '../constants/bookingConstants';
+import { RESET_TICK_MANUAL_BOOK, RESET_ATTACHMENTS, RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_PREFILTERIND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, GENERATE_XLS_SUCCESS, GENERATE_XLS_FAILED, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_DMESTATUS, SUCCESS_TICK_MANUAL_BOOK, FAILED_TICK_MANUAL_BOOK, SUCCESS_MANUAL_BOOK, FAILED_MANUAL_BOOK, BOOK_EDIT_SUCCESS, BOOK_EDIT_FAILED, SUCCESS_CREATE_ORDER, FAILED_CREATE_ORDER, SUCCESS_GET_ORDER_SUMMARY, FAILED_GET_ORDER_SUMMARY } from '../constants/bookingConstants';
 
-import { getAlliedLabel, getSTLabel } from '../services/bookingService';
+import { getAlliedLabel } from '../services/bookingService';
 
 export function successGetBookings(data) {
     return {
@@ -295,65 +295,110 @@ export function failedAlliedBook(error) {
 }
 
 export function successStBook(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book STARTRACK: ' + data[0]['Error']);
-    } else {
-        alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
-        getSTLabel(data[0]['Created Booking ID']);
-    }
+    alert(data.message + ', Now trying to get Label');
 
     return {
         type: BOOK_SUCCESS,
-        errorMessage: 'Book success'
+        errorMessage: data.message
     };
 }
 
 export function failedStBook(error) {
-    alert('Failed book STARTRACK: ' + error);
-    console.log('Failed book STARTRACK: ' + error);
+    alert('Failed STARTRACK Book: ' + error.response.data.message);
+
     return {
         type: BOOK_FAILED,
-        errorMessage: 'Book failed'
+        errorMessage: error.response.data.message
     };
 }
 
 export function successGetLabel(data) {
-    if (data[0].hasOwnProperty('Created label url'))
-        alert('Successfully get label: ' + data[0]['Created label url']);
-    else if (data[0].hasOwnProperty('Created label ID'))
-        alert('Successfully get label: ' + data[0]['Created label ID']);
-    else
-        alert('Failed get label: ' + data[0]['Error']);
+    alert(data.message);
 
     return {
         type: GET_LABEL_SUCCESS,
-        errorMessage: 'GetLable success'
+        errorMessage: data.message
     };
 }
 
 export function failedGetLabel(error) {
-    alert('Failed get label: ' + error);
+    alert('Failed ST get Label: ' + error.response.data.message);
+
     return {
         type: GET_LABEL_FAILED,
-        errorMessage: 'GetLable failed'
+        errorMessage: error.response.data
     };
 }
 
 export function successCancelBook(data) {
-    alert('Successfully cancel book: ' + data[0]['message']);
+    alert(data['message']);
 
     return {
         type: BOOK_CANCEL_SUCCESS,
-        errorMessage: data[0]['message'],
+        errorMessage: data['message'],
     };
 }
 
 export function failedCancelBook(error) {
-    alert('Failed cancel book : ' + error);
+    alert(error.response.data.message);
 
     return {
         type: BOOK_CANCEL_FAILED,
-        errorMessage: 'Cancel Book failed'
+        errorMessage: 'Failed to Cancel Book'
+    };
+}
+
+export function successEditBook(data) {
+    alert(data['message']);
+
+    return {
+        type: BOOK_EDIT_SUCCESS,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedEditBook(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: BOOK_EDIT_FAILED,
+        errorMessage: 'Failed to edit book'
+    };
+}
+
+export function successCreateOrder(data) {
+    alert(data['message'] + ', Now trying to get OrderSummary');
+
+    return {
+        type: SUCCESS_CREATE_ORDER,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedCreatedOrder(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_CREATE_ORDER,
+        errorMessage: 'Failed to create order'
+    };
+}
+
+export function successGetOrderSummary(data) {
+    alert(data['message']);
+
+    return {
+        type: SUCCESS_GET_ORDER_SUMMARY,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedGetOrderSummary(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_GET_ORDER_SUMMARY,
+        errorMessage: 'Failed to get order summary'
     };
 }
 

@@ -20,7 +20,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, stOrderSummary } from '../state/services/bookingService';
 import { getBookingLines } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
@@ -95,6 +95,7 @@ class AllBookingsPage extends React.Component {
             isShowCheckPodModal: false,
             isShowStatusInfoSlider: false,
             isShowFindModal: false,
+            selectedBookingIds2Order: [],
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -138,6 +139,8 @@ class AllBookingsPage extends React.Component {
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
+        clearErrorMessage: PropTypes.bool.isRequired,
+        stOrderSummary: PropTypes.bool.isRequired,
     };
 
     componentDidMount() {
@@ -187,7 +190,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -195,6 +198,16 @@ class AllBookingsPage extends React.Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (!_.isEmpty(bookingErrorMessage)) {
+            this.notify(bookingErrorMessage);
+            this.props.clearErrorMessage();
+
+            if (bookingErrorMessage.indexOf('Successfully create order') !== -1) {
+                this.props.stOrderSummary(this.state.selectedBookingIds2Order);
+                this.setState({selectedBookingIds2Order: []});
+            }
         }
 
         if (bookings) {
@@ -994,8 +1007,8 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickSTOrder() {
-        this.props.stOrder();
-        this.setState({selectedBookingIds: [], checkedAll: false});
+        this.props.stOrder(this.state.selectedBookingIds);
+        this.setState({selectedBookingIds: [], checkedAll: false, selectedBookingIds2Order: this.state.selectedBookingIds});
     }
 
     onClickDownloadExcel() {
@@ -1418,7 +1431,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1897,7 +1910,7 @@ class AllBookingsPage extends React.Component {
                                     this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
                                         <div className="popuptext1">
-                                            <button className="btn btn-primary none" onClick={() => this.onClickSTOrder()}>ST temp</button>
+                                            <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST Order</button>
                                             <button 
                                                 className="btn btn-primary" 
                                                 onClick={() => this.onClickCalcCollected('Calc')}
@@ -1986,7 +1999,7 @@ class AllBookingsPage extends React.Component {
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
                                             <div className="disp-inline-block">
                                                 <LoadingOverlay
-                                                    active={loadingBooking}
+                                                    active={false}
                                                     spinner={<BarLoader color={'#FFF'} />}
                                                     text=''
                                                 >
@@ -2613,7 +2626,7 @@ const mapStateToProps = (state) => {
         dmeStatus: state.booking.dmeStatus,
         multiFindField: state.booking.multiFindField,
         multiFindValues: state.booking.multiFindValues,
-        errorMessage: state.booking.errorMessage,
+        bookingErrorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
         username: state.auth.username,
@@ -2640,7 +2653,7 @@ const mapDispatchToProps = (dispatch) => {
         stBooking: (bookingId) => dispatch(stBooking(bookingId)),
         getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
         getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
-        stOrder: () => dispatch(stOrder()),
+        stOrder: (bookingIds) => dispatch(stOrder(bookingIds)),
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
@@ -2650,6 +2663,8 @@ const mapDispatchToProps = (dispatch) => {
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
+        clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
+        stOrderSummary: (bookingIds) => dispatch(stOrderSummary(bookingIds)),
     };
 };
 
