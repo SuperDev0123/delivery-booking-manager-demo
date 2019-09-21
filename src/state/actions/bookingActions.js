@@ -326,7 +326,7 @@ export function failedGetLabel(error) {
 
     return {
         type: GET_LABEL_FAILED,
-        errorMessage: error.response.data
+        errorMessage: error.response.data.message
     };
 }
 
