@@ -50,6 +50,9 @@ import {
     failedCreateOrder,
     successGetOrderSummary,
     failedGetOrderSummary,
+    resetManifestReport,
+    successGetManifestReport,
+    failedGetManifestReport,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -524,4 +527,20 @@ export const setFetchGeoInfoFlag = (boolFlag) => {
 
 export const clearErrorMessage = () => {
     return dispatch => dispatch(clearErrorMessageAction());
+};
+
+export const getManifestReport = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_report/`,
+    };
+
+    return dispatch => {
+        dispatch(resetManifestReport());
+        axios(options)
+            .then(({ data }) => dispatch(successGetManifestReport(data)))
+            .catch((error) => dispatch(failedGetManifestReport(error)));
+    };
 };

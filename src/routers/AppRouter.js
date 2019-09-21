@@ -13,7 +13,7 @@ import AllBookingsPage from '../pages/AllBookingsPage';
 import UploadPage from '../pages/UploadPage';
 import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
-import ReportPage from '../pages/ReportPage';
+import ReportPage from '../pages/report/ReportPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 
 export const AppRouter = () => (
