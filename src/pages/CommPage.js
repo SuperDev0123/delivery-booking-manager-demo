@@ -45,6 +45,7 @@ class CommPage extends React.Component {
             activeTabInd: 0,
             commCnts: null,
             activeCommId: null,
+            isUpdatingComm: false,
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
@@ -100,7 +101,7 @@ class CommPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, booking, comms, commCnts, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username, sortByDate, activeTabInd, selectedBookingId } = newProps;
+        const { redirect, booking, comm, comms, commCnts, needUpdateComms, sortField, sortType, columnFilters, notes, needUpdateNotes, simpleSearchKeyword, clientname, availableCreators, username, sortByDate, activeTabInd, selectedBookingId } = newProps;
         const { selectedCommId } = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -128,6 +129,18 @@ class CommPage extends React.Component {
 
         if (notes) {
             this.setState({notes});
+        }
+
+        if (comm && this.state.isUpdatingComm) {
+            let currentComms = this.state.comms;
+
+            for (let i = 0; i < currentComms.length; i++) {
+                if (currentComms[i].id === comm.id) {
+                    currentComms[i] = comm;
+                }
+            }
+
+            this.setState({comms: currentComms});
         }
 
         if (needUpdateComms) {
@@ -231,7 +244,7 @@ class CommPage extends React.Component {
             let updatedComms = this.state.comms;
             updatedComms[index].closed = e.target.checked;
             this.props.updateComm(id, updatedComm);
-            this.setState({comms: updatedComms});
+            this.setState({comms: updatedComms, isUpdatingComm: true});
         }
     }
 
@@ -326,12 +339,8 @@ class CommPage extends React.Component {
             let newComm = _.clone(commFormInputs);
             newComm['due_by_date'] = moment(commFormInputs['due_by_date']).format('YYYY-MM-DD');
             this.props.updateComm(selectedCommId, newComm);
+            this.setState({isUpdatingComm: true});
             this.toggleUpdateCommModal();
-        } else if (type === 'note') {
-            const {selectedNoteId, noteFormInputs} = this.state;
-
-            this.props.updateComm(selectedNoteId, noteFormInputs);
-            this.setState({isShowNoteForm: false});
         }
     }
 
@@ -955,6 +964,15 @@ class CommPage extends React.Component {
                                 value={commFormInputs['due_date_time']}
                             />
                         </label>
+                        <label>
+                            <p>Closed?</p>
+                            <input
+                                className="form-control"
+                                type="checkbox"
+                                name="closed"
+                                checked = {commFormInputs['closed']}
+                                onChange={(e) => this.handleCommModalInputChange(e)} />
+                        </label>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="primary" onClick={() => this.onUpdate('comm')}>Update</Button>{' '}
@@ -972,6 +990,7 @@ const mapStateToProps = (state) => {
         booking: state.booking.booking,
         redirect: state.auth.redirect,
         comms: state.comm.comms,
+        comm: state.comm.comm,
         sortField: state.comm.sortField,
         sortType: state.comm.sortType,
         simpleSearchKeyword: state.comm.simpleSearchKeyword,

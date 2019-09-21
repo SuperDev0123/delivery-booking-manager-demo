@@ -1,6 +1,56 @@
 import axios from 'axios';
 
-import { resetAttachments, resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction, clearErrorMessageAction, successManualBook, failedManualBook } from '../actions/bookingActions';
+import {
+    resetTickManualBook,
+    resetAttachments,
+    resetBooking,
+    successGetAttachments,
+    failedGetAttachments,
+    successGetBookings,
+    failedGetBookings,
+    successGetSuburbs,
+    failedGetSuburbs,
+    successDeliveryGetSuburbs,
+    failedDeliveryGetSuburbs,
+    successGetBooking,
+    failedUpdateBooking,
+    setMappedBok1ToBooking,
+    setUserDateFilterField,
+    failedGetUserDateFilterField,
+    successAlliedBook,
+    failedAlliedBook,
+    successStBook,
+    failedStBook,
+    successGetLabel,
+    failedGetLabel,
+    setAllLocalFilter,
+    setLocalFilter,
+    setNeedUpdateBookingsFlag,
+    successUpdateBooking,
+    successDuplicateBooking,
+    successCancelBook,
+    failedCancelBook,
+    successCreateBooking,
+    failedCreateBooking,
+    successGenerateXLS,
+    failedGenerateXLS,
+    successChangeBookingsStatus,
+    failedChangeBookingsStatus,
+    successCalcCollected,
+    failedCalcCollected,
+    setFetchGeoInfoFlagAction,
+    clearErrorMessageAction,
+    successTickManualBook,
+    failedTickManualBook,
+    successManualBook,
+    failedManualBook,
+    successEditBook,
+    failedEditBook,
+    successCreateOrder,
+    failedCreateOrder,
+    successGetOrderSummary,
+    failedGetOrderSummary,
+} from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = (
@@ -14,7 +64,9 @@ export const getBookings = (
     prefilterInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
-    dmeStatus=''
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues='',
 ) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -33,6 +85,8 @@ export const getBookings = (
             simpleSearchKeyword: simpleSearchKeyword,
             downloadOption: downloadOption,
             dmeStatus: dmeStatus,
+            multiFindField: multiFindField,
+            multiFindValues: multiFindValues,
         }
     };
     return dispatch => {
@@ -57,7 +111,9 @@ export const setAllGetBookingsFilter = (
     prefilterInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
-    dmeStatus=''
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues='',
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
@@ -70,7 +126,9 @@ export const setAllGetBookingsFilter = (
         prefilterInd,
         simpleSearchKeyword,
         downloadOption,
-        dmeStatus
+        dmeStatus,
+        multiFindField,
+        multiFindValues,
     ));
 };
 
@@ -91,6 +149,10 @@ export const simpleSearch = (keyword) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
+/*
+ * Service function which retrieve a Booking
+ * if `filter` === null, it will retrieve latest Booking for current User.
+ */
 export const getBooking = (id=null, filter=null) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -121,6 +183,23 @@ export const manualBook = (id) => {
         axios(options)
             .then(({ data }) => dispatch(successManualBook(data)))
             .catch((error) => dispatch(failedManualBook(error)));
+    };
+};
+
+export const tickManualBook = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/tick_manual_book/`,
+        data: {'id': id},
+    };
+
+    return dispatch => {
+        dispatch(resetTickManualBook());
+        axios(options)
+            .then(({ data }) => dispatch(successTickManualBook(data)))
+            .catch((error) => dispatch(failedTickManualBook(error)));
     };
 };
 
@@ -229,7 +308,7 @@ export const stBooking = (bookingId) => {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_st/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_book/`
     };
     return dispatch =>
         axios(options)
@@ -251,14 +330,15 @@ export const getAlliedLabel = (bookingId) => {
             .catch((error) => dispatch(failedGetLabel(error)));
 };
 
-export const getSTLabel = (bookingId) => {
+export const stLabel = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_st/`
+        data: {'bookingId': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_get_label/`
     };
+
     return dispatch =>
         axios(options)
             .then(({data}) => dispatch(successGetLabel(data)))
@@ -291,17 +371,32 @@ export const getUserDateFilterField = () => {
             .catch((error) => dispatch(failedGetUserDateFilterField(error)));
 };
 
-export const stOrder = () => {
+export const stOrder = (bookingIds) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_create_order/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_create_order/`,
+        data: {bookingIds}
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(console.log('@1 - After ST order', data)))
-            .catch((error) => dispatch(console.log('@2 - Failed ST order', error)));
+            .then(({ data }) => dispatch(successCreateOrder(data)))
+            .catch((error) => dispatch(failedCreateOrder(error)));
+};
+
+export const stOrderSummary = (bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_order_summary/`,
+        data: {bookingIds}
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetOrderSummary(data)))
+            .catch((error) => dispatch(failedGetOrderSummary(error)));
 };
 
 export const getExcel = () => {
@@ -317,18 +412,32 @@ export const getExcel = () => {
             .catch((error) => dispatch(console.log('@2 - Failed getExcel', error)));
 };
 
-export const cancelBook = (bookingId) => {
+export const stCancelBook = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/cancel_booking/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_cancel_book/`
     };
     return dispatch =>
         axios(options)
             .then(({data}) => dispatch(successCancelBook(data)))
             .catch((error) => dispatch(failedCancelBook(error)));
+};
+
+export const stEditBook = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/st_edit_book/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successEditBook(data)))
+            .catch((error) => dispatch(failedEditBook(error)));
 };
 
 export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) => {
@@ -338,10 +447,12 @@ export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) =>
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/booking/duplicate_booking/?bookingId=` + bookingId + '&switchInfo=' + switchInfo + '&dupLineAndLineDetail=' + dupLineAndLineDetail,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetBooking());
         axios(options)
             .then(({ data }) => dispatch(successDuplicateBooking(data)))
             .catch((error) => dispatch(console.log('@2 - Failed duplicateBooking', error)));
+    };
 };
 
 export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => {
