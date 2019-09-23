@@ -518,9 +518,14 @@ class BookingPage extends Component {
             if (needUpdateBooking && booking) {
                 this.props.getBooking(booking.id, 'id');
                 var that = this;
-                setTimeout(() => {
+
+                if (booking.b_status === 'Closed') {
                     that.setState({loading: true, curViewMode: 0});
-                }, 1000);
+                } else {
+                    setTimeout(() => {
+                        that.setState({loading: true, curViewMode: 0});
+                    }, 200);
+                }
             }
         }
 
