@@ -1,6 +1,21 @@
 import axios from 'axios';
 
-import { setBookingLines, failedGetBookingLines, successCreateBookingLine, successUpdateBookingLine, failedCreateBookingLine, failedUpdateBookingLine, successDeleteBookingLine, failedDeleteBookingLine, successCalcCollected, failedCalcCollected, resetFlag } from '../actions/bookingLineActions';
+import {
+    setBookingLines,
+    failedGetBookingLines,
+    successCreateBookingLine,
+    successUpdateBookingLine,
+    failedCreateBookingLine,
+    failedUpdateBookingLine,
+    successDeleteBookingLine,
+    failedDeleteBookingLine,
+    successCalcCollected,
+    failedCalcCollected,
+    resetFlag,
+    successGetBookingLinesCnt,
+    failedGetBookingLinesCnt,
+} from '../actions/bookingLineActions';
+
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookingLines = (pk_booking_id) => {
@@ -86,4 +101,18 @@ export const calcCollected = (ids, type) => {
         axios(options)
             .then(({ data }) => dispatch(successCalcCollected(data)))
             .catch((error) => dispatch(failedCalcCollected(error)));
+};
+
+export const getBookingLinesCnt = (bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglines/get_count/?bookingIds=` + bookingIds,
+
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetBookingLinesCnt(data)))
+            .catch((error) => dispatch(failedGetBookingLinesCnt(error)));
 };

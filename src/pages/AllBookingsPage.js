@@ -21,7 +21,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, stOrderSummary } from '../state/services/bookingService';
-import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
 // Components
@@ -34,6 +34,7 @@ import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import CheckPodModal from '../components/CommonModals/CheckPodModal';
 import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 import FindModal from '../components/CommonModals/FindModal';
+import STOrderModal from '../components/CommonModals/STOrderModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -96,6 +97,8 @@ class AllBookingsPage extends React.Component {
             isShowStatusInfoSlider: false,
             isShowFindModal: false,
             selectedBookingIds2Order: [],
+            isShowSTOrderModal: false,
+            selectedBookingLinesCnt: 0,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -107,6 +110,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
         this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
         this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
+        this.toggleShowSTOrderModal = this.toggleShowSTOrderModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -141,6 +145,7 @@ class AllBookingsPage extends React.Component {
         calcCollected: PropTypes.func.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
         stOrderSummary: PropTypes.bool.isRequired,
+        getBookingLinesCnt: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -190,7 +195,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -288,6 +293,10 @@ class AllBookingsPage extends React.Component {
 
         if (username) {
             this.setState({username});
+        }
+
+        if (selectedBookingLinesCnt) {
+            this.setState({selectedBookingLinesCnt});
         }
 
         if (needUpdateBookings) {
@@ -635,6 +644,10 @@ class AllBookingsPage extends React.Component {
 
     toggleShowFindModal() {
         this.setState(prevState => ({isShowFindModal: !prevState.isShowFindModal})); 
+    }
+
+    toggleShowSTOrderModal() {
+        this.setState(prevState => ({isShowSTOrderModal: !prevState.isShowSTOrderModal})); 
     }
 
     onCheck(e, id) {
@@ -1006,8 +1019,18 @@ class AllBookingsPage extends React.Component {
         this.setState({checkedAll: !checkedAll, selectedBookingIds});
     }
 
-    onClickSTOrder() {
-        this.props.stOrder(this.state.selectedBookingIds);
+    onClickStOrder() {
+        if (this.state.selectedBookingIds.length === 0) {
+            this.notify('Please select bookings to create Order!');
+        } else {
+            this.props.getBookingLinesCnt(this.state.selectedBookingIds);
+            this.toggleShowSTOrderModal();
+        }
+    }
+
+    onSTCreateOrder(bookingIds) {
+        this.toggleShowSTOrderModal();
+        this.props.stOrder(bookingIds);
         this.setState({selectedBookingIds: [], checkedAll: false, selectedBookingIds2Order: this.state.selectedBookingIds});
     }
 
@@ -1911,7 +1934,7 @@ class AllBookingsPage extends React.Component {
                                     this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
                                         <div className="popuptext1">
-                                            <button className="btn btn-primary" onClick={() => this.onClickSTOrder()}>ST Order</button>
+                                            <button className="btn btn-primary" onClick={() => this.onClickStOrder()}>ST Order</button>
                                             <button 
                                                 className="btn btn-primary" 
                                                 onClick={() => this.onClickCalcCollected('Calc')}
@@ -2595,6 +2618,15 @@ class AllBookingsPage extends React.Component {
                     onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
                 />
 
+                <STOrderModal
+                    isOpen={this.state.isShowSTOrderModal}
+                    toggleShow={this.toggleShowSTOrderModal}
+                    selectedBookingIds={this.state.selectedBookingIds}
+                    selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
+                    bookings={this.state.bookings}
+                    onCreateOrder={(bookingIds) => this.onSTCreateOrder(bookingIds)}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -2613,6 +2645,7 @@ const mapStateToProps = (state) => {
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
+        selectedBookingLinesCnt: state.bookingLine.selectedBookingLinesCnt,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
         startDate: state.booking.startDate,
@@ -2646,6 +2679,7 @@ const mapDispatchToProps = (dispatch) => {
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLinesCnt: (bookingIds) => dispatch(getBookingLinesCnt(bookingIds)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),

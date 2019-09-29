@@ -685,7 +685,9 @@ class BookingPage extends Component {
                 //     this.notify('Booking(' + booking.b_bookingID_Visual + ') is loaded!');
                 // }
 
-                if ((booking.b_dateBookedDate !== null) && (booking.b_dateBookedDate !== undefined)) {
+                if (((booking.b_dateBookedDate !== null) && 
+                    (booking.b_dateBookedDate !== undefined)) || 
+                    (booking.b_status === 'Booked')) {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
@@ -3808,7 +3810,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickstCancelBook()}
-                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
                                                         >
                                                             Cancel Request
                                                         </button>
@@ -3820,7 +3822,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickBook()}
-                                                            disabled={(isBookedBooking || clientname !== 'dme') ? 'disabled' : ''}
+                                                            disabled={isBookedBooking ? 'disabled' : ''}
                                                         >
                                                             Book
                                                         </button>
