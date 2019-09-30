@@ -5,6 +5,7 @@ import { withRouter, Link } from 'react-router-dom';
 
 import Clock from 'react-live-clock';
 import _ from 'lodash';
+import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -1159,23 +1160,71 @@ class BookingPage extends Component {
 
         if (isBookedBooking) {
             this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
-        } else if (!booking.x_manual_booked_flag) {  // Not manual booking
-            const st_name = 'startrack';
-            const allied_name = 'allied';
-            if (booking.id && (booking.id != undefined)) {
-                this.setState({ loading: true, curViewMode: 0});
-                if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(booking.id);
-                } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(booking.id);
+        } else {
+            if (!booking.x_manual_booked_flag) {  // Not manual booking
+                if (booking.id && (booking.id !== undefined)) {
+                    this.setState({ loading: true, curViewMode: 0});
+                    if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'startrack') {
+                        this.props.stBooking(booking.id);
+                    } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'allied') {
+                        this.props.alliedBooking(booking.id);
+                    }
+                } else {
+                    alert('Please Find any booking and then click this!');
                 }
-            } else {
-                alert('Please Find any booking and then click this!');
+            } else { // Manual booking
+                this.props.manualBook(booking.id);
+                this.setState({loadingBookingUpdate: true, curViewMode: 2});
             }
-        } else { // Manual booking
-            this.props.manualBook(booking.id);
-            this.setState({loadingBookingUpdate: true, curViewMode: 2});
+
+            if (booking.vx_freight_provider.toLowerCase() === 'cope'
+                || booking.vx_freight_provider.toLowerCase() === 'dhl')
+            {
+                this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
+            } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
+                || booking.vx_freight_provider.toLowerCase() === 'act') 
+            {
+                this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
+            }
         }
+    }
+
+    buildCSV(bookingIds, vx_freight_provider) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
+                data: {bookingIds, vx_freight_provider},
+                responseType: 'blob', // important
+            };
+
+            axios(options)
+                .then((response) => {
+                    console.log('generate-csv response: ', response);
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    buildXML(bookingIds, vx_freight_provider) {
+        return new Promise((resolve, reject) => {
+            let options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                data: {bookingIds, vx_freight_provider},
+            };
+
+            axios(options)
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     onKeyPress(e) {
