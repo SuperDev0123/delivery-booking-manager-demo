@@ -1161,6 +1161,8 @@ class BookingPage extends Component {
         if (isBookedBooking) {
             this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
         } else {
+            this.bulkBookingUpdate([booking.id], 'b_error_Capture', '');
+
             if (!booking.x_manual_booked_flag) {  // Not manual booking
                 if (booking.id && (booking.id !== undefined)) {
                     this.setState({ loading: true, curViewMode: 0});
@@ -1187,6 +1189,26 @@ class BookingPage extends Component {
                 this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
             }
         }
+    }
+
+    bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
+        return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
+            const options = {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
+                data: {bookingIds, fieldName, fieldContent},
+            };
+
+            axios(options)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
     }
 
     buildCSV(bookingIds, vx_freight_provider) {
@@ -1908,7 +1930,9 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
+        if (this.state.isBookedBooking) {
+            this.notify('Booking is already Booked!');
+        } else {
             const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
             let bookingToUpdate = this.state.booking;
 
