@@ -3659,10 +3659,10 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['pu_PickUp_Avail_From_Date_DME'] ? moment(formInputs['pu_PickUp_Avail_From_Date_DME']).format('MM/DD/YYYY') : ''}
+                                                                            {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('MM/DD/YYYY') : ''}
                                                                         </p>
                                                                         {
-                                                                            !_.isNull(formInputs['pu_PickUp_Avail_From_Date_DME']) && !_.isUndefined(formInputs['pu_PickUp_Avail_From_Date_DME'] && !_.isEmpty(formInputs['pu_PickUp_Avail_From_Date_DME'])) ?
+                                                                            !_.isNull(formInputs['puPickUpAvailFrom_Date']) && !_.isUndefined(formInputs['puPickUpAvailFrom_Date'] && !_.isEmpty(formInputs['puPickUpAvailFrom_Date'])) ?
                                                                                 <p className="time disp-inline-block">
                                                                                     {
                                                                                         formInputs['pu_PickUp_Avail_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_Avail_Time_Hours'] + ':'
@@ -3679,8 +3679,8 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_Avail_From_Date_DME'] ? moment(formInputs['pu_PickUp_Avail_From_Date_DME']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_Avail_From_Date_DME')}
+                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
                                                                         <input
