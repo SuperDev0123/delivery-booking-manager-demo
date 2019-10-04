@@ -1931,7 +1931,7 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        if (this.state.isBookedBooking) {
+        if (this.state.isBookedBooking && this.state.clientname !== 'dme') {
             this.notify('Booking is already Booked!');
         } else {
             const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
