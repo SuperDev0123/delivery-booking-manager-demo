@@ -1662,7 +1662,12 @@ class AllBookingsPage extends React.Component {
                         onClick={() => this.onClickLink(0, booking.id)}
                         className={(sortField === 'b_bookingID_Visual') ? 'visualID-box current' : 'visualID-box'}
                     >
-                        <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span>
+
+                        <span className={
+                            booking.b_error_Capture ? 'c-red bold' : booking.b_status === 'Closed' ? 'c-black bold' : 'c-dme bold'}
+                        >
+                            {booking.b_bookingID_Visual}
+                        </span>
                         { 
                             (booking.has_comms) ?
                                 <i className="fa fa-comments" aria-hidden="true"></i>
