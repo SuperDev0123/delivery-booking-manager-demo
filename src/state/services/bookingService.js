@@ -311,7 +311,7 @@ export const stBooking = (bookingId) => {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_book/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/book/`
     };
     return dispatch =>
         axios(options)
@@ -339,7 +339,7 @@ export const stLabel = (bookingId) => {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'bookingId': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_get_label/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/get-label/`
     };
 
     return dispatch =>
@@ -379,7 +379,7 @@ export const stOrder = (bookingIds) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_create_order/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/create-order/`,
         data: {bookingIds}
     };
     return dispatch =>
@@ -393,7 +393,7 @@ export const stOrderSummary = (bookingIds) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_order_summary/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/get-order-summary/`,
         data: {bookingIds}
     };
     return dispatch =>
@@ -421,7 +421,7 @@ export const stCancelBook = (bookingId) => {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_cancel_book/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/cancel-book/`
     };
     return dispatch =>
         axios(options)
@@ -435,7 +435,7 @@ export const stEditBook = (bookingId) => {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_edit_book/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/startrack/edit-book/`
     };
     return dispatch =>
         axios(options)
