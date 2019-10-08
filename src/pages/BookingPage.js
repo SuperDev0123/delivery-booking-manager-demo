@@ -1109,6 +1109,7 @@ class BookingPage extends Component {
     calcBookingLine(booking, bookingLines) {
         let qty = 0;
         let qty_collected_scanned = 0;
+        let b_fp_qty_delivered = 0;
         let total_kgs = 0;
         let cubic_meter = 0;
 
@@ -1154,18 +1155,21 @@ class BookingPage extends Component {
             return bookingLine;
         });
 
-        this.setState(
-            {
-                bookingTotals: [{
-                    id: 0,
-                    qty,
-                    qty_collected_scanned,
-                    b_fp_qty_delivered: booking.b_fp_qty_delivered,
-                    total_kgs: total_kgs.toFixed(2),
-                    cubic_meter: cubic_meter.toFixed(2)
-                }]
-            }
-        );
+        if (booking) {
+            b_fp_qty_delivered = booking.b_fp_qty_delivered;
+        }
+
+        this.setState({
+            bookingTotals: [{
+                id: 0,
+                qty,
+                qty_collected_scanned,
+                b_fp_qty_delivered: b_fp_qty_delivered,
+                total_kgs: total_kgs.toFixed(2),
+                cubic_meter: cubic_meter.toFixed(2)
+            }]
+        });
+
         return newBookingLines;
     }
 
