@@ -421,7 +421,7 @@ class BookingPage extends Component {
         }
 
         if (bookingLines) {
-            const calcedbookingLines = this.calcBookingLine(booking, bookingLines);
+            const calcedbookingLines = this.calcBookingLine(this.state.booking, bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
             bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
