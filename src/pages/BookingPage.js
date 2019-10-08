@@ -421,7 +421,7 @@ class BookingPage extends Component {
         }
 
         if (bookingLines) {
-            const calcedbookingLines = this.calcBookingLine(bookingLines);
+            const calcedbookingLines = this.calcBookingLine(booking, bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
             bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
@@ -1106,8 +1106,9 @@ class BookingPage extends Component {
         }
     }
 
-    calcBookingLine(bookingLines) {
+    calcBookingLine(booking, bookingLines) {
         let qty = 0;
+        let qty_collected_scanned = 0;
         let total_kgs = 0;
         let cubic_meter = 0;
 
@@ -1147,12 +1148,24 @@ class BookingPage extends Component {
             }
 
             qty += bookingLine.e_qty;
+            qty_collected_scanned += bookingLine.e_qty_scanned_fp;
             total_kgs += bookingLine['total_kgs'];
             cubic_meter += bookingLine['cubic_meter'];
             return bookingLine;
         });
 
-        this.setState({bookingTotals: [{id: 0, qty, total_kgs: total_kgs.toFixed(2), cubic_meter: cubic_meter.toFixed(2)}]});
+        this.setState(
+            {
+                bookingTotals: [{
+                    id: 0,
+                    qty,
+                    qty_collected_scanned,
+                    b_fp_qty_delivered: booking.b_fp_qty_delivered,
+                    total_kgs: total_kgs.toFixed(2),
+                    cubic_meter: cubic_meter.toFixed(2)
+                }]
+            }
+        );
         return newBookingLines;
     }
 
@@ -2367,10 +2380,16 @@ class BookingPage extends Component {
             },
         ];
 
-        const columnBookingCounts = [
+        const columnBookingTotals = [
             {
                 dataField: 'qty',
-                text: 'Total Pieces'
+                text: 'Total Ordered'
+            }, {
+                dataField: 'qty_collected_scanned',
+                text: 'Total Collected / Scanned'
+            }, {
+                dataField: 'b_fp_qty_delivered',
+                text: 'Total Delivered'
             }, {
                 dataField: 'total_kgs',
                 text: 'Total Kgs'
@@ -3973,7 +3992,7 @@ class BookingPage extends Component {
                                                 <BootstrapTable
                                                     keyField="id"
                                                     data={ bookingTotals }
-                                                    columns={ columnBookingCounts }
+                                                    columns={ columnBookingTotals }
                                                     bootstrap4={ true }
                                                 />
                                                 <LoadingOverlay
