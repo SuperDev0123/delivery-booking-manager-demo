@@ -21,11 +21,11 @@ const isFormValid = (formName, formFields) => {
         if (formFields['b_client_name'].length > 35) {
             return 'Client name is too long. Need to be shorter than 36 characters';
         } 
-        if (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 40) {
-            return 'PickUp Entity is too long. Need to be shorter than 40 characters';
+        if (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 128) {
+            return 'PickUp Entity is too long. Need to be shorter than 128 characters';
         } 
-        if (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 40) {
-            return 'Delivery Entity is too long. Need to be shorter than 40 characters';
+        if (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 128) {
+            return 'Delivery Entity is too long. Need to be shorter than 128 characters';
         } 
         if (!_.isEmpty(formFields['pu_Address_Street_1']) && formFields['pu_Address_Street_1'].length > 40) {
             return 'PU Street 1 is too long. Need to be shorter than 40 characters';
