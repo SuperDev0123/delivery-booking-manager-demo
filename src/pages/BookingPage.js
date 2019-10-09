@@ -682,13 +682,8 @@ class BookingPage extends Component {
                 } else if (this.state.loadingBookingUpdate && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 } 
-                // else {
-                //     this.notify('Booking(' + booking.b_bookingID_Visual + ') is loaded!');
-                // }
 
-                if (((booking.b_dateBookedDate !== null) && 
-                    (booking.b_dateBookedDate !== undefined)) || 
-                    (booking.b_status === 'Booked')) {
+                if (!_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate) && !_.isEmpty(booking.b_dateBookedDate)) {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
