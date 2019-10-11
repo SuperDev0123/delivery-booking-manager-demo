@@ -358,8 +358,9 @@ export function failedAlliedBook(error) {
     };
 }
 
-export function successStBook(data) {
-    alert(data.message + ', Now trying to get Label');
+// FP Actions
+export function successFPBook(data) {
+    alert(`${data.message}, Now trying to get Label`);
 
     return {
         type: BOOK_SUCCESS,
@@ -367,8 +368,8 @@ export function successStBook(data) {
     };
 }
 
-export function failedStBook(error) {
-    alert('Failed STARTRACK Book: ' + error.response.data.message);
+export function failedFPBook(error) {
+    alert(`Failed Book: ${error.response.data.message}`);
 
     return {
         type: BOOK_FAILED,
@@ -376,43 +377,7 @@ export function failedStBook(error) {
     };
 }
 
-export function successGetLabel(data) {
-    alert(data.message);
-
-    return {
-        type: GET_LABEL_SUCCESS,
-        errorMessage: data.message
-    };
-}
-
-export function failedGetLabel(error) {
-    alert('Failed ST get Label: ' + error.response.data.message);
-
-    return {
-        type: GET_LABEL_FAILED,
-        errorMessage: error.response.data.message
-    };
-}
-
-export function successCancelBook(data) {
-    alert(data['message']);
-
-    return {
-        type: BOOK_CANCEL_SUCCESS,
-        errorMessage: data['message'],
-    };
-}
-
-export function failedCancelBook(error) {
-    alert(error.response.data.message);
-
-    return {
-        type: BOOK_CANCEL_FAILED,
-        errorMessage: 'Failed to Cancel Book'
-    };
-}
-
-export function successEditBook(data) {
+export function successFPEditBook(data) {
     alert(data['message']);
 
     return {
@@ -421,7 +386,7 @@ export function successEditBook(data) {
     };
 }
 
-export function failedEditBook(error) {
+export function failedFPEditBook(error) {
     alert(error.response.data.message);
 
     return {
@@ -430,7 +395,43 @@ export function failedEditBook(error) {
     };
 }
 
-export function successCreateOrder(data) {
+export function successFPGetLabel(data) {
+    alert(`Failed get Label: ${data.message}`);
+
+    return {
+        type: GET_LABEL_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPGetLabel(error) {
+    alert(`Failed get Label: ${error.response.data.message}`);
+
+    return {
+        type: GET_LABEL_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successFPCancelBook(data) {
+    alert(data['message']);
+
+    return {
+        type: BOOK_CANCEL_SUCCESS,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedFPCancelBook(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: BOOK_CANCEL_FAILED,
+        errorMessage: 'Failed to Cancel Book'
+    };
+}
+
+export function successFPCreateOrder(data) {
     alert(data['message'] + ', Now trying to get OrderSummary');
 
     return {
@@ -439,7 +440,7 @@ export function successCreateOrder(data) {
     };
 }
 
-export function failedCreatedOrder(error) {
+export function failedFPCreatedOrder(error) {
     alert(error.response.data.message);
 
     return {
@@ -448,7 +449,7 @@ export function failedCreatedOrder(error) {
     };
 }
 
-export function successGetOrderSummary(data) {
+export function successFPGetOrderSummary(data) {
     alert(data['message']);
 
     return {
@@ -457,7 +458,7 @@ export function successGetOrderSummary(data) {
     };
 }
 
-export function failedGetOrderSummary(error) {
+export function failedFPGetOrderSummary(error) {
     alert(error.response.data.message);
 
     return {

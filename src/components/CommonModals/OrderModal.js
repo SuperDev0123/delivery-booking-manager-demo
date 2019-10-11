@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import _ from 'lodash';
 
-class STOrderModal extends Component {
+class OrderModal extends Component {
     constructor(props) {
         super(props);
 
@@ -33,7 +33,7 @@ class STOrderModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggleShow}>StarTrack Order Modal</ModalHeader>
+                <ModalHeader toggle={this.props.toggleShow}>FP Order Modal</ModalHeader>
                 <ModalBody>
                     <h4>
                         Please review info before creating the order.
@@ -53,7 +53,7 @@ class STOrderModal extends Component {
                 <ModalFooter>
                     <Button
                         color="primary"
-                        onClick={() => this.props.onCreateOrder(this.props.selectedBookingIds)}
+                        onClick={() => this.props.onCreateOrder(this.props.selectedBookingIds, selectedBookings[0].vx_freight_provider)}
                         disabled={puPickUpAvailFromDateCnt > 1 || (this.props.selectedBookingIds.length - bookedCnt > 0) 
                             ? 'disabled' : ''}
                     >
@@ -66,4 +66,4 @@ class STOrderModal extends Component {
     }
 }
 
-export default STOrderModal;
+export default OrderModal;

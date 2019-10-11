@@ -35,7 +35,9 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, stBooking, stLabel, stEditBook, stCancelBook, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
+// FP Services
+import { fpBook, fpEditBook, fpLabel, fpCancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -234,9 +236,9 @@ class BookingPage extends Component {
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         alliedBooking: PropTypes.func.isRequired,
-        stBooking: PropTypes.func.isRequired,
-        stEditBook: PropTypes.func.isRequired,
-        stLabel: PropTypes.func.isRequired,
+        fpBook: PropTypes.func.isRequired,
+        fpEditBook: PropTypes.func.isRequired,
+        fpLabel: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
@@ -251,7 +253,7 @@ class BookingPage extends Component {
         getWarehouses: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         setClientPK: PropTypes.func.isRequired,
-        stCancelBook: PropTypes.func.isRequired,
+        fpCancelBook: PropTypes.func.isRequired,
         getBookingStatusHistory: PropTypes.func.isRequired,
         getPackageTypes: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
@@ -513,7 +515,8 @@ class BookingPage extends Component {
             if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                 bookingErrorMessage.indexOf('Successfully edit book') !== -1
             ) {
-                this.props.stLabel(booking.id);
+                let currentBooking = this.state.booking;
+                this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
             }
 
             if (needUpdateBooking && booking) {
@@ -1180,7 +1183,7 @@ class BookingPage extends Component {
                 if (booking.id && (booking.id !== undefined)) {
                     this.setState({ loading: true, curViewMode: 0});
                     if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'startrack') {
-                        this.props.stBooking(booking.id);
+                        this.props.fpBook(booking.id, booking.vx_freight_provider);
                     } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'allied') {
                         this.props.alliedBooking(booking.id);
                     }
@@ -1770,13 +1773,13 @@ class BookingPage extends Component {
         this.toggleSwitchClientModal();
     }
 
-    onClickstCancelBook() {
+    onClickCancelBook() {
         const {booking} = this.state;
 
         if (!booking) {
             alert('Please select booking to cancel');
         } else {
-            this.props.stCancelBook(booking.id);
+            this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
         }
     }
 
@@ -1786,7 +1789,7 @@ class BookingPage extends Component {
         if (!booking) {
             alert('Please select booking to edit');
         } else {
-            this.props.stEditBook(booking.id);
+            this.props.fpEditBook(booking.id, booking.vx_freight_provider);
         }
     }
 
@@ -3901,7 +3904,7 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
                                                             className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickstCancelBook()}
+                                                            onClick={() => this.onClickCancelBook()}
                                                             disabled={isBookedBooking && booking ? '' : 'disabled'}
                                                         >
                                                             Cancel Request
@@ -4476,9 +4479,10 @@ const mapDispatchToProps = (dispatch) => {
         deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
         updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
-        stBooking: (bookingId) => dispatch(stBooking(bookingId)),
-        stEditBook: (bookingId) => dispatch(stEditBook(bookingId)),
-        stLabel: (bookingId) => dispatch(stLabel(bookingId)),
+        fpBook: (bookingId, vx_freight_provider) => dispatch(fpBook(bookingId, vx_freight_provider)),
+        fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
+        fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
+        fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
@@ -4492,7 +4496,6 @@ const mapDispatchToProps = (dispatch) => {
         getWarehouses: () => dispatch(getWarehouses()),
         getDMEClients: () => dispatch(getDMEClients()),
         setClientPK: (clientId) => dispatch(setClientPK(clientId)),
-        stCancelBook: (bookingId) => dispatch(stCancelBook(bookingId)),
         getBookingStatusHistory: (bookingId) => dispatch(getBookingStatusHistory(bookingId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),

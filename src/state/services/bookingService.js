@@ -19,17 +19,23 @@ import {
     failedGetUserDateFilterField,
     successAlliedBook,
     failedAlliedBook,
-    successStBook,
-    failedStBook,
-    successGetLabel,
-    failedGetLabel,
+    successFPBook, // FP Actions Begin
+    failedFPBook, // "
+    successFPEditBook, // "
+    failedFPEditBook, // "
+    successFPGetLabel, // "
+    failedFPGetLabel, // "
+    successFPCancelBook, // "
+    failedFPCancelBook, // "
+    successFPCreateOrder, // "
+    failedFPCreateOrder, // "
+    successFPGetOrderSummary, // "
+    failedFPGetOrderSummary, // FP Actions End
     setAllLocalFilter,
     setLocalFilter,
     setNeedUpdateBookingsFlag,
     successUpdateBooking,
     successDuplicateBooking,
-    successCancelBook,
-    failedCancelBook,
     successCreateBooking,
     failedCreateBooking,
     successGenerateXLS,
@@ -44,12 +50,6 @@ import {
     failedTickManualBook,
     successManualBook,
     failedManualBook,
-    successEditBook,
-    failedEditBook,
-    successCreateOrder,
-    failedCreateOrder,
-    successGetOrderSummary,
-    failedGetOrderSummary,
     resetManifestReport,
     successGetManifestReport,
     failedGetManifestReport,
@@ -305,47 +305,90 @@ export const alliedBooking = (bookingId) => {
             .catch((error) => dispatch(failedAlliedBook(error)));
 };
 
-export const stBooking = (bookingId) => {
+// FP services
+export const fpBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/book/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/book/`
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successStBook(data)))
-            .catch((error) => dispatch(failedStBook(error)));
+            .then(({data}) => dispatch(successFPBook(data)))
+            .catch((error) => dispatch(failedFPBook(error)));
 };
 
-export const getAlliedLabel = (bookingId) => {
+export const fpEditBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_allied/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/edit-book/`
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successGetLabel(data)))
-            .catch((error) => dispatch(failedGetLabel(error)));
+            .then(({data}) => dispatch(successFPEditBook(data)))
+            .catch((error) => dispatch(failedFPEditBook(error)));
 };
 
-export const stLabel = (bookingId) => {
+export const fpCancelBook = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/cancel-book/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPCancelBook(data)))
+            .catch((error) => dispatch(failedFPCancelBook(error)));
+};
+
+export const fpLabel = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'bookingId': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/get-label/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/get-label/`
     };
 
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successGetLabel(data)))
-            .catch((error) => dispatch(failedGetLabel(error)));
+            .then(({data}) => dispatch(successFPGetLabel(data)))
+            .catch((error) => dispatch(failedFPGetLabel(error)));
+};
+
+export const fpOrder = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/create-order/`,
+        data: {bookingIds}
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successFPCreateOrder(data)))
+            .catch((error) => dispatch(failedFPCreateOrder(error)));
+};
+
+export const fpOrderSummary = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/get-order-summary/`,
+        data: {bookingIds}
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successFPGetOrderSummary(data)))
+            .catch((error) => dispatch(failedFPGetOrderSummary(error)));
 };
 
 export const mapBok1ToBookings = () => {
@@ -374,34 +417,6 @@ export const getUserDateFilterField = () => {
             .catch((error) => dispatch(failedGetUserDateFilterField(error)));
 };
 
-export const stOrder = (bookingIds) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/create-order/`,
-        data: {bookingIds}
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successCreateOrder(data)))
-            .catch((error) => dispatch(failedCreateOrder(error)));
-};
-
-export const stOrderSummary = (bookingIds) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/get-order-summary/`,
-        data: {bookingIds}
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetOrderSummary(data)))
-            .catch((error) => dispatch(failedGetOrderSummary(error)));
-};
-
 export const getExcel = () => {
     const token = localStorage.getItem('token');
     const options = {
@@ -413,34 +428,6 @@ export const getExcel = () => {
         axios(options)
             .then(({ data }) => dispatch(console.log('@1 - After getExcel', data)))
             .catch((error) => dispatch(console.log('@2 - Failed getExcel', error)));
-};
-
-export const stCancelBook = (bookingId) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/cancel-book/`
-    };
-    return dispatch =>
-        axios(options)
-            .then(({data}) => dispatch(successCancelBook(data)))
-            .catch((error) => dispatch(failedCancelBook(error)));
-};
-
-export const stEditBook = (bookingId) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/startrack/edit-book/`
-    };
-    return dispatch =>
-        axios(options)
-            .then(({data}) => dispatch(successEditBook(data)))
-            .catch((error) => dispatch(failedEditBook(error)));
 };
 
 export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) => {
