@@ -64,8 +64,6 @@ import {
     FAIELD_GET_MANIFEST_REPORT,
 } from '../constants/bookingConstants';
 
-import { getAlliedLabel } from '../services/bookingService';
-
 export function successGetBookings(data) {
     return {
         type: SET_BOOKINGS,
@@ -335,29 +333,6 @@ export function failedGetUserDateFilterField(error) {
     };
 }
 
-export function successAlliedBook(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book allied: ' + data[0]['Error']);
-    } else {
-        alert('Successfully book allied: ' + data[0]['Created Booking ID']);
-        getAlliedLabel(data[0]['Created Booking ID']);
-    }
-
-    return {
-        type: BOOK_SUCCESS,
-        errorMessage: 'Book success'
-    };
-}
-
-export function failedAlliedBook(error) {
-    alert('Failed book allied: ' + error);
-    console.log('Failed book allied: ' + error);
-    return {
-        type: BOOK_FAILED,
-        errorMessage: 'Book failed'
-    };
-}
-
 // FP Actions
 export function successFPBook(data) {
     alert(`${data.message}, Now trying to get Label`);
@@ -396,7 +371,7 @@ export function failedFPEditBook(error) {
 }
 
 export function successFPGetLabel(data) {
-    alert(`Failed get Label: ${data.message}`);
+    alert(`Success get Label: ${data.message}`);
 
     return {
         type: GET_LABEL_SUCCESS,

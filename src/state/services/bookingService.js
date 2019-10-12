@@ -17,8 +17,6 @@ import {
     setMappedBok1ToBooking,
     setUserDateFilterField,
     failedGetUserDateFilterField,
-    successAlliedBook,
-    failedAlliedBook,
     successFPBook, // FP Actions Begin
     failedFPBook, // "
     successFPEditBook, // "
@@ -289,20 +287,6 @@ export const allTrigger = () => {
         axios(options)
             .then(({ data }) => dispatch(console.log('@1 - After all_trigger', data)))
             .catch((error) => dispatch(console.log('@2 - Failed all_trigger', error)));
-};
-
-export const alliedBooking = (bookingId) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_allied/`
-    };
-    return dispatch =>
-        axios(options)
-            .then(({data}) => dispatch(successAlliedBook(data)))
-            .catch((error) => dispatch(failedAlliedBook(error)));
 };
 
 // FP services

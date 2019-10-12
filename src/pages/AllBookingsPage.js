@@ -1030,12 +1030,12 @@ class AllBookingsPage extends React.Component {
 
     onCreateOrder(bookingIds, vx_freight_provider) {
         this.toggleShowOrderModal();
-        this.props.fpOrder(bookingIds, vx_freight_provider);
+        this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
         this.setState({
             selectedBookingIds: [],
             checkedAll: false,
             selectedBookingIds2Order: this.state.selectedBookingIds,
-            selectedFP2Order: vx_freight_provider,
+            selectedFP2Order: vx_freight_provider.toLowerCase(),
         });
     }
 
@@ -2698,7 +2698,7 @@ const mapDispatchToProps = (dispatch) => {
         fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
         getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
         fpOrder: (bookingIds, vx_freight_provider) => dispatch(fpOrder(bookingIds, vx_freight_provider)),
-        fpOrderSummary: (bookingIds) => dispatch(fpOrderSummary(bookingIds)),
+        fpOrderSummary: (bookingIds, vx_freight_provider) => dispatch(fpOrderSummary(bookingIds, vx_freight_provider)),
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),

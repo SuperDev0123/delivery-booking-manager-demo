@@ -35,7 +35,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, alliedBooking, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -235,7 +235,6 @@ class BookingPage extends Component {
         getDeliverySuburbStrings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
-        alliedBooking: PropTypes.func.isRequired,
         fpBook: PropTypes.func.isRequired,
         fpEditBook: PropTypes.func.isRequired,
         fpLabel: PropTypes.func.isRequired,
@@ -522,14 +521,9 @@ class BookingPage extends Component {
             if (needUpdateBooking && booking) {
                 this.props.getBooking(booking.id, 'id');
                 var that = this;
-
-                if (booking.b_status === 'Closed') {
+                setTimeout(() => {
                     that.setState({loading: true, curViewMode: 0});
-                } else {
-                    setTimeout(() => {
-                        that.setState({loading: true, curViewMode: 0});
-                    }, 200);
-                }
+                }, 50);
             }
         }
 
@@ -1182,10 +1176,10 @@ class BookingPage extends Component {
             if (!booking.x_manual_booked_flag) {  // Not manual booking
                 if (booking.id && (booking.id !== undefined)) {
                     this.setState({ loading: true, curViewMode: 0});
-                    if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'startrack') {
+                    if (booking.vx_freight_provider) {
                         this.props.fpBook(booking.id, booking.vx_freight_provider);
-                    } else if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'allied') {
-                        this.props.alliedBooking(booking.id);
+                    } else {
+                        this.notify('Can not *Book* since booking has no Freight Provider');
                     }
                 } else {
                     alert('Please Find any booking and then click this!');
@@ -4478,7 +4472,6 @@ const mapDispatchToProps = (dispatch) => {
         duplicateBookingLineDetail: (bookingLineDetail) => dispatch(duplicateBookingLineDetail(bookingLineDetail)),
         deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
         updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
-        alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
         fpBook: (bookingId, vx_freight_provider) => dispatch(fpBook(bookingId, vx_freight_provider)),
         fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
         fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
