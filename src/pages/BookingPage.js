@@ -680,7 +680,7 @@ class BookingPage extends Component {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
 
-                if (booking.b_client_name.toLowerCase() === "biopak") {
+                if (booking.b_client_name.toLowerCase() === 'biopak') {
                     if (!_.isNull(booking.manifest_timestamp) &&
                         !_.isUndefined(booking.manifest_timestamp) &&
                         !_.isEmpty(booking.manifest_timestamp)) 
