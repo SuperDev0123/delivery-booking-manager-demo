@@ -1698,10 +1698,16 @@ class AllBookingsPage extends React.Component {
                     >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
                         {
-                            booking.b_dateBookedDate ?
-                                null
+                            booking.b_client_name.toLowerCase() == 'biopak' ?
+                                booking.manifest_timestamp ?
+                                    null
+                                    :
+                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
                                 :
-                                <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
+                                booking.b_dateBookedDate ?
+                                    null
+                                    :
+                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
                         }
                     </td>
                     <EditablePopover 
