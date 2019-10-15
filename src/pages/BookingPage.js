@@ -678,12 +678,26 @@ class BookingPage extends Component {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is saved!');
                 } else if (this.state.loadingBookingUpdate && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
-                } 
+                }
 
-                if (!_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate) && !_.isEmpty(booking.b_dateBookedDate)) {
-                    this.setState({isBookedBooking: true});
+                if (booking.b_client_name.toLowerCase() === "biopak") {
+                    if (!_.isNull(booking.manifest_timestamp) &&
+                        !_.isUndefined(booking.manifest_timestamp) &&
+                        !_.isEmpty(booking.manifest_timestamp)) 
+                    {
+                        this.setState({isBookedBooking: true});
+                    } else {
+                        this.setState({isBookedBooking: false});
+                    }
                 } else {
-                    this.setState({isBookedBooking: false});
+                    if (!_.isNull(booking.b_dateBookedDate) &&
+                        !_.isUndefined(booking.b_dateBookedDate) &&
+                        !_.isEmpty(booking.b_dateBookedDate)) 
+                    {
+                        this.setState({isBookedBooking: true});
+                    } else {
+                        this.setState({isBookedBooking: false});
+                    }
                 }
 
                 if (
