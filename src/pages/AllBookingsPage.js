@@ -2049,7 +2049,6 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
                                             </div>
-                                            <p className="font-24px float-right">all bookings / today / by date: {bookingsCnt}</p>
                                         </div>
                                         <ul className="filter-conditions none">
                                             <li><a onClick={() => this.onClickPrefilter(1)}>Errors to Correct ({errorsToCorrect})</a></li>
@@ -2058,7 +2057,7 @@ class AllBookingsPage extends React.Component {
                                             <li><a onClick={() => this.onClickPrefilter(4)}>To Process ({toProcess})</a></li>
                                             <li><a onClick={() => this.onClickPrefilter(5)}>Closed ({closed})</a></li>
                                         </ul>
-                                        <div>
+                                        <div className="tabs">
                                             <Nav tabs>
                                                 <NavItem>
                                                     <NavLink
@@ -2128,6 +2127,7 @@ class AllBookingsPage extends React.Component {
                                                     </NavLink>
                                                 </NavItem>
                                             </Nav>
+                                            <p className="float-right">all bookings / today / by date: {bookingsCnt}</p>
                                         </div>
                                         <hr />
                                         <div>

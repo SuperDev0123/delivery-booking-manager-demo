@@ -504,8 +504,7 @@ hr {
 }
 
 ul.nav-tabs {
-  width: 100%;
-  margin: 0 auto;
+  width: 70%;
 
   li {
     cursor: pointer;
@@ -537,12 +536,6 @@ ul.nav-tabs {
 
   .btn {
     padding: 7px !important;
-  }
-
-  p {
-    font-size: 18px;
-    margin-top: 55px;
-    font-weight: lighter;
   }
 }
 
@@ -651,9 +644,27 @@ header > .qbootstrap-nav {
   margin-bottom: 10px;
 }
 
-.allbookings .text-right {
-  a {
-    cursor: pointer;
+.allbookings {
+  .tabs {
+    height: 38px;
+
+    ul {
+      display: inline-block;
+    }
+
+    p {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: lighter;
+      margin-top: 10px;
+      margin-bottom: 0px !important;
+    }
+  }
+
+  .text-right {
+    a {
+      cursor: pointer;
+    }
   }
 }
 
