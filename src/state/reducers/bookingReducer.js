@@ -20,6 +20,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    POD_SUCCESS,
+    POD_FAILED,
     GET_LABEL_SUCCESS,
     SET_LOCAL_FILTER_ALL,
     SET_LOCAL_FILTER_SELECTEDATE,
@@ -65,6 +67,7 @@ const defaultState = {
     booking: null,
     bookings: [],
     bookingsCnt: 0,
+    pod: {},
     userDateFilterField: '',
     mappedBookings: [],
     errorMessage: null,
@@ -286,6 +289,7 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 errorMessage: errorMessage
             };
+
         case BOOK_SUCCESS:
             return {
                 ...state,
@@ -294,6 +298,21 @@ export const BookingReducer = (state = defaultState, {
                 needUpdateBooking: true,
                 bookings: [],
             };
+
+        case POD_SUCCESS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                pod: {},
+            };
+
+        case POD_FAILED:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                pod: {},
+            };
+            
         case BOOK_FAILED:
             return {
                 ...state,

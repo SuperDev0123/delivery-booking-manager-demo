@@ -22,6 +22,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    POD_SUCCESS,
+    POD_FAILED,
     GET_LABEL_SUCCESS,
     GET_LABEL_FAILED,
     SET_LOCAL_FILTER_ALL,
@@ -340,6 +342,24 @@ export function successFPBook(data) {
     return {
         type: BOOK_SUCCESS,
         errorMessage: data.message
+    };
+}
+
+export function successFPPod(data) {
+    alert(`${data.message}`);
+
+    return {
+        type: POD_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPPod(error) {
+    alert(`Failed POD: ${error.response.data.message}`);
+
+    return {
+        type: POD_FAILED,
+        errorMessage: error.response.data.message
     };
 }
 
