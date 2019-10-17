@@ -19,6 +19,8 @@ import {
     failedGetUserDateFilterField,
     successFPBook, // FP Actions Begin
     failedFPBook, // "
+    successFPPod,
+    failedFPPod,
     successFPEditBook, // "
     failedFPEditBook, // "
     successFPGetLabel, // "
@@ -373,6 +375,20 @@ export const fpOrderSummary = (bookingIds, vx_freight_provider) => {
         axios(options)
             .then(({ data }) => dispatch(successFPGetOrderSummary(data)))
             .catch((error) => dispatch(failedFPGetOrderSummary(error)));
+};
+
+export const fpPod = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/pod/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPPod(data)))
+            .catch((error) => dispatch(failedFPPod(error)));
 };
 
 export const mapBok1ToBookings = () => {

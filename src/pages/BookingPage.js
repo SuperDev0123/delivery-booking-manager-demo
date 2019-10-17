@@ -37,7 +37,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
 // FP Services
-import { fpBook, fpEditBook, fpLabel, fpCancelBook } from '../state/services/bookingService';
+import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -236,6 +236,7 @@ class BookingPage extends Component {
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         fpBook: PropTypes.func.isRequired,
+        fpPod: PropTypes.func.isRequired,
         fpEditBook: PropTypes.func.isRequired,
         fpLabel: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
@@ -511,19 +512,21 @@ class BookingPage extends Component {
             this.props.clearErrorMessage();
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
-            if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
-                bookingErrorMessage.indexOf('Successfully edit book') !== -1
-            ) {
-                let currentBooking = this.state.booking;
-                this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
-            }
+            if (this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter') {
+                if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
+                    bookingErrorMessage.indexOf('Successfully edit book') !== -1
+                ) {
+                    let currentBooking = this.state.booking;
+                    this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                }
 
-            if (needUpdateBooking && booking) {
-                this.props.getBooking(booking.id, 'id');
-                var that = this;
-                setTimeout(() => {
-                    that.setState({loading: true, curViewMode: 0});
-                }, 50);
+                if (needUpdateBooking && booking) {
+                    this.props.getBooking(booking.id, 'id');
+                    var that = this;
+                    setTimeout(() => {
+                        that.setState({loading: true, curViewMode: 0});
+                    }, 50);
+                }
             }
         }
 
@@ -1169,6 +1172,13 @@ class BookingPage extends Component {
         });
 
         return newBookingLines;
+    }
+
+
+    onClickPOD() {
+        const { booking } = this.state;
+
+        this.props.fpPod(booking.id, booking.vx_freight_provider);
     }
 
     onClickBook() {
@@ -3952,6 +3962,11 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
+
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod</button>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -4491,6 +4506,7 @@ const mapDispatchToProps = (dispatch) => {
         deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
         updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
         fpBook: (bookingId, vx_freight_provider) => dispatch(fpBook(bookingId, vx_freight_provider)),
+        fpPod: (bookingId, vx_freight_provider) => dispatch(fpPod(bookingId, vx_freight_provider)),
         fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
         fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
         fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
