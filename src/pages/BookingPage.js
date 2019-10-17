@@ -680,24 +680,13 @@ class BookingPage extends Component {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
 
-                if (booking.b_client_name.toLowerCase() === 'biopak') {
-                    if (!_.isNull(booking.manifest_timestamp) &&
-                        !_.isUndefined(booking.manifest_timestamp) &&
-                        !_.isEmpty(booking.manifest_timestamp)) 
-                    {
-                        this.setState({isBookedBooking: true});
-                    } else {
-                        this.setState({isBookedBooking: false});
-                    }
+                if (!_.isNull(booking.b_dateBookedDate) &&
+                    !_.isUndefined(booking.b_dateBookedDate) &&
+                    !_.isEmpty(booking.b_dateBookedDate)) 
+                {
+                    this.setState({isBookedBooking: true});
                 } else {
-                    if (!_.isNull(booking.b_dateBookedDate) &&
-                        !_.isUndefined(booking.b_dateBookedDate) &&
-                        !_.isEmpty(booking.b_dateBookedDate)) 
-                    {
-                        this.setState({isBookedBooking: true});
-                    } else {
-                        this.setState({isBookedBooking: false});
-                    }
+                    this.setState({isBookedBooking: false});
                 }
 
                 if (
@@ -1954,9 +1943,21 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        if (this.state.isBookedBooking && this.state.clientname !== 'dme') {
+        const {clientname, isBookedBooking, booking} = this.state;
+
+        if (isBookedBooking &&
+            clientname.toLowerCase() !== 'dme' &&
+            clientname.toLowerCase() !== 'biopak')
+        {
             this.notify('Booking is already Booked!');
-        } else {
+        } else if (clientname.toLowerCase() === 'biopak' &&
+            !_.isNull(booking.manifest_timestamp) &&
+            !_.isUndefined(booking.manifest_timestamp) &&
+            !_.isEmpty(booking.manifest_timestamp))
+        {
+            this.notify('Booking is already Manifested!');
+        }
+        else {
             const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
             let bookingToUpdate = this.state.booking;
 
@@ -2005,7 +2006,7 @@ class BookingPage extends Component {
 
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
-                    this.props.updateBooking(this.state.booking.id, bookingToUpdate);
+                    this.props.updateBooking(booking.id, bookingToUpdate);
                     this.setState({loadingBookingUpdate: true, isBookingModified: false});
                 } else {
                     this.notify(res);
