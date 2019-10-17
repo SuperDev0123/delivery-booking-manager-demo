@@ -511,19 +511,21 @@ class BookingPage extends Component {
             this.props.clearErrorMessage();
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
-            if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
-                bookingErrorMessage.indexOf('Successfully edit book') !== -1
-            ) {
-                let currentBooking = this.state.booking;
-                this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
-            }
+            if (this.state.booking.b_client_name.toLowerCase() !== 'hunter') {
+                if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
+                    bookingErrorMessage.indexOf('Successfully edit book') !== -1
+                ) {
+                    let currentBooking = this.state.booking;
+                    this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                }
 
-            if (needUpdateBooking && booking) {
-                this.props.getBooking(booking.id, 'id');
-                var that = this;
-                setTimeout(() => {
-                    that.setState({loading: true, curViewMode: 0});
-                }, 50);
+                if (needUpdateBooking && booking) {
+                    this.props.getBooking(booking.id, 'id');
+                    var that = this;
+                    setTimeout(() => {
+                        that.setState({loading: true, curViewMode: 0});
+                    }, 50);
+                }
             }
         }
 
