@@ -339,7 +339,7 @@ export const fpLabel = (bookingId, vx_freight_provider) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'bookingId': bookingId},
+        data: {'booking_id': bookingId},
         url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/get-label/`
     };
 
