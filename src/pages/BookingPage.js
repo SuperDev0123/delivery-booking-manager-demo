@@ -522,7 +522,10 @@ class BookingPage extends Component {
             this.props.clearErrorMessage();
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
-            if (this.state.booking && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter') {
+            if (this.state.booking
+                && !_.isUndefined(this.state.booking.vx_freight_provider)
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter')
+            {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
