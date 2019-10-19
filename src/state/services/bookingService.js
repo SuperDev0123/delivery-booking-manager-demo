@@ -30,7 +30,9 @@ import {
     successFPCreateOrder, // "
     failedFPCreateOrder, // "
     successFPGetOrderSummary, // "
-    failedFPGetOrderSummary, // FP Actions End
+    failedFPGetOrderSummary,  // "
+    successFPPricing, // "
+    failedFPPricing, // FP Actions End
     setAllLocalFilter,
     setLocalFilter,
     setNeedUpdateBookingsFlag,
@@ -53,6 +55,10 @@ import {
     resetManifestReport,
     successGetManifestReport,
     failedGetManifestReport,
+    resetPricingInfosFlagAction,
+    resetPricingInfosAction,
+    successGetPricingInfos,
+    setErrorMessageAction,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -391,6 +397,34 @@ export const fpPod = (bookingId, vx_freight_provider) => {
             .catch((error) => dispatch(failedFPPod(error)));
 };
 
+export const fpPricing = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/pricing/`
+    };
+    return dispatch => {
+        dispatch(resetPricingInfos());
+        axios(options)
+            .then(({data}) => dispatch(successFPPricing(data)))
+            .catch((error) => dispatch(failedFPPricing(error)));
+    };
+};
+
+export const resetPricingInfosFlag = () => {
+    return dispatch => {
+        dispatch(resetPricingInfosFlagAction());
+    };
+};
+
+export const resetPricingInfos = () => {
+    return dispatch => {
+        dispatch(resetPricingInfosAction());
+    };
+};
+
 export const mapBok1ToBookings = () => {
     const token = localStorage.getItem('token');
     const options = {
@@ -529,5 +563,21 @@ export const getManifestReport = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetManifestReport(data)))
             .catch((error) => dispatch(failedGetManifestReport(error)));
+    };
+};
+
+export const getPricingInfos = (fk_booking_id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/pricing/get_pricings/`,
+        params: {'fk_booking_id': fk_booking_id},
+    };
+    return dispatch => {
+        dispatch(resetPricingInfosAction());
+        axios(options)
+            .then(({ data }) => dispatch(successGetPricingInfos(data)))
+            .catch((error) => dispatch(setErrorMessageAction(error)));
     };
 };

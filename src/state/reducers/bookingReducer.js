@@ -61,6 +61,12 @@ import {
     RESET_MANIFEST_REPORT,
     SUCCESS_GET_MANIFEST_REPORT,
     FAIELD_GET_MANIFEST_REPORT,
+    SUCCESS_FP_PRICING,
+    FAILED_FP_PRICING,
+    RESET_PRICING_INFOS,
+    RESET_PRICING_INFOS_FLAG,
+    SUCCESS_GET_PRICING_INFOS,
+    SET_ERROR_MSG,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -95,6 +101,8 @@ const defaultState = {
     isTickedManualBook: null,
     needUpdateBooking: null,
     manifestReports: [],
+    pricingInfos: [],
+    pricingInfosFlag: false,
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -140,6 +148,16 @@ export const BookingReducer = (state = defaultState, {
     multiFindValues,
 }) => {
     switch (type) {
+        case RESET_PRICING_INFOS:
+            return {
+                ...state,
+                pricingInfos: [],
+            };
+        case RESET_PRICING_INFOS_FLAG:
+            return {
+                ...state,
+                pricingInfosFlag: false,
+            };
         case RESET_MANIFEST_REPORT:
             return {
                 ...state,
@@ -453,6 +471,15 @@ export const BookingReducer = (state = defaultState, {
                 needUpdateBooking: true,
                 errorMessage: errorMessage,
             };
+        case SUCCESS_FP_PRICING:
+        case SUCCESS_GET_PRICING_INFOS:
+            return {
+                ...state,
+                pricingInfos: payload,
+                pricingInfosFlag: true,
+                errorMessage: errorMessage,
+            };
+        case SET_ERROR_MSG:
         case CHANGE_STATUS_FAILED:
         case BOOK_CANCEL_FAILED:
         case BOOK_EDIT_FAILED:
@@ -460,6 +487,7 @@ export const BookingReducer = (state = defaultState, {
         case FAILED_CALC_COLLECTED:
         case FAILED_MANUAL_BOOK:
         case FAIELD_GET_MANIFEST_REPORT:
+        case FAILED_FP_PRICING:
             return {
                 ...state,
                 errorMessage: errorMessage,

@@ -64,6 +64,12 @@ import {
     RESET_MANIFEST_REPORT,
     SUCCESS_GET_MANIFEST_REPORT,
     FAIELD_GET_MANIFEST_REPORT,
+    SUCCESS_FP_PRICING,
+    FAILED_FP_PRICING,
+    RESET_PRICING_INFOS,
+    RESET_PRICING_INFOS_FLAG,
+    SUCCESS_GET_PRICING_INFOS,
+    SET_ERROR_MSG,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -462,6 +468,23 @@ export function failedFPGetOrderSummary(error) {
     };
 }
 
+export function successFPPricing(data) {
+    return {
+        type: SUCCESS_FP_PRICING,
+        payload: data['results'],
+        errorMessage: data['message']
+    };
+}
+
+export function failedFPPricing(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_FP_PRICING,
+        errorMessage: 'Failed to FC(Freight Calculation)'
+    };
+}
+
 export function successGenerateXLS(data) {
     console.log('@500 - Success generate xml: ', data);
     return {
@@ -572,6 +595,32 @@ export function successGetManifestReport(data) {
 export function failedGetManifestReport(error) {
     return {
         type: FAIELD_GET_MANIFEST_REPORT,
+        errorMessage: error.response.data.message,
+    };
+}
+
+export function resetPricingInfosFlagAction() {
+    return {
+        type: RESET_PRICING_INFOS_FLAG,
+    };
+}
+
+export function resetPricingInfosAction() {
+    return {
+        type: RESET_PRICING_INFOS,
+    };
+}
+
+export function successGetPricingInfos(data) {
+    return {
+        type: SUCCESS_GET_PRICING_INFOS,
+        payload: data,
+    };
+}
+
+export function setErrorMessageAction(error) {
+    return {
+        type: SET_ERROR_MSG,
         errorMessage: error.response.data.message,
     };
 }

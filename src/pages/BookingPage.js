@@ -33,9 +33,10 @@ import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
+import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -170,6 +171,8 @@ class BookingPage extends Component {
             apiBCLs: [],
             allFPs: [],
             currentNoteModalField: null,
+            pricingInfos: [],
+            isShowFPPricingSlider: false,
         };
 
         this.djsConfig = {
@@ -211,6 +214,7 @@ class BookingPage extends Component {
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
         this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
+        this.toggleShowFPPricingSlider = this.toggleShowFPPricingSlider.bind(this);
     }
 
     static propTypes = {
@@ -239,6 +243,8 @@ class BookingPage extends Component {
         fpPod: PropTypes.func.isRequired,
         fpEditBook: PropTypes.func.isRequired,
         fpLabel: PropTypes.func.isRequired,
+        fpPricing: PropTypes.func.isRequired,
+        getPricingInfos: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
@@ -310,7 +316,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -408,6 +414,10 @@ class BookingPage extends Component {
 
         if (apiBCLs) {
             this.setState({apiBCLs});
+        }
+
+        if (pricingInfos && pricingInfosFlag) {
+            this.setState({pricingInfos, loading: false});
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -1772,6 +1782,10 @@ class BookingPage extends Component {
         }
     }
 
+    toggleShowFPPricingSlider() {
+        this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -2150,6 +2164,29 @@ class BookingPage extends Component {
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
         this.setState({formInputs, booking, isBookingModified: true});
+    }
+
+    onClickFC() { // On click Freight Calculation button
+        const {booking} = this.state;
+        this.props.fpPricing(booking.id);
+        this.setState({loading: true});
+        this.toggleShowFPPricingSlider();
+    }
+
+    onClickOpenPricingSlider() {
+        const {booking} = this.state;
+        this.props.getPricingInfos(booking.pk_booking_id);
+        this.setState({loading: true});
+        this.toggleShowFPPricingSlider();
+    }
+
+    onSelectPricing(pricingInfo) {
+        const formInputs = this.state.formInputs;
+        const booking = this.state.booking;
+        formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        this.setState({formInputs, booking, isBookingModified: true});
+        this.toggleShowFPPricingSlider();
     }
 
     render() {
@@ -3902,8 +3939,21 @@ class BookingPage extends Component {
                                                         <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
                                                         <button className={(parseInt(curViewMode) === 2) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
                                                     </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
+                                                    <div className="text-center mt-2 fixed-height pricing-btns">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickFC()}
+                                                            disabled={booking && !isBookedBooking ? '' : 'disabled'}
+                                                        >
+                                                            Price & Time Calc(FC)
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickOpenPricingSlider()}
+                                                            disabled={booking && !isBookedBooking ? '' : 'disabled'}
+                                                        >
+                                                            <i className="fa fa-caret-square-o-left"></i>
+                                                        </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button 
@@ -4427,6 +4477,13 @@ class BookingPage extends Component {
                     okBtnName={'Delete'}
                 />
 
+                <FPPricingSlider
+                    isOpen={this.state.isShowFPPricingSlider}
+                    toggleShowSlider={this.toggleShowFPPricingSlider}
+                    pricingInfos={this.state.pricingInfos}
+                    onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -4481,6 +4538,8 @@ const mapStateToProps = (state) => {
         needUpdateBooking: state.booking.needUpdateBooking,
         needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
         isTickedManualBook: state.booking.isTickedManualBook,
+        pricingInfos: state.booking.pricingInfos,
+        pricingInfosFlag: state.booking.pricingInfosFlag,
     };
 };
 
@@ -4510,6 +4569,7 @@ const mapDispatchToProps = (dispatch) => {
         fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
         fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
         fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
+        fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         createComm: (comm) => dispatch(createComm(comm)),
@@ -4538,6 +4598,8 @@ const mapDispatchToProps = (dispatch) => {
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getAllFPs: () => dispatch(getAllFPs()),
+        resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
+        getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
     };
 };
 
