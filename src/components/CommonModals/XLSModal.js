@@ -180,8 +180,8 @@ class XLSModal extends Component {
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
                 <ModalFooter>
+                    <Button color="secondary left" onClick={() => this.props.toggleShowXLSModal()}>Cancel</Button>
                     <Button color="primary" disabled={!buttonStatus} onClick={() => this.onClickBuildAndSend()}>Build & Send</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowXLSModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );
