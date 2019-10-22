@@ -1181,6 +1181,14 @@ class BookingPage extends Component {
         this.props.fpPod(booking.id, booking.vx_freight_provider);
     }
 
+    onClickGetLabel() {
+        const {booking, isBookedBooking} = this.state;
+
+        if (isBookedBooking) {
+            this.props.fpLabel(booking.id, booking.vx_freight_provider);
+        }
+    }
+
     onClickBook() {
         const { booking, isBookedBooking, clientname } = this.state;
 
@@ -3960,13 +3968,20 @@ class BookingPage extends Component {
                                                             null
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
+                                                        <button className="btn btn-theme custom-theme none" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
-
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod</button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickGetLabel()}
+                                                            disabled={booking && booking.z_label_url && booking.z_label_url.length > 0 ? 'disabled' : ''}
+                                                        >
+                                                            Get Label
+                                                        </button>
                                                     </div>
-
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod (Test Usage)</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
