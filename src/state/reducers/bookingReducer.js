@@ -61,6 +61,8 @@ import {
     RESET_MANIFEST_REPORT,
     SUCCESS_GET_MANIFEST_REPORT,
     FAIELD_GET_MANIFEST_REPORT,
+    GET_TRACK_FAILED,
+    DO_NOTHING,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -460,6 +462,7 @@ export const BookingReducer = (state = defaultState, {
         case FAILED_CALC_COLLECTED:
         case FAILED_MANUAL_BOOK:
         case FAIELD_GET_MANIFEST_REPORT:
+        case GET_TRACK_FAILED:
             return {
                 ...state,
                 errorMessage: errorMessage,
@@ -478,6 +481,10 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 errorMessage: '',
+            };
+        case DO_NOTHING:
+            return {
+                ...state,
             };
         default:
             return state;

@@ -25,12 +25,16 @@ import {
     failedFPEditBook, // "
     successFPGetLabel, // "
     failedFPGetLabel, // "
+    successFPReprintLabel, // "
+    failedFPReprintLabel, // "
     successFPCancelBook, // "
     failedFPCancelBook, // "
     successFPCreateOrder, // "
     failedFPCreateOrder, // "
     successFPGetOrderSummary, // "
-    failedFPGetOrderSummary, // FP Actions End
+    failedFPGetOrderSummary, // ""
+    successFPTracking, // "
+    failedFPTracking, // FP Actions End
     setAllLocalFilter,
     setLocalFilter,
     setNeedUpdateBookingsFlag,
@@ -347,6 +351,36 @@ export const fpLabel = (bookingId, vx_freight_provider) => {
         axios(options)
             .then(({data}) => dispatch(successFPGetLabel(data)))
             .catch((error) => dispatch(failedFPGetLabel(error)));
+};
+
+export const fpReprint = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/reprint/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPReprintLabel(data)))
+            .catch((error) => dispatch(failedFPReprintLabel(error)));
+};
+
+export const fpTracking = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/tracking/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPTracking(data)))
+            .catch((error) => dispatch(failedFPTracking(error)));
 };
 
 export const fpOrder = (bookingIds, vx_freight_provider) => {

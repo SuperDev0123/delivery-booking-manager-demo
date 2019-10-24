@@ -64,6 +64,8 @@ import {
     RESET_MANIFEST_REPORT,
     SUCCESS_GET_MANIFEST_REPORT,
     FAIELD_GET_MANIFEST_REPORT,
+    GET_TRACK_FAILED,
+    DO_NOTHING,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -337,7 +339,7 @@ export function failedGetUserDateFilterField(error) {
 
 // FP Actions
 export function successFPBook(data) {
-    alert(`${data.message}, Now trying to get Label`);
+    alert(data.message);
 
     return {
         type: BOOK_SUCCESS,
@@ -404,6 +406,42 @@ export function failedFPGetLabel(error) {
 
     return {
         type: GET_LABEL_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successFPReprintLabel(data) {
+    alert(`Success reprint Label: ${data.message}`);
+
+    return {
+        type: GET_LABEL_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPReprintLabel(error) {
+    alert(`Failed reprint Label: ${error.response.data.message}`);
+
+    return {
+        type: GET_LABEL_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successFPTracking(data) {
+    alert(`Success track status: ${data.message}`);
+
+    return {
+        type: DO_NOTHING,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPTracking(error) {
+    alert(`Failed track status: ${error.response.data.message}`);
+
+    return {
+        type: GET_TRACK_FAILED,
         errorMessage: error.response.data.message
     };
 }
