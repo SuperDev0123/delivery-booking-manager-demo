@@ -924,6 +924,10 @@ class AllBookingsPage extends React.Component {
         const tas_name = 'tasfr';
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
+            this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                .then(() => {
+                    this.onClickDateFilter();
+                });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
                 const win = window.open(booking.z_label_url);
                 win.focus();
