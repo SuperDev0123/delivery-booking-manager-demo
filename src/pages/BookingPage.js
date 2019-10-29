@@ -2188,6 +2188,7 @@ class BookingPage extends Component {
         const booking = this.state.booking;
         formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
         booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        booking['vx_account_code'] = pricingInfo.account_code;
         this.setState({formInputs, booking, isBookingModified: true});
         this.toggleShowFPPricingSlider();
     }

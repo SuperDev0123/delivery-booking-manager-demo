@@ -27,7 +27,7 @@ class FPPricingSlider extends React.Component {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{pricingInfo.fk_freight_provider_id}</td>
+                    <td>{pricingInfo.fk_freight_provider_id}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.fee}</td>
                     <td>{pricingInfo.etd}</td>
