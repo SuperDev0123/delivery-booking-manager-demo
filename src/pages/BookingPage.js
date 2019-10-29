@@ -30,7 +30,7 @@ import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
-import DateDetailsSlider from '../components/Sliders/DateDetailsSlider';
+import ProjectDataSlider from '../components/Sliders/ProjectDataSlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
@@ -163,7 +163,7 @@ class BookingPage extends Component {
             statusActions: [],
             availableCreators: [],
             isShowStatusLockModal: false,
-            isShowDateSlider: false,
+            isShowProjectDataSlider: false,
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
@@ -517,7 +517,7 @@ class BookingPage extends Component {
             this.props.clearErrorMessage();
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
-            if (this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter') {
+            if (this.state.booking.vx_freight_provider && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter') {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
@@ -1803,7 +1803,7 @@ class BookingPage extends Component {
         const { isBookingSelected } = this.state;
 
         if (isBookingSelected) {
-            this.setState(prevState => ({isShowDateSlider: !prevState.isShowDateSlider}));
+            this.setState(prevState => ({isShowProjectDataSlider: !prevState.isShowProjectDataSlider}));
         } else {
             alert('Please select a booking.');
         }
@@ -2200,7 +2200,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isShowDateSlider } = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments } = this.state;
 
         const bookingLineColumns = [
             {
@@ -4455,13 +4455,6 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
-                <DateDetailsSlider
-                    isOpen={isShowDateSlider}
-                    booking={booking}
-                    OnUpdateBooking = {(bookingToUpdate) => this.onUpdateBooking(bookingToUpdate)}
-                    toggleDateSlider={this.toggleShowDateSlider}
-                />
-
                 <LineTrackingSlider
                     isOpen={isShowLineTrackingSlider}
                     toggleShowLineTrackingSlider={this.toggleShowLineTrackingSlider}
@@ -4499,6 +4492,13 @@ class BookingPage extends Component {
                     title={'Delete Comm Log'}
                     text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
                     okBtnName={'Delete'}
+                />
+
+                <ProjectDataSlider
+                    isOpen={this.state.isShowProjectDataSlider}
+                    booking={booking}
+                    OnUpdateBooking = {(bookingToUpdate) => this.onUpdateBooking(bookingToUpdate)}
+                    toggleDateSlider={this.toggleShowDateSlider}
                 />
 
                 <ToastContainer />
