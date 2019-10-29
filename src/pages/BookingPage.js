@@ -30,6 +30,7 @@ import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
+import DateDetailsSlider from '../components/Sliders/DateDetailsSlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
@@ -162,6 +163,7 @@ class BookingPage extends Component {
             statusActions: [],
             availableCreators: [],
             isShowStatusLockModal: false,
+            isShowDateSlider: false,
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
@@ -208,6 +210,7 @@ class BookingPage extends Component {
         this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
         this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
         this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
+        this.toggleShowDateSlider = this.toggleShowDateSlider.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
         this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
@@ -1796,6 +1799,17 @@ class BookingPage extends Component {
         }
     }
 
+    toggleShowDateSlider() {
+        const { isBookingSelected } = this.state;
+
+        if (isBookingSelected) {
+            this.setState(prevState => ({isShowDateSlider: !prevState.isShowDateSlider}));
+        } else {
+            alert('Please select a booking.');
+        }
+    }
+
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -2066,6 +2080,11 @@ class BookingPage extends Component {
         this.toggleShowStatusHistorySlider();
     }
 
+    onClickOpenDateSlide(e) {
+        e.preventDefault();
+        this.toggleShowDateSlider();
+    }
+
     OnCreateStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
 
@@ -2100,6 +2119,10 @@ class BookingPage extends Component {
         } else {
             window.location.assign('/comm');
         }
+    }
+
+    onUpdateBooking(newBooking) {        
+        this.props.updateBooking(this.state.booking.id, newBooking);
     }
 
     onClickStatusLock(booking) {
@@ -2177,7 +2200,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isShowDateSlider } = this.state;
 
         const bookingLineColumns = [
             {
@@ -3715,7 +3738,11 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
-                                                <div className="head">
+                                                <div className="head text-white">
+                                                    <ul>
+                                                        <li>Project: {booking.b_booking_project}</li>
+                                                        <li><a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a></li>
+                                                    </ul>
                                                 </div>
                                                 <div className="pu-de-dates">
                                                     <div className="row mt-1">
@@ -4426,6 +4453,13 @@ class BookingPage extends Component {
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
                     clientname={clientname}
+                />
+
+                <DateDetailsSlider
+                    isOpen={isShowDateSlider}
+                    booking={booking}
+                    OnUpdateBooking = {(bookingToUpdate) => this.onUpdateBooking(bookingToUpdate)}
+                    toggleDateSlider={this.toggleShowDateSlider}
                 />
 
                 <LineTrackingSlider
