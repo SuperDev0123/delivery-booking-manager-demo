@@ -30,6 +30,7 @@ import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import SimpleTooltipComponent from '../components/Tooltip/SimpleTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
+import ProjectNameModal from '../components/CommonModals/ProjectNameModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import CheckPodModal from '../components/CommonModals/CheckPodModal';
 import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
@@ -84,7 +85,6 @@ class AllBookingsPage extends React.Component {
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
             scrollLeft: 0,
-            isShowXLSModal: false,
             selectedStatusValue: null,
             selectedWarehouseName: 'All',
             allBookingStatus: [],
@@ -93,6 +93,8 @@ class AllBookingsPage extends React.Component {
             selectedOneBooking: null,
             activeBookingId: null,
             dmeStatus: null,
+            isShowXLSModal: false,
+            isShowProjectNameModal: false,
             isShowCheckPodModal: false,
             isShowStatusInfoSlider: false,
             isShowFindModal: false,
@@ -112,6 +114,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
         this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
         this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
+        this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -648,6 +651,10 @@ class AllBookingsPage extends React.Component {
 
     toggleShowOrderModal() {
         this.setState(prevState => ({isShowOrderModal: !prevState.isShowOrderModal})); 
+    }
+
+    toggleShowProjectNameModal() {
+        this.setState(prevState => ({isShowProjectNameModal: !prevState.isShowProjectNameModal}));
     }
 
     onCheck(e, id) {
@@ -1456,8 +1463,18 @@ class AllBookingsPage extends React.Component {
         this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
     }
 
+    onUpdateProjectsName(name) {
+        const { selectedBookingIds } = this.state;
+        if(selectedBookingIds.length > 0) {
+            this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
+            this.toggleShowProjectNameModal();
+        } else {
+            this.notify('Please select at least one booking');
+        }
+    }
+
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1942,6 +1959,7 @@ class AllBookingsPage extends React.Component {
                             <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
                                 <i className="icon icon-th-list" aria-hidden="true"></i>
                             </div>
+
                             <div className="popup" onClick={() => this.onClickSimpleSearch(1)}>
                                 <i className="icon-cog2" aria-hidden="true"></i>
                                 {
@@ -1961,6 +1979,12 @@ class AllBookingsPage extends React.Component {
                                                 disabled={(selectedBookingIds.length > 0) ? '' : true}
                                             >
                                                 Clear Collected
+                                            </button>
+                                            <button 
+                                                className="btn btn-primary" 
+                                                onClick={() => this.toggleShowProjectNameModal()}
+                                            >
+                                                Set Project Name
                                             </button>
                                         </div>
                                     </div>
@@ -2601,6 +2625,12 @@ class AllBookingsPage extends React.Component {
                         </div>
                     </div>
                 </LoadingOverlay>
+
+                <ProjectNameModal
+                    isShowProjectNameModal={isShowProjectNameModal}
+                    toggleShowProjectNameModal={this.toggleShowProjectNameModal}
+                    onUpdate={(name) => this.onUpdateProjectsName(name)}
+                />
 
                 <XLSModal
                     isShowXLSModal={isShowXLSModal}
