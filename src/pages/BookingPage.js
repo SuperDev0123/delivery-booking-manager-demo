@@ -524,6 +524,7 @@ class BookingPage extends Component {
 
             if (this.state.booking
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
+                && !_.isNull(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter')
             {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
