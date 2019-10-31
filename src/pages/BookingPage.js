@@ -2247,25 +2247,6 @@ class BookingPage extends Component {
             }
         ];
 
-        const columnFreight = [
-            {
-                dataField: 'provider',
-                text: 'Provider'
-            }, {
-                dataField: 'service',
-                text: 'Service'
-            }, {
-                dataField: 'etd',
-                text: 'ETD'
-            }, {
-                dataField: 'totalFeeEx',
-                text: 'Total Fee Ex(GST)'
-            }, {
-                dataField: 'bookingCutoffTime',
-                text: 'Booking Cutoff Time'
-            },
-        ];
-
         const datetimeFormatter = (cell) => {
             return (
                 moment(cell).format('DD/MM/YYYY hh:mm:ss')
@@ -4032,20 +4013,22 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Freight Options</a></li>
-                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log({comms.length})</a></li>
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
-                                                <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
+                                                {
+                                                    clientname === 'dme' ?
+                                                        <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
+                                                        : null
+                                                }
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Attachments({cntAttachments})</a></li>
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Label & Pod</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer none">
                                             <select id="tab-select">
                                                 <option value="#tab01">Shipment Packages / Goods</option>
                                                 <option value="#tab02">Additional Services & Options</option>
-                                                <option value="#tab03">Freight Options</option>
-                                                <option value="#tab04">Communication Log</option>
-                                                <option value="#tab05">Attachments</option>
-                                                <option value="#tab06">Label & Pod</option>
+                                                <option value="#tab03">Communication Log</option>
+                                                <option value="#tab04">Attachments</option>
+                                                <option value="#tab05">Label & Pod</option>
                                             </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
@@ -4120,17 +4103,6 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab03" className={activeTabInd === 2 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <div className="tab-inner">
-                                                <BootstrapTable
-                                                    keyField="modelNumber"
-                                                    data={ bookingLineDetailsProduct }
-                                                    columns={ columnFreight }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
-                                                    bootstrap4={ true }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
@@ -4152,7 +4124,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
-                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e, 'attachments')}>
                                                     <DropzoneComponent
@@ -4173,7 +4145,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {
                                                 isBookingSelected ?
                                                     <div className="row">

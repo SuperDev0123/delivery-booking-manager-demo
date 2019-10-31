@@ -285,7 +285,7 @@ class LineTrackingSlider extends React.Component {
                     </label>
                     <br />
                     {
-                        (lines.length > 0) ?
+                        (lines.length > 0 && clientname === 'dme') ?
                             <label>
                                 <Button 
                                     onClick={() => this.handleBtnClick('Calc')} 
