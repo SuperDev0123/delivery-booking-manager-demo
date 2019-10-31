@@ -3427,12 +3427,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Reference No</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="b_clientReference_RA_Numbers" 
-                                                                className="form-control" 
-                                                                value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
-                                                                disabled='disabled'/>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['b_clientReference_RA_Numbers']}</p>
+                                                                    :
+                                                                    <input
+                                                                        type="text" 
+                                                                        name="b_clientReference_RA_Numbers" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
+                                                                        disabled={(booking && booking.b_status == 'Closed') ? '' : 'disabled'}
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="clearfix"></div>
