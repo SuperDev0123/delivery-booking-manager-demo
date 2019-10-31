@@ -1928,7 +1928,7 @@ class AllBookingsPage extends React.Component {
                             </ul>
                         </div>
                         <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
-                            <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                            <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                             <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
                                 {
@@ -1970,17 +1970,17 @@ class AllBookingsPage extends React.Component {
                                     </div>
                                 }
                             </div>
-                            <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                            <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
                                     <i className="fa fa-file-excel-o" aria-hidden="true"></i>
                                 </span>
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickMANI()}>
+                            <a className={clientname === 'dme' || clientname === 'biopak' ? '' : 'none'} onClick={() => this.onClickMANI()}>
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
                             </a>
-                            <a href="" className="help"><i className="fa fa-sliders"></i></a>
+                            <a href="" className="help none"><i className="fa fa-sliders"></i></a>
                         </div>
                     </div>
                     <div className="top-menu">

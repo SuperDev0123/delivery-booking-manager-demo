@@ -2504,16 +2504,21 @@ class BookingPage extends Component {
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
                         <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
-                        <div className="popup">
+                        <div className="none">
                             <i className="icon-search3" aria-hidden="true"></i>
                         </div>
-                        <div className="popup">
+                        <div className="none">
                             <i className="icon icon-th-list" aria-hidden="true"></i>
                         </div>
-                        <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
-                        <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
-                        <a href="">?</a>
-                        <a onClick={(e) => this.onClickSwitchClientNavIcon(e)} className={clientname === 'dme' ? 'cur-pointer' : 'none'}><i className="fa fa-users" aria-hidden="true"></i></a>
+                        <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
+                        <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        <a className="none">?</a>
+                        <a 
+                            className={clientname === 'dme' ? 'cur-pointer' : 'none'}
+                            onClick={(e) => this.onClickSwitchClientNavIcon(e)}
+                        >
+                            <i className="fa fa-users" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
 
