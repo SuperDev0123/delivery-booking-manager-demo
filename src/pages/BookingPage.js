@@ -2052,15 +2052,6 @@ class BookingPage extends Component {
         }
     }
 
-    onClickConfirmBooking() {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
-            let bookingToUpdate = this.state.booking;
-            bookingToUpdate.z_manual_booking_set_to_confirm = moment();
-            bookingToUpdate.b_status = 'Ready for booking';
-            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-        }
-    }
-
     onClickOpenSlide(e) {
         e.preventDefault();
         this.toggleShowStatusHistorySlider();
@@ -3914,16 +3905,11 @@ class BookingPage extends Component {
                                                         <button className={(parseInt(curViewMode) === 2) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button 
-                                                            className="btn btn-theme custom-theme" 
-                                                            onClick={() => this.onClickConfirmBooking()}
-                                                            disabled={!isBookingSelected || isBookedBooking}
-                                                        >
-                                                            <i className="fas fa-clipboard-check"></i>Confirm Booking
-                                                        </button>
+                                                        {
+                                                            clientname === 'dme' ?
+                                                                <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
+                                                                : null
+                                                        }
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
