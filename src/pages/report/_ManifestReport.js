@@ -16,6 +16,7 @@ class ManifestReport extends React.Component {
 
         this.state = {
             loadingDownload: false,
+            loading: false
         };
     }
 
@@ -26,10 +27,17 @@ class ManifestReport extends React.Component {
 
     componentDidMount() {
         this.props.getManifestReport();
+        this.setState({loading: true});
     }
 
-    // UNSAFE_componentWillReceiveProps(newProps) {
-    // }
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { reports } = newProps;
+    
+        if (reports) {
+            this.setState({ loading: false});
+            this.setState({reports});
+        }
+    }
 
     onClickDownload(report) {
         this.setState({loadingDownload: true});
@@ -54,6 +62,7 @@ class ManifestReport extends React.Component {
 
     render() {
         const { reports } = this.props;
+        const { loading } = this.state;
 
         const reportList = reports.map((report, index) => {
             return (
@@ -76,9 +85,9 @@ class ManifestReport extends React.Component {
 
         return (
             <LoadingOverlay
-                active={this.state.loadingDownload}
+                active={loading}
                 spinner
-                text='Ready to download...'
+                text='Loading...'
             >
                 <div className="manifest">
                     <table>

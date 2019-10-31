@@ -24,6 +24,7 @@ class ReportPage extends React.Component {
     };
 
     componentDidMount() {
+        console.log('ReportPage');
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {

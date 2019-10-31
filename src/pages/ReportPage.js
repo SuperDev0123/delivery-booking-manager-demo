@@ -52,6 +52,7 @@ class ReportPage extends React.Component {
         }
 
         if (reports) {
+
             this.setState({reports});
         }
     }
