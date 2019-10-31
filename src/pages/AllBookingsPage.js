@@ -1977,7 +1977,10 @@ class AllBookingsPage extends React.Component {
                                 </span>
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a className={clientname === 'dme' || clientname === 'biopak' ? '' : 'none'} onClick={() => this.onClickMANI()}>
+                            <a 
+                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                onClick={() => this.onClickMANI()}
+                            >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
                             </a>
                             <a href="" className="help none"><i className="fa fa-sliders"></i></a>

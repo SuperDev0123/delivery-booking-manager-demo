@@ -3919,27 +3919,6 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
                                                             className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickEditBook()}
-                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
-                                                        >
-                                                            Amend Booking
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button
-                                                            className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickCancelBook()}
-                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
-                                                        >
-                                                            Cancel Request
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button
-                                                            className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickBook()}
                                                             disabled={isBookedBooking ? 'disabled' : ''}
                                                         >
@@ -3961,6 +3940,27 @@ class BookingPage extends Component {
                                                             :
                                                             null
                                                     }
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickEditBook()}
+                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                        >
+                                                            Amend Booking
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickCancelBook()}
+                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
+                                                        >
+                                                            Cancel Request
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme none" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
