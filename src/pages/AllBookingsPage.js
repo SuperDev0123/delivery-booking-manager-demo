@@ -947,6 +947,10 @@ class AllBookingsPage extends React.Component {
         const tas_name = 'tasfr';
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
+            this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                .then(() => {
+                    this.onClickDateFilter();
+                });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
                 const win = window.open(booking.z_label_url);
                 win.focus();
@@ -1966,7 +1970,7 @@ class AllBookingsPage extends React.Component {
                             </ul>
                         </div>
                         <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
-                            <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                            <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                             <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
                                 {
@@ -2015,17 +2019,20 @@ class AllBookingsPage extends React.Component {
                                     </div>
                                 }
                             </div>
-                            <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
-                            <a onClick={() => this.onClickDownloadExcel()}>
+                            <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
                                     <i className="fa fa-file-excel-o" aria-hidden="true"></i>
                                 </span>
                             </a>
-                            <a onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a onClick={() => this.onClickMANI()}>
+                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
+                            <a 
+                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                onClick={() => this.onClickMANI()}
+                            >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
                             </a>
-                            <a href="" className="help"><i className="fa fa-sliders"></i></a>
+                            <a href="" className="help none"><i className="fa fa-sliders"></i></a>
                         </div>
                     </div>
                     <div className="top-menu">
@@ -2075,32 +2082,38 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
-                                            <label className='right-10px'>Status: </label>
-                                            <select 
-                                                id="status" 
-                                                required 
-                                                onChange={(e) => this.onSelected(e, 'status')} 
-                                            >
-                                                <option value="" selected disabled hidden>Select a status</option>
-                                                <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>-------------     Flags    -------------</option>
-                                                <option value="flag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Flag - add on services</option>
-                                                <option value="unflag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Unflag - add on services</option>
-                                                <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>------------- Booking Status-------------</option>
-                                                { bookingStatusList }
-                                            </select>
-                                            <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
-                                            <div className="disp-inline-block">
-                                                <LoadingOverlay
-                                                    active={false}
-                                                    spinner={<BarLoader color={'#FFF'} />}
-                                                    text=''
-                                                >
-                                                    <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
-                                                    <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                                </LoadingOverlay>
-                                            </div>
+                                            {
+                                                clientname === 'dme' || clientname === 'biopak' ?
+                                                    <div className="disp-inline-block">
+                                                        <label className='right-10px'>Status: </label>
+                                                        <select 
+                                                            id="status" 
+                                                            required 
+                                                            onChange={(e) => this.onSelected(e, 'status')} 
+                                                        >
+                                                            <option value="" selected disabled hidden>Select a status</option>
+                                                            <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>-------------     Flags    -------------</option>
+                                                            <option value="flag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Flag - add on services</option>
+                                                            <option value="unflag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Unflag - add on services</option>
+                                                            <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>------------- Booking Status-------------</option>
+                                                            { bookingStatusList }
+                                                        </select>
+                                                        <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
+                                                        <div className="disp-inline-block">
+                                                            <LoadingOverlay
+                                                                active={false}
+                                                                spinner={<BarLoader color={'#FFF'} />}
+                                                                text=''
+                                                            >
+                                                                <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
+                                                                <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                                            </LoadingOverlay>
+                                                        </div>
+                                                    </div>
+                                                    : null
+                                            }
                                         </div>
                                         <div className="row">
                                             <div className="project-name-select">

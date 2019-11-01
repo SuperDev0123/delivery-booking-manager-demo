@@ -2066,15 +2066,6 @@ class BookingPage extends Component {
         }
     }
 
-    onClickConfirmBooking() {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
-            let bookingToUpdate = this.state.booking;
-            bookingToUpdate.z_manual_booking_set_to_confirm = moment();
-            bookingToUpdate.b_status = 'Ready for booking';
-            this.props.updateBooking(this.state.booking.id, bookingToUpdate);
-        }
-    }
-
     onClickOpenSlide(e) {
         e.preventDefault();
         this.toggleShowStatusHistorySlider();
@@ -2268,25 +2259,6 @@ class BookingPage extends Component {
                 dataField: 'clientRefNumber',
                 text: 'Client Reference #'
             }
-        ];
-
-        const columnFreight = [
-            {
-                dataField: 'provider',
-                text: 'Provider'
-            }, {
-                dataField: 'service',
-                text: 'Service'
-            }, {
-                dataField: 'etd',
-                text: 'ETD'
-            }, {
-                dataField: 'totalFeeEx',
-                text: 'Total Fee Ex(GST)'
-            }, {
-                dataField: 'bookingCutoffTime',
-                text: 'Booking Cutoff Time'
-            },
         ];
 
         const datetimeFormatter = (cell) => {
@@ -2555,16 +2527,21 @@ class BookingPage extends Component {
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
                         <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
-                        <div className="popup">
+                        <div className="none">
                             <i className="icon-search3" aria-hidden="true"></i>
                         </div>
-                        <div className="popup">
+                        <div className="none">
                             <i className="icon icon-th-list" aria-hidden="true"></i>
                         </div>
-                        <a href=""><i className="icon-cog2" aria-hidden="true"></i></a>
-                        <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
-                        <a href="">?</a>
-                        <a onClick={(e) => this.onClickSwitchClientNavIcon(e)} className={clientname === 'dme' ? 'cur-pointer' : 'none'}><i className="fa fa-users" aria-hidden="true"></i></a>
+                        <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
+                        <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        <a className="none">?</a>
+                        <a 
+                            className={clientname === 'dme' ? 'cur-pointer' : 'none'}
+                            onClick={(e) => this.onClickSwitchClientNavIcon(e)}
+                        >
+                            <i className="fa fa-users" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
 
@@ -3450,12 +3427,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Reference No</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            <input 
-                                                                type="text" 
-                                                                name="b_clientReference_RA_Numbers" 
-                                                                className="form-control" 
-                                                                value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
-                                                                disabled='disabled'/>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['b_clientReference_RA_Numbers']}</p>
+                                                                    :
+                                                                    <input
+                                                                        type="text" 
+                                                                        name="b_clientReference_RA_Numbers" 
+                                                                        className="form-control" 
+                                                                        value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
+                                                                        disabled={(booking && booking.b_status == 'Closed') ? '' : 'disabled'}
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div className="clearfix"></div>
@@ -3954,37 +3937,11 @@ class BookingPage extends Component {
                                                         <button className={(parseInt(curViewMode) === 2) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button 
-                                                            className="btn btn-theme custom-theme" 
-                                                            onClick={() => this.onClickConfirmBooking()}
-                                                            disabled={!isBookingSelected || isBookedBooking}
-                                                        >
-                                                            <i className="fas fa-clipboard-check"></i>Confirm Booking
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button
-                                                            className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickEditBook()}
-                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
-                                                        >
-                                                            Amend Booking
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button
-                                                            className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickCancelBook()}
-                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
-                                                        >
-                                                            Cancel Request
-                                                        </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
+                                                        {
+                                                            clientname === 'dme' ?
+                                                                <button className="btn btn-theme custom-theme"><i className="fas fa-stopwatch"></i> Freight & Time Calculations</button>
+                                                                : null
+                                                        }
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
@@ -4010,6 +3967,27 @@ class BookingPage extends Component {
                                                             :
                                                             null
                                                     }
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickEditBook()}
+                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                        >
+                                                            Amend Booking
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickCancelBook()}
+                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
+                                                        >
+                                                            Cancel Request
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button className="btn btn-theme custom-theme none" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
@@ -4053,20 +4031,22 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Freight Options</a></li>
-                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Communication Log({comms.length})</a></li>
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
-                                                <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
+                                                {
+                                                    clientname === 'dme' ?
+                                                        <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
+                                                        : null
+                                                }
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Attachments({cntAttachments})</a></li>
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Label & Pod</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer none">
                                             <select id="tab-select">
                                                 <option value="#tab01">Shipment Packages / Goods</option>
                                                 <option value="#tab02">Additional Services & Options</option>
-                                                <option value="#tab03">Freight Options</option>
-                                                <option value="#tab04">Communication Log</option>
-                                                <option value="#tab05">Attachments</option>
-                                                <option value="#tab06">Label & Pod</option>
+                                                <option value="#tab03">Communication Log</option>
+                                                <option value="#tab04">Attachments</option>
+                                                <option value="#tab05">Label & Pod</option>
                                             </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
@@ -4141,17 +4121,6 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab03" className={activeTabInd === 2 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <div className="tab-inner">
-                                                <BootstrapTable
-                                                    keyField="modelNumber"
-                                                    data={ bookingLineDetailsProduct }
-                                                    columns={ columnFreight }
-                                                    cellEdit={ cellEditFactory({ mode: 'click',blurToSave: true }) }
-                                                    bootstrap4={ true }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
                                                 <i className="icon icon-th-list"></i>
                                             </button>
@@ -4173,7 +4142,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
-                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e, 'attachments')}>
                                                     <DropzoneComponent
@@ -4194,7 +4163,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {
                                                 isBookingSelected ?
                                                     <div className="row">

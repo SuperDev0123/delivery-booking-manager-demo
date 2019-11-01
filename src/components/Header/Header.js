@@ -103,13 +103,13 @@ class Header extends Component {
                                                     <i>Logged in as {username}</i>
                                                 </a>
                                                 <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/upload">Upload Files</a>
-                                                <div className="dropdown-divider"></div>
+                                                <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/upload">Upload Files</a>
+                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
                                                 <a className="dropdown-item" href="/booking">Booking</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/allbookings">All Bookings</a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/reports">Reports</a>
+                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
+                                                <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/reports">Reports</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
                                             </div>

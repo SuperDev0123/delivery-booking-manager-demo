@@ -47,3 +47,5 @@ body {
 .bold {
     font-weight: bold;
 }
+
+.row:before, .row:after {display: none !important;}

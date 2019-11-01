@@ -58,6 +58,7 @@ class FindModal extends Component {
                         <p>Select field to be searched: </p>
                         <select value={this.state.selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
                             <option value="b_client_sales_inv_num" selected="selected">SINV Number</option>
+                            <option value="v_FPBookingNumber" selected="selected">Consignment number</option>
                         </select>
                     </label>
                     <label>
