@@ -1463,14 +1463,19 @@ class AllBookingsPage extends React.Component {
         this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
     }
 
-    onUpdateProjectsName(name) {
+    onClickSetProjectsName() {
         const { selectedBookingIds } = this.state;
-        if(selectedBookingIds.length > 0) {
-            this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
+        if (selectedBookingIds.length > 0) {
             this.toggleShowProjectNameModal();
         } else {
             this.notify('Please select at least one booking');
         }
+    }
+
+    onUpdateProjectsName(name) {
+        const { selectedBookingIds } = this.state;
+        this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
+        this.toggleShowProjectNameModal();
     }
 
     render() {
@@ -1982,7 +1987,7 @@ class AllBookingsPage extends React.Component {
                                             </button>
                                             <button 
                                                 className="btn btn-primary" 
-                                                onClick={() => this.toggleShowProjectNameModal()}
+                                                onClick={() => this.onClickSetProjectsName()}
                                             >
                                                 Set Project Name
                                             </button>
