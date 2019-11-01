@@ -26,13 +26,14 @@ import {
     POD_FAILED,
     GET_LABEL_SUCCESS,
     GET_LABEL_FAILED,
-    SET_LOCAL_FILTER_ALL,
+    SET_LOCAL_FILTER_ALL, // Filter start
     SET_LOCAL_FILTER_SELECTEDATE,
     SET_LOCAL_FILTER_WAREHOUSEID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_PREFILTERIND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+    SET_LOCAL_FILTER_PROJECTNAME, // Filter end
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
     SUCCESS_DUPLICATE_BOOKING,
@@ -128,10 +129,15 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_DMESTATUS,
             dmeStatus: value,
         };
+    } else if (key === 'projectName') {
+        return {
+            type: SET_LOCAL_FILTER_PROJECTNAME,
+            payload: value,
+        };
     }
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) {
+export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
@@ -147,6 +153,7 @@ export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, ite
         dmeStatus: dmeStatus,
         multiFindField: multiFindField,
         multiFindValues: multiFindValues,
+        projectName: projectName,
     };
 }
 

@@ -1,4 +1,5 @@
 import {
+    DO_NOTHING,
     RESET_TICK_MANUAL_BOOK,
     RESET_ATTACHMENTS,
     RESET_BOOKING,
@@ -30,13 +31,16 @@ import {
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_PREFILTERIND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+    SET_LOCAL_FILTER_CLIENTPK,
+    SET_LOCAL_FILTER_DOWNLOADOPTION,
+    SET_LOCAL_FILTER_DMESTATUS,
+    SET_LOCAL_FILTER_PROJECTNAME,
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
     GET_LABEL_FAILED,
     SUCCESS_DUPLICATE_BOOKING,
     BOOK_CANCEL_SUCCESS,
     BOOK_CANCEL_FAILED,
-    SET_LOCAL_FILTER_CLIENTPK,
     FAILED_CREATE_BOOKING,
     SUCCESS_CREATE_BOOKING,
     CHANGE_STATUS_SUCCESS,
@@ -44,10 +48,8 @@ import {
     SUCCESS_CALC_COLLECTED,
     FAILED_CALC_COLLECTED,
     RESET_FLAG_LINES,
-    SET_LOCAL_FILTER_DOWNLOADOPTION,
     SET_FETCH_GEO_FLAG,
     CLEAR_ERR_MSG,
-    SET_LOCAL_FILTER_DMESTATUS,
     SUCCESS_TICK_MANUAL_BOOK,
     FAILED_TICK_MANUAL_BOOK,
     SUCCESS_MANUAL_BOOK,
@@ -62,7 +64,6 @@ import {
     SUCCESS_GET_MANIFEST_REPORT,
     FAIELD_GET_MANIFEST_REPORT,
     GET_TRACK_FAILED,
-    DO_NOTHING,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -97,6 +98,7 @@ const defaultState = {
     isTickedManualBook: null,
     needUpdateBooking: null,
     manifestReports: null,
+    projectName: '',
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -138,6 +140,7 @@ export const BookingReducer = (state = defaultState, {
     cntComms,
     cntAttachments,
     dmeStatus,
+    projectName,
     multiFindField,
     multiFindValues,
 }) => {
@@ -355,6 +358,7 @@ export const BookingReducer = (state = defaultState, {
                 dmeStatus: dmeStatus,
                 multiFindField: multiFindField,
                 multiFindValues: multiFindValues,
+                projectName: projectName,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SELECTEDATE:
@@ -363,63 +367,60 @@ export const BookingReducer = (state = defaultState, {
                 startDate: startDate,
                 endDate: endDate,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_WAREHOUSEID:
             return {
                 ...state,
                 warehouseId: warehouseId,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_SORTFIELD:
             return {
                 ...state,
                 sortField: sortField,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_COLUMNFILTER:
             return {
                 ...state,
                 columnFilters: columnFilters,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_PREFILTERIND:
             return {
                 ...state,
                 prefilterInd: prefilterInd,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD:
             return {
                 ...state,
                 simpleSearchKeyword: simpleSearchKeyword,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_CLIENTPK:
             return {
                 ...state,
                 clientPK: clientPK,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_DMESTATUS:
             return {
                 ...state,
                 dmeStatus: dmeStatus,
                 needUpdateBookings: true,
-                bookings: [],
             };
         case SET_LOCAL_FILTER_DOWNLOADOPTION:
             return {
                 ...state,
                 downloadOption: downloadOption,
                 needUpdateBookings: true,
-                bookings: [],
+            };
+        case SET_LOCAL_FILTER_PROJECTNAME:
+            return {
+                ...state,
+                projectName: payload,
+                needUpdateBookings: true,
             };
         case SET_FETCH_BOOKINGS_FLAG:
             return {

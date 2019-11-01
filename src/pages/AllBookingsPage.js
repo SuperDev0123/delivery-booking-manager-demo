@@ -23,7 +23,7 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
+import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
@@ -102,6 +102,8 @@ class AllBookingsPage extends React.Component {
             selectedFP2Order: null,
             isShowOrderModal: false,
             selectedBookingLinesCnt: 0,
+            projectNames: [],
+            projectName: ''
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -149,6 +151,7 @@ class AllBookingsPage extends React.Component {
         calcCollected: PropTypes.func.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
         getBookingLinesCnt: PropTypes.func.isRequired,
+        getAllProjectNames: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -185,6 +188,7 @@ class AllBookingsPage extends React.Component {
         this.props.getUserDateFilterField();
         this.props.getAllBookingStatus();
         this.props.getAllFPs();
+        this.props.getAllProjectNames();
     }
 
     UNSAFE_componentWillMount() {
@@ -198,7 +202,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt } = newProps;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -237,6 +241,7 @@ class AllBookingsPage extends React.Component {
                         dmeStatus,
                         multiFindField,
                         multiFindValues,
+                        projectName,
                     },
                     hasSuccessSearchAndFilterOptions: true,
                 });
@@ -256,7 +261,8 @@ class AllBookingsPage extends React.Component {
                     successSearchFilterOptions.downloadOption,
                     successSearchFilterOptions.dmeStatus,
                     successSearchFilterOptions.multiFindField,
-                    successSearchFilterOptions.multiFindValues
+                    successSearchFilterOptions.multiFindValues,
+                    successSearchFilterOptions.projectName
                 );
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
             }
@@ -300,6 +306,10 @@ class AllBookingsPage extends React.Component {
 
         if (selectedBookingLinesCnt) {
             this.setState({selectedBookingLinesCnt});
+        }
+
+        if (projectNames) {
+            this.setState({projectNames});
         }
 
         if (needUpdateBookings) {
@@ -359,9 +369,10 @@ class AllBookingsPage extends React.Component {
                 filterInputs: columnFilters, 
                 simpleSearchKeyword,
                 dmeStatus,
+                projectName: projectName,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
         } else {
             this.setState({loading: false});
         }
@@ -507,6 +518,11 @@ class AllBookingsPage extends React.Component {
             this.setState({selectedBookingIds: [], checkedAll: false});
         } else if (src === 'status') {
             this.setState({selectedStatusValue: e.target.value});
+        } else if (src === 'projectName') {
+            const {today} = this.state;
+            const projectName = e.target.value;
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
+            this.setState({activeTabInd: 0});
         }
     }
 
@@ -1479,7 +1495,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1494,6 +1510,10 @@ class AllBookingsPage extends React.Component {
 
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        });
+
+        const projectNameOptions = projectNames.map((name, index) => {
+            return (<option key={index} value={name}>{name}</option>);
         });
 
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
@@ -2013,10 +2033,10 @@ class AllBookingsPage extends React.Component {
                             <div className="row1 fix-box">
                                 <div className="tab-content fix-box">
                                     <div id="all_booking" className="tab-pane fix-box fade in active">
-                                        <div className="userclock">
+                                        <div className="row userclock">
                                             <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                         </div>
-                                        <div className="filter-controls">
+                                        <div className="row filter-controls">
                                             <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
                                                 selected={startDate}
@@ -2080,6 +2100,22 @@ class AllBookingsPage extends React.Component {
                                                     <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
                                                     <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                 </LoadingOverlay>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="project-name-select">
+                                                <label className="left-30px right-10px">
+                                                    Project Name: 
+                                                    <select 
+                                                        id="project-name-select" 
+                                                        required 
+                                                        onChange={(e) => this.onSelected(e, 'projectName')} 
+                                                        value={projectName}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a project name</option>
+                                                        { projectNameOptions }
+                                                    </select>
+                                                </label>
                                             </div>
                                         </div>
                                         <ul className="filter-conditions none">
@@ -2721,15 +2757,17 @@ const mapStateToProps = (state) => {
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
         allFPs: state.extra.allFPs,
+        projectNames: state.extra.projectNames,
+        projectName: state.booking.projectName,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
@@ -2751,6 +2789,7 @@ const mapDispatchToProps = (dispatch) => {
         changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
+        getAllProjectNames: () => dispatch(getAllProjectNames()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
     };

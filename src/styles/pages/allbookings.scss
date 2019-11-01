@@ -483,9 +483,8 @@ ul.filter-conditions {
 }
 
 #all_booking .userclock {
-  padding-right: 0px;
+  padding-left: 55px;
   text-align: left;
-  padding-left: 115px;
 }
 
 .allbookings .fa-sort-amount-asc,
@@ -516,7 +515,7 @@ ul.nav-tabs {
 }
 
 .filter-controls {
-  padding-left: 77px;
+  padding-left: 51px;
   margin-bottom: 10px;
 
   .date-adjust {
@@ -535,7 +534,10 @@ ul.nav-tabs {
   }
 
   .btn {
-    padding: 7px !important;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
 }
 
@@ -633,6 +635,16 @@ header > .qbootstrap-nav {
 
   button:hover {
     background: #0995a5;
+  }
+}
+
+.project-name-select {
+  padding-left: 22px;
+
+  #project-name-select {
+    margin-left: 10px;
+    width: 200px;
+    height: 30px;
   }
 }
 

@@ -74,6 +74,7 @@ export const getBookings = (
     dmeStatus='',
     multiFindField=null,
     multiFindValues='',
+    projectName=null,
 ) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -94,6 +95,7 @@ export const getBookings = (
             dmeStatus: dmeStatus,
             multiFindField: multiFindField,
             multiFindValues: multiFindValues,
+            projectName: projectName,
         }
     };
     return dispatch => {
@@ -121,6 +123,7 @@ export const setAllGetBookingsFilter = (
     dmeStatus='',
     multiFindField=null,
     multiFindValues='',
+    projectName=null,
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
@@ -136,6 +139,7 @@ export const setAllGetBookingsFilter = (
         dmeStatus,
         multiFindField,
         multiFindValues,
+        projectName,
     ));
 };
 
