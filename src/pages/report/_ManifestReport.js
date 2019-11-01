@@ -16,7 +16,7 @@ class ManifestReport extends React.Component {
 
         this.state = {
             loadingDownload: false,
-            loading: false
+            loading: true,
         };
     }
 
@@ -27,20 +27,18 @@ class ManifestReport extends React.Component {
 
     componentDidMount() {
         this.props.getManifestReport();
-        this.setState({loading: true});
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { reports } = newProps;
     
         if (reports) {
-            this.setState({ loading: false});
-            this.setState({reports});
+            this.setState({loading: false, reports});
         }
     }
 
     onClickDownload(report) {
-        this.setState({loadingDownload: true});
+        this.setState({loading: true});
 
         const options = {
             method: 'post',
@@ -56,32 +54,35 @@ class ManifestReport extends React.Component {
             link.setAttribute('download', 'ST__manifests__' + moment(report.manifest_date).format('YYYY_MM_DD') + '.zip');
             document.body.appendChild(link);
             link.click();
-            this.setState({loadingDownload: false});
+            this.setState({loading: false});
         });
     }
 
     render() {
         const { reports } = this.props;
         const { loading } = this.state;
+        var reportList = [];
 
-        const reportList = reports.map((report, index) => {
-            return (
-                <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
-                    <td>{report.warehouse_name}</td>
-                    <td>{report.count}</td>
-                    <td>
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => this.onClickDownload(report)}
-                        >
-                            Download
-                        </button>
-                    </td>
-                </tr>
-            );
-        });
+        if (reports) {
+            reportList = reports.map((report, index) => {
+                return (
+                    <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
+                        <td>{report.warehouse_name}</td>
+                        <td>{report.count}</td>
+                        <td>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => this.onClickDownload(report)}
+                            >
+                                Download
+                            </button>
+                        </td>
+                    </tr>
+                );
+            });
+        }
 
         return (
             <LoadingOverlay

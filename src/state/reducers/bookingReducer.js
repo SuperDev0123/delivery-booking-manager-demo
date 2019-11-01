@@ -96,7 +96,7 @@ const defaultState = {
     needUpdateBookingLines: false,
     isTickedManualBook: null,
     needUpdateBooking: null,
-    manifestReports: [],
+    manifestReports: null,
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -145,7 +145,7 @@ export const BookingReducer = (state = defaultState, {
         case RESET_MANIFEST_REPORT:
             return {
                 ...state,
-                manifestReports: [],
+                manifestReports: null,
             };
         case RESET_TICK_MANUAL_BOOK:
             return {
