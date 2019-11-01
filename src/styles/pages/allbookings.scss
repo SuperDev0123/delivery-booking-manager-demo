@@ -67,7 +67,7 @@ table.booking-lines {
 // Main Table
 #all_booking .table-responsive {
   margin-top: 5px !important;
-  height: calc(100% - 150px);
+  height: calc(100% - 190px);
   width: 100%;
   overflow-x: auto;
 
@@ -516,7 +516,6 @@ ul.nav-tabs {
 
 .filter-controls {
   padding-left: 51px;
-  margin-bottom: 10px;
 
   .date-adjust {
     width: 30px;
