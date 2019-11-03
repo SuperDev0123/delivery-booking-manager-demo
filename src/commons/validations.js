@@ -51,11 +51,11 @@ const isFormValid = (formName, formFields) => {
         if (!_.isEmpty(formFields['de_to_Phone_Main']) && formFields['de_to_Phone_Main'].length > 25) {
             return 'DE Contact is too long. Need to be shorter than 25 characters';
         }
-        if (!_.isEmpty(formFields['pu_Email']) && formFields['pu_Email'].length > 35) {
-            return 'PU Email is too long. Need to be shorter than 35 characters';
+        if (!_.isEmpty(formFields['pu_Email']) && formFields['pu_Email'].length > 64) {
+            return 'PU Email is too long. Need to be shorter than 64 characters';
         } 
-        if (!_.isEmpty(formFields['de_Email']) && formFields['de_Email'].length > 35) {
-            return 'DE Email is too long. Need to be shorter than 35 characters';
+        if (!_.isEmpty(formFields['de_Email']) && formFields['de_Email'].length > 64) {
+            return 'DE Email is too long. Need to be shorter than 64 characters';
         }
         if (!_.isEmpty(formFields['pu_Email']) && !validateEmail(formFields['pu_Email'])) {
             return 'PU Email is not correct';
