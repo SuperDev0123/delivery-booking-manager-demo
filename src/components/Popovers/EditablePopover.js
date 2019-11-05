@@ -82,6 +82,7 @@ class EditablePopover extends React.Component {
     }
 
     render() {
+        console.log('EditablePopover');
         const { isOpen, booking, inputType } = this.props;
         const { selectedDate } = this.state;
 
