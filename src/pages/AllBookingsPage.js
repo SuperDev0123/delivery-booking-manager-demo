@@ -16,7 +16,7 @@ import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Constants
-import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL, S3_URL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -952,8 +952,13 @@ class AllBookingsPage extends React.Component {
                     this.onClickDateFilter();
                 });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                const win = window.open(booking.z_label_url);
-                win.focus();
+                if (booking.z_label_url.indexOf('startrack_au') > -1) {
+                    const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
+                    win.focus();
+                } else {
+                    const win = window.open(booking.z_label_url);
+                    win.focus();
+                }
             } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
                 booking.vx_freight_provider.toLowerCase() === cope_name ||
                 booking.vx_freight_provider.toLowerCase() === tas_name) {
