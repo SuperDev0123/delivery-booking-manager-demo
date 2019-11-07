@@ -1104,7 +1104,10 @@ class AllBookingsPage extends React.Component {
             } else {
                 for (let i = 0; i < nonBookedBookings.length; i++) {
                     for (let j = 0; j < dmeClients.length; j++) {
-                        if (nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()) {
+                        if (nonBookedBookings[i].b_client_name &&
+                            dmeClients[j].company_name &&
+                            nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
+                        ) {
                             if (!_.isNull(dmeClients[j].current_freight_provider)
                                 && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
                                 if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
@@ -1748,7 +1751,7 @@ class AllBookingsPage extends React.Component {
                     >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
                         {
-                            booking.b_client_name.toLowerCase() == 'biopak' ?
+                            booking.b_client_name && booking.b_client_name.toLowerCase() == 'biopak' ?
                                 booking.manifest_timestamp ?
                                     null
                                     :
