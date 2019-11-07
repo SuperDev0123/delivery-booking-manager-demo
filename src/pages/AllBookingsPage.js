@@ -36,6 +36,7 @@ import CheckPodModal from '../components/CommonModals/CheckPodModal';
 import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 import FindModal from '../components/CommonModals/FindModal';
 import OrderModal from '../components/CommonModals/OrderModal';
+import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -103,7 +104,8 @@ class AllBookingsPage extends React.Component {
             isShowOrderModal: false,
             selectedBookingLinesCnt: 0,
             projectNames: [],
-            projectName: ''
+            projectName: '',
+            isShowBulkUpdateSlider: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -117,6 +119,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
         this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
         this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
+        this.toggleShowBulkUpdateSlider = this.toggleShowBulkUpdateSlider.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -673,6 +676,10 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowProjectNameModal: !prevState.isShowProjectNameModal}));
     }
 
+    toggleShowBulkUpdateSlider() {
+        this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
+    }
+
     onCheck(e, id) {
         if (!e.target.checked) {
             this.setState({selectedBookingIds: _.difference(this.state.selectedBookingIds, [id])});
@@ -955,7 +962,7 @@ class AllBookingsPage extends React.Component {
                 if (booking.z_label_url.indexOf('startrack_au') > -1) {
                     const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
                     win.focus();
-                } else {
+                } else { // Can be deleted later
                     const win = window.open(booking.z_label_url);
                     win.focus();
                 }
@@ -1425,26 +1432,6 @@ class AllBookingsPage extends React.Component {
         this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
     }
 
-    onClickChangeStatusButton() {
-        const {selectedStatusValue, selectedBookingIds} = this.state;
-
-        if (!selectedStatusValue) {
-            alert('Please select a status.');
-        } else if (selectedBookingIds.length === 0) {
-            alert('Please select at least one booking.');
-        } else if (selectedBookingIds.length > 25) {
-            alert('You can change 25 bookings status at a time.');
-        } else {
-            if (selectedStatusValue.indexOf('flag_add_on_services') > -1) {
-                this.props.changeBookingsFlagStatus(selectedStatusValue, selectedBookingIds);
-            } else {
-                this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
-            }
-
-            this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
-        }
-    }
-
     onClickCalcCollected(type) {
         const {selectedBookingIds} = this.state;
 
@@ -1503,6 +1490,29 @@ class AllBookingsPage extends React.Component {
         this.toggleShowProjectNameModal();
     }
 
+    onClickShowBulkUpdateButton() {
+        const { selectedBookingIds } = this.state;
+
+        if (selectedBookingIds.length === 0) {
+            this.notify('Please select at least one booking');
+        } else if (selectedBookingIds.length > 50) {
+            this.notify('Bulk operation can process 50 bookings at once');
+        } else {
+            this.toggleShowBulkUpdateSlider();
+        }
+    }
+
+    onClickBulkUpdate(field, value, bookingIds) {
+        if (field === 'flag') {
+            this.props.changeBookingsFlagStatus(value, bookingIds);
+        } else if (field === 'status') {
+            this.props.changeBookingsStatus(value, bookingIds);
+        }
+
+        this.toggleShowBulkUpdateSlider();
+        this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
+    }
+
     render() {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName } = this.state;
 
@@ -1515,10 +1525,6 @@ class AllBookingsPage extends React.Component {
 
         const clientOptionsList = dmeClients.map((client, index) => {
             return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
-        });
-
-        const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
-            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
 
         const projectNameOptions = projectNames.map((name, index) => {
@@ -2090,20 +2096,7 @@ class AllBookingsPage extends React.Component {
                                             {
                                                 clientname === 'dme' || clientname === 'biopak' ?
                                                     <div className="disp-inline-block">
-                                                        <label className='right-10px'>Status: </label>
-                                                        <select 
-                                                            id="status" 
-                                                            required 
-                                                            onChange={(e) => this.onSelected(e, 'status')} 
-                                                        >
-                                                            <option value="" selected disabled hidden>Select a status</option>
-                                                            <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>-------------     Flags    -------------</option>
-                                                            <option value="flag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Flag - add on services</option>
-                                                            <option value="unflag_add_on_services" className={clientname === 'dme' ? '' : 'none'}>Unflag - add on services</option>
-                                                            <option value="" disabled className={clientname === 'dme' ? '' : 'none'}>------------- Booking Status-------------</option>
-                                                            { bookingStatusList }
-                                                        </select>
-                                                        <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
+                                                        <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
                                                         <div className="disp-inline-block">
                                                             <LoadingOverlay
                                                                 active={false}
@@ -2733,6 +2726,14 @@ class AllBookingsPage extends React.Component {
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
                     bookings={this.state.bookings}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
+                />
+
+                <BulkUpdateSlider
+                    isOpen={this.state.isShowBulkUpdateSlider}
+                    toggleSlider={this.toggleShowBulkUpdateSlider}
+                    allBookingStatus={allBookingStatus}
+                    selectedBookingIds={selectedBookingIds}
+                    onUpdate={(field, value, bookingIds) => this.onClickBulkUpdate(field, value, bookingIds)}
                 />
 
                 <ToastContainer />
