@@ -959,13 +959,8 @@ class AllBookingsPage extends React.Component {
                     this.onClickDateFilter();
                 });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                if (booking.z_label_url.indexOf('startrack_au') > -1) {
-                    const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
-                    win.focus();
-                } else { // Can be deleted later
-                    const win = window.open(booking.z_label_url);
-                    win.focus();
-                }
+                const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
+                win.focus();
             } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
                 booking.vx_freight_provider.toLowerCase() === cope_name ||
                 booking.vx_freight_provider.toLowerCase() === tas_name) {
