@@ -546,8 +546,7 @@ export function failedGenerateXLS(error) {
     };
 }
 
-export function successChangeBookingsStatus(data) {
-    console.log('@501 - Success change bookings status: ', data);
+export function successChangeBookingsStatus() {
     return {
         type: CHANGE_STATUS_SUCCESS,
         errorMessage: 'Success change bookings status',

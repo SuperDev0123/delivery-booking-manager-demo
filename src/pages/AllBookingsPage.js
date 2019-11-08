@@ -1505,6 +1505,11 @@ class AllBookingsPage extends React.Component {
             this.props.changeBookingsFlagStatus(value, bookingIds);
         } else if (field === 'status') {
             this.props.changeBookingsStatus(value, bookingIds);
+        } else {
+            this.bulkBookingUpdate(bookingIds, field, value)
+                .then(() => {
+                    this.onClickDateFilter();
+                });
         }
 
         this.toggleShowBulkUpdateSlider();
