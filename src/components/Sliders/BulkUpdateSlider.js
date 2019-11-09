@@ -52,6 +52,10 @@ class BulkUpdateSlider extends React.Component {
         this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
     }
 
+    onChangeDateTime(dateTime) {
+        this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+    }
+
     render() {
         const { isOpen, allBookingStatus } = this.props;
         const { selectedField, selectedValue } = this.state;
@@ -82,8 +86,44 @@ class BulkUpdateSlider extends React.Component {
                             <option value="status_action">Status Action</option>
                             <option value="dme_status_history_notes">Status History Note</option>
                             <option value="inv_billing_status_note">Invoice Billing Status Note</option>
+
                             <option value="puCompany">Pickup Entity</option>
                             <option value="pu_Address_Street_1">Pickup Street 1</option>
+                            <option value="pu_Address_street_2">Pickup Street 2</option>
+                            <option value="pu_Address_Suburb" disabled>Pickup Suburb</option>
+                            <option value="pu_Address_State" disabled>Pickup State</option>
+                            <option value="pu_Address_PostalCode" disabled>Pickup PostalCode</option>
+                            <option value="pu_Address_Country">Pickup Country</option>
+                            <option value="pu_Contact_F_L_Name">Pickup Contact</option>
+                            <option value="pu_Phone_Main">Pickup Tel</option>
+                            <option value="pu_Phone_Mobile">Pickup Mobile</option>
+                            <option value="pu_Email">Pickup Email</option>
+                            <option value="puPickUpAvailFrom_Date">Pickup From</option>
+                            <option value="pu_PickUp_By_Date_DME">Pickup By</option>
+                            <option value="pu_pickup_instructions_address">Pickup Instructions</option>
+
+                            <option value="deToCompanyName">Deliver to Entity</option>
+                            <option value="de_To_Address_Street_1">Deliver to Street 1</option>
+                            <option value="de_To_Address_Street_2">Deliver to Street 2</option>
+                            <option value="de_To_Address_Suburb" disabled>Deliver to Suburb</option>
+                            <option value="de_To_Address_State" disabled>Deliver to State</option>
+                            <option value="de_To_Address_PostalCode" disabled>Deliver to PostalCode</option>
+                            <option value="de_To_Address_Country">Deliver to Country</option>
+                            <option value="de_to_Contact_F_LName">Deliver to Contact</option>
+                            <option value="de_to_Phone_Main">Deliver to Tel</option>
+                            <option value="de_to_Phone_Mobile">Deliver to Mobile</option>
+                            <option value="de_Email">Deliver to Email</option>
+                            <option value="de_Deliver_From_Date">Deliver to From</option>
+                            <option value="de_Deliver_By_Date">Deliver to By</option>
+                            <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>
+                            
+                            <option value="b_booking_Priority">Priority</option>
+                            <option value="b_booking_Category">Category</option>
+                            <option value="v_vehicle_Type">Vehicle Type</option>
+                            <option value="inv_dme_invoice_no">Your Invoice No</option>
+                            
+                            
+                            
                             <option value="b_booking_project">Project Name</option>
                             <option value="de_Deliver_By_Date">Project Due Date</option>
                         </select>
@@ -115,7 +155,10 @@ class BulkUpdateSlider extends React.Component {
                             (selectedField === 'status_detail' ||
                             selectedField === 'status_action' ||
                             selectedField === 'dme_status_history_notes' ||
-                            selectedField === 'inv_billing_status_note') ?
+                            selectedField === 'inv_billing_status_note' ||
+                            selectedField === 'pu_pickup_instructions_address' ||
+                            selectedField === 'de_to_Pick_Up_Instructions_Contact' ||
+                            selectedField === 'b_booking_Category') ?
                                 <textarea 
                                     width="100%"
                                     className=""
@@ -130,6 +173,23 @@ class BulkUpdateSlider extends React.Component {
                             selectedField &&
                             (selectedField === 'puCompany' ||
                             selectedField === 'pu_Address_Street_1' ||
+                            selectedField === 'pu_Address_street_2' ||
+                            selectedField === 'pu_Address_Country' ||
+                            selectedField === 'pu_Contact_F_L_Name' ||
+                            selectedField === 'pu_Phone_Main' ||
+                            selectedField === 'pu_Phone_Mobile' ||
+                            selectedField === 'pu_Email' ||
+                            selectedField === 'deToCompanyName' ||
+                            selectedField === 'de_To_Address_Street_1' ||
+                            selectedField === 'de_To_Address_Street_2' ||
+                            selectedField === 'de_To_Address_Country' ||
+                            selectedField === 'de_to_Contact_F_LName' ||
+                            selectedField === 'de_to_Phone_Main' ||
+                            selectedField === 'de_to_Phone_Mobile' ||
+                            selectedField === 'de_Email' ||
+                            selectedField === 'b_booking_Priority' ||
+                            selectedField === 'v_vehicle_Type' ||
+                            selectedField === 'inv_dme_invoice_no' ||
                             selectedField === 'b_booking_project') ?
                                 <input 
                                     type="text"
@@ -141,9 +201,12 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            selectedField === 'de_Deliver_By_Date' ?
+                            (selectedField === 'puPickUpAvailFrom_Date' ||
+                            selectedField === 'pu_PickUp_By_Date_DME' ||
+                            selectedField === 'de_Deliver_From_Date' ||
+                            selectedField === 'de_Deliver_By_Date') ?
                                 <DateTimePicker
-                                    onChange={(date) => this.onChangeDate(date)}
+                                    onChange={(dateTime) => this.onChangeDateTime(dateTime)}
                                     value={selectedValue ? moment(selectedValue).toDate() : null}
                                     format={'dd/MM/yyyy hh:mm a'}
                                 />
