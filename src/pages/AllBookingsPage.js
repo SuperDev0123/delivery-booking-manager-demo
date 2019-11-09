@@ -533,7 +533,7 @@ class AllBookingsPage extends React.Component {
         } else if (src === 'projectName') {
             const {today} = this.state;
             const projectName = e.target.value;
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
             this.setState({activeTabInd: 0});
         }
     }
@@ -1019,7 +1019,7 @@ class AllBookingsPage extends React.Component {
 
     onMultiFind(FieldName, valueSet) {
         const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
         this.setState({activeTabInd: 0, selectedBookingIds: [], checkedAll: false});
     }
 
@@ -1031,7 +1031,7 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, pageInd, '-id', {}, 0, '', downloadOption);
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
-            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, pageItemCnt, pageInd, '-id', {}, activeTabInd);
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, pageInd, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) {
             this.toggleShowStatusInfoSlider();
         } else {
@@ -1500,7 +1500,7 @@ class AllBookingsPage extends React.Component {
 
     onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status) {
         this.toggleShowStatusInfoSlider();
-        this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
+        this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, this.state.pageItemCnt, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
     }
 
     onClickSetProjectsName() {
