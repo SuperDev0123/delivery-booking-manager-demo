@@ -2002,6 +2002,24 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
+                    <td 
+                        id={'booking-' + 'b_booking_project' + '-tooltip-' + booking.id}
+                        className={(sortField === 'b_booking_project') ? 'current nowrap' : 'nowrap'}
+                    >
+                        {booking.b_booking_project}
+                        {
+                            !_.isEmpty(booking.b_booking_project) && !_.isEmpty(booking.b_booking_project) ?
+                                <BookingTooltipItem booking={booking} fields={['b_booking_project']} />
+                                :
+                                null
+                        }
+                    </td>
+                    <td 
+                        id={'booking-' + 'de_Deliver_By_Date' + '-tooltip-' + booking.id}
+                        className={(sortField === 'de_Deliver_By_Date') ? 'current nowrap' : 'nowrap'}
+                    >
+                        {booking.de_Deliver_By_Date}
+                    </td>
                 </tr>
             );
         });
@@ -2681,8 +2699,10 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th className="" scope="col"><p>Status Detail</p></th>
                                                             <th className="" scope="col"><p>Status Action</p></th>
-                                                            <th className="" scope="col"><p>FP Del ETA</p></th>
+                                                            <th className="" scope="col"><p>ETA Delivery</p></th>
                                                             <th className="" scope="col"><p>DE Instruction</p></th>
+                                                            <th className="" scope="col"><p>Project Name</p></th>
+                                                            <th className="" scope="col"><p>Project Due Date</p></th>
                                                         </tr>
                                                         <tr className="filter-tr">
                                                             <th>
@@ -2725,6 +2745,8 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
+                                                            <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
