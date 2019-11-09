@@ -957,6 +957,10 @@ class AllBookingsPage extends React.Component {
             this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
                 .then(() => {
                     this.onClickDateFilter();
+                })
+                .catch((err) => {
+                    this.notify(err.response.data.message);
+                    this.setState({loading: false});
                 });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
                 const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
@@ -1509,6 +1513,10 @@ class AllBookingsPage extends React.Component {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
                     this.onClickDateFilter();
+                })
+                .catch((err) => {
+                    this.notify(err.response.data.message);
+                    this.setState({loading: false});
                 });
         }
 
