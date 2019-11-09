@@ -3701,20 +3701,39 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">ETA Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">ETA Delivery<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['vx_fp_del_eta_time']}</p>
+                                                                    <p className="show-mode">{formInputs['z_calculated_ETA']}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'vx_fp_del_eta_time')}
-                                                                            value={(!_.isNull(formInputs['vx_fp_del_eta_time']) && !_.isUndefined(formInputs['vx_fp_del_eta_time'])) ? moment(formInputs['vx_fp_del_eta_time']).toDate() : null}
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'z_calculated_ETA')}
+                                                                            value={(!_.isNull(formInputs['z_calculated_ETA']) && !_.isUndefined(formInputs['z_calculated_ETA'])) ? moment(formInputs['z_calculated_ETA']).toDate() : null}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['vx_fp_del_eta_time']}</p>
+                                                                        <p className="show-mode">{formInputs['z_calculated_ETA']}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_Deliver_By_Date']}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'de_Deliver_By_Date')}
+                                                                            value={(!_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'])) ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['de_Deliver_By_Date']}</p>
                                                             }
                                                         </div>
                                                     </div>
