@@ -8,18 +8,44 @@ body {
     animation-duration: 1s;
     -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
- }
+}
 
 @keyframes fadeIn {
     0% {opacity: 0;}
     100% {opacity: 1;}
- }
+}
 
- .fadeIn {
+.fadeIn {
     -webkit-animation-name: fadeIn;
     animation-name: fadeIn;
- }
+}
 
- .navbar {
-     border-bottom: 4px solid dodgerblue; 
- }
+.navbar {
+    border-bottom: 4px solid dodgerblue; 
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
+}
+
+.c-black {
+    color: black;
+}
+
+.c-red {
+    color: red;
+}
+
+.c-dme {
+    color: #048abb;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.row:before, .row:after {display: none !important;}

@@ -1,0 +1,24 @@
+.find-modal {
+	width: 50%;
+	margin-top: 10%;
+	max-width: 500px;
+
+	.modal-header h5 {
+		font-size: 20px !important;
+		font-weight: bold;
+	}
+
+	label {
+		width: 100%;
+
+		p {
+			vertical-align: top;
+			display: inline-block;
+			width: 40%;
+		}
+
+		select, textarea {
+			width: 50%;
+		}
+	}
+}

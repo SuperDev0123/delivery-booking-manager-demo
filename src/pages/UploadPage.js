@@ -28,6 +28,7 @@ class UploadPage extends Component {
         this.djsConfig = {
             addRemoveLinks: true,
             autoProcessQueue: false,
+            parallelUploads: 10,
             params: { filename: 'file' }
         };
 
@@ -196,6 +197,7 @@ class UploadPage extends Component {
                                         <option value="" selected disabled hidden>Select Uploader</option>
                                         <option value='Seaway'>Seaway-Tempo</option>
                                         <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
+                                        <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>
                                     </select>
                                     :
                                     null

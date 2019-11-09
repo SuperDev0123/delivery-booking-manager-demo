@@ -54,7 +54,7 @@ p.dme-id {
 		padding: 0 !important;
 	}
 
-	.col-sm-4, .col-sm-2 {
+	.col-sm-4, .col-sm-2, .col-sm-3, .col-sm-1 {
   		padding: 0 5px !important;
   	}
 }
@@ -136,9 +136,16 @@ p.dme-id {
 			vertical-align: top;
 		}
 
-		>input, select, textarea {
+		>input[type=text], select, textarea {
 			width: 70%;
 			display: inline-block;
+		}
+
+		>input[type=checkbox] {
+			width: 30px;
+			display: inline-block;
+			vertical-align: top;
+			height: 30px;
 		}
 
 		select {
@@ -377,7 +384,7 @@ input.orange-color {
 	}
 }
 
-.form-view-btns {
+.form-view-btns, .half-size {
 	button {
 		width: 35% !important;
 	}
@@ -498,12 +505,12 @@ p.lock-status {
 }
 
 .status-history-form,
-.booking-form-01 {
+.booking-form-01, .booking-form-02 {
 	select {
 		height: 30px;
 		margin-top: 5px;
 		margin-bottom: 5px;
-		width: 175px;
+		width: 100%;
 	}
 
 	p {
@@ -516,6 +523,16 @@ p.lock-status {
 	span {
 		font-size: 9px;
 		color: gray;
+	}
+}
+
+.booking-form-02 > .col-sm-6 {
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+
+	> textarea {
+		width: 100%;
+		overflow: auto;
 	}
 }
 
@@ -573,6 +590,34 @@ p.lock-status {
 
 	.booked-date {
 		float: right;
+		padding-right: 15px;
 		text-align: right;
+	}
+}
+
+
+div.manual-book {
+	input {
+		height: 30px;
+		width: 30px;
+	}
+
+	p {
+		font-size: 16px;
+		display: inline-block;
+		vertical-align: top;
+		margin-top: 10px;
+		margin-left: 10px;
+	}
+}
+
+.pricing-btns {
+	button {
+		&:first-child {
+			width: 55% !important;
+		}
+		&:last-child {
+			width: 15% !important;
+		}
 	}
 }

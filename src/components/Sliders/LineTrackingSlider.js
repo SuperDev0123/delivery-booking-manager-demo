@@ -221,7 +221,7 @@ class LineTrackingSlider extends React.Component {
                 style: editableStyle,
             }, {
                 dataField: 'e_qty_shortages',
-                text: 'Qty Shortages',
+                text: 'Qty Shortages / Lost',
                 editable: isEditable,
                 style: editableStyle,
             }
@@ -285,7 +285,7 @@ class LineTrackingSlider extends React.Component {
                     </label>
                     <br />
                     {
-                        (lines.length > 0) ?
+                        (lines.length > 0 && clientname === 'dme') ?
                             <label>
                                 <Button 
                                     onClick={() => this.handleBtnClick('Calc')} 

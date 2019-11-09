@@ -34,6 +34,7 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 commCnts: commCnts,
                 needUpdateComms: false,
             };
+        case FAILED_UPDATE_COMM:
         case FAILED_GET_COMMS:
             return { 
                 ...state, 
@@ -45,11 +46,6 @@ export const CommReducer = (state = defaultState, { type, errorMessage, comms, c
                 ...state, 
                 comm: comm,
                 needUpdateComms: true,
-            };
-        case FAILED_UPDATE_COMM:
-            return { 
-                ...state, 
-                errorMessage: errorMessage 
             };
         case SET_LOCAL_FILTER_SORT_FIELD:
             return {

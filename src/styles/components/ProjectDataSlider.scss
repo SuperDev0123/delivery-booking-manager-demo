@@ -1,0 +1,25 @@
+.pd-slider {
+	width: 40% !important;
+
+	.form-view {
+		text-align: left !important;
+
+		label {
+			width: 100%;
+
+			p {
+				width: 40%;
+				text-align: left;
+				vertical-align: top;
+			}
+
+			>textarea {
+				width: 60%;
+			}
+
+			input {
+				min-width: unset !important;
+			}
+		}
+	}
+}

@@ -1,6 +1,81 @@
-import { RESET_BOOKING, SET_ATTACHMENTS, FAILED_GET_ATTACHMENTS, SET_POSTALCODE_DE, SET_SUBURB_DE, SET_STATE_DE, FAILED_GET_SUBURBS_DE, SET_BOOKING_WITH_FILTER, SET_SUBURB, SET_POSTALCODE, SET_STATE, FAILED_GET_SUBURBS, SET_BOOKINGS, FAILED_GET_BOOKINGS, SET_BOOKING, FAILED_UPDATE_BOOKING, SET_MAPPEDBOOKINGS, SET_USER_DATE_FILTER_FIELD, FAILED_GET_USER_DATE_FILTER_FIELD, BOOK_SUCCESS, BOOK_FAILED, GET_LABEL_SUCCESS, GET_LABEL_FAILED, SET_LOCAL_FILTER_ALL, SET_LOCAL_FILTER_SELECTEDATE, SET_LOCAL_FILTER_WAREHOUSEID, SET_LOCAL_FILTER_SORTFIELD, SET_LOCAL_FILTER_COLUMNFILTER, SET_LOCAL_FILTER_ACTIVE_TAB_IND, SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD, SET_FETCH_BOOKINGS_FLAG, SUCCESS_UPDATE_BOOKING, SUCCESS_DUPLICATE_BOOKING, BOOK_CANCEL_SUCCESS, BOOK_CANCEL_FAILED, SET_LOCAL_FILTER_CLIENTPK, FAILED_CREATE_BOOKING, SUCCESS_CREATE_BOOKING, GENERATE_XLS_SUCCESS, GENERATE_XLS_FAILED, CHANGE_STATUS_SUCCESS, CHANGE_STATUS_FAILED, SUCCESS_CALC_COLLECTED, FAILED_CALC_COLLECTED, SET_LOCAL_FILTER_DOWNLOADOPTION, SET_FETCH_GEO_FLAG, CLEAR_ERR_MSG, SET_LOCAL_FILTER_PAGEITEMCNT, SET_LOCAL_FILTER_PAGEINDEX } from '../constants/bookingConstants';
-
-import { getAlliedLabel, getSTLabel } from '../services/bookingService';
+import {
+    RESET_TICK_MANUAL_BOOK,
+    RESET_ATTACHMENTS,
+    RESET_BOOKING,
+    SET_ATTACHMENTS,
+    FAILED_GET_ATTACHMENTS,
+    SET_POSTALCODE_DE,
+    SET_SUBURB_DE,
+    SET_STATE_DE,
+    FAILED_GET_SUBURBS_DE,
+    SET_BOOKING_WITH_FILTER,
+    SET_SUBURB,
+    SET_POSTALCODE,
+    SET_STATE,
+    FAILED_GET_SUBURBS,
+    SET_BOOKINGS,
+    FAILED_GET_BOOKINGS,
+    SET_BOOKING,
+    FAILED_UPDATE_BOOKING,
+    SET_MAPPEDBOOKINGS,
+    SET_USER_DATE_FILTER_FIELD,
+    FAILED_GET_USER_DATE_FILTER_FIELD,
+    BOOK_SUCCESS,
+    BOOK_FAILED,
+    POD_SUCCESS,
+    POD_FAILED,
+    GET_LABEL_SUCCESS,
+    GET_LABEL_FAILED,
+    SET_LOCAL_FILTER_ALL, // Filter start
+    SET_LOCAL_FILTER_SELECTEDATE,
+    SET_LOCAL_FILTER_WAREHOUSEID,
+    SET_LOCAL_FILTER_SORTFIELD,
+    SET_LOCAL_FILTER_COLUMNFILTER,
+    SET_LOCAL_FILTER_PREFILTERIND,
+    SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+    SET_LOCAL_FILTER_PROJECTNAME, // Filter end
+    SET_FETCH_BOOKINGS_FLAG,
+    SUCCESS_UPDATE_BOOKING,
+    SUCCESS_DUPLICATE_BOOKING,
+    BOOK_CANCEL_SUCCESS,
+    BOOK_CANCEL_FAILED,
+    SET_LOCAL_FILTER_CLIENTPK,
+    FAILED_CREATE_BOOKING,
+    SUCCESS_CREATE_BOOKING,
+    GENERATE_XLS_SUCCESS,
+    GENERATE_XLS_FAILED,
+    CHANGE_STATUS_SUCCESS,
+    CHANGE_STATUS_FAILED,
+    SUCCESS_CALC_COLLECTED,
+    FAILED_CALC_COLLECTED,
+    SET_LOCAL_FILTER_DOWNLOADOPTION,
+    SET_FETCH_GEO_FLAG,
+    CLEAR_ERR_MSG,
+    SET_LOCAL_FILTER_DMESTATUS,
+    SUCCESS_TICK_MANUAL_BOOK,
+    FAILED_TICK_MANUAL_BOOK,
+    SUCCESS_MANUAL_BOOK,
+    FAILED_MANUAL_BOOK,
+    BOOK_EDIT_SUCCESS,
+    BOOK_EDIT_FAILED,
+    SUCCESS_CREATE_ORDER,
+    FAILED_CREATE_ORDER,
+    SUCCESS_GET_ORDER_SUMMARY,
+    FAILED_GET_ORDER_SUMMARY,
+    RESET_MANIFEST_REPORT,
+    SUCCESS_GET_MANIFEST_REPORT,
+    FAIELD_GET_MANIFEST_REPORT,
+    GET_TRACK_FAILED,
+    DO_NOTHING,
+    SUCCESS_FP_PRICING,
+    FAILED_FP_PRICING,
+    RESET_PRICING_INFOS,
+    RESET_PRICING_INFOS_FLAG,
+    SUCCESS_GET_PRICING_INFOS,
+    SET_ERROR_MSG,
+    SET_LOCAL_FILTER_PAGEITEMCNT,
+    SET_LOCAL_FILTER_PAGEINDEX,
+} from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
     return {
@@ -41,10 +116,10 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_COLUMNFILTER,
             columnFilters: value,
         };
-    } else if (key === 'activeTabInd') {
+    } else if (key === 'prefilterInd') {
         return {
-            type: SET_LOCAL_FILTER_ACTIVE_TAB_IND,
-            activeTabInd: value,
+            type: SET_LOCAL_FILTER_PREFILTERIND,
+            prefilterInd: value,
         };
     } else if (key === 'simpleSearchKeyword') {
         return {
@@ -71,10 +146,20 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_PAGEINDEX,
             pageInd: value,
         };
-    } 
+    } else if (key === 'dmeStatus') {
+        return {
+            type: SET_LOCAL_FILTER_DMESTATUS,
+            dmeStatus: value,
+        };
+    } else if (key === 'projectName') {
+        return {
+            type: SET_LOCAL_FILTER_PROJECTNAME,
+            payload: value,
+        };
+    }
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption) {
+export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
@@ -84,10 +169,14 @@ export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pag
         pageItemCnt: pageItemCnt,
         pageInd: pageInd,
         columnFilters: columnFilters,
-        activeTabInd: activeTabInd,
+        prefilterInd: prefilterInd,
         simpleSearchKeyword: simpleSearchKeyword,
         downloadOption: downloadOption,
         clientPK: clientPK,
+        dmeStatus: dmeStatus,
+        multiFindField: multiFindField,
+        multiFindValues: multiFindValues,
+        projectName: projectName,
     };
 }
 
@@ -104,6 +193,12 @@ export function resetBooking() {
     };
 }
 
+export function resetAttachments() {
+    return {
+        type: RESET_ATTACHMENTS,
+    };
+}
+
 export function successGetBooking(data) {
     if (!data['booking']['id']) {
         return {
@@ -117,6 +212,9 @@ export function successGetBooking(data) {
         booking: data['booking'],
         nextBookingId: data['nextid'],
         prevBookingId: data['previd'],
+        qtyTotal: data['e_qty_total'],
+        cntComms: data['cnt_comms'],
+        cntAttachments: data['cnt_attachments'],
         noBooking: false,
     };
 }
@@ -269,89 +367,183 @@ export function failedGetUserDateFilterField(error) {
     };
 }
 
-export function successAlliedBook(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book allied: ' + data[0]['Error']);
-    } else {
-        alert('Successfully book allied: ' + data[0]['Created Booking ID']);
-        getAlliedLabel(data[0]['Created Booking ID']);
-    }
+// FP Actions
+export function successFPBook(data) {
+    alert(data.message);
 
     return {
         type: BOOK_SUCCESS,
-        errorMessage: 'Book success'
+        errorMessage: data.message
     };
 }
 
-export function failedAlliedBook(error) {
-    alert('Failed book allied: ' + error);
-    console.log('Failed book allied: ' + error);
+export function successFPPod(data) {
+    alert(`${data.message}`);
+
+    return {
+        type: POD_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPPod(error) {
+    alert(`Failed POD: ${error.response.data.message}`);
+
+    return {
+        type: POD_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function failedFPBook(error) {
+    alert(`Failed Book: ${error.response.data.message}`);
+
     return {
         type: BOOK_FAILED,
-        errorMessage: 'Book failed'
+        errorMessage: error.response.data.message
     };
 }
 
-export function successStBook(data) {
-    if (!data[0].hasOwnProperty('Created Booking ID')) {
-        alert('Failed book STARTRACK: ' + data[0]['Error']);
-    } else {
-        alert('Successfully book STARTRACK: ' + data[0]['Created Booking ID']);
-        getSTLabel(data[0]['Created Booking ID']);
-    }
+export function successFPEditBook(data) {
+    alert(data['message']);
 
     return {
-        type: BOOK_SUCCESS,
-        errorMessage: 'Book success'
+        type: BOOK_EDIT_SUCCESS,
+        errorMessage: data['message'],
     };
 }
 
-export function failedStBook(error) {
-    alert('Failed book STARTRACK: ' + error);
-    console.log('Failed book STARTRACK: ' + error);
+export function failedFPEditBook(error) {
+    alert(error.response.data.message);
+
     return {
-        type: BOOK_FAILED,
-        errorMessage: 'Book failed'
+        type: BOOK_EDIT_FAILED,
+        errorMessage: 'Failed to edit book'
     };
 }
 
-export function successGetLabel(data) {
-    if (data[0].hasOwnProperty('Created label url'))
-        alert('Successfully get label: ' + data[0]['Created label url']);
-    else if (data[0].hasOwnProperty('Created label ID'))
-        alert('Successfully get label: ' + data[0]['Created label ID']);
-    else
-        alert('Failed get label: ' + data[0]['Error']);
+export function successFPGetLabel(data) {
+    alert(`Success get Label: ${data.message}`);
 
     return {
         type: GET_LABEL_SUCCESS,
-        errorMessage: 'GetLable success'
+        errorMessage: data.message
     };
 }
 
-export function failedGetLabel(error) {
-    alert('Failed get label: ' + error);
+export function failedFPGetLabel(error) {
+    alert(`Failed get Label: ${error.response.data.message}`);
+
     return {
         type: GET_LABEL_FAILED,
-        errorMessage: 'GetLable failed'
+        errorMessage: error.response.data.message
     };
 }
 
-export function successCancelBook(data) {
-    alert('Successfully cancel book: ' + data[0]['message']);
+export function successFPReprintLabel(data) {
+    alert(`Success reprint Label: ${data.message}`);
+
+    return {
+        type: GET_LABEL_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPReprintLabel(error) {
+    alert(`Failed reprint Label: ${error.response.data.message}`);
+
+    return {
+        type: GET_LABEL_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successFPTracking(data) {
+    alert(`Success track status: ${data.message}`);
+
+    return {
+        type: DO_NOTHING,
+        errorMessage: data.message
+    };
+}
+
+export function failedFPTracking(error) {
+    alert(`Failed track status: ${error.response.data.message}`);
+
+    return {
+        type: GET_TRACK_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successFPCancelBook(data) {
+    alert(data['message']);
 
     return {
         type: BOOK_CANCEL_SUCCESS,
-        errorMessage: data[0]['message'],
+        errorMessage: data['message'],
     };
 }
 
-export function failedCancelBook(error) {
-    alert('Failed cancel book : ' + error);
+export function failedFPCancelBook(error) {
+    alert(error.response.data.message);
 
     return {
         type: BOOK_CANCEL_FAILED,
-        errorMessage: 'Cancel Book failed'
+        errorMessage: 'Failed to Cancel Book'
+    };
+}
+
+export function successFPCreateOrder(data) {
+    alert(data['message'] + ', Now trying to get OrderSummary');
+
+    return {
+        type: SUCCESS_CREATE_ORDER,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedFPCreatedOrder(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_CREATE_ORDER,
+        errorMessage: 'Failed to create order'
+    };
+}
+
+export function successFPGetOrderSummary(data) {
+    alert(data['message']);
+
+    return {
+        type: SUCCESS_GET_ORDER_SUMMARY,
+        errorMessage: data['message'],
+    };
+}
+
+export function failedFPGetOrderSummary(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_GET_ORDER_SUMMARY,
+        errorMessage: 'Failed to get order summary'
+    };
+}
+
+export function successFPPricing(data) {
+    return {
+        type: SUCCESS_FP_PRICING,
+        payload: data['results'],
+        errorMessage: data['message']
+    };
+}
+
+export function failedFPPricing(error) {
+    alert(error.response.data.message);
+
+    return {
+        type: FAILED_FP_PRICING,
+        errorMessage: 'Failed to FC(Freight Calculation)'
     };
 }
 
@@ -371,8 +563,7 @@ export function failedGenerateXLS(error) {
     };
 }
 
-export function successChangeBookingsStatus(data) {
-    console.log('@501 - Success change bookings status: ', data);
+export function successChangeBookingsStatus() {
     return {
         type: CHANGE_STATUS_SUCCESS,
         errorMessage: 'Success change bookings status',
@@ -413,5 +604,84 @@ export function setFetchGeoInfoFlagAction(boolFlag) {
 export function clearErrorMessageAction() {
     return {
         type: CLEAR_ERR_MSG,
+    };
+}
+
+export function successTickManualBook(data) {
+    return {
+        type: SUCCESS_TICK_MANUAL_BOOK,
+        booking: data,
+        noBooking: false,
+    };
+}
+
+export function failedTickManualBook() {
+    return {
+        type: FAILED_TICK_MANUAL_BOOK,
+    };
+}
+
+export function resetTickManualBook() {
+    return {
+        type: RESET_TICK_MANUAL_BOOK,
+    };
+}
+
+export function failedManualBook() {
+    return {
+        type: FAILED_MANUAL_BOOK,
+    };
+}
+
+export function successManualBook(data) {
+    return {
+        type: SUCCESS_MANUAL_BOOK,
+        booking: data,
+    };
+}
+
+export function resetManifestReport() {
+    return {
+        type: RESET_MANIFEST_REPORT,
+    };
+}
+
+export function successGetManifestReport(data) {
+    return {
+        type: SUCCESS_GET_MANIFEST_REPORT,
+        payload: data,
+    };
+}
+
+export function failedGetManifestReport(error) {
+    return {
+        type: FAIELD_GET_MANIFEST_REPORT,
+        errorMessage: error.response.data.message,
+    };
+}
+
+export function resetPricingInfosFlagAction() {
+    return {
+        type: RESET_PRICING_INFOS_FLAG,
+    };
+}
+
+export function resetPricingInfosAction() {
+    return {
+        type: RESET_PRICING_INFOS,
+    };
+}
+
+export function successGetPricingInfos(data) {
+    return {
+        type: SUCCESS_GET_PRICING_INFOS,
+        payload: data,
+    };
+}
+
+export function setErrorMessageAction(error) {
+    return {
+        type: SET_ERROR_MSG,
+        errorMessage: error.response.data.message,
     };
 }

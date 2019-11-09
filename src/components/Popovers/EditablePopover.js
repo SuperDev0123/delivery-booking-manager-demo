@@ -95,9 +95,9 @@ class EditablePopover extends React.Component {
             >
                 <PopoverBody>
                     {
-                        inputType === 'datepicker' ?
+                        inputType === 'datepicker' && !_.isNull(selectedDate) ?
                             <DatePicker
-                                selected={selectedDate}
+                                selected={moment(selectedDate).toDate()}
                                 onChange={(e) => this.onDateChange(e)}
                                 dateFormat="dd MMM yyyy"
                             />

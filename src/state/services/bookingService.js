@@ -1,9 +1,88 @@
 import axios from 'axios';
 
-import { resetBooking, successGetAttachments, failedGetAttachments, successGetBookings, failedGetBookings, successGetSuburbs, failedGetSuburbs, successDeliveryGetSuburbs, failedDeliveryGetSuburbs, successGetBooking, failedUpdateBooking, setMappedBok1ToBooking, setUserDateFilterField, failedGetUserDateFilterField, successAlliedBook, failedAlliedBook, successStBook, failedStBook, successGetLabel, failedGetLabel, setAllLocalFilter, setLocalFilter, setNeedUpdateBookingsFlag, successUpdateBooking, successDuplicateBooking, successCancelBook, failedCancelBook, successCreateBooking, failedCreateBooking, successGenerateXLS, failedGenerateXLS, successChangeBookingsStatus, failedChangeBookingsStatus, successCalcCollected, failedCalcCollected, setFetchGeoInfoFlagAction, clearErrorMessageAction } from '../actions/bookingActions';
+import {
+    resetTickManualBook,
+    resetAttachments,
+    resetBooking,
+    successGetAttachments,
+    failedGetAttachments,
+    successGetBookings,
+    failedGetBookings,
+    successGetSuburbs,
+    failedGetSuburbs,
+    successDeliveryGetSuburbs,
+    failedDeliveryGetSuburbs,
+    successGetBooking,
+    failedUpdateBooking,
+    setMappedBok1ToBooking,
+    setUserDateFilterField,
+    failedGetUserDateFilterField,
+    successFPBook, // FP Actions Begin
+    failedFPBook, // "
+    successFPPod,
+    failedFPPod,
+    successFPEditBook, // "
+    failedFPEditBook, // "
+    successFPGetLabel, // "
+    failedFPGetLabel, // "
+    successFPReprintLabel, // "
+    failedFPReprintLabel, // "
+    successFPCancelBook, // "
+    failedFPCancelBook, // "
+    successFPCreateOrder, // "
+    failedFPCreateOrder, // "
+    successFPGetOrderSummary, // "
+    failedFPGetOrderSummary, // ""
+    successFPTracking, // "
+    failedFPTracking, // "
+    successFPPricing, // "
+    failedFPPricing, // FP Actions End
+    setAllLocalFilter,
+    setLocalFilter,
+    setNeedUpdateBookingsFlag,
+    successUpdateBooking,
+    successDuplicateBooking,
+    successCreateBooking,
+    failedCreateBooking,
+    successGenerateXLS,
+    failedGenerateXLS,
+    successChangeBookingsStatus,
+    failedChangeBookingsStatus,
+    successCalcCollected,
+    failedCalcCollected,
+    setFetchGeoInfoFlagAction,
+    clearErrorMessageAction,
+    successTickManualBook,
+    failedTickManualBook,
+    successManualBook,
+    failedManualBook,
+    resetManifestReport,
+    successGetManifestReport,
+    failedGetManifestReport,
+    resetPricingInfosFlagAction,
+    resetPricingInfosAction,
+    successGetPricingInfos,
+    setErrorMessageAction,
+} from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0, sortField='-id', columnFilters={}, activeTabInd=0, simpleSearchKeyword='', downloadOption='label') => {
+export const getBookings = (
+    startDate,
+    endDate,
+    clientPK=0,
+    warehouseId=0,
+    pageItemCnt=10,
+    pageInd=0,
+    sortField='-id',
+    columnFilters={},
+    prefilterInd=0,
+    simpleSearchKeyword='',
+    downloadOption='label',
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues='',
+    projectName=null,
+) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -18,9 +97,13 @@ export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageI
             pageInd: parseInt(pageInd),
             sortField: sortField,
             columnFilters: columnFilters,
-            activeTabInd: activeTabInd,
+            prefilterInd: prefilterInd,
             simpleSearchKeyword: simpleSearchKeyword,
             downloadOption: downloadOption,
+            dmeStatus: dmeStatus,
+            multiFindField: multiFindField,
+            multiFindValues: multiFindValues,
+            projectName: projectName,
         }
     };
     return dispatch => {
@@ -30,29 +113,44 @@ export const getBookings = (startDate, endDate, clientPK=0, warehouseId=0, pageI
     };
 };
 
-export const queryManifest = (vx_freight_provider, puPickUpAvailFrom_Date) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_bookings_4_manifest/`,
-        params: {
-            vx_freight_provider: vx_freight_provider,
-            puPickUpAvailFrom_Date: puPickUpAvailFrom_Date,
-        }
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetBookings(data)))
-            .catch((error) => dispatch(failedGetBookings(error)));
-};
-
 export const setGetBookingsFilter = (key, value) => {
     return dispatch => dispatch(setLocalFilter(key, value));
 };
 
-export const setAllGetBookingsFilter = (startDate, endDate, clientPK=0, warehouseId=0, pageItemCnt=10, pageInd=0,  sortField='-id', columnFilters={}, activeTabInd=0, simpleSearchKeyword='', downloadOption='label') => {
-    return dispatch => dispatch(setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption));
+export const setAllGetBookingsFilter = (
+    startDate,
+    endDate,
+    clientPK=0,
+    warehouseId=0,
+    pageItemCnt=10,
+    pageInd=0,
+    sortField='-id',
+    columnFilters={},
+    prefilterInd=0,
+    simpleSearchKeyword='',
+    downloadOption='label',
+    dmeStatus='',
+    multiFindField=null,
+    multiFindValues='',
+    projectName=null,
+) => {
+    return dispatch => dispatch(setAllLocalFilter(
+        startDate,
+        endDate,
+        clientPK,
+        warehouseId,
+        pageItemCnt,
+        pageInd,
+        sortField,
+        columnFilters,
+        prefilterInd,
+        simpleSearchKeyword,
+        downloadOption,
+        dmeStatus,
+        multiFindField,
+        multiFindValues,
+        projectName,
+    ));
 };
 
 export const setNeedUpdateBookingsState = (boolFlag) => {
@@ -72,7 +170,11 @@ export const simpleSearch = (keyword) => {
             .catch((error) => dispatch(failedGetBookings(error)));
 };
 
-export const getBookingWithFilter = (id, filter) => {
+/*
+ * Service function which retrieve a Booking
+ * if `filter` === null, it will retrieve latest Booking for current User.
+ */
+export const getBooking = (id=null, filter=null) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
@@ -88,17 +190,38 @@ export const getBookingWithFilter = (id, filter) => {
     };
 };
 
-export const getLatestBooking = () => {
+export const manualBook = (id) => {
     const token = localStorage.getItem('token');
     const options = {
-        method: 'get',
+        method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_latest_booking/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/manual_book/`,
+        data: {'id': id},
     };
-    return dispatch =>
+
+    return dispatch => {
+        dispatch(resetBooking());
         axios(options)
-            .then(({ data }) => dispatch(successGetBooking(data)))
-            .catch((error) => dispatch(failedGetBookings(error)));
+            .then(({ data }) => dispatch(successManualBook(data)))
+            .catch((error) => dispatch(failedManualBook(error)));
+    };
+};
+
+export const tickManualBook = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/tick_manual_book/`,
+        data: {'id': id},
+    };
+
+    return dispatch => {
+        dispatch(resetTickManualBook());
+        axios(options)
+            .then(({ data }) => dispatch(successTickManualBook(data)))
+            .catch((error) => dispatch(failedTickManualBook(error)));
+    };
 };
 
 export const getSuburbStrings = (type, name) => {
@@ -114,17 +237,19 @@ export const getSuburbStrings = (type, name) => {
             .catch((error) => dispatch(failedGetSuburbs(error)));
 };
 
-export const getAttachmentHistory = (id) => {
+export const getAttachmentHistory = (fk_booking_id) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/attachments/?id=` + id,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/attachments/?fk_booking_id=` + fk_booking_id,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetAttachments());
         axios(options)
             .then(({ data }) => dispatch(successGetAttachments(data)))
             .catch((error) => dispatch(failedGetAttachments(error)));
+    };
 };
 
 export const getDeliverySuburbStrings = (type, name) => {
@@ -184,60 +309,162 @@ export const allTrigger = () => {
             .catch((error) => dispatch(console.log('@2 - Failed all_trigger', error)));
 };
 
-export const alliedBooking = (bookingId) => {
+// FP services
+export const fpBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_allied/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/book/`
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successAlliedBook(data)))
-            .catch((error) => dispatch(failedAlliedBook(error)));
+            .then(({data}) => dispatch(successFPBook(data)))
+            .catch((error) => dispatch(failedFPBook(error)));
 };
 
-export const stBooking = (bookingId) => {
+export const fpEditBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking_st/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/edit-book/`
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successStBook(data)))
-            .catch((error) => dispatch(failedStBook(error)));
+            .then(({data}) => dispatch(successFPEditBook(data)))
+            .catch((error) => dispatch(failedFPEditBook(error)));
 };
 
-export const getAlliedLabel = (bookingId) => {
+export const fpCancelBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_allied/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/cancel-book/`
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successGetLabel(data)))
-            .catch((error) => dispatch(failedGetLabel(error)));
+            .then(({data}) => dispatch(successFPCancelBook(data)))
+            .catch((error) => dispatch(failedFPCancelBook(error)));
 };
 
-export const getSTLabel = (bookingId) => {
+export const fpLabel = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_label_st/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/get-label/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPGetLabel(data)))
+            .catch((error) => dispatch(failedFPGetLabel(error)));
+};
+
+export const fpReprint = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/reprint/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPReprintLabel(data)))
+            .catch((error) => dispatch(failedFPReprintLabel(error)));
+};
+
+export const fpTracking = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/tracking/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPTracking(data)))
+            .catch((error) => dispatch(failedFPTracking(error)));
+};
+
+export const fpOrder = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/create-order/`,
+        data: {bookingIds}
     };
     return dispatch =>
         axios(options)
-            .then(({data}) => dispatch(successGetLabel(data)))
-            .catch((error) => dispatch(failedGetLabel(error)));
+            .then(({ data }) => dispatch(successFPCreateOrder(data)))
+            .catch((error) => dispatch(failedFPCreateOrder(error)));
+};
+
+export const fpOrderSummary = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/get-order-summary/`,
+        data: {bookingIds}
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successFPGetOrderSummary(data)))
+            .catch((error) => dispatch(failedFPGetOrderSummary(error)));
+};
+
+export const fpPod = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/pod/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPPod(data)))
+            .catch((error) => dispatch(failedFPPod(error)));
+};
+
+export const fpPricing = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/pricing/`
+    };
+    return dispatch => {
+        dispatch(resetPricingInfos());
+        axios(options)
+            .then(({data}) => dispatch(successFPPricing(data)))
+            .catch((error) => dispatch(failedFPPricing(error)));
+    };
+};
+
+export const resetPricingInfosFlag = () => {
+    return dispatch => {
+        dispatch(resetPricingInfosFlagAction());
+    };
+};
+
+export const resetPricingInfos = () => {
+    return dispatch => {
+        dispatch(resetPricingInfosAction());
+    };
 };
 
 export const mapBok1ToBookings = () => {
@@ -266,19 +493,6 @@ export const getUserDateFilterField = () => {
             .catch((error) => dispatch(failedGetUserDateFilterField(error)));
 };
 
-export const stOrder = () => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/st_create_order/`
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(console.log('@1 - After ST order', data)))
-            .catch((error) => dispatch(console.log('@2 - Failed ST order', error)));
-};
-
 export const getExcel = () => {
     const token = localStorage.getItem('token');
     const options = {
@@ -292,20 +506,6 @@ export const getExcel = () => {
             .catch((error) => dispatch(console.log('@2 - Failed getExcel', error)));
 };
 
-export const cancelBook = (bookingId) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/cancel_booking/`
-    };
-    return dispatch =>
-        axios(options)
-            .then(({data}) => dispatch(successCancelBook(data)))
-            .catch((error) => dispatch(failedCancelBook(error)));
-};
-
 export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -313,10 +513,12 @@ export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) =>
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/booking/duplicate_booking/?bookingId=` + bookingId + '&switchInfo=' + switchInfo + '&dupLineAndLineDetail=' + dupLineAndLineDetail,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetBooking());
         axios(options)
             .then(({ data }) => dispatch(successDuplicateBooking(data)))
             .catch((error) => dispatch(console.log('@2 - Failed duplicateBooking', error)));
+    };
 };
 
 export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => {
@@ -354,6 +556,20 @@ export const changeBookingsStatus = (status, bookingIds) => {
             .catch((error) => dispatch(failedChangeBookingsStatus(error)));
 };
 
+export const changeBookingsFlagStatus = (flagStatus, bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/change_bookings_status/`,
+        data: {status: flagStatus, bookingIds},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successChangeBookingsStatus(data)))
+            .catch((error) => dispatch(failedChangeBookingsStatus(error)));
+};
+
 export const calcCollected = (bookingIds, type) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -374,4 +590,36 @@ export const setFetchGeoInfoFlag = (boolFlag) => {
 
 export const clearErrorMessage = () => {
     return dispatch => dispatch(clearErrorMessageAction());
+};
+
+export const getManifestReport = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_report/`,
+    };
+
+    return dispatch => {
+        dispatch(resetManifestReport());
+        axios(options)
+            .then(({ data }) => dispatch(successGetManifestReport(data)))
+            .catch((error) => dispatch(failedGetManifestReport(error)));
+    };
+};
+
+export const getPricingInfos = (fk_booking_id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/pricing/get_pricings/`,
+        params: {'fk_booking_id': fk_booking_id},
+    };
+    return dispatch => {
+        dispatch(resetPricingInfosAction());
+        axios(options)
+            .then(({ data }) => dispatch(successGetPricingInfos(data)))
+            .catch((error) => dispatch(setErrorMessageAction(error)));
+    };
 };

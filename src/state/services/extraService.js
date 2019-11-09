@@ -1,6 +1,36 @@
 import axios from 'axios';
 
-import { resetFlagApiBCLs, resetFlagStatusHistory, successGetPackageTypes, failedGetPackageTypes, successGetAllBookingStatus, failedGetAllBookingStatus, successSaveStatusHistory, failedSaveStatusHistory, successGetBookingStatusHistory, failedGetBookingStatusHistory, successGetAllFPs, failedGetAllFPs, successStatusActions, failedStatusActions, successGetStatusDetails, failedStatusDetails, successCreateStatusDetail, successCreateStatusAction, failedCreateStatusDetail, failedCreateStatusAction, successGetApiBCLs, failedGetApiBCLs } from '../actions/extraActions';
+import {
+    resetStatusInfoFlag,
+    resetFlagApiBCLs,
+    resetFlagStatusHistory,
+    successGetPackageTypes,
+    failedGetPackageTypes,
+    successGetAllBookingStatus,
+    failedGetAllBookingStatus,
+    successSaveStatusHistory,
+    failedSaveStatusHistory,
+    successGetBookingStatusHistory,
+    failedGetBookingStatusHistory,
+    successGetAllFPs,
+    failedGetAllFPs,
+    successStatusActions,
+    failedStatusActions,
+    successGetStatusDetails,
+    failedStatusDetails,
+    successCreateStatusDetail,
+    successCreateStatusAction,
+    failedCreateStatusDetail,
+    failedCreateStatusAction,
+    successGetApiBCLs,
+    failedGetApiBCLs,
+    setStatusInfoFilterAction,
+    successGetStatusInfo,
+    failedGetStatusInfo,
+    resetProjectNames,
+    successGetProjectNames,
+    failedGetProjectNames,
+} from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
@@ -152,5 +182,40 @@ export const getApiBCLs = (bookingId) => {
         axios(options)
             .then(({ data }) => dispatch(successGetApiBCLs(data)))
             .catch((error) => dispatch(failedGetApiBCLs(error)));
+    };
+};
+
+export const setStatusInfoFilter = (startDate, endDate, clientPK=0) => {
+    return dispatch => dispatch(setStatusInfoFilterAction(startDate, endDate, clientPK));
+};
+
+export const getStatusInfo = (startDate, endDate, clientPK=0) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_status_info/`,
+        params: {'startDate': startDate, 'endDate': endDate, 'clientPK': clientPK},
+    };
+    return dispatch => {
+        dispatch(resetStatusInfoFlag());
+        axios(options)
+            .then(({ data }) => dispatch(successGetStatusInfo(data)))
+            .catch((error) => dispatch(failedGetStatusInfo(error)));
+    };
+};
+
+export const getAllProjectNames = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_project_names/`,
+    };
+    return dispatch => {
+        dispatch(resetProjectNames());
+        axios(options)
+            .then(({ data }) => dispatch(successGetProjectNames(data)))
+            .catch((error) => dispatch(failedGetProjectNames(error)));
     };
 };

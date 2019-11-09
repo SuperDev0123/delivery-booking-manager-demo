@@ -16,23 +16,28 @@ import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Constants
-import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL, S3_URL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, stBooking, getSTLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, stOrder, getExcel, generateXLS, changeBookingsStatus, calcCollected, queryManifest } from '../state/services/bookingService';
-import { getBookingLines } from '../state/services/bookingLinesService';
+import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
+import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import { getAllBookingStatus, getAllFPs } from '../state/services/extraService';
+import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
+import SimpleTooltipComponent from '../components/Tooltip/SimpleTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
+import ProjectNameModal from '../components/CommonModals/ProjectNameModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
-import ManifestModal from '../components/CommonModals/ManifestModal';
 import CustomPagination from '../components/Pagination/Pagination';
 import CheckPodModal from '../components/CommonModals/CheckPodModal';
+import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
+import FindModal from '../components/CommonModals/FindModal';
+import OrderModal from '../components/CommonModals/OrderModal';
+import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -81,21 +86,29 @@ class AllBookingsPage extends React.Component {
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
             scrollLeft: 0,
-            isShowXLSModal: false,
             selectedStatusValue: null,
             selectedWarehouseName: 'All',
             allBookingStatus: [],
             allFPs: [],
             isShowStatusLockModal: false,
-            isShowCheckPodModal: false,
-            isShowManifestModal: false,
-            manifestStatus: 0,
-            oneManifestFile: false,
-            activeBookingId: null,
-            selectedOneBooking: null,
             pageItemCnt: 10,
             pageInd: 0,
             pageCnt: 0,
+            selectedOneBooking: null,
+            activeBookingId: null,
+            dmeStatus: null,
+            isShowXLSModal: false,
+            isShowProjectNameModal: false,
+            isShowCheckPodModal: false,
+            isShowStatusInfoSlider: false,
+            isShowFindModal: false,
+            selectedBookingIds2Order: [],
+            selectedFP2Order: null,
+            isShowOrderModal: false,
+            selectedBookingLinesCnt: 0,
+            projectNames: [],
+            projectName: '',
+            isShowBulkUpdateSlider: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -104,8 +117,12 @@ class AllBookingsPage extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
         this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
-        this.toggleShowManifestModal = this.toggleShowManifestModal.bind(this);
         this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
+        this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
+        this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
+        this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
+        this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
+        this.toggleShowBulkUpdateSlider = this.toggleShowBulkUpdateSlider.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -119,8 +136,9 @@ class AllBookingsPage extends React.Component {
         getUserDateFilterField: PropTypes.func.isRequired,
         allTrigger: PropTypes.func.isRequired,
         alliedBooking: PropTypes.func.isRequired,
-        stBooking: PropTypes.func.isRequired,
-        getSTLabel: PropTypes.func.isRequired,
+        fpLabel: PropTypes.func.isRequired,
+        fpOrder: PropTypes.func.isRequired,
+        fpOrderSummary: PropTypes.bool.isRequired,
         getAlliedLabel: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
@@ -129,15 +147,17 @@ class AllBookingsPage extends React.Component {
         setGetBookingsFilter: PropTypes.func.isRequired,
         setAllGetBookingsFilter: PropTypes.func.isRequired,
         setNeedUpdateBookingsState: PropTypes.func.isRequired,
-        stOrder: PropTypes.func.isRequired,
         getExcel: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         generateXLS: PropTypes.func.isRequired,
         changeBookingsStatus: PropTypes.func.isRequired,
+        changeBookingsFlagStatus: PropTypes.func.isRequired,
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
-        queryManifest: PropTypes.func.isRequired,
+        clearErrorMessage: PropTypes.bool.isRequired,
+        getBookingLinesCnt: PropTypes.func.isRequired,
+        getAllProjectNames: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -174,6 +194,7 @@ class AllBookingsPage extends React.Component {
         this.props.getUserDateFilterField();
         this.props.getAllBookingStatus();
         this.props.getAllFPs();
+        this.props.getAllProjectNames();
     }
 
     UNSAFE_componentWillMount() {
@@ -187,7 +208,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, errorMessage, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -197,8 +218,18 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
+        if (!_.isEmpty(bookingErrorMessage)) {
+            this.notify(bookingErrorMessage);
+            this.props.clearErrorMessage();
+
+            if (bookingErrorMessage.indexOf('Successfully create order') !== -1) {
+                this.props.fpOrderSummary(this.state.selectedBookingIds2Order, this.state.selectedFP2Order);
+                this.setState({selectedBookingIds2Order: []});
+            }
+        }
+
         if (bookings) {
-            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, activeTabInd });
+            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, prefilterInd });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -210,10 +241,14 @@ class AllBookingsPage extends React.Component {
                         pageItemCnt,
                         pageInd,
                         columnFilters: {...columnFilters},
-                        activeTabInd,
+                        prefilterInd,
                         simpleSearchKeyword,
                         downloadOption,
                         clientPK,
+                        dmeStatus,
+                        multiFindField,
+                        multiFindValues,
+                        projectName,
                     },
                     hasSuccessSearchAndFilterOptions: true,
                 });
@@ -221,25 +256,23 @@ class AllBookingsPage extends React.Component {
                 alert('Your search/filter has returned 0 records - Returning to your last found set.');
 
                 this.props.setAllGetBookingsFilter(
-                    successSearchFilterOptions.startDate, 
-                    successSearchFilterOptions.endDate, 
-                    successSearchFilterOptions.clientPK, 
-                    successSearchFilterOptions.warehouseId, 
+                    successSearchFilterOptions.startDate,
+                    successSearchFilterOptions.endDate,
+                    successSearchFilterOptions.clientPK,
+                    successSearchFilterOptions.warehouseId,
                     successSearchFilterOptions.pageItemCnt, 
                     successSearchFilterOptions.pageInd,
-                    successSearchFilterOptions.sortField, 
-                    successSearchFilterOptions.columnFilters, 
-                    successSearchFilterOptions.activeTabInd, 
-                    successSearchFilterOptions.simpleSearchKeyword, 
-                    successSearchFilterOptions.downloadOption
+                    successSearchFilterOptions.sortField,
+                    successSearchFilterOptions.columnFilters,
+                    successSearchFilterOptions.prefilterInd,
+                    successSearchFilterOptions.simpleSearchKeyword,
+                    successSearchFilterOptions.downloadOption,
+                    successSearchFilterOptions.dmeStatus,
+                    successSearchFilterOptions.multiFindField,
+                    successSearchFilterOptions.multiFindValues,
+                    successSearchFilterOptions.projectName
                 );
                 this.setState({successSearchFilterOptions: {}, hasSuccessSearchAndFilterOptions: false});
-            }
-
-            if (this.state.manifestStatus === 1) {
-                this.setState({manifestStatus: 2});
-            } else {
-                this.setState({manifestStatus: 0});
             }
         }
 
@@ -271,12 +304,6 @@ class AllBookingsPage extends React.Component {
             this.setState({ pageCnt: parseInt(pageCnt), pageInd: parseInt(pageInd) });
         }
 
-        if ((errorMessage === 'Book success' || 
-            errorMessage === 'book failed') && 
-            needUpdateBookings) {
-            this.onAfterBook();
-        }
-
         if (dmeClients) {
             this.setState({dmeClients});
         }
@@ -287,6 +314,14 @@ class AllBookingsPage extends React.Component {
 
         if (username) {
             this.setState({username});
+        }
+
+        if (selectedBookingLinesCnt) {
+            this.setState({selectedBookingLinesCnt});
+        }
+
+        if (projectNames) {
+            this.setState({projectNames});
         }
 
         if (needUpdateBookings) {
@@ -323,13 +358,13 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            // activeTabInd
+            // prefilterInd
             if (startDate === '*') {
                 this.setState({activeTabInd: 0});
-            } else if (startDate !== '*' && activeTabInd === 0) {
+            } else if (startDate !== '*' && prefilterInd === 0) {
                 this.setState({activeTabInd: 7});
             } else {
-                this.setState({activeTabInd});
+                this.setState({activeTabInd: prefilterInd});
             }
 
             // downloadOption
@@ -345,9 +380,11 @@ class AllBookingsPage extends React.Component {
                 selectedWarehouseId: warehouseId, 
                 filterInputs: columnFilters, 
                 simpleSearchKeyword,
+                dmeStatus,
+                projectName: projectName,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
         } else {
             this.setState({loading: false});
         }
@@ -493,6 +530,11 @@ class AllBookingsPage extends React.Component {
             this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
         } else if (src === 'status') {
             this.setState({selectedStatusValue: e.target.value});
+        } else if (src === 'projectName') {
+            const {today} = this.state;
+            const projectName = e.target.value;
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
+            this.setState({activeTabInd: 0});
         }
     }
 
@@ -592,11 +634,11 @@ class AllBookingsPage extends React.Component {
         else
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
 
-        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [], bookingLines: [] });
     }
 
     clearActivePopoverVar() {
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [], bookingLines: [] });
     }
 
     togglePopover() {
@@ -609,10 +651,6 @@ class AllBookingsPage extends React.Component {
 
     toggleShowStatusLockModal() {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
-    }
-
-    toggleShowManifestModal() {
-        this.setState(prevState => ({isShowManifestModal: !prevState.isShowManifestModal}));
     }
 
     toggleShowCheckPodModal() {
@@ -641,73 +679,35 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds, allCheckStatus});
     }
 
+    toggleShowStatusInfoSlider() {
+        this.setState(prevState => ({isShowStatusInfoSlider: !prevState.isShowStatusInfoSlider})); 
+    }
+
+    toggleShowFindModal() {
+        this.setState(prevState => ({isShowFindModal: !prevState.isShowFindModal})); 
+    }
+
+    toggleShowOrderModal() {
+        this.setState(prevState => ({isShowOrderModal: !prevState.isShowOrderModal})); 
+    }
+
+    toggleShowProjectNameModal() {
+        this.setState(prevState => ({isShowProjectNameModal: !prevState.isShowProjectNameModal}));
+    }
+
+    toggleShowBulkUpdateSlider() {
+        this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
+    }
+
     onClickAllTrigger() {
         this.props.allTrigger();
-    }
-
-    onClickBook() {
-        const { selectedBookingIds, bookings } = this.state;
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-
-        if (selectedBookingIds.length < 1) {
-            alert('Please select at least one booking!');
-        } else if (selectedBookingIds.length > 10) {
-            alert('Please select less than 10 booking! 10+ bookings takes 5+ minutes to book');
-        } else {
-            this.setState({loadingBooking: true});
-            let ind = -1;
-
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[0]) {
-                    ind = i;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
-        }
-    }
-
-    onAfterBook() {
-        const { selectedBookingIds, bookings, currentBookInd } = this.state;
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-
-        if (currentBookInd === selectedBookingIds.length - 1) {
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingBooking: false, currentBookInd: 0});
-        } else {
-            let ind = -1;
-
-            for (let i = 0; i < bookings.length; i++) {
-                if (bookings[i].id === selectedBookingIds[currentBookInd + 1]) {
-                    ind = i;
-                    break;
-                }
-            }
-
-            if (ind > -1) {
-                if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.stBooking(bookings[ind].id);
-                } else if (bookings[ind].vx_freight_provider && bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
-                    this.props.alliedBooking(bookings[ind].id);
-                }
-            }
-            
-            this.setState({currentBookInd: currentBookInd + 1});
-        }
     }
 
     onClickGetLabel() {
         const { selectedBookingIds, bookings } = this.state;
         const st_name = 'startrack';
         const allied_name = 'allied';
+        const dhl_name = 'dhl';
 
         if (selectedBookingIds.length == 0) {
             alert('Please check only one booking!');
@@ -725,11 +725,13 @@ class AllBookingsPage extends React.Component {
 
             if (ind > -1) {
                 if (bookings[ind].vx_freight_provider.toLowerCase() === st_name) {
-                    this.props.getSTLabel(bookings[ind].id);
+                    this.props.fpLabel(bookings[ind].id, bookings[ind].vx_freight_provider);
                     this.setState({loadingBooking: true});
                 } else if (bookings[ind].vx_freight_provider.toLowerCase() === allied_name) {
                     this.props.getAlliedLabel(bookings[ind].id);
                     this.setState({loadingBooking: true});
+                } else if (bookings[ind].vx_freight_provider.toLowerCase() === dhl_name) {
+                    this.buildPDF([bookings[ind].id], bookings[ind].vx_freight_provider);
                 }
             }
         }
@@ -879,38 +881,32 @@ class AllBookingsPage extends React.Component {
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'label_and_connote') {
-                let bookingIdsWithLabelOrConnote = [];
-                let cnt = 0;
+                let bookingIdsWithLabel = [];
+                let bookingIdsWithConnote = [];
 
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     for (let i = 0; i < bookings.length; i++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
-                            if ((bookings[i].z_connote_url &&
-                                bookings[i].z_connote_url.length > 0) ||
-                                (bookings[i].z_label_url &&
-                                bookings[i].z_label_url.length > 0))
-                                bookingIdsWithLabelOrConnote.push(bookings[i].id);
-
                             if (bookings[i].z_connote_url &&
                                 bookings[i].z_connote_url.length > 0) {
-                                cnt ++;
+                                bookingIdsWithConnote.push(bookings[i].id);
                             }
 
                             if (bookings[i].z_label_url &&
                                 bookings[i].z_label_url.length > 0) {
-                                cnt ++;
+                                bookingIdsWithLabel.push(bookings[i].id);
                             }
                         }
                     }
                 }
 
-                if (bookingIdsWithLabelOrConnote.length > 0) {
+                if (bookingIdsWithConnote.length > 0) {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
                         data: {
-                            ids: bookingIdsWithLabelOrConnote,
-                            downloadOption: downloadOption,
+                            ids: bookingIdsWithConnote,
+                            downloadOption: 'connote',
                         },
                         responseType: 'blob', // important
                     };
@@ -919,13 +915,38 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'label_and_connote_' + selectedWarehouseName + '_' + cnt + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
                         this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
-                } else {
+                }
+
+                if (bookingIdsWithLabel.length > 0) {
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
+                        data: {
+                            ids: bookingIdsWithLabel,
+                            downloadOption: 'label',
+                        },
+                        responseType: 'blob', // important
+                    };
+
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                        this.props.setGetBookingsFilter('date', {startDate, endDate});
+                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                    });
+                }
+
+                if (bookingIdsWithConnote.length === 0 && bookingIdsWithLabel.length === 0) {
                     alert('No Booking which has Label or Connote info');
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
@@ -944,8 +965,12 @@ class AllBookingsPage extends React.Component {
         const tas_name = 'tasfr';
 
         if (booking.z_label_url && booking.z_label_url.length > 0) {
+            this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                .then(() => {
+                    this.onClickDateFilter();
+                });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                const win = window.open(booking.z_label_url);
+                const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
                 booking.vx_freight_provider.toLowerCase() === cope_name ||
@@ -992,6 +1017,12 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
+    onMultiFind(FieldName, valueSet) {
+        const today = moment().format('YYYY-MM-DD');
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
+        this.setState({activeTabInd: 0, selectedBookingIds: [], checkedAll: false});
+    }
+
     onClickTab(activeTabInd) {
         const {downloadOption, pageItemCnt, pageInd} = this.state;
 
@@ -1000,7 +1031,9 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, pageInd, '-id', {}, 0, '', downloadOption);
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
-            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, pageInd, '-id', {}, activeTabInd);
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, pageItemCnt, pageInd, '-id', {}, activeTabInd);
+        } else if (activeTabInd === 6) {
+            this.toggleShowStatusInfoSlider();
         } else {
             this.props.setGetBookingsFilter('activeTabInd', activeTabInd);
             this.props.setGetBookingsFilter('columnFilters', {});
@@ -1035,9 +1068,15 @@ class AllBookingsPage extends React.Component {
         this.setState({allCheckStatus, selectedBookingIds});
     }
 
-    onClickSTOrder() {
-        this.props.stOrder();
-        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+    onCreateOrder(bookingIds, vx_freight_provider) {
+        this.toggleShowOrderModal();
+        this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
+        this.setState({
+            selectedBookingIds: [],
+            checkedAll: false,
+            selectedBookingIds2Order: this.state.selectedBookingIds,
+            selectedFP2Order: vx_freight_provider.toLowerCase(),
+        });
     }
 
     onClickDownloadExcel() {
@@ -1048,19 +1087,24 @@ class AllBookingsPage extends React.Component {
         const { bookings, selectedBookingIds, dmeClients } = this.state;
 
         if (selectedBookingIds && selectedBookingIds.length === 0) {
-            alert('There is no bookings to *Book.');
+            alert('Please select bookings to *Book*.');
         } else if (selectedBookingIds.length > 500) {
-            alert('You can generate xml or csv with 500 bookings at most.');
+            alert('You can generate XML or CSV with 500 bookings at most.');
         } else {
             const bookedIds = [];
             const ids4csv = [];
             const ids4xml = [];
             const nonBookedBookings = [];
             const ids4notMatchFP = [];
+            const fps = [];
 
             for (let i = 0; i < bookings.length; i++) {
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     if (bookings[i].id === selectedBookingIds[j]) {
+                        if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                            fps.push(bookings[i].vx_freight_provider);
+                        }
+
                         if (!_.isNull(bookings[i].b_dateBookedDate)) {
                             bookedIds.push(bookings[i].id);
                         } else {
@@ -1070,76 +1114,92 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            for (let i = 0; i < nonBookedBookings.length; i++) {
-                for (let j = 0; j < dmeClients.length; j++) {
-                    if (nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()) {
-                        if (!_.isNull(dmeClients[j].current_freight_provider)
-                            && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
-                            if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope') {
-                                ids4csv.push(nonBookedBookings[i].id);
-                            } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
-                                ids4xml.push(nonBookedBookings[i].id);
+            if (fps.length !== 1) {
+                alert('Please select only one kind `Freight Provider` bookings.');
+            } else {
+                for (let i = 0; i < nonBookedBookings.length; i++) {
+                    for (let j = 0; j < dmeClients.length; j++) {
+                        if (nonBookedBookings[i].b_client_name &&
+                            dmeClients[j].company_name &&
+                            nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
+                        ) {
+                            if (!_.isNull(dmeClients[j].current_freight_provider)
+                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
+                                if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
+                                    || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl') {
+                                    ids4csv.push(nonBookedBookings[i].id);
+                                } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
+                                    ids4xml.push(nonBookedBookings[i].id);
+                                } else {
+                                    ids4notMatchFP.push(nonBookedBookings[i].id);
+                                }
                             } else {
                                 ids4notMatchFP.push(nonBookedBookings[i].id);
                             }
-                        } else {
-                            ids4notMatchFP.push(nonBookedBookings[i].id);
                         }
                     }
                 }
-            }
 
-            this.setState({loadingDownload: true});
-            if (bookedIds.length || ids4notMatchFP.length) {
-                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
-                    .then(() => {
-                        Promise.all([
-                            this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
-                            this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
-                        ])
-                            .then(() => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                this.notify('There was error, please check each booking error');
-                            })
-                            .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                console.log('#100 - ', err);
-                            });
-                    })
-                    .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                        this.props.setNeedUpdateBookingsState(true);
-                        console.log('#101 - ', err);
-                    });
-            } else {
-                this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
-                    .then(() => {
-                        Promise.all([
-                            this.buildCSV(ids4csv),
-                            this.buildXML(ids4xml, 'allied'),
-                        ])
-                            .then(() => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
+                this.setState({loadingDownload: true});
+                if (bookedIds.length || ids4notMatchFP.length) {
+                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
+                        .then(() => {
+                            Promise.all([
+                                this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
+                                this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
+                            ])
+                                .then(() => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    this.notify('There was error, please check each booking error');
+                                })
+                                .catch((err) => {
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    console.log('#100 - ', err);
+                                });
+                        })
+                        .catch((err) => {
+                            this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                            this.props.setNeedUpdateBookingsState(true);
+                            console.log('#101 - ', err);
+                        });
+                } else {
+                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
+                        .then(() => {
+                            Promise.all([
+                                this.buildCSV(ids4csv, fps[0].toLowerCase()),
+                                this.buildXML(ids4xml, 'allied'),
+                            ])
+                                .then(() => {
+                                    if (ids4csv.length) {
+                                        this.notify('Successfully created CSV.');
 
-                                if (ids4csv.length)
-                                    this.notify('Successfully created CSV.');
-                                if (ids4xml.length)
-                                    this.notify('Successfully created XML.');
-                            })
-                            .catch((err) => {
-                                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                this.props.setNeedUpdateBookingsState(true);
-                                console.log('#100 - ', err);
-                            });
-                    })
-                    .catch((err) => {
-                        this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                        this.props.setNeedUpdateBookingsState(true);
-                        console.log('#101 - ', err);
-                    });
+                                        if (fps[0].toLowerCase() === 'dhl') {
+                                            this.buildPDF(ids4csv, fps[0].toLowerCase());
+                                        }
+                                    }
+
+                                    if (ids4xml.length) {
+                                        this.notify('Successfully created XML.');
+                                    }
+
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                })
+                                .catch((err) => {
+                                    this.notify(err);
+                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                                    this.props.setNeedUpdateBookingsState(true);
+                                    console.log('#107 - ', err);
+                                });
+                        })
+                        .catch((err) => {
+                            this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                            this.props.setNeedUpdateBookingsState(true);
+                            console.log('#108 - ', err);
+                        });
+                }
             }
         }
     }
@@ -1164,24 +1224,18 @@ class AllBookingsPage extends React.Component {
         });
     }
 
-    buildCSV(bookingIds) {
+    buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-csv/',
-                data: {bookingIds},
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
+                data: {bookingIds, vx_freight_provider},
                 responseType: 'blob', // important
             };
 
             axios(options)
                 .then((response) => {
-                    console.log('download-csv response: ', response);
-                    // const url = window.URL.createObjectURL(new Blob([response.data]));
-                    // const link = document.createElement('a');
-                    // link.href = url;
-                    // link.setAttribute('download', 'SEATEMP_' + bookings.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD hh:mm:ss') + '.csv');
-                    // document.body.appendChild(link);
-                    // link.click();
+                    console.log('generate-csv response: ', response);
                     resolve();
                 })
                 .catch((err) => {
@@ -1195,39 +1249,12 @@ class AllBookingsPage extends React.Component {
             let options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {bookingIds, vx_freight_provider, one_manifest_file: 0}, // `one_manifest_file` is useless here
+                data: {bookingIds, vx_freight_provider},
             };
 
             axios(options)
                 .then((response) => {
-                    if (response.data.success && response.data.success === 'success') {
-                        resolve();
-                    } else {
-                        if (vx_freight_provider === 'TASFR') {
-                            this.notify('XML’s have been generated successfully. Labels will be generated');
-                            options = {
-                                method: 'post',
-                                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                                data: {bookingIds, vx_freight_provider: 'TASFR'},
-                            };
-
-                            axios(options)
-                                .then((response) => {
-                                    if (response.data.success && response.data.success === 'success') {
-                                        this.notify('PDF(Label)’s have been generated successfully.');
-                                        resolve();
-                                    } else {
-                                        this.notify('PDF(Label)’s have *not been generated.');
-                                        reject();
-                                    }
-                                })
-                                .catch((err) => {
-                                    reject(err);
-                                });
-                        } else {
-                            resolve();
-                        }
-                    }
+                    resolve(response);
                 })
                 .catch((err) => {
                     reject(err);
@@ -1235,8 +1262,129 @@ class AllBookingsPage extends React.Component {
         });
     }
 
-    onClickMani() {
-        this.toggleShowManifestModal();
+    buildPDF(bookingIds, vx_freight_provider) {
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options)
+            .then((response) => {
+                if (response.data.success && response.data.success === 'success') {
+                    this.notify('PDF(Label)’s have been generated successfully.');
+                    this.props.setNeedUpdateBookingsState(true);
+                } else {
+                    this.notify('PDF(Label)’s have *not been generated.');
+                    this.props.setNeedUpdateBookingsState(true);
+                }
+            })
+            .catch((err) => {
+                this.notify('Error: ' + err);
+                this.props.setNeedUpdateBookingsState(true);
+            });
+    }
+
+    buildMANIFEST(bookingIds, vx_freight_provider, username) {
+        return new Promise((resolve, reject) => {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
+                data: {bookingIds, vx_freight_provider, username},
+                responseType: 'blob', // important
+            };
+
+            axios(options)
+                .then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'Manifests.zip');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    onClickMANI() {
+        const {selectedBookingIds} = this.state;
+
+        if (selectedBookingIds.length === 0) {
+            this.notify('Please select bookings to create Order!');
+        } else {
+            this.props.getBookingLinesCnt(selectedBookingIds);
+            this.toggleShowOrderModal();
+        }
+
+        // if (selectedBookingIds && selectedBookingIds.length === 0) {
+        //     alert('Please select bookings to *Book*.');
+        // } else if (selectedBookingIds.length > 500) {
+        //     alert('You can generate Manifest with 500 bookings at most.');
+        // } else {
+        //     const bookingIds = [];
+        //     const fps = [];
+        //     let manifestedBookingVisualIds = null;
+        //     let notBookedVisualIds = null;
+
+        //     for (let i = 0; i < bookings.length; i++) {
+        //         for (let j = 0; j < selectedBookingIds.length; j++) {
+        //             if (bookings[i].id === selectedBookingIds[j]) {
+        //                 if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+        //                     fps.push(bookings[i].vx_freight_provider);
+        //                 }
+
+        //                 if (!_.isNull(bookings[i].fk_manifest_id)) {
+        //                     manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+        //                 } else if (_.isNull(bookings[i].b_dateBookedDate)) {
+        //                     notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+        //                 } else {
+        //                     bookingIds.push(bookings[i].id);
+        //                 }
+        //             }
+        //         }
+        //     }
+
+        //     if (fps.length !== 1) {
+        //         alert('Please select only one kind `Freight Provider` bookings.');
+        //     } else if (!_.isNull(manifestedBookingVisualIds)) {
+        //         alert('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
+        //     } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
+        //         alert('There are bookings which have not been `Booked`:' + notBookedVisualIds);
+        //     } else {
+        //         this.setState({loadingDownload: true});
+                
+        //         this.buildMANIFEST(bookingIds, fps[0], username)
+        //             .then(() => {
+        //                 if (fps[0] === 'TASFR') {
+        //                     this.buildXML(bookingIds, 'TASFR')
+        //                         .then((response) => {
+        //                             if (response.data.error && response.data.error === 'Found set has booked bookings') {
+        //                                 alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+        //                                 this.setState({loadingDownload: false});
+        //                             } else if (response.data.success && response.data.success === 'success') {
+        //                                 alert('XML’s have been generated successfully.');
+        //                                 this.setState({loading: true, loadingDownload: false});
+        //                                 this.props.setNeedUpdateBookingsState(true);
+        //                             } else {
+        //                                 alert('XML’s have been generated successfully. Labels will be generated');
+        //                                 this.buildPDF(bookingIds, 'TASFR');
+        //                             }
+        //                         });
+        //                 } else {
+        //                     this.setState({selectedBookingIds: [], loading: true, loadingDownload: false});
+        //                     this.props.setNeedUpdateBookingsState(true);
+        //                 }
+        //             })
+        //             .catch((err) => {
+        //                 this.notify('Error: ' + err);
+        //             });
+        //     }
+        // }
     }
 
     onClickGear() {
@@ -1339,75 +1487,63 @@ class AllBookingsPage extends React.Component {
         this.setState({activeBookingId: booking.id});
     }
 
-    onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) {
-        this.setState({manifestStatus: 1, oneManifestFile});
-        this.props.queryManifest(vx_freight_provider, puPickUpAvailFrom_Date);
+    onClickGetCSV() {
+        const {selectedBookingIds} = this.state;
+        this.buildCSV(selectedBookingIds)
+            .then(() => {
+                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
+                this.props.setNeedUpdateBookingsState(true);
+
+                this.notify('Successfully created CSV.');
+            });
     }
 
-    onClickCreateManifest() {
-        const {bookings, oneManifestFile, username} = this.state;
-        let bookingIds = [];
-        this.setState({loadingDownload: true});
-        
-        for (let i = 0; i < bookings.length; i++)
-            bookingIds.push(bookings[i].id);
+    onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status) {
+        this.toggleShowStatusInfoSlider();
+        this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
+    }
 
-        let options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-manifest/',
-            data: {bookingIds, one_manifest_file: oneManifestFile ? 1 : 0, username},
-            responseType: 'blob', // important
-        };
+    onClickSetProjectsName() {
+        const { selectedBookingIds } = this.state;
+        if (selectedBookingIds.length > 0) {
+            this.toggleShowProjectNameModal();
+        } else {
+            this.notify('Please select at least one booking');
+        }
+    }
 
-        axios(options).then((response) => {
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'manifest_files.zip');
-            document.body.appendChild(link);
+    onUpdateProjectsName(name) {
+        const { selectedBookingIds } = this.state;
+        this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
+        this.toggleShowProjectNameModal();
+    }
 
-            options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
-                data: {
-                    bookingIds, 
-                    vx_freight_provider: 'TASFR', 
-                    one_manifest_file: oneManifestFile ? 1 : 0,
-                },
-            };
+    onClickShowBulkUpdateButton() {
+        const { selectedBookingIds } = this.state;
 
-            axios(options).then((response) => {
-                if (response.data.error && response.data.error === 'Found set has booked bookings') {
-                    alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-                    this.setState({loadingDownload: false});
-                } else if (response.data.success && response.data.success === 'success') {
-                    alert('XML’s have been generated successfully.');
-                    this.setState({loading: true, loadingDownload: false});
-                    this.props.setNeedUpdateBookingsState(true);
-                } else {
-                    alert('XML’s have been generated successfully. Labels will be generated');
-                    options = {
-                        method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-                        data: {bookingIds, vx_freight_provider: 'TASFR'},
-                    };
+        if (selectedBookingIds.length === 0) {
+            this.notify('Please select at least one booking');
+        } else if (selectedBookingIds.length > 50) {
+            this.notify('Bulk operation can process 50 bookings at once');
+        } else {
+            this.toggleShowBulkUpdateSlider();
+        }
+    }
 
-                    axios(options).then((response) => {
-                        if (response.data.success && response.data.success === 'success') {
-                            alert('PDF(Label)’s have been generated successfully.');
-                        } else {
-                            alert('PDF(Label)’s have *not been generated.');
-                        }
+    onClickBulkUpdate(field, value, bookingIds) {
+        if (field === 'flag') {
+            this.props.changeBookingsFlagStatus(value, bookingIds);
+        } else if (field === 'status') {
+            this.props.changeBookingsStatus(value, bookingIds);
+        } else {
+            this.bulkBookingUpdate(bookingIds, field, value)
+                .then(() => {
+                    this.onClickDateFilter();
+                });
+        }
 
-                        this.setState({loading: true, loadingDownload: false});
-                        this.props.setNeedUpdateBookingsState(true);
-                        link.click(); // Show download Manifest file
-                    });
-                }
-            });
-        });
-
-        this.setState({manifestStatus: 0});
+        this.toggleShowBulkUpdateSlider();
+        this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
     }
 
     onClickPagination(pageInd) {
@@ -1415,7 +1551,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, loadingBooking, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, allCheckStatus } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -1428,8 +1564,8 @@ class AllBookingsPage extends React.Component {
             return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
         });
 
-        const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
-            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        const projectNameOptions = projectNames.map((name, index) => {
+            return (<option key={index} value={name}>{name}</option>);
         });
 
         const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
@@ -1623,7 +1759,12 @@ class AllBookingsPage extends React.Component {
                         onClick={() => this.onClickLink(0, booking.id)}
                         className={(sortField === 'b_bookingID_Visual') ? 'visualID-box current' : 'visualID-box'}
                     >
-                        <span className={booking.b_error_Capture ? 'c-red' : ''}>{booking.b_bookingID_Visual}</span>
+
+                        <span className={
+                            booking.b_error_Capture ? 'c-red bold' : booking.b_status === 'Closed' ? 'c-black bold' : 'c-dme bold'}
+                        >
+                            {booking.b_bookingID_Visual}
+                        </span>
                         { 
                             (booking.has_comms) ?
                                 <i className="fa fa-comments" aria-hidden="true"></i>
@@ -1649,10 +1790,16 @@ class AllBookingsPage extends React.Component {
                     >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
                         {
-                            booking.b_dateBookedDate ?
-                                null
+                            booking.b_client_name && booking.b_client_name.toLowerCase() == 'biopak' ?
+                                booking.manifest_timestamp ?
+                                    null
+                                    :
+                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
                                 :
-                                <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
+                                booking.b_dateBookedDate ?
+                                    null
+                                    :
+                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
                         }
                     </td>
                     <EditablePopover 
@@ -1721,6 +1868,44 @@ class AllBookingsPage extends React.Component {
                                 </div>
                                 :
                                 null
+                        }
+                    </td>
+                    <td className={
+                        !_.isEmpty(booking.z_connote_url) ?
+                            (!_.isEmpty(booking.z_downloaded_connote_timestamp)) ?
+                                'bg-yellow'
+                                :
+                                'dark-blue'
+                            :
+                            null
+                    }>
+                        {
+                            !_.isEmpty(booking.z_connote_url) ?
+                                <div className="pod-status">
+                                    <i className="icon icon-image"></i>
+                                </div>
+                                :
+                                null
+                        }
+                    </td>
+                    <td className={
+                        !_.isNull(booking.fk_manifest_id) ?
+                            'bg-yellow'
+                            :
+                            null
+                    }>
+                        {
+                            !_.isNull(booking.fk_manifest_id) ? <div className="pod-status">M</div> : null
+                        }
+                    </td>
+                    <td className={
+                        booking.b_is_flagged_add_on_services ?
+                            'bg-yellow'
+                            :
+                            null
+                    }>
+                        {
+                            booking.b_is_flagged_add_on_services ? <div className="pod-status">F</div> : null
                         }
                     </td>
                     <td className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
@@ -1797,6 +1982,18 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'vx_fp_del_eta_time') ? 'current' : ''}>
                         {booking.vx_fp_del_eta_time ? moment(booking.vx_fp_del_eta_time).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
+                    <td 
+                        id={'booking-' + 'de_to_PickUp_Instructions_Address' + '-tooltip-' + booking.id}
+                        className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
+                    >
+                        {booking.de_to_PickUp_Instructions_Address}
+                        {
+                            !_.isEmpty(booking.de_to_PickUp_Instructions_Address) && !_.isEmpty(booking.de_to_PickUp_Instructions_Address) ?
+                                <BookingTooltipItem booking={booking} fields={['de_to_PickUp_Instructions_Address']} />
+                                :
+                                null
+                        }
+                    </td>
                 </tr>
             );
         });
@@ -1815,12 +2012,13 @@ class AllBookingsPage extends React.Component {
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
                                 <li className={clientname === 'dme' ? '' : 'none'}><Link to="/comm">Comm</Link></li>
-                                <li><a href="/bookinglines" className="none">Booking Lines</a></li>
-                                <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
+                                <li className=""><Link to="/reports">Reports</Link></li>
+                                <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                                <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                             </ul>
                         </div>
-                        <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
-                            <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
+                        <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
+                            <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                             <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
                                 {
@@ -1832,16 +2030,19 @@ class AllBookingsPage extends React.Component {
                                     </div>
                                 }
                             </div>
+                            <a onClick={() => this.toggleShowFindModal()}>
+                                <i className="fa fa-search-plus" aria-hidden="true"></i>
+                            </a>
                             <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
                                 <i className="icon icon-th-list" aria-hidden="true"></i>
                             </div>
+
                             <div className="popup" onClick={() => this.onClickSimpleSearch(1)}>
                                 <i className="icon-cog2" aria-hidden="true"></i>
                                 {
                                     this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
                                         <div className="popuptext1">
-                                            <button className="btn btn-primary none" onClick={() => this.onClickSTOrder()}>ST temp</button>
                                             <button 
                                                 className="btn btn-primary" 
                                                 onClick={() => this.onClickCalcCollected('Calc')}
@@ -1856,15 +2057,30 @@ class AllBookingsPage extends React.Component {
                                             >
                                                 Clear Collected
                                             </button>
+                                            <button 
+                                                className="btn btn-primary" 
+                                                onClick={() => this.onClickSetProjectsName()}
+                                            >
+                                                Set Project Name
+                                            </button>
                                         </div>
                                     </div>
                                 }
                             </div>
-                            <a href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
-                            <a onClick={() => this.onClickDownloadExcel()}><i className="fa fa-file-excel-o" aria-hidden="true"></i></a>
-                            <a onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a onClick={() => this.onClickMani()}>Mani</a>
-                            <a href="">?</a>
+                            <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
+                                <span title="Build XLS report">
+                                    <i className="fa fa-file-excel-o" aria-hidden="true"></i>
+                                </span>
+                            </a>
+                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
+                            <a 
+                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                onClick={() => this.onClickMANI()}
+                            >
+                                <span title="Manifest"><i className="fa fa-clipboard"></i></span>
+                            </a>
+                            <a href="" className="help none"><i className="fa fa-sliders"></i></a>
                         </div>
                     </div>
                     <div className="top-menu">
@@ -1872,10 +2088,10 @@ class AllBookingsPage extends React.Component {
                             <div className="row1 fix-box">
                                 <div className="tab-content fix-box">
                                     <div id="all_booking" className="tab-pane fix-box fade in active">
-                                        <div className="userclock">
+                                        <div className="row userclock">
                                             <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                         </div>
-                                        <div className="filter-controls">
+                                        <div className="row filter-controls">
                                             <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
                                                 selected={startDate}
@@ -1914,39 +2130,41 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
-                                            <label className='right-10px'>Status: </label>
-                                            <select 
-                                                id="status" 
-                                                required 
-                                                onChange={(e) => this.onSelected(e, 'status')} 
-                                            >
-                                                <option value="" selected disabled hidden>Select a status</option>
-                                                { bookingStatusList }
-                                            </select>
-                                            <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickChangeStatusButton()}>Change</button>
-                                            <div className="disp-inline-block">
-                                                <LoadingOverlay
-                                                    active={loadingBooking}
-                                                    spinner={<BarLoader color={'#FFF'} />}
-                                                    text=''
-                                                >
-                                                    <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                    <button className="btn btn-primary allied-booking none" onClick={() => this.onClickBook()}>Book</button>
-                                                    {
-                                                        loadingBooking ? '(' + this.state.currentBookInd + '/' + this.state.selectedBookingIds.length + ') ' : ''
-                                                    }
-                                                    <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                    <button
-                                                        className="btn btn-primary create-manifest"
-                                                        onClick={() => this.onClickCreateManifest()}
-                                                        disabled={(this.state.manifestStatus === 2 && bookings.length > 0) ? '' : 'disabled'}
+                                            {
+                                                clientname === 'dme' || clientname === 'biopak' ?
+                                                    <div className="disp-inline-block">
+                                                        <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                        <div className="disp-inline-block">
+                                                            <LoadingOverlay
+                                                                active={false}
+                                                                spinner={<BarLoader color={'#FFF'} />}
+                                                                text=''
+                                                            >
+                                                                <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
+                                                                <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                                            </LoadingOverlay>
+                                                        </div>
+                                                    </div>
+                                                    : null
+                                            }
+                                        </div>
+                                        <div className="row">
+                                            <div className="project-name-select">
+                                                <label className="left-30px right-10px">
+                                                    Project Name: 
+                                                    <select 
+                                                        id="project-name-select" 
+                                                        required 
+                                                        onChange={(e) => this.onSelected(e, 'projectName')} 
+                                                        value={projectName}
                                                     >
-                                                        Manifest
-                                                    </button>
-                                                    <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                                </LoadingOverlay>
+                                                        <option value="" selected disabled hidden>Select a project name</option>
+                                                        { projectNameOptions }
+                                                    </select>
+                                                </label>
                                             </div>
-                                            <p className="font-24px float-right">Selected/Found: {selectedBookingIds.length}/{bookingsCnt}</p>
                                         </div>
                                         <ul className="filter-conditions none">
                                             <li><a onClick={() => this.onClickTab(1)}>Errors to Correct ({errorsToCorrect})</a></li>
@@ -1955,7 +2173,7 @@ class AllBookingsPage extends React.Component {
                                             <li><a onClick={() => this.onClickTab(4)}>To Process ({toProcess})</a></li>
                                             <li><a onClick={() => this.onClickTab(5)}>Closed ({closed})</a></li>
                                         </ul>
-                                        <div>
+                                        <div className="tabs">
                                             <Nav tabs>
                                                 <NavItem>
                                                     <NavLink
@@ -2013,7 +2231,19 @@ class AllBookingsPage extends React.Component {
                                                         Closed ({closed})
                                                     </NavLink>
                                                 </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 6 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(6)}
+                                                    >
+                                                        More
+                                                        {this.state.dmeStatus &&
+                                                            ' (' + this.state.dmeStatus + ')'
+                                                        }
+                                                    </NavLink>
+                                                </NavItem>
                                             </Nav>
+                                            <p className="float-right">all bookings / today / by date: {bookingsCnt}</p>
                                         </div>
                                         <hr />
                                         <div>
@@ -2028,6 +2258,7 @@ class AllBookingsPage extends React.Component {
                                                 <option value="new_connote">New Connote</option>
                                                 <option value="label_and_connote">Label & Connote</option>
                                                 <option value="check_pod">Check POD</option>
+                                                <option value="flagged">Flagged</option>
                                             </select>
                                             <div className="tbl-pagination">
                                                 <label>
@@ -2226,9 +2457,54 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th className=""></th>
-                                                            <th className=""></th>
-                                                            <th className=""></th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Error'}
+                                                                className={(sortField === 'b_error_Capture') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_error_Capture')} 
+                                                            >
+                                                                <i className="fa fa-exclamation-triangle"></i>
+                                                                <SimpleTooltipComponent text={'Error'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Label'}
+                                                                className={(sortField === 'z_label_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_label_url')} 
+                                                            >
+                                                                L
+                                                                <SimpleTooltipComponent text={'Label'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-POD-or-POD-Signed'}
+                                                                className={(sortField === 'z_pod_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_pod_url')} 
+                                                            >
+                                                                P|S
+                                                                <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Connote'}
+                                                                className={(sortField === 'z_connote_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_connote_url')} 
+                                                            >
+                                                                C
+                                                                <SimpleTooltipComponent text={'Connote'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Manifest'}
+                                                                className={(sortField === 'fk_manifest_id') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('fk_manifest_id')} 
+                                                            >
+                                                                M
+                                                                <SimpleTooltipComponent text={'Manifest'} />
+                                                            </th>
+                                                            <th
+                                                                id={'booking-column-header-tooltip-Flagged'}
+                                                                className={(sortField === 'b_is_flagged_add_on_services') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_is_flagged_add_on_services')} 
+                                                            >
+                                                                F
+                                                                <SimpleTooltipComponent text={'Flagged'} />
+                                                            </th>
                                                             <th 
                                                                 className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
@@ -2397,6 +2673,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="" scope="col"><p>Status Detail</p></th>
                                                             <th className="" scope="col"><p>Status Action</p></th>
                                                             <th className="" scope="col"><p>FP Del ETA</p></th>
+                                                            <th className="" scope="col"><p>DE Instruction</p></th>
                                                         </tr>
                                                         <tr className="filter-tr">
                                                             <th>
@@ -2420,9 +2697,12 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th className="narrow-column"><i className="fa fa-exclamation-triangle"></i></th>
-                                                            <th className="narrow-column"><i className="icon icon-printer"></i></th>
-                                                            <th className="narrow-column"><i className="icon icon-image"></i></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
+                                                            <th className=""></th>
                                                             <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -2436,6 +2716,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"></th>
@@ -2456,6 +2737,12 @@ class AllBookingsPage extends React.Component {
                     </div>
                 </LoadingOverlay>
 
+                <ProjectNameModal
+                    isShowProjectNameModal={isShowProjectNameModal}
+                    toggleShowProjectNameModal={this.toggleShowProjectNameModal}
+                    onUpdate={(name) => this.onUpdateProjectsName(name)}
+                />
+
                 <XLSModal
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
@@ -2470,18 +2757,42 @@ class AllBookingsPage extends React.Component {
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
 
-                <ManifestModal
-                    isOpen={this.state.isShowManifestModal}
-                    toggleShowManifestModal={this.toggleShowManifestModal}
-                    allFPs={allFPs}
-                    onClickOk={(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile) => this.onQuery4Manifest(vx_freight_provider, puPickUpAvailFrom_Date, oneManifestFile)}
-                />
-
                 <CheckPodModal
                     isOpen={this.state.isShowCheckPodModal}
                     toggleShowCheckPodModal={this.toggleShowCheckPodModal}
                     onClickSave={(id, booking) => this.props.updateBooking(id, booking)}
                     booking={this.state.selectedOneBooking}
+                />
+
+                <StatusInfoSlider
+                    isOpen={this.state.isShowStatusInfoSlider}
+                    toggleShowStatusInfoSlider={this.toggleShowStatusInfoSlider}
+                    onClickShowStatusInfo={(startDate, endDate, clientPK, dme_delivery_status) => this.onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status)}
+                    startDate={startDate}
+                    endDate={endDate}
+                />
+
+                <FindModal
+                    isOpen={this.state.isShowFindModal}
+                    toggleShowFindModal={this.toggleShowFindModal}
+                    onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
+                />
+
+                <OrderModal
+                    isOpen={this.state.isShowOrderModal}
+                    toggleShow={this.toggleShowOrderModal}
+                    selectedBookingIds={this.state.selectedBookingIds}
+                    selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
+                    bookings={this.state.bookings}
+                    onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
+                />
+
+                <BulkUpdateSlider
+                    isOpen={this.state.isShowBulkUpdateSlider}
+                    toggleSlider={this.toggleShowBulkUpdateSlider}
+                    allBookingStatus={allBookingStatus}
+                    selectedBookingIds={selectedBookingIds}
+                    onUpdate={(field, value, bookingIds) => this.onClickBulkUpdate(field, value, bookingIds)}
                 />
 
                 <ToastContainer />
@@ -2503,6 +2814,7 @@ const mapStateToProps = (state) => {
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
+        selectedBookingLinesCnt: state.bookingLine.selectedBookingLinesCnt,
         warehouses: state.warehouse.warehouses,
         redirect: state.auth.redirect,
         startDate: state.booking.startDate,
@@ -2516,43 +2828,51 @@ const mapStateToProps = (state) => {
         activeTabInd: state.booking.activeTabInd,
         simpleSearchKeyword: state.booking.simpleSearchKeyword,
         downloadOption: state.booking.downloadOption,
-        errorMessage: state.booking.errorMessage,
+        dmeStatus: state.booking.dmeStatus,
+        multiFindField: state.booking.multiFindField,
+        multiFindValues: state.booking.multiFindValues,
+        bookingErrorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
         username: state.auth.username,
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
         allFPs: state.extra.allFPs,
+        projectNames: state.extra.projectNames,
+        projectName: state.booking.projectName,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
+        getBookingLinesCnt: (bookingIds) => dispatch(getBookingLinesCnt(bookingIds)),
         getBookingLineDetails: (bookingId) => dispatch(getBookingLineDetails(bookingId)),
         getWarehouses: () => dispatch(getWarehouses()),
         getUserDateFilterField: () => dispatch(getUserDateFilterField()),
         allTrigger: () => dispatch(allTrigger()),
         alliedBooking: (bookingId) => dispatch(alliedBooking(bookingId)),
-        stBooking: (bookingId) => dispatch(stBooking(bookingId)),
-        getSTLabel: (bookingId) => dispatch(getSTLabel(bookingId)),
+        fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
         getAlliedLabel: (bookingId) => dispatch(getAlliedLabel(bookingId)),
-        stOrder: () => dispatch(stOrder()),
+        fpOrder: (bookingIds, vx_freight_provider) => dispatch(fpOrder(bookingIds, vx_freight_provider)),
+        fpOrderSummary: (bookingIds, vx_freight_provider) => dispatch(fpOrderSummary(bookingIds, vx_freight_provider)),
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
         generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
+        changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
+        getAllProjectNames: () => dispatch(getAllProjectNames()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
-        queryManifest: (vx_freight_provider, puPickUpAvailFrom_Date) => dispatch(queryManifest(vx_freight_provider, puPickUpAvailFrom_Date)),
+        clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
     };
 };
 

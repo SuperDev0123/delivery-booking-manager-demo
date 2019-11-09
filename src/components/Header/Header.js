@@ -61,7 +61,8 @@ class Header extends Component {
                     currentRoute === '/bookinglines' ||
                     currentRoute === '/bookinglinedetails' ||
                     currentRoute === '/comm' ||
-                    currentRoute === '/pods' ?
+                    currentRoute === '/pods' ||
+                    currentRoute === '/reports' ?
                         <nav className="qbootstrap-nav" role="navigation">
                             <div className="col-md-12" id="headr">
                                 <div className="top">
@@ -70,7 +71,15 @@ class Header extends Component {
                                             <h3 className="label_hel"><a href="/">Company: {clientname ? clientname : '---'}    User: {username ? username : '---'}</a></h3>
                                             <h3 className="label_hel"></h3>
                                         </div>
-                                        <div className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right"> <a href="" className="none">Login Info Client</a> <span className="none">|</span> <a href="" className="none">Accounts</a> <span className="none">|</span> <a href="" className="none">Client Mode</a> <span className="none">|</span> <a href="/">Home</a> </div>
+                                        <div className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
+                                            <a href="" className="none">Login Info Client</a>
+                                            <span className="none">|</span>
+                                            <a href="" className="none">Accounts</a>
+                                            <span className="none">|</span>
+                                            <a href="" className="none">Client Mode</a>
+                                            <span className="none">|</span>
+                                            <a href="/">Home</a>
+                                        </div>
                                     </div>
                                     <div className="line"></div>
                                 </div>
@@ -94,11 +103,13 @@ class Header extends Component {
                                                     <i>Logged in as {username}</i>
                                                 </a>
                                                 <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/upload">Upload Files</a>
-                                                <div className="dropdown-divider"></div>
+                                                <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/upload">Upload Files</a>
+                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
                                                 <a className="dropdown-item" href="/booking">Booking</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
+                                                <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/reports">Reports</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
                                             </div>

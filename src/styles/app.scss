@@ -13,6 +13,7 @@
 @import './pages/pods.scss';
 @import './pages/upload.scss';
 @import './pages/comm.scss';
+@import './pages/report.scss';
 @import './components/LineAndLineDetailSlider.scss';
 @import './components/StatusHistorySlider.scss';
 @import './components/LineTrackingSlider.scss';
@@ -21,5 +22,9 @@
 @import './components/ConfirmModal.scss';
 @import './components/StatusNoteModal.scss';
 @import './components/NoteSlider.scss';
-@import './components/ManifestModal.scss';
 @import './components/CheckPodModal.scss';
+@import './components/StatusInfoSlider.scss';
+@import './components/FindModal.scss';
+@import './components/ProjectDataSlider.scss';
+@import './components/FPPricingSlider.scss';
+@import './components/BulkUpdateSlider.scss';

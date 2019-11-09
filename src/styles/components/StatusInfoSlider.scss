@@ -1,0 +1,29 @@
+.status-info {
+	width: 40% !important;
+}
+
+.status-info-slider {
+	.filter-section {
+		padding-bottom: 15px;
+
+		.react-datepicker-wrapper {
+			width: 75px;
+
+			input {
+				width: 75px;
+			}
+		}
+	}
+
+	.table-section {
+		width: 100%;
+
+		td, th {
+			padding: 3px;
+
+			button {
+				padding: 2px 12px;
+			}
+		}
+	}
+}

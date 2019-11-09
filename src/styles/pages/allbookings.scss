@@ -68,7 +68,7 @@ table.booking-lines {
 #all_booking {
   .table-responsive {
     margin-top: 5px !important;
-    height: calc(100% - 200px);
+    height: calc(100% - 190px);
     width: 100%;
     overflow-x: auto;
 
@@ -154,24 +154,28 @@ $column_14_width: 70px;
 $column_15_width: 30px;
 $column_16_width: 30px;
 $column_17_width: 30px;
-$column_18_width: 95px;
-$column_19_width: 95px;
-$column_20_width: 95px;
+$column_18_width: 30px;
+$column_19_width: 30px;
+$column_20_width: 30px;
 
-$column_21_width: 70px;
-$column_22_width: 90px;
-$column_23_width: 30px;
-$column_24_width: 120px;
-$column_25_width: 120px;
-$column_26_width: 130px;
-$column_27_width: 130px;
-$column_28_width: 130px;
+$column_21_width: 95px;
+$column_22_width: 95px;
+$column_23_width: 95px;
+$column_24_width: 70px;
+$column_25_width: 90px;
+$column_26_width: 30px;
+$column_27_width: 120px;
+$column_28_width: 120px;
 $column_29_width: 130px;
 $column_30_width: 130px;
 
-$column_31_width: 100px;
-$column_32_width: 100px;
+$column_31_width: 130px;
+$column_32_width: 130px;
 $column_33_width: 130px;
+$column_34_width: 100px;
+$column_35_width: 100px;
+$column_36_width: 130px;
+$column_37_width: 130px;
 
 #all_booking .fixed_headers{
   table-layout: fixed;
@@ -220,40 +224,49 @@ $column_33_width: 130px;
   td:nth-child(17), th:nth-child(17) { width: $column_17_width; }
   td:nth-child(17) p, th:nth-child(17) p { width: 30px }
   td:nth-child(18), th:nth-child(18) { width: $column_18_width; }
-  td:nth-child(18) p, th:nth-child(18) p { width: 70px }
+  td:nth-child(18) p, th:nth-child(18) p { width: 30px }
   td:nth-child(19), th:nth-child(19) { width: $column_19_width; }
-  td:nth-child(19) p, th:nth-child(19) p { width: 70px }
+  td:nth-child(19) p, th:nth-child(19) p { width: 30px }
   td:nth-child(20), th:nth-child(20) { width: $column_20_width; }
-  td:nth-child(20) p, th:nth-child(20) p { width: 70px }
+  td:nth-child(20) p, th:nth-child(20) p { width: 30px }
+
 
   td:nth-child(21), th:nth-child(21) { width: $column_21_width; }
-  td:nth-child(21) p, th:nth-child(21) p { width: 50px }
+  td:nth-child(21) p, th:nth-child(21) p { width: 70px }
   td:nth-child(22), th:nth-child(22) { width: $column_22_width; }
   td:nth-child(22) p, th:nth-child(22) p { width: 70px }
   td:nth-child(23), th:nth-child(23) { width: $column_23_width; }
-  td:nth-child(23) p, th:nth-child(23) p { width: 30px }
+  td:nth-child(23) p, th:nth-child(23) p { width: 70px }
   td:nth-child(24), th:nth-child(24) { width: $column_24_width; }
-  td:nth-child(24) p, th:nth-child(24) p { width: 100px }
+  td:nth-child(24) p, th:nth-child(24) p { width: 50px }
   td:nth-child(25), th:nth-child(25) { width: $column_25_width; }
-  td:nth-child(25) p, th:nth-child(25) p { width: 100px }
+  td:nth-child(25) p, th:nth-child(25) p { width: 70px }
   td:nth-child(26), th:nth-child(26) { width: $column_26_width; }
-  td:nth-child(26) p, th:nth-child(26) p { width: 110px }
+  td:nth-child(26) p, th:nth-child(26) p { width: 30px }
   td:nth-child(27), th:nth-child(27) { width: $column_27_width; }
-  td:nth-child(27) p, th:nth-child(27) p { width: 110px }
+  td:nth-child(27) p, th:nth-child(27) p { width: 100px }
   td:nth-child(28), th:nth-child(28) { width: $column_28_width; }
   td:nth-child(28) p, th:nth-child(28) p { width: 100px }
   td:nth-child(29), th:nth-child(29) { width: $column_29_width; }
-  td:nth-child(29) p, th:nth-child(29) p { width: 100px }
+  td:nth-child(29) p, th:nth-child(29) p { width: 110px }
   td:nth-child(30), th:nth-child(30) { width: $column_30_width; }
   td:nth-child(30) p, th:nth-child(30) p { width: 110px }
 
   td:nth-child(31), th:nth-child(31) { width: $column_31_width; }
-  td:nth-child(31) p, th:nth-child(31) p { width: 90px }
+  td:nth-child(31) p, th:nth-child(31) p { width: 100px }
   td:nth-child(32), th:nth-child(32) { width: $column_32_width; }
-  td:nth-child(32) p, th:nth-child(32) p { width: 90px }
+  td:nth-child(32) p, th:nth-child(32) p { width: 100px }
   td:nth-child(33), th:nth-child(33) { width: $column_33_width; }
   td:nth-child(33) p, th:nth-child(33) p { width: 110px }
-  
+  td:nth-child(34), th:nth-child(34) { width: $column_34_width; }
+  td:nth-child(34) p, th:nth-child(34) p { width: 90px }
+  td:nth-child(35), th:nth-child(35) { width: $column_35_width; }
+  td:nth-child(35) p, th:nth-child(35) p { width: 90px }
+  td:nth-child(36), th:nth-child(36) { width: $column_36_width; }
+  td:nth-child(36) p, th:nth-child(36) p { width: 110px }
+  td:nth-child(37), th:nth-child(37) { width: $column_37_width; }
+  td:nth-child(37) p, th:nth-child(37) p { width: 110px }
+
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
   }
@@ -515,9 +528,8 @@ ul.filter-conditions {
 }
 
 #all_booking .userclock {
-  padding-right: 0px;
+  padding-left: 55px;
   text-align: left;
-  padding-left: 115px;
 }
 
 .allbookings .fa-sort-amount-asc,
@@ -536,8 +548,7 @@ hr {
 }
 
 ul.nav-tabs {
-  width: 100%;
-  margin: 0 auto;
+  width: 70%;
 
   li {
     cursor: pointer;
@@ -549,8 +560,7 @@ ul.nav-tabs {
 }
 
 .filter-controls {
-  padding-left: 77px;
-  margin-bottom: 10px;
+  padding-left: 51px;
 
   .date-adjust {
     width: 30px;
@@ -568,13 +578,10 @@ ul.nav-tabs {
   }
 
   .btn {
-    padding: 7px !important;
-  }
-
-  p {
-    font-size: 18px;
-    margin-top: 55px;
-    font-weight: lighter;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-bottom: 2px;
   }
 }
 
@@ -594,7 +601,8 @@ ul.nav-tabs {
 }
 
 .narrow-column {
-  text-align: center;
+  cursor: pointer;
+  text-align: center !important;
 
   i {
     float: none !important;
@@ -674,6 +682,16 @@ header > .qbootstrap-nav {
   }
 }
 
+.project-name-select {
+  padding-left: 22px;
+
+  #project-name-select {
+    margin-left: 10px;
+    width: 200px;
+    height: 30px;
+  }
+}
+
 #client-select {
   margin-left: 10px;
 }
@@ -682,9 +700,27 @@ header > .qbootstrap-nav {
   margin-bottom: 10px;
 }
 
-.allbookings .text-right {
-  a {
-    cursor: pointer;
+.allbookings {
+  .tabs {
+    height: 38px;
+
+    ul {
+      display: inline-block;
+    }
+
+    p {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: lighter;
+      margin-top: 10px;
+      margin-bottom: 0px !important;
+    }
+  }
+
+  .text-right {
+    a {
+      cursor: pointer;
+    }
   }
 }
 
@@ -748,5 +784,15 @@ p.status {
   .popuptext::after,
   .popuptext1::after {
 
+  }
+}
+
+a.help {
+  font-size: 20px !important;
+}
+
+#icn {
+  i {
+    font-size: 19px;
   }
 }

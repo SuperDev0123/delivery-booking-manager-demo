@@ -1,4 +1,18 @@
-import { SET_BOOKINGLINES, FAILED_GET_BOOKINGLINES, SUCCESS_CREATE_BOOKING_LINE, SUCCESS_UPDATE_BOOKING_LINE, FAILED_CREATE_BOOKING_LINE, FAILED_UPDATE_BOOKING_LINE, SUCCESS_DELETE_BOOKING_LINE, FAILED_DELETE_BOOKING_LINE, SUCCESS_CALC_COLLECTED_LINE, FAILED_CALC_COLLECTED_LINE, RESET_FLAG_LINES } from '../constants/bookingLineConstants';
+import {
+    SET_BOOKINGLINES,
+    FAILED_GET_BOOKINGLINES,
+    SUCCESS_CREATE_BOOKING_LINE,
+    SUCCESS_UPDATE_BOOKING_LINE,
+    FAILED_CREATE_BOOKING_LINE,
+    FAILED_UPDATE_BOOKING_LINE,
+    SUCCESS_DELETE_BOOKING_LINE,
+    FAILED_DELETE_BOOKING_LINE,
+    SUCCESS_CALC_COLLECTED_LINE,
+    FAILED_CALC_COLLECTED_LINE,
+    RESET_FLAG_LINES,
+    SUCCESS_GET_BOOKING_LINES_CNT,
+    FAILED_GET_BOOKING_LINES_CNT,
+} from '../constants/bookingLineConstants';
 
 export function setBookingLines(bookingLines) {
     return {
@@ -75,5 +89,19 @@ export function failedCalcCollected(error) {
 export function resetFlag() {
     return {
         type: RESET_FLAG_LINES,
+    };
+}
+
+export function successGetBookingLinesCnt(data) {
+    return {
+        type: SUCCESS_GET_BOOKING_LINES_CNT,
+        payload: data,
+    };
+}
+
+export function failedGetBookingLinesCnt() {
+    return {
+        type: FAILED_GET_BOOKING_LINES_CNT,
+        errorMessage: 'Failed to get booking lines count',
     };
 }
