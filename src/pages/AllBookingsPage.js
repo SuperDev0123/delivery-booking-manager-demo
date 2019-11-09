@@ -2243,7 +2243,7 @@ class AllBookingsPage extends React.Component {
                                                     </NavLink>
                                                 </NavItem>
                                             </Nav>
-                                            <p className="float-right">all bookings / today / by date: {bookingsCnt}</p>
+                                            <p className="font-24px float-right">Selected / Found: {selectedBookingIds.length}/{bookingsCnt}</p>
                                         </div>
                                         <hr />
                                         <div>
