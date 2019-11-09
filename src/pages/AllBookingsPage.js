@@ -637,11 +637,11 @@ class AllBookingsPage extends React.Component {
         else
             bookingLinesInfoOpens['booking-lines-info-popup-' + bookingId] = true;
 
-        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
+        this.setState({ bookingLinesInfoOpens, additionalInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [], bookingLines: [] });
     }
 
     clearActivePopoverVar() {
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [] });
+        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens: [], bookingLines: [] });
     }
 
     togglePopover() {
