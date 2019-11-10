@@ -1676,6 +1676,8 @@ class BookingPage extends Component {
             booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             this.setState({formInputs, booking});
         }
+
+        this.setState({isBookingModified: true});
     }
 
     handleModalInputChange(type, event) {
@@ -2650,6 +2652,7 @@ class BookingPage extends Component {
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
                                                 value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ? moment(booking.b_dateBookedDate).toDate() : null}
+                                                format={'dd/MM/yyyy hh:mm a'}
                                             />
                                     }
                                 </div>
@@ -3415,6 +3418,7 @@ class BookingPage extends Component {
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'vx_fp_pu_eta_time')}
                                                                             value={(!_.isNull(formInputs['vx_fp_pu_eta_time']) && !_.isUndefined(formInputs['vx_fp_pu_eta_time'])) ? moment(formInputs['vx_fp_pu_eta_time']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['vx_fp_pu_eta_time']}</p>
@@ -3437,6 +3441,7 @@ class BookingPage extends Component {
                                                                             className="s_20_datetimepicker"
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
                                                                             value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp']}</p>
@@ -3709,9 +3714,11 @@ class BookingPage extends Component {
                                                                     <p className="show-mode">{formInputs['z_calculated_ETA']}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'z_calculated_ETA')}
-                                                                            value={(!_.isNull(formInputs['z_calculated_ETA']) && !_.isUndefined(formInputs['z_calculated_ETA'])) ? moment(formInputs['z_calculated_ETA']).toDate() : null}
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'z_calculated_ETA')}
+                                                                            dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['z_calculated_ETA']}</p>
@@ -3731,6 +3738,7 @@ class BookingPage extends Component {
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'de_Deliver_By_Date')}
                                                                             value={(!_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'])) ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['de_Deliver_By_Date']}</p>
@@ -3750,6 +3758,7 @@ class BookingPage extends Component {
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
                                                                             value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp']}</p>
@@ -4424,6 +4433,7 @@ class BookingPage extends Component {
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
                                 value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) ? commFormInputs['due_date_time'] : null}
+                                format={'dd/MM/yyyy hh:mm a'}
                             />
                         </label>
                         <label>
