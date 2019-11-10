@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 
 import { Button } from 'reactstrap';
 import moment from 'moment-timezone';
-import DateTimePicker from 'react-datetime-picker';
+// import DateTimePicker from 'react-datetime-picker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 
@@ -203,10 +205,10 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'pu_PickUp_By_Date_DME' ||
                             selectedField === 'de_Deliver_From_Date' ||
                             selectedField === 'de_Deliver_By_Date') ?
-                                <DateTimePicker
+                                <DatePicker
+                                    selected={selectedValue ? new Date(selectedValue) : null}
                                     onChange={(date) => this.onChangeDate(date)}
-                                    value={selectedValue ? new Date(selectedValue) : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    dateFormat="dd/MM/yyyy"
                                 />
                                 : null
                         }

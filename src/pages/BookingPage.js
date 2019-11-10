@@ -3709,9 +3709,11 @@ class BookingPage extends Component {
                                                                     <p className="show-mode">{formInputs['z_calculated_ETA']}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'z_calculated_ETA')}
-                                                                            value={(!_.isNull(formInputs['z_calculated_ETA']) && !_.isUndefined(formInputs['z_calculated_ETA'])) ? moment(formInputs['z_calculated_ETA']).toDate() : null}
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'z_calculated_ETA')}
+                                                                            dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['z_calculated_ETA']}</p>

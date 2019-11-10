@@ -1908,11 +1908,11 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
-                    <td className={(sortField === 's_05_LatestPickUpDateTimeFinal') ? 'current' : ''}>
-                        {booking.s_05_LatestPickUpDateTimeFinal ? moment(booking.s_05_LatestPickUpDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}
+                    <td className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}>
+                        {booking.pu_PickUp_By_Date_DME ? moment(booking.pu_PickUp_By_Date_DME).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
-                    <td className={(sortField === 's_06_LatestDeliveryDateTimeFinal') ? 'current' : ''}>
-                        {booking.s_06_LatestDeliveryDateTimeFinal ? moment(booking.s_06_LatestDeliveryDateTimeFinal).format('DD/MM/YYYY hh:mm:ss') : ''}
+                    <td className={(sortField === 'de_Deliver_By_Date') ? 'current' : ''}>
+                        {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
                     <td id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}>
                         <p>{booking.de_Deliver_By_Date}</p>
@@ -1953,8 +1953,8 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
-                    <td className={(sortField === 'vx_fp_del_eta_time') ? 'current' : ''}>
-                        {booking.vx_fp_del_eta_time ? moment(booking.vx_fp_del_eta_time).format('DD/MM/YYYY hh:mm:ss') : ''}
+                    <td className={(sortField === 'z_calculated_ETA') ? 'current' : ''}>
+                        {booking.z_calculated_ETA ? moment(booking.z_calculated_ETA).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
                     <td 
                         id={'booking-' + 'de_to_PickUp_Instructions_Address' + '-tooltip-' + booking.id}
@@ -2575,7 +2575,7 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th 
                                                                 className={(sortField === 'b_status') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('b_status')} 
+                                                                onClick={() => this.onChangeSortField('b_status')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
@@ -2589,14 +2589,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 's_05_LatestPickUpDateTimeFinal') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('s_05_LatestPickUpDateTimeFinal')} 
+                                                                className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('pu_PickUp_By_Date_DME')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Pickup Due</p>
                                                                 {
-                                                                    (sortField === 's_05_LatestPickUpDateTimeFinal') ?
+                                                                    (sortField === 'pu_PickUp_By_Date_DME') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2604,14 +2604,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 's_06_LatestDeliveryDateTimeFinal') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('s_06_LatestDeliveryDateTimeFinal')} 
+                                                                className={(sortField === 'de_Deliver_By_Date') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('de_Deliver_By_Date')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Delivery Due</p>
                                                                 {
-                                                                    (sortField === 's_06_LatestDeliveryDateTimeFinal') ?
+                                                                    (sortField === 'de_Deliver_By_Date') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2683,8 +2683,8 @@ class AllBookingsPage extends React.Component {
                                                             <th className="narrow-column"><i className="fa fa-lock"></i></th>
                                                             <th scope="col"><input type="text" name="dme_delivery_status_category" value={filterInputs['dme_delivery_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="s_05_LatestPickUpDateTimeFinal" value={filterInputs['s_05_LatestPickUpDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="s_06_LatestDeliveryDateTimeFinal" value={filterInputs['s_06_LatestDeliveryDateTimeFinal'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="pu_PickUp_By_Date_DME" value={filterInputs['pu_PickUp_By_Date_DME'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"></th>
                                                             <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
