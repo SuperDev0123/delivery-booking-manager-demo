@@ -3734,7 +3734,7 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
@@ -3744,7 +3744,7 @@ class BookingPage extends Component {
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
