@@ -3737,10 +3737,11 @@ class BookingPage extends Component {
                                                                     <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'de_Deliver_By_Date')}
-                                                                            value={(!_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'])) ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
+                                                                            dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
