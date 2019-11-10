@@ -3809,7 +3809,7 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('MM/DD/YYYY') : ''}
+                                                                            {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
                                                                         {
                                                                             !_.isNull(formInputs['puPickUpAvailFrom_Date']) && !_.isUndefined(formInputs['puPickUpAvailFrom_Date'] && !_.isEmpty(formInputs['puPickUpAvailFrom_Date'])) ?
@@ -3857,7 +3857,7 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).format('MM/DD/YYYY') : ''}
+                                                                            {formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).format('DD/MM/YYYY') : ''}
                                                                         </p>
                                                                         {
                                                                             !_.isNull(formInputs['pu_PickUp_By_Date_DME']) && !_.isUndefined(formInputs['pu_PickUp_By_Date_DME'] && !_.isEmpty(formInputs['pu_PickUp_By_Date_DME'])) ?
@@ -3905,7 +3905,7 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('MM/DD/YYYY') : ''}
+                                                                            {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
                                                                         {
                                                                             !_.isNull(formInputs['de_Deliver_From_Date']) && !_.isUndefined(formInputs['de_Deliver_From_Date'] && !_.isEmpty(formInputs['de_Deliver_From_Date'])) ?
@@ -3953,7 +3953,7 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('MM/DD/YYYY') : ''}
+                                                                            {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
                                                                         {
                                                                             !_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'] && !_.isEmpty(formInputs['de_Deliver_By_Date'])) ?
