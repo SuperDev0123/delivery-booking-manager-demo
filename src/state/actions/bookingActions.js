@@ -159,7 +159,23 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) {
+export function setAllLocalFilter(
+    startDate,
+    endDate,
+    clientPK,
+    warehouseId,
+    pageItemCnt,
+    pageInd,
+    sortField,
+    columnFilters,
+    prefilterInd,
+    simpleSearchKeyword,
+    downloadOption,
+    dmeStatus,
+    multiFindField,
+    multiFindValues,
+    projectName
+) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,

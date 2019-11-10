@@ -382,6 +382,8 @@ class AllBookingsPage extends React.Component {
                 simpleSearchKeyword,
                 dmeStatus,
                 projectName: projectName,
+                pageItemCnt: pageItemCnt,
+                pageInd: pageInd,
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
@@ -1008,13 +1010,13 @@ class AllBookingsPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {simpleSearchKeyword, downloadOption, pageItemCnt, pageInd} = this.state;
+        const {simpleSearchKeyword, downloadOption, pageItemCnt} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
             const today = moment().format('YYYY-MM-DD');
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, pageInd, '-id', {}, 0, simpleSearchKeyword, downloadOption);
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, simpleSearchKeyword, downloadOption);
             this.setState({activeTabInd: 0});
         }
 
@@ -1028,14 +1030,14 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickTab(activeTabInd) {
-        const {downloadOption, pageItemCnt, pageInd} = this.state;
+        const {downloadOption, pageItemCnt} = this.state;
 
         if (activeTabInd === 0) {
             const today = moment().format('YYYY-MM-DD');
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, pageInd, '-id', {}, 0, '', downloadOption);
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, '', downloadOption);
         } else if (activeTabInd === 7) {
             const {startDate, endDate} = this.state;
-            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, pageInd, '-id', {}, activeTabInd);
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) {
             this.toggleShowStatusInfoSlider();
         } else {
