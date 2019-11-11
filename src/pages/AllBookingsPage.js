@@ -228,8 +228,8 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        if (bookings) {
-            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, prefilterInd });
+        if (bookings && bookingsCnt) {
+            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, prefilterInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -388,8 +388,6 @@ class AllBookingsPage extends React.Component {
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
-        } else {
-            this.setState({loading: false});
         }
     }
 
@@ -2276,7 +2274,7 @@ class AllBookingsPage extends React.Component {
                                                     </NavLink>
                                                 </NavItem>
                                             </Nav>
-                                            <p className="font-24px float-right">Selected / Found: {selectedBookingIds.length}/{bookingsCnt}</p>
+                                            <p className="font-24px float-right">Selected / Found: {selectedBookingIds.length}/{bookingsCnt ? bookingsCnt : '*'}</p>
                                         </div>
                                         <hr />
                                         <div>

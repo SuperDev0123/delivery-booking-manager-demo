@@ -165,7 +165,8 @@ export const BookingReducer = (state = defaultState, {
         case RESET_REFRESH_BOOKINGS_FLAG:
             return {
                 ...state,
-                needUpdateBookings,
+                needUpdateBookings: false,
+                bookingsCnt: null,
             };
         case RESET_PRICING_INFOS:
             return {
