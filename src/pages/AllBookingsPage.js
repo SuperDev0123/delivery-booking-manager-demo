@@ -2005,7 +2005,9 @@ class AllBookingsPage extends React.Component {
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                <li className={clientname === 'dme' ? '' : 'none'}><Link to="/comm">Comm</Link></li>
+                                {
+                                    clientname === 'dme' ? <li className=""><Link to="/comm">Comm</Link></li> : null
+                                }
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
