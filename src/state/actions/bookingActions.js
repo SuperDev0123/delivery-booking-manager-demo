@@ -73,6 +73,7 @@ import {
     RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
+    RESET_REFRESH_BOOKINGS_FLAG,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -85,6 +86,12 @@ export function successGetBookings(data) {
         closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
         missingLabels: data['missing_labels'],
+    };
+}
+
+export function resetRefeshBookingsFlag() {
+    return {
+        type: RESET_REFRESH_BOOKINGS_FLAG,
     };
 }
 

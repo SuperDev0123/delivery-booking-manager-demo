@@ -70,6 +70,7 @@ import {
     RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
+    RESET_REFRESH_BOOKINGS_FLAG,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -153,6 +154,11 @@ export const BookingReducer = (state = defaultState, {
     multiFindValues,
 }) => {
     switch (type) {
+        case RESET_REFRESH_BOOKINGS_FLAG:
+            return {
+                ...state,
+                needUpdateBookings,
+            };
         case RESET_PRICING_INFOS:
             return {
                 ...state,

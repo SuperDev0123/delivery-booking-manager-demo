@@ -63,6 +63,7 @@ import {
     resetPricingInfosAction,
     successGetPricingInfos,
     setErrorMessageAction,
+    resetRefeshBookingsFlag,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -105,6 +106,7 @@ export const getBookings = (
         }
     };
     return dispatch => {
+        dispatch(resetRefeshBookingsFlag());
         axios(options)
             .then(({ data }) => dispatch(successGetBookings(data)))
             .catch((error) => dispatch(failedGetBookings(error)));

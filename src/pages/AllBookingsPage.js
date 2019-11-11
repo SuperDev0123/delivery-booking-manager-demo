@@ -363,6 +363,7 @@ class AllBookingsPage extends React.Component {
                 this.setState({downloadOption});
             }
 
+            // Client Select Option
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
                 this.setState({clientPK});
             }
