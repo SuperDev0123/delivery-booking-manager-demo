@@ -75,6 +75,7 @@ import {
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
     SET_LOCAL_FILTER_PAGEINDEX,
+    RESET_REFRESH_BOOKINGS_FLAG,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -91,6 +92,12 @@ export function successGetBookings(data) {
         closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
         missingLabels: data['missing_labels'],
+    };
+}
+
+export function resetRefeshBookingsFlag() {
+    return {
+        type: RESET_REFRESH_BOOKINGS_FLAG,
     };
 }
 

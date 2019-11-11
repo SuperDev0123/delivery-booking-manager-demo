@@ -21,6 +21,7 @@ class ReportPage extends React.Component {
         redirect: PropTypes.object.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        clientname: PropTypes.string.isRequired,
     };
 
     componentDidMount() {
@@ -50,6 +51,7 @@ class ReportPage extends React.Component {
     }
 
     render() {
+        const { clientname } = this.props;
         const { selectedReportType } = this.state;
 
         return (
@@ -60,7 +62,9 @@ class ReportPage extends React.Component {
                             <li><a href="/booking">Header</a></li>
                             <li><a href="/allbookings">All Bookings</a></li>
                             <li><a href="/pods">PODs</a></li>
-                            <li><a href="/comms">Comms</a></li>
+                            {
+                                clientname === 'dme' && <li><a href="/comm">Comm</a></li>
+                            }
                             <li className="active"><a href="/reports">Reports</a></li>
                         </ul>
                     </div>
@@ -99,6 +103,7 @@ class ReportPage extends React.Component {
 const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
+        clientname: state.auth.clientname,
     };
 };
 

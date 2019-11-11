@@ -72,6 +72,7 @@ import {
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
     SET_LOCAL_FILTER_PAGEINDEX,
+    RESET_REFRESH_BOOKINGS_FLAG,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -161,6 +162,11 @@ export const BookingReducer = (state = defaultState, {
     filteredBookingIds,
 }) => {
     switch (type) {
+        case RESET_REFRESH_BOOKINGS_FLAG:
+            return {
+                ...state,
+                needUpdateBookings,
+            };
         case RESET_PRICING_INFOS:
             return {
                 ...state,
