@@ -228,10 +228,8 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        if (!.isNull(bookingsCnt)) {
+        if (!_.isNull(bookingsCnt)) {
             this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, prefilterInd, loading: false });
-        if (!.isNull(bookingsCnt)) {
-            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
