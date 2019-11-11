@@ -225,8 +225,8 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        if (bookings) {
-            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels });
+        if (bookings && bookingsCnt) {
+            this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -377,8 +377,6 @@ class AllBookingsPage extends React.Component {
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
-        } else {
-            this.setState({loading: false});
         }
     }
 
@@ -2240,7 +2238,7 @@ class AllBookingsPage extends React.Component {
                                                     </NavLink>
                                                 </NavItem>
                                             </Nav>
-                                            <p className="float-right">all bookings / today / by date: {bookingsCnt}</p>
+                                            <p className="float-right">all bookings / today / by date: {bookingsCnt ? bookingsCnt : '*'}</p>
                                         </div>
                                         <hr />
                                         <div>
