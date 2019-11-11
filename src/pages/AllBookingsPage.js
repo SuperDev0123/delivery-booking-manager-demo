@@ -225,7 +225,7 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        if (bookings && bookingsCnt) {
+        if (!.isNull(bookingsCnt)) {
             this.setState({ bookings, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
