@@ -1133,7 +1133,8 @@ class BookingPage extends Component {
 
     calcBookingLine(booking, bookingLines) {
         let qty = 0;
-        let qty_collected_scanned = 0;
+        let total_qty_collected = 0;
+        let total_qty_scanned = 0;
         let b_fp_qty_delivered = 0;
         let total_kgs = 0;
         let cubic_meter = 0;
@@ -1174,9 +1175,10 @@ class BookingPage extends Component {
             }
 
             qty += bookingLine.e_qty;
-            qty_collected_scanned += bookingLine.e_qty_scanned_fp;
             total_kgs += bookingLine['total_kgs'];
             cubic_meter += bookingLine['cubic_meter'];
+            total_qty_collected += bookingLine['e_qty_collected'];
+            total_qty_scanned += bookingLine['e_qty_scanned_fp'];
             return bookingLine;
         });
 
@@ -1188,7 +1190,8 @@ class BookingPage extends Component {
             bookingTotals: [{
                 id: 0,
                 qty,
-                qty_collected_scanned,
+                total_qty_collected,
+                total_qty_scanned,
                 b_fp_qty_delivered: b_fp_qty_delivered,
                 total_kgs: total_kgs.toFixed(2),
                 cubic_meter: cubic_meter.toFixed(2)
@@ -2476,8 +2479,11 @@ class BookingPage extends Component {
                 dataField: 'qty',
                 text: 'Total Ordered'
             }, {
-                dataField: 'qty_collected_scanned',
-                text: 'Total Collected / Scanned'
+                dataField: 'total_qty_collected',
+                text: 'Total Collected'
+            }, {
+                dataField: 'total_qty_scanned',
+                text: 'Total Scanned'
             }, {
                 dataField: 'b_fp_qty_delivered',
                 text: 'Total Delivered'
