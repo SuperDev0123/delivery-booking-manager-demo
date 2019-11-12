@@ -54,6 +54,10 @@ class ProjectDataSlider extends React.Component {
         booking['b_project_dd_receive_date'] = b_project_dd_receive_date;
         booking['b_project_due_date'] = b_project_due_date;
 
+        if (b_booking_project && !booking['de_Deliver_From_Date']) {
+            booking['de_Deliver_From_Date'] = b_project_due_date;
+        }
+
         if (b_booking_project && !booking['de_Deliver_By_Date']) {
             booking['de_Deliver_By_Date'] = b_project_due_date;
         }
