@@ -8,6 +8,8 @@ import { Button } from 'reactstrap';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import DateTimePicker from 'react-datetime-picker';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 class ProjectDataSlider extends React.Component {
     constructor(props) {
@@ -15,10 +17,11 @@ class ProjectDataSlider extends React.Component {
 
         this.state = {
             b_booking_project: '',
-            b_project_opened: new Date(),
-            b_project_inventory_due: new Date(),
-            b_project_wh_unpack: new Date(),
-            b_project_dd_receive_date: new Date(),
+            b_project_opened: null,
+            b_project_inventory_due: null,
+            b_project_wh_unpack: null,
+            b_project_dd_receive_date: null,
+            b_project_due_date: null,
             errorMessage: '',
         };
     }
@@ -27,7 +30,7 @@ class ProjectDataSlider extends React.Component {
         isOpen: PropTypes.bool.isRequired,
         toggleDateSlider: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
-        OnUpdateBooking: PropTypes.func.isRequired,
+        OnUpdate: PropTypes.func.isRequired,
     };
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -36,19 +39,26 @@ class ProjectDataSlider extends React.Component {
         const b_project_inventory_due = nextProps.booking.b_project_inventory_due;
         const b_project_wh_unpack = nextProps.booking.b_project_wh_unpack;
         const b_project_dd_receive_date = nextProps.booking.b_project_dd_receive_date;
-        this.setState({b_booking_project, b_project_opened, b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date});
+        const b_project_due_date = nextProps.booking.b_project_due_date;
+        this.setState({b_booking_project, b_project_opened, b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date, b_project_due_date});
     }
 
     onClickSave() {
         const { booking } = this.props;
-        const { b_booking_project, b_project_opened , b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date} = this.state;
+        const { b_booking_project, b_project_opened , b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date, b_project_due_date } = this.state;
 
         booking['b_booking_project'] = b_booking_project;
         booking['b_project_opened'] = b_project_opened;
         booking['b_project_inventory_due'] = b_project_inventory_due;
         booking['b_project_wh_unpack'] = b_project_wh_unpack;
         booking['b_project_dd_receive_date'] = b_project_dd_receive_date;
-        this.props.OnUpdateBooking(booking);
+        booking['b_project_due_date'] = b_project_due_date;
+
+        if (b_booking_project && !booking['de_Deliver_By_Date']) {
+            booking['de_Deliver_By_Date'] = b_project_due_date;
+        }
+
+        this.props.OnUpdate(booking);
         this.props.toggleDateSlider();
     }
 
@@ -65,12 +75,14 @@ class ProjectDataSlider extends React.Component {
             this.setState({b_project_wh_unpack: date});
         } else if (fieldName === 'b_project_dd_receive_date') {
             this.setState({b_project_dd_receive_date: date});
+        } else if (fieldName === 'b_project_due_date') {
+            this.setState({b_project_due_date: moment(date).format('YYYY-MM-DD')});
         }
     }
 
     render() {
         const { isOpen } = this.props;
-        const { errorMessage, b_booking_project, b_project_opened , b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date } = this.state;
+        const { errorMessage, b_booking_project, b_project_opened , b_project_inventory_due, b_project_wh_unpack, b_project_dd_receive_date, b_project_due_date } = this.state;
 
         return (
             <SlidingPane
@@ -120,6 +132,14 @@ class ProjectDataSlider extends React.Component {
                                     onChange={(date) => this.onChangeDate(date, 'b_project_dd_receive_date')}
                                     value={b_project_dd_receive_date ? moment(b_project_dd_receive_date).toDate() : null}
                                     format={'dd/MM/yyyy hh:mm a'}
+                                />
+                            </label>
+                            <label>
+                                <p>Project Due Date</p>
+                                <DatePicker
+                                    selected={b_project_due_date ? new Date(b_project_due_date) : null}
+                                    onChange={(date) => this.onChangeDate(date, 'b_project_due_date')}
+                                    dateFormat="dd/MM/yyyy"
                                 />
                             </label>
 

@@ -118,14 +118,14 @@ class BulkUpdateSlider extends React.Component {
                             <option value="de_Deliver_From_Date">Deliver to From</option>
                             <option value="de_Deliver_By_Date">Deliver to By</option>
                             <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>
-                            
+
                             <option value="b_booking_Priority">Priority</option>
                             <option value="b_booking_Category">Category</option>
                             <option value="v_vehicle_Type">Vehicle Type</option>
                             <option value="inv_dme_invoice_no">Your Invoice No</option>
-                            
+
                             <option value="b_booking_project">Project Name</option>
-                            <option value="de_Deliver_By_Date">Project Due Date</option>
+                            <option value="b_project_due_date">Project Due Date</option>
                         </select>
                     </label>
                     <br />
@@ -204,7 +204,8 @@ class BulkUpdateSlider extends React.Component {
                             (selectedField === 'puPickUpAvailFrom_Date' ||
                             selectedField === 'pu_PickUp_By_Date_DME' ||
                             selectedField === 'de_Deliver_From_Date' ||
-                            selectedField === 'de_Deliver_By_Date') ?
+                            selectedField === 'de_Deliver_By_Date' ||
+                            selectedField === 'b_project_due_date') ?
                                 <DatePicker
                                     selected={selectedValue ? new Date(selectedValue) : null}
                                     onChange={(date) => this.onChangeDate(date)}
