@@ -825,6 +825,8 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Hours'] = 0;
                 if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = booking.de_Deliver_By_Minutes;
                 else formInputs['de_Deliver_By_Minutes'] = 0;
+                if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
+                else formInputs['b_project_due_date'] = null;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -2133,7 +2135,8 @@ class BookingPage extends Component {
         }
     }
 
-    onUpdateBooking(newBooking) {        
+    onUpdateProjectData(newBooking) {
+        this.setState({curViewMode: 2, loadingBookingUpdate: true});
         this.props.updateBooking(this.state.booking.id, newBooking);
     }
 
@@ -3729,22 +3732,22 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Project Due Date<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            selected={formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).toDate() : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4548,7 +4551,7 @@ class BookingPage extends Component {
                 <ProjectDataSlider
                     isOpen={this.state.isShowProjectDataSlider}
                     booking={booking}
-                    OnUpdateBooking = {(bookingToUpdate) => this.onUpdateBooking(bookingToUpdate)}
+                    OnUpdate = {(bookingToUpdate) => this.onUpdateProjectData(bookingToUpdate)}
                     toggleDateSlider={this.toggleShowDateSlider}
                 />
 

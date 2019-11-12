@@ -1644,14 +1644,14 @@ class AllBookingsPage extends React.Component {
                                         <tr>
                                             <td>Lines</td>
                                             <td>{_.size(bookingLines)}</td>
-                                            <td>{total_qty}</td>
-                                            <td>{total_kgs}</td>
-                                            <td>{total_cubic_meter}</td>
+                                            <td>{total_qty===0?'X':total_qty}</td>
+                                            <td>{total_kgs===0?'X':total_kgs}</td>
+                                            <td>{total_cubic_meter===0?'X':total_cubic_meter}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
                                             <td>{_.size(bookingLineDetails)}</td>
-                                            <td>{bookingLineDetailsQtyTotal}</td>
+                                            <td>{bookingLineDetailsQtyTotal===0?'X':bookingLineDetailsQtyTotal}</td>
                                             <td>X</td>
                                             <td>X</td>
                                         </tr>
@@ -2019,9 +2019,9 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td 
-                        className={(sortField === 'de_Deliver_By_Date') ? 'current nowrap' : 'nowrap'}
+                        className={(sortField === 'b_project_due_date') ? 'current nowrap' : 'nowrap'}
                     >
-                        {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY') : null}
+                        {booking.b_project_due_date ? moment(booking.b_project_due_date).format('DD/MM/YYYY') : null}
                     </td>
                 </tr>
             );
@@ -2792,14 +2792,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 'de_Deliver_By_Date') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('de_Deliver_By_Date')}
+                                                                className={(sortField === 'b_project_due_date') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_project_due_date')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Project Due Date</p>
                                                                 {
-                                                                    (sortField === 'de_Deliver_By_Date') ?
+                                                                    (sortField === 'b_project_due_date') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2853,7 +2853,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="z_calculated_ETA" value={filterInputs['z_calculated_ETA'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_to_PickUp_Instructions_Address" value={filterInputs['de_to_PickUp_Instructions_Address'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_booking_project" value={filterInputs['b_booking_project'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_project_due_date" value={filterInputs['b_project_due_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                         </tr>
                                                     </table>
                                                 </div>
