@@ -1608,14 +1608,14 @@ class AllBookingsPage extends React.Component {
                                         <tr>
                                             <td>Lines</td>
                                             <td>{_.size(bookingLines)}</td>
-                                            <td>{total_qty}</td>
-                                            <td>{total_kgs}</td>
-                                            <td>{total_cubic_meter}</td>
+                                            <td>{total_qty===0?'X':total_qty}</td>
+                                            <td>{total_kgs===0?'X':total_kgs}</td>
+                                            <td>{total_cubic_meter===0?'X':total_cubic_meter}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
                                             <td>{_.size(bookingLineDetails)}</td>
-                                            <td>{bookingLineDetailsQtyTotal}</td>
+                                            <td>{bookingLineDetailsQtyTotal===0?'X':bookingLineDetailsQtyTotal}</td>
                                             <td>X</td>
                                             <td>X</td>
                                         </tr>
