@@ -1589,8 +1589,9 @@ class AllBookingsPage extends React.Component {
                         isOpen={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id]}
                         target={'booking-lines-info-popup-' + booking.id}
                         placement="right"
-                        hideArrow={true} >
-                        <PopoverHeader>Line and Line Details <a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
+                        hideArrow={true}
+                    >
+                        <PopoverHeader>Line and Line Details<a className="close-popover" onClick={this.togglePopover}>x</a></PopoverHeader>
                         <PopoverBody>
                             <div className="pad-10p">
                                 <p><strong>Booking ID: {booking.b_bookingID_Visual}</strong></p>
@@ -1608,14 +1609,14 @@ class AllBookingsPage extends React.Component {
                                         <tr>
                                             <td>Lines</td>
                                             <td>{_.size(bookingLines)}</td>
-                                            <td>{total_qty===0?'X':total_qty}</td>
-                                            <td>{total_kgs===0?'X':total_kgs}</td>
-                                            <td>{total_cubic_meter===0?'X':total_cubic_meter}</td>
+                                            <td>{_.size(bookingLines)===0?'X':total_qty}</td>
+                                            <td>{_.size(bookingLines)===0?'X':total_kgs}</td>
+                                            <td>{_.size(bookingLines)===0?'X':total_cubic_meter}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
                                             <td>{_.size(bookingLineDetails)}</td>
-                                            <td>{bookingLineDetailsQtyTotal===0?'X':bookingLineDetailsQtyTotal}</td>
+                                            <td>{_.size(bookingLineDetails)===0?'X':bookingLineDetailsQtyTotal}</td>
                                             <td>X</td>
                                             <td>X</td>
                                         </tr>
