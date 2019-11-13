@@ -91,7 +91,7 @@ class AllBookingsPage extends React.Component {
             allBookingStatus: [],
             allFPs: [],
             isShowStatusLockModal: false,
-            pageItemCnt: 10,
+            pageItemCnt: 100,
             pageInd: 0,
             pageCnt: 0,
             selectedOneBooking: null,
@@ -512,8 +512,8 @@ class AllBookingsPage extends React.Component {
             startDate: moment(startDate).format('YYYY-MM-DD'), 
             endDate: moment(endDate).format('YYYY-MM-DD'),
         });
-        this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
         this.props.setGetBookingsFilter('columnFilters', {});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
     onSelected(e, src) {
@@ -535,7 +535,7 @@ class AllBookingsPage extends React.Component {
             const {today} = this.state;
             const projectName = e.target.value;
             this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
-            this.setState({activeTabInd: 0});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
         }
     }
 
@@ -577,6 +577,7 @@ class AllBookingsPage extends React.Component {
             filterInputs[e.target.name] = e.target.value;
             this.setState({filterInputs});
             this.props.setGetBookingsFilter('columnFilters', filterInputs);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
         }
     }
 
@@ -943,7 +944,7 @@ class AllBookingsPage extends React.Component {
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
-                        this.setState({selectedBookingIds: [], checkedAll: false, loadingDownload: false});
+                        this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 }
 
@@ -992,7 +993,7 @@ class AllBookingsPage extends React.Component {
         e.preventDefault();
         const {startDate, endDate} = this.state;
         this.props.setAllGetBookingsFilter(startDate, endDate);
-        this.setState({selectedBookingIds: []});
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickSimpleSearch(num) {
@@ -1016,16 +1017,14 @@ class AllBookingsPage extends React.Component {
         } else {
             const today = moment().format('YYYY-MM-DD');
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, simpleSearchKeyword, downloadOption);
-            this.setState({activeTabInd: 0});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
         }
-
-        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onMultiFind(FieldName, valueSet) {
         const today = moment().format('YYYY-MM-DD');
         this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
-        this.setState({activeTabInd: 0, selectedBookingIds: [], checkedAll: false});
+        this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickTab(activeTabInd) {
@@ -1078,7 +1077,7 @@ class AllBookingsPage extends React.Component {
         this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
         this.setState({
             selectedBookingIds: [],
-            checkedAll: false,
+            allCheckStatus: 'None',
             selectedBookingIds2Order: this.state.selectedBookingIds,
             selectedFP2Order: vx_freight_provider.toLowerCase(),
         });
@@ -1552,7 +1551,7 @@ class AllBookingsPage extends React.Component {
         }
 
         this.toggleShowBulkUpdateSlider();
-        this.setState({loading: true, selectedBookingIds: [], checkedAll: false});
+        this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickPagination(pageInd) {

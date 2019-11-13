@@ -95,7 +95,7 @@ const defaultState = {
     startDate: '',
     endDate: '',
     warehouseId: 0,
-    pageItemCnt: 10,
+    pageItemCnt: 100,
     pageInd: 0,
     sortField: '-id',
     columnFilters: {},
