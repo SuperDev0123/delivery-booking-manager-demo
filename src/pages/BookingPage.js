@@ -776,7 +776,6 @@ class BookingPage extends Component {
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
-
                 if (booking.de_to_Pick_Up_Instructions_Contact != null) formInputs['de_to_Pick_Up_Instructions_Contact'] = booking.de_to_Pick_Up_Instructions_Contact;
                 else formInputs['de_to_Pick_Up_Instructions_Contact'] = '';
                 if (booking.de_to_PickUp_Instructions_Address != null) formInputs['de_to_PickUp_Instructions_Address'] = booking.de_to_PickUp_Instructions_Address;
@@ -787,7 +786,6 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
                 if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
                 else formInputs['b_status_API'] = '';
-
                 if (booking.dme_status_history_notes != null) formInputs['dme_status_history_notes'] = booking.dme_status_history_notes;
                 else formInputs['dme_status_history_notes'] = '';
                 if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
@@ -827,6 +825,8 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Minutes'] = 0;
                 if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
+                if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
+                else formInputs['fp_store_event_date'] = null;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -2214,6 +2214,14 @@ class BookingPage extends Component {
         const booking = this.state.booking;
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
+
+        if (fieldName === 'fp_store_event_date') {
+            formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
+            formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
+            booking['de_Deliver_From_Date'] = booking[fieldName];
+            booking['de_Deliver_By_Date'] = booking[fieldName];
+        }
+
         this.setState({formInputs, booking, isBookingModified: true});
     }
 
@@ -3733,6 +3741,27 @@ class BookingPage extends Component {
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
+                                                                            dateFormat="dd/MM/yyyy"
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
