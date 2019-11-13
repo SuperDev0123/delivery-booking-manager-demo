@@ -29,7 +29,7 @@ import {
     SET_LOCAL_FILTER_WAREHOUSEID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
-    SET_LOCAL_FILTER_PREFILTERIND,
+    SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
     SET_LOCAL_FILTER_CLIENTPK,
     SET_LOCAL_FILTER_DOWNLOADOPTION,
@@ -99,7 +99,7 @@ const defaultState = {
     pageInd: 0,
     sortField: '-id',
     columnFilters: {},
-    prefilterInd: 7,
+    activeTabInd: 7,
     simpleSearchKeyword: '',
     downloadOption: 'label',
     multiFindField: null,
@@ -138,7 +138,7 @@ export const BookingReducer = (state = defaultState, {
     warehouseId,
     sortField,
     columnFilters,
-    prefilterInd,
+    activeTabInd,
     simpleSearchKeyword,
     needUpdateBookings,
     puStates,
@@ -387,7 +387,7 @@ export const BookingReducer = (state = defaultState, {
                 warehouseId: warehouseId,
                 sortField: sortField,
                 columnFilters: columnFilters,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 simpleSearchKeyword: simpleSearchKeyword,
                 downloadOption: downloadOption,
                 clientPK: clientPK,
@@ -424,10 +424,10 @@ export const BookingReducer = (state = defaultState, {
                 columnFilters: columnFilters,
                 needUpdateBookings: true,
             };
-        case SET_LOCAL_FILTER_PREFILTERIND:
+        case SET_LOCAL_FILTER_ACTIVE_TAB_IND:
             return {
                 ...state,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD:

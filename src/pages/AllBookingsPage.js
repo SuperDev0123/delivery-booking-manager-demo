@@ -208,7 +208,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -229,7 +229,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (!_.isNull(bookingsCnt)) {
-            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, prefilterInd, loading: false });
+            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, activeTabInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -241,7 +241,7 @@ class AllBookingsPage extends React.Component {
                         pageItemCnt,
                         pageInd,
                         columnFilters: {...columnFilters},
-                        prefilterInd,
+                        activeTabInd,
                         simpleSearchKeyword,
                         downloadOption,
                         clientPK,
@@ -264,7 +264,7 @@ class AllBookingsPage extends React.Component {
                     successSearchFilterOptions.pageInd,
                     successSearchFilterOptions.sortField,
                     successSearchFilterOptions.columnFilters,
-                    successSearchFilterOptions.prefilterInd,
+                    successSearchFilterOptions.activeTabInd,
                     successSearchFilterOptions.simpleSearchKeyword,
                     successSearchFilterOptions.downloadOption,
                     successSearchFilterOptions.dmeStatus,
@@ -358,13 +358,13 @@ class AllBookingsPage extends React.Component {
                 }
             }
 
-            // prefilterInd
+            // activeTabInd
             if (startDate === '*') {
                 this.setState({activeTabInd: 0});
-            } else if (startDate !== '*' && prefilterInd === 0) {
+            } else if (startDate !== '*' && activeTabInd === 0) {
                 this.setState({activeTabInd: 7});
             } else {
-                this.setState({activeTabInd: prefilterInd});
+                this.setState({activeTabInd: activeTabInd});
             }
 
             // downloadOption
@@ -387,7 +387,7 @@ class AllBookingsPage extends React.Component {
                 pageInd: pageInd,
             });
 
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
         }
     }
 
@@ -2974,9 +2974,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
         setNeedUpdateBookingsState: (boolFlag) => dispatch(setNeedUpdateBookingsState(boolFlag)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),

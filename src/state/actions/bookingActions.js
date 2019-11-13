@@ -31,7 +31,7 @@ import {
     SET_LOCAL_FILTER_WAREHOUSEID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
-    SET_LOCAL_FILTER_PREFILTERIND,
+    SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
     SET_LOCAL_FILTER_PROJECTNAME, // Filter end
     SET_FETCH_BOOKINGS_FLAG,
@@ -123,10 +123,10 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_COLUMNFILTER,
             columnFilters: value,
         };
-    } else if (key === 'prefilterInd') {
+    } else if (key === 'activeTabInd') {
         return {
-            type: SET_LOCAL_FILTER_PREFILTERIND,
-            prefilterInd: value,
+            type: SET_LOCAL_FILTER_ACTIVE_TAB_IND,
+            activeTabInd: value,
         };
     } else if (key === 'simpleSearchKeyword') {
         return {
@@ -175,7 +175,7 @@ export function setAllLocalFilter(
     pageInd,
     sortField,
     columnFilters,
-    prefilterInd,
+    activeTabInd,
     simpleSearchKeyword,
     downloadOption,
     dmeStatus,
@@ -192,7 +192,7 @@ export function setAllLocalFilter(
         pageItemCnt: pageItemCnt,
         pageInd: pageInd,
         columnFilters: columnFilters,
-        prefilterInd: prefilterInd,
+        activeTabInd: activeTabInd,
         simpleSearchKeyword: simpleSearchKeyword,
         downloadOption: downloadOption,
         clientPK: clientPK,
