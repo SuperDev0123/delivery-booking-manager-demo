@@ -1496,8 +1496,8 @@ class AllBookingsPage extends React.Component {
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select at least one booking');
-        } else if (selectedBookingIds.length > 50) {
-            this.notify('Bulk operation can process 50 bookings at once');
+        } else if (selectedBookingIds.length > 1000) {
+            this.notify('Bulk operation can process 1000 bookings at once');
         } else {
             this.toggleShowBulkUpdateSlider();
         }
