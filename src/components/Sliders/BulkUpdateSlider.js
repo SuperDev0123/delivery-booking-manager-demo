@@ -14,8 +14,9 @@ class BulkUpdateSlider extends React.Component {
         super(props);
 
         this.state = {
-            selectedValue: null,
             selectedField: null,
+            selectedValue: null,
+            optionalValue: null,
         };
     }
 
@@ -33,9 +34,9 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onClickUpdateBtn() {
-        const {selectedValue, selectedField} = this.state;
+        const {selectedValue, selectedField, optionalValue} = this.state;
         const {selectedBookingIds} = this.props;
-        this.props.onUpdate(selectedField, selectedValue, selectedBookingIds);
+        this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
     }
 
     onSelected(e, src) {
@@ -50,8 +51,12 @@ class BulkUpdateSlider extends React.Component {
         this.setState({selectedValue: e.target.value});
     }
 
-    onChangeDate(date) {
-        this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+    onChangeDate(date, valueType) {
+        if (valueType === 'selectedValue') {
+            this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+        } else if (valueType === 'optionalValue') {
+            this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+        }
     }
 
     onChangeDateTime(dateTime) {
@@ -60,7 +65,7 @@ class BulkUpdateSlider extends React.Component {
 
     render() {
         const { isOpen, allBookingStatus } = this.props;
-        const { selectedField, selectedValue } = this.state;
+        const { selectedField, selectedValue, optionalValue } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
@@ -208,7 +213,23 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'b_project_due_date') ?
                                 <DatePicker
                                     selected={selectedValue ? new Date(selectedValue) : null}
-                                    onChange={(date) => this.onChangeDate(date)}
+                                    onChange={(date) => this.onChangeDate(date, 'selectedValue')}
+                                    dateFormat="dd/MM/yyyy"
+                                />
+                                : null
+                        }
+                    </div>
+                    <br />
+                    <div className="optional">
+                        {
+                            selectedField === 'status' && selectedValue === 'In Transit' ?
+                                <label className="value">Event Date: </label> : null
+                        }
+                        {
+                            selectedField === 'status' && selectedValue === 'In Transit' ?
+                                <DatePicker
+                                    selected={optionalValue ? new Date(optionalValue) : null}
+                                    onChange={(date) => this.onChangeDate(date, 'optionalValue')}
                                     dateFormat="dd/MM/yyyy"
                                 />
                                 : null

@@ -544,13 +544,13 @@ export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, 
             .catch(( error ) => dispatch(failedGenerateXLS(error)));
 };
 
-export const changeBookingsStatus = (status, bookingIds) => {
+export const changeBookingsStatus = (status, bookingIds, optionalValue=null) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/change_bookings_status/`,
-        data: {status, bookingIds},
+        data: {status, bookingIds, optionalValue},
     };
     return dispatch =>
         axios(options)

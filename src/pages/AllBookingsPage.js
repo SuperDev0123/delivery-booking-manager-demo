@@ -1534,11 +1534,11 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onClickBulkUpdate(field, value, bookingIds) {
+    onClickBulkUpdate(field, value, bookingIds, optionalValue=null) {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
         } else if (field === 'status') {
-            this.props.changeBookingsStatus(value, bookingIds);
+            this.props.changeBookingsStatus(value, bookingIds, optionalValue);
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
@@ -2920,7 +2920,7 @@ class AllBookingsPage extends React.Component {
                     toggleSlider={this.toggleShowBulkUpdateSlider}
                     allBookingStatus={allBookingStatus}
                     selectedBookingIds={selectedBookingIds}
-                    onUpdate={(field, value, bookingIds) => this.onClickBulkUpdate(field, value, bookingIds)}
+                    onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
                 <ToastContainer />

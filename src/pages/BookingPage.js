@@ -2105,27 +2105,57 @@ class BookingPage extends Component {
     OnCreateStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
 
-        newBooking.b_status = statusHistory['status_last'];
-        this.props.updateBooking(this.state.booking.id, newBooking);
-
         statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
         statusHistory['dme_status_action'] = newBooking.dme_status_action;
         statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.createStatusHistory(statusHistory);
+
+        if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
+            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+        } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
+            if (!newBooking.fp_store_event_date) {
+                newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+            } else {
+                if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
+                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                } else {
+                    newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
+                }
+            }
+        }
+
+        newBooking.b_status = statusHistory['status_last'];
+        this.props.updateBooking(this.state.booking.id, newBooking);
+        this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
     }
 
     OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
         let newBooking = this.state.booking;
 
-        if (needToUpdateBooking) {
-            newBooking.b_status = statusHistory['status_last'];
-            this.props.updateBooking(this.state.booking.id, newBooking);
-        }
-
         // statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
         // statusHistory['dme_status_action'] = newBooking.dme_status_action;
         // statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.updateStatusHistory(statusHistory);
+
+        if (needToUpdateBooking) {
+            if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
+                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+            } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
+                if (!newBooking.fp_store_event_date) {
+                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                } else {
+                    if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
+                        newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                    } else {
+                        newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
+                    }
+                }
+            }
+
+            newBooking.b_status = statusHistory['status_last'];
+            this.props.updateBooking(this.state.booking.id, newBooking);
+            this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
+        }
     }
 
     onClickComms(e) {
