@@ -37,7 +37,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -280,6 +280,7 @@ class BookingPage extends Component {
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
+        sendEmail: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -2249,6 +2250,10 @@ class BookingPage extends Component {
         this.toggleShowFPPricingSlider();
     }
 
+    onClickEnvelop(templateName) {
+        this.props.sendEmail(templateName);
+    }
+
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments} = this.state;
 
@@ -2597,13 +2602,20 @@ class BookingPage extends Component {
                         </div>
                         <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile</a>}
                         <a className="none">?</a>
-                        <a 
-                            className={clientname === 'dme' ? 'cur-pointer' : 'none'}
-                            onClick={(e) => this.onClickSwitchClientNavIcon(e)}
-                        >
-                            <i className="fa fa-users" aria-hidden="true"></i>
-                        </a>
+                        {
+                            clientname === 'dme' &&
+                                <a 
+                                    className='cur-pointer'
+                                    onClick={(e) => this.onClickSwitchClientNavIcon(e)}
+                                >
+                                    <i className="fa fa-users" aria-hidden="true"></i>
+                                </a>
+                        }
                     </div>
                 </div>
 
@@ -4715,6 +4727,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllFPs: () => dispatch(getAllFPs()),
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
+        sendEmail: (templateName) => dispatch(sendEmail(templateName)),
     };
 };
 

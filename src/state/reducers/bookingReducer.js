@@ -71,6 +71,8 @@ import {
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     RESET_REFRESH_BOOKINGS_FLAG,
+    SUCCESS_SEND_EMAIL,
+    FAILED_SEND_EMAIL,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -499,6 +501,8 @@ export const BookingReducer = (state = defaultState, {
         case FAIELD_GET_MANIFEST_REPORT:
         case GET_TRACK_FAILED:
         case FAILED_FP_PRICING:
+        case SUCCESS_SEND_EMAIL:
+        case FAILED_SEND_EMAIL:
             return {
                 ...state,
                 errorMessage: errorMessage,

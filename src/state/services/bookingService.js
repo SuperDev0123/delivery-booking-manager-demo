@@ -64,6 +64,8 @@ import {
     successGetPricingInfos,
     setErrorMessageAction,
     resetRefeshBookingsFlag,
+    successSendEmail,
+    failedSendEmail,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -619,5 +621,20 @@ export const getPricingInfos = (fk_booking_id) => {
         axios(options)
             .then(({ data }) => dispatch(successGetPricingInfos(data)))
             .catch((error) => dispatch(setErrorMessageAction(error)));
+    };
+};
+
+export const sendEmail = (templateName) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/send_email/`,
+        params: {'templateName': templateName},
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successSendEmail(data)))
+            .catch((error) => dispatch(failedSendEmail(error)));
     };
 };

@@ -74,6 +74,8 @@ import {
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     RESET_REFRESH_BOOKINGS_FLAG,
+    SUCCESS_SEND_EMAIL,
+    FAILED_SEND_EMAIL,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -672,6 +674,20 @@ export function successGetPricingInfos(data) {
 export function setErrorMessageAction(error) {
     return {
         type: SET_ERROR_MSG,
+        errorMessage: error.response.data.message,
+    };
+}
+
+export function successSendEmail() {
+    return {
+        type: SUCCESS_SEND_EMAIL,
+        errorMessage: 'Sent Email Successfully',
+    };
+}
+
+export function failedSendEmail(error) {
+    return {
+        type: FAILED_SEND_EMAIL,
         errorMessage: error.response.data.message,
     };
 }
