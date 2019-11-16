@@ -2299,7 +2299,13 @@ class BookingPage extends Component {
     }
 
     onClickEnvelop(templateName) {
-        this.props.sendEmail(templateName);
+        const { booking } = this.state;
+
+        if (!booking) {
+            this.notify('Please select booking!');
+        } else {
+            this.props.sendEmail(booking.id, templateName);
+        }
     }
 
     render() {
@@ -4816,7 +4822,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllFPs: () => dispatch(getAllFPs()),
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
-        sendEmail: (templateName) => dispatch(sendEmail(templateName)),
+        sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
     };
 };
 

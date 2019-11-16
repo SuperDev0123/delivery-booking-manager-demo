@@ -628,13 +628,13 @@ export const getPricingInfos = (fk_booking_id) => {
     };
 };
 
-export const sendEmail = (templateName) => {
+export const sendEmail = (bookingId, templateName) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/send_email/`,
-        params: {'templateName': templateName},
+        params: {bookingId, templateName},
     };
     return dispatch => {
         axios(options)
