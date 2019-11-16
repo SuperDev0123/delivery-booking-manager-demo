@@ -31,7 +31,7 @@ import {
     SET_LOCAL_FILTER_WAREHOUSEID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
-    SET_LOCAL_FILTER_PREFILTERIND,
+    SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
     SET_LOCAL_FILTER_PROJECTNAME, // Filter end
     SET_FETCH_BOOKINGS_FLAG,
@@ -73,6 +73,8 @@ import {
     RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
+    SET_LOCAL_FILTER_PAGEITEMCNT,
+    SET_LOCAL_FILTER_PAGEINDEX,
     RESET_REFRESH_BOOKINGS_FLAG,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
@@ -82,7 +84,11 @@ export function successGetBookings(data) {
     return {
         type: SET_BOOKINGS,
         bookings: data['bookings'],
+        filteredBookingIds: data['filtered_booking_ids'],
         bookingsCnt: data['count'],
+        pageCnt: data['page_cnt'],
+        pageInd: data['page_ind'],
+        pageItemCnt: data['page_item_cnt'],
         toManifest: data['to_manifest'],
         toProcess: data['to_process'],
         closed: data['closed'],
@@ -119,10 +125,10 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_COLUMNFILTER,
             columnFilters: value,
         };
-    } else if (key === 'prefilterInd') {
+    } else if (key === 'activeTabInd') {
         return {
-            type: SET_LOCAL_FILTER_PREFILTERIND,
-            prefilterInd: value,
+            type: SET_LOCAL_FILTER_ACTIVE_TAB_IND,
+            activeTabInd: value,
         };
     } else if (key === 'simpleSearchKeyword') {
         return {
@@ -139,6 +145,16 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_DOWNLOADOPTION,
             downloadOption: value,
         };
+    } else if (key === 'pageItemCnt') {
+        return {
+            type: SET_LOCAL_FILTER_PAGEITEMCNT,
+            pageItemCnt: value,
+        };
+    } else if (key === 'pageInd') {
+        return {
+            type: SET_LOCAL_FILTER_PAGEINDEX,
+            pageInd: value,
+        };
     } else if (key === 'dmeStatus') {
         return {
             type: SET_LOCAL_FILTER_DMESTATUS,
@@ -152,16 +168,33 @@ export function setLocalFilter(key, value) {
     }
 }
 
-export function setAllLocalFilter(startDate, endDate, clientPK, warehouseId, itemCountPerPage, sortField, columnFilters, prefilterInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) {
+export function setAllLocalFilter(
+    startDate,
+    endDate,
+    clientPK,
+    warehouseId,
+    pageItemCnt,
+    pageInd,
+    sortField,
+    columnFilters,
+    activeTabInd,
+    simpleSearchKeyword,
+    downloadOption,
+    dmeStatus,
+    multiFindField,
+    multiFindValues,
+    projectName
+) {
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
         endDate: endDate,
         warehouseId: warehouseId,
         sortField: sortField,
-        itemCountPerPage: itemCountPerPage,
+        pageItemCnt: pageItemCnt,
+        pageInd: pageInd,
         columnFilters: columnFilters,
-        prefilterInd: prefilterInd,
+        activeTabInd: activeTabInd,
         simpleSearchKeyword: simpleSearchKeyword,
         downloadOption: downloadOption,
         clientPK: clientPK,

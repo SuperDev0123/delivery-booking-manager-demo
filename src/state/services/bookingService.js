@@ -74,10 +74,11 @@ export const getBookings = (
     endDate,
     clientPK=0,
     warehouseId=0,
-    itemCountPerPage=10,
+    pageItemCnt=100,
+    pageInd=0,
     sortField='-id',
     columnFilters={},
-    prefilterInd=0,
+    activeTabInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
     dmeStatus='',
@@ -95,10 +96,11 @@ export const getBookings = (
             endDate: endDate,
             clientPK: clientPK,
             warehouseId: warehouseId,
-            itemCountPerPage: itemCountPerPage,
+            pageItemCnt: parseInt(pageItemCnt),
+            pageInd: parseInt(pageInd),
             sortField: sortField,
             columnFilters: columnFilters,
-            prefilterInd: prefilterInd,
+            activeTabInd: activeTabInd,
             simpleSearchKeyword: simpleSearchKeyword,
             downloadOption: downloadOption,
             dmeStatus: dmeStatus,
@@ -124,10 +126,11 @@ export const setAllGetBookingsFilter = (
     endDate,
     clientPK=0,
     warehouseId=0,
-    itemCountPerPage=10,
+    pageItemCnt=100,
+    pageInd=0,
     sortField='-id',
     columnFilters={},
-    prefilterInd=0,
+    activeTabInd=0,
     simpleSearchKeyword='',
     downloadOption='label',
     dmeStatus='',
@@ -140,10 +143,11 @@ export const setAllGetBookingsFilter = (
         endDate,
         clientPK,
         warehouseId,
-        itemCountPerPage,
+        pageItemCnt,
+        pageInd,
         sortField,
         columnFilters,
-        prefilterInd,
+        activeTabInd,
         simpleSearchKeyword,
         downloadOption,
         dmeStatus,
@@ -542,13 +546,13 @@ export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, 
             .catch(( error ) => dispatch(failedGenerateXLS(error)));
 };
 
-export const changeBookingsStatus = (status, bookingIds) => {
+export const changeBookingsStatus = (status, bookingIds, optionalValue=null) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/change_bookings_status/`,
-        data: {status, bookingIds},
+        data: {status, bookingIds, optionalValue},
     };
     return dispatch =>
         axios(options)

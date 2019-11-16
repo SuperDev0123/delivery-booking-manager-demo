@@ -65,31 +65,72 @@ table.booking-lines {
 }
 
 // Main Table
-#all_booking .table-responsive {
-  margin-top: 5px !important;
-  height: calc(100% - 190px);
-  width: 100%;
-  overflow-x: auto;
+#all_booking {
+  .table-responsive {
+    margin-top: 5px !important;
+    height: calc(100% - 190px);
+    width: 100%;
+    overflow-x: auto;
 
-  .tbl-content {
-    height: calc(100% - 70px);
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  th {
-    white-space: nowrap;
-    padding: 3px !important;
-
-    p {
-      display: inline-block;
-      width: calc(100% - 10px);
-      overflow: hidden;
+    .tbl-content {
+      height: calc(100% - 70px);
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
-    i {
+    th {
+      white-space: nowrap;
+      padding: 3px !important;
+
+      p {
+        display: inline-block;
+        width: calc(100% - 10px);
+        overflow: hidden;
+      }
+
+      i {
+        vertical-align: top;
+        float: right;
+      }
+    }
+  }
+
+  .download-select {
+    margin-top: 7px;
+  }
+
+  .tbl-pagination {
+    float: right;
+    display: inline-block;
+
+    select {
+      width: 75px;
       vertical-align: top;
-      float: right;
+      margin-top: 7px;
+      margin-right: 10px;
+    }
+
+    label {
+      vertical-align: top;
+    }
+
+    nav {
+      display: inline-block !important;
+    }
+
+    .pagination-sm {
+      .page-link {
+        padding: 0.75rem 1rem;
+      }
+
+      .disabled {
+        background-color: lightgray;
+        cursor: not-allowed;
+      }
+
+      .current {
+        background-color: lightgreen;
+      }
     }
   }
 }
@@ -393,6 +434,10 @@ table {
 .filter-tr {
   input {
     width: 100%;
+  }
+
+  .some {
+    opacity: 0.5;
   }
 }
 

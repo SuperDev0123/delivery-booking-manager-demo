@@ -29,7 +29,7 @@ import {
     SET_LOCAL_FILTER_WAREHOUSEID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
-    SET_LOCAL_FILTER_PREFILTERIND,
+    SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
     SET_LOCAL_FILTER_CLIENTPK,
     SET_LOCAL_FILTER_DOWNLOADOPTION,
@@ -70,6 +70,8 @@ import {
     RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
+    SET_LOCAL_FILTER_PAGEITEMCNT,
+    SET_LOCAL_FILTER_PAGEINDEX,
     RESET_REFRESH_BOOKINGS_FLAG,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
@@ -78,6 +80,7 @@ import {
 const defaultState = {
     booking: null,
     bookings: [],
+    filteredBookingIds: [],
     bookingsCnt: 0,
     pod: {},
     userDateFilterField: '',
@@ -94,10 +97,11 @@ const defaultState = {
     startDate: '',
     endDate: '',
     warehouseId: 0,
-    itemCountPerPage: 10,
+    pageItemCnt: 100,
+    pageInd: 0,
     sortField: '-id',
     columnFilters: {},
-    prefilterInd: 0,
+    activeTabInd: 7,
     simpleSearchKeyword: '',
     downloadOption: 'label',
     multiFindField: null,
@@ -136,7 +140,7 @@ export const BookingReducer = (state = defaultState, {
     warehouseId,
     sortField,
     columnFilters,
-    prefilterInd,
+    activeTabInd,
     simpleSearchKeyword,
     needUpdateBookings,
     puStates,
@@ -154,6 +158,10 @@ export const BookingReducer = (state = defaultState, {
     projectName,
     multiFindField,
     multiFindValues,
+    pageItemCnt,
+    pageInd,
+    pageCnt,
+    filteredBookingIds,
 }) => {
     switch (type) {
         case RESET_REFRESH_BOOKINGS_FLAG:
@@ -211,7 +219,11 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 bookings: bookings,
+                filteredBookingIds: filteredBookingIds,
                 bookingsCnt: bookingsCnt,
+                pageInd: pageInd,
+                pageItemCnt: pageItemCnt,
+                pageCnt: pageCnt,
                 needUpdateBookings: false,
                 errorsToCorrect: errorsToCorrect,
                 toManifest: toManifest,
@@ -377,10 +389,11 @@ export const BookingReducer = (state = defaultState, {
                 warehouseId: warehouseId,
                 sortField: sortField,
                 columnFilters: columnFilters,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 simpleSearchKeyword: simpleSearchKeyword,
                 downloadOption: downloadOption,
                 clientPK: clientPK,
+                pageItemCnt: pageItemCnt,
                 bookings: [],
                 dmeStatus: dmeStatus,
                 multiFindField: multiFindField,
@@ -413,10 +426,10 @@ export const BookingReducer = (state = defaultState, {
                 columnFilters: columnFilters,
                 needUpdateBookings: true,
             };
-        case SET_LOCAL_FILTER_PREFILTERIND:
+        case SET_LOCAL_FILTER_ACTIVE_TAB_IND:
             return {
                 ...state,
-                prefilterInd: prefilterInd,
+                activeTabInd: activeTabInd,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD:
@@ -448,6 +461,20 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 projectName: payload,
                 needUpdateBookings: true,
+            };
+        case SET_LOCAL_FILTER_PAGEITEMCNT:
+            return {
+                ...state,
+                pageItemCnt: pageItemCnt,
+                needUpdateBookings: true,
+                bookings: [],
+            };
+        case SET_LOCAL_FILTER_PAGEINDEX:
+            return {
+                ...state,
+                pageInd: pageInd,
+                needUpdateBookings: true,
+                bookings: [],
             };
         case SET_FETCH_BOOKINGS_FLAG:
             return {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Button } from 'reactstrap';
 import moment from 'moment-timezone';
-// import DateTimePicker from 'react-datetime-picker';
+import DateTimePicker from 'react-datetime-picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import SlidingPane from 'react-sliding-pane';
@@ -14,8 +14,9 @@ class BulkUpdateSlider extends React.Component {
         super(props);
 
         this.state = {
-            selectedValue: null,
             selectedField: null,
+            selectedValue: null,
+            optionalValue: null,
         };
     }
 
@@ -33,9 +34,9 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onClickUpdateBtn() {
-        const {selectedValue, selectedField} = this.state;
+        const {selectedValue, selectedField, optionalValue} = this.state;
         const {selectedBookingIds} = this.props;
-        this.props.onUpdate(selectedField, selectedValue, selectedBookingIds);
+        this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
     }
 
     onSelected(e, src) {
@@ -50,8 +51,12 @@ class BulkUpdateSlider extends React.Component {
         this.setState({selectedValue: e.target.value});
     }
 
-    onChangeDate(date) {
-        this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+    onChangeDate(date, valueType) {
+        if (valueType === 'selectedValue') {
+            this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+        } else if (valueType === 'optionalValue') {
+            this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+        }
     }
 
     onChangeDateTime(dateTime) {
@@ -60,7 +65,7 @@ class BulkUpdateSlider extends React.Component {
 
     render() {
         const { isOpen, allBookingStatus } = this.props;
-        const { selectedField, selectedValue } = this.state;
+        const { selectedField, selectedValue, optionalValue } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
@@ -126,6 +131,8 @@ class BulkUpdateSlider extends React.Component {
 
                             <option value="b_booking_project">Project Name</option>
                             <option value="b_project_due_date">Project Due Date</option>
+                            <option value="fp_received_date_time">First Scan Label Date</option>
+                            <option value="fp_warehouse_collected_date_time">Warehouse Collected DateTime</option>
                         </select>
                     </label>
                     <br />
@@ -205,10 +212,37 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'pu_PickUp_By_Date_DME' ||
                             selectedField === 'de_Deliver_From_Date' ||
                             selectedField === 'de_Deliver_By_Date' ||
-                            selectedField === 'b_project_due_date') ?
+                            selectedField === 'b_project_due_date' ||
+                            selectedField === 'fp_received_date_time') ?
                                 <DatePicker
                                     selected={selectedValue ? new Date(selectedValue) : null}
-                                    onChange={(date) => this.onChangeDate(date)}
+                                    onChange={(date) => this.onChangeDate(date, 'selectedValue')}
+                                    dateFormat="dd/MM/yyyy"
+                                />
+                                : null
+                        }
+                        {
+                            selectedField &&
+                            (selectedField === 'fp_warehouse_collected_date_time') ?
+                                <DateTimePicker
+                                    onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
+                                    value={selectedValue ? moment(selectedValue).toDate() : null}
+                                    format={'dd/MM/yyyy hh:mm a'}
+                                />
+                                : null
+                        }
+                    </div>
+                    <br />
+                    <div className="optional">
+                        {
+                            selectedField === 'status' && selectedValue === 'In Transit' ?
+                                <label className="value">Event Date: </label> : null
+                        }
+                        {
+                            selectedField === 'status' && selectedValue === 'In Transit' ?
+                                <DatePicker
+                                    selected={optionalValue ? new Date(optionalValue) : null}
+                                    onChange={(date) => this.onChangeDate(date, 'optionalValue')}
                                     dateFormat="dd/MM/yyyy"
                                 />
                                 : null

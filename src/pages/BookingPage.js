@@ -809,8 +809,6 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_By_Time_Hours_DME'] = 0;
                 if (!_.isNull(booking.pu_PickUp_By_Time_Minutes_DME)) formInputs['pu_PickUp_By_Time_Minutes_DME'] = booking.pu_PickUp_By_Time_Minutes_DME;
                 else formInputs['pu_PickUp_By_Time_Minutes_DME'] = 0;
-                if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
-                else formInputs['z_calculated_ETA'] = '';
 
                 if (!_.isNull(booking.de_Deliver_From_Date)) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
                 else formInputs['de_Deliver_From_Date'] = null;
@@ -828,6 +826,12 @@ class BookingPage extends Component {
                 else formInputs['b_project_due_date'] = null;
                 if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
                 else formInputs['fp_store_event_date'] = null;
+                if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
+                else formInputs['z_calculated_ETA'] = null;
+                if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
+                else formInputs['fp_received_date_time'] = null;
+                if (!_.isNull(booking.fp_warehouse_collected_date_time)) formInputs['fp_warehouse_collected_date_time'] = booking.fp_warehouse_collected_date_time;
+                else formInputs['fp_warehouse_collected_date_time'] = null;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -1662,32 +1666,6 @@ class BookingPage extends Component {
         }
     }
 
-    onChangeDateTime(date, fieldName) {
-        const commFormInputs = this.state.commFormInputs;
-        const formInputs = this.state.formInputs;
-        const booking = this.state.booking;
-
-        if (fieldName === 'due_date_time') {
-            commFormInputs['due_date_time'] = date;
-            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
-            this.setState({commFormInputs});
-        } else if (fieldName === 'vx_fp_pu_eta_time' || 
-            fieldName === 's_20_Actual_Pickup_TimeStamp' ||
-            fieldName === 'vx_fp_del_eta_time' ||
-            fieldName === 's_21_Actual_Delivery_TimeStamp') {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            this.setState({formInputs, booking});
-        } else {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            this.setState({formInputs, booking});
-        }
-
-        this.setState({isBookingModified: true});
-    }
-
     handleModalInputChange(type, event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -2106,27 +2084,57 @@ class BookingPage extends Component {
     OnCreateStatusHistory(statusHistory) {
         let newBooking = this.state.booking;
 
-        newBooking.b_status = statusHistory['status_last'];
-        this.props.updateBooking(this.state.booking.id, newBooking);
-
         statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
         statusHistory['dme_status_action'] = newBooking.dme_status_action;
         statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.createStatusHistory(statusHistory);
+
+        if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
+            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+        } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
+            if (!newBooking.fp_store_event_date) {
+                newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+            } else {
+                if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
+                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                } else {
+                    newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
+                }
+            }
+        }
+
+        newBooking.b_status = statusHistory['status_last'];
+        this.props.updateBooking(this.state.booking.id, newBooking);
+        this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
     }
 
     OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
         let newBooking = this.state.booking;
 
-        if (needToUpdateBooking) {
-            newBooking.b_status = statusHistory['status_last'];
-            this.props.updateBooking(this.state.booking.id, newBooking);
-        }
-
         // statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
         // statusHistory['dme_status_action'] = newBooking.dme_status_action;
         // statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
         this.props.updateStatusHistory(statusHistory);
+
+        if (needToUpdateBooking) {
+            if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
+                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+            } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
+                if (!newBooking.fp_store_event_date) {
+                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                } else {
+                    if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
+                        newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
+                    } else {
+                        newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
+                    }
+                }
+            }
+
+            newBooking.b_status = statusHistory['status_last'];
+            this.props.updateBooking(this.state.booking.id, newBooking);
+            this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
+        }
     }
 
     onClickComms(e) {
@@ -2223,7 +2231,47 @@ class BookingPage extends Component {
             booking['de_Deliver_By_Date'] = booking[fieldName];
         }
 
+        if (fieldName === 'fp_received_date_time') {
+            if (date && !booking.fp_warehouse_collected_date_time) {
+                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+            }
+        }
+
         this.setState({formInputs, booking, isBookingModified: true});
+    }
+
+    onChangeDateTime(date, fieldName) {
+        const commFormInputs = this.state.commFormInputs;
+        const formInputs = this.state.formInputs;
+        const booking = this.state.booking;
+
+        if (fieldName === 'due_date_time') {
+            commFormInputs['due_date_time'] = date;
+            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
+            commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
+            this.setState({commFormInputs});
+        } else if (fieldName === 'vx_fp_pu_eta_time' || 
+            fieldName === 's_20_Actual_Pickup_TimeStamp' ||
+            fieldName === 'vx_fp_del_eta_time' ||
+            fieldName === 's_21_Actual_Delivery_TimeStamp') {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
+        } else if (fieldName === 'fp_warehouse_collected_date_time') {
+            if (date) {
+                formInputs['fp_warehouse_collected_date_time'] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+                booking['fp_warehouse_collected_date_time'] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+            }
+        } else {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
+        }
+
+        this.setState({isBookingModified: true});
     }
 
     onClickFC() { // On click Freight Calculation button
@@ -3753,6 +3801,47 @@ class BookingPage extends Component {
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">First Scanned Label<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'fp_received_date_time')}
+                                                                            dateFormat="dd/MM/yyyy"
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Warehouse Collected<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_warehouse_collected_date_time')}
+                                                                            value={(!_.isNull(formInputs['fp_warehouse_collected_date_time']) && !_.isUndefined(formInputs['fp_warehouse_collected_date_time'])) ? moment(formInputs['fp_warehouse_collected_date_time']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : null}</p>
                                                             }
                                                         </div>
                                                     </div>
