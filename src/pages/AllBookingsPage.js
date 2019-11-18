@@ -2995,7 +2995,7 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
         generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)),
-        changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
+        changeBookingsStatus: (status, bookingIds, optionalValue) => dispatch(changeBookingsStatus(status, bookingIds, optionalValue)),
         changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
         getAllFPs: () => dispatch(getAllFPs()),
