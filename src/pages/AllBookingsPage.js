@@ -2875,7 +2875,8 @@ class AllBookingsPage extends React.Component {
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
                     allFPs={allFPs}
-                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)}
+                    selectedBookingIds={this.state.selectedBookingIds}
+                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)}
                 />
 
                 <StatusLockModal
@@ -2993,7 +2994,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName)),
+        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)),
         changeBookingsStatus: (status, bookingIds) => dispatch(changeBookingsStatus(status, bookingIds)),
         changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),

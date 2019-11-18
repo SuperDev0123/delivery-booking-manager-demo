@@ -20,6 +20,7 @@ class XLSModal extends Component {
             report_type: '',
             errorMessage: '',
             showFieldName: false,
+            useSelected: false,
         };
     }
 
@@ -27,6 +28,7 @@ class XLSModal extends Component {
         isShowXLSModal: PropTypes.bool,
         toggleShowXLSModal: PropTypes.func,
         generateXLS: PropTypes.func.isRequired,
+        selectedBookingIds: PropTypes.array.isRequired,
         allFPs: PropTypes.array.isRequired,
     };
 
@@ -99,22 +101,32 @@ class XLSModal extends Component {
             this.setState({report_type: e.target.value, errorMessage: ''});
         } else if (type === 'showFieldName') {
             this.setState({showFieldName: e.target.checked, errorMessage: ''});
+        } else if (type === 'useSelected') {
+            this.setState({useSelected: e.target.checked, errorMessage: ''});
+
+            if (e.target.checked && this.props.selectedBookingIds.length == 0) {
+                this.setState({errorMessage: 'No Bookings are selected!'});
+            }
         }
     }
 
     onClickBuildAndSend() {
-        const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName} = this.state;
-        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type, showFieldName);
-        this.setState({startDate: '', endDate: '', emailAddr: '', vx_freight_provider: '', showFieldName: false, report_type: ''});
+        const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected} = this.state;
+        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, this.props.selectedBookingIds);
         this.props.toggleShowXLSModal();
     }
 
     render() {
-        const {isShowXLSModal, allFPs} = this.props;
-        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName} = this.state;
+        const {isShowXLSModal, allFPs, selectedBookingIds} = this.props;
+        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName, useSelected} = this.state;
         let buttonStatus = false;
 
-        if (validateEmail(emailAddr) && vx_freight_provider !== '' && report_type !== '') {
+        if (validateEmail(emailAddr) &&
+            vx_freight_provider !== '' &&
+            report_type !== '' &&
+            ((useSelected && selectedBookingIds.length > 0 ) || 
+            (!useSelected && startDate && endDate))
+        ) {
             buttonStatus = true;
         }
 
@@ -154,21 +166,39 @@ class XLSModal extends Component {
                         </select>
                     </label>
                     <label>
-                        <p>Start Date: </p>
-                        <DatePicker
-                            selected={startDate}
-                            onChange={(e) => this.onDateChange(e, 'startDate')}
-                            dateFormat="dd MMM yyyy"
+                        <p>Use selected: </p>
+                        <input
+                            type="checkbox"
+                            name="useSelected"
+                            className="checkbox"
+                            checked={useSelected}
+                            onChange={(e) => this.onInputChange(e, 'useSelected')}
                         />
                     </label>
-                    <label>
-                        <p>End Date: </p>
-                        <DatePicker
-                            selected={endDate}
-                            onChange={(e) => this.onDateChange(e, 'endDate')}
-                            dateFormat="dd MMM yyyy"
-                        />
-                    </label>
+                    {
+                        !useSelected &&
+                            <label>
+                                <p>Start Date: </p>
+                                <DatePicker
+                                    selected={startDate}
+                                    onChange={(e) => this.onDateChange(e, 'startDate')}
+                                    dateFormat="dd MMM yyyy"
+                                    disabled={useSelected ? 'disabled' : null}
+                                />
+                            </label>
+                    }
+                    {
+                        !useSelected &&
+                            <label>
+                                <p>End Date: </p>
+                                <DatePicker
+                                    selected={endDate}
+                                    onChange={(e) => this.onDateChange(e, 'endDate')}
+                                    dateFormat="dd MMM yyyy"
+                                    disabled={useSelected ? 'disabled' : null}
+                                />
+                            </label>
+                    }
                     <label>
                         <p>Email address: </p>
                         <input type="text" placeholder="Email to send xls" name="emailAddr" value={emailAddr} onChange={(e) => this.onInputChange(e, 'email')} />
