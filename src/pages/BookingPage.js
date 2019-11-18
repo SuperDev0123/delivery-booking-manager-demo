@@ -2091,6 +2091,7 @@ class BookingPage extends Component {
 
         if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
             newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
             if (!newBooking.fp_store_event_date) {
                 newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
@@ -2101,6 +2102,7 @@ class BookingPage extends Component {
                     newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
                 }
             }
+            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         }
 
         newBooking.b_status = statusHistory['status_last'];
@@ -2119,6 +2121,7 @@ class BookingPage extends Component {
         if (needToUpdateBooking) {
             if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
                 newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+                newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
                 if (!newBooking.fp_store_event_date) {
                     newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
@@ -2129,6 +2132,7 @@ class BookingPage extends Component {
                         newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
                     }
                 }
+                newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             }
 
             newBooking.b_status = statusHistory['status_last'];
