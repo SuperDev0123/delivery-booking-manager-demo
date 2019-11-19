@@ -59,8 +59,12 @@ class BulkUpdateSlider extends React.Component {
         }
     }
 
-    onChangeDateTime(dateTime) {
-        this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+    onChangeDateTime(dateTime, valueType=null) {
+        if (valueType === 'optionalValue') {
+            this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+        } else {
+            this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+        }
     }
 
     render() {
@@ -240,10 +244,10 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField === 'status' && selectedValue === 'In Transit' ?
-                                <DatePicker
-                                    selected={optionalValue ? new Date(optionalValue) : null}
-                                    onChange={(date) => this.onChangeDate(date, 'optionalValue')}
-                                    dateFormat="dd/MM/yyyy"
+                                <DateTimePicker
+                                    onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
+                                    value={optionalValue ? moment(optionalValue).toDate() : null}
+                                    format={'dd/MM/yyyy hh:mm a'}
                                 />
                                 : null
                         }
