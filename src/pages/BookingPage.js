@@ -2090,17 +2090,16 @@ class BookingPage extends Component {
         this.props.createStatusHistory(statusHistory);
 
         if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
+                .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-            if (!newBooking.fp_store_event_date) {
-                newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
-            } else {
-                if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
-                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
-                } else {
-                    newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
-                }
+            if (!newBooking.fp_warehouse_collected_date_time && newBooking.fp_received_date_time) {
+                newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
+                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+            } else if (newBooking.fp_warehouse_collected_date_time){
+                newBooking.z_calculated_ETA = moment(newBooking.fp_warehouse_collected_date_time)
+                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
             }
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         }
@@ -2120,17 +2119,16 @@ class BookingPage extends Component {
 
         if (needToUpdateBooking) {
             if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp']).format('YYYY-MM-DD');
+                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
+                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-                if (!newBooking.fp_store_event_date) {
-                    newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
-                } else {
-                    if (moment().toDate() < moment(newBooking.fp_store_event_date).toDate()) {
-                        newBooking.z_calculated_ETA = moment().format('YYYY-MM-DD');
-                    } else {
-                        newBooking.z_calculated_ETA = moment(newBooking.fp_store_event_date).format('YYYY-MM-DD');
-                    }
+                if (!newBooking.fp_warehouse_collected_date_time && newBooking.fp_received_date_time) {
+                    newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
+                        .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                } else if (newBooking.fp_warehouse_collected_date_time){
+                    newBooking.z_calculated_ETA = moment(newBooking.fp_warehouse_collected_date_time)
+                        .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 }
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             }
