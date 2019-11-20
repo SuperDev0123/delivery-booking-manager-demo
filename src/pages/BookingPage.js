@@ -2233,13 +2233,6 @@ class BookingPage extends Component {
             booking['de_Deliver_By_Date'] = booking[fieldName];
         }
 
-        if (fieldName === 'fp_received_date_time') {
-            if (date && !booking.fp_warehouse_collected_date_time) {
-                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-            }
-        }
-
         this.setState({formInputs, booking, isBookingModified: true});
     }
 
@@ -2267,6 +2260,17 @@ class BookingPage extends Component {
                 formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
             }
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
+        } else if (fieldName === 'fp_received_date_time') {
+            if (date && !booking.fp_warehouse_collected_date_time) {
+                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+            }
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            this.setState({formInputs, booking});
         } else {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
@@ -3514,24 +3518,41 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Actual Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Freight Provider Rec`d<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
-                                                                            calendarClassName="s_20_cal"
-                                                                            clockClassName="s_20_clock"
-                                                                            className="s_20_datetimepicker"
-                                                                            onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate() : null}
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
+                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time']).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Warehouse Collected<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_warehouse_collected_date_time')}
+                                                                            value={(!_.isNull(formInputs['fp_warehouse_collected_date_time']) && !_.isUndefined(formInputs['fp_warehouse_collected_date_time'])) ? moment(formInputs['fp_warehouse_collected_date_time']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : null}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -3814,47 +3835,6 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">First Scanned Label<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
-                                                                    :
-                                                                    (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_received_date_time')}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Warehouse Collected<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
-                                                                    :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_warehouse_collected_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_warehouse_collected_date_time']) && !_.isUndefined(formInputs['fp_warehouse_collected_date_time'])) ? moment(formInputs['fp_warehouse_collected_date_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : null}</p>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
@@ -3879,20 +3859,7 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Project Due Date<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
-                                                                    :
-                                                                    (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
-                                                            }
+                                                            <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">

@@ -1955,8 +1955,8 @@ class AllBookingsPage extends React.Component {
                     >
                         <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
                     </td>
-                    <td className={(sortField === 's_20_Actual_Pickup_TimeStamp') ? 'current' : ''}>
-                        {booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
+                    <td className={(sortField === 'fp_received_date_time') ? 'current' : ''}>
+                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).format('DD/MM/YYYY hh:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
                         {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''}
@@ -2683,13 +2683,13 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 's_20_Actual_Pickup_TimeStamp') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('s_20_Actual_Pickup_TimeStamp')} 
+                                                                className={(sortField === 'fp_received_date_time') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('fp_received_date_time')} 
                                                                 scope="col"
                                                             >
                                                                 <p>Collected</p>
                                                                 {
-                                                                    (sortField === 's_20_Actual_Pickup_TimeStamp') ?
+                                                                    (sortField === 'fp_received_date_time') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2840,7 +2840,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="pu_PickUp_By_Date_DME" value={filterInputs['pu_PickUp_By_Date_DME'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="fp_store_event_date" value={filterInputs['fp_store_event_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="s_20_Actual_Pickup_TimeStamp" value={filterInputs['s_20_Actual_Pickup_TimeStamp'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="fp_received_date_time" value={filterInputs['fp_received_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="dme_status_detail" value={filterInputs['dme_status_detail'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="dme_status_action" value={filterInputs['dme_status_action'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>

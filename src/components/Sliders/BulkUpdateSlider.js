@@ -216,8 +216,7 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'pu_PickUp_By_Date_DME' ||
                             selectedField === 'de_Deliver_From_Date' ||
                             selectedField === 'de_Deliver_By_Date' ||
-                            selectedField === 'b_project_due_date' ||
-                            selectedField === 'fp_received_date_time') ?
+                            selectedField === 'b_project_due_date') ?
                                 <DatePicker
                                     selected={selectedValue ? new Date(selectedValue) : null}
                                     onChange={(date) => this.onChangeDate(date, 'selectedValue')}
@@ -227,7 +226,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'fp_warehouse_collected_date_time') ?
+                            (selectedField === 'fp_warehouse_collected_date_time' ||
+                            selectedField === 'fp_received_date_time') ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
                                     value={selectedValue ? moment(selectedValue).toDate() : null}
