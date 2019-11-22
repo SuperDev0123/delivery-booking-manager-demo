@@ -2256,21 +2256,38 @@ class BookingPage extends Component {
             this.setState({formInputs, booking});
         } else if (fieldName === 'fp_warehouse_collected_date_time') {
             if (date) {
-                formInputs['fp_warehouse_collected_date_time'] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-                booking['fp_warehouse_collected_date_time'] = moment(date).format('YYYY-MM-DD hh:mm:ss');
                 formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+                booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            } else {
+                formInputs[fieldName] = null;
+                booking[fieldName] = null;
+
+                if (booking.fp_received_date_time) {
+                    formInputs['z_calculated_ETA'] = moment(booking.fp_received_date_time).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                    booking['z_calculated_ETA'] = moment(booking.fp_received_date_time).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                } else {
+                    formInputs['z_calculated_ETA'] = null;
+                    booking['z_calculated_ETA'] = null;
+                }
             }
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             this.setState({formInputs, booking});
         } else if (fieldName === 'fp_received_date_time') {
-            if (date && !booking.fp_warehouse_collected_date_time) {
+            if (!date) {
+                formInputs['z_calculated_ETA'] = null;
+                booking['z_calculated_ETA'] = null;
+                formInputs[fieldName] = null;
+                booking[fieldName] = null;
+            } else if (date && !booking.fp_warehouse_collected_date_time) {
                 formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+                booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+            } else {
+                formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
+                booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             }
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             this.setState({formInputs, booking});
         } else {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
