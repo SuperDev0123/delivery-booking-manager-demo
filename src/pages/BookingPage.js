@@ -2092,6 +2092,7 @@ class BookingPage extends Component {
         if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
             newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
                 .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+            newBooking.fp_warehouse_collected_date_time = statusHistory['event_time_stamp'];
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
             if (!newBooking.fp_warehouse_collected_date_time && newBooking.fp_received_date_time) {
