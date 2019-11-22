@@ -82,7 +82,7 @@ class LoginPage extends Component {
                                             <p className="error-message">{ errorMessage }</p>
                                     }
                                     <button className="btn btn-lg btn-info mt-md-2 btn-block">Sign in</button>
-                                    <p className="mt-5 mb-0"><a href="#" className="text-offlight">Forgot your password?</a></p>
+                                    <p className="mt-5 mb-0"><a href="/forgot-password" className="text-offlight">Forgot your password?</a></p>
                                 </form>
 
                             </div>

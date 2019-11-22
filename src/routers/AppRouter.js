@@ -6,6 +6,8 @@ import Header from '../components/Header/Header';
 import { Footer } from '../components/Footer/Footer';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/ResetPasswordPage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
@@ -24,6 +26,8 @@ export const AppRouter = () => (
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
                 <Route exact path='/login' component={LoginPage} />
+                <Route exact path='/forgot-password' component={ForgotPasswordPage} />
+                <Route path='/reset-password' component={ResetPasswordPage} />
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
                 <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
