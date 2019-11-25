@@ -3572,7 +3572,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Warehouse Collected<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Given to transport<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
