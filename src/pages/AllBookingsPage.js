@@ -2687,7 +2687,7 @@ class AllBookingsPage extends React.Component {
                                                                 onClick={() => this.onChangeSortField('fp_received_date_time')} 
                                                                 scope="col"
                                                             >
-                                                                <p>Given to transport</p>
+                                                                <p>Freight Provider Rec`d</p>
                                                                 {
                                                                     (sortField === 'fp_received_date_time') ?
                                                                         (sortDirection > 0) ?
