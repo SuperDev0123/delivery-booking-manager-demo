@@ -830,8 +830,8 @@ class BookingPage extends Component {
                 else formInputs['z_calculated_ETA'] = null;
                 if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
                 else formInputs['fp_received_date_time'] = null;
-                if (!_.isNull(booking.fp_warehouse_collected_date_time)) formInputs['fp_warehouse_collected_date_time'] = booking.fp_warehouse_collected_date_time;
-                else formInputs['fp_warehouse_collected_date_time'] = null;
+                if (!_.isNull(booking.b_given_to_transport_date_time)) formInputs['b_given_to_transport_date_time'] = booking.b_given_to_transport_date_time;
+                else formInputs['b_given_to_transport_date_time'] = null;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
@@ -2091,16 +2091,23 @@ class BookingPage extends Component {
 
         if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
             newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-            newBooking.fp_warehouse_collected_date_time = statusHistory['event_time_stamp'];
+                .add(newBooking.delivery_kpi_days, 'd')
+                .format('YYYY-MM-DD');
+            newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-            if (!newBooking.fp_warehouse_collected_date_time && newBooking.fp_received_date_time) {
+            if (!newBooking.b_given_to_transport_date_time && newBooking.fp_received_date_time) {
                 newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
-                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-            } else if (newBooking.fp_warehouse_collected_date_time){
-                newBooking.z_calculated_ETA = moment(newBooking.fp_warehouse_collected_date_time)
-                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                    .add(newBooking.delivery_kpi_days, 'd')
+                    .format('YYYY-MM-DD');
+            } else if (newBooking.b_given_to_transport_date_time){
+                newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
+                    .add(newBooking.delivery_kpi_days, 'd')
+                    .format('YYYY-MM-DD');
+            }
+
+            if (!newBooking.b_given_to_transport_date_time) {
+                newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
             }
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         }
@@ -2121,16 +2128,24 @@ class BookingPage extends Component {
         if (needToUpdateBooking) {
             if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
                 newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                    .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                    .add(newBooking.delivery_kpi_days, 'd')
+                    .format('YYYY-MM-DD');
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
-                newBooking.fp_warehouse_collected_date_time = statusHistory['event_time_stamp'];
+                newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
             } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-                if (!newBooking.fp_warehouse_collected_date_time && newBooking.fp_received_date_time) {
+                if (!newBooking.b_given_to_transport_date_time && newBooking.fp_received_date_time) {
                     newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
-                        .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                } else if (newBooking.fp_warehouse_collected_date_time){
-                    newBooking.z_calculated_ETA = moment(newBooking.fp_warehouse_collected_date_time)
-                        .add(newBooking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                        .add(newBooking.delivery_kpi_days, 'd')
+                        .format('YYYY-MM-DD');
+                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
+                } else if (newBooking.b_given_to_transport_date_time){
+                    newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
+                        .add(newBooking.delivery_kpi_days, 'd')
+                        .format('YYYY-MM-DD');
+                }
+                
+                if (!newBooking.b_given_to_transport_date_time) {
+                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
                 }
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             }
@@ -2255,7 +2270,7 @@ class BookingPage extends Component {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
             this.setState({formInputs, booking});
-        } else if (fieldName === 'fp_warehouse_collected_date_time') {
+        } else if (fieldName === 'b_given_to_transport_date_time') {
             if (date) {
                 formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
@@ -2280,7 +2295,7 @@ class BookingPage extends Component {
                 booking['z_calculated_ETA'] = null;
                 formInputs[fieldName] = null;
                 booking[fieldName] = null;
-            } else if (date && !booking.fp_warehouse_collected_date_time) {
+            } else if (date && !booking.b_given_to_transport_date_time) {
                 formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
                 formInputs[fieldName] = moment(date).format('YYYY-MM-DD hh:mm:ss');
@@ -3562,16 +3577,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_warehouse_collected_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_warehouse_collected_date_time']) && !_.isUndefined(formInputs['fp_warehouse_collected_date_time'])) ? moment(formInputs['fp_warehouse_collected_date_time']).toDate() : null}
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
+                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time']).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_warehouse_collected_date_time'] ? moment(formInputs['fp_warehouse_collected_date_time']).format('DD/MM/YYYY hh:mm:ss') : null}</p>
+                                                                        <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY hh:mm:ss') : null}</p>
                                                             }
                                                         </div>
                                                     </div>

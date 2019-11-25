@@ -52,18 +52,22 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onChangeDate(date, valueType) {
-        if (valueType === 'selectedValue') {
-            this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
-        } else if (valueType === 'optionalValue') {
-            this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+        if (date) {
+            if (valueType === 'selectedValue') {
+                this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+            } else if (valueType === 'optionalValue') {
+                this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+            }
         }
     }
 
     onChangeDateTime(dateTime, valueType=null) {
-        if (valueType === 'optionalValue') {
-            this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
-        } else {
-            this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+        if (dateTime) {
+            if (valueType === 'optionalValue') {
+                this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+            } else {
+                this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+            }
         }
     }
 
@@ -136,7 +140,7 @@ class BulkUpdateSlider extends React.Component {
                             <option value="b_booking_project">Project Name</option>
                             <option value="b_project_due_date">Project Due Date</option>
                             <option value="fp_received_date_time">First Scan Label Date</option>
-                            <option value="fp_warehouse_collected_date_time">Warehouse Collected DateTime</option>
+                            <option value="b_given_to_transport_date_time">Warehouse Collected DateTime</option>
                         </select>
                     </label>
                     <br />
@@ -226,7 +230,7 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'fp_warehouse_collected_date_time' ||
+                            (selectedField === 'b_given_to_transport_date_time' ||
                             selectedField === 'fp_received_date_time') ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
