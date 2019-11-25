@@ -1,7 +1,8 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK  } from '../constants/authConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK, SUCCESS_RESET_PASSWORD, FAILED_RESET_PASSWORD, SUCCESS_RESET_PASSWORD_CONFIRM, FAILED_RESET_PASSWORD_CONFIRM  } from '../constants/authConstants';
 
 const defaultState = {
     token: '',
+    successMessage: null,
     errorMessage: null,
     username: null,
     clientname: null,
@@ -12,7 +13,7 @@ const defaultState = {
     clientPK: null,
 };
 
-export const AuthReducer = (state = defaultState, { type, token, errorMessage, username, clientname, clientId, isLoggedIn, dmeClients, clientPK }) => {
+export const AuthReducer = (state = defaultState, { type, token, successMessage, errorMessage, username, clientname, clientId, isLoggedIn, dmeClients, clientPK }) => {
     switch (type) {
         case SET_TOKEN:
             return {
@@ -31,6 +32,31 @@ export const AuthReducer = (state = defaultState, { type, token, errorMessage, u
                 ...state,
                 errorMessage: errorMessage,
                 redirect : true,
+            };
+        case SUCCESS_RESET_PASSWORD:
+            return {
+                ...state,
+                successMessage: successMessage,
+                errorMessage: null
+            };
+        case FAILED_RESET_PASSWORD:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                successMessage: null
+            };
+
+        case SUCCESS_RESET_PASSWORD_CONFIRM:
+            return {
+                ...state,
+                successMessage: successMessage,
+                errorMessage: null
+            };
+        case FAILED_RESET_PASSWORD_CONFIRM:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                successMessage: null
             };
         case SET_USER:
             return {
