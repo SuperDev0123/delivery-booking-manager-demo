@@ -2096,19 +2096,17 @@ class BookingPage extends Component {
             newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-            if (!newBooking.b_given_to_transport_date_time && newBooking.fp_received_date_time) {
-                newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
+            if (!newBooking.b_given_to_transport_date_time) {
+                newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
+                newBooking.z_calculated_ETA = moment()
                     .add(newBooking.delivery_kpi_days, 'd')
                     .format('YYYY-MM-DD');
-            } else if (newBooking.b_given_to_transport_date_time){
+            } else {
                 newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
                     .add(newBooking.delivery_kpi_days, 'd')
                     .format('YYYY-MM-DD');
             }
 
-            if (!newBooking.b_given_to_transport_date_time) {
-                newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
-            }
             newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         }
 
@@ -2133,20 +2131,17 @@ class BookingPage extends Component {
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
                 newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
             } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-                if (!newBooking.b_given_to_transport_date_time && newBooking.fp_received_date_time) {
-                    newBooking.z_calculated_ETA = moment(newBooking.fp_received_date_time)
+                if (!newBooking.b_given_to_transport_date_time) {
+                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
+                    newBooking.z_calculated_ETA = moment()
                         .add(newBooking.delivery_kpi_days, 'd')
                         .format('YYYY-MM-DD');
-                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
-                } else if (newBooking.b_given_to_transport_date_time){
+                } else {
                     newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
                         .add(newBooking.delivery_kpi_days, 'd')
                         .format('YYYY-MM-DD');
                 }
-                
-                if (!newBooking.b_given_to_transport_date_time) {
-                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:MM:SS');
-                }
+
                 newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             }
 
