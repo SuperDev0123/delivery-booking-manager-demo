@@ -90,7 +90,7 @@ class NoteSlider extends React.Component {
         }
 
         const noteFormInputs = note;
-        noteFormInputs['updated_timestamp'] = note.note_date_updated ? moment(note.note_date_updated + ' ' + note.note_time_updated, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
+        noteFormInputs['updated_timestamp'] = note.note_date_updated ? moment(note.note_date_updated + ' ' + note.note_time_updated, 'YYYY-MM-DD HH:mm:ss').toDate() : null;
         this.setState({selectedNoteNo: index, selectedNoteId: note.id, noteFormInputs});
         this.setState({isShowNoteForm: true, noteFormMode: 'update'});
     }
@@ -111,7 +111,7 @@ class NoteSlider extends React.Component {
 
         noteFormInputs['updated_timestamp'] = date;
         noteFormInputs['note_date_updated'] = moment(date).format('YYYY-MM-DD');
-        noteFormInputs['note_time_updated'] = moment(date).format('hh:mm:ss');
+        noteFormInputs['note_time_updated'] = moment(date).format('HH:mm:ss');
         this.setState({noteFormInputs});
     }
 

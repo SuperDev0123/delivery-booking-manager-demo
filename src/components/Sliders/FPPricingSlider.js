@@ -18,12 +18,14 @@ class FPPricingSlider extends React.Component {
         toggleShowSlider: PropTypes.func.isRequired,
         pricingInfos: PropTypes.array.isRequired,
         onSelectPricing: PropTypes.func.isRequired,
+        booking: PropTypes.object.isRequired,
     };
 
     render() {
-        const {isOpen, pricingInfos} = this.props;
+        const {isOpen, pricingInfos, booking} = this.props;
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
+            console.log(booking.api_booking_quote, pricingInfo.id);
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
@@ -34,7 +36,13 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1}</td>
                     <td className="select">
-                        <Button color="primary" onClick={() => this.props.onSelectPricing(pricingInfo)}>Select</Button>
+                        <Button
+                            color="primary"
+                            disabled={booking.api_booking_quote === pricingInfo.id ? 'disabled': null}
+                            onClick={() => this.props.onSelectPricing(pricingInfo)}
+                        >
+                            Select
+                        </Button>
                     </td>
                 </tr>
             );

@@ -53,10 +53,10 @@ class DailyNewPods extends React.Component {
                         </p>
                         <p className="">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <span>Created At: {moment(report.z_createdTimeStamp).format('DD MMM YYYY hh:mm:ss')}</span>
+                            <span>Created At: {moment(report.z_createdTimeStamp).format('DD MMM YYYY HH:mm:ss')}</span>
                             {
                                 (report.z_downloadedTimeStamp) &&
-                                    <span>&nbsp;&nbsp;Downloaded At: {moment(report.z_downloadedTimeStamp).format('DD MMM YYYY hh:mm:ss')}</span>
+                                    <span>&nbsp;&nbsp;Downloaded At: {moment(report.z_downloadedTimeStamp).format('DD MMM YYYY HH:mm:ss')}</span>
                             }
                         </p>
                     </div>

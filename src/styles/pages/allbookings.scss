@@ -172,12 +172,13 @@ $column_30_width: 130px;
 $column_31_width: 130px;
 $column_32_width: 130px;
 $column_33_width: 130px;
-$column_34_width: 100px;
+$column_34_width: 130px;
 $column_35_width: 100px;
-$column_36_width: 130px;
+$column_36_width: 100px;
 $column_37_width: 130px;
 $column_38_width: 130px;
 $column_39_width: 130px;
+$column_40_width: 130px;
 
 #all_booking .fixed_headers{
   table-layout: fixed;
@@ -258,20 +259,22 @@ $column_39_width: 130px;
   td:nth-child(31) p, th:nth-child(31) p { width: 100px }
   td:nth-child(32), th:nth-child(32) { width: $column_32_width; }
   td:nth-child(32) p, th:nth-child(32) p { width: 100px }
-  td:nth-child(33), th:nth-child(33) { width: $column_33_width; }
-  td:nth-child(33) p, th:nth-child(33) p { width: 110px }
-  td:nth-child(34), th:nth-child(34) { width: $column_34_width; }
-  td:nth-child(34) p, th:nth-child(34) p { width: 80px }
-  td:nth-child(35), th:nth-child(35) { width: $column_35_width; }
-  td:nth-child(35) p, th:nth-child(35) p { width: 82px }
-  td:nth-child(36), th:nth-child(36) { width: $column_36_width; }
-  td:nth-child(36) p, th:nth-child(36) p { width: 110px }
-  td:nth-child(37), th:nth-child(37) { width: $column_37_width; }
-  td:nth-child(37) p, th:nth-child(37) p { width: 110px }
-  td:nth-child(38), th:nth-child(38) { width: $column_38_width; }
-  td:nth-child(38) p, th:nth-child(38) p { width: 110px }
-  td:nth-child(39), th:nth-child(39) { width: $column_39_width; }
-  td:nth-child(39) p, th:nth-child(39) p { width: 110px }
+  td:nth-child(32), th:nth-child(33) { width: $column_33_width; }
+  td:nth-child(32) p, th:nth-child(34) p { width: 100px }
+  td:nth-child(33), th:nth-child(34) { width: $column_34_width; }
+  td:nth-child(33) p, th:nth-child(35) p { width: 110px }
+  td:nth-child(34), th:nth-child(35) { width: $column_35_width; }
+  td:nth-child(34) p, th:nth-child(36) p { width: 80px }
+  td:nth-child(35), th:nth-child(36) { width: $column_36_width; }
+  td:nth-child(35) p, th:nth-child(37) p { width: 82px }
+  td:nth-child(36), th:nth-child(37) { width: $column_37_width; }
+  td:nth-child(36) p, th:nth-child(38) p { width: 110px }
+  td:nth-child(37), th:nth-child(38) { width: $column_38_width; }
+  td:nth-child(37) p, th:nth-child(39) p { width: 110px }
+  td:nth-child(38), th:nth-child(39) { width: $column_39_width; }
+  td:nth-child(38) p, th:nth-child(30) p { width: 110px }
+  td:nth-child(39), th:nth-child(40) { width: $column_40_width; }
+  td:nth-child(39) p, th:nth-child(40) p { width: 110px }
 
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;

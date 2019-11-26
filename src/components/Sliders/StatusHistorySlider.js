@@ -60,7 +60,7 @@ class StatusHistorySlider extends React.Component {
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD hh:mm:ss') : null;
+                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ss') : null;
                 this.props.OnCreateStatusHistory(statusHistory);
                 this.setState({
                     viewMode: 0, 
@@ -77,7 +77,7 @@ class StatusHistorySlider extends React.Component {
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD hh:mm:ss') : null;
+                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ss') : null;
 
                 if (selectedStatusHistoryInd === 0) {
                     this.props.OnUpdateStatusHistory(statusHistory, true);
@@ -111,7 +111,7 @@ class StatusHistorySlider extends React.Component {
         this.setState({formInputs, errorMessage: ''});
     }
 
-    onChangeDate(date, fieldName) {
+    onChangeDateTime(date, fieldName) {
         if (fieldName === 'event_time_stamp') {
             this.setState({event_time_stamp: date});
         }
@@ -137,8 +137,8 @@ class StatusHistorySlider extends React.Component {
                     <small> Status Detail: {statusHistory.dme_status_detail} </small><br/>
                     <small> Status Action: {statusHistory.dme_status_action} </small><br/>
                     <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
-                    <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small><br/>
-                    <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss') : ''} </small>
+                    <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''} </small><br/>
+                    <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''} </small>
                     {
                         (clientname === 'dme') ?
                             <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
@@ -204,7 +204,7 @@ class StatusHistorySlider extends React.Component {
                                 <label>
                                     <p>Event time</p>
                                     <DateTimePicker
-                                        onChange={(date) => this.onChangeDate(date, 'event_time_stamp')}
+                                        onChange={(date) => this.onChangeDateTime(date, 'event_time_stamp')}
                                         value={event_time_stamp}
                                     />
                                 </label>

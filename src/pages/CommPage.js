@@ -312,7 +312,7 @@ class CommPage extends React.Component {
         if (type === 'comm') {
             const comm = data;
             const commFormInputs = comm;
-            commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD hh:mm:ss').toDate() : null;
+            commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD HH:mm:ss').toDate() : null;
             this.setState({selectedCommId: comm.id, commFormInputs});
             this.toggleUpdateCommModal();
         } else if (type === 'note') {
@@ -373,7 +373,7 @@ class CommPage extends React.Component {
 
         commFormInputs['due_date_time'] = date;
         commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-        commFormInputs['due_by_time'] = moment(date).format('hh:mm:ss');
+        commFormInputs['due_by_time'] = moment(date).format('HH:mm:ss');
         this.setState({commFormInputs});
     }
 
@@ -440,7 +440,7 @@ class CommPage extends React.Component {
                     <td>{comm.query}</td>
                     <td><div>{comm.dme_action}</div></td>
                     <td><input type="checkbox" checked={comm.closed} name="closed" onChange={(e) => this.onCheckClosed(e, comm.id, index)} /></td>
-                    <td>{comm.status_log_closed_time ? moment(comm.status_log_closed_time).format('DD/MM/YYYY hh:mm:ss') : ''}</td>
+                    <td>{comm.status_log_closed_time ? moment(comm.status_log_closed_time).format('DD/MM/YYYY HH:mm:ss') : ''}</td>
                     <td>{comm.dme_detail}</td>
                     <td>{comm.dme_notes_external}</td>
                     <td>{comm.due_by_date ? moment(comm.due_by_date).format('DD/MM/YYYY') : ''}</td>
