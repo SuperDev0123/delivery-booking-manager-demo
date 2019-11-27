@@ -34,7 +34,7 @@ class FPPricingSlider extends React.Component {
                     <td>${pricingInfo.fee.toFixed(2)}</td>
                     <td>{pricingInfo.etd}</td>
                     <td>{pricingInfo.tax_id_1}</td>
-                    <td>{pricingInfo.tax_value_1 ? '$' + tax_value_1 : null}</td>
+                    <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
                     <td className="select">
                         <Button
                             color="primary"
