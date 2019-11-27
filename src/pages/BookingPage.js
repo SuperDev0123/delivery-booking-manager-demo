@@ -1223,6 +1223,8 @@ class BookingPage extends Component {
 
         if (isBookedBooking) {
             this.props.fpLabel(booking.id, booking.vx_freight_provider);
+        } else {
+            this.notify('This booking is not Booked!');
         }
     }
 
