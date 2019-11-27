@@ -31,10 +31,10 @@ class FPPricingSlider extends React.Component {
                     <td>{index + 1}</td>
                     <td>{pricingInfo.fk_freight_provider_id}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
-                    <td>{pricingInfo.fee.toFixed(2)}</td>
+                    <td>${pricingInfo.fee.toFixed(2)}</td>
                     <td>{pricingInfo.etd}</td>
                     <td>{pricingInfo.tax_id_1}</td>
-                    <td>{pricingInfo.tax_value_1}</td>
+                    <td>${pricingInfo.tax_value_1}</td>
                     <td className="select">
                         <Button
                             color="primary"
@@ -67,13 +67,13 @@ class FPPricingSlider extends React.Component {
                                     <p>Freight Provider</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>Service Name</p>
+                                    <p>Service</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>Fee</p>
+                                    <p>Cost</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>ETD</p>
+                                    <p>Transport Days(working)</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
                                     <p>Tax ID</p>
