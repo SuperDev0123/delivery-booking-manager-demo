@@ -3906,16 +3906,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
