@@ -30,6 +30,7 @@ class UploadPage extends Component {
             autoProcessQueue: false,
             parallelUploads: 10,
             params: { filename: 'file' }
+            timeout: 360000,
         };
 
         this.componentConfig = {
