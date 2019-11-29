@@ -29,7 +29,7 @@ class UploadPage extends Component {
             addRemoveLinks: true,
             autoProcessQueue: false,
             parallelUploads: 10,
-            params: { filename: 'file' }
+            params: { filename: 'file' },
             timeout: 360000,
         };
 
