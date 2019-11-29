@@ -104,7 +104,7 @@ class Header extends Component {
                                                 </a>
                                                 <div className="dropdown-divider"></div>
                                                 <a href="/upload">Upload Files</a>
-                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
+                                                <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/booking">Booking</a>
                                                 <div className="dropdown-divider"></div>
                                                 <a className="dropdown-item" href="/allbookings">All Bookings</a>
