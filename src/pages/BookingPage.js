@@ -2096,7 +2096,6 @@ class BookingPage extends Component {
                 .add(newBooking.delivery_kpi_days, 'd')
                 .format('YYYY-MM-DD');
             newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
-            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
             if (!newBooking.b_given_to_transport_date_time) {
                 newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -2108,10 +2107,9 @@ class BookingPage extends Component {
                     .add(newBooking.delivery_kpi_days, 'd')
                     .format('YYYY-MM-DD');
             }
-
-            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         }
 
+        newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         newBooking.b_status = statusHistory['status_last'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
@@ -2130,7 +2128,6 @@ class BookingPage extends Component {
                 newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
                     .add(newBooking.delivery_kpi_days, 'd')
                     .format('YYYY-MM-DD');
-                newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
                 newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
             } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
                 if (!newBooking.b_given_to_transport_date_time) {
@@ -2143,10 +2140,9 @@ class BookingPage extends Component {
                         .add(newBooking.delivery_kpi_days, 'd')
                         .format('YYYY-MM-DD');
                 }
-
-                newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             }
 
+            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             newBooking.b_status = statusHistory['status_last'];
             this.props.updateBooking(this.state.booking.id, newBooking);
             this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});

@@ -108,8 +108,8 @@ class BulkUpdateSlider extends React.Component {
                             <option value="status">Booking status</option>
                             <option value="client_name" disabled>Client Name</option>
                             <option value="sub_client" disabled>Sub Client</option>
-                            <option value="status_detail">Status Detail</option>
-                            <option value="status_action">Status Action</option>
+                            <option value="dme_status_detail">Status Detail</option>
+                            <option value="dme_status_action">Status Action</option>
                             <option value="dme_status_history_notes">Status History Note</option>
                             <option value="inv_billing_status_note">Invoice Billing Status Note</option>
 
@@ -178,8 +178,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'status_detail' ||
-                            selectedField === 'status_action' ||
+                            (selectedField === 'dme_status_detail' ||
+                            selectedField === 'dme_status_action' ||
                             selectedField === 'dme_status_history_notes' ||
                             selectedField === 'inv_billing_status_note' ||
                             selectedField === 'pu_pickup_instructions_address' ||
