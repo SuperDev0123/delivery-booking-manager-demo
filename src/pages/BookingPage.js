@@ -2109,7 +2109,6 @@ class BookingPage extends Component {
             }
         }
 
-        newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
         newBooking.b_status = statusHistory['status_last'];
         this.props.updateBooking(this.state.booking.id, newBooking);
         this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
@@ -2142,7 +2141,6 @@ class BookingPage extends Component {
                 }
             }
 
-            newBooking.dme_status_detail = 'Collection Confirmed by Pickup Address.';
             newBooking.b_status = statusHistory['status_last'];
             this.props.updateBooking(this.state.booking.id, newBooking);
             this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
