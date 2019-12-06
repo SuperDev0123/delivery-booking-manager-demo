@@ -4737,6 +4737,7 @@ class BookingPage extends Component {
                     pricingInfos={this.state.pricingInfos}
                     onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
                     booking={booking}
+                    clientname={clientname}
                 />
 
                 <ToastContainer />
