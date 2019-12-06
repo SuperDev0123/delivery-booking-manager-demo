@@ -33,15 +33,15 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
                     {
-                        clientname === 'dme' ? <td>${pricingInfo.fee.toFixed(2)}</td> : null
+                        clientname === 'dme' ? <td className="text-right">${pricingInfo.fee.toFixed(2)}</td> : null
                     }
                     {
-                        clientname === 'dme' ? <td>{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td> : null
+                        clientname === 'dme' ? <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td> : null
                     }
-                    <td>${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
-                    <td>${(pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2)}</td>
+                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2)}</td>
                     <td className="select">
                         <Button
                             color="primary"
@@ -71,7 +71,7 @@ class FPPricingSlider extends React.Component {
                                     <p>No</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>Freight Provider</p>
+                                    <p>Transporter</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
                                     <p>Service</p>
