@@ -3110,7 +3110,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
-                                                <span>Tracking ID</span>
+                                                <span>PU / Booking ID</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['fk_fp_pickup_id']}</p>
