@@ -2893,8 +2893,9 @@ class AllBookingsPage extends React.Component {
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
                     allFPs={allFPs}
+                    allClients={dmeClients}
                     selectedBookingIds={this.state.selectedBookingIds}
-                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)}
+                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, b_client_name) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, b_client_name)}
                 />
 
                 <StatusLockModal
@@ -3012,7 +3013,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)),
+        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, b_client_name) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, b_client_name)),
         changeBookingsStatus: (status, bookingIds, optionalValue) => dispatch(changeBookingsStatus(status, bookingIds, optionalValue)),
         changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
