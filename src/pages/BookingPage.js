@@ -295,7 +295,6 @@ class BookingPage extends Component {
 
         var urlParams = new URLSearchParams(window.location.search);
         var bookingId = urlParams.get('bookingid');
-
         if (bookingId != null) {
             this.props.getBooking(bookingId, 'id');
             this.setState({bookingId, loading: true, curViewMode: 0});
@@ -439,6 +438,7 @@ class BookingPage extends Component {
         }
 
         if (bookingLines) {
+            console.log('bookingLines', bookingLines);
             const calcedbookingLines = this.calcBookingLine(this.state.booking, bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
@@ -551,7 +551,10 @@ class BookingPage extends Component {
             }
         }
 
+        
+        console.log('UNSAFE_componentWillReceiveProps', this.state.loadingGeoPU, this.state.loadingGeoDeTo, isBookedBooking, needToFetchGeoInfo);
         if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
+            
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -693,7 +696,7 @@ class BookingPage extends Component {
         }
 
         if (
-            (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
+            (booking &&  parseInt(this.state.curViewMode) === 0)
             || (booking && this.state.loadingBookingSave && parseInt(this.state.curViewMode) === 1)
             || (booking && this.state.loadingBookingUpdate && parseInt(this.state.curViewMode) === 2)
         ) {
@@ -1089,15 +1092,18 @@ class BookingPage extends Component {
     onClickPrev(e){
         e.preventDefault();
         const {prevBookingId, isBookingModified} = this.state;
-
+        console.warn('onClickPrev', prevBookingId);
         if (isBookingModified) {
             alert('You can lose modified booking info. Please update it');
         } else {
+            this.setState({loading: true, curViewMode: 0});
+
             if (prevBookingId && prevBookingId > -1) {
+                
                 this.props.getBooking(prevBookingId, 'id');
             }
 
-            this.setState({loading: true, curViewMode: 0});
+           
         }
     }
 
@@ -1122,6 +1128,7 @@ class BookingPage extends Component {
     }
 
     onClickNext(e){
+        console.warn('onClickNext');
         e.preventDefault();
         const {nextBookingId, isBookingModified} = this.state;
 
@@ -2772,6 +2779,7 @@ class BookingPage extends Component {
                                     Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                 </div>
                                 <div className="booked-date disp-inline-block">
+                                    <span>{this.state.loading?'LOADING':''}</span>
                                     <span>Booked Date:</span>
                                     {
                                         (parseInt(curViewMode) === 0) ?

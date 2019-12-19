@@ -225,6 +225,7 @@ export function resetAttachments() {
 }
 
 export function successGetBooking(data) {
+    console.log('successGetBooking', data);
     if (!data['booking']['id']) {
         return {
             type: SET_BOOKING_WITH_FILTER,
