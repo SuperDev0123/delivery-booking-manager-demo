@@ -531,7 +531,8 @@ class BookingPage extends Component {
             if (this.state.booking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter')
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
@@ -1222,10 +1223,34 @@ class BookingPage extends Component {
         const {booking, isBookedBooking} = this.state;
 
         if (isBookedBooking) {
-            this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            if (booking.vx_freight_provider.toLowerCase() === 'dhl') {
+                this.buildPDF([booking.id], 'dhl');
+            } else {
+                this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            }
         } else {
             this.notify('This booking is not Booked!');
         }
+    }
+
+    buildPDF(bookingIds, vx_freight_provider) {
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options)
+            .then((response) => {
+                if (response.data.success && response.data.success === 'success') {
+                    this.notify('PDF(Label)’s have been generated successfully.');
+                } else {
+                    this.notify('PDF(Label)’s have *not been generated.');
+                }
+            })
+            .catch((err) => {
+                this.notify('Error: ' + err);
+            });
     }
 
     onClickReprintLabel() {
@@ -1260,13 +1285,12 @@ class BookingPage extends Component {
                 this.setState({loadingBookingUpdate: true, curViewMode: 2});
             }
 
-            if (booking.vx_freight_provider.toLowerCase() === 'cope'
-                || booking.vx_freight_provider.toLowerCase() === 'dhl')
-            {
+            // if (booking.vx_freight_provider.toLowerCase() === 'cope'
+            // || booking.vx_freight_provider.toLowerCase() === 'dhl')
+            if (booking.vx_freight_provider.toLowerCase() === 'cope'){
                 this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
             } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
-                || booking.vx_freight_provider.toLowerCase() === 'act') 
-            {
+                || booking.vx_freight_provider.toLowerCase() === 'act') {
                 this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
             }
         }
