@@ -35,6 +35,7 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
+import StoreBookingLogSlider from '../components/Sliders/StoreBookingLogSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
@@ -44,7 +45,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getStoreBookingLogs } from '../state/services/extraService';
 import { isFormValid } from '../commons/validations';
 
 class BookingPage extends Component {
@@ -175,6 +176,8 @@ class BookingPage extends Component {
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
+            storeBookingLogs: [],
+            isShowStoreBookingLogSlider: false,
         };
 
         this.djsConfig = {
@@ -218,6 +221,7 @@ class BookingPage extends Component {
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
         this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
         this.toggleShowFPPricingSlider = this.toggleShowFPPricingSlider.bind(this);
+        this.toggleStoreBookingLogSlider = this.toggleStoreBookingLogSlider.bind(this);
     }
 
     static propTypes = {
@@ -281,6 +285,8 @@ class BookingPage extends Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
+        getStoreBookingLogs: PropTypes.func.isRequired,
+        storeBookingLogs: PropTypes.array.isRequired,
     };
 
     componentDidMount() {
@@ -825,8 +831,8 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Minutes'] = 0;
                 if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
-                if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
-                else formInputs['fp_store_event_date'] = null;
+                if (!_.isNull(booking.fp_store_scheduled_date)) formInputs['fp_store_scheduled_date'] = booking.fp_store_scheduled_date;
+                else formInputs['fp_store_scheduled_date'] = null;
                 if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
                 else formInputs['z_calculated_ETA'] = null;
                 if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
@@ -1841,6 +1847,18 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
 
+    toggleStoreBookingLogSlider(e) {
+        e.preventDefault();
+        const { isBookingSelected, booking } = this.state;
+
+        if (isBookingSelected) {
+            this.props.getStoreBookingLogs(booking.v_FPBookingNumber);
+            this.setState(prevState => ({isShowStoreBookingLogSlider: !prevState.isShowStoreBookingLogSlider}));
+        } else {
+            this.notify('Please select a booking.');
+        }
+    }
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -2258,7 +2276,7 @@ class BookingPage extends Component {
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
 
-        if (fieldName === 'fp_store_event_date') {
+        if (fieldName === 'fp_store_scheduled_date') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
             formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
             booking['de_Deliver_From_Date'] = booking[fieldName];
@@ -3918,25 +3936,28 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
+                                                    <div className="row mt-1 delivery-booking">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
-                                                        <div className="col-sm-8">
+                                                        <div className="col-sm-6">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
+                                                                            selected={formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_scheduled_date')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).format('DD/MM/YYYY'): ''}</p>
                                                             }
+                                                        </div>
+                                                        <div className="col-sm-2">
+                                                            <button className="btn" onClick={(e) => this.toggleStoreBookingLogSlider(e)}><i className="fa fa-table"></i></button>
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -4764,6 +4785,12 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <StoreBookingLogSlider
+                    isOpen={this.state.isShowStoreBookingLogSlider}
+                    toggle={this.toggleStoreBookingLogSlider}
+                    storeBookingLogs={this.props.storeBookingLogs}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -4820,6 +4847,7 @@ const mapStateToProps = (state) => {
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         pricingInfosFlag: state.booking.pricingInfosFlag,
+        storeBookingLogs: state.extra.storeBookingLogs,
     };
 };
 
@@ -4883,6 +4911,7 @@ const mapDispatchToProps = (dispatch) => {
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
+        getStoreBookingLogs: (v_FPBookingNumber) => dispatch(getStoreBookingLogs(v_FPBookingNumber)),
     };
 };
 
