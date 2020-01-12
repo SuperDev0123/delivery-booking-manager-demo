@@ -19,6 +19,7 @@ class StoreBookingLogSlider extends React.Component {
         isOpen: PropTypes.bool.isRequired,
         toggle: PropTypes.func.isRequired,
         storeBookingLogs: PropTypes.array.isRequired,
+        booking: PropTypes.object.isRequired,
     };
 
     render() {
@@ -28,21 +29,21 @@ class StoreBookingLogSlider extends React.Component {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{storeBookingLog.v_FPBookingNumber}</td>
-                    <td>{(storeBookingLog.fp_store_scheduled_date && !_.isEmpty(storeBookingLog.fp_store_scheduled_date)) ? moment(storeBookingLog.fp_store_scheduled_date).format('DD MMM YYYY') : null}</td>
+                    <td>{(storeBookingLog.delivery_booking && !_.isEmpty(storeBookingLog.delivery_booking)) ? moment(storeBookingLog.delivery_booking).format('DD MMM YYYY') : null}</td>
                     <td>{(storeBookingLog.fp_store_event_date && !_.isEmpty(storeBookingLog.fp_store_event_date)) ? moment(storeBookingLog.fp_store_event_date).format('DD MMM YYYY') : null}</td>
                     <td>{(storeBookingLog.fp_store_event_time && !_.isEmpty(storeBookingLog.fp_store_event_time)) ? storeBookingLog.fp_store_event_time : null}</td>
-                    <td>{(storeBookingLog.z_createdTimeStamp && !_.isEmpty(storeBookingLog.z_createdTimeStamp)) ? moment(storeBookingLog.z_createdTimeStamp).format('DD MMM YYYY HH:MM:SS') : null}</td>
+                    <td></td>
                 </tr>
             );
         });
+        const title = `Delivery Booking Log Slider - Consignment No: ${booking.v_FPBookingNumber}`;
 
         return (
             <SlidingPane
                 className='sbl-slider'
                 overlayClassName='sbl-slider-overlay'
                 isOpen={isOpen}
-                title='Store Booking Log Slider'
+                title=title
                 onRequestClose={this.props.toggle}>
                 <div className="slider-content">
                     <div className="table-responsive">
@@ -52,19 +53,16 @@ class StoreBookingLogSlider extends React.Component {
                                     <p>No</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>Consignment No</p>
+                                    <p>Delivery Booking</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>FP Store Scheduled Date</p>
+                                    <p>Logged Date</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>FP Store Event Date</p>
+                                    <p>Logged Time</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
-                                    <p>FP Store Event Time</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Created At</p>
+                                    <p>Activity Description</p>
                                 </th>
                             </tr>
                             { storeBookingLogList }

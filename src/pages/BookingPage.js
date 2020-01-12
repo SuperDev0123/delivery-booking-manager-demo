@@ -831,8 +831,12 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Minutes'] = 0;
                 if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
-                if (!_.isNull(booking.fp_store_scheduled_date)) formInputs['fp_store_scheduled_date'] = booking.fp_store_scheduled_date;
-                else formInputs['fp_store_scheduled_date'] = null;
+                if (!_.isNull(booking.delivery_booking)) formInputs['delivery_booking'] = booking.delivery_booking;
+                else formInputs['delivery_booking'] = null;
+                if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
+                else formInputs['fp_store_event_date'] = null;
+                if (!_.isNull(booking.fp_store_event_time)) formInputs['fp_store_event_time'] = booking.fp_store_event_time;
+                else formInputs['fp_store_event_time'] = null;
                 if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
                 else formInputs['z_calculated_ETA'] = null;
                 if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
@@ -2276,7 +2280,7 @@ class BookingPage extends Component {
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
 
-        if (fieldName === 'fp_store_scheduled_date') {
+        if (fieldName === 'delivery_booking') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
             formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
             booking['de_Deliver_From_Date'] = booking[fieldName];
@@ -3938,22 +3942,43 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1 delivery-booking">
                                                         <div className="col-sm-4">
+                                                            <label className="" htmlFor="">1st Contact For Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DatePicker
+                                                                            className="date"
+                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
+                                                                            dateFormat="dd/MM/yyyy"
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1 delivery-booking">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-6">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_scheduled_date')}
+                                                                            selected={formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'delivery_booking')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_store_scheduled_date'] ? moment(formInputs['fp_store_scheduled_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                         <div className="col-sm-2">
@@ -4789,6 +4814,7 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowStoreBookingLogSlider}
                     toggle={this.toggleStoreBookingLogSlider}
                     storeBookingLogs={this.props.storeBookingLogs}
+                    booking={booking}
                 />
 
                 <ToastContainer />
