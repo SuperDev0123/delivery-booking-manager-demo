@@ -23,7 +23,7 @@ class StoreBookingLogSlider extends React.Component {
     };
 
     render() {
-        const { isOpen, storeBookingLogs } = this.props;
+        const { isOpen, storeBookingLogs, booking } = this.props;
 
         const storeBookingLogList = storeBookingLogs.map((storeBookingLog, index) => {
             return (
