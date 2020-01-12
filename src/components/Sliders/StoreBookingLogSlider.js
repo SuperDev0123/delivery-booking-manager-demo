@@ -43,7 +43,7 @@ class StoreBookingLogSlider extends React.Component {
                 className='sbl-slider'
                 overlayClassName='sbl-slider-overlay'
                 isOpen={isOpen}
-                title=title
+                title={title}
                 onRequestClose={this.props.toggle}>
                 <div className="slider-content">
                     <div className="table-responsive">
