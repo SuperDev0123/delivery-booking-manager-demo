@@ -2300,6 +2300,12 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
+        } else if (fieldName === 'fp_store_event') {
+            formInputs['fp_store_event_date'] = moment(date).format('YYYY-MM-DD');
+            formInputs['fp_store_event_time'] = moment(date).utc().format('HH:mm:ss');
+            booking['fp_store_event_date'] = formInputs['fp_store_event_date'];
+            booking['fp_store_event_time'] = formInputs['fp_store_event_time'];
+            this.setState({formInputs, booking});
         } else if (fieldName === 'vx_fp_pu_eta_time' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 'vx_fp_del_eta_time' ||
@@ -3947,17 +3953,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
-                                                                            dateFormat="dd/MM/yyyy"
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_store_event')}
+                                                                            value={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
