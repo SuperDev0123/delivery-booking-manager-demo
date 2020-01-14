@@ -2729,8 +2729,13 @@ class BookingPage extends Component {
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
-                            <li className=""><Link to="/reports">Reports</Link></li>
+                            {
+                                clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>
+                            }
+                            {
+                                (clientname === 'dme' || clientname === 'BioPak')
+                                && <li className=""><Link to="/reports">Reports</Link></li>
+                            }
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
