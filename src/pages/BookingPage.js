@@ -35,6 +35,7 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
+import StoreBookingLogSlider from '../components/Sliders/StoreBookingLogSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
@@ -44,7 +45,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getStoreBookingLogs } from '../state/services/extraService';
 import { isFormValid } from '../commons/validations';
 
 class BookingPage extends Component {
@@ -175,6 +176,8 @@ class BookingPage extends Component {
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
+            storeBookingLogs: [],
+            isShowStoreBookingLogSlider: false,
         };
 
         this.djsConfig = {
@@ -218,6 +221,7 @@ class BookingPage extends Component {
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
         this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
         this.toggleShowFPPricingSlider = this.toggleShowFPPricingSlider.bind(this);
+        this.toggleStoreBookingLogSlider = this.toggleStoreBookingLogSlider.bind(this);
     }
 
     static propTypes = {
@@ -281,6 +285,8 @@ class BookingPage extends Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
+        getStoreBookingLogs: PropTypes.func.isRequired,
+        storeBookingLogs: PropTypes.array.isRequired,
     };
 
     componentDidMount() {
@@ -531,7 +537,8 @@ class BookingPage extends Component {
             if (this.state.booking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter')
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
@@ -824,8 +831,12 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Minutes'] = 0;
                 if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
+                if (!_.isNull(booking.delivery_booking)) formInputs['delivery_booking'] = booking.delivery_booking;
+                else formInputs['delivery_booking'] = null;
                 if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
                 else formInputs['fp_store_event_date'] = null;
+                if (!_.isNull(booking.fp_store_event_time)) formInputs['fp_store_event_time'] = booking.fp_store_event_time;
+                else formInputs['fp_store_event_time'] = null;
                 if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
                 else formInputs['z_calculated_ETA'] = null;
                 if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
@@ -1222,10 +1233,34 @@ class BookingPage extends Component {
         const {booking, isBookedBooking} = this.state;
 
         if (isBookedBooking) {
-            this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            if (booking.vx_freight_provider.toLowerCase() === 'dhl') {
+                this.buildPDF([booking.id], 'dhl');
+            } else {
+                this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            }
         } else {
             this.notify('This booking is not Booked!');
         }
+    }
+
+    buildPDF(bookingIds, vx_freight_provider) {
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options)
+            .then((response) => {
+                if (response.data.success && response.data.success === 'success') {
+                    this.notify('PDF(Label)’s have been generated successfully.');
+                } else {
+                    this.notify('PDF(Label)’s have *not been generated.');
+                }
+            })
+            .catch((err) => {
+                this.notify('Error: ' + err);
+            });
     }
 
     onClickReprintLabel() {
@@ -1260,13 +1295,12 @@ class BookingPage extends Component {
                 this.setState({loadingBookingUpdate: true, curViewMode: 2});
             }
 
-            if (booking.vx_freight_provider.toLowerCase() === 'cope'
-                || booking.vx_freight_provider.toLowerCase() === 'dhl')
-            {
+            // if (booking.vx_freight_provider.toLowerCase() === 'cope'
+            // || booking.vx_freight_provider.toLowerCase() === 'dhl')
+            if (booking.vx_freight_provider.toLowerCase() === 'cope'){
                 this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
             } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
-                || booking.vx_freight_provider.toLowerCase() === 'act') 
-            {
+                || booking.vx_freight_provider.toLowerCase() === 'act') {
                 this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
             }
         }
@@ -1817,6 +1851,18 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
 
+    toggleStoreBookingLogSlider(e) {
+        e.preventDefault();
+        const { isBookingSelected, booking } = this.state;
+
+        if (isBookingSelected) {
+            this.props.getStoreBookingLogs(booking.v_FPBookingNumber);
+            this.setState(prevState => ({isShowStoreBookingLogSlider: !prevState.isShowStoreBookingLogSlider}));
+        } else {
+            this.notify('Please select a booking.');
+        }
+    }
+
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -2234,7 +2280,7 @@ class BookingPage extends Component {
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
 
-        if (fieldName === 'fp_store_event_date') {
+        if (fieldName === 'delivery_booking') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
             formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
             booking['de_Deliver_From_Date'] = booking[fieldName];
@@ -2254,6 +2300,12 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
+        } else if (fieldName === 'fp_store_event') {
+            formInputs['fp_store_event_date'] = moment(date).format('YYYY-MM-DD');
+            formInputs['fp_store_event_time'] = moment(date).utc().format('HH:mm:ss');
+            booking['fp_store_event_date'] = formInputs['fp_store_event_date'];
+            booking['fp_store_event_time'] = formInputs['fp_store_event_time'];
+            this.setState({formInputs, booking});
         } else if (fieldName === 'vx_fp_pu_eta_time' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 'vx_fp_del_eta_time' ||
@@ -2677,8 +2729,13 @@ class BookingPage extends Component {
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
-                            <li className=""><Link to="/reports">Reports</Link></li>
+                            {
+                                clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>
+                            }
+                            {
+                                (clientname === 'dme' || clientname === 'BioPak')
+                                && <li className=""><Link to="/reports">Reports</Link></li>
+                            }
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
@@ -3894,25 +3951,48 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
+                                                    <div className="row mt-1 delivery-booking">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">1st Contact For Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                                    :
+                                                                    (clientname === 'dme') ?
+                                                                        <DateTimePicker
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_store_event')}
+                                                                            value={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).toDate() : null}
+                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                        />
+                                                                        :
+                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1 delivery-booking">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-6">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
+                                                                            selected={formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'delivery_booking')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
                                                             }
+                                                        </div>
+                                                        <div className="col-sm-2">
+                                                            <button className="btn" onClick={(e) => this.toggleStoreBookingLogSlider(e)}><i className="fa fa-table"></i></button>
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -4740,6 +4820,13 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <StoreBookingLogSlider
+                    isOpen={this.state.isShowStoreBookingLogSlider}
+                    toggle={this.toggleStoreBookingLogSlider}
+                    storeBookingLogs={this.props.storeBookingLogs}
+                    booking={booking}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -4796,6 +4883,7 @@ const mapStateToProps = (state) => {
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         pricingInfosFlag: state.booking.pricingInfosFlag,
+        storeBookingLogs: state.extra.storeBookingLogs,
     };
 };
 
@@ -4859,6 +4947,7 @@ const mapDispatchToProps = (dispatch) => {
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
+        getStoreBookingLogs: (v_FPBookingNumber) => dispatch(getStoreBookingLogs(v_FPBookingNumber)),
     };
 };
 

@@ -30,6 +30,9 @@ import {
     resetProjectNames,
     successGetProjectNames,
     failedGetProjectNames,
+    resetStoreBookingLogs,
+    successGetStoreBookingLogs,
+    failedGetStoreBookingLogs,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -217,5 +220,20 @@ export const getAllProjectNames = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetProjectNames(data)))
             .catch((error) => dispatch(failedGetProjectNames(error)));
+    };
+};
+
+export const getStoreBookingLogs = (v_FPBookingNumber) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-store-booking-log/get_store_booking_logs/?v_FPBookingNumber=${v_FPBookingNumber}`,
+    };
+    return dispatch => {
+        dispatch(resetStoreBookingLogs());
+        axios(options)
+            .then(({ data }) => dispatch(successGetStoreBookingLogs(data)))
+            .catch((error) => dispatch(failedGetStoreBookingLogs(error)));
     };
 };

@@ -1951,9 +1951,9 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td 
                         id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}
-                        className={(sortField === 'fp_store_event_date') ? 'current' : ''}
+                        className={(sortField === 'delivery_booking') ? 'current' : ''}
                     >
-                        <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
+                        <p>{booking.delivery_booking ? moment(booking.delivery_booking).format('DD/MM/YYYY') : null}</p>
                     </td>
                     <td className={(sortField === 'b_given_to_transport_date_time') ? 'current' : ''}>
                         {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
@@ -2038,9 +2038,12 @@ class AllBookingsPage extends React.Component {
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
                                 {
-                                    clientname === 'dme' ? <li className=""><Link to="/comm">Comm</Link></li> : null
+                                    clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>
                                 }
-                                <li className=""><Link to="/reports">Reports</Link></li>
+                                {
+                                    (clientname === 'dme' || clientname === 'BioPak')
+                                    && <li className=""><Link to="/reports">Reports</Link></li>
+                                }
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                             </ul>
@@ -2671,14 +2674,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 'fp_store_event_date') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('fp_store_event_date')}
+                                                                className={(sortField === 'delivery_booking') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('delivery_booking')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Delivery Booking</p>
                                                                 {
-                                                                    (sortField === 'fp_store_event_date') ?
+                                                                    (sortField === 'delivery_booking') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2856,7 +2859,7 @@ class AllBookingsPage extends React.Component {
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="pu_PickUp_By_Date_DME" value={filterInputs['pu_PickUp_By_Date_DME'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="fp_store_event_date" value={filterInputs['fp_store_event_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="delivery_booking" value={filterInputs['delivery_booking'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_given_to_transport_date_time" value={filterInputs['b_given_to_transport_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="fp_received_date_time" value={filterInputs['fp_received_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -2893,8 +2896,9 @@ class AllBookingsPage extends React.Component {
                     isShowXLSModal={isShowXLSModal}
                     toggleShowXLSModal={this.toggleShowXLSModal}
                     allFPs={allFPs}
+                    allClients={dmeClients}
                     selectedBookingIds={this.state.selectedBookingIds}
-                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)}
+                    generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client)}
                 />
 
                 <StatusLockModal
@@ -3012,7 +3016,7 @@ const mapDispatchToProps = (dispatch) => {
         getExcel: () => dispatch(getExcel()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds)),
+        generateXLS: (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client) => dispatch(generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client)),
         changeBookingsStatus: (status, bookingIds, optionalValue) => dispatch(changeBookingsStatus(status, bookingIds, optionalValue)),
         changeBookingsFlagStatus: (flagStatus, bookingIds) => dispatch(changeBookingsFlagStatus(flagStatus, bookingIds)),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
