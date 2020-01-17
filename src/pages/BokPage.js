@@ -244,7 +244,7 @@ class BokPage extends Component {
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3>Bookings</h3>
+                                    <h3>Bookings (Last 50s)</h3>
                                 </div>
                                 <div className="panel-body">
                                     <div className="table-responsive">
@@ -263,7 +263,7 @@ class BokPage extends Component {
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3>Booking Lines</h3>
+                                    <h3>Booking Lines (Last 50s)</h3>
                                 </div>
                                 <div className="panel-body">
                                     <div className="table-responsive">
@@ -282,7 +282,7 @@ class BokPage extends Component {
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3>Booking Lines Data</h3>
+                                    <h3>Booking Lines Data (Last 50s)</h3>
                                 </div>
                                 <div className="panel-body">
                                     <div className="table-responsive">

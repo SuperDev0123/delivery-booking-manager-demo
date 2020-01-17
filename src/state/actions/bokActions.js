@@ -10,7 +10,7 @@ import {
 export function successGetBok1Headers(data) {
     return {
         type: SUCCESS_GET_BOK_1_HEADERS,
-        payload: data.result,
+        payload: data,
     };
 }
 
@@ -24,7 +24,7 @@ export function failedGetBok1Headers(error) {
 export function successGetBok2Lines(data) {
     return {
         type: SUCCESS_GET_BOK_2_LINES,
-        payload: data.result,
+        payload: data,
     };
 }
 
@@ -38,7 +38,7 @@ export function failedGetBok2Lines(error) {
 export function successGetBok3LinesData(data) {
     return {
         type: SUCCESS_GET_BOK_3_LINES_DATA,
-        payload: data.result,
+        payload: data,
     };
 }
 
