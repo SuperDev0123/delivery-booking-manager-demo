@@ -35,7 +35,7 @@ export const getBookingLines = () => {
 export const getBookingLinesData = () => {
     const options = {
         method: 'get',
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_2_lines_data/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_3_lines_data/`,
     };
     return dispatch =>
         axios(options)
