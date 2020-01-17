@@ -8,7 +8,7 @@ import { WarehouseReducer } from './warehouseReducer';
 import { CommReducer } from './commReducer';
 import { ReportReducer } from './reportReducer';
 import { ExtraReducer } from './extraReducer';
-import { InvReducer } from './invReducer';
+import { BokReducer } from './bokReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -19,5 +19,5 @@ export const AppReducer = combineReducers({
     comm: CommReducer,
     report: ReportReducer,
     extra: ExtraReducer,
-    inv: InvReducer,
+    bok: BokReducer,
 });

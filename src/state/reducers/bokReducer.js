@@ -5,39 +5,39 @@ import {
     FAILED_GET_BOK_2_LINES,
     SUCCESS_GET_BOK_3_LINES_DATA,
     FAILED_GET_BOK_3_LINES_DATA,
-} from '../constants/invConstants';
+} from '../constants/bokConstants';
 
 const defaultState = {
     BOK_1_headers: [],
     BOK_2_lines: [],
     BOK_3_lines_data: [],
+    errorMessage: '',
 };
 
-export const InvReducer = (state = defaultState, {
-    type,
-    BOK_1_headers,
-    BOK_2_lines,
-    BOK_3_lines_data
-}) => {
+export const BokReducer = (state = defaultState, { type, payload }) => {
     switch (type) {
         case SUCCESS_GET_BOK_1_HEADERS:
             return {
                 ...state,
-                BOK_1_headers: BOK_1_headers,
+                BOK_1_headers: payload,
             };
-        case FAILED_GET_BOK_1_HEADERS:
         case SUCCESS_GET_BOK_2_LINES:
             return {
                 ...state,
-                BOK_2_lines: BOK_2_lines,
+                BOK_2_lines: payload,
             };
-        case FAILED_GET_BOK_2_LINES:
         case SUCCESS_GET_BOK_3_LINES_DATA:
             return {
                 ...state,
-                BOK_3_lines_data: BOK_3_lines_data,
+                BOK_3_lines_data: payload,
             };
+        case FAILED_GET_BOK_1_HEADERS:
+        case FAILED_GET_BOK_2_LINES:
         case FAILED_GET_BOK_3_LINES_DATA:
+            return {
+                ...state,
+                errorMessage: payload,
+            };
         default:
             return state;
     }

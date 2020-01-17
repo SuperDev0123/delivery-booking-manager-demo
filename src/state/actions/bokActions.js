@@ -5,47 +5,46 @@ import {
     FAILED_GET_BOK_2_LINES,
     SUCCESS_GET_BOK_3_LINES_DATA,
     FAILED_GET_BOK_3_LINES_DATA,
-} from '../constants/invConstants';
+} from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
     return {
         type: SUCCESS_GET_BOK_1_HEADERS,
-        BOK_1_headers: data.result,
+        payload: data.result,
     };
 }
 
 export function failedGetBok1Headers(error) {
     return {
         type: FAILED_GET_BOK_1_HEADERS,
-        errorMessage: 'Unable to get packageTypes. Error:' + error,
+        payload: 'Unable to get Bok_1 records. Error:' + error,
     };
 }
 
 export function successGetBok2Lines(data) {
     return {
         type: SUCCESS_GET_BOK_2_LINES,
-        BOK_2_lines: data.result,
+        payload: data.result,
     };
 }
 
 export function failedGetBok2Lines(error) {
     return {
         type: FAILED_GET_BOK_2_LINES,
-        errorMessage: 'Unable to get all booking status. Error:' + error,  
+        payload: 'Unable to get BOk_2 records. Error:' + error,
     };
 }
 
 export function successGetBok3LinesData(data) {
     return {
         type: SUCCESS_GET_BOK_3_LINES_DATA,
-        BOK_3_lines_data: data.result,
+        payload: data.result,
     };
 }
 
 export function failedGetBok3LinesData(error) {
-
     return {
         type: FAILED_GET_BOK_3_LINES_DATA,
-        errorMessage: 'Get booking history status failed. Error: '+ error,
+        payload: 'Unable to get BOk_3 records. Error:' + error,
     };
 }

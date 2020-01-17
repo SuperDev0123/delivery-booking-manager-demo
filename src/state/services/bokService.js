@@ -7,15 +7,13 @@ import {
     failedGetBok2Lines,
     successGetBok3LinesData,
     failedGetBok3LinesData
-} from '../actions/invActions';
+} from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookings = () => {
-    //const token = localStorage.getItem('token');
     const options = {
         method: 'get',
-        //headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/dme_api_inv/get_bookings/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/`,
     };
     return dispatch =>
         axios(options)
@@ -24,11 +22,9 @@ export const getBookings = () => {
 };
 
 export const getBookingLines = () => {
-    //const token = localStorage.getItem('token');
     const options = {
         method: 'get',
-        //headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/dme_api_inv/get_booking_lines/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_2_lines/`,
     };
     return dispatch =>
         axios(options)
@@ -37,11 +33,9 @@ export const getBookingLines = () => {
 };
 
 export const getBookingLinesData = () => {
-    //const token = localStorage.getItem('token');
     const options = {
         method: 'get',
-        //headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/dme_api_inv/get_booking_lines_data/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_2_lines_data/`,
     };
     return dispatch =>
         axios(options)

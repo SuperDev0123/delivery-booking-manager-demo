@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import '../styles/pages/dmeapiinv.scss';
 
-import { getBookings, getBookingLines, getBookingLinesData } from '../state/services/invService';
+import { getBookings, getBookingLines, getBookingLinesData } from '../state/services/bokService';
 
-class DmeApiInvPage extends Component {
+class BokPage extends Component {
     constructor(props) {
         super(props);
 
@@ -308,9 +308,9 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         errorMessage: state.auth.errorMessage,
         redirect: state.auth.redirect,
-        BOK_1_headers: state.inv.BOK_1_headers,
-        BOK_2_lines: state.inv.BOK_2_lines,
-        BOK_3_lines_data: state.inv.BOK_3_lines_data,
+        BOK_1_headers: state.bok.BOK_1_headers,
+        BOK_2_lines: state.bok.BOK_2_lines,
+        BOK_3_lines_data: state.bok.BOK_3_lines_data,
     };
 };
 
@@ -322,4 +322,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DmeApiInvPage);
+export default connect(mapStateToProps, mapDispatchToProps)(BokPage);
