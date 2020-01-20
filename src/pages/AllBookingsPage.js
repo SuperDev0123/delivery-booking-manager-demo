@@ -20,7 +20,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL, S3_URL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
+import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary, sendEmailBookings } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
@@ -38,6 +38,7 @@ import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 import FindModal from '../components/CommonModals/FindModal';
 import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
+import EmailBookingsModal from '../components/CommonModals/EmailBookingsModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -109,6 +110,7 @@ class AllBookingsPage extends React.Component {
             projectNames: [],
             projectName: '',
             isShowBulkUpdateSlider: false,
+            isShowEmailBookingsModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -123,6 +125,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
         this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
         this.toggleShowBulkUpdateSlider = this.toggleShowBulkUpdateSlider.bind(this);
+        this.toggleShowEmailBookingsModal = this.toggleShowEmailBookingsModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -158,6 +161,7 @@ class AllBookingsPage extends React.Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
+        sendEmailBookings: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -701,6 +705,10 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
     }
 
+    toggleShowEmailBookingsModal() {
+        this.setState(prevState => ({isShowEmailBookingsModal: !prevState.isShowEmailBookingsModal}));   
+    }
+
     onClickAllTrigger() {
         this.props.allTrigger();
     }
@@ -1085,6 +1093,14 @@ class AllBookingsPage extends React.Component {
 
     onClickDownloadExcel() {
         this.toggleShowXLSModal();
+    }
+
+    onClickSendEmail() {
+        if (this.state.selectedBookingIds.length < 1) {
+            this.notify('Please select Bookings to send via email');
+        } else {
+            this.toggleShowEmailBookingsModal();
+        }
     }
 
     onClickBOOK() {
@@ -2099,6 +2115,11 @@ class AllBookingsPage extends React.Component {
                                 }
                             </div>
                             <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
+                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickSendEmail()}>
+                                <span title="Send Bookings info via email">
+                                    <i className="fa fa-envelope" aria-hidden="true"></i>
+                                </span>
+                            </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
                                     <i className="fa fa-file-excel-o" aria-hidden="true"></i>
@@ -2946,6 +2967,13 @@ class AllBookingsPage extends React.Component {
                     onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
+                <EmailBookingsModal
+                    isShow={this.state.isShowEmailBookingsModal}
+                    toggleShow={this.toggleShowEmailBookingsModal}
+                    selectedBookingIds={selectedBookingIds}
+                    sendEmailBookings={(emailAddr, selectedBookingIds) => this.props.sendEmailBookings(emailAddr, selectedBookingIds)}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -3024,6 +3052,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllProjectNames: () => dispatch(getAllProjectNames()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
+        sendEmailBookings: (emailAddr, ids) => dispatch(sendEmailBookings(emailAddr, ids)),
     };
 };
 

@@ -76,8 +76,10 @@ import {
     SET_LOCAL_FILTER_PAGEITEMCNT,
     SET_LOCAL_FILTER_PAGEINDEX,
     RESET_REFRESH_BOOKINGS_FLAG,
-    SUCCESS_SEND_EMAIL,
-    FAILED_SEND_EMAIL,
+    SUCCESS_SEND_EMAIL_BOOKING,
+    FAILED_SEND_EMAIL_BOOKING,
+    SUCCESS_SEND_EMAIL_BOOKINGS,
+    FAILED_SEND_EMAIL_BOOKINGS,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -711,16 +713,30 @@ export function setErrorMessageAction(error) {
     };
 }
 
-export function successSendEmail() {
+export function successSendEmailBooking() {
     return {
-        type: SUCCESS_SEND_EMAIL,
-        errorMessage: 'Sent Email Successfully',
+        type: SUCCESS_SEND_EMAIL_BOOKING,
+        errorMessage: 'Sent Email a Booking Successfully',
     };
 }
 
-export function failedSendEmail(error) {
+export function failedSendEmailBooking(error) {
     return {
-        type: FAILED_SEND_EMAIL,
+        type: FAILED_SEND_EMAIL_BOOKING,
+        errorMessage: error.response.data.message,
+    };
+}
+
+export function successSendEmailBookings() {
+    return {
+        type: SUCCESS_SEND_EMAIL_BOOKINGS,
+        errorMessage: 'Sent Email Bookings Successfully',
+    };
+}
+
+export function failedSendEmailBookings(error) {
+    return {
+        type: FAILED_SEND_EMAIL_BOOKINGS,
         errorMessage: error.response.data.message,
     };
 }

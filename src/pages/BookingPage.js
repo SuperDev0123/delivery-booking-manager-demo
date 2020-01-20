@@ -38,7 +38,7 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import StoreBookingLogSlider from '../components/Sliders/StoreBookingLogSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmailBooking } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -284,7 +284,7 @@ class BookingPage extends Component {
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
-        sendEmail: PropTypes.func.isRequired,
+        sendEmailBooking: PropTypes.func.isRequired,
         getStoreBookingLogs: PropTypes.func.isRequired,
         storeBookingLogs: PropTypes.array.isRequired,
     };
@@ -2393,7 +2393,7 @@ class BookingPage extends Component {
         if (!booking) {
             this.notify('Please select booking!');
         } else {
-            this.props.sendEmail(booking.id, templateName);
+            this.props.sendEmailBooking(booking.id, templateName);
         }
     }
 
@@ -4946,7 +4946,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllFPs: () => dispatch(getAllFPs()),
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
-        sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
+        sendEmailBooking: (bookingId, templateName) => dispatch(sendEmailBooking(bookingId, templateName)),
         getStoreBookingLogs: (v_FPBookingNumber) => dispatch(getStoreBookingLogs(v_FPBookingNumber)),
     };
 };

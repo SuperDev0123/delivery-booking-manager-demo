@@ -73,8 +73,10 @@ import {
     SET_LOCAL_FILTER_PAGEITEMCNT,
     SET_LOCAL_FILTER_PAGEINDEX,
     RESET_REFRESH_BOOKINGS_FLAG,
-    SUCCESS_SEND_EMAIL,
-    FAILED_SEND_EMAIL,
+    SUCCESS_SEND_EMAIL_BOOKING,
+    FAILED_SEND_EMAIL_BOOKING,
+    SUCCESS_SEND_EMAIL_BOOKINGS,
+    FAILED_SEND_EMAIL_BOOKINGS,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -528,8 +530,10 @@ export const BookingReducer = (state = defaultState, {
         case FAIELD_GET_MANIFEST_REPORT:
         case GET_TRACK_FAILED:
         case FAILED_FP_PRICING:
-        case SUCCESS_SEND_EMAIL:
-        case FAILED_SEND_EMAIL:
+        case SUCCESS_SEND_EMAIL_BOOKING:
+        case FAILED_SEND_EMAIL_BOOKING:
+        case SUCCESS_SEND_EMAIL_BOOKINGS:
+        case FAILED_SEND_EMAIL_BOOKINGS:
             return {
                 ...state,
                 errorMessage: errorMessage,

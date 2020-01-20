@@ -64,8 +64,10 @@ import {
     successGetPricingInfos,
     setErrorMessageAction,
     resetRefeshBookingsFlag,
-    successSendEmail,
-    failedSendEmail,
+    successSendEmailBooking,
+    failedSendEmailBooking,
+    successSendEmailBookings,
+    failedSendEmailBookings,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -623,17 +625,32 @@ export const getPricingInfos = (fk_booking_id) => {
     };
 };
 
-export const sendEmail = (bookingId, templateName) => {
+export const sendEmailBooking = (bookingId, templateName) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/send_email/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/send_email_booking/`,
         params: {bookingId, templateName},
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successSendEmail(data)))
-            .catch((error) => dispatch(failedSendEmail(error)));
+            .then(({ data }) => dispatch(successSendEmailBooking(data)))
+            .catch((error) => dispatch(failedSendEmailBooking(error)));
+    };
+};
+
+export const sendEmailBookings = (emailAddr, bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/send_email_bookings/`,
+        data: {emailAddr, bookingIds},
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successSendEmailBookings(data)))
+            .catch((error) => dispatch(failedSendEmailBookings(error)));
     };
 };
