@@ -32,6 +32,7 @@ class StoreBookingLogSlider extends React.Component {
                     <td>{(storeBookingLog.delivery_booking && !_.isEmpty(storeBookingLog.delivery_booking)) ? moment(storeBookingLog.delivery_booking).format('DD MMM YYYY') : null}</td>
                     <td>{(storeBookingLog.fp_store_event_date && !_.isEmpty(storeBookingLog.fp_store_event_date)) ? moment(storeBookingLog.fp_store_event_date).format('DD MMM YYYY') : null}</td>
                     <td>{(storeBookingLog.fp_store_event_time && !_.isEmpty(storeBookingLog.fp_store_event_time)) ? storeBookingLog.fp_store_event_time : null}</td>
+                    <td>{storeBookingLog.fp_store_event_desc}</td>
                     <td></td>
                 </tr>
             );
