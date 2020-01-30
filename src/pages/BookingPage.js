@@ -3694,6 +3694,26 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Pickup Instructions Contact<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_PickUp_Instructions_Contact']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%"
+                                                                        className="textarea-width"
+                                                                        name="pu_PickUp_Instructions_Contact"
+                                                                        rows="1"
+                                                                        cols="9"
+                                                                        value={formInputs['pu_PickUp_Instructions_Contact'] ? formInputs['pu_PickUp_Instructions_Contact'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
+                                                        </div>
+                                                    </div>
                                                     <div className="mt-1 additional-pickup-div">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Reference No</label>
@@ -4039,6 +4059,26 @@ class BookingPage extends Component {
                                                                         rows="1"
                                                                         cols="9"
                                                                         value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Delivery Instructions Contact<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_to_Pick_Up_Instructions_Contact']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%"
+                                                                        className="textarea-width"
+                                                                        name="de_to_Pick_Up_Instructions_Contact"
+                                                                        rows="1"
+                                                                        cols="9"
+                                                                        value={formInputs['de_to_Pick_Up_Instructions_Contact'] ? formInputs['de_to_Pick_Up_Instructions_Contact'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
