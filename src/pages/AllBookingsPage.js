@@ -1128,10 +1128,13 @@ class AllBookingsPage extends React.Component {
                             nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
                         ) {
                             if (!_.isNull(dmeClients[j].current_freight_provider)
-                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
+                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()
+                                || dmeClients[j].current_freight_provider === "*"
+                            ) {
                                 if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
                                     || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl'
-                                    || dmeClients[j].current_freight_provider.toLowerCase() === '*') {
+                                    || (dmeClients[j].current_freight_provider === '*' && nonBookedBookings[i].vx_freight_provider.toLowerCase() === "cope")
+                                ) {
                                     ids4csv.push(nonBookedBookings[i].id);
                                 } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
                                     ids4xml.push(nonBookedBookings[i].id);
