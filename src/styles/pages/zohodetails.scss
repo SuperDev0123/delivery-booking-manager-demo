@@ -1,0 +1,31 @@
+.messages-box {
+    height: 510px;
+    overflow-y: auto;
+    position: relative;
+}
+.chat-box {
+    height: 510px;
+    overflow-y: auto;
+    position: relative;
+    .media {
+        &:hover {
+            background: #ececf6;
+        }
+    }
+}
+form.bg-light {
+    position: absolute;
+    width: 97%;
+    bottom: 0;
+    z-index: 9;
+    left: 1%;
+    background: #ececec;
+    border: 1px solid #007bff;
+}
+div.toggle-div {
+    display: none;
+    padding: 0 0 15px;
+}
+.toggle-sec {
+    cursor: pointer;
+}
