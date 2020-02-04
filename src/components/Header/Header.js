@@ -45,6 +45,7 @@ class Header extends Component {
     logout() {
         localStorage.setItem('isLoggedIn', 'false');
         localStorage.setItem('token', '');
+        localStorage.setItem('zohotoken', '');
         this.props.history.push('/');
     }
 
@@ -62,6 +63,7 @@ class Header extends Component {
                     currentRoute === '/bookinglinedetails' ||
                     currentRoute === '/comm' ||
                     currentRoute === '/pods' ||
+                    currentRoute === '/zoho' ||
                     currentRoute === '/reports' ?
                         <nav className="qbootstrap-nav" role="navigation">
                             <div className="col-md-12" id="headr">
