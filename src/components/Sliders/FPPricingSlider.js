@@ -27,7 +27,7 @@ class FPPricingSlider extends React.Component {
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
             return (
-                <tr key={index}>
+                <tr key={index} className={booking.api_booking_quote === pricingInfo.id && 'selected'}>
                     <td>{index + 1}</td>
                     <td>{pricingInfo.fk_freight_provider_id}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
