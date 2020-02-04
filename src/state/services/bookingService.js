@@ -66,6 +66,7 @@ import {
     resetRefeshBookingsFlag,
     successSendEmail,
     failedSendEmail,
+    resetAutoSelectedAction,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -462,6 +463,12 @@ export const fpPricing = (bookingId) => {
 export const resetPricingInfosFlag = () => {
     return dispatch => {
         dispatch(resetPricingInfosFlagAction());
+    };
+};
+
+export const resetAutoSelected = () => {
+    return dispatch => {
+        dispatch(resetAutoSelectedAction());
     };
 };
 

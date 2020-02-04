@@ -78,6 +78,7 @@ import {
     RESET_REFRESH_BOOKINGS_FLAG,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
+    RESET_AUTO_SELECTED,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -559,7 +560,8 @@ export function successFPPricing(data) {
     return {
         type: SUCCESS_FP_PRICING,
         payload: data['results'],
-        errorMessage: data['message']
+        errorMessage: data['message'],
+        isAutoSelected: data['isAutoSelected'],
     };
 }
 
@@ -701,6 +703,7 @@ export function successGetPricingInfos(data) {
     return {
         type: SUCCESS_GET_PRICING_INFOS,
         payload: data,
+        isAutoSelected: data['isAutoSelected'],
     };
 }
 
@@ -722,5 +725,11 @@ export function failedSendEmail(error) {
     return {
         type: FAILED_SEND_EMAIL,
         errorMessage: error.response.data.message,
+    };
+}
+
+export function resetAutoSelectedAction() {
+    return {
+        type: RESET_AUTO_SELECTED,
     };
 }
