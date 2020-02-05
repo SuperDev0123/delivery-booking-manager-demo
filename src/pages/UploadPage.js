@@ -200,6 +200,7 @@ class UploadPage extends Component {
                                         <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
                                         <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>
                                         <option value='Seaway-Bunnings'>Seaway-Bunnings</option>
+                                        <option value='Tempo'>Tempo</option>
                                     </select>
                                     :
                                     null
