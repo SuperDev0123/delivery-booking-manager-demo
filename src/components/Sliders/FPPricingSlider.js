@@ -83,7 +83,7 @@ class FPPricingSlider extends React.Component {
                                     clientname === 'dme' ? <th className="" scope="col" nowrap><p>FP Cost</p></th> : null
                                 }
                                 {
-                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>MU %</p></th> : null
+                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>Fuel Levy %</p></th> : null
                                 }
                                 <th className="" scope="col" nowrap>
                                     <p>Cost</p>
