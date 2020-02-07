@@ -4320,14 +4320,12 @@ class BookingPage extends Component {
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickFC()}
-                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
                                                                 >
                                                                     Price & Time Calc(FC)
                                                                 </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickOpenPricingSlider()}
-                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
                                                                 >
                                                                     <i className="fa fa-caret-square-o-left"></i>
                                                                 </button>
