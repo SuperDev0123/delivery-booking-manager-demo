@@ -215,6 +215,29 @@ class ZohoDetailsPage extends React.Component {
         }
     }
 
+    getattachment(event){
+        event.preventDefault();
+
+        // console.log(event.target.href);
+        const optionsnew = {
+            method: 'get',
+            headers: {
+                'orgId': '7000200810',
+                'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken'),
+                'Content-type': 'application/json',
+            },
+            url: event.target.href,
+        };
+        axios(optionsnew)
+            .then((dat) => {
+                console.log((dat));
+                // document.getElementById('attachmentimage').setAttribute('src',dat.data+'.jpg');
+                // console.log(File(dat.data));
+                // window.open("someLink", "_blank")
+            })
+            .catch((error) => console.log(error));
+    }
+
 
     //reply by mail
     sendReply(tomail = '', fromemail = ''){
@@ -246,7 +269,6 @@ class ZohoDetailsPage extends React.Component {
         }
 
     }
-
 
     //call sendReply function on successful adding of mail body
     addValue(evt) {
@@ -284,7 +306,7 @@ class ZohoDetailsPage extends React.Component {
                 return (<SlideToggle collapsed key={key}>
                     {({toggle, setCollapsibleElement}) => (
                         <div>
-                            {/*<a href={ item.attachments.href }><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
+
                             <div className="media p-3 mb-3 my-collapsible">
                                 <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
                                 <div className="media-body ml-3 ">
@@ -296,8 +318,8 @@ class ZohoDetailsPage extends React.Component {
                                         <div className="table-responsive my-collapsible__content-inner">
                                             { ReactHtmlParser(item.content) }
                                         </div>
-
                                     </div>
+                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment</a>
 
                                 </div>
                             </div>
@@ -310,7 +332,6 @@ class ZohoDetailsPage extends React.Component {
                 return (<SlideToggle collapsed key={key}>
                     {({ toggle, setCollapsibleElement }) => (
                         <div>
-                            {/*<a href={ item.attachments.href }><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
                             <div className="media p-3  mb-3 my-collapsible"><img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
                                 <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
                                     <div className="py-2 px-3 toggle-sec">
@@ -326,6 +347,7 @@ class ZohoDetailsPage extends React.Component {
 
                                         </div>
                                     </div>
+                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
 
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
@@ -341,7 +363,6 @@ class ZohoDetailsPage extends React.Component {
                 return (<SlideToggle collapsed key={key}>
                     {({ toggle, setCollapsibleElement }) => (
                         <div>
-                            {/*<a href={ item.attachments.href }><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
                             <div className="media p-3  mb-3 my-collapsible"><img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
                                 <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
                                     <div className="py-2 px-3 toggle-sec">
@@ -357,6 +378,7 @@ class ZohoDetailsPage extends React.Component {
                                         </div>
 
                                     </div>
+                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
 
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
@@ -427,6 +449,8 @@ class ZohoDetailsPage extends React.Component {
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                             </div>
+
+                            {/*<img id="attachmentimage"/>*/}
                             {/*//  Chat Box*/}
 
                             <div className="col-9 px-0">

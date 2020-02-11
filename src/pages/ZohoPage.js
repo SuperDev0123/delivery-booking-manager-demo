@@ -141,6 +141,7 @@ class ZohoPage extends React.Component {
         document.querySelectorAll('#btnmerge').forEach(query => { query.style.display='inline';});
         e.target.closest('td').children[2].style.display = 'none';
         e.target.closest('td').children[3].style.display = 'none';
+        e.target.closest('td').children[4].style.display = 'none';
     }
 
     submitMerge(e){
@@ -184,6 +185,30 @@ class ZohoPage extends React.Component {
             });
         }
 
+    }
+
+    closeTicket(e){
+        var r = confirm('Are you sure you want to Close these ticket?');
+        if (r == true) {
+            var ticketid = e.target.closest('td').getAttribute('id');
+            
+
+            const options = {
+                method: 'patch',
+                headers: {
+                    'orgId': '7000200810',
+                    'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
+                },
+                contentType: 'application/json; charset=utf-8',
+                data: { 'status': 'Closed'},
+                url: 'https://desk.zoho.com.au/api/v1/tickets/' + ticketid,
+            };
+            axios(options)
+                .then(() => {
+                    window.location.reload(false);
+                })
+                .catch((error) => console.log(error));
+        }
     }
 
     updateCheck(e){
@@ -290,10 +315,12 @@ class ZohoPage extends React.Component {
                     <td>{item.id}</td>
                     <td>{item.subject}</td>
                     <td>{item.email}</td>
+                    <td>{item.status}</td>
                     <td className="text-center" id={item.id}><Link to={'/zohodetails?id='+item.id}><i className="fa fa-eye"></i> </Link>
                         <a id="btnmerge" onClick={this.clickMerge} data-toggle="tooltip" title="Merge"><i className="icon-flow-merge" aria-hidden="true"></i></a>
                         <a id="btncancelmerge" onClick={this.cancelMerge} data-toggle="tooltip" title="Cancel Merge"><i className="icon-cancel" aria-hidden="true"></i></a>
                         <a id="btnsubmitmerge" onClick={this.submitMerge} data-toggle="tooltip" title="Submit Merge"><i className="icon-check" aria-hidden="true"></i></a>
+                        <a id="btncloseticket" onClick={this.closeTicket} data-toggle="tooltip" title="Close Ticket"><i className="icon-delete2" aria-hidden="true"></i></a>
                         {/*<a href={'/zohodetails/' + item.id}>View</a>*/}
                     </td>
                 </tr>
@@ -334,6 +361,7 @@ class ZohoPage extends React.Component {
                                 <th>Ticket Id</th>
                                 <th>Subject</th>
                                 <th>Email-Id</th>
+                                <th>Status</th>
                                 <th className="text-center">Action</th>
                             </tr>
                         </thead>
