@@ -548,8 +548,7 @@ class BookingPage extends Component {
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital'
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital')
             {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
@@ -1244,11 +1243,7 @@ class BookingPage extends Component {
         const {booking, isBookedBooking} = this.state;
 
         if (isBookedBooking) {
-            if (booking.vx_freight_provider.toLowerCase() === 'dhl') {
-                this.buildPDF([booking.id], 'dhl');
-            } else {
-                this.props.fpLabel(booking.id, booking.vx_freight_provider);
-            }
+            this.props.fpLabel(booking.id, booking.vx_freight_provider);
         } else {
             this.notify('This booking is not Booked!');
         }
