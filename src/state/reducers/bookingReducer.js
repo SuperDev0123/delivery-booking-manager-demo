@@ -75,6 +75,7 @@ import {
     RESET_REFRESH_BOOKINGS_FLAG,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
+    RESET_AUTO_SELECTED,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -114,6 +115,7 @@ const defaultState = {
     projectName: '',
     pricingInfos: [],
     pricingInfosFlag: false,
+    isAutoSelected: false,
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -162,6 +164,7 @@ export const BookingReducer = (state = defaultState, {
     pageInd,
     pageCnt,
     filteredBookingIds,
+    isAutoSelected,
 }) => {
     switch (type) {
         case RESET_REFRESH_BOOKINGS_FLAG:
@@ -214,6 +217,11 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 errorMessage: errorMessage,
+            };
+        case RESET_AUTO_SELECTED:
+            return {
+                ...state,
+                isAutoSelected: false
             };
         case SET_BOOKINGS:
             return {
@@ -517,6 +525,7 @@ export const BookingReducer = (state = defaultState, {
                 pricingInfos: payload,
                 pricingInfosFlag: true,
                 errorMessage: errorMessage,
+                isAutoSelected: isAutoSelected,
             };
         case SET_ERROR_MSG:
         case CHANGE_STATUS_FAILED:
