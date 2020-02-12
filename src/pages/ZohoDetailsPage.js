@@ -215,28 +215,30 @@ class ZohoDetailsPage extends React.Component {
         }
     }
 
-    getattachment(event){
-        event.preventDefault();
+    //attachment work commented out for merge
 
-        // console.log(event.target.href);
-        const optionsnew = {
-            method: 'get',
-            headers: {
-                'orgId': '7000200810',
-                'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken'),
-                'Content-type': 'application/json',
-            },
-            url: event.target.href,
-        };
-        axios(optionsnew)
-            .then((dat) => {
-                console.log((dat));
-                // document.getElementById('attachmentimage').setAttribute('src',dat.data+'.jpg');
-                // console.log(File(dat.data));
-                // window.open("someLink", "_blank")
-            })
-            .catch((error) => console.log(error));
-    }
+    // getattachment(event){
+    //     event.preventDefault();
+    //
+    //     // console.log(event.target.href);
+    //     const optionsnew = {
+    //         method: 'get',
+    //         headers: {
+    //             'orgId': '7000200810',
+    //             'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken'),
+    //             'Content-type': 'application/json',
+    //         },
+    //         url: event.target.href,
+    //     };
+    //     axios(optionsnew)
+    //         .then((dat) => {
+    //             console.log((dat));
+    //             // document.getElementById('attachmentimage').setAttribute('src',dat.data+'.jpg');
+    //             // console.log(File(dat.data));
+    //             // window.open("someLink", "_blank")
+    //         })
+    //         .catch((error) => console.log(error));
+    // }
 
 
     //reply by mail
@@ -319,7 +321,7 @@ class ZohoDetailsPage extends React.Component {
                                             { ReactHtmlParser(item.content) }
                                         </div>
                                     </div>
-                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment</a>
+                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment</a>*/}
 
                                 </div>
                             </div>
@@ -347,7 +349,7 @@ class ZohoDetailsPage extends React.Component {
 
                                         </div>
                                     </div>
-                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
 
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
@@ -378,7 +380,7 @@ class ZohoDetailsPage extends React.Component {
                                         </div>
 
                                     </div>
-                                    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
 
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
@@ -450,7 +452,7 @@ class ZohoDetailsPage extends React.Component {
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                             </div>
 
-                            {/*<img id="attachmentimage"/>*/}
+
                             {/*//  Chat Box*/}
 
                             <div className="col-9 px-0">
