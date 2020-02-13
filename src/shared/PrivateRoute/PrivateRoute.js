@@ -28,6 +28,11 @@ export function PrivateRoute({ component: Component, ...rest }) {
 PrivateRoute.propTypes = {
     location: PropTypes.object.isRequired,
     component: PropTypes.object.isRequired,
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            id: PropTypes.number.isRequired
+        })
+    }),
 };
 
 const isLogged = () =>

@@ -186,7 +186,7 @@ p.dme-id {
 		}
 
 		.date-adjust:hover {
-			background: gray;
+			background: grey;
 		}
 	}
 
@@ -619,14 +619,5 @@ div.manual-book {
 		&:last-child {
 			width: 15% !important;
 		}
-	}
-}
-
-.delivery-booking {
-	button.btn {
-		padding: 0px;
-		padding-top: 3px;
-
-		i { font-size: 20px }
 	}
 }
