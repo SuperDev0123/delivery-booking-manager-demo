@@ -1128,13 +1128,9 @@ class AllBookingsPage extends React.Component {
                             nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
                         ) {
                             if (!_.isNull(dmeClients[j].current_freight_provider)
-                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()
-                                || dmeClients[j].current_freight_provider === '*'
-                            ) {
+                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
                                 if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
-                                    || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl'
-                                    || (dmeClients[j].current_freight_provider === '*' && nonBookedBookings[i].vx_freight_provider.toLowerCase() === 'cope')
-                                ) {
+                                    || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl') {
                                     ids4csv.push(nonBookedBookings[i].id);
                                 } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
                                     ids4xml.push(nonBookedBookings[i].id);
@@ -1957,7 +1953,7 @@ class AllBookingsPage extends React.Component {
                         id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}
                         className={(sortField === 'delivery_booking') ? 'current' : ''}
                     >
-                        <p>{booking.delivery_booking ? moment(booking.delivery_booking).format('DD/MM/YYYY') : null}</p>
+                        <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
                     </td>
                     <td className={(sortField === 'b_given_to_transport_date_time') ? 'current' : ''}>
                         {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
@@ -2042,12 +2038,13 @@ class AllBookingsPage extends React.Component {
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
                                 {
-                                    clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>
+                                    clientname === 'dme' ? <li className=""><Link to="/comm">Comm</Link></li> : null
+                                    
                                 }
                                 {
-                                    (clientname === 'dme' || clientname === 'BioPak')
-                                    && <li className=""><Link to="/reports">Reports</Link></li>
+                                    clientname === 'dme' ? <li className=""><Link to="/zoho">Zoho</Link></li> : null
                                 }
+                                <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                             </ul>
@@ -2679,13 +2676,13 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th 
                                                                 className={(sortField === 'delivery_booking') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('delivery_booking')}
+                                                                onClick={() => this.onChangeSortField('fp_store_event_date')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Delivery Booking</p>
                                                                 {
-                                                                    (sortField === 'delivery_booking') ?
+                                                                    (sortField === 'fp_store_event_date') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>

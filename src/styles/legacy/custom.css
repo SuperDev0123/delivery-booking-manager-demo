@@ -512,3 +512,11 @@ tr.filter input {
     font-weight: 100;
     height: 25px;
 }
+
+#btncancelmerge {
+    display: none;
+}
+
+#btnsubmitmerge {
+    display: none;
+}

@@ -35,17 +35,16 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
-import StoreBookingLogSlider from '../components/Sliders/StoreBookingLogSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, resetAutoSelected } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getStoreBookingLogs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
 import { isFormValid } from '../commons/validations';
 
 class BookingPage extends Component {
@@ -176,8 +175,6 @@ class BookingPage extends Component {
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
-            storeBookingLogs: [],
-            isShowStoreBookingLogSlider: false,
         };
 
         this.djsConfig = {
@@ -221,7 +218,6 @@ class BookingPage extends Component {
         this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
         this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
         this.toggleShowFPPricingSlider = this.toggleShowFPPricingSlider.bind(this);
-        this.toggleStoreBookingLogSlider = this.toggleStoreBookingLogSlider.bind(this);
     }
 
     static propTypes = {
@@ -285,9 +281,6 @@ class BookingPage extends Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
-        getStoreBookingLogs: PropTypes.func.isRequired,
-        storeBookingLogs: PropTypes.array.isRequired,
-        resetAutoSelected: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -329,7 +322,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoSelected} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -431,15 +424,6 @@ class BookingPage extends Component {
 
         if (pricingInfos && pricingInfosFlag) {
             this.setState({pricingInfos, loading: false});
-
-            if (isAutoSelected) {
-                this.props.getBooking(this.state.booking.id, 'id');
-                var that0 = this;
-                setTimeout(() => {
-                    that0.setState({loading: true, curViewMode: 0});
-                }, 50);
-                this.props.resetAutoSelected();
-            }
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -505,7 +489,7 @@ class BookingPage extends Component {
                 result['insuranceValueEach'] = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
                 result['gap_ra'] = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
                 result['clientRefNumber'] = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
-                result['fk_booking_lines_id'] = bookingLineDetail.fk_booking_lines_id ? bookingLineDetail.fk_booking_lines_id : '';
+                result['fk_id_booking_lines'] = bookingLineDetail.fk_id_booking_lines ? bookingLineDetail.fk_id_booking_lines : '';
                 return result;
             });
 
@@ -549,6 +533,7 @@ class BookingPage extends Component {
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital')
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
                 if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
@@ -841,12 +826,8 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Minutes'] = 0;
                 if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
-                if (!_.isNull(booking.delivery_booking)) formInputs['delivery_booking'] = booking.delivery_booking;
-                else formInputs['delivery_booking'] = null;
                 if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
                 else formInputs['fp_store_event_date'] = null;
-                if (!_.isNull(booking.fp_store_event_time)) formInputs['fp_store_event_time'] = booking.fp_store_event_time;
-                else formInputs['fp_store_event_time'] = null;
                 if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
                 else formInputs['z_calculated_ETA'] = null;
                 if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
@@ -1857,18 +1838,6 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
 
-    toggleStoreBookingLogSlider(e) {
-        e.preventDefault();
-        const { isBookingSelected, booking } = this.state;
-
-        if (isBookingSelected) {
-            this.props.getStoreBookingLogs(booking.v_FPBookingNumber);
-            this.setState(prevState => ({isShowStoreBookingLogSlider: !prevState.isShowStoreBookingLogSlider}));
-        } else {
-            this.notify('Please select a booking.');
-        }
-    }
-
     onClickSwitchClientNavIcon(e) {
         e.preventDefault();
         this.props.getDMEClients();
@@ -2286,7 +2255,7 @@ class BookingPage extends Component {
         formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
         booking[fieldName] = moment(date).format('YYYY-MM-DD');
 
-        if (fieldName === 'delivery_booking') {
+        if (fieldName === 'fp_store_event_date') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
             formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
             booking['de_Deliver_From_Date'] = booking[fieldName];
@@ -2306,12 +2275,6 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
-        } else if (fieldName === 'fp_store_event') {
-            formInputs['fp_store_event_date'] = moment(date).format('YYYY-MM-DD');
-            formInputs['fp_store_event_time'] = moment(date).utc().format('HH:mm:ss');
-            booking['fp_store_event_date'] = formInputs['fp_store_event_date'];
-            booking['fp_store_event_time'] = formInputs['fp_store_event_time'];
-            this.setState({formInputs, booking});
         } else if (fieldName === 'vx_fp_pu_eta_time' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 'vx_fp_del_eta_time' ||
@@ -2735,13 +2698,9 @@ class BookingPage extends Component {
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            {
-                                clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>
-                            }
-                            {
-                                (clientname === 'dme' || clientname === 'BioPak')
-                                && <li className=""><Link to="/reports">Reports</Link></li>
-                            }
+                            <li className=""><Link to="/zoho">Zoho</Link></li>
+                            <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
+                            <li className=""><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
@@ -3700,26 +3659,6 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup Instructions Contact<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['pu_PickUp_Instructions_Contact']}</p>
-                                                                    :
-                                                                    <textarea 
-                                                                        width="100%"
-                                                                        className="textarea-width"
-                                                                        name="pu_PickUp_Instructions_Contact"
-                                                                        rows="1"
-                                                                        cols="9"
-                                                                        value={formInputs['pu_PickUp_Instructions_Contact'] ? formInputs['pu_PickUp_Instructions_Contact'] : ''} 
-                                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                                            }
-                                                        </div>
-                                                    </div>
                                                     <div className="mt-1 additional-pickup-div">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Reference No</label>
@@ -3977,48 +3916,25 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1 delivery-booking">
+                                                    <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">1st Contact For Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
-                                                                    :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_store_event')}
-                                                                            value={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date'] + 'T' + formInputs['fp_store_event_time']).format('DD/MM/YYYY hh:mm:ss') : ''}</p>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1 delivery-booking">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className="col-sm-6">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'delivery_booking')}
+                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['delivery_booking'] ? moment(formInputs['delivery_booking']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
                                                             }
-                                                        </div>
-                                                        <div className="col-sm-2">
-                                                            <button className="btn" onClick={(e) => this.toggleStoreBookingLogSlider(e)}><i className="fa fa-table"></i></button>
                                                         </div>
                                                     </div>
                                                     <div className="row mt-1">
@@ -4065,26 +3981,6 @@ class BookingPage extends Component {
                                                                         rows="1"
                                                                         cols="9"
                                                                         value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
-                                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                                            }
-                                                        </div>
-                                                    </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Instructions Contact<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
-                                                        </div>
-                                                        <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['de_to_Pick_Up_Instructions_Contact']}</p>
-                                                                    :
-                                                                    <textarea 
-                                                                        width="100%"
-                                                                        className="textarea-width"
-                                                                        name="de_to_Pick_Up_Instructions_Contact"
-                                                                        rows="1"
-                                                                        cols="9"
-                                                                        value={formInputs['de_to_Pick_Up_Instructions_Contact'] ? formInputs['de_to_Pick_Up_Instructions_Contact'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -4315,12 +4211,14 @@ class BookingPage extends Component {
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickFC()}
+                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
                                                                 >
                                                                     Price & Time Calc(FC)
                                                                 </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickOpenPricingSlider()}
+                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
                                                                 >
                                                                     <i className="fa fa-caret-square-o-left"></i>
                                                                 </button>
@@ -4864,13 +4762,6 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
-                <StoreBookingLogSlider
-                    isOpen={this.state.isShowStoreBookingLogSlider}
-                    toggle={this.toggleStoreBookingLogSlider}
-                    storeBookingLogs={this.props.storeBookingLogs}
-                    booking={booking}
-                />
-
                 <ToastContainer />
             </div>
         );
@@ -4927,8 +4818,6 @@ const mapStateToProps = (state) => {
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         pricingInfosFlag: state.booking.pricingInfosFlag,
-        storeBookingLogs: state.extra.storeBookingLogs,
-        isAutoSelected: state.booking.isAutoSelected,
     };
 };
 
@@ -4992,8 +4881,6 @@ const mapDispatchToProps = (dispatch) => {
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
-        getStoreBookingLogs: (v_FPBookingNumber) => dispatch(getStoreBookingLogs(v_FPBookingNumber)),
-        resetAutoSelected: () => dispatch(resetAutoSelected()),
     };
 };
 
