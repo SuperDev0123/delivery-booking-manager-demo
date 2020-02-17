@@ -125,6 +125,12 @@ class BokPage extends Component {
                 dataField: 'b_022_b_pu_avail_from_time_hour',
                 text: 'b_022_b_pu_avail_from_time_hour'
             }, {
+                dataField: 'b_043_b_del_instructions_contact',
+                text: 'b_043_b_del_instructions_contact'
+            }, {
+                dataField: 'b_044_b_del_instructions_address',
+                text: 'b_044_b_del_instructions_address'
+            }, {
                 dataField: 'b_049_b_del_avail_from_time_minute',
                 text: 'b_049_b_del_avail_from_time_minute'
             }, {
