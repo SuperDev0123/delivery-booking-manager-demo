@@ -14,6 +14,7 @@ import UploadPage from '../pages/UploadPage';
 import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
+import BokPage from '../pages/BokPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
@@ -36,6 +37,7 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/zoho' component={ZohoPage} />
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />
                 <PrivateRoute exact path='/reports' component={ReportPage} />
+                <Route exact path='/bok' component={BokPage} />
                 <Redirect to='/' />
             </Switch>
             <Footer />
