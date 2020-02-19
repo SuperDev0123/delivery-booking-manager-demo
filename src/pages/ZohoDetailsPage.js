@@ -178,7 +178,6 @@ class ZohoDetailsPage extends React.Component {
                                         this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
                                         this.setState({loadingStatus: false});
                                     }
-                                    console.log(this.state.threadiddetails);
                                 })
                                 .catch((error) => console.log(error));
                         }
@@ -215,30 +214,32 @@ class ZohoDetailsPage extends React.Component {
         }
     }
 
-    //attachment work commented out for merge
+    //attachment download
 
-    // getattachment(event){
-    //     event.preventDefault();
-    //
-    //     // console.log(event.target.href);
-    //     const optionsnew = {
-    //         method: 'get',
-    //         headers: {
-    //             'orgId': '7000200810',
-    //             'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken'),
-    //             'Content-type': 'application/json',
-    //         },
-    //         url: event.target.href,
-    //     };
-    //     axios(optionsnew)
-    //         .then((dat) => {
-    //             console.log((dat));
-    //             // document.getElementById('attachmentimage').setAttribute('src',dat.data+'.jpg');
-    //             // console.log(File(dat.data));
-    //             // window.open("someLink", "_blank")
-    //         })
-    //         .catch((error) => console.log(error));
-    // }
+    getattachment(event){
+        event.preventDefault();
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', event.target.href);
+        var filename = event.target.id;
+        xhr.responseType = 'blob';
+        xhr.setRequestHeader('orgId', '7000200810');
+        xhr.setRequestHeader('Authorization', 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken'));
+
+        xhr.onload = (function () {
+
+            var a = document.createElement('a');
+            a.download = filename;
+            a.rel = 'noopener';
+            a.href = URL.createObjectURL(xhr.response);
+            setTimeout(function () { URL.revokeObjectURL(a.href); }, 4E4);
+            a.dispatchEvent(new MouseEvent('click'));
+
+        });
+        xhr.onerror = (function () {
+            console.error('could not download file');
+        });
+        xhr.send();
+    }
 
 
     //reply by mail
@@ -321,9 +322,20 @@ class ZohoDetailsPage extends React.Component {
                                             { ReactHtmlParser(item.content) }
                                         </div>
                                     </div>
-                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment</a>*/}
 
                                 </div>
+                            </div>
+                            <div className="divattach">
+                                {item.attachments[0] != undefined ? (
+                                    item.attachments.map((attach, keys) => {
+                                        return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                    }
+                                    )
+
+                                // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                ) : (
+                                    <p></p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -349,10 +361,21 @@ class ZohoDetailsPage extends React.Component {
 
                                         </div>
                                     </div>
-                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
 
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                            </div>
+                            <div className="divattach">
+                                {item.attachments[0] != undefined ? (
+                                    item.attachments.map((attach, keys) => {
+                                        return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                    }
+                                    )
+
+                                // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                ) : (
+                                    <p></p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -380,10 +403,25 @@ class ZohoDetailsPage extends React.Component {
                                         </div>
 
                                     </div>
-                                    {/*<a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
-
+                                    {/*{item.attachments[0] != undefined ? (*/}
+                                    {/*    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
+                                    {/*) : (*/}
+                                    {/*    <p></p>*/}
+                                    {/*)}*/}
                                 </div>
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                            </div>
+                            <div className="divattach">
+                                {item.attachments[0] != undefined ? (
+                                    item.attachments.map((attach, keys) => {
+                                        return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                    }
+                                    )
+
+                                // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                ) : (
+                                    <p></p>
+                                )}
                             </div>
                         </div>
                     )}
