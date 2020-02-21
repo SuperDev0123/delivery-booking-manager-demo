@@ -25,8 +25,9 @@ export const S3_URL = 'dme-pod-api-static.s3-ap-southeast-2.amazonaws.com';
 // PROD
 // export const API_HOST = '13.55.64.102/api';              // Prod Api
 // export const STATIC_HOST = S3_URL;                       // Prod Static
+
+// Zoho(Dev)
 // export const ZOHO_REDIRECT_URI = 'http://13.55.160.158/zoho';
-
-
-
-
+// export const ZOHO_CLIENT_ID = '1000.42ANMURFOIIQP8GFPSLVHH63K5EYPN';
+// export const ZOHO_CLIENT_SECRET = 'f306eba52bb0987d8620e0821e0421ffd6995c0b18';
+// export const ZOHO_ORG_ID = '7000200810';
