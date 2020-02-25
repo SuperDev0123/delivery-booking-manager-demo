@@ -3,38 +3,38 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 
-import { getToken, getUser } from '../state/services/authService';
+import { getUser, resetPasswordConfirm } from '../state/services/authService';
 
-class LoginPage extends Component {
+class ResetPasswordPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            username: '',
+            token: '',
             password: '',
+            rpassword: '',
             loading: false,
         };
     }
 
     static propTypes = {
-        getToken: PropTypes.func.isRequired,
+        resetPasswordConfirm: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
+        location: PropTypes.object.isRequired,
     };
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { token, username, errorMessage } = newProps;
+        const { token, errorMessage, successMessage } = newProps;
 
         if (token)
             this.props.getUser(token);
 
-        if (username) {
-            this.props.history.push('/home');
-            this.setState({loading: false});
-        }
-
         if (errorMessage)
-            this.setState({errorMessage, loading: false});
+            this.setState({errorMessage, loading: false});this.setState({successMessage, loading: false});
+
+        if (successMessage)
+            this.setState({successMessage, loading: false});this.setState({errorMessage, loading: false});
     }
 
     onInputChange(event) {
@@ -42,14 +42,17 @@ class LoginPage extends Component {
     }
 
     onSubmit(event) {
-        const { username, password } = this.state;
-        this.props.getToken(username, password);
+        const params = new URLSearchParams(this.props.location.search);
+        const token = params.get('token');
+        const email = params.get('email');
+        const { password } = this.state;
+        this.props.resetPasswordConfirm(token, email, password);
         this.setState({loading: true});
         event.preventDefault();
     }
 
     render() {
-        const { errorMessage } = this.state;
+        const { errorMessage, successMessage } = this.state;
 
         return (
             <section className="theme-bg">
@@ -64,25 +67,28 @@ class LoginPage extends Component {
                             <div className=" col-md-4 col-sm-12 theme-bg rounded-left">
 
                                 <form onSubmit={(e) => this.onSubmit(e)} className="form-signin text-center">
-                                    <h1 className="h4 mb-5 mt-5 font-weight-normal">Welcome to Deliver-Me </h1>
+                                    <h1 className="h4 mb-5 mt-5 font-weight-normal">Reset Password </h1>
                                     <div className="input-group input-group-text bg-white borderB">
                                         <span className="input-group-addon bg-white">
                                             <i className="fa fa-envelope text-lightgray"></i>
                                         </span>
-                                        <input name="username" className="form-control border-0 txtFocus inputSpace" type="text" placeholder="User Name" value={this.state.username} onChange={(e) => this.onInputChange(e)} />
+                                        <input name="password" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="New Password" value={this.state.password} onChange={(e) => this.onInputChange(e)} />
                                     </div>
-                                    <div className="input-group input-group-text bg-white borderT">
+                                    <div className="input-group input-group-text bg-white borderB">
                                         <span className="input-group-addon bg-white">
-                                            <i className="fa fa-lock text-lightgray"></i>
+                                            <i className="fa fa-envelope text-lightgray"></i>
                                         </span>
-                                        <input name="password" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="Password" value={this.state.password} onChange={(e) => this.onInputChange(e)} />
+                                        <input name="rpassword" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="Confirm New Password" value={this.state.rpassword} onChange={(e) => this.onInputChange(e)} />
                                     </div>
                                     {
                                         errorMessage &&
                                             <p className="error-message">{ errorMessage }</p>
                                     }
-                                    <button className="btn btn-lg btn-info mt-md-2 btn-block">Sign in</button>
-                                    <p className="mt-5 mb-0"><a href="/forgot-password" className="text-offlight">Forgot your password?</a></p>
+                                    {
+                                        successMessage &&
+                                            <p style={{color:'green'}} className="success-message">{ successMessage }</p>
+                                    }
+                                    <button disabled={this.state.password === '' || this.state.password!==this.state.rpassword} className="btn btn-lg btn-info mt-md-2 btn-block">Submit</button>
                                 </form>
 
                             </div>
@@ -104,16 +110,16 @@ class LoginPage extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.auth.token,
-        username: state.auth.username,
         errorMessage: state.auth.errorMessage,
+        successMessage: state.auth.successMessage
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getToken: (username, password) => dispatch(getToken(username, password)),
+        resetPasswordConfirm: (token, email, password) => dispatch(resetPasswordConfirm(token, email, password)),
         getUser: (token) => dispatch(getUser(token)),
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ResetPasswordPage);

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState, setDMEClients, failedGetDMEClients, setCurrentClientPK } from '../actions/authActions';
+import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState, setDMEClients, failedGetDMEClients, setCurrentClientPK, successResetPassword, failedResetPassword, successResetPasswordConfirm, failedResetPasswordConfirm } from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getToken = (username, password) => {
@@ -22,6 +22,42 @@ export const verifyToken = () => {
         })
             .then(({ data }) => dispatch(detectTokenExpiration(data)) )
             .catch((error) => dispatch(failedVerifiyToken(error)) );
+};
+
+export const resetPassword = (email, path) => {
+
+    return dispatch =>
+        axios.post(`${HTTP_PROTOCOL}://${API_HOST}/password_reset/reset_password/` , {
+            email: email,
+            path: path
+        })
+            .then(({ data }) => dispatch(successResetPassword(data)) )
+            .catch((error) => dispatch(failedResetPassword(error)) );
+};
+
+export const resetPasswordConfirm = (token, email, password) => {
+    const options = {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            //'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/password_reset/confirm/`,
+        data: {password: password, token: token}
+    };
+    /*const options = {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json',
+            //'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/password_reset/?token=`+token,
+        data: {password: password, token: token}
+    };*/
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successResetPasswordConfirm(data)) )
+            .catch((error) => dispatch(failedResetPasswordConfirm(error)) );
 };
 
 export const getUser = (token) => {
