@@ -52,7 +52,7 @@ class ResetPasswordPage extends Component {
     }
 
     render() {
-        const { errorMessage, successMessage } = this.state;
+        const { errorMessage, successMessage, password, rpassword } = this.state;
 
         return (
             <section className="theme-bg">
@@ -61,7 +61,6 @@ class ResetPasswordPage extends Component {
                     spinner
                     text='Loading...'
                 >
-
                     <div className="container h-100vh">
                         <div className="row justify-content-md-center mt-md-5 mt-sm-0">
                             <div className=" col-md-4 col-sm-12 theme-bg rounded-left">
@@ -72,13 +71,27 @@ class ResetPasswordPage extends Component {
                                         <span className="input-group-addon bg-white">
                                             <i className="fa fa-envelope text-lightgray"></i>
                                         </span>
-                                        <input name="password" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="New Password" value={this.state.password} onChange={(e) => this.onInputChange(e)} />
+                                        <input
+                                            name="password"
+                                            className="form-control border-0 txtFocus inputSpace"
+                                            type="password"
+                                            placeholder="New Password"
+                                            value={password}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        />
                                     </div>
-                                    <div className="input-group input-group-text bg-white borderB">
+                                    <div className="input-group input-group-text bg-white borderT">
                                         <span className="input-group-addon bg-white">
                                             <i className="fa fa-envelope text-lightgray"></i>
                                         </span>
-                                        <input name="rpassword" className="form-control border-0 txtFocus inputSpace" type="password" placeholder="Confirm New Password" value={this.state.rpassword} onChange={(e) => this.onInputChange(e)} />
+                                        <input
+                                            name="rpassword"
+                                            className="form-control border-0 txtFocus inputSpace"
+                                            type="password"
+                                            placeholder="Confirm New Password"
+                                            value={rpassword}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        />
                                     </div>
                                     {
                                         errorMessage &&
@@ -88,7 +101,12 @@ class ResetPasswordPage extends Component {
                                         successMessage &&
                                             <p style={{color:'green'}} className="success-message">{ successMessage }</p>
                                     }
-                                    <button disabled={this.state.password === '' || this.state.password!==this.state.rpassword} className="btn btn-lg btn-info mt-md-2 btn-block">Submit</button>
+                                    <button
+                                        disabled={!password || password!==rpassword || successMessage}
+                                        className="btn btn-lg btn-info mt-md-2 btn-block"
+                                    >
+                                        Submit
+                                    </button>
                                 </form>
 
                             </div>

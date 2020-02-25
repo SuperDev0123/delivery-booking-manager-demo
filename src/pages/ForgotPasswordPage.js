@@ -73,7 +73,7 @@ class ForgotPasswordPage extends Component {
                                 <form onSubmit={(e) => this.onSubmit(e)} className="form-signin text-center">
                                     <h1 className="h4 mb-5 mt-5 font-weight-normal">Forgot Your Password? </h1>
                                     <p>Please enter your email address below to receive a password reset link.</p>
-                                    <div className="input-group input-group-text bg-white borderB">
+                                    <div className="input-group input-group-text bg-white borderT">
                                         <span className="input-group-addon bg-white">
                                             <i className="fa fa-envelope text-lightgray"></i>
                                         </span>
