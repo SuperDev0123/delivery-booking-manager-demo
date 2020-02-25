@@ -17,6 +17,7 @@ class BulkUpdateSlider extends React.Component {
             selectedField: null,
             selectedValue: null,
             optionalValue: null,
+            errorMsg: null,
         };
     }
 
@@ -36,40 +37,54 @@ class BulkUpdateSlider extends React.Component {
     onClickUpdateBtn() {
         const {selectedValue, selectedField, optionalValue} = this.state;
         const {selectedBookingIds} = this.props;
-        this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
+
+        if (selectedField === 'status' && selectedValue === 'In Transit' && !optionalValue) {
+            this.setState({errorMsg: 'Event Date Time is required!'});
+        } else {
+            this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
+            this.setState({selectedValue: null, selectedField: null, optionalValue: null, errorMsg: null});
+        }
     }
 
     onSelected(e, src) {
         if (src === 'value') {
-            this.setState({selectedValue: e.target.value});
+            this.setState({selectedValue: e.target.value, errorMsg: null});
         } else if (src === 'field') {
-            this.setState({selectedField: e.target.value, selectedValue: null});
+            this.setState({selectedField: e.target.value, selectedValue: null, errorMsg: null});
         }
     }
 
     onHandleInput(e) {
-        this.setState({selectedValue: e.target.value});
+        this.setState({selectedValue: e.target.value, errorMsg: null});
     }
 
     onChangeDate(date, valueType) {
-        if (valueType === 'selectedValue') {
-            this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
-        } else if (valueType === 'optionalValue') {
-            this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+        if (date) {
+            if (valueType === 'selectedValue') {
+                this.setState({selectedValue: moment(date).format('YYYY-MM-DD')});
+            } else if (valueType === 'optionalValue') {
+                this.setState({optionalValue: moment(date).format('YYYY-MM-DD')});
+            }
+
+            this.setState({errorMsg: null});
         }
     }
 
     onChangeDateTime(dateTime, valueType=null) {
-        if (valueType === 'optionalValue') {
-            this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
-        } else {
-            this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD hh:mm:ss')});
+        if (dateTime) {
+            if (valueType === 'optionalValue') {
+                this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD HH:mm:ss')});
+            } else {
+                this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD HH:mm:ss')});
+            }
+
+            this.setState({errorMsg: null});
         }
     }
 
     render() {
         const { isOpen, allBookingStatus } = this.props;
-        const { selectedField, selectedValue, optionalValue } = this.state;
+        const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
@@ -93,8 +108,8 @@ class BulkUpdateSlider extends React.Component {
                             <option value="status">Booking status</option>
                             <option value="client_name" disabled>Client Name</option>
                             <option value="sub_client" disabled>Sub Client</option>
-                            <option value="status_detail">Status Detail</option>
-                            <option value="status_action">Status Action</option>
+                            <option value="dme_status_detail">Status Detail</option>
+                            <option value="dme_status_action">Status Action</option>
                             <option value="dme_status_history_notes">Status History Note</option>
                             <option value="inv_billing_status_note">Invoice Billing Status Note</option>
 
@@ -135,8 +150,8 @@ class BulkUpdateSlider extends React.Component {
 
                             <option value="b_booking_project">Project Name</option>
                             <option value="b_project_due_date">Project Due Date</option>
-                            <option value="fp_received_date_time">First Scan Label Date</option>
-                            <option value="fp_warehouse_collected_date_time">Warehouse Collected DateTime</option>
+                            <option value="fp_received_date_time">Transport Received</option>
+                            <option value="b_given_to_transport_date_time">Given to Transport</option>
                         </select>
                     </label>
                     <br />
@@ -163,8 +178,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'status_detail' ||
-                            selectedField === 'status_action' ||
+                            (selectedField === 'dme_status_detail' ||
+                            selectedField === 'dme_status_action' ||
                             selectedField === 'dme_status_history_notes' ||
                             selectedField === 'inv_billing_status_note' ||
                             selectedField === 'pu_pickup_instructions_address' ||
@@ -226,7 +241,7 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'fp_warehouse_collected_date_time' ||
+                            (selectedField === 'b_given_to_transport_date_time' ||
                             selectedField === 'fp_received_date_time') ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
@@ -253,6 +268,7 @@ class BulkUpdateSlider extends React.Component {
                         }
                     </div>
                     <br />
+                    {errorMsg ? <p className="red">{errorMsg}<br /></p> : null}
                     <Button
                         color="primary"
                         disabled={!selectedField || !selectedValue ? 'disabled' : ''}

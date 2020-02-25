@@ -66,6 +66,7 @@ import {
     resetRefeshBookingsFlag,
     successSendEmail,
     failedSendEmail,
+    resetAutoSelectedAction,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -465,6 +466,12 @@ export const resetPricingInfosFlag = () => {
     };
 };
 
+export const resetAutoSelected = () => {
+    return dispatch => {
+        dispatch(resetAutoSelectedAction());
+    };
+};
+
 export const resetPricingInfos = () => {
     return dispatch => {
         dispatch(resetPricingInfosAction());
@@ -525,14 +532,14 @@ export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) =>
     };
 };
 
-export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds) => {
+export const generateXLS = (startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/generate_xls/`,
         data: {
-            startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds
+            startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client
         },
     };
     return dispatch =>

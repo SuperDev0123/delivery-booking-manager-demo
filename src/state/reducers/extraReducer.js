@@ -28,6 +28,7 @@ import {
     RESET_PROJECT_NAMES,
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
+    RESET_STORE_BOOKING_LOGS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -60,6 +61,11 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_STORE_BOOKING_LOGS:
+            return {
+                ...state,
+                storeBookingLogs: [],
+            };
         case RESET_PROJECT_NAMES:
             return {
                 ...state,

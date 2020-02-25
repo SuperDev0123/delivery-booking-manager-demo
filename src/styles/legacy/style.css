@@ -1926,3 +1926,11 @@ td > a > .icon-th-list {
   line-height: 18px !important;
 }
 /*# sourceMappingURL=style.css.map */
+
+.pods table.table{ width: 95%; margin:20px auto;}
+
+table.table.table-striped.custom-table td, table.table .thead-dark th{ padding: 10px; line-height: inherit !important; font-size: 14px;}
+
+form.bg-light .input-group .form-control{ width: 93%;}
+
+.messages-box{    border-right: 1px solid #efefef;}

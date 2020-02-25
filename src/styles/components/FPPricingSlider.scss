@@ -2,10 +2,18 @@
 	.slider-content {
 		height: 100%;
 		overflow-y: auto;
+
+		.selected {
+			background: lightblue;
+		}
 	}
 
 	button {
 		padding-top: 3px !important;
 		padding-bottom: 3px !important;
+	}
+
+	.text-right {
+		text-align: right;
 	}
 }

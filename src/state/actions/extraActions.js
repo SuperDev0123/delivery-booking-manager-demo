@@ -28,6 +28,7 @@ import {
     RESET_PROJECT_NAMES,
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
+    RESET_STORE_BOOKING_LOGS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -230,5 +231,11 @@ export function failedGetProjectNames(error) {
     return {
         type: FAILED_GET_PROJECT_NAMES,
         errorMessage: 'Unable to get project names. Error:' + error,
+    };
+}
+
+export function resetStoreBookingLogs() {
+    return {
+        type: RESET_STORE_BOOKING_LOGS,
     };
 }

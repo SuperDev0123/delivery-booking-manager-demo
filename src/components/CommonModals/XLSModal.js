@@ -17,6 +17,7 @@ class XLSModal extends Component {
             endDate: '',
             emailAddr: '',
             vx_freight_provider: '',
+            b_client_name: '',
             report_type: '',
             errorMessage: '',
             showFieldName: false,
@@ -30,6 +31,7 @@ class XLSModal extends Component {
         generateXLS: PropTypes.func.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         allFPs: PropTypes.array.isRequired,
+        allClients: PropTypes.array.isRequired,
     };
 
     static defaultProps = {
@@ -85,8 +87,10 @@ class XLSModal extends Component {
             if (validateEmail(e.target.value)) {
                 let errorMessage = '';
 
-                if (this.state.vx_freight_provider === '') {
-                    errorMessage = 'Please select Freight Provider.';
+                if (this.state.vx_freight_provider === '' &&
+                    this.state.b_client_name === ''
+                ) {
+                    errorMessage = 'Please select Client or Freight Provider.';
                 } else if (this.state.report_type === '') {
                     errorMessage = 'Please select Report Type.';
                 }
@@ -95,8 +99,18 @@ class XLSModal extends Component {
             } else {
                 this.setState({emailAddr: e.target.value, errorMessage: 'Please input correct email address.'});
             }
-        } else if (type === 'fp') {
+        } else if (type === 'vx_freight_provider') {
             this.setState({vx_freight_provider: e.target.value, errorMessage: ''});
+
+            if (this.state.b_client_name == '') {
+                this.setState({b_client_name: 'All'});
+            }
+        } else if (type === 'b_client_name') {
+            this.setState({b_client_name: e.target.value, errorMessage: ''});
+
+            if (this.state.vx_freight_provider == '') {
+                this.setState({vx_freight_provider: 'All'});
+            }
         } else if (type === 'report_type') {
             this.setState({report_type: e.target.value, errorMessage: ''});
         } else if (type === 'showFieldName') {
@@ -111,27 +125,49 @@ class XLSModal extends Component {
     }
 
     onClickBuildAndSend() {
-        const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected} = this.state;
-        this.props.generateXLS(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, this.props.selectedBookingIds);
+        const {startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, b_client_name} = this.state;
+        this.props.generateXLS(
+            moment(startDate).format('YYYY-MM-DD'),
+            moment(endDate).format('YYYY-MM-DD'),
+            emailAddr,
+            vx_freight_provider,
+            report_type,
+            showFieldName,
+            useSelected,
+            this.props.selectedBookingIds,
+            b_client_name
+        );
         this.props.toggleShowXLSModal();
     }
 
     render() {
-        const {isShowXLSModal, allFPs, selectedBookingIds} = this.props;
-        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName, useSelected} = this.state;
+        const {isShowXLSModal, allFPs, allClients, selectedBookingIds} = this.props;
+        const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName, useSelected, b_client_name} = this.state;
         let buttonStatus = false;
 
-        if (validateEmail(emailAddr) &&
-            vx_freight_provider !== '' &&
-            report_type !== '' &&
-            ((useSelected && selectedBookingIds.length > 0 ) || 
-            (!useSelected && startDate && endDate))
-        ) {
-            buttonStatus = true;
+        if (validateEmail(emailAddr)) {
+            if (report_type !== '' &&
+                (useSelected && selectedBookingIds.length > 0)
+            ) {
+                buttonStatus = true;
+            } else if (
+                b_client_name !== '' &&
+                report_type !== ''
+            ) {
+                buttonStatus = true;
+            } else if (vx_freight_provider !== '' &&
+                report_type !== '' &&
+                (!useSelected && startDate && endDate))
+            {
+                buttonStatus = true;
+            }
         }
 
         const fpList = allFPs.map((fp, index) => {
             return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+        });
+        const clientList = allClients.map((client, index) => {
+            return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
         });
 
         return (
@@ -154,11 +190,23 @@ class XLSModal extends Component {
                         </select>
                     </label>
                     <label>
+                        <p>Client: </p>
+                        <select
+                            required 
+                            name="b_client_name" 
+                            onChange={(e) => this.onInputChange(e, 'b_client_name')}
+                            value = {b_client_name} >
+                            <option value="" selected disabled hidden>Select a Client</option>
+                            <option value="All">All</option>
+                            {clientList}
+                        </select>
+                    </label>
+                    <label>
                         <p>Freight Provider: </p>
                         <select
                             required 
                             name="vx_freight_provider" 
-                            onChange={(e) => this.onInputChange(e, 'fp')}
+                            onChange={(e) => this.onInputChange(e, 'vx_freight_provider')}
                             value = {vx_freight_provider} >
                             <option value="" selected disabled hidden>Select a FP</option>
                             <option value="All">All</option>

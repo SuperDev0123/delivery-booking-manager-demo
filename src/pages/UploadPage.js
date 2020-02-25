@@ -29,7 +29,8 @@ class UploadPage extends Component {
             addRemoveLinks: true,
             autoProcessQueue: false,
             parallelUploads: 10,
-            params: { filename: 'file' }
+            params: { filename: 'file' },
+            timeout: 360000,
         };
 
         this.componentConfig = {
@@ -198,6 +199,8 @@ class UploadPage extends Component {
                                         <option value='Seaway'>Seaway-Tempo</option>
                                         <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
                                         <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>
+                                        <option value='Seaway-Bunnings'>Seaway-Bunnings</option>
+                                        <option value='Tempo'>Tempo</option>
                                     </select>
                                     :
                                     null
