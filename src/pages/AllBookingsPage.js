@@ -976,11 +976,6 @@ class AllBookingsPage extends React.Component {
                     this.setState({loading: false});
                 });
             if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                const win = window.open(HTTP_PROTOCOL + '://' + S3_URL + '/pdfs/' + booking.z_label_url, '_blank');
-                win.focus();
-            } else if (booking.vx_freight_provider.toLowerCase() === allied_name ||
-                booking.vx_freight_provider.toLowerCase() === cope_name ||
-                booking.vx_freight_provider.toLowerCase() === tas_name) {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             }

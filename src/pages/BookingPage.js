@@ -1002,14 +1002,12 @@ class BookingPage extends Component {
     }
 
     onHandleInput(e) {
-        const {isBookedBooking, clientname} = this.state;
+        const {isBookedBooking, clientname, formInputs, booking} = this.state;
 
         if (clientname === 'dme' ||
             isBookedBooking === false || 
-            (clientname.lower() === 'biopak' && !this.state.booking.manifest_timestamp))
+            (clientname.lower() === 'biopak' && !booking.manifest_timestamp))
         {
-            let {formInputs, booking} = this.state;
-
             if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
                 this.setState({isShowStatusDetailInput: true});
             } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
