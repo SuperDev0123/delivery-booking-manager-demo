@@ -3673,7 +3673,7 @@ class BookingPage extends Component {
                                                                         name="b_clientReference_RA_Numbers"
                                                                         className="form-control"
                                                                         value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
-                                                                        disabled={(booking && booking.b_status == 'Closed') ? '' : 'disabled'}
+                                                                        disabled={(booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
