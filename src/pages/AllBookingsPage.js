@@ -16,7 +16,7 @@ import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Constants
-import { API_HOST, STATIC_HOST, HTTP_PROTOCOL, S3_URL } from '../config';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -961,11 +961,6 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickPrinter(booking) {
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-        const cope_name = 'cope';
-        const tas_name = 'tasfr';
-
         if (booking.z_label_url && booking.z_label_url.length > 0) {
             this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
                 .then(() => {
@@ -975,10 +970,8 @@ class AllBookingsPage extends React.Component {
                     this.notify(err.response.data.message);
                     this.setState({loading: false});
                 });
-            if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
-                win.focus();
-            }
+            const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+            win.focus();
         } else {
             alert('This booking has no label');
         }
