@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../state/services/fpService';  
 import FPDataSlider from '../../sliders/FPDataSlider';
 
@@ -46,6 +46,9 @@ class EditFreightProviders extends Component {
         createFpZone:  PropTypes.func.isRequired,
         updateFpZone:  PropTypes.func.isRequired,
         deleteFpZone:  PropTypes.func.isRequired,
+        match: PropTypes.object.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        updateFpDetail: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -68,7 +71,7 @@ class EditFreightProviders extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, fpDetails, id, fpCarriers, fpZones, pageItemCnt, pageInd, pageCnt, needUpdateFpCarriers, needUpdateFpZones } = newProps;
+        const { redirect, fpDetails, id, fpCarriers, fpZones, pageItemCnt, pageInd, pageCnt, needUpdateFpCarriers, needUpdateFpZones } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -173,7 +176,6 @@ class EditFreightProviders extends Component {
 
     render() {
         const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt } = this.state;
-        const { errorMessage } = this.state;
 
         return (
             <div>

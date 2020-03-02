@@ -2,14 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
-import { confirmAlert } from 'react-confirm-alert'; // Import
+import { withRouter } from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import Moment from 'react-moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getallCronOptions, updateCronOptionDetails } from '../../../state/services/cronOptionService';  
 
 class CronOptions extends Component {   
@@ -31,6 +30,9 @@ class CronOptions extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         getallCronOptions: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        updateCronOptionDetails: PropTypes.func.isRequired,
+        allCronOptions: PropTypes.object.isRequired,
     }
 
     componentDidMount() {
@@ -76,7 +78,7 @@ class CronOptions extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, allCronOptions, needUpdateCronOptions, } = newProps;
+        const { redirect, allCronOptions, needUpdateCronOptions, } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -102,7 +104,6 @@ class CronOptions extends Component {
 
     render() {
         const { allCronOptions } = this.state;
-        const { errorMessage } = this.state;
         const tableData = allCronOptions.map((item, index) => {
             return (
                 <tr key={index}>

@@ -17,7 +17,6 @@ const defaultState = {
 };
 
 export const EmailTemplateReducer = (state = defaultState, {
-    payload,
     type,
     allEmailTemplates,
     emailTemplateDetails

@@ -20,7 +20,7 @@ export function failedGetAllCronOptions(error) {
     };
 }
 
-export function successUpdateCronOption(data) {
+export function successUpdateCronOption() {
     return {
         type: SUCCESS_UPDATE_CRON_OPTION,
         needUpdateCronOptions: true,

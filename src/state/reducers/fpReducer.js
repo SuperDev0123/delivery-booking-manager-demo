@@ -35,7 +35,6 @@ const defaultState = {
 };
 
 export const FpReducer = (state = defaultState, {
-    payload,
     type,
     allFPs,
     fpDetails,
@@ -114,19 +113,19 @@ export const FpReducer = (state = defaultState, {
                 ...state,
                 needUpdateFpZones: true
             };
-        case FAILED_CREATE_FP_CARRIER:
+        case FAILED_CREATE_FP_ZONE:
         case SUCCESS_UPDATE_FP_ZONE:
             return {
                 ...state,
                 needUpdateFpZones: true
             };
-        case FAILED_UPDATE_FP_CARRIER:
+        case FAILED_UPDATE_FP_ZONE:
         case SUCCESS_DELETE_FP_ZONE:
             return {
                 ...state,
                 needUpdateFpZones: true
             };
-        case FAILED_DELETE_FP_CARRIER:
+        case FAILED_DELETE_FP_ZONE:
         default:
             return state;
     }

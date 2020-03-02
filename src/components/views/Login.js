@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 
 import { getToken, getUser } from '../../state/services/authService';
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../state/services/authService';  
+import { verifyToken, cleanRedirectState } from '../../state/services/authService';  
 
 class Login extends Component {
     constructor(props) {
@@ -24,7 +24,8 @@ class Login extends Component {
         getToken: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        handleLoginCheck: PropTypes.func.isRequired
+        handleLoginCheck: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     };
 
     componentDidMount() {

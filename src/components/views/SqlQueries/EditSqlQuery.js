@@ -2,15 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
-//import Modal from 'react-bootstrap-modal';
-
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../state/services/sqlQueryService';  
 
 const customStyles = {
@@ -57,7 +55,12 @@ class EditSqlQueries extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
+        match: PropTypes.object.isRequired,
         getSqlQueryDetails: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        validateSqlQueryDetails: PropTypes.func.isRequired,
+        updateSqlQueryDetails: PropTypes.func.isRequired,
+        runUpdateSqlQueryDetails: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -77,7 +80,7 @@ class EditSqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -132,7 +135,7 @@ class EditSqlQueries extends Component {
 
     onValidate(event) {
         this.setState({loading: true});
-        const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes } = this.state;
         this.props.validateSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes});
         this.setState({loading: false});
         event.preventDefault();
@@ -140,7 +143,7 @@ class EditSqlQueries extends Component {
 
     onUpdate(event) {
         this.setState({loading: true});
-        const { sql_title, sql_query, sql_description, sql_notes, username, updateQueries } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes, updateQueries } = this.state;
         let i = 0;
         updateQueries.forEach((query) => {
             this.props.runUpdateSqlQueryDetails({sql_title:sql_title, sql_query: query, sql_description: sql_description, sql_notes: sql_notes});
@@ -175,35 +178,35 @@ class EditSqlQueries extends Component {
     }
 
     render() {
-        const { errorMessage, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
 
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-        let queryResultData = '';
-        let queryResultColumns = '';
+        // let queryResultData = '';
+        // let queryResultColumns = '';
         let tableColumns = [];
 
-        const allowedColumns = ['suburb'];
+        // const allowedColumns = ['suburb'];
 
-        if(queryResult && queryResult.length>0){
-            queryResultData = queryResult.map((row, index) => {
-                return (
-                    <tr key={index}>
-                        {Object.keys(queryResult[0]).map((row1, index1) => 
-                            <td data-column={row1}>{row[row1]}</td>
-                        )}
-                    </tr>
-                );
-            });
+        // if(queryResult && queryResult.length>0){
+        //     queryResultData = queryResult.map((row, index) => {
+        //         return (
+        //             <tr key={index}>
+        //                 {Object.keys(queryResult[0]).map((row1, index1) => 
+        //                     <td data-column={row1}>{row[row1]}</td>
+        //                 )}
+        //             </tr>
+        //         );
+        //     });
             
 
-            queryResultColumns = Object.keys(queryResult[0]).map((row, index) => {
-                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row)});
-            });
-        }
+        //     queryResultColumns = Object.keys(queryResult[0]).map((row, index) => {
+        //         tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row)});
+        //     });
+        // }
 
         return (
             <div>
@@ -248,7 +251,7 @@ class EditSqlQueries extends Component {
                         <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Edit SQL Query >> <b>{sql_title}</b></h3>
+                                    <h3 className="panel-title">Edit SQL Query <b>{sql_title}</b></h3>
                                 </div>
                                 <div className="panel-body">
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
@@ -263,7 +266,7 @@ class EditSqlQueries extends Component {
                                         </div>
 
                                         <div className="form-group required">
-                                            <label className="control-label" className="control-label" htmlFor="sql_query">SQL Query</label>
+                                            <label className="control-label" htmlFor="sql_query">SQL Query</label>
                                             <textarea name="sql_query"  required="required" type="text" className="form-control" id="sql_query" placeholder="Enter Query" onChange={(e) => {this.setState({validSqlQueryDetails: false});this.onInputChange(e);}} value={sql_query || ''}>{sql_query}</textarea>
                                             <button style={{float:'right'}} type="button" disabled={sql_query==='' || loading} onClick={(e) => this.onValidate(e)} className="btn btn-info">Run</button>
                                         </div>

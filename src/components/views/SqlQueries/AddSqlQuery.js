@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../state/services/sqlQueryService';  
 
 const customStyles = {
@@ -54,6 +54,10 @@ class AddSqlQueries extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         createSqlQueryDetails: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        validateSqlQueryDetails:  PropTypes.func.isRequired,
+        runUpdateSqlQueryDetails:  PropTypes.func.isRequired,
+        
     }
 
     componentDidMount() {
@@ -69,7 +73,7 @@ class AddSqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -128,16 +132,7 @@ class AddSqlQueries extends Component {
 
     onValidate(event) {
         this.setState({loading: true});
-        const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
-        this.props.validateSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes});
-        this.setState({loading: false});
-        //this.props.history.push('/sqlqueries');
-        event.preventDefault();
-    }
-
-    onValidate(event) {
-        this.setState({loading: true});
-        const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes } = this.state;
         this.props.validateSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes});
         this.setState({loading: false});
         event.preventDefault();
@@ -145,12 +140,12 @@ class AddSqlQueries extends Component {
 
     onUpdate(event) {
         this.setState({loading: true});
-        const { sql_title, sql_query, sql_description, sql_notes, username, updateQueries } = this.state;
-        let i = 0;
+        const { sql_title, sql_description, sql_notes, updateQueries } = this.state;
+
         updateQueries.forEach((query) => {
             this.props.runUpdateSqlQueryDetails({sql_title:sql_title, sql_query: query, sql_description: sql_description, sql_notes: sql_notes});
-            i++;
         });
+
         this.setState({loading: false, modalIsOpen: false, updateQueries: []});
         event.preventDefault();
     }
@@ -175,35 +170,35 @@ class AddSqlQueries extends Component {
     }
 
     render() {
-        const { errorMessage, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
 
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-        let queryResultData = '';
-        let queryResultColumns = '';
+        // let queryResultData = '';
+        // let queryResultColumns = '';
         let tableColumns = [];
 
-        const allowedColumns = ['fp_zones.suburb', 'dme_options.option_description', 'fp_freight_providers.fp_company_name'];
+        // const allowedColumns = ['fp_zones.suburb', 'dme_options.option_description', 'fp_freight_providers.fp_company_name'];
 
-        if(queryResult && queryResult.length>0 && queryTables && queryTables.length>0){
-            queryResultData = queryResult.map((row, index) => {
-                return (
-                    <tr key={index}>
-                        {Object.keys(queryResult[0]).map((row1, index1) => 
-                            <td data-column={row1}>{row[row1]}</td>
-                        )}
-                    </tr>
-                );
-            });
+        // if(queryResult && queryResult.length>0 && queryTables && queryTables.length>0){
+        //     queryResultData = queryResult.map((row, index) => {
+        //         return (
+        //             <tr key={index}>
+        //                 {Object.keys(queryResult[0]).map((row1, index1) => 
+        //                     <td data-column={row1}>{row[row1]}</td>
+        //                 )}
+        //             </tr>
+        //         );
+        //     });
             
 
-            queryResultColumns = Object.keys(queryResult[0]).map((row, index) => {
-                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(queryTables[0]+'.'+row)});
-            });
-        }
+        //     queryResultColumns = Object.keys(queryResult[0]).map((row, index) => {
+        //         tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(queryTables[0]+'.'+row)});
+        //     });
+        // }
         
 
         return (

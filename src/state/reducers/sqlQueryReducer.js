@@ -21,11 +21,9 @@ const defaultState = {
 };
 
 export const SqlQueryReducer = (state = defaultState, {
-    payload,
     type,
     allSqlQueries,
     sqlQueryDetails,
-    needUpdateSqlQueries,
     validSqlQueryDetails,
     queryResult,
     queryTables,

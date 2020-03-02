@@ -19,7 +19,6 @@ const defaultState = {
 };
 
 export const UserReducer = (state = defaultState, {
-    payload,
     type,
     allUsers,
     userDetails,

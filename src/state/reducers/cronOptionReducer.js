@@ -11,10 +11,8 @@ const defaultState = {
 };
 
 export const CronOptionReducer = (state = defaultState, {
-    payload,
     type,
-    allCronOptions,
-    needUpdateCronOptions
+    allCronOptions
 }) => {
     switch (type) {
         case SUCCESS_GET_ALL_CRON_OPTIONS:

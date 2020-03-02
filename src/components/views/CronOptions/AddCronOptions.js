@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { createFpDetail } from '../../../state/services/fpService';  
 
 class AddFreightProviders extends Component {
@@ -24,6 +24,7 @@ class AddFreightProviders extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         createFpDetail: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -39,7 +40,7 @@ class AddFreightProviders extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {console.log(3);
-        const { redirect, username, fp_company_name, fp_address_country } = newProps;
+        const { redirect, fp_company_name, fp_address_country } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -68,8 +69,6 @@ class AddFreightProviders extends Component {
     }
 
     render() {
-        const { errorMessage } = this.state;
-
         return (
             <div>
                 <div className="pageheader">

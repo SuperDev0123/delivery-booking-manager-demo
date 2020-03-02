@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getAllSqlQueries, deleteSqlQueryDetails } from '../../../state/services/sqlQueryService'; 
-import CustomPagination from '../../pagination/CustomPagination'; 
 
 class SqlQueries extends Component {    
     constructor(props) {
@@ -30,6 +29,8 @@ class SqlQueries extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         getAllSqlQueries: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        deleteSqlQueryDetails: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -49,7 +50,7 @@ class SqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, allSqlQueries, needUpdateSqlQueries } = newProps;
+        const { redirect, allSqlQueries, needUpdateSqlQueries } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -87,19 +88,20 @@ class SqlQueries extends Component {
     }
 
     render() {
-        const { allSqlQueries, errorMessage, loading } = this.state;
-        const List = allSqlQueries.map((row, index) => {
-            return (
-                <tr key={index}>
-                    <td>{row.id}</td>
-                    <td>{row.sql_title}</td>
-                    <td>{row.sql_description}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/sqlqueries/edit/'+row.id}>Edit</a></td>
-                </tr>
-            );
-        });
+        const { allSqlQueries, loading } = this.state;
+        // const List = allSqlQueries.map((row, index) => {
+        //     return (
+        //         <tr key={index}>
+        //             <td>{row.id}</td>
+        //             <td>{row.sql_title}</td>
+        //             <td>{row.sql_description}</td>
+        //             <td><a className="btn btn-info btn-sm" href={'/sqlqueries/edit/'+row.id}>Edit</a></td>
+        //         </tr>
+        //     );
+        // });
 
         const editableStyle = (cell, row) => {
+            console.log(row);
             return {
                 backgroundColor: 'white',
                 cursor: 'default',
@@ -107,6 +109,7 @@ class SqlQueries extends Component {
         };
 
         const actionButton = (cell, row, enumObject, rowIndex) => {
+            console.log(rowIndex);
             return (
                 <div>
                     <a className="btn btn-success btn-sm" href={'/sqlqueries/edit/'+row.id}><i className="fa fa-edit"></i></a>
@@ -185,7 +188,18 @@ class SqlQueries extends Component {
                                     </thead>
 
                                     <tbody>
-                                        { List }
+                                        { 
+                                            allSqlQueries.map((row, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td>{row.id}</td>
+                                                        <td>{row.sql_title}</td>
+                                                        <td>{row.sql_description}</td>
+                                                        <td><a className="btn btn-info btn-sm" href={'/sqlqueries/edit/'+row.id}>Edit</a></td>
+                                                    </tr>
+                                                );
+                                            }) 
+                                        }
                                     </tbody>
                                 </table>*/}
                 

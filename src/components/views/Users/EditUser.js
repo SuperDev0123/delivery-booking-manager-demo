@@ -2,13 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
-import Modal from 'react-modal';
-
+import { withRouter, } from 'react-router-dom';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getUserDetails, updateUserDetails } from '../../../state/services/userService';  
 
 class EditUser extends Component {
@@ -35,7 +33,12 @@ class EditUser extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
+        match: PropTypes.object.isRequired,
         getUserDetails: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        updateUserDetails: PropTypes.func.isRequired,
+        deleteFpCarrier: PropTypes.func.isRequired,
+        deleteFpZone: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -55,7 +58,7 @@ class EditUser extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, emailTemplateDetails, id, pageItemCnt, pageInd, pageCnt } = newProps;
+        const { redirect, emailTemplateDetails, id, pageInd, pageCnt } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -103,8 +106,7 @@ class EditUser extends Component {
     }
 
     render() {
-        const { emailTemplateDetails, isShowFPDataSlider, pageCnt, pageInd, pageItemCnt } = this.state;
-        const { errorMessage } = this.state;
+        const { emailTemplateDetails } = this.state;
 
         return (
             <div>
@@ -132,7 +134,7 @@ class EditUser extends Component {
                         <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Edit Email Template <b>{this.state.emailTemplateDetails.emailName}</b></h3>
+                                    <h3 className="panel-title">Edit Email Template <b>{emailTemplateDetails.emailName}</b></h3>
                                     <div className="actions pull-right">
                                         <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                     </div>

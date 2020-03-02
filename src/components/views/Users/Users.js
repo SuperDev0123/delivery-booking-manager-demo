@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -28,6 +28,9 @@ class Users extends Component {
     
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        deleteUserDetails: PropTypes.func.isRequired,
+        updateUserDetails: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
@@ -54,7 +57,7 @@ class Users extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, allUsers, needUpdateUserDetails, dmeClients, clientPK, needUpdateUsers } = newProps;
+        const { redirect, allUsers, dmeClients, clientPK, needUpdateUsers } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -129,25 +132,26 @@ class Users extends Component {
     }
 
     render() {
-        const { allUsers, errorMessage, loading, dmeClients, clientPK } = this.state;
-        const List = allUsers.map((user, index) => {
-            return (
-                <tr key={index}>
-                    <td>{user.id}</td>
-                    <td>{user.first_name}</td>
-                    <td>{user.last_name}</td>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td>{user.last_login}</td>
-                    <td>{(user.is_active)?'Active':'Inactive'}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/users/edit/'+user.id}>Edit</a>&nbsp;<a className="btn btn-danger btn-sm" href={'/users/edit/'+user.id}>Delete</a></td>
-                </tr>
-            );
-        });
+        const { allUsers, loading, dmeClients, clientPK } = this.state;
+        // const List = allUsers.map((user, index) => {
+        //     return (
+        //         <tr key={index}>
+        //             <td>{user.id}</td>
+        //             <td>{user.first_name}</td>
+        //             <td>{user.last_name}</td>
+        //             <td>{user.username}</td>
+        //             <td>{user.email}</td>
+        //             <td>{user.last_login}</td>
+        //             <td>{(user.is_active)?'Active':'Inactive'}</td>
+        //             <td><a className="btn btn-info btn-sm" href={'/users/edit/'+user.id}>Edit</a>&nbsp;<a className="btn btn-danger btn-sm" href={'/users/edit/'+user.id}>Delete</a></td>
+        //         </tr>
+        //     );
+        // });
 
         const { SearchBar } = Search;
 
         const editableStyle = (cell, row) => {
+            console.log(row);
             return {
                 backgroundColor: 'white',
                 cursor: 'default',
@@ -165,6 +169,7 @@ class Users extends Component {
         };
 
         const actionButtons = (cell, row, enumObject, rowIndex) => {
+            console.log(rowIndex);
             return (
                 <div>
                     <i onClick={() => this.onClickEdit(2, 1, row.id)} className="fa fa-edit" style={{fontSize:'24px',color:'green'}}></i>
@@ -174,6 +179,7 @@ class Users extends Component {
         };
 
         const statusUpdate = (cell, row, enumObject, rowIndex) => {
+            console.log(rowIndex);
             return (
                 <div>
                     {row.is_active ? (

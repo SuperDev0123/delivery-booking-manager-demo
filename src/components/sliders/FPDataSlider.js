@@ -1,7 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import _ from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -10,8 +8,6 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import { Button } from 'reactstrap';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-
-import ConfirmModal from '../modals/ConfirmModal';
 import CustomPagination from '../pagination/CustomPagination';
 
 class FPDataSlider extends React.Component {
@@ -58,6 +54,17 @@ class FPDataSlider extends React.Component {
         createFpZone: PropTypes.func.isRequired,
         updateFpZone: PropTypes.func.isRequired,
         onClickDelete: PropTypes.func.isRequired,
+        calcCollected: PropTypes.func.isRequired,
+        handlePageItemCntChange: PropTypes.func.isRequired,
+        handleClickPagination: PropTypes.func.isRequired,
+        fpCarriers: PropTypes.object.isRequired,
+        fpZones: PropTypes.object.isRequired,
+        fpDetails: PropTypes.object.isRequired,
+        clientname: PropTypes.object.isRequired,
+        loading: PropTypes.bool.isRequired,
+        pageCnt: PropTypes.number.isRequired,
+        pageInd: PropTypes.number.isRequired,
+        
     };
 
     onClickNew(editMode, typeNum) {
@@ -66,7 +73,7 @@ class FPDataSlider extends React.Component {
 
     onClickEdit(editMode, typeNum, index) {
         const {fpCarriers, fpZones} = this.props;
-        //const {lineOrLineDetail, carrierFormInputs, zoneFormInputs} = this.state;
+
         if (typeNum === 1) {
             this.setState({editMode: editMode, lineOrLineDetail: typeNum, carrierFormInputs: fpCarriers.filter(word => word.id == index)[0]});
         } else if (typeNum === 2) {
@@ -92,8 +99,8 @@ class FPDataSlider extends React.Component {
     }
 
     onSubmit() {
-        const {editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs, selectedLineIndex} = this.state;
-        const {lines, fpDetails} = this.props;
+        const {editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs } = this.state;
+        const { fpDetails } = this.props;
 
         if (editMode === 1) {
             if (lineOrLineDetail === 1) {
@@ -157,9 +164,9 @@ class FPDataSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, toggleShowFPDataSlider, booking, isBooked, clientname, apiBCLs, fpDetails, fpCarriers, fpZones, loading, pageCnt, pageInd, pageItemCnt } = this.props;
+        const { isOpen, toggleShowFPDataSlider, clientname, fpDetails, fpCarriers, fpZones, loading, pageCnt, pageInd } = this.props;
 
-        const { selected, selectedLineIndex, editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs } = this.state;
+        const { selected, editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs } = this.state;
 
         const { SearchBar } = Search;
 
@@ -167,7 +174,7 @@ class FPDataSlider extends React.Component {
             mode: 'checkbox',
             clickToSelect: true,
             clickToEdit: true,
-            selected: this.state.selected,
+            selected: selected,
             onSelect: this.handleOnSelect,
             onSelectAll: this.handleOnSelectAll,
         };
@@ -187,33 +194,33 @@ class FPDataSlider extends React.Component {
             }
         };
 
-        const qtyEditableStyle = (cell, row) => {
-            if ((row.is_scanned || isBooked) && clientname !== 'dme') {
-                return {
-                    backgroundColor: 'lightgray',
-                    cursor: 'not-allowed',
-                };
-            } else {
-                return {
-                    backgroundColor: 'white',
-                    cursor: 'default',
-                };
-            }
-        };
+        // const qtyEditableStyle = (cell, row) => {
+        //     if ((row.is_scanned || isBooked) && clientname !== 'dme') {
+        //         return {
+        //             backgroundColor: 'lightgray',
+        //             cursor: 'not-allowed',
+        //         };
+        //     } else {
+        //         return {
+        //             backgroundColor: 'white',
+        //             cursor: 'default',
+        //         };
+        //     }
+        // };
 
-        const isEditable = (cell, row) => {
-            if (row.is_scanned && clientname !== 'dme') {
-                return false;
-            } else {
-                return true;
-            }
-        };
+        // const isEditable = (cell, row) => {
+        //     if (row.is_scanned && clientname !== 'dme') {
+        //         return false;
+        //     } else {
+        //         return true;
+        //     }
+        // };
 
         const onClickRowSelected = (cell, row, rowIndex) => {console.log(row);
             console.log('Product #', rowIndex);
         };
 
-        const carrierActionButton = (cell, row, enumObject, rowIndex) => {console.log(row);
+        const carrierActionButton = (cell, row, enumObject, rowIndex) => {console.log(row, rowIndex);
             return (
                 <div>
                     <i onClick={() => this.onClickEdit(2, 1, row.id)} className="fa fa-edit" style={{fontSize:'24px',color:'green'}}></i>

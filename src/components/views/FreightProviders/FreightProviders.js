@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
-import { getAllFPs, deleteFpDetail, getAllFPCarriers, getAllFPZones } from '../../../state/services/fpService';  
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
+import { getAllFPs, deleteFpDetail } from '../../../state/services/fpService';  
 
 class FreightProviders extends Component {    
     constructor(props) {
@@ -27,6 +27,8 @@ class FreightProviders extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         getAllFPs: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        deleteFpDetail: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -46,7 +48,7 @@ class FreightProviders extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, allFPs, needUpdateFpDetails } = newProps;
+        const { redirect, allFPs, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -84,7 +86,7 @@ class FreightProviders extends Component {
 
     render() {
         const { allFPs } = this.state;
-        const { errorMessage } = this.state;
+
         const fpsList = allFPs.map((fp, index) => {
             return (
                 <tr key={index}>

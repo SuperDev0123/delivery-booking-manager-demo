@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter, Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../state/services/emailTemplateService';  
 
 class EmailTemplates extends Component {    
@@ -26,6 +26,8 @@ class EmailTemplates extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
         getAllEmailTemplates: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        deleteEmailTemplateDetails: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -45,7 +47,7 @@ class EmailTemplates extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, username, allEmailTemplates, needUpdateFpDetails } = newProps;
+        const { redirect, allEmailTemplates, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -83,7 +85,7 @@ class EmailTemplates extends Component {
     }
 
     render() {
-        const { allEmailTemplates, errorMessage, loading } = this.state;
+        const { allEmailTemplates, loading } = this.state;
         const List = allEmailTemplates.map((fp, index) => {
             return (
                 <tr key={index}>
