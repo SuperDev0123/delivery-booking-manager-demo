@@ -20,14 +20,13 @@ import BokPage from '../pages/BokPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
-import Main from '../components/Main';
 
+import Main from '../components/Main';
 import Login from '../components/views/Login';
 import Dashboard from '../components/views/Dashboard';
 import EmailTemplates from '../components/views/EmailTemplates/EmailTemplates';
 import AddEmailTemplates from '../components/views/EmailTemplates/AddEmailTemplates';
 import EditEmailTemplates from '../components/views/EmailTemplates/EditEmailTemplates';
-// import Emails from '../components/views/Emails';
 import Users from '../components/views/Users/Users';
 import AddUser from '../components/views/Users/AddUser';
 import EditUser from '../components/views/Users/EditUser';
