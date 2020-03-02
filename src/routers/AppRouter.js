@@ -20,6 +20,7 @@ import BokPage from '../pages/BokPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
+import Main from '../components/Main';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -27,6 +28,7 @@ export const AppRouter = () => (
             <Header />
             <Switch>
                 <Route exact path='/' component={HomePage} />
+                <Route exact path='/admin' component={Main} />
                 <Route exact path='/home' component={HomePage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
