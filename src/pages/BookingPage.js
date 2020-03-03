@@ -4564,7 +4564,7 @@ class BookingPage extends Component {
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-primary"
-                                                                        onClick={() => this.onClickLabelOrPOD('label')}
+                                                                        onClick={() => this.onClickLabelOrPOD(booking, 'label')}
                                                                     >
                                                                         View
                                                                     </button>
@@ -4594,7 +4594,7 @@ class BookingPage extends Component {
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-primary"
-                                                                        onClick={() => this.onClickLabelOrPOD('pod')}
+                                                                        onClick={() => this.onClickLabelOrPOD(booking, 'pod')}
                                                                     >
                                                                         View
                                                                     </button>
