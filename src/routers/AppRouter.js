@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+// import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import Header from '../components/Header/Header';
@@ -20,6 +21,10 @@ import BokPage from '../pages/BokPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
+
+import Dashboard from '../components/views/Dashboard';
+import Main from '../components/Main';
+import Login from '../components/views/Login';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -42,9 +47,14 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />
                 <PrivateRoute exact path='/reports' component={ReportPage} />
                 <Route exact path='/bok' component={BokPage} />
-                <Redirect to='/' />
+                <Main>
+                    <Route exact path='/admin' component={ Login} />
+                    <Route exact path='/admin/login' component={ Login} />
+                    <Route exact path='/admin/dashboard' component={ Dashboard} />
+                </Main>
             </Switch>
             <Footer />
         </Fragment>
     </BrowserRouter>
 );
+// <Redirect to='/' />
