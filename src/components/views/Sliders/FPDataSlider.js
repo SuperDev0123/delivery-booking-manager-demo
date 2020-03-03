@@ -8,7 +8,7 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import { Button } from 'reactstrap';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-import CustomPagination from '../Pagination/CustomPagination';
+import CustomPagination from '../pagination/CustomPagination';
 
 class FPDataSlider extends React.Component {
     constructor(props) {

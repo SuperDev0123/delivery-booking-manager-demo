@@ -7,7 +7,7 @@ import Modal from 'react-modal';
 
 import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../state/services/fpService';  
-import FPDataSlider from '../../sliders/FPDataSlider';
+import FPDataSlider from '../../Sliders/FPDataSlider';
 
 class EditFreightProviders extends Component {
     constructor(props) {
