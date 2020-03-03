@@ -1549,8 +1549,10 @@ class BookingPage extends Component {
     handlePost(e, type) {
         e.preventDefault();
         const {booking} = this.state;
-        if ( booking != null && booking.id != null) {
-            if (type === 'attachments') {
+        if (booking != null && booking.id != null) {
+            if (!booking.vx_freight_provider) {
+                this.notify('Booking should have selected Freight Provider.');
+            } else if (type === 'attachments') {
                 this.attachmentsDz.processQueue();
             } else if (type === 'label') {
                 this.labelDz.processQueue();
@@ -1558,7 +1560,7 @@ class BookingPage extends Component {
                 this.podDz.processQueue();
             }
         } else {
-            alert('There is no booking data.');
+            this.notify('There is no booking data.');
         }
     }
 
