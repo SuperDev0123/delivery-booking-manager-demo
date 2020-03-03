@@ -1101,23 +1101,109 @@ class BookingPage extends Component {
         }
     }
 
-    onClickPrinter(booking) {
-        const st_name = 'startrack';
-        const allied_name = 'allied';
-
-        if (booking.z_label_url && booking.z_label_url.length > 0) {
-            if (booking.vx_freight_provider.toLowerCase() === st_name) {
-                const win = window.open(booking.z_label_url);
-                win.focus();
-            } else if (booking.vx_freight_provider.toLowerCase() === allied_name) {
+    onClickLabelOrPOD(booking, type) {
+        if (type === 'label') {
+            if (booking.z_label_url && booking.z_label_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
+            } else {
+                alert('This booking has no label');
             }
-            booking.is_printed = true;
-            booking.z_downloaded_shipping_label_timestamp = new Date();
-            this.props.updateBooking(booking.id, booking);
-        } else {
-            alert('This booking has no label');
+        } else if (type === 'pod') {
+            if (booking.z_pod_url && booking.z_pod_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_url, '_blank');
+                win.focus();
+            } else if (booking.z_pod_signed_url && booking.z_pod_signed_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_sog_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
+                win.focus();
+            } else {
+                alert('This booking has no POD or POD_SOG');
+            }
+        }
+    }
+
+    onDownload(downloadOption) {
+        const { booking } = this.state;
+        const selectedBookingIds = [booking.id];
+
+        if (downloadOption === 'label') {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
+                data: {ids: selectedBookingIds},
+                responseType: 'blob', // important
+            };
+
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'label_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            });
+        } else if (downloadOption === 'pod') {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                data: {
+                    ids: selectedBookingIds,
+                    downloadOption: downloadOption,
+                },
+                responseType: 'blob', // important
+            };
+
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'pod_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            });
+        } else if (downloadOption === 'pod_sog') {
+            const options = {
+                method: 'post',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                data: {
+                    ids: selectedBookingIds,
+                    downloadOption: downloadOption,
+                },
+                responseType: 'blob', // important
+            };
+
+            axios(options).then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'pod_signed_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            });
         }
     }
 
@@ -1486,8 +1572,16 @@ class BookingPage extends Component {
         formData.append('booking_id', this.state.booking.id);
     }
 
-    handleUploadSuccess() {
-        this.setState({uploaded: true});
+    handleUploadSuccess(file, response) {
+        let {booking} =  this.state;
+
+        if (file.type === 'application/pdf' && response['status'] === 'success' && response['type'] === 'label') {
+            booking.z_label_url = response['file_path'];
+        } else if (file.type === 'image/png' && response['status'] === 'success' && response['type'] === 'pod') {
+            booking.z_pod_url = response['file_path'];
+        }
+
+        this.setState({booking});
     }
 
     attachmentsHandleUploadFinish() {
@@ -4269,7 +4363,7 @@ class BookingPage extends Component {
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme none" onClick={() => this.onClickPrinter(booking)}><i className="icon icon-printer"></i> Print</button>
+                                                        <button className="btn btn-theme custom-theme none" onClick={() => this.onClickLabel(booking, 'label')}><i className="icon icon-printer"></i> Print</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
                                                         <button
@@ -4431,7 +4525,7 @@ class BookingPage extends Component {
                                                         eventHandlers={attachmentsEventHandlers}
                                                         djsConfig={djsConfig}
                                                     />
-                                                    <button id="submit-upload" type="submit">upload</button>
+                                                    <button className="btn btn-primary" type="submit">upload</button>
                                                 </form>
                                             </div>
                                             <div className="tab-inner">
@@ -4456,8 +4550,26 @@ class BookingPage extends Component {
                                                                     eventHandlers={labelEventHandlers}
                                                                     djsConfig={djsConfig}
                                                                 />
-                                                                <button id="submit-upload" type="submit">upload</button>
+                                                                <button className="btn btn-primary" type="submit">upload</button>
                                                             </form>
+                                                            {
+                                                                booking.z_label_url &&
+                                                                <div>
+                                                                    <p>Label: {booking.z_label_url}</p>
+                                                                    <button
+                                                                        className="btn btn-primary"
+                                                                        onClick={() => this.onDownload('label')}
+                                                                    >
+                                                                        Download
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn btn-primary"
+                                                                        onClick={() => this.onClickLabelOrPOD('label')}
+                                                                    >
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            }
                                                         </div>
                                                         <div className="col-6">
                                                             <label>POD upload</label>
@@ -4468,8 +4580,26 @@ class BookingPage extends Component {
                                                                     eventHandlers={podEventHandlers}
                                                                     djsConfig={djsConfig}
                                                                 />
-                                                                <button id="submit-upload" type="submit">upload</button>
+                                                                <button className="btn btn-primary" type="submit">upload</button>
                                                             </form>
+                                                            {
+                                                                (booking.z_pod_url || booking.z_pod_signed_url) &&
+                                                                <div>
+                                                                    <p>POD: {booking.z_pod_url}</p>
+                                                                    <button
+                                                                        className="btn btn-primary"
+                                                                        onClick={() => this.onDownload('pod')}
+                                                                    >
+                                                                        Download
+                                                                    </button>
+                                                                    <button
+                                                                        className="btn btn-primary"
+                                                                        onClick={() => this.onClickLabelOrPOD('pod')}
+                                                                    >
+                                                                        View
+                                                                    </button>
+                                                                </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                     :
