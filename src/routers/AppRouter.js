@@ -19,12 +19,26 @@ import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
 import BokPage from '../pages/BokPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
+import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 
 import Dashboard from '../components/views/Dashboard';
 import Main from '../components/Main';
 import Login from '../components/views/Login';
+import EmailTemplates from '../components/views/EmailTemplates/EmailTemplates';
+import AddEmailTemplates from '../components/views/EmailTemplates/AddEmailTemplates';
+import EditEmailTemplates from '../components/views/EmailTemplates/EditEmailTemplates';
+import Users from '../components/views/Users/Users';
+import AddUser from '../components/views/Users/AddUser';
+import EditUser from '../components/views/Users/EditUser';
+import CronOptions from '../components/views/CronOptions/CronOptions';
+import FreightProviders from '../components/views/FreightProviders/FreightProviders';
+import AddFreightProviders from '../components/views/FreightProviders/AddFreightProviders';
+import EditFreightProviders from '../components/views/FreightProviders/EditFreightProviders';
+import SqlQueries from '../components/views/SqlQueries/SqlQueries';
+import AddSqlQuery from '../components/views/SqlQueries/AddSqlQuery';
+import EditSqlQuery from '../components/views/SqlQueries/EditSqlQuery';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -48,9 +62,22 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/reports' component={ReportPage} />
                 <Route exact path='/bok' component={BokPage} />
                 <Main>
-                    <Route exact path='/admin' component={ Login} />
+                    <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />
                     <Route exact path='/admin/dashboard' component={ Dashboard} />
+                    <AdminRoute exact path='/admin/sqlqueries' component={SqlQueries} />
+                    <AdminRoute exact path='/admin/sqlqueries/add' component={AddSqlQuery} />
+                    <AdminRoute exact path='/admin/sqlqueries/edit/:id' component={EditSqlQuery} />
+                    <AdminRoute exact path='/admin/emails' component={EmailTemplates} />
+                    <AdminRoute exact path='/admin/emails/add' component={AddEmailTemplates} />
+                    <AdminRoute exact path='/emails/edit/:id' component={EditEmailTemplates} />
+                    <AdminRoute exact path='/admin/users' component={Users} />
+                    <AdminRoute exact path='/admin/users/add' component={AddUser} />
+                    <AdminRoute exact path='/admin/users/edit/:id' component={EditUser} />
+                    <AdminRoute exact path='/admin/crons' component={CronOptions} />
+                    <AdminRoute exact path='/admin/providers' component={FreightProviders} />
+                    <AdminRoute exact path='/admin/providers/add' component={AddFreightProviders} />
+                    <AdminRoute exact path='/admin/providers/edit/:id' component={EditFreightProviders} />
                 </Main>
             </Switch>
             <Footer />
