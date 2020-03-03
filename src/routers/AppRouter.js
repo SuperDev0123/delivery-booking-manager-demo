@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 import Header from '../components/Header/Header';
-import { Footer } from '../components/Footer/Footer';
+import Footer from '../components/Footer/Footer';
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
@@ -62,6 +62,7 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/reports' component={ReportPage} />
                 <Route exact path='/bok' component={BokPage} />
                 <Main>
+
                     <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />
                     <Route exact path='/admin/dashboard' component={ Dashboard} />

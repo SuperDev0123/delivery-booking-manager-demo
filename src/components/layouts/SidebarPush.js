@@ -112,42 +112,42 @@ class SidebarPush extends React.Component {
                     <h5 className="sidebar-header">Navigation</h5>
                     <ul className="nav nav-pills nav-stacked">
                         <li className={this.activeRoute('dashboard') ? 'active' : ''}>
-                            <Link to="/dashboard" title="dashboard">
+                            <Link to="/admin/dashboard" title="dashboard">
                                 <i className="fa fa-fw fa-tachometer"></i>
                                 <span>Dashboard</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('emails') ? 'active' : ''}>
-                            <Link to="/users" title="Users">
+                            <Link to="/admin/users" title="Users">
                                 <i className="fa fa-fw fa-users"></i>
                                 <span>Users</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('emails') ? 'active' : ''}>
-                            <Link to="/emails" title="Email Templates">
+                            <Link to="/admin/emails" title="Email Templates">
                                 <i className="fa fa-fw fa-envelope"></i>
                                 <span>Email Templates</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('crons') ? 'active' : ''}>
-                            <Link to="/crons" title="Cron Options">
+                            <Link to="/admin/crons" title="Cron Options">
                                 <i className="fa fa-fw fa-tasks"></i>
                                 <span>Cron Options</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
-                            <a href='#' onClick={() => { this.setState({ providersCollapsed: !this.state.providersCollapsed }); return false; }}>
+                            <a onClick={() => { this.setState({ providersCollapsed: !this.state.providersCollapsed }); return false; }}>
                                 <i className="fa fa-bars fa-fw"></i>
                                 <span>Freight Providers</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !this.state.providersCollapsed })}>
                                 <li>
-                                    <Link title="View All Freight Providers" to="/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
+                                    <Link title="View All Freight Providers" to="/admin/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
                                         <span>View All</span>
                                     </Link>
                                 </li>   
                                 <li>
-                                    <Link title="Add New Freight Providers" to="/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
+                                    <Link title="Add New Freight Providers" to="/admin/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
                                         <span>Add New</span>
                                     </Link>
                                 </li>
@@ -155,7 +155,7 @@ class SidebarPush extends React.Component {
                         </li>
 
                         <li className={this.activeRoute('sqltool') ? 'active' : ''}>
-                            <Link to="/sqlqueries" title="SQL Tool">
+                            <Link to="/admin/sqlqueries" title="SQL Tool">
                                 <i className="fa fa-fw fa-database"></i>
                                 <span>SQL Tool</span>
                             </Link>

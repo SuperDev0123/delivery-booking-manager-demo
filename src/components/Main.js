@@ -33,14 +33,14 @@ class Main extends Component {
 
     componentDidMount() {
         console.log('componentDidMount');
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            // this.props.history.push('/');
+            this.props.history.push('/admin/login');
         }
         this.setState({ isLoggedIn: (!localStorage.getItem('token') || localStorage.getItem('token') == 'false')?false:true  });
     }

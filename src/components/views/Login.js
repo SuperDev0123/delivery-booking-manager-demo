@@ -29,7 +29,7 @@ class Login extends Component {
     };
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
@@ -57,7 +57,7 @@ class Login extends Component {
 
         if (username) {
             
-            this.props.history.push('/dashboard');
+            this.props.history.push('/admin/dashboard');
             this.setState({loading: false});
         }
 
