@@ -3574,7 +3574,7 @@ class BookingPage extends Component {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white panel-title">
+                                                    <div className="head text-white booking-panel-title">
                                                         PickUp Dates
                                                     </div>
                                                     <div className="row mt-1">
@@ -3890,7 +3890,7 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white panel-title">
+                                                    <div className="head text-white booking-panel-title">
                                                         Delivery Dates
                                                     </div>
                                                     <div className="row mt-1">

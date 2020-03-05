@@ -6,6 +6,8 @@ import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
+import imgProfile from '../../public/images/profile.jpg';
+
 class SidebarPush extends React.Component {
     constructor(props) {
         super(props);
@@ -55,7 +57,7 @@ class SidebarPush extends React.Component {
             <aside className="sidebar sidebar-left">
                 <div className="sidebar-profile">
                     <div className="avatar">
-                        <img className="img-circle profile-image" src="/profile.jpg"/>
+                        <img className="img-circle profile-image" src={imgProfile}/>
                         <i className="on border-dark animated bounceIn"></i>
                     </div>
                     <div className="profile-body dropdown">
@@ -69,7 +71,7 @@ class SidebarPush extends React.Component {
                                     <li className="profile-progress">
                                         <h5>
                                             <span>80%</span>
-                                            <small>Profile complete</small>
+                                            <small> Profile complete</small>
                                         </h5>
                                         <div className="progress progress-xs">
                                             <div className="progress-bar progress-bar-primary" style={{
@@ -82,26 +84,26 @@ class SidebarPush extends React.Component {
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-user"></i>
-                                            </span>My Account</a>
+                                            </span><small>My Account</small></a>
                                     </li>
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-envelope"></i>
-                                            </span>Messages</a>
+                                            </span><small>Messages</small></a>
                                     </li>
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-cog"></i>
-                                            </span>Settings</a>
+                                            </span><small>Settings</small></a>
                                     </li>
                                     <li className="divider"></li>
                                     <li>
                                         <a href='#' onClick={e => {e.preventDefault();this.logout();}}>
                                             <span className="icon">
                                                 <i className="fa fa-sign-out"></i>
-                                            </span>Logout</a>
+                                            </span><small>Logout</small></a>
                                     </li>
                                 </ul>
                             </DropdownMenu>

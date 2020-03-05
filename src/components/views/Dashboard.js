@@ -94,7 +94,7 @@ class Dashboard extends Component {
                         <div className="col-xs-12 col-sm-6 col-md-6 col-lg-3">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Monthly Goal</h3>
+                                    <h6 className="panel-title">Monthly Goal</h6>
                                     <div className="actions pull-right">
                                         <i className="fa fa-expand"></i>
                                     </div>
