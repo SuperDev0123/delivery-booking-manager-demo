@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
-import CKEditor from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditor from 'ckeditor4-react';
 
 import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
 import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../state/services/emailTemplateService';  
@@ -156,10 +155,8 @@ class EditEmailTemplates extends Component {
                                             <label htmlFor="exampleInputEmail1">Email Body</label>
                                             <br/><i>*Please do no modify or remove variables with curly braces {}</i>
                                             <CKEditor
-                                                editor={ ClassicEditor }
                                                 data={this.state.emailBody}
                                                 onInit={ editor => {
-                                                // You can store the "editor" and use when it is needed.
                                                     console.log( 'Editor is ready to use!', editor );
                                                 } }
                                                 onChange={ ( event, editor ) => {
