@@ -39,7 +39,7 @@ class AddFreightProviders extends Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {console.log(3);
+    UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, fp_company_name, fp_address_country } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {

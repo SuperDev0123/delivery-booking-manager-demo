@@ -87,7 +87,6 @@ class EditEmailTemplates extends Component {
         this.setState({loading: true});
         const { emailTemplateDetails, emailName, sectionName, emailBody } = this.state;
         let data = {id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody};
-        console.log(data);
         this.props.updateEmailTemplateDetails(data);
         this.setState({loading: false});
         this.props.history.push('/emails');
@@ -95,8 +94,6 @@ class EditEmailTemplates extends Component {
     }
 
     onClickDelete(typeNum, row) {
-        console.log('onDelete: ', typeNum, row);
-
         if (typeNum === 0) { // Duplicate line
             this.props.deleteFpCarrier({ id: row.id });
             //this.setState({loadingBookingLine: true});

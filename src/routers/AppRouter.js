@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 // import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
+// User pages
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 import HomePage from '../pages/HomePage';
@@ -23,6 +24,7 @@ import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 
+// Admin pages
 import Dashboard from '../components/views/Dashboard';
 import Main from '../components/Main';
 import Login from '../components/views/Login';
@@ -62,7 +64,6 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/reports' component={ReportPage} />
                 <Route exact path='/bok' component={BokPage} />
                 <Main>
-
                     <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />
                     <Route exact path='/admin/dashboard' component={ Dashboard} />
@@ -85,4 +86,3 @@ export const AppRouter = () => (
         </Fragment>
     </BrowserRouter>
 );
-// <Redirect to='/' />

@@ -62,7 +62,7 @@ class CronOptions extends Component {
 
     handleChange({target}){
         this.props.updateCronOptionDetails({id: target.name, option_value: target.value==0?1:0});
-        if (target.checked){console.log(target.value);
+        if (target.checked) {
             target.setAttribute('checked', true);
             target.parentNode.style.textDecoration = 'line-through';
             target.value=1;

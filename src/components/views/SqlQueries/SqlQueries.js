@@ -100,16 +100,14 @@ class SqlQueries extends Component {
         //     );
         // });
 
-        const editableStyle = (cell, row) => {
-            console.log(row);
+        const editableStyle = () => {
             return {
                 backgroundColor: 'white',
                 cursor: 'default',
             };
         };
 
-        const actionButton = (cell, row, enumObject, rowIndex) => {
-            console.log(rowIndex);
+        const actionButton = (cell, row) => {
             return (
                 <div>
                     <a className="btn btn-success btn-sm" href={'/sqlqueries/edit/'+row.id}><i className="fa fa-edit"></i></a>

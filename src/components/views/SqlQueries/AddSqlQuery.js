@@ -160,7 +160,7 @@ class AddSqlQueries extends Component {
                     return newRow;
                 }
                 return row;
-            });console.log(result);
+            });
             this.setState(() => ({
                 queryResult: result,
                 errorMessage: null

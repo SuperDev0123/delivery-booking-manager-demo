@@ -3,7 +3,6 @@ import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export function AdminRoute({ component: Component, ...rest }) {
-    console.log('AdminRoute',  Component );
     return (
         <Route
             {...rest}
@@ -31,7 +30,6 @@ AdminRoute.propTypes = {
     component: PropTypes.object.isRequired,
 };
 
-const isLogged = () =>
-{
+const isLogged = () => {
     return localStorage.getItem('isLoggedIn');
 };

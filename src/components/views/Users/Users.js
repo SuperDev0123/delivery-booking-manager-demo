@@ -73,7 +73,7 @@ class Users extends Component {
         if (dmeClients) {
             this.setState({dmeClients});
         }
-        console.log(needUpdateUsers);
+
         if(needUpdateUsers){
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
                 this.setState({clientPK});
@@ -132,7 +132,6 @@ class Users extends Component {
     }
 
     render() {
-        console.log('render');
         const { allUsers, loading, dmeClients, clientPK } = this.state;
         // const List = allUsers.map((user, index) => {
         //     return (
@@ -151,13 +150,11 @@ class Users extends Component {
 
         const { SearchBar } = Search;
 
-        const editableStyle = (cell, row) => {
-            console.log(row);
+        const editableStyle = () => {
             return {
                 backgroundColor: 'white',
                 cursor: 'default',
             };
-            
         };
 
         const selectRow = {
@@ -169,8 +166,7 @@ class Users extends Component {
             onSelectAll: this.handleOnSelectAll,
         };
 
-        const actionButtons = (cell, row, enumObject, rowIndex) => {
-            console.log(rowIndex);
+        const actionButtons = (cell, row) => {
             return (
                 <div>
                     <i onClick={() => this.onClickEdit(2, 1, row.id)} className="fa fa-edit" style={{fontSize:'24px',color:'green'}}></i>
@@ -179,8 +175,7 @@ class Users extends Component {
             );
         };
 
-        const statusUpdate = (cell, row, enumObject, rowIndex) => {
-            console.log(rowIndex);
+        const statusUpdate = (cell, row) => {
             return (
                 <div>
                     {row.is_active ? (

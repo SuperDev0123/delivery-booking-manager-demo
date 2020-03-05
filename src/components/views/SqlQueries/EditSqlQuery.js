@@ -159,7 +159,6 @@ class EditSqlQueries extends Component {
 
     handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
         setTimeout(() => {
-            console.log(rowId);console.log(dataField);console.log(newValue);
             this.state.updateQueries.push('UPDATE '+this.state.queryTables[0]+' SET '+dataField+' = "'+newValue+'" WHERE '+this.state.queryTables[4]+' = '+rowId);
             const result = data.map((row) => {
                 if (row[this.state.queryTables[4]] === rowId) {

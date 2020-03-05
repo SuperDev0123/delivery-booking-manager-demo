@@ -163,8 +163,6 @@ class EditFreightProviders extends Component {
     }
 
     onClickDelete(typeNum, row) {
-        console.log('onDelete: ', typeNum, row);
-
         if (typeNum === 0) { // Duplicate line
             this.props.deleteFpCarrier({ id: row.id });
             //this.setState({loadingBookingLine: true});
