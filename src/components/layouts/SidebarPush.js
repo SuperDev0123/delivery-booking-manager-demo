@@ -137,7 +137,7 @@ class SidebarPush extends React.Component {
                                 <span>Cron Options</span>
                             </Link>
                         </li>
-                        <li className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
+                        <li style={{'color': '#B3B8C3'}} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
                             <a onClick={() => { this.setState({ providersCollapsed: !this.state.providersCollapsed }); return false; }}>
                                 <i className="fa fa-bars fa-fw"></i>
                                 <span>Freight Providers</span>
