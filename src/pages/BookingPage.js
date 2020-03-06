@@ -1575,9 +1575,9 @@ class BookingPage extends Component {
     handleUploadSuccess(file, response) {
         let {booking} =  this.state;
 
-        if (file.type === 'application/pdf' && response['status'] === 'success' && response['type'] === 'label') {
+        if (response['status'] === 'success' && response['type'] === 'label') {
             booking.z_label_url = response['file_path'];
-        } else if (file.type === 'image/png' && response['status'] === 'success' && response['type'] === 'pod') {
+        } else if (response['status'] === 'success' && response['type'] === 'pod') {
             booking.z_pod_url = response['file_path'];
         }
 
