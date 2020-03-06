@@ -960,20 +960,48 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onClickPrinter(booking) {
-        if (booking.z_label_url && booking.z_label_url.length > 0) {
-            this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
-                .then(() => {
-                    this.onClickDateFilter();
-                })
-                .catch((err) => {
-                    this.notify(err.response.data.message);
-                    this.setState({loading: false});
-                });
-            const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
-            win.focus();
-        } else {
-            alert('This booking has no label');
+    onClickLabelOrPOD(booking, type) {
+        if (type === 'label') {
+            if (booking.z_label_url && booking.z_label_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+                win.focus();
+            } else {
+                alert('This booking has no label');
+            }
+        } else if (type === 'pod') {
+            if (booking.z_pod_url && booking.z_pod_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_url, '_blank');
+                win.focus();
+            } else if (booking.z_pod_signed_url && booking.z_pod_signed_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_sog_timestamp', new Date())
+                    .then(() => {
+                        this.onClickDateFilter();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
+                win.focus();
+            } else {
+                alert('This booking has no POD or POD_SOG');
+            }
         }
     }
 
@@ -1842,7 +1870,7 @@ class AllBookingsPage extends React.Component {
                         {
                             <div className="booking-status">
                                 {
-                                    <a href="#" onClick={() => this.onClickPrinter(booking)}>
+                                    <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
                                         <i className="icon icon-printer"></i>
                                     </a>
                                 }

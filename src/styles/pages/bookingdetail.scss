@@ -66,7 +66,7 @@ p.dme-id {
 .btn-standard {
 	height: 40px;
 	border: 1px solid #aaa;
-	padding: 0px !important;
+	padding: 10px !important;
 }
 
 .btn-update {
@@ -214,16 +214,6 @@ p.dme-id {
 }
 
 #tab04 {
-	button {
-		width: 40px;
-		font-size: 26px;
-		color: #0189b9;
-	}
-
-	button:hover {
-		background-color: #eee;
-	}
-
 	.tab-inner {
 		height: 300px;
 	}
@@ -619,5 +609,16 @@ div.manual-book {
 		&:last-child {
 			width: 15% !important;
 		}
+	}
+}
+
+.filepicker {
+	margin-bottom: 10px;
+}
+
+#tab05 {
+	p {
+		margin-top: 10px;
+		margin-bottom: 5px;
 	}
 }
