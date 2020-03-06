@@ -489,7 +489,7 @@ class BookingPage extends Component {
                 result['insuranceValueEach'] = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : '';
                 result['gap_ra'] = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
                 result['clientRefNumber'] = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
-                result['fk_id_booking_lines'] = bookingLineDetail.fk_id_booking_lines ? bookingLineDetail.fk_id_booking_lines : '';
+                result['fk_booking_lines_id'] = bookingLineDetail.fk_booking_lines_id ? bookingLineDetail.fk_booking_lines_id : '';
                 return result;
             });
 
