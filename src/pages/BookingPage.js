@@ -1354,7 +1354,14 @@ class BookingPage extends Component {
                 if (booking.id && (booking.id !== undefined)) {
                     this.setState({ loading: true, curViewMode: 0});
                     if (booking.vx_freight_provider) {
-                        this.props.fpBook(booking.id, booking.vx_freight_provider);
+                        if (booking.vx_freight_provider.toLowerCase() === 'cope') {
+                            this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
+                        } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
+                            || booking.vx_freight_provider.toLowerCase() === 'act') {
+                            this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
+                        } else {
+                            this.props.fpBook(booking.id, booking.vx_freight_provider);
+                        }
                     } else {
                         this.notify('Can not *Book* since booking has no Freight Provider');
                     }
@@ -1364,15 +1371,6 @@ class BookingPage extends Component {
             } else { // Manual booking
                 this.props.manualBook(booking.id);
                 this.setState({loadingBookingUpdate: true, curViewMode: 2});
-            }
-
-            // if (booking.vx_freight_provider.toLowerCase() === 'cope'
-            // || booking.vx_freight_provider.toLowerCase() === 'dhl')
-            if (booking.vx_freight_provider.toLowerCase() === 'cope'){
-                this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
-            } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
-                || booking.vx_freight_provider.toLowerCase() === 'act') {
-                this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
             }
         }
     }
