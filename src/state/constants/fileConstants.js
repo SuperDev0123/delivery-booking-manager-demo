@@ -1,0 +1,2 @@
+export const SUCCESS_GET_FILES = 'SUCCESS_GET_FILES';
+export const FAILED_GET_FILES = 'FAILED_GET_FILES';
