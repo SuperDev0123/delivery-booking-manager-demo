@@ -8,17 +8,16 @@ class Header extends Component {
         sidebarPush: PropTypes.func.isRequired,
     };
 
-  
     sidebarOverlay (){
         $('#sidebar-right').toggleClass('sidebar-right-open');
         $('#toggle-right .fa').toggleClass('fa-indent fa-dedent');
     }
-  
+
     render () {
         return (
             <header id="header">
                 <div className="brand">
-                    <Link to="/" className="logo">
+                    <Link to="/admin" className="logo">
                         <span>DME</span>ADMIN
                     </Link>
                 </div>

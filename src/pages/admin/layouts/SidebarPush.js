@@ -6,7 +6,7 @@ import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
-import imgProfile from '../../public/images/profile.jpg';
+import imgProfile from '../../../public/images/profile.jpg';
 
 class SidebarPush extends React.Component {
     constructor(props) {

@@ -6,8 +6,8 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../state/services/emailTemplateService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
 
 class EmailTemplates extends Component {    
     constructor(props) {

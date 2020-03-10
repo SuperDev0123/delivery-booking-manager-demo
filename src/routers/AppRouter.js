@@ -25,22 +25,22 @@ import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 
 // Admin pages
-import Dashboard from '../components/views/Dashboard';
-import Main from '../components/Main';
-import Login from '../components/views/Login';
-import EmailTemplates from '../components/views/EmailTemplates/EmailTemplates';
-import AddEmailTemplates from '../components/views/EmailTemplates/AddEmailTemplates';
-import EditEmailTemplates from '../components/views/EmailTemplates/EditEmailTemplates';
-import Users from '../components/views/Users/Users';
-import AddUser from '../components/views/Users/AddUser';
-import EditUser from '../components/views/Users/EditUser';
-import CronOptions from '../components/views/CronOptions/CronOptions';
-import FreightProviders from '../components/views/FreightProviders/FreightProviders';
-import AddFreightProviders from '../components/views/FreightProviders/AddFreightProviders';
-import EditFreightProviders from '../components/views/FreightProviders/EditFreightProviders';
-import SqlQueries from '../components/views/SqlQueries/SqlQueries';
-import AddSqlQuery from '../components/views/SqlQueries/AddSqlQuery';
-import EditSqlQuery from '../components/views/SqlQueries/EditSqlQuery';
+import Main from '../pages/admin/Main';
+import Login from '../pages/admin/views/Login';
+import Dashboard from '../pages/admin/views/Dashboard';
+import EmailTemplates from '../pages/admin/views/EmailTemplates/EmailTemplates';
+import AddEmailTemplates from '../pages/admin/views/EmailTemplates/AddEmailTemplates';
+import EditEmailTemplates from '../pages/admin/views/EmailTemplates/EditEmailTemplates';
+import Users from '../pages/admin/views/Users/Users';
+import AddUser from '../pages/admin/views/Users/AddUser';
+import EditUser from '../pages/admin/views/Users/EditUser';
+import CronOptions from '../pages/admin/views/CronOptions/CronOptions';
+import FreightProviders from '../pages/admin/views/FreightProviders/FreightProviders';
+import AddFreightProviders from '../pages/admin/views/FreightProviders/AddFreightProviders';
+import EditFreightProviders from '../pages/admin/views/FreightProviders/EditFreightProviders';
+import SqlQueries from '../pages/admin/views/SqlQueries/SqlQueries';
+import AddSqlQuery from '../pages/admin/views/SqlQueries/AddSqlQuery';
+import EditSqlQuery from '../pages/admin/views/SqlQueries/EditSqlQuery';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>

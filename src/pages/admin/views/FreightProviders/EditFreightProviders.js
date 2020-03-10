@@ -5,9 +5,9 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../state/services/fpService';  
-import FPDataSlider from '../../sliders/FPDataSlider';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';  
+import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
 
 class EditFreightProviders extends Component {
     constructor(props) {
@@ -35,6 +35,7 @@ class EditFreightProviders extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.object.isRequired,
+        match: PropTypes.object.isRequired,
         getFPDetails: PropTypes.func.isRequired,
         getFPCarriers: PropTypes.func.isRequired,
         getFPZones: PropTypes.func.isRequired,
@@ -46,9 +47,8 @@ class EditFreightProviders extends Component {
         createFpZone:  PropTypes.func.isRequired,
         updateFpZone:  PropTypes.func.isRequired,
         deleteFpZone:  PropTypes.func.isRequired,
-        match: PropTypes.object.isRequired,
-        cleanRedirectState: PropTypes.func.isRequired,
-        updateFpDetail: PropTypes.func.isRequired,
+        cleanRedirectState:  PropTypes.func.isRequired,
+        updateFpDetail:  PropTypes.func.isRequired,
     }
 
     componentDidMount() {

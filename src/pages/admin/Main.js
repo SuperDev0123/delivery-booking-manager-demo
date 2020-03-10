@@ -7,9 +7,9 @@ import MainWrapper from './layouts/MainWrapper';
 import LoginWrapper from './layouts/LoginWrapper';
 import SidebarOverlay from './layouts/SidebarOverlay';
 
-import { verifyToken, cleanRedirectState } from '../state/services/authService'; 
-import '../assets/styles/vendor.scss';
-import '../assets/styles/main.scss';
+import { verifyToken, cleanRedirectState } from '../../state/services/authService'; 
+import '../../assets/styles/vendor.scss';
+import '../../assets/styles/main.scss';
 
 class Main extends Component {
     constructor(props) {

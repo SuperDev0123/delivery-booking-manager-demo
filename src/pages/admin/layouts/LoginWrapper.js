@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import PageWrapper from './PageWrapper';
 
 class LoginWrapper extends Component{
-
     static propTypes = {
         handleLoginCheck: PropTypes.func.isRequired,
         children: PropTypes.object.isRequired,

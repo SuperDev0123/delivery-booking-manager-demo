@@ -8,8 +8,8 @@ import Moment from 'react-moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getallCronOptions, updateCronOptionDetails } from '../../../state/services/cronOptionService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getallCronOptions, updateCronOptionDetails } from '../../../../state/services/cronOptionService';  
 
 class CronOptions extends Component {   
     intervalId = 0; 

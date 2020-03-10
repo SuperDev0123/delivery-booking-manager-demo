@@ -9,8 +9,8 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getAllSqlQueries, deleteSqlQueryDetails } from '../../../state/services/sqlQueryService'; 
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getAllSqlQueries, deleteSqlQueryDetails } from '../../../../state/services/sqlQueryService'; 
 
 class SqlQueries extends Component {    
     constructor(props) {

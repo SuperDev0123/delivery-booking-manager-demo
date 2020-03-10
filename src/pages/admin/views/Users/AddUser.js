@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { createFpDetail } from '../../../state/services/fpService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { createFpDetail } from '../../../../state/services/fpService';  
 
 class AddUser extends Component {
     constructor(props) {

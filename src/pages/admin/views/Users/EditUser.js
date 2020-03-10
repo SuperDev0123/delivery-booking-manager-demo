@@ -5,8 +5,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter, } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getUserDetails, updateUserDetails } from '../../../state/services/userService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getUserDetails, updateUserDetails } from '../../../../state/services/userService';  
 
 class EditUser extends Component {
     constructor(props) {

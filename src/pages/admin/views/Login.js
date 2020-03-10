@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 
-import { getToken, getUser } from '../../state/services/authService';
-import { verifyToken, cleanRedirectState } from '../../state/services/authService';  
+import { getToken, getUser } from '../../../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../../../state/services/authService';  
 
 class Login extends Component {
     constructor(props) {

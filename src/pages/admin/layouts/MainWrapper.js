@@ -5,7 +5,6 @@ import PageWrapper from './PageWrapper';
 import SidebarPush from './SidebarPush';
 
 class MainWrapper extends Component {
-    
     constructor(props) {
         super(props);
         this.state = {

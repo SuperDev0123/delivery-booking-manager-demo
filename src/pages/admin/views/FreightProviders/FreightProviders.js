@@ -6,8 +6,8 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getAllFPs, deleteFpDetail } from '../../../state/services/fpService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getAllFPs, deleteFpDetail } from '../../../../state/services/fpService';  
 
 class FreightProviders extends Component {    
     constructor(props) {

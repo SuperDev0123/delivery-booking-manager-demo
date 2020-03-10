@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+// Libs
 import _ from 'lodash';
+// Components
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
@@ -9,9 +11,9 @@ import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../state/services/authService';   
-import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../state/services/userService';  
+// Services
+import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';   
+import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
 class Users extends Component {    
     constructor(props) {
@@ -41,7 +43,6 @@ class Users extends Component {
     }
 
     componentDidMount() {
-        //this.setState({loading: true});
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
@@ -91,7 +92,7 @@ class Users extends Component {
             buttons: [
                 {
                     label: 'Yes',
-                    onClick: () => {this.props.deleteUserDetails(user);this.props.setNeedUpdateUsersState(true);}
+                    onClick: () => {this.props.deleteUserDetails(user); this.props.setNeedUpdateUsersState(true);}
                 },
                 {
                     label: 'No',
@@ -107,14 +108,13 @@ class Users extends Component {
     onSelected(e, src) {
         if (src === 'client') {
             this.props.setGetUsersFilter('clientPK', e.target.value);
-            //this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
         }
     }
 
     updateUserStatus(event, user, status){
         this.setState({loading: true});
         confirmAlert({
-            title: 'Change User Status',
+            title: 'Confirmation Alert',
             message: 'Click Ok to change current User Status',
             buttons: [
                 {
@@ -169,8 +169,18 @@ class Users extends Component {
         const actionButtons = (cell, row) => {
             return (
                 <div>
-                    <i onClick={() => this.onClickEdit(2, 1, row.id)} className="fa fa-edit" style={{fontSize:'24px',color:'green'}}></i>
-                &nbsp;&nbsp;&nbsp;<i onClick={() => this.onClickDelete(0, {id: row.id})} className="fa fa-trash" style={{fontSize:'24px',color:'red'}}></i>
+                    <i
+                        onClick={() => this.onClickEdit(2, 1, row.id)}
+                        className="fa fa-edit"
+                        style={{fontSize:'24px',color:'green'}}
+                    >
+                    </i>&nbsp;&nbsp;&nbsp;
+                    <i
+                        onClick={() => this.onClickDelete(0, {id: row.id})}
+                        className="fa fa-trash"
+                        style={{fontSize:'24px',color:'red'}}
+                    >
+                    </i>
                 </div>
             );
         };
@@ -240,20 +250,19 @@ class Users extends Component {
         });
 
         return (
-            <div>
+            <div className="users">
                 <div className="pageheader">
                     <h1>Users</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
-                            </li>
+                            <li><a href="/admin">Admin</a></li>
                             <li className="active">Users</li>
                         </ol>
                     </div>
                 </div>
                 <section id="main-content" className="container animated fadeInUp">
-                    {loading ?(
+                    {loading ? (
                         <LoadingOverlay
                             active={loading}
                             spinner
@@ -264,13 +273,14 @@ class Users extends Component {
                             <div className="col-md-12">
                                 <div className="panel panel-default">
                                     <div className="panel-heading">
-                                        <h3 className="panel-title">Users</h3>
+                                        <h3 className="panel-title">Users List</h3>
                                         <div className="actions pull-right">
-                                            <a className="btn btn-success" href="/users/add">Add New</a>
+                                            <a className="btn btn-success" href="/admin/users/add">
+                                                Add New
+                                            </a>
                                         </div>
                                     </div>
                                     <div className="panel-body">
-                                
                                         <ToolkitProvider
                                             keyField="id"
                                             data={ allUsers }
@@ -278,36 +288,32 @@ class Users extends Component {
                                             bootstrap4={ true }
                                             search
                                         >
-                                            {
-                                                props => (
-                                                    <div className="table-responsive">
-                                                        <div className="row">
-                                                            <div className="col-sm-6">
-                                                                <label className="left-30px right-10px">
-                                            Find By Client:&nbsp; 
-                                                                    <select 
-                                                                        id="client-select" 
-                                                                        required 
-                                                                        onChange={(e) => this.onSelected(e, 'client')} 
-                                                                        value={clientPK}>
-                                                                        {/*<option value="">Find All</option>*/}
-                                                                        { clientOptionsList }
-                                                                    </select>
-                                                                </label>
-                                                            </div>
-                                                            <div className="col-sm-6">
-                                                                <SearchBar { ...props.searchProps } />
-                                                            </div>
+                                            {props => (
+                                                <div className="table-responsive">
+                                                    <div className="row">
+                                                        <div className="col-sm-6">
+                                                            <label>
+                                                                Find By Client:&nbsp; 
+                                                                <select 
+                                                                    id="client-select" 
+                                                                    required 
+                                                                    onChange={(e) => this.onSelected(e, 'client')} 
+                                                                    value={clientPK}
+                                                                >
+                                                                    { clientOptionsList }
+                                                                </select>
+                                                            </label>
                                                         </div>
-                                                        <hr />
-                                                        <BootstrapTable selectRow={ selectRow }
-                                                            { ...props.baseProps }
-                                                        />
+                                                        <div className="col-sm-6">
+                                                            <SearchBar { ...props.searchProps } />
+                                                        </div>
                                                     </div>
-                                                )
-                                            }
+                                                    <BootstrapTable selectRow={ selectRow }
+                                                        { ...props.baseProps }
+                                                    />
+                                                </div>
+                                            )}
                                         </ToolkitProvider>
-
                                     </div>
                                 </div>
                             </div>

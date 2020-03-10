@@ -5,8 +5,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';   
-import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../state/services/emailTemplateService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
 
 class EditEmailTemplates extends Component {
     constructor(props) {

@@ -39,4 +39,47 @@
 			}
 		}
 	}
+
+	&.sidebar-mini {
+		.sidebarNav ul a {
+			&:hover {
+				padding: 9px 7px !important;
+			}
+
+			i {
+				font-size: 20px;
+				margin-left: 4px;
+			}
+
+			>span { display: none }
+		}
+	}
+
+	.panel {
+		.actions {
+			right: 12px;
+			top: 0;
+		}
+	}
+
+	.users {
+		.table-responsive > .row {
+			margin-bottom: 5px;
+
+			.col-sm-6 {
+				padding: 0 !important;
+
+				.search-label {
+					margin: 0 !important;
+					width: 50%;
+					float: right;
+				}
+
+				#client-select {
+					width: 200px;
+					height: 32px;
+				}
+			}
+		}
+	}
 }
