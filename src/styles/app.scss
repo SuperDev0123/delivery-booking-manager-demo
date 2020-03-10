@@ -1,12 +1,16 @@
 @import '_settings.scss';
 @import '_base.scss';
-@import './components/_header.scss';
+
+// Legacy
 @import './legacy/custom.css';
 @import './legacy/style.css';
 @import './legacy/main.css';
 @import './legacy/bootstrap.css';
 @import './legacy/icomoon.css';
 @import './legacy/dropzone.css';
+
+// Pages
+@import './pages/admin.scss';
 @import './pages/allbookings.scss';
 @import './pages/bookingdetail.scss';
 @import './pages/login.scss';
@@ -15,6 +19,9 @@
 @import './pages/comm.scss';
 @import './pages/report.scss';
 @import './pages/zohodetails.scss';
+
+// Components
+@import './components/_header.scss';
 @import './components/LineAndLineDetailSlider.scss';
 @import './components/StatusHistorySlider.scss';
 @import './components/LineTrackingSlider.scss';

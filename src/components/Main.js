@@ -60,21 +60,20 @@ class Main extends Component {
         const isLoggedIn = this.state.isLoggedIn;
         console.log('isLoggedIn', isLoggedIn);
         return (
-            <div>
+            <React.Fragment>
                 { isLoggedIn ? (
-                    <div>
+                    <React.Fragment>
                         <MainWrapper handleLoginCheck={this.loginCheck}>
                             {this.props.children}
                         </MainWrapper>
                         <SidebarOverlay />
-                    </div>
+                    </React.Fragment>
                 ) : (
                     <LoginWrapper handleLoginCheck={this.loginCheck}>
                         {this.props.children}
                     </LoginWrapper>
                 )}
-
-            </div>
+            </React.Fragment>
         );
     }
 }

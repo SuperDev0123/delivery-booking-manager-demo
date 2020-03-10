@@ -1,0 +1,42 @@
+.admin-theme {
+	position: relative;
+	min-height: 100%;
+	background: #F0F3F3;
+
+	.sidebar-left {
+		padding-left: 0;
+		padding-right: 0;
+		padding-top: 62px;
+
+		.sidebar-profile {
+			.dropdown {
+				margin-top: 20px;
+
+				ul.animated {
+					padding: 5px 15px !important;
+					margin: 0;
+
+					.progress.progress-xs {
+						margin-bottom: 10px;
+					}
+
+					li a {
+						padding: 0px !important;
+					}
+				}
+			}
+		}
+
+		.sidebarNav ul {
+			margin: 0;
+
+			li {
+				width: 100%;
+
+				a:hover {
+					border-radius: 0;
+				}
+			}
+		}
+	}
+}

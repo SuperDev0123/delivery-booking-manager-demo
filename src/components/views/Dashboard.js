@@ -13,7 +13,7 @@ class Dashboard extends Component {
     render() {
 
         return (
-            <div id="main-wrapper" className="theme-default">
+            <div id="main-wrapper" className="theme-default admin-theme">
                 <div className="pageheader">
                     <h1>Dashboard</h1>
                     <p className="description">Welcome to NEUBOARD Responsive Admin Theme</p>

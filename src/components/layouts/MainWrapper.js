@@ -40,7 +40,7 @@ class MainWrapper extends Component {
     }
     render() {
         return (
-            <div id="main-wrapper" className={'theme-default ' +this.state.sidebarClass}>
+            <div id="main-wrapper" className={'theme-default admin-theme ' + this.state.sidebarClass}>
                 <Header sidebarPush={this.sidebarPush} />
                 <SidebarPush handleLoginCheck={this.props.handleLoginCheck} />
                 <PageWrapper handleLoginCheck={this.props.handleLoginCheck}>
