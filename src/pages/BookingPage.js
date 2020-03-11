@@ -169,12 +169,14 @@ class BookingPage extends Component {
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
             isShowDeleteCommConfirmModal: false,
+            isShowDeleteFileConfirmModal: false,
             bookingId: null,
             apiBCLs: [],
             allFPs: [],
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
+            selectedFileOption: null,
         };
 
         this.djsConfig = {
@@ -208,16 +210,17 @@ class BookingPage extends Component {
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleShowNoteSlider = this.toggleShowNoteSlider.bind(this);
+        this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
         this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
-        this.toggleShowLineSlider = this.toggleShowLineSlider.bind(this);
-        this.toggleShowLineTrackingSlider = this.toggleShowLineTrackingSlider.bind(this);
-        this.toggleShowStatusHistorySlider = this.toggleShowStatusHistorySlider.bind(this);
-        this.toggleShowDateSlider = this.toggleShowDateSlider.bind(this);
-        this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
-        this.toggleShowStatusNoteModal = this.toggleShowStatusNoteModal.bind(this);
-        this.toggleShowDeleteCommConfirmModal = this.toggleShowDeleteCommConfirmModal.bind(this);
-        this.toggleShowFPPricingSlider = this.toggleShowFPPricingSlider.bind(this);
+        this.toggleLineSlider = this.toggleLineSlider.bind(this);
+        this.toggleLineTrackingSlider = this.toggleLineTrackingSlider.bind(this);
+        this.toggleStatusHistorySlider = this.toggleStatusHistorySlider.bind(this);
+        this.toggleDateSlider = this.toggleDateSlider.bind(this);
+        this.toggleStatusLockModal = this.toggleStatusLockModal.bind(this);
+        this.toggleStatusNoteModal = this.toggleStatusNoteModal.bind(this);
+        this.toggleDeleteCommConfirmModal = this.toggleDeleteCommConfirmModal.bind(this);
+        this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
+        this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
     }
 
     static propTypes = {
@@ -1101,8 +1104,10 @@ class BookingPage extends Component {
         }
     }
 
-    onClickLabelOrPOD(booking, type) {
-        if (type === 'label') {
+    onClickViewFile(fileOption) {
+        const {booking} = this.state;
+
+        if (fileOption === 'label') {
             if (booking.z_label_url && booking.z_label_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
                     .then(() => {
@@ -1117,7 +1122,7 @@ class BookingPage extends Component {
             } else {
                 alert('This booking has no label');
             }
-        } else if (type === 'pod') {
+        } else if (fileOption === 'pod') {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_timestamp', new Date())
                     .then(() => {
@@ -1146,11 +1151,11 @@ class BookingPage extends Component {
         }
     }
 
-    onDownload(downloadOption) {
+    onClickDownloadFile(fileOption) {
         const { booking } = this.state;
         const selectedBookingIds = [booking.id];
 
-        if (downloadOption === 'label') {
+        if (fileOption === 'label') {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
@@ -1166,13 +1171,13 @@ class BookingPage extends Component {
                 document.body.appendChild(link);
                 link.click();
             });
-        } else if (downloadOption === 'pod') {
+        } else if (fileOption === 'pod') {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
                 data: {
                     ids: selectedBookingIds,
-                    downloadOption: downloadOption,
+                    downloadOption: fileOption,
                 },
                 responseType: 'blob', // important
             };
@@ -1185,13 +1190,13 @@ class BookingPage extends Component {
                 document.body.appendChild(link);
                 link.click();
             });
-        } else if (downloadOption === 'pod_sog') {
+        } else if (fileOption === 'pod_sog') {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
                 data: {
                     ids: selectedBookingIds,
-                    downloadOption: downloadOption,
+                    downloadOption: fileOption,
                 },
                 responseType: 'blob', // important
             };
@@ -1205,6 +1210,39 @@ class BookingPage extends Component {
                 link.click();
             });
         }
+    }
+
+    onClickDeleteFile(fileOption) {
+        this.setState({selectedFileOption: fileOption});
+        this.toggleDeleteFileConfirmModal();
+    }
+
+    onClickConfirmDeleteFileBtn() {
+        const {booking, selectedFileOption} = this.state;
+
+        const options = {
+            method: 'delete',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
+            data: {bookingId: booking.id, deleteFileOption: selectedFileOption},
+            responseType: 'blob', // important
+        };
+
+        axios(options)
+            .then((response) => {
+                console.log('#301 - ', response.data);
+
+                if (selectedFileOption === 'label') {
+                    booking.z_label_url = null;
+                } else if (selectedFileOption === 'pod') {
+                    booking.z_pod_url = null;
+                }
+
+                this.toggleDeleteFileConfirmModal();
+            })
+            .catch(error => {
+                this.notify('Failed to delete a file: ' + error);
+                this.toggleDeleteFileConfirmModal();
+            });
     }
 
     onClickNext(e){
@@ -1572,6 +1610,18 @@ class BookingPage extends Component {
         formData.append('booking_id', this.state.booking.id);
     }
 
+    handleAddedFiles(files) {
+        var dropzone = this;
+
+        if (files.length > 1) {
+            this.notify('Please add only single file for POD and Label.');
+
+            files.map(file => {
+                dropzone.remove(file);
+            });
+        }
+    }
+
     handleUploadSuccess(file, response) {
         let {booking} =  this.state;
 
@@ -1615,7 +1665,7 @@ class BookingPage extends Component {
         }
     }
 
-    onClickDelete(typeNum, row) {
+    onClickDeleteLineOrLineData(typeNum, row) {
         console.log('onDelete: ', typeNum, row);
 
         if (typeNum === 0) { // Duplicate line
@@ -1872,7 +1922,7 @@ class BookingPage extends Component {
         }
     }
 
-    toggleShowNoteSlider() {
+    toggleNoteSlider() {
         this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
@@ -1880,7 +1930,7 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
     }
 
-    toggleShowLineSlider() {
+    toggleLineSlider() {
         const { isBookingSelected } = this.state;
 
         if (isBookingSelected) {
@@ -1890,23 +1940,27 @@ class BookingPage extends Component {
         }
     }
 
-    toggleShowLineTrackingSlider() {
+    toggleLineTrackingSlider() {
         this.setState(prevState => ({isShowLineTrackingSlider: !prevState.isShowLineTrackingSlider}));
     }
 
-    toggleShowStatusLockModal() {
+    toggleStatusLockModal() {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
-    toggleShowStatusNoteModal(type='dme_status_history_notes') {
+    toggleStatusNoteModal(type='dme_status_history_notes') {
         this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal, currentNoteModalField: type}));
     }
 
-    toggleShowDeleteCommConfirmModal() {
+    toggleDeleteCommConfirmModal() {
         this.setState(prevState => ({isShowDeleteCommConfirmModal: !prevState.isShowDeleteCommConfirmModal}));
     }
 
-    toggleShowStatusHistorySlider() {
+    toggleDeleteFileConfirmModal() {
+        this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
+    }
+
+    toggleStatusHistorySlider() {
         const { isBookingSelected } = this.state;
 
         if (isBookingSelected) {
@@ -1916,7 +1970,7 @@ class BookingPage extends Component {
         }
     }
 
-    toggleShowDateSlider() {
+    toggleDateSlider() {
         const { isBookingSelected } = this.state;
 
         if (isBookingSelected) {
@@ -1926,7 +1980,7 @@ class BookingPage extends Component {
         }
     }
 
-    toggleShowFPPricingSlider() {
+    toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
 
@@ -2188,12 +2242,12 @@ class BookingPage extends Component {
 
     onClickOpenSlide(e) {
         e.preventDefault();
-        this.toggleShowStatusHistorySlider();
+        this.toggleStatusHistorySlider();
     }
 
     onClickOpenDateSlide(e) {
         e.preventDefault();
-        this.toggleShowDateSlider();
+        this.toggleDateSlider();
     }
 
     OnCreateStatusHistory(statusHistory) {
@@ -2280,7 +2334,7 @@ class BookingPage extends Component {
 
         if (clientname === 'dme') {
             if (booking.b_status_API === 'POD Delivered') {
-                this.toggleShowStatusLockModal();
+                this.toggleStatusLockModal();
             } else {
                 this.onChangeStatusLock(booking);
             }
@@ -2291,7 +2345,7 @@ class BookingPage extends Component {
 
     onChangeStatusLock(booking) {
         if (booking.b_status_API === 'POD Delivered') {
-            this.toggleShowStatusLockModal();
+            this.toggleStatusLockModal();
         }
 
         booking.z_lock_status = !booking.z_lock_status;
@@ -2317,7 +2371,7 @@ class BookingPage extends Component {
         newBooking[currentNoteModalField] = note;
         formInputs[currentNoteModalField] = note;
         this.setState({booking: newBooking, formInputs, isBookingModified: true});
-        this.toggleShowStatusNoteModal();
+        this.toggleStatusNoteModal();
     }
 
     onClearStatusNote() {
@@ -2328,17 +2382,17 @@ class BookingPage extends Component {
         newBooking[currentNoteModalField] = '';
         formInputs[currentNoteModalField] = '';
         this.setState({booking: newBooking, formInputs, isBookingModified: true});
-        this.toggleShowStatusNoteModal();
+        this.toggleStatusNoteModal();
     }
 
     onDeleteBtnClick(commId) {
         this.setState({selectedCommId: commId});
-        this.toggleShowDeleteCommConfirmModal();
+        this.toggleDeleteCommConfirmModal();
     }
 
     onClickConfirmDeleteCommBtn() {
         this.props.deleteComm(this.state.selectedCommId);
-        this.toggleShowDeleteCommConfirmModal();
+        this.toggleDeleteCommConfirmModal();
     }
 
     onDateChange(date, fieldName) {
@@ -2422,14 +2476,14 @@ class BookingPage extends Component {
         const {booking} = this.state;
         this.props.fpPricing(booking.id);
         this.setState({loading: true});
-        this.toggleShowFPPricingSlider();
+        this.toggleFPPricingSlider();
     }
 
     onClickOpenPricingSlider() {
         const {booking} = this.state;
         this.props.getPricingInfos(booking.pk_booking_id);
         this.setState({loading: true});
-        this.toggleShowFPPricingSlider();
+        this.toggleFPPricingSlider();
     }
 
     onSelectPricing(pricingInfo) {
@@ -2445,7 +2499,7 @@ class BookingPage extends Component {
 
         this.setState({formInputs, booking, isBookingModified: true});
         this.props.updateBooking(booking.id, booking);
-        this.toggleShowFPPricingSlider();
+        this.toggleFPPricingSlider();
     }
 
     onClickEnvelop(templateName) {
@@ -2729,11 +2783,13 @@ class BookingPage extends Component {
         };
         const labelEventHandlers = {
             init: dz => this.labelDz = dz,
+            addedfiles: this.handleAddedFiles.bind(this),
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
         const podEventHandlers = {
             init: dz => this.podDz = dz,
+            addedfiles: this.handleAddedFiles.bind(this),
             sending: this.handleFileSending.bind(this),
             success: this.handleUploadSuccess.bind(this),
         };
@@ -3391,7 +3447,7 @@ class BookingPage extends Component {
                                                     id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
                                                     name="inv_billing_status_note"
                                                     value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
-                                                    onClick={() => this.toggleShowStatusNoteModal('inv_billing_status_note')}
+                                                    onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
                                                     rows="4"
                                                     cols="83"
                                                 />
@@ -3410,7 +3466,7 @@ class BookingPage extends Component {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <textarea 
                                                         className="show-mode"
-                                                        onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                        onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
                                                         id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         value={formInputs['dme_status_history_notes']}
                                                         disabled='disabled'
@@ -3424,14 +3480,14 @@ class BookingPage extends Component {
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             name="dme_status_linked_reference_from_fp"
                                                             value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
                                                             rows="4"
                                                             cols="83"
                                                         />
                                                         :
                                                         <textarea 
                                                             className="show-mode"
-                                                            onClick={() => this.toggleShowStatusNoteModal('dme_status_history_notes')}
+                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             value={formInputs['dme_status_history_notes']}
                                                             disabled='disabled'
@@ -4427,14 +4483,14 @@ class BookingPage extends Component {
                                             <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
                                                 <Button 
                                                     className="edit-lld-btn btn-primary"
-                                                    onClick={this.toggleShowLineSlider} 
+                                                    onClick={this.toggleLineSlider} 
                                                     disabled={!isBookingSelected || (isBookedBooking && clientname !== 'dme')}
                                                 >
                                                     Edit
                                                 </Button>
                                                 <Button 
                                                     className="edit-lld-btn btn-primary"
-                                                    onClick={this.toggleShowLineTrackingSlider} 
+                                                    onClick={this.toggleLineTrackingSlider} 
                                                     disabled={!isBookingSelected}
                                                 >
                                                     Edit Tracking
@@ -4538,72 +4594,83 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
                                         <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            {
-                                                isBookingSelected ?
-                                                    <div className="row">
-                                                        <div className="col-6">
-                                                            <label>Label upload</label>
-                                                            <form onSubmit={(e) => this.handlePost(e, 'label')}>
-                                                                <DropzoneComponent
-                                                                    id="label-dz"
-                                                                    config={labelDzConfig}
-                                                                    eventHandlers={labelEventHandlers}
-                                                                    djsConfig={djsConfig}
-                                                                />
-                                                                <button className="btn btn-primary" type="submit">upload</button>
-                                                            </form>
-                                                            {
-                                                                booking.z_label_url &&
-                                                                <div>
-                                                                    <p>Label: {booking.z_label_url}</p>
-                                                                    <button
-                                                                        className="btn btn-primary"
-                                                                        onClick={() => this.onDownload('label')}
-                                                                    >
-                                                                        Download
-                                                                    </button>
-                                                                    <button
-                                                                        className="btn btn-primary"
-                                                                        onClick={() => this.onClickLabelOrPOD(booking, 'label')}
-                                                                    >
-                                                                        View
-                                                                    </button>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                        <div className="col-6">
-                                                            <label>POD upload</label>
-                                                            <form onSubmit={(e) => this.handlePost(e, 'pod')}>
-                                                                <DropzoneComponent
-                                                                    id="pod-dz"
-                                                                    config={podDzConfig}
-                                                                    eventHandlers={podEventHandlers}
-                                                                    djsConfig={djsConfig}
-                                                                />
-                                                                <button className="btn btn-primary" type="submit">upload</button>
-                                                            </form>
-                                                            {
-                                                                (booking.z_pod_url || booking.z_pod_signed_url) &&
-                                                                <div>
-                                                                    <p>POD: {booking.z_pod_url}</p>
-                                                                    <button
-                                                                        className="btn btn-primary"
-                                                                        onClick={() => this.onDownload('pod')}
-                                                                    >
-                                                                        Download
-                                                                    </button>
-                                                                    <button
-                                                                        className="btn btn-primary"
-                                                                        onClick={() => this.onClickLabelOrPOD(booking, 'pod')}
-                                                                    >
-                                                                        View
-                                                                    </button>
-                                                                </div>
-                                                            }
-                                                        </div>
+                                            {isBookingSelected ?
+                                                <div className="row">
+                                                    <div className="col-6">
+                                                        <label>Label upload</label>
+                                                        <form onSubmit={(e) => this.handlePost(e, 'label')}>
+                                                            <DropzoneComponent
+                                                                id="label-dz"
+                                                                config={labelDzConfig}
+                                                                eventHandlers={labelEventHandlers}
+                                                                djsConfig={djsConfig}
+                                                            />
+                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                        </form>
+                                                        {
+                                                            booking.z_label_url &&
+                                                            <div>
+                                                                <p>Label: {booking.z_label_url}</p>
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => this.onClickDownloadFile('label')}
+                                                                >
+                                                                    Download
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => this.onClickViewFile('label')}
+                                                                >
+                                                                    View
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-danger"
+                                                                    onClick={() => this.onClickDeleteFile('label')}
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        }
                                                     </div>
-                                                    :
-                                                    <label className='red'>Please select booking first</label>
+                                                    <div className="col-6">
+                                                        <label>POD upload</label>
+                                                        <form onSubmit={(e) => this.handlePost(e, 'pod')}>
+                                                            <DropzoneComponent
+                                                                id="pod-dz"
+                                                                config={podDzConfig}
+                                                                eventHandlers={podEventHandlers}
+                                                                djsConfig={djsConfig}
+                                                            />
+                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                        </form>
+                                                        {
+                                                            (booking.z_pod_url || booking.z_pod_signed_url) &&
+                                                            <div>
+                                                                <p>POD: {booking.z_pod_url}</p>
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => this.onClickDownloadFile('pod')}
+                                                                >
+                                                                    Download
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-primary"
+                                                                    onClick={() => this.onClickViewFile('pod')}
+                                                                >
+                                                                    View
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-danger"
+                                                                    onClick={() => this.onClickDeleteFile('pod')}
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                :
+                                                <label className='red'>Please select booking first</label>
                                             }
                                         </div>
                                     </div>
@@ -4794,7 +4861,7 @@ class BookingPage extends Component {
 
                 <NoteSlider
                     isOpen={isNotePaneOpen}
-                    toggleShowNoteSlider={this.toggleShowNoteSlider}
+                    toggleNoteSlider={this.toggleNoteSlider}
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
@@ -4805,11 +4872,11 @@ class BookingPage extends Component {
 
                 <LineAndLineDetailSlider
                     isOpen={isShowLineSlider}
-                    toggleShowLineSlider={this.toggleShowLineSlider}
+                    toggleLineSlider={this.toggleLineSlider}
                     lines={products}
                     lineDetails={bookingLineDetailsProduct}
                     onClickDuplicate={(typeNum, data) => this.onClickDuplicate(typeNum, data)}
-                    onClickDelete={(typeNum, data) => this.onClickDelete(typeNum, data)}
+                    onClickDelete={(typeNum, data) => this.onClickDeleteLineOrLineData(typeNum, data)}
                     loadingBookingLine={this.state.loadingBookingLine}
                     loadingBookingLineDetail={this.state.loadingBookingLineDetail}
                     selectedLineIndex={this.state.selectedLineIndex}
@@ -4828,7 +4895,7 @@ class BookingPage extends Component {
                     isOpen={isShowStatusHistorySlider}
                     statusHistories={statusHistories}
                     booking={booking}
-                    toggleStatusHistorySlider={this.toggleShowStatusHistorySlider}
+                    toggleStatusHistorySlider={this.toggleStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
@@ -4837,7 +4904,7 @@ class BookingPage extends Component {
 
                 <LineTrackingSlider
                     isOpen={isShowLineTrackingSlider}
-                    toggleShowLineTrackingSlider={this.toggleShowLineTrackingSlider}
+                    toggleLineTrackingSlider={this.toggleLineTrackingSlider}
                     lines={products}
                     booking={booking}
                     clientname={clientname}
@@ -4850,14 +4917,14 @@ class BookingPage extends Component {
 
                 <StatusLockModal
                     isOpen={isShowStatusLockModal}
-                    toggleShowStatusLockModal={this.toggleShowStatusLockModal}
+                    toggleStatusLockModal={this.toggleStatusLockModal}
                     booking={booking}
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
 
                 <StatusNoteModal
                     isShowStatusNoteModal={this.state.isShowStatusNoteModal}
-                    toggleShowStatusNoteModal={this.toggleShowStatusNoteModal}
+                    toggleStatusNoteModal={this.toggleStatusNoteModal}
                     onUpdate={(note) => this.onUpdateStatusNote(note)}
                     onClear={() => this.onClearStatusNote()}
                     note={formInputs[currentNoteModalField]}
@@ -4868,9 +4935,18 @@ class BookingPage extends Component {
                 <ConfirmModal
                     isOpen={this.state.isShowDeleteCommConfirmModal}
                     onOk={() => this.onClickConfirmDeleteCommBtn()}
-                    onCancel={this.toggleShowDeleteCommConfirmModal}
+                    onCancel={this.toggleDeleteCommConfirmModal}
                     title={'Delete Comm Log'}
                     text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
+                    okBtnName={'Delete'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowDeleteFileConfirmModal}
+                    onOk={() => this.onClickConfirmDeleteFileBtn()}
+                    onCancel={this.toggleDeleteFileConfirmModal}
+                    title={this.state.selectedFileOption === 'label' ? 'Delete Label' : 'Delete POD'}
+                    text={'Are you sure you want to delete this file?'}
                     okBtnName={'Delete'}
                 />
 
@@ -4878,12 +4954,12 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowProjectDataSlider}
                     booking={booking}
                     OnUpdate = {(bookingToUpdate) => this.onUpdateProjectData(bookingToUpdate)}
-                    toggleDateSlider={this.toggleShowDateSlider}
+                    toggleDateSlider={this.toggleDateSlider}
                 />
 
                 <FPPricingSlider
                     isOpen={this.state.isShowFPPricingSlider}
-                    toggleShowSlider={this.toggleShowFPPricingSlider}
+                    toggleSlider={this.toggleFPPricingSlider}
                     pricingInfos={this.state.pricingInfos}
                     onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
                     booking={booking}
