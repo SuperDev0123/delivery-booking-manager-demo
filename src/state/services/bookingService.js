@@ -67,6 +67,12 @@ import {
     successSendEmail,
     failedSendEmail,
     resetAutoSelectedAction,
+    successCheckAugmented,
+    failedCheckAugmented,
+    successAutoAugment,
+    failedAutoAugment,
+    successRevertAugment,
+    failedRevertAugment,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -298,6 +304,49 @@ export const saveBooking = (booking) => {
         axios(options)
             .then(({ data }) => dispatch(successCreateBooking(data)))
             .catch((error) => dispatch(failedCreateBooking(error)));
+    };
+};
+
+export const checkAugmentedBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/check_augmented/?bookingId=` + bookingId,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCheckAugmented(data)))
+            .catch((error) => dispatch(failedCheckAugmented(error)));
+};
+
+export const autoAugmentBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/auto_augment/`,
+        data: {'bookingId': bookingId}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successAutoAugment(data)))
+            .catch((error) => dispatch(failedAutoAugment(error)));
+    };
+};
+
+export const revertAugmentBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/revert_augment/`,
+        data: {'bookingId': bookingId}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successRevertAugment(data)))
+            .catch((error) => dispatch(failedRevertAugment(error)));
     };
 };
 
