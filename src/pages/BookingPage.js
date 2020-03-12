@@ -4387,6 +4387,11 @@ class BookingPage extends Component {
                                                         <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
                                                         <button className={(parseInt(curViewMode) === 2 && isAutoAugmented === false) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
                                                     </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        {
+                                                            isAutoAugmented === false? <button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickAutoAugment()}>Auto Augment</button>:<button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickRevertAugment()}>Revert</button>
+                                                        }
+                                                    </div>
                                                     {
                                                         (clientname === 'dme') ?
                                                             <div className="text-center mt-2 fixed-height pricing-btns">
@@ -4470,11 +4475,6 @@ class BookingPage extends Component {
                                                         >
                                                             Reprint
                                                         </button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        {
-                                                            isAutoAugmented === false? <button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickAutoAugment()}>Auto Augment</button>:<button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickRevertAugment()}>Revert</button>
-                                                        }
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickTrackingStatus()}>Status(Test)</button>
