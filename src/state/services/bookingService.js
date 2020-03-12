@@ -312,7 +312,7 @@ export const checkAugmentedBooking = (bookingId) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/check_augmented/?bookingId=` + bookingId,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/check_augmented/?bookingId=` + bookingId,
     };
     return dispatch =>
         axios(options)
@@ -325,7 +325,7 @@ export const autoAugmentBooking = (bookingId) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/auto_augment/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/auto_augment/`,
         data: {'bookingId': bookingId}
     };
     return dispatch => {
@@ -340,7 +340,7 @@ export const revertAugmentBooking = (bookingId) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/revert_augment/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/revert_augment/`,
         data: {'bookingId': bookingId}
     };
     return dispatch => {
