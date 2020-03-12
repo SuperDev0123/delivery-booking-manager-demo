@@ -20,14 +20,13 @@ class Upload extends Component {
             addRemoveLinks: true,
             autoProcessQueue: false,
             parallelUploads: 10,
-            params: { filename: 'file' },
             timeout: 360000,
         };
 
         this.componentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/upload/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pricing-only/',
         };
 
         this.dropzone = null;
@@ -81,6 +80,7 @@ class Upload extends Component {
     handleFileSending(data, xhr, formData) {
         const {username} = this.state;
         formData.append('username', username);
+        formData.append('uploadOption', 'pricing-only');
     }
 
     render() {
@@ -116,7 +116,11 @@ class Upload extends Component {
                         </div>
                         <div className="panel-body">
                             <form onSubmit={(e) => this.handlePost(e)}>
-                                <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
+                                <DropzoneComponent 
+                                    config={config}
+                                    eventHandlers={eventHandlers}
+                                    djsConfig={djsConfig}
+                                />
                                 <button className="btn btn-primary" type="submit">Upload</button>
                             </form>
                         </div>
