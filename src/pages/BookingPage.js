@@ -177,6 +177,7 @@ class BookingPage extends Component {
             pricingInfos: [],
             isShowFPPricingSlider: false,
             selectedFileOption: null,
+            uploadOption: null,
         };
 
         this.djsConfig = {
@@ -1586,17 +1587,21 @@ class BookingPage extends Component {
         e.preventDefault();
         const {booking} = this.state;
         if (booking != null && booking.id != null) {
-            if (!booking.vx_freight_provider) {
-                this.notify('Booking should have selected Freight Provider.');
-            } else if (type === 'attachments') {
-                this.attachmentsDz.processQueue();
-            } else if (type === 'label') {
-                this.labelDz.processQueue();
-            } else if (type === 'pod') {
-                this.podDz.processQueue();
-            }
+            const that = this;
+            this.setState({uploadOption: type});
+            setTimeout(() => {
+                if (!booking.vx_freight_provider) {
+                    that.notify('Please select a Freight Provider!');
+                } else if (type === 'attachment') {
+                    that.attachmentsDz.processQueue();
+                } else if (type === 'label') {
+                    that.labelDz.processQueue();
+                } else if (type === 'pod') {
+                    that.podDz.processQueue();
+                }
+            }, 300);
         } else {
-            this.notify('There is no booking data.');
+            this.notify('Plase select a Booking!');
         }
     }
 
@@ -1607,7 +1612,8 @@ class BookingPage extends Component {
     }
 
     handleFileSending(data, xhr, formData) {
-        formData.append('booking_id', this.state.booking.id);
+        formData.append('bookingId', this.state.booking.id);
+        formData.append('uploadOption', this.state.uploadOption);
     }
 
     handleAddedFiles(files) {
@@ -4574,7 +4580,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
-                                                <form onSubmit={(e) => this.handlePost(e, 'attachments')}>
+                                                <form onSubmit={(e) => this.handlePost(e, 'attachment')}>
                                                     <DropzoneComponent
                                                         id="attachments-dz"
                                                         config={attachmentsDzConfig}

@@ -41,6 +41,8 @@ import EditFreightProviders from '../pages/admin/views/FreightProviders/EditFrei
 import SqlQueries from '../pages/admin/views/SqlQueries/SqlQueries';
 import AddSqlQuery from '../pages/admin/views/SqlQueries/AddSqlQuery';
 import EditSqlQuery from '../pages/admin/views/SqlQueries/EditSqlQuery';
+import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
+import PricingOnlyUpload from '../pages/admin/views/PricingOnly/Upload';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -80,6 +82,8 @@ export const AppRouter = () => (
                     <AdminRoute exact path='/admin/providers' component={FreightProviders} />
                     <AdminRoute exact path='/admin/providers/add' component={AddFreightProviders} />
                     <AdminRoute exact path='/admin/providers/edit/:id' component={EditFreightProviders} />
+                    <AdminRoute exact path='/admin/pricing-only' component={PricingOnlyList} />
+                    <AdminRoute exact path='/admin/pricing-only/upload' component={PricingOnlyUpload} />
                 </Main>
             </Switch>
             <Footer />
