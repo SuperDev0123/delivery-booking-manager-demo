@@ -1,7 +1,10 @@
 import React, { Fragment } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-// import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, Route, Switch,Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+
+// Routes
+import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
+import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
 
 // User pages
 import Header from '../components/Header/Header';
@@ -20,8 +23,6 @@ import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
 import BokPage from '../pages/BokPage';
 import FilesPage from '../pages/FilesPage';
-import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
-import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
 import ZohoPage from '../pages/ZohoPage';
 import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 

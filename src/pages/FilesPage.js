@@ -22,19 +22,19 @@ class FilesPage extends Component {
     };
 
     componentDidMount() {
-        this.props.getFiles();
+        this.props.getFiles('import');
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const {redirect, files} = newProps;
 
-        if (files) {
-            this.setState({files});
-        }
-
         if (redirect) {
             this.props.cleanRedirectState();
             this.props.history.push('/');
+        }
+
+        if (files) {
+            this.setState({files});
         }
     }
 
@@ -102,7 +102,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getFiles: () => dispatch(getFiles()),
+        getFiles: (fileType) => dispatch(getFiles(fileType)),
     };
 };
 
