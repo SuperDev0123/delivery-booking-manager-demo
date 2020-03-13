@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 
-import { getToken, getUser } from '../../../state/services/authService';
-import { verifyToken, cleanRedirectState } from '../../../state/services/authService';  
+import { getToken, getUser } from '../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../state/services/adminAuthService';  
 
 class Login extends Component {
     constructor(props) {
@@ -34,7 +34,7 @@ class Login extends Component {
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -140,9 +140,9 @@ class Login extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        token: state.auth.token,
-        username: state.auth.username,
-        errorMessage: state.auth.errorMessage,
+        token: state.adminAuth.token,
+        username: state.adminAuth.username,
+        errorMessage: state.adminAuth.errorMessage,
     };
 };
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { createFpDetail } from '../../../../state/services/fpService';  
 
 class AddFreightProviders extends Component {
@@ -28,12 +28,12 @@ class AddFreightProviders extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -43,7 +43,7 @@ class AddFreightProviders extends Component {
         const { redirect, fp_company_name, fp_address_country } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -64,7 +64,7 @@ class AddFreightProviders extends Component {
         const { fp_company_name, fp_address_country } = this.state;
         this.props.createFpDetail({fp_company_name:fp_company_name, fp_address_country:fp_address_country});
         this.setState({loading: false});
-        this.props.history.push('/providers');
+        this.props.history.push('/admin/providers');
         event.preventDefault();
     }
 
@@ -126,10 +126,10 @@ class AddFreightProviders extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         fp_company_name: state.fp.fp_company_name,
         fp_address_country: state.fp.fp_address_country,
-        username: state.auth.username,
+        username: state.adminAuth.username,
     };
 };
 

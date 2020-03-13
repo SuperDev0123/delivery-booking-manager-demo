@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
 
 class EmailTemplates extends Component {    
@@ -32,12 +32,12 @@ class EmailTemplates extends Component {
 
     componentDidMount() {
         //this.setState({loading: true});
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -50,7 +50,7 @@ class EmailTemplates extends Component {
         const { redirect, allEmailTemplates, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -156,9 +156,9 @@ class EmailTemplates extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         allEmailTemplates: state.emailTemplate.allEmailTemplates,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
     };
 };

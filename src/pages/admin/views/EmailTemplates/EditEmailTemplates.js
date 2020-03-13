@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
 
 class EditEmailTemplates extends Component {
@@ -44,12 +44,12 @@ class EditEmailTemplates extends Component {
     componentDidMount() {
         const id = this.props.match.params.id;
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -61,7 +61,7 @@ class EditEmailTemplates extends Component {
         const { redirect, emailTemplateDetails, id, pageInd, pageCnt } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -187,9 +187,9 @@ class EditEmailTemplates extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         emailTemplateDetails: state.emailTemplate.emailTemplateDetails,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
         pageInd: state.fp.pageInd

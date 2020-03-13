@@ -12,7 +12,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 // Services
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/adminAuthService';   
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
 class Users extends Component {    
@@ -43,12 +43,12 @@ class Users extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -61,7 +61,7 @@ class Users extends Component {
         const { redirect, allUsers, dmeClients, clientPK, needUpdateUsers } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -327,10 +327,10 @@ class Users extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         allUsers: state.user.allUsers,
-        username: state.auth.username,
-        dmeClients: state.auth.dmeClients,
+        username: state.adminAuth.username,
+        dmeClients: state.adminAuth.dmeClients,
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,

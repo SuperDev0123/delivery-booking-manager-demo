@@ -8,7 +8,7 @@ import Modal from 'react-modal';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';  
 
 const customStyles = {
@@ -61,12 +61,12 @@ class AddSqlQueries extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -76,7 +76,7 @@ class AddSqlQueries extends Component {
         const { redirect, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -126,7 +126,7 @@ class AddSqlQueries extends Component {
         const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
         this.props.createSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username});
         this.setState({loading: false});
-        this.props.history.push('/sqlqueries');
+        this.props.history.push('/admin/sqlqueries');
         event.preventDefault();
     }
 
@@ -313,12 +313,12 @@ class AddSqlQueries extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         sql_title: state.sqlQuery.sql_title,
         sql_query: state.sqlQuery.sql_query,
         sql_description: state.sqlQuery.sql_description,
         sql_notes: state.sqlQuery.sql_notes,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,

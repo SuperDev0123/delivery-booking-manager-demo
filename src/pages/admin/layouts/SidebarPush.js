@@ -46,8 +46,8 @@ class SidebarPush extends React.Component {
     }
 
     logout() {
-        localStorage.setItem('isLoggedIn', 'false');
-        localStorage.setItem('token', '');
+        localStorage.setItem('isAdminLoggedIn', 'false');
+        localStorage.setItem('admin_token', '');
         this.props.handleLoginCheck();
         this.props.history.push('/');
     }

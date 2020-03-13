@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { getAllFPs, deleteFpDetail } from '../../../../state/services/fpService';  
 
 class FreightProviders extends Component {    
@@ -33,12 +33,12 @@ class FreightProviders extends Component {
 
     componentDidMount() {
         this.setState({loading: true});
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -51,7 +51,7 @@ class FreightProviders extends Component {
         const { redirect, allFPs, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -154,9 +154,9 @@ class FreightProviders extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         allFPs: state.fp.allFPs,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
     };
 };

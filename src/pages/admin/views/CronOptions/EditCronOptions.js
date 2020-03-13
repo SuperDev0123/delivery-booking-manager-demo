@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';  
 import FPDataSlider from '../../../sliders/FPDataSlider';
 
@@ -54,12 +54,12 @@ class EditFreightProviders extends Component {
     componentDidMount() {
         const fp_id = this.props.match.params.id;
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -74,7 +74,7 @@ class EditFreightProviders extends Component {
         const { redirect, fpDetails, id, fpCarriers, fpZones, pageItemCnt, pageInd, pageCnt, needUpdateFpCarriers, needUpdateFpZones } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -127,7 +127,7 @@ class EditFreightProviders extends Component {
         const { fpDetails } = this.state;
         this.props.updateFpDetail({id: fpDetails.id, fp_company_name: fpDetails.fp_company_name, fp_address_country: fpDetails.fp_address_country});
         this.setState({loading: false});
-        this.props.history.push('/providers');
+        this.props.history.push('/admin/providers');
         event.preventDefault();
     }
 
@@ -254,11 +254,11 @@ class EditFreightProviders extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         fpDetails: state.fp.fpDetails,
         fpCarriers: state.fp.fpCarriers,
         fpZones: state.fp.fpZones,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
         pageInd: state.fp.pageInd,

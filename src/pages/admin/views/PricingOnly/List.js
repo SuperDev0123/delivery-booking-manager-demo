@@ -7,7 +7,7 @@ import moment from 'moment-timezone';
 // Components
 import LoadingOverlay from 'react-loading-overlay';
 // Services
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
 import { getFiles } from '../../../../state/services/fileService';
 
 class List extends Component {
@@ -30,12 +30,12 @@ class List extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin/');
         }
@@ -48,7 +48,7 @@ class List extends Component {
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -137,8 +137,8 @@ class List extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
-        username: state.auth.username,
+        redirect: state.adminAuth.redirect,
+        username: state.adminAuth.username,
         files: state.files.files,
     };
 };
