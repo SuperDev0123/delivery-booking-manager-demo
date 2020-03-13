@@ -51,7 +51,7 @@ class EditEmailTemplates extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getEmailTemplateDetails(id);
@@ -63,7 +63,7 @@ class EditEmailTemplates extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         if (emailTemplateDetails) {
@@ -88,7 +88,7 @@ class EditEmailTemplates extends Component {
         let data = {id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody};
         this.props.updateEmailTemplateDetails(data);
         this.setState({loading: false});
-        this.props.history.push('/emails');
+        this.props.history.push('/admin/emails');
         event.preventDefault();
     }
 

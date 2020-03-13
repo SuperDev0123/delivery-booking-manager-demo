@@ -44,7 +44,7 @@ class CronOptions extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getallCronOptions();
@@ -83,7 +83,7 @@ class CronOptions extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (allCronOptions && allCronOptions !== this.state.allCronOptions) {
             this.setState({ allCronOptions });

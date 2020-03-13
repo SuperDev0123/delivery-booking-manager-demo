@@ -42,7 +42,7 @@ class SqlQueries extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getAllSqlQueries();
@@ -55,7 +55,7 @@ class SqlQueries extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (allSqlQueries) {
             this.setState({ allSqlQueries });

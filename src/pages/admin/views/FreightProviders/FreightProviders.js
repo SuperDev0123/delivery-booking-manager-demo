@@ -40,7 +40,7 @@ class FreightProviders extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getAllFPs();

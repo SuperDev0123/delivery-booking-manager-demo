@@ -50,7 +50,7 @@ class EditUser extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getUserDetails(id);
@@ -62,7 +62,7 @@ class EditUser extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         if (emailTemplateDetails) {

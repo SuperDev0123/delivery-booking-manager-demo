@@ -39,7 +39,7 @@ class EmailTemplates extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getAllEmailTemplates();
@@ -52,7 +52,7 @@ class EmailTemplates extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (allEmailTemplates) {
             this.setState({ allEmailTemplates });

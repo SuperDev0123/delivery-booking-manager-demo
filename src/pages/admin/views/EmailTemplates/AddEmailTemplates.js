@@ -35,7 +35,7 @@ class AddFreightProviders extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
     }
 
@@ -45,7 +45,7 @@ class AddFreightProviders extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (fp_company_name) {
             this.setState({ fp_company_name: fp_company_name });
@@ -64,7 +64,7 @@ class AddFreightProviders extends Component {
         const { fp_company_name, fp_address_country } = this.state;
         this.props.createFpDetail({fp_company_name:fp_company_name, fp_address_country:fp_address_country});
         this.setState({loading: false});
-        this.props.history.push('/providers');
+        this.props.history.push('/admin/providers');
         event.preventDefault();
     }
 

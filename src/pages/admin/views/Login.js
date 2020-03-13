@@ -44,7 +44,7 @@ class Login extends Component {
             //this.props.handleLoginCheck();
 
         /*if (username) {
-            this.props.history.push('/dashboard');
+            this.props.history.push('/admin/dashboard');
             this.setState({loading: false});
         }*/
     }

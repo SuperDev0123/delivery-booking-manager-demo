@@ -36,7 +36,7 @@ class AddUser extends Component {
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
     }
 
@@ -46,7 +46,7 @@ class AddUser extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (fp_company_name) {
             this.setState({ fp_company_name: fp_company_name });
