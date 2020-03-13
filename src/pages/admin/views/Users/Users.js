@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 // Libs
 import _ from 'lodash';
 // Components
 import LoadingOverlay from 'react-loading-overlay';
-import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import BootstrapTable from 'react-bootstrap-table-next';
