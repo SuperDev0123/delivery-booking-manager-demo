@@ -37,7 +37,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -176,6 +176,7 @@ class BookingPage extends Component {
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
+            isAutoAugmented: false,
             selectedFileOption: null,
             uploadOption: null,
         };
@@ -230,6 +231,9 @@ class BookingPage extends Component {
         manualBook: PropTypes.func.isRequired,
         tickManualBook: PropTypes.func.isRequired,
         duplicateBooking: PropTypes.func.isRequired,
+        autoAugmentBooking: PropTypes.func.isRequired,
+        revertAugmentBooking: PropTypes.func.isRequired,
+        checkAugmentedBooking: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
         deleteBookingLine: PropTypes.func.isRequired,
@@ -283,6 +287,7 @@ class BookingPage extends Component {
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
+        isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
     };
@@ -326,7 +331,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -526,6 +531,7 @@ class BookingPage extends Component {
             this.setState({loading: false, curViewMode: 1});
             this.showCreateView();
         }
+
 
         if (!_.isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
@@ -934,6 +940,7 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
+                this.props.checkAugmentedBooking(booking.id);
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
@@ -955,6 +962,10 @@ class BookingPage extends Component {
             });
 
             this.setState({attachmentsHistory: bookingLineDetailsProduct});
+        }
+
+        if (isAutoAugmented != this.props.isAutoAugmented) {
+            this.setState({isAutoAugmented});
         }
     }
 
@@ -1380,6 +1391,25 @@ class BookingPage extends Component {
             this.props.fpReprint(booking.id, booking.vx_freight_provider);
         }
     }
+
+    onClickAutoAugment() {
+        const {booking, isAutoAugmented} = this.state;
+
+        if(!isAutoAugmented) {
+            this.setState({loadingBookingUpdate: true, curViewMode: 2});
+            this.props.autoAugmentBooking(booking.id);
+        }
+    }
+
+    onClickRevertAugment() {
+        const {booking, isAutoAugmented} = this.state;
+
+        if(isAutoAugmented) {
+            this.setState({loadingBookingUpdate: true, curViewMode: 2});
+            this.props.revertAugmentBooking(booking.id);
+        }
+    }
+
 
     onClickBook() {
         const { booking, isBookedBooking, clientname } = this.state;
@@ -2174,7 +2204,11 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        const {clientname, isBookedBooking, booking} = this.state;
+        const {clientname, isBookedBooking, booking, isAutoAugmented} = this.state;
+
+        if(isAutoAugmented) {
+            return;
+        }
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
@@ -2519,7 +2553,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments} = this.state;
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented } = this.state;
 
         const bookingLineColumns = [
             {
@@ -4357,7 +4391,12 @@ class BookingPage extends Component {
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height form-view-btns">
                                                         <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
-                                                        <button className={(parseInt(curViewMode) === 2) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
+                                                        <button className={(parseInt(curViewMode) === 2 && isAutoAugmented === false) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        {
+                                                            isAutoAugmented === false? <button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickAutoAugment()}>Auto Augment</button>:<button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickRevertAugment()}>Revert</button>
+                                                        }
                                                     </div>
                                                     {
                                                         (clientname === 'dme') ?
@@ -4986,6 +5025,7 @@ const mapStateToProps = (state) => {
         qtyTotal: state.booking.qtyTotal,
         cntComms: state.booking.cntComms,
         cntAttachments: state.booking.cntAttachments,
+        isAutoAugmented: state.booking.isAutoAugmented,
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -5034,6 +5074,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
+        autoAugmentBooking: (bookingId) => dispatch(autoAugmentBooking(bookingId)),
+        revertAugmentBooking: (bookingId) => dispatch(revertAugmentBooking(bookingId)),
+        checkAugmentedBooking: (bookingId) => dispatch(checkAugmentedBooking(bookingId)),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),

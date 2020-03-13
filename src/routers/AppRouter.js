@@ -19,6 +19,7 @@ import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
 import BokPage from '../pages/BokPage';
+import FilesPage from '../pages/FilesPage';
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
 import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
 import ZohoPage from '../pages/ZohoPage';
@@ -51,6 +52,8 @@ export const AppRouter = () => (
             <Switch>
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
+                <Route exact path='/bok' component={BokPage} />
+                <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
                 <Route path='/reset-password' component={ResetPasswordPage} />
@@ -64,7 +67,6 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/zoho' component={ZohoPage} />
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />
                 <PrivateRoute exact path='/reports' component={ReportPage} />
-                <Route exact path='/bok' component={BokPage} />
                 <Main>
                     <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />
@@ -85,6 +87,7 @@ export const AppRouter = () => (
                     <AdminRoute exact path='/admin/pricing-only' component={PricingOnlyList} />
                     <AdminRoute exact path='/admin/pricing-only/upload' component={PricingOnlyUpload} />
                 </Main>
+                <Redirect to='/' />
             </Switch>
             <Footer />
         </Fragment>

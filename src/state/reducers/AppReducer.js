@@ -9,12 +9,12 @@ import { CommReducer } from './commReducer';
 import { ReportReducer } from './reportReducer';
 import { ExtraReducer } from './extraReducer';
 import { BokReducer } from './bokReducer';
+import { FileReducer } from './fileReducer';
 import { FpReducer } from './fpReducer';
 import { SqlQueryReducer } from './sqlQueryReducer';
 import { EmailTemplateReducer } from './emailTemplateReducer';
 import { UserReducer } from './userReducer';
 import { CronOptionReducer } from './cronOptionReducer';
-
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -26,6 +26,7 @@ export const AppReducer = combineReducers({
     report: ReportReducer,
     extra: ExtraReducer,
     bok: BokReducer,
+    files: FileReducer,
     fp: FpReducer,
     sqlQuery: SqlQueryReducer,
     emailTemplate: EmailTemplateReducer,

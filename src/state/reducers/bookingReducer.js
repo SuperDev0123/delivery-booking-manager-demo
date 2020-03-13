@@ -76,6 +76,12 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
+    SUCCESS_CHECK_AUGMENTED,
+    FAILED_CHECK_AUGMENTED,
+    SUCCESS_AUTO_AUGMENT,
+    FAILED_AUTO_AUGMENT,
+    SUCCESS_REVERT_AUGMENT,
+    FAILED_REVERT_AUGMENT,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -116,6 +122,7 @@ const defaultState = {
     pricingInfos: [],
     pricingInfosFlag: false,
     isAutoSelected: false,
+    isAutoAugmented: false
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -165,6 +172,7 @@ export const BookingReducer = (state = defaultState, {
     pageCnt,
     filteredBookingIds,
     isAutoSelected,
+    isAutoAugmented,
 }) => {
     switch (type) {
         case RESET_REFRESH_BOOKINGS_FLAG:
@@ -542,6 +550,37 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 errorMessage: errorMessage,
+            };
+
+        case SUCCESS_AUTO_AUGMENT:
+            return {
+                ...state,
+                isAutoAugmented: true,
+                booking: payload
+            };
+        case FAILED_AUTO_AUGMENT:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+            };
+        case SUCCESS_CHECK_AUGMENTED:
+            return {
+                ...state,
+                isAutoAugmented: isAutoAugmented,
+            };
+        case FAILED_CHECK_AUGMENTED:
+            return {
+                ...state,
+            };
+        case SUCCESS_REVERT_AUGMENT:
+            return {
+                ...state,
+                isAutoAugmented: false,
+                booking: payload
+            };
+        case FAILED_REVERT_AUGMENT:
+            return {
+                ...state,
             };
         case SET_FETCH_GEO_FLAG:
             return {
