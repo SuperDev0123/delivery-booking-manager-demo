@@ -117,7 +117,6 @@ class EditFreightProviders extends Component {
     }
 
     onInputChange(event) {
-        //this.setState({[event.target.name]: event.target.value});
         const { fpDetails } = this.state;
         if (event.target.name == 'fp_company_name') {
             this.setState({ fpDetails: { fp_company_name: event.target.value, id: fpDetails.id, fp_address_country: fpDetails.fp_address_country } });
@@ -158,19 +157,18 @@ class EditFreightProviders extends Component {
     }
 
     onClickDelete(typeNum, row) {
-        if (typeNum === 0) { // Duplicate line
+        if (typeNum === 0) {
             this.props.deleteFpCarrier({ id: row.id });
-        } else if (typeNum === 1) { // Duplicate line detail
+        } else if (typeNum === 1) {
             this.props.deleteFpZone({ id: row.id });
         }
     }
 
     render() {
-        const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt } = this.state;
+        const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt, id, loading } = this.state;
 
         return (
             <div>
-
                 <div className="pageheader">
                     <h1>Edit Freight Providers</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
@@ -185,7 +183,7 @@ class EditFreightProviders extends Component {
                 </div>
                 <section id="main-content" className="animated fadeInUp">
                     <LoadingOverlay
-                        active={this.state.loading}
+                        active={loading}
                         spinner
                         text='Loading...'
                     />
@@ -213,7 +211,7 @@ class EditFreightProviders extends Component {
                         <div className="col-md-6">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Edit Freight Provider <b>{this.state.fpDetails.fp_company_name}</b></h3>
+                                    <h3 className="panel-title">Edit Freight Provider <b>{fpDetails.fp_company_name}</b></h3>
                                     <div className="actions pull-right">
                                         <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                     </div>
@@ -222,19 +220,17 @@ class EditFreightProviders extends Component {
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
                                         <div className="form-group">
                                             <label htmlFor="exampleInputEmail1">Company Name</label>
-                                            <input name="fp_company_name" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Company Name" value={this.state.fpDetails.fp_company_name} onChange={(e) => this.onInputChange(e)} />
-                                            <input name="id" type="hidden" value={this.state.id} />
+                                            <input name="fp_company_name" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Company Name" value={fpDetails.fp_company_name} onChange={(e) => this.onInputChange(e)} />
+                                            <input name="id" type="hidden" value={id} />
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="exampleInputPassword1">Country</label>
-                                            <select name="fp_address_country" className="form-control" id="exampleInputPassword1" value={this.state.fpDetails.fp_address_country} onChange={(e) => this.onInputChange(e)} >
+                                            <select name="fp_address_country" className="form-control" id="exampleInputPassword1" value={fpDetails.fp_address_country} onChange={(e) => this.onInputChange(e)} >
                                                 <option value="AUS">Australia</option>
                                             </select>
                                         </div>
                                         <button type="submit" className="btn btn-primary">Submit</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>

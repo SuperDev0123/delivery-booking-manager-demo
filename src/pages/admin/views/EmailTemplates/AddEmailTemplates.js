@@ -48,10 +48,10 @@ class AddFreightProviders extends Component {
             this.props.history.push('/admin');
         }
         if (fp_company_name) {
-            this.setState({ fp_company_name: fp_company_name });
+            this.setState({ fp_company_name });
         }
         if (fp_address_country) {
-            this.setState({ fp_address_country: fp_address_country });
+            this.setState({ fp_address_country });
         }
     }
 
@@ -112,8 +112,6 @@ class AddFreightProviders extends Component {
                                         </div>
                                         <button type="submit" className="btn btn-primary">Submit</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>

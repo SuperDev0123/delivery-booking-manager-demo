@@ -85,7 +85,6 @@ class EditUser extends Component {
         this.setState({ loading: true });
         const { emailTemplateDetails, emailName, sectionName, emailBody } = this.state;
         let data = { id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody };
-        console.log(data);
         this.props.updateUserDetails(data);
         this.setState({ loading: false });
         this.props.history.push('/admin/emails');

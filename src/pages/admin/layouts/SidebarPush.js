@@ -52,7 +52,7 @@ class SidebarPush extends React.Component {
     }
 
     render() {
-        const { dropdownOpen } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -141,11 +141,11 @@ class SidebarPush extends React.Component {
                             </Link>
                         </li>
                         <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
-                            <a onClick={() => this.setState({ providersCollapsed: !this.state.providersCollapsed })}>
+                            <a onClick={() => this.setState({ providersCollapsed: !providersCollapsed })}>
                                 <i className="fa fa-bars fa-fw"></i>
                                 <span className="menu-title">Freight Providers</span>
                             </a>
-                            <ul className={classNames({ 'nav-sub': true, 'collapse': !this.state.providersCollapsed })}>
+                            <ul className={classNames({ 'nav-sub': true, 'collapse': !providersCollapsed })}>
                                 <li>
                                     <Link title="View All Freight Providers" to="/admin/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
                                         <span className="submenu-title">All</span>
@@ -165,11 +165,11 @@ class SidebarPush extends React.Component {
                             </Link>
                         </li>
                         <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
-                            <a onClick={() => this.setState({ pricingOnlyCollapsed: !this.state.pricingOnlyCollapsed })}>
+                            <a onClick={() => this.setState({ pricingOnlyCollapsed: !pricingOnlyCollapsed })}>
                                 <i className="fa fa-usd fa-fw"></i>
                                 <span className="menu-title">Pricing Only</span>
                             </a>
-                            <ul className={classNames({ 'nav-sub': true, 'collapse': !this.state.pricingOnlyCollapsed })}>
+                            <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingOnlyCollapsed })}>
                                 <li>
                                     <Link
                                         title="View All Pricing result list"
