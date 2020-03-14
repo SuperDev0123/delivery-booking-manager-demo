@@ -160,7 +160,7 @@ class SqlQueries extends Component {
                                     <div className="panel-heading">
                                         <h3 className="panel-title">SQL Queries</h3>
                                         <div className="actions pull-right">
-                                            <a className="btn btn-success btn-sm" href="/sqlqueries/add">Add New</a>
+                                            <a className="btn btn-success" href="/sqlqueries/add">Add New</a>
                                         </div>
                                     </div>
 

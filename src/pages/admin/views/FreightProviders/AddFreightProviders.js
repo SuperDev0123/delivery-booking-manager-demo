@@ -110,7 +110,7 @@ class AddFreightProviders extends Component {
                                                 <option value="AUS">Australia</option>
                                             </select>
                                         </div>
-                                        <button type="submit" className="btn btn-primary">Submit</button>
+                                        <button type="submit" className="btn btn-primary  mt-5 mb-2">Submit</button>
                                     </form>
                                 </div>
                             </div>

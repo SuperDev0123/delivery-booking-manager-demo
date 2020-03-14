@@ -110,7 +110,7 @@ class AddUser extends Component {
                                                 <option value="AUS">Australia</option>
                                             </select>
                                         </div>
-                                        <button type="submit" className="btn btn-primary">Submit</button>
+                                        <button type="submit" className="btn btn-primary mt-5 mb-5">Submit</button>
                                     </form>
 
 
