@@ -35,7 +35,6 @@ class EditEmailTemplates extends Component {
         getEmailTemplateDetails: PropTypes.func.isRequired,
         match: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-
         updateEmailTemplateDetails: PropTypes.func.isRequired,
         deleteFpCarrier: PropTypes.func.isRequired,
         deleteFpZone: PropTypes.func.isRequired,
@@ -66,15 +65,17 @@ class EditEmailTemplates extends Component {
             this.props.history.push('/admin');
         }
 
+        const { emailName, sectionName, emailBody } = emailTemplateDetails;
+
         if (emailTemplateDetails) {
-            this.setState({ emailTemplateDetails: emailTemplateDetails });
-            this.setState({ emailName: emailTemplateDetails.emailName });
-            this.setState({ sectionName: emailTemplateDetails.sectionName });
-            this.setState({ emailBody: emailTemplateDetails.emailBody });
+            this.setState({ emailTemplateDetails });
+            this.setState({ emailName: emailName });
+            this.setState({ sectionName: sectionName });
+            this.setState({ emailBody: emailBody });
         }
 
         if (id) {
-            this.setState({ id: id });
+            this.setState({ id });
         }
 
         if (pageCnt) {

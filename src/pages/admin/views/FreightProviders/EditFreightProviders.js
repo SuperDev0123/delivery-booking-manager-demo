@@ -158,9 +158,9 @@ class EditFreightProviders extends Component {
     }
 
     onClickDelete(typeNum, row) {
-        if (typeNum === 0) { // Duplicate line
+        if (typeNum === 0) {
             this.props.deleteFpCarrier({ id: row.id });
-        } else if (typeNum === 1) { // Duplicate line detail
+        } else if (typeNum === 1) {
             this.props.deleteFpZone({ id: row.id });
         }
     }
@@ -233,8 +233,6 @@ class EditFreightProviders extends Component {
                                         </div>
                                         <button type="submit" className="btn btn-primary">Submit</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>

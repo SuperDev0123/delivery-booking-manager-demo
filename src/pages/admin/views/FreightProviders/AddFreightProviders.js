@@ -112,8 +112,6 @@ class AddFreightProviders extends Component {
                                         </div>
                                         <button type="submit" className="btn btn-primary">Submit</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>

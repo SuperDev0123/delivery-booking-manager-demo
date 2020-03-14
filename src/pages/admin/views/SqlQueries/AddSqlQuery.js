@@ -83,21 +83,21 @@ class AddSqlQueries extends Component {
         this.setState({ validSqlQueryDetails: validSqlQueryDetails, rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails });
 
         if (queryResult) {
-            this.setState({ queryResult: queryResult, queryTables: queryTables });
+            this.setState({ queryResult, queryTables });
         }
         if (sql_title) {
-            this.setState({ sql_title: sql_title });
+            this.setState({ sql_title });
         }
         if (sql_query) {
-            this.setState({ sql_query: sql_query });
+            this.setState({ sql_query });
         }
 
         if (sql_description) {
-            this.setState({ sql_description: sql_description });
+            this.setState({ sql_description });
         }
 
         if (sql_notes) {
-            this.setState({ sql_notes: sql_notes });
+            this.setState({ sql_notes });
         }
 
         if (rerunValidateSqlQueryDetails) {

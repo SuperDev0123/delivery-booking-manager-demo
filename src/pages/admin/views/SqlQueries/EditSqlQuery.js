@@ -88,19 +88,17 @@ class EditSqlQueries extends Component {
             this.props.history.push('/admin');
         }
 
-        this.setState({ validSqlQueryDetails: validSqlQueryDetails, rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails });
+        this.setState({ validSqlQueryDetails, rerunValidateSqlQueryDetails });
 
         if (queryResult) {
-            this.setState({ queryResult: queryResult, queryTables: queryTables });
+            this.setState({ queryResult, queryTables });
         }
 
         if (sqlQueryDetails && !queryResult) {
-            this.setState({ sqlQueryDetails: sqlQueryDetails });
+            const { sql_title,  sql_query, sql_description, sql_notes } = sql_description;
+            this.setState({ sqlQueryDetails });
             this.setState({ id: sqlQueryDetails.id });
-            this.setState({ sql_title: sqlQueryDetails.sql_title });
-            this.setState({ sql_query: sqlQueryDetails.sql_query });
-            this.setState({ sql_description: sqlQueryDetails.sql_description });
-            this.setState({ sql_notes: sqlQueryDetails.sql_notes });
+            this.setState({ sql_title, sql_query, sql_description, sql_notes });
         }
         if (rerunValidateSqlQueryDetails) {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
