@@ -8,20 +8,20 @@ import Modal from 'react-modal';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
-import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
 
 const customStyles = {
-    content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : 'auto',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)'
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)'
     }
 };
- 
+
 // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement('#app');
 
@@ -55,9 +55,9 @@ class AddSqlQueries extends Component {
         redirect: PropTypes.object.isRequired,
         createSqlQueryDetails: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        validateSqlQueryDetails:  PropTypes.func.isRequired,
-        runUpdateSqlQueryDetails:  PropTypes.func.isRequired,
-        
+        validateSqlQueryDetails: PropTypes.func.isRequired,
+        runUpdateSqlQueryDetails: PropTypes.func.isRequired,
+
     }
 
     componentDidMount() {
@@ -81,7 +81,7 @@ class AddSqlQueries extends Component {
             this.props.history.push('/admin');
         }
         this.setState({ validSqlQueryDetails: validSqlQueryDetails, rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails });
-        
+
         if (queryResult) {
             this.setState({ queryResult: queryResult, queryTables: queryTables });
         }
@@ -100,59 +100,59 @@ class AddSqlQueries extends Component {
             this.setState({ sql_notes: sql_notes });
         }
 
-        if(rerunValidateSqlQueryDetails){
-            this.props.validateSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes});
+        if (rerunValidateSqlQueryDetails) {
+            this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
         }
     }
 
     openModal() {
-        this.setState({modalIsOpen: true});
+        this.setState({ modalIsOpen: true });
     }
-     
+
     afterOpenModal() {
         this.subtitle.style.color = '#f00';
     }
-     
+
     closeModal() {
-        this.setState({modalIsOpen: false});
+        this.setState({ modalIsOpen: false });
     }
 
     onInputChange(event) {
-        this.setState({[event.target.name]: event.target.value});
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     onSubmit(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
-        this.props.createSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username});
-        this.setState({loading: false});
+        this.props.createSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username });
+        this.setState({ loading: false });
         this.props.history.push('/admin/sqlqueries');
         event.preventDefault();
     }
 
     onValidate(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { sql_title, sql_query, sql_description, sql_notes } = this.state;
-        this.props.validateSqlQueryDetails({sql_title:sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes});
-        this.setState({loading: false});
+        this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
     onUpdate(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { sql_title, sql_description, sql_notes, updateQueries } = this.state;
 
         updateQueries.forEach((query) => {
-            this.props.runUpdateSqlQueryDetails({sql_title:sql_title, sql_query: query, sql_description: sql_description, sql_notes: sql_notes});
+            this.props.runUpdateSqlQueryDetails({ sql_title: sql_title, sql_query: query, sql_description: sql_description, sql_notes: sql_notes });
         });
 
-        this.setState({loading: false, modalIsOpen: false, updateQueries: []});
+        this.setState({ loading: false, modalIsOpen: false, updateQueries: [] });
         event.preventDefault();
     }
 
     handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
         setTimeout(() => {
-            this.state.updateQueries.push('UPDATE '+this.state.queryTables[0]+' SET '+dataField+' = "'+newValue+'" WHERE '+this.state.queryTables[4]+' = "'+rowId+'"');
+            this.state.updateQueries.push('UPDATE ' + this.state.queryTables[0] + ' SET ' + dataField + ' = "' + newValue + '" WHERE ' + this.state.queryTables[4] + ' = "' + rowId + '"');
             const result = data.map((row) => {
                 if (row[this.state.queryTables[4]] === rowId) {
                     const newRow = { ...row };
@@ -165,7 +165,7 @@ class AddSqlQueries extends Component {
                 queryResult: result,
                 errorMessage: null
             }));
-          
+
         }, 2000);
     }
 
@@ -177,29 +177,7 @@ class AddSqlQueries extends Component {
             blurToSave: true
         });
 
-        // let queryResultData = '';
-        // let queryResultColumns = '';
         let tableColumns = [];
-
-        // const allowedColumns = ['fp_zones.suburb', 'dme_options.option_description', 'fp_freight_providers.fp_company_name'];
-
-        // if(queryResult && queryResult.length>0 && queryTables && queryTables.length>0){
-        //     queryResultData = queryResult.map((row, index) => {
-        //         return (
-        //             <tr key={index}>
-        //                 {Object.keys(queryResult[0]).map((row1, index1) => 
-        //                     <td data-column={row1}>{row[row1]}</td>
-        //                 )}
-        //             </tr>
-        //         );
-        //     });
-            
-
-        //     queryResultColumns = Object.keys(queryResult[0]).map((row, index) => {
-        //         tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(queryTables[0]+'.'+row)});
-        //     });
-        // }
-        
 
         return (
             <div>
@@ -210,7 +188,7 @@ class AddSqlQueries extends Component {
                     style={customStyles}
                     contentLabel="Example Modal"
                 >
-     
+
                     <h2 ref={subtitle => this.subtitle = subtitle}>Review the SQL Script to be Applied on the Database. </h2>
                     <p>Please review the SQL Script to be Applied on the Database.</p>
                     <p>Note that once applied, these statements may not be revertible without losing some of the data.</p>
@@ -219,7 +197,7 @@ class AddSqlQueries extends Component {
                             <textarea readOnly name="sql_query" value={updateQueries} type="text" className="form-control" id="sql_query" placeholder="Enter Query"></textarea>
                         </div>
                     </form>
-                    <button type="button"  onClick={(e) => this.onUpdate(e)} disabled={updateQueries.length===0} className="btn btn-success pull-right">Apply</button>&nbsp;&nbsp;<button type="button" onClick={this.closeModal} className="btn btn-primary pull-right">Cancel</button>&nbsp;&nbsp;
+                    <button type="button" onClick={(e) => this.onUpdate(e)} disabled={updateQueries.length === 0} className="btn btn-success pull-right">Apply</button>&nbsp;&nbsp;<button type="button" onClick={this.closeModal} className="btn btn-primary pull-right">Cancel</button>&nbsp;&nbsp;
                 </Modal>
                 <div className="pageheader">
                     <h1>Add SQL Query</h1>
@@ -235,7 +213,7 @@ class AddSqlQueries extends Component {
                 </div>
                 <section id="main-content" className="animated fadeInUp">
                     <LoadingOverlay
-                        active={this.state.loading}
+                        active={loading}
                         spinner
                         text='Loading...'
                     />
@@ -245,7 +223,7 @@ class AddSqlQueries extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Add New</h3>
                                     <div className="actions pull-right">
-                                    
+
                                     </div>
                                 </div>
                                 <div className="panel-body">
@@ -262,48 +240,46 @@ class AddSqlQueries extends Component {
 
                                         <div className="form-group required">
                                             <label className="control-label" htmlFor="sql_query">SQL Query</label>
-                                            <textarea name="sql_query" required="required" type="text" className="form-control" id="sql_query" placeholder="Enter SQL Query" onChange={(e) => {this.setState({validSqlQueryDetails: false});this.onInputChange(e);}}>{sql_query}</textarea>
-                                            <button style={{float:'right'}} type="button" disabled={sql_query==='' || loading} onClick={(e) => this.onValidate(e)} className="btn btn-info">Run</button>
+                                            <textarea name="sql_query" required="required" type="text" className="form-control" id="sql_query" placeholder="Enter SQL Query" onChange={(e) => { this.setState({ validSqlQueryDetails: false }); this.onInputChange(e); }}>{sql_query}</textarea>
+                                            <button style={{ float: 'right' }} type="button" disabled={sql_query === '' || loading} onClick={(e) => this.onValidate(e)} className="btn btn-info">Run</button>
                                         </div>
-                                    
+
 
                                         <div className="form-group">
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
                                             <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title==='' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
                                     </form>
 
 
                                 </div>
                             </div>
                         </div>
-                    
+
                         <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Query Result</h3>
                                     <div className="actions pull-right">
-                                        <button type="button"  disabled={updateQueries.length===0} onClick={(e) => {this.onValidate(e);this.setState({updateQueries: []});}} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button"  disabled={updateQueries.length===0} onClick={this.openModal} className="btn btn-success">Apply</button>
+                                        <button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
                                     </div>
                                 </div>
-                                <div className="panel-body" style={{maxHeight: '452px', overflowY:'auto'}}>
-                                    {queryResult && queryResult.length>0 && queryTables && queryTables.length>0 ?(
+                                <div className="panel-body" style={{ maxHeight: '452px', overflowY: 'auto' }}>
+                                    {queryResult && queryResult.length > 0 && queryTables && queryTables.length > 0 ? (
                                         <BootstrapTable
-                                            remote={ { cellEdit: true } }
-                                            keyField={ queryTables[4] }
-                                            data={ queryResult }
-                                            columns={ tableColumns }
-                                            cellEdit={ cellEdit }
-                                            onTableChange={ this.handleTableChange }
+                                            remote={{ cellEdit: true }}
+                                            keyField={queryTables[4]}
+                                            data={queryResult}
+                                            columns={tableColumns}
+                                            cellEdit={cellEdit}
+                                            onTableChange={this.handleTableChange}
                                         />
-                                    ) : (
-                                        <code>Make changes in query and click on run button to get result.</code>
-                                    )}
+                                    ) : ( <code>Make changes in query and click on run button to get result.</code> )}
                                 </div>
                             </div>
                         </div>
-                    
+
                     </div>
                 </section>
             </div>

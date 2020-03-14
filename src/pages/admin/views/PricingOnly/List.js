@@ -2,11 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-// Libs
 import moment from 'moment-timezone';
-// Components
 import LoadingOverlay from 'react-loading-overlay';
-// Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
 import { getFiles } from '../../../../state/services/fileService';
 
@@ -54,17 +51,17 @@ class List extends Component {
         }
 
         if (files) {
-            this.setState({files, loading: false});
+            this.setState({ files, loading: false });
         }
     }
 
     refresh() {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         this.props.getFiles('pricing-only');
     }
 
     render() {
-        const {loading, files} = this.state;
+        const { loading, files } = this.state;
 
         const fileList = files.map((file, index) => {
             return (
@@ -110,7 +107,7 @@ class List extends Component {
                                     <h3 className="panel-title"></h3>
                                 </div>
                                 <div className="panel-body">
-                                    <button className="btn btn-success" onClick={() => this.refresh()}>Refresh</button> 
+                                    <button className="btn btn-success" onClick={() => this.refresh()}>Refresh</button>
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
                                             <th>No</th>
@@ -123,7 +120,7 @@ class List extends Component {
                                             <th>Delete</th>
                                         </thead>
                                         <tbody>
-                                            { fileList }
+                                            {fileList}
                                         </tbody>
                                     </table>
                                 </div>

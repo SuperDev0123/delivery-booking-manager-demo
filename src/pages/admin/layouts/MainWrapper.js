@@ -11,7 +11,6 @@ class MainWrapper extends Component {
             isDesktop: false,
             sidebarClass: ''
         };
-
     }
 
     static propTypes = {
@@ -27,23 +26,30 @@ class MainWrapper extends Component {
     componentWillUnmount() {
         window.removeEventListener('resize', this.updatePredicate);
     }
+
     updatePredicate = () => {
         this.setState({ isDesktop: window.innerWidth > 767 });
     }
+
     sidebarPush = () => {
-        if(this.state.sidebarClass === ''){
-            (this.state.isDesktop) ? this.setState({ sidebarClass: 'sidebar-mini' }) : this.setState({ sidebarClass: 'sidebar-opened' });
-        }else{
+        const { sidebarClass, isDesktop } = this.state;
+        if (sidebarClass === '') {
+            (isDesktop) ? this.setState({ sidebarClass: 'sidebar-mini' }) : this.setState({ sidebarClass: 'sidebar-opened' });
+        } else {
             this.setState({ sidebarClass: '' });
-        }  
+        }
     }
+    
     render() {
+        const { handleLoginCheck, children } = this.props;
+        const { sidebarClass } = this.state;
+
         return (
-            <div id="main-wrapper" className={'theme-default admin-theme ' + this.state.sidebarClass}>
+            <div id="main-wrapper" className={'theme-default admin-theme ' + sidebarClass}>
                 <Header sidebarPush={this.sidebarPush} />
-                <SidebarPush handleLoginCheck={this.props.handleLoginCheck} />
-                <PageWrapper handleLoginCheck={this.props.handleLoginCheck}>
-                    {this.props.children}
+                <SidebarPush handleLoginCheck={handleLoginCheck} />
+                <PageWrapper handleLoginCheck={handleLoginCheck}>
+                    {children}
                 </PageWrapper>
             </div>
         );

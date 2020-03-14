@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
@@ -89,16 +89,7 @@ class SqlQueries extends Component {
 
     render() {
         const { allSqlQueries, loading } = this.state;
-        // const List = allSqlQueries.map((row, index) => {
-        //     return (
-        //         <tr key={index}>
-        //             <td>{row.id}</td>
-        //             <td>{row.sql_title}</td>
-        //             <td>{row.sql_description}</td>
-        //             <td><a className="btn btn-info btn-sm" href={'/sqlqueries/edit/'+row.id}>Edit</a></td>
-        //         </tr>
-        //     );
-        // });
+        const { SearchBar } = Search;
 
         const editableStyle = () => {
             return {
@@ -142,8 +133,6 @@ class SqlQueries extends Component {
             }
         ];
 
-        const { SearchBar } = Search;
-
         return (
             <div>
                 <div className="pageheader">
@@ -160,7 +149,7 @@ class SqlQueries extends Component {
                 <section id="main-content" className="container animated fadeInUp">
                     {loading ?(
                         <LoadingOverlay
-                            active={this.state.loading}
+                            active={loading}
                             spinner
                             text='Loading...'
                         />
@@ -174,33 +163,8 @@ class SqlQueries extends Component {
                                             <a className="btn btn-success btn-sm" href="/sqlqueries/add">Add New</a>
                                         </div>
                                     </div>
-                                    <div className="panel-body">
-                                        {/*<table id="example" className="table table-striped table-bordered" cellSpacing="0" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>id</th>
-                                            <th>title</th>
-                                            <th>Description</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
 
-                                    <tbody>
-                                        { 
-                                            allSqlQueries.map((row, index) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>{row.id}</td>
-                                                        <td>{row.sql_title}</td>
-                                                        <td>{row.sql_description}</td>
-                                                        <td><a className="btn btn-info btn-sm" href={'/sqlqueries/edit/'+row.id}>Edit</a></td>
-                                                    </tr>
-                                                );
-                                            }) 
-                                        }
-                                    </tbody>
-                                </table>*/}
-                
+                                    <div className="panel-body">
                                         <ToolkitProvider
                                             id="sql_queries"
                                             keyField="id"

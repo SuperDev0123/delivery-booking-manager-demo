@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
-import { createFpDetail } from '../../../../state/services/fpService';  
+import { createFpDetail } from '../../../../state/services/fpService';
 
 class AddFreightProviders extends Component {
     constructor(props) {
@@ -56,14 +56,14 @@ class AddFreightProviders extends Component {
     }
 
     onInputChange(event) {
-        this.setState({[event.target.name]: event.target.value});
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     onSubmit(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { fp_company_name, fp_address_country } = this.state;
-        this.props.createFpDetail({fp_company_name:fp_company_name, fp_address_country:fp_address_country});
-        this.setState({loading: false});
+        this.props.createFpDetail({ fp_company_name: fp_company_name, fp_address_country: fp_address_country });
+        this.setState({ loading: false });
         this.props.history.push('/admin/providers');
         event.preventDefault();
     }
@@ -95,7 +95,7 @@ class AddFreightProviders extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Add New</h3>
                                     <div className="actions pull-right">
-                                    
+
                                     </div>
                                 </div>
                                 <div className="panel-body">

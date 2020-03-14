@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
-import { getAllFPs, deleteFpDetail } from '../../../../state/services/fpService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { getAllFPs, deleteFpDetail } from '../../../../state/services/fpService';
 
-class FreightProviders extends Component {    
+class FreightProviders extends Component {
     constructor(props) {
         super(props);
 
@@ -20,7 +20,7 @@ class FreightProviders extends Component {
             loading: false,
         };
     }
-    
+
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
@@ -32,7 +32,7 @@ class FreightProviders extends Component {
     }
 
     componentDidMount() {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
@@ -44,7 +44,7 @@ class FreightProviders extends Component {
         }
 
         this.props.getAllFPs();
-        this.setState({loading: false});
+        this.setState({ loading: false });
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -58,20 +58,20 @@ class FreightProviders extends Component {
         if (allFPs) {
             this.setState({ allFPs });
         }
-        if(needUpdateFpDetails){
+        if (needUpdateFpDetails) {
             this.props.getAllFPs();
         }
     }
 
-    removeFpDetail(event, fp){
-        this.setState({loading: true});
+    removeFpDetail(event, fp) {
+        this.setState({ loading: true });
         confirmAlert({
             title: 'Confirm to delete Freight Provider',
             message: 'Are you sure to do this?',
             buttons: [
                 {
                     label: 'Yes',
-                    onClick: () => {this.props.deleteFpDetail(fp);this.props.getAllFPs();}
+                    onClick: () => { this.props.deleteFpDetail(fp); this.props.getAllFPs(); }
                 },
                 {
                     label: 'No',
@@ -79,8 +79,8 @@ class FreightProviders extends Component {
                 }
             ]
         });
-        
-        this.setState({loading: false});
+
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
@@ -93,7 +93,7 @@ class FreightProviders extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.fp_company_name}</td>
                     <td>{fp.fp_address_country}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/providers/edit/'+fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
+                    <td><a className="btn btn-info btn-sm" href={'/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
                 </tr>
             );
         });
@@ -138,7 +138,7 @@ class FreightProviders extends Component {
                                         </thead>
 
                                         <tbody>
-                                            { fpsList }
+                                            {fpsList}
                                         </tbody>
                                     </table>
 

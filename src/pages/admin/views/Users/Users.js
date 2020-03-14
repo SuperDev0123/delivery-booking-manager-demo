@@ -2,16 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-// Libs
 import _ from 'lodash';
-// Components
 import LoadingOverlay from 'react-loading-overlay';
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-// Services
+
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/adminAuthService';   
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
@@ -68,31 +66,30 @@ class Users extends Component {
 
         if (allUsers) {
             this.setState({ allUsers });
-            this.setState({loading: false});
+            this.setState({ loading: false });
         }
 
         if (dmeClients) {
-            this.setState({dmeClients});
+            this.setState({ dmeClients });
         }
 
-        if(needUpdateUsers){
+        if (needUpdateUsers) {
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
-                this.setState({clientPK});
+                this.setState({ clientPK });
             }
             this.props.getAllUsers(clientPK);
         }
-        
     }
 
     removeUserDetail(event, user){
-        this.setState({loading: true});
+        this.setState({ loading: true });
         confirmAlert({
             title: 'Confirm to delete User Details',
             message: 'Are you sure to do this?',
             buttons: [
                 {
                     label: 'Yes',
-                    onClick: () => {this.props.deleteUserDetails(user); this.props.setNeedUpdateUsersState(true);}
+                    onClick: () => { this.props.deleteUserDetails(user); this.props.setNeedUpdateUsersState(true); }
                 },
                 {
                     label: 'No',
@@ -100,8 +97,8 @@ class Users extends Component {
                 }
             ]
         });
-        
-        this.setState({loading: false});
+
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
@@ -112,14 +109,14 @@ class Users extends Component {
     }
 
     updateUserStatus(event, user, status){
-        this.setState({loading: true});
+        this.setState({ loading: true });
         confirmAlert({
             title: 'Confirmation Alert',
             message: 'Click Ok to change current User Status',
             buttons: [
                 {
                     label: 'Ok',
-                    onClick: () => {this.props.updateUserDetails({id:user.id, is_active: status});this.props.setNeedUpdateUsersState(true);}
+                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); this.props.setNeedUpdateUsersState(true); }
                 },
                 {
                     label: 'Cancel',
@@ -127,27 +124,12 @@ class Users extends Component {
                 }
             ]
         });
-        this.setState({loading: false});
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
     render() {
         const { allUsers, loading, dmeClients, clientPK } = this.state;
-        // const List = allUsers.map((user, index) => {
-        //     return (
-        //         <tr key={index}>
-        //             <td>{user.id}</td>
-        //             <td>{user.first_name}</td>
-        //             <td>{user.last_name}</td>
-        //             <td>{user.username}</td>
-        //             <td>{user.email}</td>
-        //             <td>{user.last_login}</td>
-        //             <td>{(user.is_active)?'Active':'Inactive'}</td>
-        //             <td><a className="btn btn-info btn-sm" href={'/users/edit/'+user.id}>Edit</a>&nbsp;<a className="btn btn-danger btn-sm" href={'/users/edit/'+user.id}>Delete</a></td>
-        //         </tr>
-        //     );
-        // });
-
         const { SearchBar } = Search;
 
         const editableStyle = () => {
@@ -172,13 +154,13 @@ class Users extends Component {
                     <i
                         onClick={() => this.onClickEdit(2, 1, row.id)}
                         className="fa fa-edit"
-                        style={{fontSize:'24px',color:'green'}}
+                        style={{ fontSize: '24px', color: 'green' }}
                     >
                     </i>&nbsp;&nbsp;&nbsp;
                     <i
-                        onClick={() => this.onClickDelete(0, {id: row.id})}
+                        onClick={() => this.onClickDelete(0, { id: row.id })}
                         className="fa fa-trash"
-                        style={{fontSize:'24px',color:'red'}}
+                        style={{ fontSize: '24px', color: 'red' }}
                     >
                     </i>
                 </div>
@@ -190,9 +172,7 @@ class Users extends Component {
                 <div>
                     {row.is_active ? (
                         <button onClick={(e) => this.updateUserStatus(e, row, 0)} className="btn btn-sm btn-success">Active</button>
-                    ) : (
-                        <button onClick={(e) => this.updateUserStatus(e, row, 1)} className="btn btn-sm btn-danger">Inactive</button>
-                    )}
+                    ) : ( <button onClick={(e) => this.updateUserStatus(e, row, 1)} className="btn btn-sm btn-danger">Inactive</button> )}
                 </div>
             );
         };
@@ -334,7 +314,7 @@ const mapStateToProps = (state) => {
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,
-        
+
     };
 };
 

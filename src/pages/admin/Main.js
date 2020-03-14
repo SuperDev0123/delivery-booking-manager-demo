@@ -7,7 +7,7 @@ import MainWrapper from './layouts/MainWrapper';
 import LoginWrapper from './layouts/LoginWrapper';
 import SidebarOverlay from './layouts/SidebarOverlay';
 
-import { verifyToken, cleanRedirectState } from '../../state/services/adminAuthService'; 
+import { verifyToken, cleanRedirectState } from '../../state/services/adminAuthService';
 import '../../assets/styles/vendor.scss';
 import '../../assets/styles/main.scss';
 
@@ -44,27 +44,27 @@ class Main extends Component {
             // this.props.cleanRedirectState();
             this.props.history.push('/admin/login');
         }
-        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false')?false:true  });
+        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false') ? false : true });
     }
 
     loginCheck() {
         const token = localStorage.getItem('admin_token');
         console.log('loginCheck', token);
-        
+
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
             localStorage.setItem('isAdminLoggedIn', 'false');
         }
-        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false')?false:true  });
+        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false') ? false : true });
     }
 
     render() {
         const isLoggedIn = this.state.isLoggedIn;
-        console.log('isLoggedIn', isLoggedIn);
+
         return (
             <React.Fragment>
-                { isLoggedIn ? (
+                {isLoggedIn ? (
                     <React.Fragment>
                         <MainWrapper handleLoginCheck={this.loginCheck}>
                             {this.props.children}

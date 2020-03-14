@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 class SidebarOverlay extends Component {
-    render () {
+    render() {
         return (
             <aside id="sidebar-right" >
                 <h4 className="sidebar-title">contact List</h4>
@@ -14,7 +14,7 @@ class SidebarOverlay extends Component {
                                 </a>
                             </li>
                             <li>
-                                <input type="text" className="search" placeholder="Search"/>
+                                <input type="text" className="search" placeholder="Search" />
                                 <button type="submit" className="btn btn-sm btn-search">
                                     <i className="fa fa-search"></i>
                                 </button>

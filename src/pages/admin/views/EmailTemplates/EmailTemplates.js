@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import { confirmAlert } from 'react-confirm-alert';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
-import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../../state/services/emailTemplateService';
 
-class EmailTemplates extends Component {    
+class EmailTemplates extends Component {
     constructor(props) {
         super(props);
 
@@ -19,7 +19,7 @@ class EmailTemplates extends Component {
             loading: true,
         };
     }
-    
+
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
@@ -31,7 +31,6 @@ class EmailTemplates extends Component {
     }
 
     componentDidMount() {
-        //this.setState({loading: true});
         const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
@@ -43,7 +42,7 @@ class EmailTemplates extends Component {
         }
 
         this.props.getAllEmailTemplates();
-        
+
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -56,22 +55,22 @@ class EmailTemplates extends Component {
         }
         if (allEmailTemplates) {
             this.setState({ allEmailTemplates });
-            this.setState({loading: false});
+            this.setState({ loading: false });
         }
-        if(needUpdateFpDetails){
+        if (needUpdateFpDetails) {
             this.props.getAllEmailTemplates();
         }
     }
 
-    removeFpDetail(event, fp){
-        this.setState({loading: true});
+    removeFpDetail(event, fp) {
+        this.setState({ loading: true });
         confirmAlert({
             title: 'Confirm to delete Freight Provider',
             message: 'Are you sure to do this?',
             buttons: [
                 {
                     label: 'Yes',
-                    onClick: () => {this.props.deleteEmailTemplateDetails(fp);this.props.getAllEmailTemplates();}
+                    onClick: () => { this.props.deleteEmailTemplateDetails(fp); this.props.getAllEmailTemplates(); }
                 },
                 {
                     label: 'No',
@@ -79,24 +78,60 @@ class EmailTemplates extends Component {
                 }
             ]
         });
-        
-        this.setState({loading: false});
+
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
-    render() {
-        const { allEmailTemplates, loading } = this.state;
+    renderEmailTemplatesTable() {
+        const { allEmailTemplates } = this.state;
         const List = allEmailTemplates.map((fp, index) => {
             return (
                 <tr key={index}>
                     <td>{fp.id}</td>
                     <td>{fp.emailName}</td>
                     <td>{fp.sectionName}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/emails/edit/'+fp.id}>Edit</a></td>
+                    <td><a className="btn btn-info btn-sm" href={'/emails/edit/' + fp.id}>Edit</a></td>
                 </tr>
             );
         });
 
+        return (
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="panel panel-default">
+                        <div className="panel-heading">
+                            <h3 className="panel-title">Email Templates</h3>
+                            <div className="actions pull-right">
+                                {/*<a className="btn btn-success" href="/emails/add">Add New</a>*/}
+                            </div>
+                        </div>
+                        <div className="panel-body">
+                            <table id="example" className="table table-striped table-bordered" cellSpacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>id</th>
+                                        <th>Name</th>
+                                        <th>Section</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {List}
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    render() {       
+        const { loading } = this.state;
+        
         return (
             <div>
                 <div className="pageheader">
@@ -111,43 +146,7 @@ class EmailTemplates extends Component {
                     </div>
                 </div>
                 <section id="main-content" className="container animated fadeInUp">
-                    {loading ?(
-                        <LoadingOverlay
-                            active={this.state.loading}
-                            spinner
-                            text='Loading...'
-                        />
-                    ) : (
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="panel panel-default">
-                                    <div className="panel-heading">
-                                        <h3 className="panel-title">Email Templates</h3>
-                                        <div className="actions pull-right">
-                                            {/*<a className="btn btn-success" href="/emails/add">Add New</a>*/}
-                                        </div>
-                                    </div>
-                                    <div className="panel-body">
-                                        <table id="example" className="table table-striped table-bordered" cellSpacing="0" width="100%">
-                                            <thead>
-                                                <tr>
-                                                    <th>id</th>
-                                                    <th>Name</th>
-                                                    <th>Section</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody>
-                                                { List }
-                                            </tbody>
-                                        </table>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    { loading ? ( <LoadingOverlay active={loading} spinner text='Loading...' />): this.renderEmailTemplatesTable()}
                 </section>
             </div>
         );

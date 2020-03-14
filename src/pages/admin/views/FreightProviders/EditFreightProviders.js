@@ -5,25 +5,26 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
-import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';
 import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
 
 class EditFreightProviders extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             id: 0,
             loading: false,
             isShowFPDataSlider: false,
-            fpDetails: {id: 0, fp_company_name: '', fp_address_country: 'AU'},
+            fpDetails: { id: 0, fp_company_name: '', fp_address_country: 'AU' },
             fpCarriers: [],
             fpZones: [],
             pageItemCnt: 10,
             pageInd: 0,
             pageCnt: 0,
         };
+
         this.toggleShowFPDataSlider = this.toggleShowFPDataSlider.bind(this);
         this.setGetZonesFilter = setGetZonesFilter.bind(this);
         this.onPageItemCntChange = this.onPageItemCntChange.bind(this);
@@ -44,11 +45,11 @@ class EditFreightProviders extends Component {
         createFpCarrier: PropTypes.func.isRequired,
         updateFpCarrier: PropTypes.func.isRequired,
         deleteFpCarrier: PropTypes.func.isRequired,
-        createFpZone:  PropTypes.func.isRequired,
-        updateFpZone:  PropTypes.func.isRequired,
-        deleteFpZone:  PropTypes.func.isRequired,
-        cleanRedirectState:  PropTypes.func.isRequired,
-        updateFpDetail:  PropTypes.func.isRequired,
+        createFpZone: PropTypes.func.isRequired,
+        updateFpZone: PropTypes.func.isRequired,
+        deleteFpZone: PropTypes.func.isRequired,
+        cleanRedirectState: PropTypes.func.isRequired,
+        updateFpDetail: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -86,11 +87,13 @@ class EditFreightProviders extends Component {
         if (id) {
             this.setState({ id: id });
         }
+
         if (fpCarriers) {
-            this.setState({fpCarriers: fpCarriers});
+            this.setState({ fpCarriers: fpCarriers });
         }
+
         if (fpZones) {
-            this.setState({fpZones: fpZones});
+            this.setState({ fpZones: fpZones });
         }
 
         if (pageCnt) {
@@ -98,35 +101,34 @@ class EditFreightProviders extends Component {
         }
 
         if (needUpdateFpCarriers && fpDetails) {
-            this.setState({loading: true});
+            this.setState({ loading: true });
 
             this.props.getFPCarriers(fpDetails.id, pageItemCnt, pageInd);
         } else {
-            this.setState({loading: false});
+            this.setState({ loading: false });
         }
 
         if (needUpdateFpZones && fpDetails) {
-            this.setState({loading: true});
+            this.setState({ loading: true });
 
             this.props.getFPZones(fpDetails.id, pageItemCnt, pageInd);
         } else {
-            this.setState({loading: false});
+            this.setState({ loading: false });
         }
     }
 
     onInputChange(event) {
-        //this.setState({[event.target.name]: event.target.value});
         const { fpDetails } = this.state;
-        if(event.target.name == 'fp_company_name'){
-            this.setState({ fpDetails: {fp_company_name: event.target.value, id: fpDetails.id, fp_address_country: fpDetails.fp_address_country} });
+        if (event.target.name == 'fp_company_name') {
+            this.setState({ fpDetails: { fp_company_name: event.target.value, id: fpDetails.id, fp_address_country: fpDetails.fp_address_country } });
         }
     }
 
     onSubmit(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { fpDetails } = this.state;
-        this.props.updateFpDetail({id: fpDetails.id, fp_company_name: fpDetails.fp_company_name, fp_address_country: fpDetails.fp_address_country});
-        this.setState({loading: false});
+        this.props.updateFpDetail({ id: fpDetails.id, fp_company_name: fpDetails.fp_company_name, fp_address_country: fpDetails.fp_address_country });
+        this.setState({ loading: false });
         this.props.history.push('/admin/providers');
         event.preventDefault();
     }
@@ -137,18 +139,11 @@ class EditFreightProviders extends Component {
     }
 
     toggleShowFPDataSlider() {
-        /*const { isBookingSelected } = this.state;
-
-        if (isBookingSelected) {
-            this.setState(prevState => ({isShowFPDataSlider: !prevState.isShowFPDataSlider}));
-        } else {
-            alert('Please select a booking.');
-        }*/
-        this.setState(prevState => ({isShowFPDataSlider: !prevState.isShowFPDataSlider}));
+        this.setState(prevState => ({ isShowFPDataSlider: !prevState.isShowFPDataSlider }));
     }
 
     onPageItemCntChange(e) {
-        const {fpDetails, pageInd} = this.state;
+        const { fpDetails, pageInd } = this.state;
         const pageItemCnt = parseInt(e.target.value);
         this.setGetZonesFilter('pageInd', 0);
         this.setGetZonesFilter('pageItemCnt', pageItemCnt);
@@ -157,7 +152,7 @@ class EditFreightProviders extends Component {
     }
 
     onClickPagination(pageInd) {
-        const {fpDetails, pageItemCnt} = this.state;
+        const { fpDetails, pageItemCnt } = this.state;
         this.setGetZonesFilter('pageInd', pageInd);
         this.props.getFPZones(fpDetails.id, pageItemCnt, pageInd);
     }
@@ -165,10 +160,8 @@ class EditFreightProviders extends Component {
     onClickDelete(typeNum, row) {
         if (typeNum === 0) { // Duplicate line
             this.props.deleteFpCarrier({ id: row.id });
-            //this.setState({loadingBookingLine: true});
         } else if (typeNum === 1) { // Duplicate line detail
             this.props.deleteFpZone({ id: row.id });
-            //this.setState({loadingBookingLineDetail: true});
         }
     }
 
@@ -177,7 +170,7 @@ class EditFreightProviders extends Component {
 
         return (
             <div>
-            
+
                 <div className="pageheader">
                     <h1>Edit Freight Providers</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
@@ -283,7 +276,7 @@ const mapDispatchToProps = (dispatch) => {
         createFpZone: (data) => dispatch(createFpZone(data)),
         updateFpZone: (data) => dispatch(updateFpZone(data)),
         deleteFpZone: (data) => dispatch(deleteFpZone(data)),
-        
+
     };
 };
 

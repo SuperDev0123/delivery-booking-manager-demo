@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import DropzoneComponent from 'react-dropzone-component';
-// Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
-// Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
 class Upload extends Component {
@@ -84,7 +82,6 @@ class Upload extends Component {
     }
 
     render() {
-        // DropzoneComponent config
         this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('admin_token')};
         const config = this.componentConfig;
         const djsConfig = this.djsConfig;
