@@ -1164,6 +1164,7 @@ class BookingPage extends Component {
     }
 
     onClickDownloadFile(fileOption) {
+        const token = localStorage.getItem('token');
         const { booking } = this.state;
         const selectedBookingIds = [booking.id];
 
@@ -1171,7 +1172,8 @@ class BookingPage extends Component {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                data: {ids: selectedBookingIds},
+                headers: {'Authorization': 'JWT ' + token },
+                data: {ids: selectedBookingIds, downloadOption: fileOption },
                 responseType: 'blob', // important
             };
 
@@ -1187,10 +1189,8 @@ class BookingPage extends Component {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                data: {
-                    ids: selectedBookingIds,
-                    downloadOption: fileOption,
-                },
+                headers: {'Authorization': 'JWT ' + token },
+                data: { ids: selectedBookingIds, downloadOption: fileOption },
                 responseType: 'blob', // important
             };
 
@@ -1206,10 +1206,8 @@ class BookingPage extends Component {
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                data: {
-                    ids: selectedBookingIds,
-                    downloadOption: fileOption,
-                },
+                headers: {'Authorization': 'JWT ' + token },
+                data: { ids: selectedBookingIds, downloadOption: fileOption },
                 responseType: 'blob', // important
             };
 
@@ -1230,13 +1228,14 @@ class BookingPage extends Component {
     }
 
     onClickConfirmDeleteFileBtn() {
+        const token = localStorage.getItem('token');
         const {booking, selectedFileOption} = this.state;
 
         const options = {
             method: 'delete',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
+            headers: {'Authorization': 'JWT ' + token },
             data: {bookingId: booking.id, deleteFileOption: selectedFileOption},
-            responseType: 'blob', // important
         };
 
         axios(options)

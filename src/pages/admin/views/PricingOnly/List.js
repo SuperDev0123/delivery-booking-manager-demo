@@ -3,12 +3,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 // Libs
+import axios from 'axios';
 import moment from 'moment-timezone';
 // Components
+import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
+import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getFiles } from '../../../../state/services/fileService';
+// Constants
+import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
 class List extends Component {
     constructor(props) {
@@ -17,7 +22,12 @@ class List extends Component {
         this.state = {
             loading: false,
             files: [],
+            selectedFile: null,
+            selectedFileOption: null,
+            isShowDeleteFileConfirmModal: false,
         };
+
+        this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -40,7 +50,7 @@ class List extends Component {
             this.props.history.push('/admin/');
         }
 
-        this.refresh();
+        this.onClickRefresh();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -55,12 +65,75 @@ class List extends Component {
 
         if (files) {
             this.setState({files, loading: false});
+            this.notify('Refreshed!');
         }
     }
 
-    refresh() {
+    notify = (text) => {
+        toast(text);
+    };
+
+    toggleDeleteFileConfirmModal() {
+        this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
+    }
+
+    onClickRefresh() {
         this.setState({loading: true});
         this.props.getFiles('pricing-only');
+    }
+
+    onClickDeleteFile(file, fileOption) {
+        this.setState({selectedFile: file, selectedFileOption: fileOption});
+        this.toggleDeleteFileConfirmModal();
+    }
+
+    onClickConfirmDeleteFileBtn() {
+        const token = localStorage.getItem('token');
+        const {selectedFile, selectedFileOption} = this.state;
+
+        const options = {
+            method: 'delete',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
+            headers: {'Authorization': 'JWT ' + token },
+            data: {deleteFileOption: selectedFileOption, fileName: selectedFile.file_name},
+        };
+
+        axios(options)
+            .then((response) => {
+                console.log('#301 - ', response.data);
+                this.notify('Deleted successfully!');
+                this.props.getFiles('pricing-only');
+                this.toggleDeleteFileConfirmModal();
+            })
+            .catch(error => {
+                this.notify('Failed to delete a file: ' + error);
+                this.toggleDeleteFileConfirmModal();
+            });
+    }
+
+    onClickDownloadFile(file, downloadOption) {
+        const token = localStorage.getItem('token');
+
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+            headers: {'Authorization': 'JWT ' + token },
+            data: {downloadOption: downloadOption, fileName: file.file_name},
+            responseType: 'blob', // important
+        };
+
+        axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'pricing-only__' + file.file_name + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                this.notify('Failed to download files: ' + error);
+            });
     }
 
     render() {
@@ -75,8 +148,22 @@ class List extends Component {
                     <td>{moment(file.z_createdTimestamp).format('DD/MM/YYYY HH:mm')}</td>
                     <td>{file.z_createdByAccount}</td>
                     <td>{file.note}</td>
-                    <td><button className="btn btn-success" onClick={() => this.refresh()}>Download</button></td>
-                    <td><button className="btn btn-danger" onClick={() => this.refresh()}>Delete</button></td>
+                    <td>
+                        <button 
+                            className="btn btn-primary"
+                            onClick={() => this.onClickDownloadFile(file, 'pricing-only')}
+                        >
+                            Download
+                        </button>
+                    </td>
+                    <td>
+                        <button
+                            className="btn btn-danger"
+                            onClick={() => this.onClickDeleteFile(file, 'pricing-only')}
+                        >
+                            Delete
+                        </button>
+                    </td>
                 </tr>
             );
         });
@@ -110,7 +197,12 @@ class List extends Component {
                                     <h3 className="panel-title"></h3>
                                 </div>
                                 <div className="panel-body">
-                                    <button className="btn btn-success" onClick={() => this.refresh()}>Refresh</button> 
+                                    <button
+                                        className="btn btn-success btn-refresh"
+                                        onClick={() => this.onClickRefresh()}
+                                    >
+                                        Refresh
+                                    </button> 
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
                                             <th>No</th>
@@ -130,6 +222,17 @@ class List extends Component {
                             </div>
                         )}
                 </section>
+
+                <ConfirmModal
+                    isOpen={this.state.isShowDeleteFileConfirmModal}
+                    onOk={() => this.onClickConfirmDeleteFileBtn()}
+                    onCancel={this.toggleDeleteFileConfirmModal}
+                    title={'Delete File'}
+                    text={'Are you sure you want to delete source file and result file?'}
+                    okBtnName={'Delete'}
+                />
+
+                <ToastContainer />
             </div>
         );
     }

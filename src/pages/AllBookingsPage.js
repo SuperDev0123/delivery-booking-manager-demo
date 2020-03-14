@@ -742,6 +742,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onDownload() {
+        const token = localStorage.getItem('token');
         const { selectedBookingIds, downloadOption, bookings, startDate, endDate, selectedWarehouseName } = this.state;
 
         if (selectedBookingIds.length > 0 && selectedBookingIds.length < 501) {
@@ -751,7 +752,8 @@ class AllBookingsPage extends React.Component {
                 const options = {
                     method: 'post',
                     url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                    data: {ids: selectedBookingIds},
+                    headers: {'Authorization': 'JWT ' + token },
+                    data: {ids: selectedBookingIds, downloadOption: downloadOption},
                     responseType: 'blob', // important
                 };
 
@@ -783,6 +785,7 @@ class AllBookingsPage extends React.Component {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod' ? selectedBookingIds : bookingIdsWithNewPOD,
                             downloadOption: downloadOption,
@@ -822,6 +825,7 @@ class AllBookingsPage extends React.Component {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod_sog' ? selectedBookingIds : bookingIdsWithNewPODSOG,
                             downloadOption: downloadOption,
@@ -861,6 +865,7 @@ class AllBookingsPage extends React.Component {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
+                        headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'connote' ? selectedBookingIds : bookingIdsWithNewConnote,
                             downloadOption: downloadOption,
@@ -906,6 +911,7 @@ class AllBookingsPage extends React.Component {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
+                        headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: bookingIdsWithConnote,
                             downloadOption: 'connote',
@@ -929,6 +935,7 @@ class AllBookingsPage extends React.Component {
                     const options = {
                         method: 'post',
                         url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
+                        headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: bookingIdsWithLabel,
                             downloadOption: 'label',
