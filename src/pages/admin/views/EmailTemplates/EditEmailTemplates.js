@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../../state/services/emailTemplateService';
 
 class EditEmailTemplates extends Component {
@@ -31,7 +31,7 @@ class EditEmailTemplates extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getEmailTemplateDetails: PropTypes.func.isRequired,
         match: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
@@ -44,12 +44,12 @@ class EditEmailTemplates extends Component {
     componentDidMount() {
         const id = this.props.match.params.id;
 
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -61,7 +61,7 @@ class EditEmailTemplates extends Component {
         const { redirect, emailTemplateDetails, id, pageInd, pageCnt } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -185,9 +185,9 @@ class EditEmailTemplates extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         emailTemplateDetails: state.emailTemplate.emailTemplateDetails,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
         pageInd: state.fp.pageInd

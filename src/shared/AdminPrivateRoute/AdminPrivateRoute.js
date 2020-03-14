@@ -2,11 +2,11 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-export function AdminRoute({ component: Component, ...rest }) {
+export function AdminPrivateRoute({ component: Component, ...rest }) {
     return (
         <Route
             {...rest}
-            render={props =>
+            render = {props =>
                 isLogged() === 'true' ? 
                     (
                         <Component {...props} />
@@ -25,8 +25,8 @@ export function AdminRoute({ component: Component, ...rest }) {
     );
 }
 
-AdminRoute.propTypes = {
-    location: PropTypes.object.isRequired,
+AdminPrivateRoute.propTypes = {
+    location: PropTypes.object,
     component: PropTypes.object.isRequired,
 };
 

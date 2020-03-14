@@ -16,7 +16,7 @@ class PageWrapper extends Component {
         });
         
         return (
-            <section className="main-content-wrapper">
+            <section className="admin-theme">
                 {children}
             </section>
         );

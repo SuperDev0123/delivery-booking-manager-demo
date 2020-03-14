@@ -9,7 +9,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';   
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
 import { getAllSqlQueries, deleteSqlQueryDetails } from '../../../../state/services/sqlQueryService'; 
 
 class SqlQueries extends Component {    
@@ -27,7 +27,7 @@ class SqlQueries extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getAllSqlQueries: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteSqlQueryDetails: PropTypes.func.isRequired,
@@ -35,12 +35,12 @@ class SqlQueries extends Component {
 
     componentDidMount() {
         //this.setState({loading: true});
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -53,7 +53,7 @@ class SqlQueries extends Component {
         const { redirect, allSqlQueries, needUpdateSqlQueries } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -199,9 +199,9 @@ class SqlQueries extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         allSqlQueries: state.sqlQuery.allSqlQueries,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         needUpdateSqlQueries: state.sqlQuery.needUpdateSqlQueries,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
     };

@@ -8,7 +8,7 @@ import Modal from 'react-modal';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
 
 const customStyles = {
@@ -54,7 +54,7 @@ class EditSqlQueries extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         match: PropTypes.object.isRequired,
         getSqlQueryDetails: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
@@ -66,12 +66,12 @@ class EditSqlQueries extends Component {
     componentDidMount() {
         const id = this.props.match.params.id;
 
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -83,7 +83,7 @@ class EditSqlQueries extends Component {
         const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -291,9 +291,9 @@ class EditSqlQueries extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         sqlQueryDetails: state.sqlQuery.sqlQueryDetails,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,

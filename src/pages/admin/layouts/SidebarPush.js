@@ -1,9 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
+
+import { logout } from '../../../state/services/authService';
 
 import imgProfile from '../../../public/images/profile.jpg';
 
@@ -27,15 +30,17 @@ class SidebarPush extends React.Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         handleLoginCheck: PropTypes.func.isRequired,
+        logout: PropTypes.func.isRequired,
     };
-
 
     activeRoute(getPath) {
         getPath = Array.isArray(getPath) ? getPath : [getPath];
+
         for (let i in getPath) {
             if ('/admin/' + getPath[i] === this.props.location.pathname)
                 return true;
         }
+
         return false;
     }
 
@@ -45,9 +50,7 @@ class SidebarPush extends React.Component {
     }
 
     logout() {
-        localStorage.setItem('isAdminLoggedIn', 'false');
-        localStorage.setItem('admin_token', '');
-        this.props.handleLoginCheck();
+        this.props.logout();
         this.props.history.push('/admin');
     }
 
@@ -196,8 +199,15 @@ class SidebarPush extends React.Component {
         );
     }
 }
+
 SidebarPush.contextTypes = {
     router: PropTypes.object
 };
 
-export default withRouter(SidebarPush);
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout: () => dispatch(logout()),
+    };
+};
+
+export default withRouter(connect(mapDispatchToProps)(SidebarPush));

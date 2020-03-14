@@ -45,7 +45,7 @@ class MainWrapper extends Component {
         const { sidebarClass } = this.state;
 
         return (
-            <div id="main-wrapper" className={'theme-default admin-theme ' + sidebarClass}>
+            <div id="main-wrapper" className={'theme-default ' + sidebarClass}>
                 <Header sidebarPush={this.sidebarPush} />
                 <SidebarPush handleLoginCheck={handleLoginCheck} />
                 <PageWrapper handleLoginCheck={handleLoginCheck}>

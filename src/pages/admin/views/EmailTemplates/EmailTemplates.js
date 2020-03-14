@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getAllEmailTemplates, deleteEmailTemplateDetails } from '../../../../state/services/emailTemplateService';
 
 class EmailTemplates extends Component {
@@ -24,19 +24,19 @@ class EmailTemplates extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getAllEmailTemplates: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteEmailTemplateDetails: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -49,7 +49,7 @@ class EmailTemplates extends Component {
         const { redirect, allEmailTemplates, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -155,9 +155,9 @@ class EmailTemplates extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         allEmailTemplates: state.emailTemplate.allEmailTemplates,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
     };
 };

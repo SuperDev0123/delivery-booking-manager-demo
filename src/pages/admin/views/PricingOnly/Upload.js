@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import DropzoneComponent from 'react-dropzone-component';
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
 class Upload extends Component {
@@ -34,17 +34,17 @@ class Upload extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin/');
         }
@@ -54,7 +54,7 @@ class Upload extends Component {
         const { redirect } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -82,7 +82,7 @@ class Upload extends Component {
     }
 
     render() {
-        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('admin_token')};
+        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
         const config = this.componentConfig;
         const djsConfig = this.djsConfig;
         const eventHandlers = {
@@ -130,9 +130,9 @@ class Upload extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
-        username: state.adminAuth.username,
-        clientname: state.adminAuth.clientname,
+        redirect: state.auth.redirect,
+        username: state.auth.username,
+        clientname: state.auth.clientname,
     };
 };
 

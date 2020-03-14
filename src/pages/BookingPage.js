@@ -243,7 +243,7 @@ class BookingPage extends Component {
         deleteBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getBooking: PropTypes.func.isRequired,
         getSuburbStrings: PropTypes.func.isRequired,

@@ -7,7 +7,7 @@ import MainWrapper from './layouts/MainWrapper';
 import LoginWrapper from './layouts/LoginWrapper';
 import SidebarOverlay from './layouts/SidebarOverlay';
 
-import { verifyToken, cleanRedirectState } from '../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import '../../assets/styles/vendor.scss';
 import '../../assets/styles/main.scss';
 
@@ -27,36 +27,32 @@ class Main extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         children: PropTypes.object.isRequired,
     }
 
     componentDidMount() {
-        console.log('componentDidMount');
-        const token = localStorage.getItem('admin_token');
-        console.log('admin_token', token);
+        const token = localStorage.getItem('token');
+
         if (token && token.length > 0) {
-            console.log('verifyToken');
             this.props.verifyToken();
         } else {
-            console.log('Redirect');
-            // localStorage.setItem('isAdminLoggedIn', 'false');
-            // this.props.cleanRedirectState();
             this.props.history.push('/admin/login');
         }
-        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false') ? false : true });
+
+        this.setState({ isLoggedIn: (!localStorage.getItem('token') || localStorage.getItem('token') == 'false') ? false : true });
     }
 
     loginCheck() {
-        const token = localStorage.getItem('admin_token');
-        console.log('loginCheck', token);
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
         }
-        this.setState({ isLoggedIn: (!localStorage.getItem('admin_token') || localStorage.getItem('admin_token') == 'false') ? false : true });
+
+        this.setState({ isLoggedIn: (!localStorage.getItem('token') || localStorage.getItem('token') == 'false') ? false : true });
     }
 
     render() {
@@ -83,7 +79,7 @@ class Main extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
     };
 };
 

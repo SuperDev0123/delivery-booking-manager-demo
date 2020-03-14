@@ -141,7 +141,7 @@ class AllBookingsPage extends React.Component {
         fpOrderSummary: PropTypes.bool.isRequired,
         getAlliedLabel: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         setGetBookingsFilter: PropTypes.func.isRequired,

@@ -4,7 +4,7 @@ import { createBrowserHistory } from 'history';
 
 // Routes
 import { PrivateRoute } from '../shared/PrivateRoute/PrivateRoute';
-import { AdminRoute } from '../shared/AdminRoute/AdminRoute';
+import { AdminPrivateRoute } from '../shared/AdminPrivateRoute/AdminPrivateRoute';
 
 // User pages
 import Header from '../components/Header/Header';
@@ -71,22 +71,22 @@ export const AppRouter = () => (
                 <Main>
                     <Route exact path='/admin' component={ Login } />
                     <Route exact path='/admin/login' component={ Login} />
-                    <Route exact path='/admin/dashboard' component={ Dashboard} />
-                    <AdminRoute exact path='/admin/sqlqueries' component={SqlQueries} />
-                    <AdminRoute exact path='/admin/sqlqueries/add' component={AddSqlQuery} />
-                    <AdminRoute exact path='/admin/sqlqueries/edit/:id' component={EditSqlQuery} />
-                    <AdminRoute exact path='/admin/emails' component={EmailTemplates} />
-                    <AdminRoute exact path='/admin/emails/add' component={AddEmailTemplates} />
-                    <AdminRoute exact path='/emails/edit/:id' component={EditEmailTemplates} />
-                    <AdminRoute exact path='/admin/users' component={Users} />
-                    <AdminRoute exact path='/admin/users/add' component={AddUser} />
-                    <AdminRoute exact path='/admin/users/edit/:id' component={EditUser} />
-                    <AdminRoute exact path='/admin/crons' component={CronOptions} />
-                    <AdminRoute exact path='/admin/providers' component={FreightProviders} />
-                    <AdminRoute exact path='/admin/providers/add' component={AddFreightProviders} />
-                    <AdminRoute exact path='/admin/providers/edit/:id' component={EditFreightProviders} />
-                    <AdminRoute exact path='/admin/pricing-only' component={PricingOnlyList} />
-                    <AdminRoute exact path='/admin/pricing-only/upload' component={PricingOnlyUpload} />
+                    <AdminPrivateRoute exact path='/admin/dashboard' component={Dashboard} />
+                    <AdminPrivateRoute exact path='/admin/users' component={Users} />
+                    <AdminPrivateRoute exact path='/admin/users/add' component={AddUser} />
+                    <AdminPrivateRoute exact path='/admin/users/edit/:id' component={EditUser} />
+                    <AdminPrivateRoute exact path='/admin/emails' component={EmailTemplates} />
+                    <AdminPrivateRoute exact path='/admin/emails/add' component={AddEmailTemplates} />
+                    <AdminPrivateRoute exact path='/admin/emails/edit/:id' component={EditEmailTemplates} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries' component={SqlQueries} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries/add' component={AddSqlQuery} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries/edit/:id' component={EditSqlQuery} />
+                    <AdminPrivateRoute exact path='/admin/crons' component={CronOptions} />
+                    <AdminPrivateRoute exact path='/admin/providers' component={FreightProviders} />
+                    <AdminPrivateRoute exact path='/admin/providers/add' component={AddFreightProviders} />
+                    <AdminPrivateRoute exact path='/admin/providers/edit/:id' component={EditFreightProviders} />
+                    <AdminPrivateRoute exact path='/admin/pricing-only' component={PricingOnlyList} />
+                    <AdminPrivateRoute exact path='/admin/pricing-only/upload' component={PricingOnlyUpload} />
                 </Main>
                 <Redirect to='/' />
             </Switch>

@@ -8,7 +8,7 @@ import Moment from 'react-moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getallCronOptions, updateCronOptionDetails } from '../../../../state/services/cronOptionService';
 
 class CronOptions extends Component {
@@ -28,7 +28,7 @@ class CronOptions extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getallCronOptions: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         updateCronOptionDetails: PropTypes.func.isRequired,
@@ -37,12 +37,12 @@ class CronOptions extends Component {
 
     componentDidMount() {
         this.setState({ loading: true });
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -81,7 +81,7 @@ class CronOptions extends Component {
         const { redirect, allCronOptions, needUpdateCronOptions, } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -194,9 +194,9 @@ class CronOptions extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         allCronOptions: state.cronOption.allCronOptions,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         needUpdateCronOptions: state.cronOption.needUpdateCronOptions,
     };
 };

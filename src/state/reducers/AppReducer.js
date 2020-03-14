@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 import { AuthReducer } from './authReducer';
-import { AdminAuthReducer } from './adminAuthReducer';
 import { BookingReducer } from './bookingReducer';
 import { BookingLineReducer } from './bookingLineReducer';
 import { BookingLineDetailReducer } from './bookingLineDetailReducer';
@@ -19,7 +18,6 @@ import { CronOptionReducer } from './cronOptionReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
-    adminAuth: AdminAuthReducer,
     booking: BookingReducer,
     bookingLine: BookingLineReducer,
     bookingLineDetail: BookingLineDetailReducer,

@@ -5,7 +5,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';
 import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
 
@@ -35,7 +35,7 @@ class EditFreightProviders extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         match: PropTypes.object.isRequired,
         getFPDetails: PropTypes.func.isRequired,
         getFPCarriers: PropTypes.func.isRequired,
@@ -55,12 +55,12 @@ class EditFreightProviders extends Component {
     componentDidMount() {
         const fp_id = this.props.match.params.id;
 
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -75,7 +75,7 @@ class EditFreightProviders extends Component {
         const { redirect, fpDetails, id, fpCarriers, fpZones, pageItemCnt, pageInd, pageCnt, needUpdateFpCarriers, needUpdateFpZones } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -247,11 +247,11 @@ class EditFreightProviders extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         fpDetails: state.fp.fpDetails,
         fpCarriers: state.fp.fpCarriers,
         fpZones: state.fp.fpZones,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
         pageInd: state.fp.pageInd,

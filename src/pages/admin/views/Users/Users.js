@@ -10,7 +10,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 
-import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/adminAuthService';   
+import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
 class Users extends Component {    
@@ -33,7 +33,7 @@ class Users extends Component {
         updateUserDetails: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getAllUsers: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         setGetUsersFilter: PropTypes.func.isRequired,
@@ -41,12 +41,12 @@ class Users extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -59,7 +59,7 @@ class Users extends Component {
         const { redirect, allUsers, dmeClients, clientPK, needUpdateUsers } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -307,10 +307,10 @@ class Users extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         allUsers: state.user.allUsers,
-        username: state.adminAuth.username,
-        dmeClients: state.adminAuth.dmeClients,
+        username: state.auth.username,
+        dmeClients: state.auth.dmeClients,
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,

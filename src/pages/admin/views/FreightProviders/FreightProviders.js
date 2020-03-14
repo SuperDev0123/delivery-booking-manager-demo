@@ -6,7 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getAllFPs, deleteFpDetail } from '../../../../state/services/fpService';
 
 class FreightProviders extends Component {
@@ -25,7 +25,7 @@ class FreightProviders extends Component {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteFpDetail: PropTypes.func.isRequired,
@@ -33,12 +33,12 @@ class FreightProviders extends Component {
 
     componentDidMount() {
         this.setState({ loading: true });
-        const token = localStorage.getItem('admin_token');
+        const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -51,7 +51,7 @@ class FreightProviders extends Component {
         const { redirect, allFPs, needUpdateFpDetails } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isAdminLoggedIn', 'false');
+            localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
@@ -154,9 +154,9 @@ class FreightProviders extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.adminAuth.redirect,
+        redirect: state.auth.redirect,
         allFPs: state.fp.allFPs,
-        username: state.adminAuth.username,
+        username: state.auth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
     };
 };

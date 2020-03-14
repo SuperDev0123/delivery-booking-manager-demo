@@ -25,8 +25,9 @@ class LoginPage extends Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const { token, username, errorMessage } = newProps;
 
-        if (token)
+        if (token) {
             this.props.getUser(token);
+        }
 
         if (username) {
             this.props.history.push('/home');
