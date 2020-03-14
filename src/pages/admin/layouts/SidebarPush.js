@@ -2,7 +2,6 @@ import React from 'react';
 import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
-
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
@@ -13,7 +12,7 @@ class SidebarPush extends React.Component {
         super(props);
 
         this.state = {
-            dropdownOpen:false,
+            dropdownOpen: false,
             collapse: {
                 dashboard: this.activeRoute('dashboard'),
                 providers: this.activeRoute(['providers', 'providers/add', 'providers/edit']),
@@ -34,42 +33,44 @@ class SidebarPush extends React.Component {
     activeRoute(getPath) {
         getPath = Array.isArray(getPath) ? getPath : [getPath];
         for (let i in getPath) {
-            if ('/admin/'+getPath[i] === this.props.location.pathname)
+            if ('/admin/' + getPath[i] === this.props.location.pathname)
                 return true;
         }
         return false;
     }
 
-    toggle(){
+    toggle() {
         const { dropdownOpen } = this.state;
-        this.setState({dropdownOpen:!dropdownOpen});
+        this.setState({ dropdownOpen: !dropdownOpen });
     }
 
     logout() {
-        localStorage.setItem('isLoggedIn', 'false');
-        localStorage.setItem('token', '');
+        localStorage.setItem('isAdminLoggedIn', 'false');
+        localStorage.setItem('admin_token', '');
         this.props.handleLoginCheck();
-        this.props.history.push('/');
+        this.props.history.push('/admin');
     }
 
-    render() { 
+    render() {
         const { dropdownOpen } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
                 <div className="sidebar-profile">
                     <div className="avatar">
-                        <img className="img-circle profile-image" src={imgProfile}/>
+                        <img className="img-circle profile-image" src={imgProfile} />
                         <i className="on border-dark animated bounceIn"></i>
                     </div>
                     <div className="profile-body dropdown">
                         <Dropdown isOpen={dropdownOpen} toggle={this.toggle}>
                             <DropdownToggle caret>
-                            Master Admin
+                                Master Admin
                             </DropdownToggle>
                             <DropdownMenu>
-                                <ul className="animated" role="menu" style={{listStyle: 'none',
-                                    padding: '15px'}}>
+                                <ul className="animated" role="menu" style={{
+                                    listStyle: 'none',
+                                    padding: '15px'
+                                }}>
                                     <li className="profile-progress">
                                         <h5>
                                             <span>80%</span>
@@ -102,7 +103,7 @@ class SidebarPush extends React.Component {
                                     </li>
                                     <li className="divider"></li>
                                     <li>
-                                        <a href='#' onClick={e => {e.preventDefault();this.logout();}}>
+                                        <a href='#' onClick={e => { e.preventDefault(); this.logout(); }}>
                                             <span className="icon">
                                                 <i className="fa fa-sign-out"></i>
                                             </span><small>Logout</small></a>
@@ -139,7 +140,7 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">Cron Options</span>
                             </Link>
                         </li>
-                        <li style={{'color': '#B3B8C3'}} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
+                        <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
                             <a onClick={() => this.setState({ providersCollapsed: !this.state.providersCollapsed })}>
                                 <i className="fa fa-bars fa-fw"></i>
                                 <span className="menu-title">Freight Providers</span>
@@ -149,7 +150,7 @@ class SidebarPush extends React.Component {
                                     <Link title="View All Freight Providers" to="/admin/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
                                         <span className="submenu-title">All</span>
                                     </Link>
-                                </li>   
+                                </li>
                                 <li>
                                     <Link title="Add New Freight Providers" to="/admin/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
                                         <span className="submenu-title">Add New</span>
@@ -163,21 +164,21 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">SQL Tool</span>
                             </Link>
                         </li>
-                        <li style={{'color': '#B3B8C3'}} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
+                        <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
                             <a onClick={() => this.setState({ pricingOnlyCollapsed: !this.state.pricingOnlyCollapsed })}>
                                 <i className="fa fa-usd fa-fw"></i>
                                 <span className="menu-title">Pricing Only</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !this.state.pricingOnlyCollapsed })}>
                                 <li>
-                                    <Link 
+                                    <Link
                                         title="View All Pricing result list"
                                         to="/admin/pricing-only"
                                         className={this.activeRoute(['pricing-only']) ? 'active' : ''}
                                     >
                                         <span className="submenu-title">List</span>
                                     </Link>
-                                </li>   
+                                </li>
                                 <li>
                                     <Link
                                         title="Upload new Pricing sheet"

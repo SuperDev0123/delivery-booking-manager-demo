@@ -11,7 +11,6 @@ class Dashboard extends Component {
     }
 
     render() {
-
         return (
             <div id="main-wrapper" className="theme-default admin-theme">
                 <div className="pageheader">
@@ -128,14 +127,14 @@ class Dashboard extends Component {
                                                 <li>
                                                     <span className="text-left">Network Usage</span>
                                                     <div className="progress progress-xs">
-                                                        <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style={{width: '65%'}}>
+                                                        <div className="progress-bar progress-bar-success" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100" style={{ width: '65%' }}>
                                                         </div>
                                                     </div>
                                                 </li>
                                                 <li>
                                                     <span className="text-left">CPU Load</span>
                                                     <div className="progress progress-xs">
-                                                        <div className="progress-bar progress-bar-info" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style={{width: '40%'}}>
+                                                        <div className="progress-bar progress-bar-info" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style={{ width: '40%' }}>
                                                         </div>
                                                     </div>
                                                 </li>

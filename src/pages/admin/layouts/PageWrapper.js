@@ -10,10 +10,11 @@ class PageWrapper extends Component {
         children: PropTypes.object.isRequired,
     };
 
-    render () {
+    render() {
         const children = React.Children.map(this.props.children, child => {
-            return React.cloneElement(child, { handleLoginCheck: () => this.props.handleLoginCheck});
+            return React.cloneElement(child, { handleLoginCheck: () => this.props.handleLoginCheck });
         });
+        
         return (
             <section className="main-content-wrapper">
                 {children}

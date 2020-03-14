@@ -3,16 +3,16 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
+import 'react-confirm-alert/src/react-confirm-alert.css';
 import Moment from 'react-moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
-import { getallCronOptions, updateCronOptionDetails } from '../../../../state/services/cronOptionService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { getallCronOptions, updateCronOptionDetails } from '../../../../state/services/cronOptionService';
 
-class CronOptions extends Component {   
-    intervalId = 0; 
+class CronOptions extends Component {
+    intervalId = 0;
     constructor(props) {
         super(props);
 
@@ -23,7 +23,7 @@ class CronOptions extends Component {
         };
         this.handleChange = this.handleChange.bind(this);
     }
-    
+
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
@@ -36,20 +36,20 @@ class CronOptions extends Component {
     }
 
     componentDidMount() {
-        this.setState({loading: true});
-        const token = localStorage.getItem('token');
+        this.setState({ loading: true });
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getallCronOptions();
-        this.setState({loading: false});
-        this.intervalId = setInterval(() => {this.props.getallCronOptions();}, 1000*5*60);
+        this.setState({ loading: false });
+        this.intervalId = setInterval(() => { this.props.getallCronOptions(); }, 1000 * 5 * 60);
     }
 
     componentWillUnmount() {
@@ -60,44 +60,43 @@ class CronOptions extends Component {
         toast(text);
     };
 
-    handleChange({target}){
-        this.props.updateCronOptionDetails({id: target.name, option_value: target.value==0?1:0});
+    handleChange({ target }) {
+        this.props.updateCronOptionDetails({ id: target.name, option_value: target.value == 0 ? 1 : 0 });
         if (target.checked) {
             target.setAttribute('checked', true);
             target.parentNode.style.textDecoration = 'line-through';
-            target.value=1;
-             
+            target.value = 1;
+
         } else {
             target.removeAttribute('checked');
             target.parentNode.style.textDecoration = '';
-            target.value=0;
+            target.value = 0;
         }
     }
     onInputChange(event) {
-        this.setState({[event.target.name]: event.target.value});
+        this.setState({ [event.target.name]: event.target.value });
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, allCronOptions, needUpdateCronOptions, } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
         if (allCronOptions && allCronOptions !== this.state.allCronOptions) {
             this.setState({ allCronOptions });
-            
+
         }
-        if(needUpdateCronOptions){
+        if (needUpdateCronOptions) {
             this.notify('Data updated!');
             this.props.getallCronOptions();
         }
     }
 
     componentDidUpdate(prevProps) {
-        // Typical usage (don't forget to compare props):
-        if (prevProps.allCronOptions.length>0 && this.props.allCronOptions !== prevProps.allCronOptions) {
+        if (prevProps.allCronOptions.length > 0 && this.props.allCronOptions !== prevProps.allCronOptions) {
             this.notify('Data updated!');
         }
     }
@@ -107,9 +106,8 @@ class CronOptions extends Component {
         const tableData = allCronOptions.map((item, index) => {
             return (
                 <tr key={index}>
-                    {/*<td>{item.id}</td>*/}
                     <td>{item.option_name}</td>
-                    <td><input name={item.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={item.option_value} checked={(item.option_value==1)?true:false}/></td>
+                    <td><input name={item.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={item.option_value} checked={(item.option_value == 1) ? true : false} /></td>
                     <td width="50">{item.option_description}</td>
                     <td>{item.option_schedule}</td>
                     <td>{item.start_time}</td>
@@ -118,12 +116,7 @@ class CronOptions extends Component {
                     <td>{item.end_count}</td>
                     <td>{item.elapsed_seconds}</td>
                     <td>
-                        {item.is_running==1 ? (
-                            <button className="btn btn-success btn-sm">Running</button>
-                        ) : (
-                            <button className="btn btn-warn btn-sm">Not Running</button>
-                        )
-                        }
+                        {item.is_running == 1 ? ( <button className="btn btn-success btn-sm">Running</button> ) : ( <button className="btn btn-warn btn-sm">Not Running</button> )}
                     </td>
                     <td>{item.z_createdByAccount}</td>
                     <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_createdTimeStamp} /></td>
@@ -159,16 +152,12 @@ class CronOptions extends Component {
                             <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Cron Options</h3>
-                                    {/*<div className="actions pull-right">
-                                    <a className="btn btn-success" href="/providers/add">Add New</a>
-                                </div>*/}
                                 </div>
                                 <div className="panel-body">
                                     <div className="table-responsive">
                                         <table id="example" className="table table-striped table-bordered" cellSpacing="0" width="100%">
                                             <thead>
                                                 <tr>
-                                                    {/*<th>id</th>*/}
                                                     <th>Option Name</th>
                                                     <th>Option Value</th>
                                                     <th width="50">Option Description</th>
@@ -180,7 +169,7 @@ class CronOptions extends Component {
                                                     <th>Elapsed Second</th>
                                                     <th>Is Running</th>
                                                     <th>Created By</th>
-                                                    <th>Craeted At</th>
+                                                    <th>Created At</th>
                                                     {/*<th>Modified BY</th>
                                             <th>Modified At</th>
                                             <th>Actions</th>*/}
@@ -188,7 +177,7 @@ class CronOptions extends Component {
                                             </thead>
 
                                             <tbody>
-                                                { tableData }
+                                                {tableData}
                                             </tbody>
                                         </table>
                                     </div>
@@ -197,7 +186,7 @@ class CronOptions extends Component {
                         </div>
                     </div>
                 </section>
-            
+
             </div>
         );
     }
@@ -205,9 +194,9 @@ class CronOptions extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         allCronOptions: state.cronOption.allCronOptions,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         needUpdateCronOptions: state.cronOption.needUpdateCronOptions,
     };
 };

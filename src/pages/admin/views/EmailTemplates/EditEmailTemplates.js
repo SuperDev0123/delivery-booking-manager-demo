@@ -5,13 +5,13 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import CKEditor from 'ckeditor4-react';
 
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';   
-import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../../state/services/emailTemplateService';  
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
+import { getEmailTemplateDetails, updateEmailTemplateDetails } from '../../../../state/services/emailTemplateService';
 
 class EditEmailTemplates extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             id: 0,
             loading: false,
@@ -19,7 +19,7 @@ class EditEmailTemplates extends Component {
             emailName: '',
             sectionName: '',
             emailBody: '',
-            emailTemplateDetails: {id: 0, emailName: '', sectionName: '', emailBody: ''},
+            emailTemplateDetails: { id: 0, emailName: '', sectionName: '', emailBody: '' },
             pageItemCnt: 10,
             pageInd: 0,
             pageCnt: 0,
@@ -35,7 +35,7 @@ class EditEmailTemplates extends Component {
         getEmailTemplateDetails: PropTypes.func.isRequired,
         match: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        
+
         updateEmailTemplateDetails: PropTypes.func.isRequired,
         deleteFpCarrier: PropTypes.func.isRequired,
         deleteFpZone: PropTypes.func.isRequired,
@@ -44,14 +44,14 @@ class EditEmailTemplates extends Component {
     componentDidMount() {
         const id = this.props.match.params.id;
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         this.props.getEmailTemplateDetails(id);
@@ -61,9 +61,9 @@ class EditEmailTemplates extends Component {
         const { redirect, emailTemplateDetails, id, pageInd, pageCnt } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/');
+            this.props.history.push('/admin');
         }
 
         if (emailTemplateDetails) {
@@ -83,22 +83,20 @@ class EditEmailTemplates extends Component {
     }
 
     onSubmit(event) {
-        this.setState({loading: true});
+        this.setState({ loading: true });
         const { emailTemplateDetails, emailName, sectionName, emailBody } = this.state;
-        let data = {id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody};
+        let data = { id: emailTemplateDetails.id, emailName: emailName, sectionName: sectionName, emailBody: emailBody };
         this.props.updateEmailTemplateDetails(data);
-        this.setState({loading: false});
-        this.props.history.push('/emails');
+        this.setState({ loading: false });
+        this.props.history.push('/admin/emails');
         event.preventDefault();
     }
 
     onClickDelete(typeNum, row) {
         if (typeNum === 0) { // Duplicate line
             this.props.deleteFpCarrier({ id: row.id });
-            //this.setState({loadingBookingLine: true});
         } else if (typeNum === 1) { // Duplicate line detail
             this.props.deleteFpZone({ id: row.id });
-            //this.setState({loadingBookingLineDetail: true});
         }
     }
 
@@ -107,7 +105,7 @@ class EditEmailTemplates extends Component {
 
         return (
             <div>
-            
+
                 <div className="pageheader">
                     <h1>Edit Email Template</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
@@ -126,7 +124,7 @@ class EditEmailTemplates extends Component {
                         spinner
                         text='Loading...'
                     />
-                
+
                     <div className="row">
                         <div className="col-md-12">
                             <div className="panel panel-default">
@@ -141,38 +139,38 @@ class EditEmailTemplates extends Component {
                                         <input name="id" type="hidden" value={this.state.id} />
                                         <div className="form-group">
                                             <label htmlFor="exampleInputEmail1">Template Name</label>
-                                            <input readOnly name="emailName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Email Name" value={this.state.emailName} onChange={(e) => this.setState({emailName: e.target.value})} />
+                                            <input readOnly name="emailName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Email Name" value={this.state.emailName} onChange={(e) => this.setState({ emailName: e.target.value })} />
                                             <i>*This field cannot be changed</i>
                                         </div>
 
                                         <div className="form-group">
                                             <label htmlFor="exampleInputEmail1">Section Name</label>
-                                            <input readOnly name="sectionName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Section Name" value={this.state.sectionName} onChange={(e) => this.setState({sectionName: e.target.value})} />
+                                            <input readOnly name="sectionName" type="text" className="form-control" id="exampleInputEmail1" placeholder="Enter Section Name" value={this.state.sectionName} onChange={(e) => this.setState({ sectionName: e.target.value })} />
                                             <i>*This field cannot be changed</i>
                                         </div>
-    
+
                                         <div className="form-group">
                                             <label htmlFor="exampleInputEmail1">Email Body</label>
-                                            <br/><i>*Please do no modify or remove variables with curly braces {}</i>
+                                            <br /><i>*Please do no modify or remove variables with curly braces {}</i>
                                             <CKEditor
                                                 data={this.state.emailBody}
-                                                onInit={ editor => {
-                                                    console.log( 'Editor is ready to use!', editor );
-                                                } }
-                                                onChange={ ( event, editor ) => {
+                                                onInit={editor => {
+                                                    console.log('Editor is ready to use!', editor);
+                                                }}
+                                                onChange={(event, editor) => {
                                                     const data = editor.getData();
-                                                    this.setState({emailBody: data});
-                                                    console.log( { event, editor, data } );
-                                                } }
-                                                onBlur={ ( event, editor ) => {
-                                                    console.log( 'Blur.', editor );
-                                                } }
-                                                onFocus={ ( event, editor ) => {
-                                                    console.log( 'Focus.', editor );
-                                                } }
+                                                    this.setState({ emailBody: data });
+                                                    console.log({ event, editor, data });
+                                                }}
+                                                onBlur={(event, editor) => {
+                                                    console.log('Blur.', editor);
+                                                }}
+                                                onFocus={(event, editor) => {
+                                                    console.log('Focus.', editor);
+                                                }}
                                             />
                                         </div>
-                                    
+
                                         <button type="submit" className="btn btn-primary pull-right">Submit</button>
                                     </form>
                                 </div>
@@ -187,9 +185,9 @@ class EditEmailTemplates extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
+        redirect: state.adminAuth.redirect,
         emailTemplateDetails: state.emailTemplate.emailTemplateDetails,
-        username: state.auth.username,
+        username: state.adminAuth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
         pageInd: state.fp.pageInd
@@ -201,7 +199,7 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getEmailTemplateDetails: (fp_id) => dispatch(getEmailTemplateDetails(fp_id)),
-        updateEmailTemplateDetails: (emailTemplateDetails) => dispatch(updateEmailTemplateDetails(emailTemplateDetails)), 
+        updateEmailTemplateDetails: (emailTemplateDetails) => dispatch(updateEmailTemplateDetails(emailTemplateDetails)),
     };
 };
 

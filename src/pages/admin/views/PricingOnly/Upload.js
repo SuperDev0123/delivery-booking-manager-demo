@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import DropzoneComponent from 'react-dropzone-component';
-// Services
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-// Constants
+import { verifyToken, cleanRedirectState } from '../../../../state/services/adminAuthService';
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
 class Upload extends Component {
@@ -41,12 +39,12 @@ class Upload extends Component {
     }
 
     componentDidMount() {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin_token');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin/');
         }
@@ -56,7 +54,7 @@ class Upload extends Component {
         const { redirect } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
+            localStorage.setItem('isAdminLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
@@ -84,8 +82,7 @@ class Upload extends Component {
     }
 
     render() {
-        // DropzoneComponent config
-        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
+        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('admin_token')};
         const config = this.componentConfig;
         const djsConfig = this.djsConfig;
         const eventHandlers = {
@@ -133,9 +130,9 @@ class Upload extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        redirect: state.auth.redirect,
-        username: state.auth.username,
-        clientname: state.auth.clientname,
+        redirect: state.adminAuth.redirect,
+        username: state.adminAuth.username,
+        clientname: state.adminAuth.clientname,
     };
 };
 
