@@ -136,7 +136,6 @@ class FreightProviders extends Component {
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
-
                                         <tbody>
                                             {fpsList}
                                         </tbody>

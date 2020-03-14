@@ -1,4 +1,4 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK, SUCCESS_RESET_PASSWORD, FAILED_RESET_PASSWORD, SUCCESS_RESET_PASSWORD_CONFIRM, FAILED_RESET_PASSWORD_CONFIRM  } from '../constants/adminAuthConstants';
+import { SET_TOKEN, FAILED_GET_TOKEN, SET_USER, FAILED_GET_USER, FAILED_VERIFY_TOKEN, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK, SUCCESS_RESET_PASSWORD, FAILED_RESET_PASSWORD, SUCCESS_RESET_PASSWORD_CONFIRM, FAILED_RESET_PASSWORD_CONFIRM } from '../constants/adminAuthConstants';
 
 const defaultState = {
     token: '',
@@ -19,19 +19,19 @@ export const AdminAuthReducer = (state = defaultState, { type, token, successMes
             return {
                 ...state,
                 token: token,
-                redirect : false,
+                redirect: false,
             };
         case FAILED_GET_TOKEN:
             return {
                 ...state,
                 errorMessage: errorMessage,
-                redirect : true,
+                redirect: true,
             };
         case FAILED_VERIFY_TOKEN:
             return {
                 ...state,
                 errorMessage: errorMessage,
-                redirect : true,
+                redirect: true,
             };
         case SUCCESS_RESET_PASSWORD:
             return {
@@ -65,13 +65,13 @@ export const AdminAuthReducer = (state = defaultState, { type, token, successMes
                 clientname: clientname,
                 clientId: clientId,
                 isLoggedIn: isLoggedIn,
-                redirect : false,
+                redirect: false,
             };
         case FAILED_GET_USER:
             return {
                 ...state,
                 errorMessage: errorMessage,
-                redirect : true,
+                redirect: true,
             };
         case RESET_REDIRECT_STATE:
             return {
@@ -82,13 +82,13 @@ export const AdminAuthReducer = (state = defaultState, { type, token, successMes
             return {
                 ...state,
                 dmeClients: dmeClients,
-                redirect : false,
+                redirect: false,
             };
         case FAILED_GET_DME_CLIENTS:
             return {
                 ...state,
                 errorMessage: errorMessage,
-                redirect : false,
+                redirect: false,
             };
         case SET_CLIENT_PK:
             return {
