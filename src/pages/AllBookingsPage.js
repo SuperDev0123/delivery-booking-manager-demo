@@ -1797,6 +1797,8 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
+                    <td className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
+                    <td className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
                     <Popover
                         isOpen={this.state.linkPopoverOpens['link-popover-' + booking.id]}
                         target={'link-popover-' + booking.id}
@@ -2357,6 +2359,36 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
+                                                                className={(sortField === 'b_client_name') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_client_name')} 
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Client</p>
+                                                                {
+                                                                    (sortField === 'b_client_name') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
+                                                            </th>
+                                                            <th 
+                                                                className={(sortField === 'b_client_name_sub') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_client_name_sub')} 
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Sub Client</p>
+                                                                {
+                                                                    (sortField === 'b_client_name_sub') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
+                                                            </th>
+                                                            <th 
                                                                 className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('puPickUpAvailFrom_Date')} 
                                                                 scope="col" 
@@ -2850,6 +2882,8 @@ class AllBookingsPage extends React.Component {
                                                             <th><i className="icon icon-th-list"></i></th>
                                                             <th><i className="icon icon-plus"></i></th>
                                                             <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
