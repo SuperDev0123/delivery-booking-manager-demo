@@ -6,7 +6,7 @@ import { Dropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 
-import { logout } from '../../../state/services/authService';
+import { getUser, verifyToken, logout } from '../../../state/services/authService';
 
 import imgProfile from '../../../public/images/profile.jpg';
 
@@ -29,9 +29,31 @@ class SidebarPush extends React.Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
-        handleLoginCheck: PropTypes.func.isRequired,
+        getUser: PropTypes.func.isRequired,
+        verifyToken: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired,
     };
+
+    componentDidMount() {
+        const token = localStorage.getItem('token');
+
+        if (token && token.length > 0) {
+            this.props.verifyToken();
+            this.props.getUser();
+        } else {
+            this.props.logout();
+            this.props.history.push('/admin');
+        }
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { clientname } = newProps;
+
+        if (clientname && clientname !== 'dme') {
+            this.props.logout();
+            this.props.history.push('/admin');
+        }
+    }
 
     activeRoute(getPath) {
         getPath = Array.isArray(getPath) ? getPath : [getPath];
@@ -51,7 +73,7 @@ class SidebarPush extends React.Component {
 
     logout() {
         this.props.logout();
-        this.props.history.push('/admin');
+        this.props.history.push('/admin/login');
     }
 
     render() {
@@ -90,7 +112,8 @@ class SidebarPush extends React.Component {
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-user"></i>
-                                            </span><small>My Account</small></a>
+                                            </span><small>My Account</small>
+                                        </a>
                                     </li>
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
@@ -204,10 +227,19 @@ SidebarPush.contextTypes = {
     router: PropTypes.object
 };
 
-const mapDispatchToProps = (dispatch) => {
+const mapStateToProps = (state) => {
     return {
-        logout: () => dispatch(logout()),
+        redirect: state.auth.redirect,
+        clientname: state.auth.clientname,
     };
 };
 
-export default withRouter(connect(mapDispatchToProps)(SidebarPush));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logout: () => dispatch(logout()),
+        verifyToken: () => dispatch(verifyToken()),
+        getUser: () => dispatch(getUser()),
+    };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SidebarPush));

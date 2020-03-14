@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class PageWrapper extends Component {
-    static propTypes = {
-        handleLoginCheck: PropTypes.func.isRequired
-    };
+    static propTypes = {};
 
     static propTypes = {
         children: PropTypes.object.isRequired,
@@ -12,11 +10,11 @@ class PageWrapper extends Component {
 
     render() {
         const children = React.Children.map(this.props.children, child => {
-            return React.cloneElement(child, { handleLoginCheck: () => this.props.handleLoginCheck });
+            return React.cloneElement(child);
         });
         
         return (
-            <section className="admin-theme">
+            <section className="main-content-wrapper">
                 {children}
             </section>
         );

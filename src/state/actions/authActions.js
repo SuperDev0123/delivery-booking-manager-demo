@@ -38,7 +38,7 @@ export function detectTokenExpiration(data) {
         console.log('verifyToken response: ', data);
         return {
             type: SET_TOKEN,
-            errorMessage: data.token
+            errorMessage: ''
         };
     } else {
         console.log('Token expired');
@@ -106,7 +106,7 @@ export function setUser(username, clientname, clientId) {
         username,
         clientname,
         clientId,
-        isLoggedIn: 'true'
+        isLoggedIn: true
     };
 }
 
@@ -114,6 +114,7 @@ export function failedGetUser(error) {
     console.log('Error: ', error);
     return {
         type: FAILED_GET_USER,
+        isLoggedIn: false,
         errorMessage: 'Unable to get user with this token.'
     };
 }

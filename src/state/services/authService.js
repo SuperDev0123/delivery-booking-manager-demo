@@ -117,6 +117,7 @@ export const setClientPK = (clientPK) => {
 };
 
 export const logout = () => {
+    console.log('@999 - logout');
     localStorage.setItem('isLoggedIn', 'false');
     localStorage.setItem('token', '');
     localStorage.setItem('zohotoken', '');

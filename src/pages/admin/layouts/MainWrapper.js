@@ -9,12 +9,11 @@ class MainWrapper extends Component {
         super(props);
         this.state = {
             isDesktop: false,
-            sidebarClass: ''
+            sidebarClass: 'sidebar-opened',
         };
     }
 
     static propTypes = {
-        handleLoginCheck: PropTypes.func.isRequired,
         children: PropTypes.object.isRequired,
     };
 
@@ -33,22 +32,25 @@ class MainWrapper extends Component {
 
     sidebarPush = () => {
         const { sidebarClass, isDesktop } = this.state;
+
         if (sidebarClass === '') {
-            (isDesktop) ? this.setState({ sidebarClass: 'sidebar-mini' }) : this.setState({ sidebarClass: 'sidebar-opened' });
+            (isDesktop)
+                ? this.setState({ sidebarClass: 'sidebar-mini' })
+                : this.setState({ sidebarClass: 'sidebar-opened' });
         } else {
             this.setState({ sidebarClass: '' });
         }
     }
     
     render() {
-        const { handleLoginCheck, children } = this.props;
+        const { children } = this.props;
         const { sidebarClass } = this.state;
 
         return (
-            <div id="main-wrapper" className={'theme-default ' + sidebarClass}>
+            <div id="main-wrapper" className={'theme-default admin-theme ' + sidebarClass}>
                 <Header sidebarPush={this.sidebarPush} />
-                <SidebarPush handleLoginCheck={handleLoginCheck} />
-                <PageWrapper handleLoginCheck={handleLoginCheck}>
+                <SidebarPush />
+                <PageWrapper>
                     {children}
                 </PageWrapper>
             </div>

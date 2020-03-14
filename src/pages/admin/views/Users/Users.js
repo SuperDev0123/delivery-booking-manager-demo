@@ -314,7 +314,6 @@ const mapStateToProps = (state) => {
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,
-
     };
 };
 

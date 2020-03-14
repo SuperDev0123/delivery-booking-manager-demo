@@ -30,11 +30,6 @@ class Login extends Component {
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/admin');
-        }
-
-        if (token) {
-            this.props.getUser(token);
         }
     }
 
@@ -45,11 +40,14 @@ class Login extends Component {
             this.props.getUser(token);
         }
 
-        if (username && clientname && clientname === 'dme') {
-            this.props.history.push('/admin/dashboard');
-        } else {
-            this.props.logout();
-            this.setState({ errorMessage: 'Invalid username or password!'});
+        if (username && clientname) {
+            if (clientname === 'dme') {
+                localStorage.setItem('isLoggedIn', 'true');
+                this.props.history.push('/admin/dashboard');
+            } else {
+                this.props.logout();
+                this.setState({ errorMessage: 'Invalid username or password!'});
+            }
         }
 
         if (errorMessage) {

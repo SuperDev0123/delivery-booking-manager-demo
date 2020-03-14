@@ -5,9 +5,8 @@ import { withRouter } from 'react-router-dom';
 
 import MainWrapper from './layouts/MainWrapper';
 import LoginWrapper from './layouts/LoginWrapper';
-import SidebarOverlay from './layouts/SidebarOverlay';
 
-import { verifyToken, cleanRedirectState } from '../../state/services/authService';
+import { verifyToken } from '../../state/services/authService';
 import '../../assets/styles/vendor.scss';
 import '../../assets/styles/main.scss';
 
@@ -15,17 +14,11 @@ class Main extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            loading: false,
-            isLoggedIn: false
-        };
-        this.loginCheck = this.loginCheck.bind(this);
+        this.state = {};
     }
 
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
-        cleanRedirectState: PropTypes.func.isRequired,
-        location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         children: PropTypes.object.isRequired,
@@ -37,38 +30,23 @@ class Main extends Component {
         if (token && token.length > 0) {
             this.props.verifyToken();
         } else {
-            this.props.history.push('/admin/login');
-        }
-
-        this.setState({ isLoggedIn: (!localStorage.getItem('token') || localStorage.getItem('token') == 'false') ? false : true });
-    }
-
-    loginCheck() {
-        const token = localStorage.getItem('token');
-
-        if (token && token.length > 0) {
-            this.props.verifyToken();
-        } else {
             localStorage.setItem('isLoggedIn', 'false');
+            this.props.history.push('/admin');
         }
-
-        this.setState({ isLoggedIn: (!localStorage.getItem('token') || localStorage.getItem('token') == 'false') ? false : true });
     }
 
     render() {
-        const isLoggedIn = this.state.isLoggedIn;
-
+        const token = localStorage.getItem('token');
         return (
             <React.Fragment>
-                {isLoggedIn ? (
+                {token ? (
                     <React.Fragment>
-                        <MainWrapper handleLoginCheck={this.loginCheck}>
+                        <MainWrapper>
                             {this.props.children}
                         </MainWrapper>
-                        <SidebarOverlay />
                     </React.Fragment>
                 ) : (
-                    <LoginWrapper handleLoginCheck={this.loginCheck}>
+                    <LoginWrapper>
                         {this.props.children}
                     </LoginWrapper>
                 )}
@@ -85,8 +63,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        verifyToken: () => dispatch(verifyToken()),
-        cleanRedirectState: () => dispatch(cleanRedirectState())
+        verifyToken: () => dispatch(verifyToken())
     };
 };
 

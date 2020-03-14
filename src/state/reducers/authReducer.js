@@ -22,7 +22,7 @@ const defaultState = {
     username: null,
     clientname: null,
     clientId: null,
-    isLoggedIn: 'false',
+    isLoggedIn: false,
     redirect: false,
     dmeClients: [],
     clientPK: null,
@@ -57,6 +57,7 @@ export const AuthReducer = (state = defaultState, {
             return {
                 ...state,
                 token: token,
+                isLoggedIn: true,
                 redirect : false,
             };
         case FAILED_GET_TOKEN:
@@ -108,6 +109,7 @@ export const AuthReducer = (state = defaultState, {
             return {
                 ...state,
                 errorMessage: errorMessage,
+                isLoggedIn: isLoggedIn,
                 redirect : true,
             };
         case RESET_REDIRECT_STATE:

@@ -4,15 +4,14 @@ import PageWrapper from './PageWrapper';
 
 class LoginWrapper extends Component {
     static propTypes = {
-        handleLoginCheck: PropTypes.func.isRequired,
         children: PropTypes.object.isRequired,
     };
 
     render() {
-        const { handleLoginCheck, children } = this.props;
+        const { children } = this.props;
 
         return (
-            <PageWrapper handleLoginCheck={handleLoginCheck}>
+            <PageWrapper>
                 {children}
             </PageWrapper>
         );
