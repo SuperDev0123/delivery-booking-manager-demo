@@ -9,6 +9,7 @@ import { CommReducer } from './commReducer';
 import { ReportReducer } from './reportReducer';
 import { ExtraReducer } from './extraReducer';
 import { BokReducer } from './bokReducer';
+import { FileReducer } from './fileReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -20,4 +21,5 @@ export const AppReducer = combineReducers({
     report: ReportReducer,
     extra: ExtraReducer,
     bok: BokReducer,
+    files: FileReducer,
 });

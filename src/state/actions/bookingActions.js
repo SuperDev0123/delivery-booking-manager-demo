@@ -79,6 +79,12 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
+    SUCCESS_CHECK_AUGMENTED,
+    FAILED_CHECK_AUGMENTED,
+    SUCCESS_AUTO_AUGMENT,
+    FAILED_AUTO_AUGMENT,
+    SUCCESS_REVERT_AUGMENT,
+    FAILED_REVERT_AUGMENT,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -731,5 +737,50 @@ export function failedSendEmail(error) {
 export function resetAutoSelectedAction() {
     return {
         type: RESET_AUTO_SELECTED,
+    };
+}
+
+export function successCheckAugmented(data) {
+    return {
+        type: SUCCESS_CHECK_AUGMENTED,
+        payload: data,
+        isAutoAugmented: data['isAutoAugmented'],
+    };
+}
+
+export function failedCheckAugmented() {
+    return {
+        type: FAILED_CHECK_AUGMENTED,
+    };
+}
+
+export function successAutoAugment(data) {
+    return {
+        type: SUCCESS_AUTO_AUGMENT,
+        payload: data,
+        isAutoAugmented: true
+    };
+}
+
+export function failedAutoAugment(error) {
+    return {
+        type: FAILED_AUTO_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+
+export function successRevertAugment(data) {
+    return {
+        type: SUCCESS_REVERT_AUGMENT,
+        payload: data,
+        isAutoAugmented: false
+    };
+}
+
+export function failedRevertAugment(error) {
+    return {
+        type: FAILED_REVERT_AUGMENT,
+        errorMessage: error.response.data.message
     };
 }
