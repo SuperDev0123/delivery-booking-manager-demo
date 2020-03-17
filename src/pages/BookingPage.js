@@ -774,6 +774,10 @@ class BookingPage extends Component {
                 else formInputs['booking_Created_For_Email'] = '';
                 if (booking.booking_Created_For != null) formInputs['booking_Created_For'] = booking.booking_Created_For;
                 else formInputs['booking_Created_For'] = '';
+                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = booking.b_booking_Category;
+                else formInputs['b_booking_Category'] = '';
+                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = booking.b_booking_Priority;
+                else formInputs['b_booking_Priority'] = '';
 
                 if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
                 else formInputs['vx_fp_pu_eta_time'] = null;
@@ -3125,6 +3129,69 @@ class BookingPage extends Component {
                                                 </div>
                                         }
                                     </div>
+                                    <div className="row col-sm-12 booking-form-01">
+                                        <div className="col-sm-3 form-group">
+                                            <span>Created For</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['booking_Created_For']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="booking_Created_For"
+                                                        value = {formInputs['booking_Created_For'] ? formInputs['booking_Created_For'] : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Created For Email</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="booking_Created_For_Email"
+                                                        value = {formInputs['booking_Created_For_Email'] ? formInputs['booking_Created_For_Email'] : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Category</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_booking_Category']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="b_booking_Category"
+                                                        value = {formInputs['b_booking_Category'] ? formInputs['b_booking_Category'] : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
+                                        </div>
+                                        <div className="col-sm-3 form-group">
+                                            <span>Priority</span>
+                                            {
+                                                (parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['b_booking_Priority']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="b_booking_Priority"
+                                                        value = {formInputs['b_booking_Priority'] ? formInputs['b_booking_Priority'] : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
+                                            }
+                                        </div>
+                                    </div>
+
                                     <div className="row col-sm-12 booking-form-01">
                                         <div className="col-sm-2 form-group">
                                             <span>Warehouse Code</span>
