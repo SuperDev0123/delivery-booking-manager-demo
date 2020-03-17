@@ -106,8 +106,8 @@ class BulkUpdateSlider extends React.Component {
                             <option value="" selected disabled hidden>Select a field</option>
                             <option value="flag">Flag</option>
                             <option value="status">Booking status</option>
-                            <option value="client_name" disabled>Client Name</option>
-                            <option value="sub_client" disabled>Sub Client</option>
+                            <option value="b_client_name" disabled>Client</option>
+                            <option value="b_client_name_sub">Sub Client</option>
                             <option value="dme_status_detail">Status Detail</option>
                             <option value="dme_status_action">Status Action</option>
                             <option value="dme_status_history_notes">Status History Note</option>
@@ -146,7 +146,8 @@ class BulkUpdateSlider extends React.Component {
                             <option value="b_booking_Priority">Priority</option>
                             <option value="b_booking_Category">Category</option>
                             <option value="v_vehicle_Type">Vehicle Type</option>
-                            <option value="inv_dme_invoice_no">Your Invoice No</option>
+                            <option value="inv_dme_invoice_no">DME Invoice No</option>
+                            <option value="b_client_sales_inv_num">Your Invoice No</option>
 
                             <option value="b_booking_project">Project Name</option>
                             <option value="b_project_due_date">Project Due Date</option>
@@ -197,7 +198,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'puCompany' ||
+                            (selectedField === 'b_client_name_sub' ||
+                            selectedField === 'puCompany' ||
                             selectedField === 'pu_Address_Street_1' ||
                             selectedField === 'pu_Address_street_2' ||
                             selectedField === 'pu_Address_Country' ||
@@ -216,6 +218,7 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'b_booking_Priority' ||
                             selectedField === 'v_vehicle_Type' ||
                             selectedField === 'inv_dme_invoice_no' ||
+                            selectedField === 'b_client_sales_inv_num' ||
                             selectedField === 'b_booking_project') ?
                                 <input 
                                     type="text"
