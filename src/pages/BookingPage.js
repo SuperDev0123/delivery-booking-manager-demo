@@ -4456,7 +4456,22 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         {
-                                                            isAutoAugmented === false? <button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickAutoAugment()}>Auto Augment</button>:<button className='btn btn-theme custom-theme' disabled={isBookedBooking} onClick={() => this.onClickRevertAugment()}>Revert</button>
+                                                            isAutoAugmented === false ? 
+                                                                <button
+                                                                    className='btn btn-theme custom-theme'
+                                                                    disabled={isBookedBooking}
+                                                                    onClick={() => this.onClickAutoAugment()}
+                                                                >
+                                                                    Auto Augment
+                                                                </button>
+                                                                :
+                                                                <button
+                                                                    className='btn btn-theme custom-theme'
+                                                                    disabled={isBookedBooking}
+                                                                    onClick={() => this.onClickRevertAugment()}
+                                                                >
+                                                                    Revert Augment
+                                                                </button>
                                                         }
                                                     </div>
                                                     {
