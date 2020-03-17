@@ -3979,7 +3979,7 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="mt-1 additional-pickup-div none">
+                                                    <div className="mt-1 additional-pickup-div">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Reference No</label>
                                                         </div>
@@ -4589,10 +4589,10 @@ class BookingPage extends Component {
                                                                     </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3 none">
+                                                        <div className="col-sm-3">
                                                             <label className="" htmlFor="">Gaps</label>
                                                         </div>
-                                                        <div className="col-sm-9 none">
+                                                        <div className="col-sm-9">
                                                             <label className="show-mode">
                                                                 {booking ? booking.client_item_references : ''}
                                                             </label>
