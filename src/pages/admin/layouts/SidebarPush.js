@@ -216,6 +216,36 @@ class SidebarPush extends React.Component {
                                 </li>
                             </ul>
                         </li>
+                        <li className={this.activeRoute('vehicles') ? 'active' : ''}>
+                            <Link to="/admin/vehicles" title="Vehicles">
+                                <i className="fa fa-fw fa-truck"></i>
+                                <span className="menu-title">Vehicles</span>
+                            </Link>
+                        </li>
+                        <li className={this.activeRoute('timings') ? 'active' : ''}>
+                            <Link to="/admin/timings" title="Timings">
+                                <i className="fa fa-fw fa-bell"></i>
+                                <span className="menu-title">Timings</span>
+                            </Link>
+                        </li>
+                        <li className={this.activeRoute('availabilities') ? 'active' : ''}>
+                            <Link to="/admin/availabilities" title="Availabilities">
+                                <i className="fa fa-fw fa-clock-o"></i>
+                                <span className="menu-title">Availabilities</span>
+                            </Link>
+                        </li>
+                        <li className={this.activeRoute('costs') ? 'active' : ''}>
+                            <Link to="/admin/costs" title="Costs">
+                                <i className="fa fa-fw fa-dollar"></i>
+                                <span className="menu-title">Costs</span>
+                            </Link>
+                        </li>
+                        <li className={this.activeRoute('pricingrules') ? 'active' : ''}>
+                            <Link to="/admin/pricingrules" title="Pricing Rules">
+                                <i className="fa fa-fw fa-gavel"></i>
+                                <span className="menu-title">Pricing Rules</span>
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
             </aside>
