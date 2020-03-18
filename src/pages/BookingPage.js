@@ -2417,8 +2417,14 @@ class BookingPage extends Component {
     onDateChange(date, fieldName) {
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
-        formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
-        booking[fieldName] = moment(date).format('YYYY-MM-DD');
+
+        if (date) {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD');
+        } else {
+            formInputs[fieldName] = null;
+            booking[fieldName] = null;
+        }
 
         if (fieldName === 'fp_store_event_date') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
