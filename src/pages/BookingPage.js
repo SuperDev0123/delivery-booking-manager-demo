@@ -52,8 +52,6 @@ class BookingPage extends Component {
         super(props);
 
         this.state = {
-            isShowAddServiceAndOpt: false,
-            isShowBookingCntAndTot: false,
             formInputs: {},
             commFormInputs: {
                 assigned_to: '', 
@@ -1106,10 +1104,6 @@ class BookingPage extends Component {
             formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
             booking[e.target.name] = value;
         }
-    }
-
-    getRadioValue(event) {
-        console.log(event.target.value);
     }
 
     onClickPrev(e){
@@ -2538,8 +2532,8 @@ class BookingPage extends Component {
     }
 
     onClickRadio(type) {
-        let booking = this.state.booking;
-        booking.x_ReadyStatus = type;
+        const { booking } = this.state;
+        booking['x_ReadyStatus'] = type;
         this.setState({booking});
     }
 
@@ -2939,7 +2933,7 @@ class BookingPage extends Component {
                                         disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
                                     />
                                 </div>
-                                <div className="float-r disp-inline-block mar-right-20" onChange={this.getRadioValue.bind(this)}>
+                                <div className="float-r disp-inline-block mar-right-20">
                                     <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #<br />
                                     <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                 </div>
