@@ -13,7 +13,7 @@ class StatusNoteModal extends Component {
 
     static propTypes = {
         isShowStatusNoteModal: PropTypes.bool,
-        toggleShowStatusNoteModal: PropTypes.func,
+        toggleStatusNoteModal: PropTypes.func,
         onUpdate: PropTypes.func.required,
         onClear: PropTypes.func.required,
         note: PropTypes.string.required,
@@ -46,8 +46,8 @@ class StatusNoteModal extends Component {
         title = isEditable ? title : title + ' (View Only)';
 
         return (
-            <ReactstrapModal isOpen={isShowStatusNoteModal} toggle={() => this.props.toggleShowStatusNoteModal()} className="status-note-modal">
-                <ModalHeader toggle={() => this.props.toggleShowStatusNoteModal()}>{title}</ModalHeader>
+            <ReactstrapModal isOpen={isShowStatusNoteModal} toggle={() => this.props.toggleStatusNoteModal()} className="status-note-modal">
+                <ModalHeader toggle={() => this.props.toggleStatusNoteModal()}>{title}</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Status Note: </p>
@@ -62,7 +62,7 @@ class StatusNoteModal extends Component {
                 <ModalFooter>
                     <Button color="danger" disabled={isEditable ? false : true} onClick={() => this.props.onClear()}>Clear</Button>
                     <Button color="primary" disabled={isEditable ? false : true} onClick={() => this.props.onUpdate(note)}>Save</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowStatusNoteModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleStatusNoteModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

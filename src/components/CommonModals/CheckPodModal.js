@@ -14,7 +14,7 @@ class CheckPodModal extends Component {
 
     static propTypes = {
         isOpen: PropTypes.bool,
-        toggleShowCheckPodModal: PropTypes.func,
+        toggleCheckPodModal: PropTypes.func,
         onClickSave: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
     };
@@ -35,7 +35,7 @@ class CheckPodModal extends Component {
         newBooking.check_pod = isPODChecked;
 
         this.props.onClickSave(newBooking.id, newBooking);
-        this.props.toggleShowCheckPodModal();
+        this.props.toggleCheckPodModal();
         this.setState({isPODChecked: null});
     }
 
@@ -49,8 +49,8 @@ class CheckPodModal extends Component {
         }
 
         return (
-            <ReactstrapModal isOpen={isOpen} toggle={() => this.props.toggleShowCheckPodModal()} className="check-pod-modal">
-                <ModalHeader toggle={() => this.props.toggleShowCheckPodModal()}>Check POD status Modal</ModalHeader>
+            <ReactstrapModal isOpen={isOpen} toggle={() => this.props.toggleCheckPodModal()} className="check-pod-modal">
+                <ModalHeader toggle={() => this.props.toggleCheckPodModal()}>Check POD status Modal</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Checked POD? </p>
@@ -59,7 +59,7 @@ class CheckPodModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.onClickSave()}>Save</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowCheckPodModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleCheckPodModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

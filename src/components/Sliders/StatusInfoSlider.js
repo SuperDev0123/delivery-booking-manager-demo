@@ -30,7 +30,7 @@ class StatusInfoSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowStatusInfoSlider: PropTypes.func.isRequired,
+        toggleStatusInfoSlider: PropTypes.func.isRequired,
         onClickShowStatusInfo: PropTypes.func.isRequired,
         getStatusInfo: PropTypes.func.isRequired,
         startDate: PropTypes.string.isRequired,
@@ -159,7 +159,7 @@ class StatusInfoSlider extends React.Component {
                 isOpen={isOpen}
                 title='Status Info Slider'
                 subtitle=""
-                onRequestClose={this.props.toggleShowStatusInfoSlider}
+                onRequestClose={this.props.toggleStatusInfoSlider}
             >
                 <div className="filter-section">
                     <label className="right-10px">

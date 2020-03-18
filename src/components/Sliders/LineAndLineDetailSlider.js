@@ -29,7 +29,7 @@ class LineAndLineDetailSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowLineSlider: PropTypes.func.isRequired,
+        toggleLineSlider: PropTypes.func.isRequired,
         lines: PropTypes.array.isRequired,
         lineDetails: PropTypes.array.isRequired,
         onClickDuplicate: PropTypes.func.isRequired,
@@ -200,7 +200,7 @@ class LineAndLineDetailSlider extends React.Component {
                 isOpen={isOpen}
                 title='Line And Line Detail Slider'
                 subtitle='Table view'
-                onRequestClose={this.props.toggleShowLineSlider}>
+                onRequestClose={this.props.toggleLineSlider}>
                 <div className="slider-content">
                     {
                         (editMode === 0) ?

@@ -15,7 +15,7 @@ class FPPricingSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowSlider: PropTypes.func.isRequired,
+        toggleSlider: PropTypes.func.isRequired,
         pricingInfos: PropTypes.array.isRequired,
         onSelectPricing: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
@@ -61,7 +61,7 @@ class FPPricingSlider extends React.Component {
                 isOpen={isOpen}
                 title='Freight Provider Pricing Panel'
                 subtitle='List View'
-                onRequestClose={this.props.toggleShowSlider}
+                onRequestClose={this.props.toggleSlider}
             >
                 <div className="slider-content">
                     <div className="table-view">

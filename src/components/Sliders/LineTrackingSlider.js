@@ -25,7 +25,7 @@ class LineTrackingSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowLineTrackingSlider: PropTypes.func.isRequired,
+        toggleLineTrackingSlider: PropTypes.func.isRequired,
         lines: PropTypes.array.isRequired,
         booking: PropTypes.object.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
@@ -107,7 +107,7 @@ class LineTrackingSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, lines, toggleShowLineTrackingSlider, booking, isBooked, clientname, apiBCLs } = this.props;
+        const { isOpen, lines, toggleLineTrackingSlider, booking, isBooked, clientname, apiBCLs } = this.props;
         const { selected } = this.state;
 
         const selectRow = {
@@ -263,7 +263,7 @@ class LineTrackingSlider extends React.Component {
                 isOpen={isOpen}
                 title='Line Tracking Slider'
                 subtitle='Table view'
-                onRequestClose={toggleShowLineTrackingSlider}>
+                onRequestClose={toggleLineTrackingSlider}>
                 <div className="slider-content">
                     <h1>Booking ID: {booking.b_bookingID_Visual}{booking.tally_delivered > 0 ? ' - Delivered' : ''}</h1>
                     <BootstrapTable

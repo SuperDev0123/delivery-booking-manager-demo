@@ -3564,7 +3564,7 @@ class BookingPage extends Component {
                                                     name="inv_billing_status_note"
                                                     value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
                                                     onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
-                                                    rows="4"
+                                                    rows="6"
                                                     cols="83"
                                                 />
                                                     
@@ -3586,7 +3586,7 @@ class BookingPage extends Component {
                                                         id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         value={formInputs['dme_status_history_notes']}
                                                         disabled='disabled'
-                                                        rows="4"
+                                                        rows="6"
                                                         cols="83"
                                                     />
                                                     :
@@ -3597,7 +3597,7 @@ class BookingPage extends Component {
                                                             name="dme_status_linked_reference_from_fp"
                                                             value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
                                                             onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            rows="4"
+                                                            rows="6"
                                                             cols="83"
                                                         />
                                                         :
@@ -3607,7 +3607,7 @@ class BookingPage extends Component {
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             value={formInputs['dme_status_history_notes']}
                                                             disabled='disabled'
-                                                            rows="4"
+                                                            rows="6"
                                                             cols="83"
                                                         />
                                             }
