@@ -4580,7 +4580,10 @@ class BookingPage extends Component {
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height form-view-btns">
                                                         <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
-                                                        <button className={(parseInt(curViewMode) === 2 && isAutoAugmented === false) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickUpdateBooking()}>Update</button>
+                                                        <button
+                                                            className={(parseInt(curViewMode) === 2) ?
+                                                                'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
+                                                            onClick={() => this.onClickUpdateBooking()}>Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme' && isAutoAugmented === false) ?
