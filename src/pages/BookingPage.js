@@ -52,8 +52,6 @@ class BookingPage extends Component {
         super(props);
 
         this.state = {
-            isShowAddServiceAndOpt: false,
-            isShowBookingCntAndTot: false,
             formInputs: {},
             commFormInputs: {
                 assigned_to: '', 
@@ -821,41 +819,40 @@ class BookingPage extends Component {
                 if (booking.dme_status_linked_reference_from_fp != null) formInputs['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
                 else formInputs['dme_status_linked_reference_from_fp'] = '';
 
-                if (!_.isNull(booking.pu_PickUp_Avail_From_Date_DME)) formInputs['pu_PickUp_Avail_From_Date_DME'] = booking.pu_PickUp_Avail_From_Date_DME;
-                if (!_.isNull(booking.puPickUpAvailFrom_Date)) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
+                if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
                 else formInputs['puPickUpAvailFrom_Date'] = null;
-                if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
-                else formInputs['pu_PickUp_Avail_Time_Hours'] = 0;
-                if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = booking.pu_PickUp_Avail_Time_Minutes;
-                else formInputs['pu_PickUp_Avail_Time_Minutes'] = 0;
-                if (!_.isNull(booking.pu_PickUp_By_Date_DME)) formInputs['pu_PickUp_By_Date_DME'] = booking.pu_PickUp_By_Date_DME;
-                else formInputs['pu_PickUp_By_Date_DME'] = null;
-                if (!_.isNull(booking.pu_PickUp_By_Time_Hours_DME)) formInputs['pu_PickUp_By_Time_Hours_DME'] = booking.pu_PickUp_By_Time_Hours_DME;
-                else formInputs['pu_PickUp_By_Time_Hours_DME'] = 0;
-                if (!_.isNull(booking.pu_PickUp_By_Time_Minutes_DME)) formInputs['pu_PickUp_By_Time_Minutes_DME'] = booking.pu_PickUp_By_Time_Minutes_DME;
-                else formInputs['pu_PickUp_By_Time_Minutes_DME'] = 0;
+                if (booking.pu_PickUp_Avail_Time_Hours) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
+                else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
+                if (booking.pu_PickUp_Avail_Time_Minutes) formInputs['pu_PickUp_Avail_Time_Minutes'] = booking.pu_PickUp_Avail_Time_Minutes;
+                else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
+                if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
+                else formInputs['pu_PickUp_By_Date'] = null;
+                if (booking.pu_PickUp_By_Time_Hours) formInputs['pu_PickUp_By_Time_Hours'] = booking.pu_PickUp_By_Time_Hours;
+                else formInputs['pu_PickUp_By_Time_Hours'] = null;
+                if (booking.pu_PickUp_By_Time_Minute) formInputs['pu_PickUp_By_Time_Minutes'] = booking.pu_PickUp_By_Time_Minutes;
+                else formInputs['pu_PickUp_By_Time_Minutes'] = null;
 
-                if (!_.isNull(booking.de_Deliver_From_Date)) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
+                if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
                 else formInputs['de_Deliver_From_Date'] = null;
-                if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = booking.de_Deliver_From_Hours;
-                else formInputs['de_Deliver_From_Hours'] = 0;
-                if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = booking.de_Deliver_From_Minutes;
-                else formInputs['de_Deliver_From_Minutes'] = 0;
-                if (!_.isNull(booking.de_Deliver_By_Date)) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
+                if (booking.de_Deliver_From_Hours) formInputs['de_Deliver_From_Hours'] = booking.de_Deliver_From_Hours;
+                else formInputs['de_Deliver_From_Hours'] = null;
+                if (booking.de_Deliver_From_Minutes) formInputs['de_Deliver_From_Minutes'] = booking.de_Deliver_From_Minutes;
+                else formInputs['de_Deliver_From_Minutes'] = null;
+                if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
                 else formInputs['de_Deliver_By_Date'] = null;
-                if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = booking.de_Deliver_By_Hours;
-                else formInputs['de_Deliver_By_Hours'] = 0;
-                if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = booking.de_Deliver_By_Minutes;
-                else formInputs['de_Deliver_By_Minutes'] = 0;
-                if (!_.isNull(booking.b_project_due_date)) formInputs['b_project_due_date'] = booking.b_project_due_date;
+                if (booking.de_Deliver_By_Hours) formInputs['de_Deliver_By_Hours'] = booking.de_Deliver_By_Hours;
+                else formInputs['de_Deliver_By_Hours'] = null;
+                if (booking.de_Deliver_By_Minutes) formInputs['de_Deliver_By_Minutes'] = booking.de_Deliver_By_Minutes;
+                else formInputs['de_Deliver_By_Minutes'] = null;
+                if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
-                if (!_.isNull(booking.fp_store_event_date)) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
+                if (booking.fp_store_event_date) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
                 else formInputs['fp_store_event_date'] = null;
-                if (!_.isNull(booking.z_calculated_ETA)) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
+                if (booking.z_calculated_ETA) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
                 else formInputs['z_calculated_ETA'] = null;
-                if (!_.isNull(booking.fp_received_date_time)) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
+                if (booking.fp_received_date_time) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
                 else formInputs['fp_received_date_time'] = null;
-                if (!_.isNull(booking.b_given_to_transport_date_time)) formInputs['b_given_to_transport_date_time'] = booking.b_given_to_transport_date_time;
+                if (booking.b_given_to_transport_date_time) formInputs['b_given_to_transport_date_time'] = booking.b_given_to_transport_date_time;
                 else formInputs['b_given_to_transport_date_time'] = null;
 
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
@@ -912,13 +909,13 @@ class BookingPage extends Component {
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
                 if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = '$' + parseFloat(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-                else formInputs['inv_cost_quoted'] = 0;
+                else formInputs['inv_cost_quoted'] = null;
                 if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = '$' + parseFloat(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-                else formInputs['inv_cost_actual'] = 0;
+                else formInputs['inv_cost_actual'] = null;
                 if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = '$' + parseFloat(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-                else formInputs['inv_sell_quoted'] = 0;
+                else formInputs['inv_sell_quoted'] = null;
                 if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-                else formInputs['inv_sell_actual'] = 0;
+                else formInputs['inv_sell_actual'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
 
@@ -1049,7 +1046,7 @@ class BookingPage extends Component {
             let canUpdateField = true;
             if (!_.isEmpty(event.target.value)) {
                 if (event.target.name === 'pu_PickUp_Avail_Time_Hours' ||
-                    event.target.name === 'pu_PickUp_By_Time_Hours_DME' ||
+                    event.target.name === 'pu_PickUp_By_Time_Hours' ||
                     event.target.name === 'de_Deliver_From_Hours' ||
                     event.target.name === 'de_Deliver_By_Hours') {
                     if (_.isNaN(parseInt(event.target.value))) {
@@ -1062,7 +1059,7 @@ class BookingPage extends Component {
                 }
 
                 if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
-                    event.target.name === 'pu_PickUp_By_Time_Minutes_DME' ||
+                    event.target.name === 'pu_PickUp_By_Time_Minutes' ||
                     event.target.name === 'de_Deliver_From_Minutes' ||
                     event.target.name === 'de_Deliver_By_Minutes') {
                     if (_.isNaN(parseInt(event.target.value))) {
@@ -1108,10 +1105,6 @@ class BookingPage extends Component {
             formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
             booking[e.target.name] = value;
         }
-    }
-
-    getRadioValue(event) {
-        console.log(event.target.value);
     }
 
     onClickPrev(e){
@@ -2183,17 +2176,6 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
 
-            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? 0 : formInputs['pu_PickUp_Avail_Time_Hours'];
-            formInputs['pu_PickUp_By_Time_Hours_DME'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours_DME']) ? 0 : formInputs['pu_PickUp_By_Time_Hours_DME'];
-            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? 0 : formInputs['de_Deliver_From_Hours'];
-            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? 0 : formInputs['pu_PickUp_Avail_Time_Hours'];
-            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? 0 : formInputs['de_Deliver_By_Hours'];
-
-            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? 0 : formInputs['pu_PickUp_Avail_Time_Minutes'];
-            formInputs['pu_PickUp_By_Time_Minutes_DME'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes_DME']) ? 0 : formInputs['pu_PickUp_By_Time_Minutes_DME'];
-            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? 0 : formInputs['de_Deliver_From_Minutes'];
-            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? 0 : formInputs['de_Deliver_By_Minutes'];
-
             if (_.isUndefined(formInputs['vx_fp_pu_eta_time']))
                 formInputs['vx_fp_pu_eta_time'] = null;
             if (_.isUndefined(formInputs['vx_fp_del_eta_time']))
@@ -2261,16 +2243,6 @@ class BookingPage extends Component {
                 bookingToUpdate.de_To_Address_State = this.state.deToState.label;
                 bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
                 bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
-
-                bookingToUpdate.pu_PickUp_Avail_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Hours) ? 0 : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
-                bookingToUpdate.pu_PickUp_By_Time_Hours_DME = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Hours_DME) ? 0 : bookingToUpdate.pu_PickUp_By_Time_Hours_DME;
-                bookingToUpdate.de_Deliver_From_Hours = _.isEmpty(bookingToUpdate.de_Deliver_From_Hours) ? 0 : bookingToUpdate.de_Deliver_From_Hours;
-                bookingToUpdate.de_Deliver_By_Hours = _.isEmpty(bookingToUpdate.de_Deliver_By_Hours) ? 0 : bookingToUpdate.de_Deliver_By_Hours;
-
-                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Minutes) ? 0 : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
-                bookingToUpdate.pu_PickUp_By_Time_Minutes_DME = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Minutes_DME) ? 0 : bookingToUpdate.pu_PickUp_By_Time_Minutes_DME;
-                bookingToUpdate.de_Deliver_From_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_From_Minutes) ? 0 : bookingToUpdate.de_Deliver_From_Minutes;
-                bookingToUpdate.de_Deliver_By_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_By_Minutes) ? 0 : bookingToUpdate.de_Deliver_By_Minutes;
 
                 if (_.isUndefined(bookingToUpdate['vx_fp_pu_eta_time']))
                     bookingToUpdate['vx_fp_pu_eta_time'] = null;
@@ -2450,8 +2422,14 @@ class BookingPage extends Component {
     onDateChange(date, fieldName) {
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
-        formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
-        booking[fieldName] = moment(date).format('YYYY-MM-DD');
+
+        if (date) {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD');
+        } else {
+            formInputs[fieldName] = null;
+            booking[fieldName] = null;
+        }
 
         if (fieldName === 'fp_store_event_date') {
             formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
@@ -2565,8 +2543,8 @@ class BookingPage extends Component {
     }
 
     onClickRadio(type) {
-        let booking = this.state.booking;
-        booking.x_ReadyStatus = type;
+        const { booking } = this.state;
+        booking['x_ReadyStatus'] = type;
         this.setState({booking});
     }
 
@@ -2966,7 +2944,7 @@ class BookingPage extends Component {
                                         disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
                                     />
                                 </div>
-                                <div className="float-r disp-inline-block mar-right-20" onChange={this.getRadioValue.bind(this)}>
+                                <div className="float-r disp-inline-block mar-right-20">
                                     <input type="radio" value="dme" name="gender" checked={this.state.selected === 'dme'} onChange={(e) => this.setState({ selected: e.target.value })} /> DME #<br />
                                     <input type="radio" value="con" name="gender" checked={this.state.selected === 'con'} onChange={(e) => this.setState({ selected: e.target.value })}/> CON #
                                 </div>
@@ -3569,7 +3547,7 @@ class BookingPage extends Component {
                                                     name="inv_billing_status_note"
                                                     value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
                                                     onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
-                                                    rows="4"
+                                                    rows="6"
                                                     cols="83"
                                                 />
                                                     
@@ -3591,7 +3569,7 @@ class BookingPage extends Component {
                                                         id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                         value={formInputs['dme_status_history_notes']}
                                                         disabled='disabled'
-                                                        rows="4"
+                                                        rows="6"
                                                         cols="83"
                                                     />
                                                     :
@@ -3602,7 +3580,7 @@ class BookingPage extends Component {
                                                             name="dme_status_linked_reference_from_fp"
                                                             value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
                                                             onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            rows="4"
+                                                            rows="6"
                                                             cols="83"
                                                         />
                                                         :
@@ -3612,7 +3590,7 @@ class BookingPage extends Component {
                                                             id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
                                                             value={formInputs['dme_status_history_notes']}
                                                             disabled='disabled'
-                                                            rows="4"
+                                                            rows="6"
                                                             cols="83"
                                                         />
                                             }
@@ -3984,7 +3962,7 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="mt-1 additional-pickup-div none">
+                                                    <div className="mt-1 additional-pickup-div">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Reference No</label>
                                                         </div>
@@ -4458,16 +4436,16 @@ class BookingPage extends Component {
                                                                 (parseInt(curViewMode) === 0) ?
                                                                     <label className="show-mode">
                                                                         <p className="date disp-inline-block">
-                                                                            {formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).format('DD/MM/YYYY') : ''}
+                                                                            {formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
                                                                         {
-                                                                            !_.isNull(formInputs['pu_PickUp_By_Date_DME']) && !_.isUndefined(formInputs['pu_PickUp_By_Date_DME'] && !_.isEmpty(formInputs['pu_PickUp_By_Date_DME'])) ?
+                                                                            !_.isNull(formInputs['pu_PickUp_By_Date']) && !_.isUndefined(formInputs['pu_PickUp_By_Date'] && !_.isEmpty(formInputs['pu_PickUp_By_Date'])) ?
                                                                                 <p className="time disp-inline-block">
                                                                                     {
-                                                                                        formInputs['pu_PickUp_By_Time_Hours_DME'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours_DME'] + ':'
+                                                                                        formInputs['pu_PickUp_By_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours'] + ':'
                                                                                     }
                                                                                     {
-                                                                                        formInputs['pu_PickUp_By_Time_Minutes_DME'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes_DME']
+                                                                                        formInputs['pu_PickUp_By_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes']
                                                                                     }
                                                                                 </p>
                                                                                 :
@@ -4478,21 +4456,21 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date_DME'] ? moment(formInputs['pu_PickUp_By_Date_DME']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date_DME')}
+                                                                            selected={formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
                                                                         <input
                                                                             className="hour"
-                                                                            name='pu_PickUp_By_Time_Hours_DME'
-                                                                            value={formInputs['pu_PickUp_By_Time_Hours_DME']}
+                                                                            name='pu_PickUp_By_Time_Hours'
+                                                                            value={formInputs['pu_PickUp_By_Time_Hours']}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                         {':'}
                                                                         <input
                                                                             className="time"
-                                                                            name='pu_PickUp_By_Time_Minutes_DME'
-                                                                            value={formInputs['pu_PickUp_By_Time_Minutes_DME']}
+                                                                            name='pu_PickUp_By_Time_Minutes'
+                                                                            value={formInputs['pu_PickUp_By_Time_Minutes']}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
@@ -4594,10 +4572,10 @@ class BookingPage extends Component {
                                                                     </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3 none">
+                                                        <div className="col-sm-3">
                                                             <label className="" htmlFor="">Gaps</label>
                                                         </div>
-                                                        <div className="col-sm-9 none">
+                                                        <div className="col-sm-9">
                                                             <label className="show-mode">
                                                                 {booking ? booking.client_item_references : ''}
                                                             </label>
