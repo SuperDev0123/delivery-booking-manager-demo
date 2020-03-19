@@ -2195,10 +2195,6 @@ class BookingPage extends Component {
     onClickUpdateBooking() {
         const {clientname, isBookedBooking, booking, isAutoAugmented} = this.state;
 
-        if(isAutoAugmented) {
-            return;
-        }
-
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
             clientname.toLowerCase() !== 'biopak')
