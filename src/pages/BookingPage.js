@@ -2193,7 +2193,7 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        const {clientname, isBookedBooking, booking, isAutoAugmented} = this.state;
+        const {clientname, isBookedBooking, booking} = this.state;
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
