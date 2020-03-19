@@ -47,7 +47,7 @@ class FPDataSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowFPDataSlider: PropTypes.func.isRequired,
+        toggleFPDataSlider: PropTypes.func.isRequired,
         setGetZonesFilter: PropTypes.func.isRequired,
         createFpCarrier: PropTypes.func.isRequired,
         updateFpCarrier: PropTypes.func.isRequired,
@@ -164,7 +164,7 @@ class FPDataSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, toggleShowFPDataSlider, clientname, fpDetails, fpCarriers, fpZones, loading, pageCnt, pageInd } = this.props;
+        const { isOpen, toggleFPDataSlider, clientname, fpDetails, fpCarriers, fpZones, loading, pageCnt, pageInd } = this.props;
 
         const { selected, editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs } = this.state;
 
@@ -327,7 +327,7 @@ class FPDataSlider extends React.Component {
                 isOpen={isOpen}
                 title={'Freight Provider '+fpDetails.fp_company_name}
                 subtitle='Table view'
-                onRequestClose={toggleShowFPDataSlider}>
+                onRequestClose={toggleFPDataSlider}>
                 <div className="slider-content">
                     {(editMode === 0) ?(
                         <div className="table-view">

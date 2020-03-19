@@ -27,7 +27,7 @@ class XLSModal extends Component {
 
     static propTypes = {
         isShowXLSModal: PropTypes.bool,
-        toggleShowXLSModal: PropTypes.func,
+        toggleXLSModal: PropTypes.func,
         generateXLS: PropTypes.func.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         allFPs: PropTypes.array.isRequired,
@@ -137,7 +137,7 @@ class XLSModal extends Component {
             this.props.selectedBookingIds,
             b_client_name
         );
-        this.props.toggleShowXLSModal();
+        this.props.toggleXLSModal();
     }
 
     render() {
@@ -171,8 +171,8 @@ class XLSModal extends Component {
         });
 
         return (
-            <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleShowXLSModal()} className="xls-modal">
-                <ModalHeader toggle={() => this.props.toggleShowXLSModal()}>XLS Download</ModalHeader>
+            <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleXLSModal()} className="xls-modal">
+                <ModalHeader toggle={() => this.props.toggleXLSModal()}>XLS Download</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Report Type: </p>
@@ -258,7 +258,7 @@ class XLSModal extends Component {
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary left" onClick={() => this.props.toggleShowXLSModal()}>Cancel</Button>
+                    <Button color="secondary left" onClick={() => this.props.toggleXLSModal()}>Cancel</Button>
                     <Button color="primary" disabled={!buttonStatus} onClick={() => this.onClickBuildAndSend()}>Build & Send</Button>
                 </ModalFooter>
             </ReactstrapModal>

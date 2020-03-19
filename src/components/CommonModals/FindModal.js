@@ -16,7 +16,7 @@ class FindModal extends Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowFindModal: PropTypes.func.isRequired,
+        toggleFindModal: PropTypes.func.isRequired,
         onFind: PropTypes.func.isRequired,
     };
 
@@ -52,7 +52,7 @@ class FindModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggleShowFindModal}>Find (Multiple) Modal</ModalHeader>
+                <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Select field to be searched: </p>
@@ -75,7 +75,7 @@ class FindModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.onSubmit()}>Find</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowFindModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleFindModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );
