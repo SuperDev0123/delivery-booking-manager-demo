@@ -829,7 +829,7 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_By_Date'] = null;
                 if (booking.pu_PickUp_By_Time_Hours) formInputs['pu_PickUp_By_Time_Hours'] = booking.pu_PickUp_By_Time_Hours;
                 else formInputs['pu_PickUp_By_Time_Hours'] = null;
-                if (booking.pu_PickUp_By_Time_Minute) formInputs['pu_PickUp_By_Time_Minutes'] = booking.pu_PickUp_By_Time_Minutes;
+                if (booking.pu_PickUp_By_Time_Minutes) formInputs['pu_PickUp_By_Time_Minutes'] = booking.pu_PickUp_By_Time_Minutes;
                 else formInputs['pu_PickUp_By_Time_Minutes'] = null;
 
                 if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
@@ -2243,15 +2243,16 @@ class BookingPage extends Component {
                     this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
                 }
 
-                bookingToUpdate.pu_PickUp_Avail_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Hours) ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
-                bookingToUpdate.pu_PickUp_By_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Hours) ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
-                bookingToUpdate.de_Deliver_From_Hours = _.isEmpty(bookingToUpdate.de_Deliver_From_Hours) ? null : bookingToUpdate.de_Deliver_From_Hours;
-                bookingToUpdate.de_Deliver_By_Hours = _.isEmpty(bookingToUpdate.de_Deliver_By_Hours) ? null : bookingToUpdate.de_Deliver_By_Hours;
-
-                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Minutes) ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
-                bookingToUpdate.pu_PickUp_By_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Minutes) ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
-                bookingToUpdate.de_Deliver_From_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_From_Minutes) ? null : bookingToUpdate.de_Deliver_From_Minutes;
-                bookingToUpdate.de_Deliver_By_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_By_Minutes) ? null : bookingToUpdate.de_Deliver_By_Minutes;
+                console.log('@1 - ', bookingToUpdate.pu_PickUp_Avail_Time_Hours, bookingToUpdate.pu_PickUp_By_Time_Hours);
+                bookingToUpdate.pu_PickUp_Avail_Time_Hours = bookingToUpdate.pu_PickUp_Avail_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
+                bookingToUpdate.pu_PickUp_By_Time_Hours = bookingToUpdate.pu_PickUp_By_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
+                bookingToUpdate.de_Deliver_From_Hours = bookingToUpdate.de_Deliver_From_Hours === '' ? null : bookingToUpdate.de_Deliver_From_Hours;
+                bookingToUpdate.de_Deliver_By_Hours = bookingToUpdate.de_Deliver_By_Hours === '' ? null : bookingToUpdate.de_Deliver_By_Hours;
+                console.log('@2 - ', bookingToUpdate.pu_PickUp_Avail_Time_Hours, bookingToUpdate.pu_PickUp_By_Time_Hours);
+                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = bookingToUpdate.pu_PickUp_Avail_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
+                bookingToUpdate.pu_PickUp_By_Time_Minutes = bookingToUpdate.pu_PickUp_By_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
+                bookingToUpdate.de_Deliver_From_Minutes = bookingToUpdate.de_Deliver_From_Minutes === '' ? null : bookingToUpdate.de_Deliver_From_Minutes;
+                bookingToUpdate.de_Deliver_By_Minutes = bookingToUpdate.de_Deliver_By_Minutes === '' ? null : bookingToUpdate.de_Deliver_By_Minutes;
 
                 bookingToUpdate.pu_Address_State = this.state.puState.label;
                 bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
