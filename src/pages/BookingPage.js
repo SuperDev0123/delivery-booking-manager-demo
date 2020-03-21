@@ -2169,6 +2169,16 @@ class BookingPage extends Component {
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
 
+            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? null : formInputs['pu_PickUp_Avail_Time_Hours'];
+            formInputs['pu_PickUp_By_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours']) ? null : formInputs['pu_PickUp_By_Time_Hours'];
+            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? null : formInputs['de_Deliver_From_Hours'];
+            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? null : formInputs['de_Deliver_By_Hours'];
+
+            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? null : formInputs['pu_PickUp_Avail_Time_Minutes'];
+            formInputs['pu_PickUp_By_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes']) ? null : formInputs['pu_PickUp_By_Time_Minutes'];
+            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? null : formInputs['de_Deliver_From_Minutes'];
+            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? null : formInputs['de_Deliver_By_Minutes'];
+
             formInputs['pu_Address_State'] = puState ? puState.label : '';
             formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
             formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
@@ -2232,6 +2242,16 @@ class BookingPage extends Component {
                     bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
                     this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
                 }
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Hours) ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
+                bookingToUpdate.pu_PickUp_By_Time_Hours = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Hours) ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
+                bookingToUpdate.de_Deliver_From_Hours = _.isEmpty(bookingToUpdate.de_Deliver_From_Hours) ? null : bookingToUpdate.de_Deliver_From_Hours;
+                bookingToUpdate.de_Deliver_By_Hours = _.isEmpty(bookingToUpdate.de_Deliver_By_Hours) ? null : bookingToUpdate.de_Deliver_By_Hours;
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_Avail_Time_Minutes) ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
+                bookingToUpdate.pu_PickUp_By_Time_Minutes = _.isEmpty(bookingToUpdate.pu_PickUp_By_Time_Minutes) ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
+                bookingToUpdate.de_Deliver_From_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_From_Minutes) ? null : bookingToUpdate.de_Deliver_From_Minutes;
+                bookingToUpdate.de_Deliver_By_Minutes = _.isEmpty(bookingToUpdate.de_Deliver_By_Minutes) ? null : bookingToUpdate.de_Deliver_By_Minutes;
 
                 bookingToUpdate.pu_Address_State = this.state.puState.label;
                 bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
