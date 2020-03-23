@@ -49,7 +49,7 @@ class CommPage extends React.Component {
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleShowNoteSlider = this.toggleShowNoteSlider.bind(this);
+        this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.myRef = React.createRef();
@@ -327,7 +327,7 @@ class CommPage extends React.Component {
         this.setState(prevState => ({isShowUpdateCommModal: !prevState.isShowUpdateCommModal}));
     }
 
-    toggleShowNoteSlider() {
+    toggleNoteSlider() {
         this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
@@ -885,7 +885,7 @@ class CommPage extends React.Component {
 
                 <NoteSlider
                     isOpen={isNotePaneOpen}
-                    toggleShowNoteSlider={this.toggleShowNoteSlider}
+                    toggleNoteSlider={this.toggleNoteSlider}
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
