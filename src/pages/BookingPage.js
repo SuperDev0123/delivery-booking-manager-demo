@@ -2963,7 +2963,7 @@ class BookingPage extends Component {
                                         onChange={this.onChangeText.bind(this)} 
                                         onKeyPress={(e) => this.onKeyPress(e)} 
                                         placeholder="Enter Number(Enter)"
-                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''}
                                     />
                                 </div>
                                 <div className="float-r disp-inline-block mar-right-20">
@@ -4598,13 +4598,15 @@ class BookingPage extends Component {
                                                         <button
                                                             className={(parseInt(curViewMode) === 2) ?
                                                                 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
-                                                            onClick={() => this.onClickUpdateBooking()}>Update</button>
+                                                            onClick={() => this.onClickUpdateBooking()}
+                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                        >Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme' && isAutoAugmented === false) ?
                                                             <button
                                                                 className='btn btn-theme custom-theme'
-                                                                disabled={isBookedBooking}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
                                                                 onClick={() => this.onClickAutoAugment()}
                                                             >
                                                                 Auto Augment
@@ -4612,7 +4614,7 @@ class BookingPage extends Component {
                                                             :
                                                             <button
                                                                 className='btn btn-theme custom-theme'
-                                                                disabled={isBookedBooking}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
                                                                 onClick={() => this.onClickRevertAugment()}
                                                             >
                                                                 Revert Augment
