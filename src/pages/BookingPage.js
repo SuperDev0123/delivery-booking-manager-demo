@@ -702,7 +702,7 @@ class BookingPage extends Component {
             this.setState({selectionChanged: 0});
             this.props.setFetchGeoInfoFlag(false);
         }
-
+     
         if (
             (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
             || (booking && this.state.loadingBookingSave && parseInt(this.state.curViewMode) === 1)
