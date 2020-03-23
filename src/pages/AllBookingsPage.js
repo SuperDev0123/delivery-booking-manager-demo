@@ -115,14 +115,14 @@ class AllBookingsPage extends React.Component {
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
-        this.toggleShowXLSModal = this.toggleShowXLSModal.bind(this);
-        this.toggleShowStatusLockModal = this.toggleShowStatusLockModal.bind(this);
-        this.toggleShowCheckPodModal = this.toggleShowCheckPodModal.bind(this);
-        this.toggleShowStatusInfoSlider = this.toggleShowStatusInfoSlider.bind(this);
-        this.toggleShowFindModal = this.toggleShowFindModal.bind(this);
-        this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
-        this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
-        this.toggleShowBulkUpdateSlider = this.toggleShowBulkUpdateSlider.bind(this);
+        this.toggleXLSModal = this.toggleXLSModal.bind(this);
+        this.toggleStatusLockModal = this.toggleStatusLockModal.bind(this);
+        this.toggleCheckPodModal = this.toggleCheckPodModal.bind(this);
+        this.toggleStatusInfoSlider = this.toggleStatusInfoSlider.bind(this);
+        this.toggleFindModal = this.toggleFindModal.bind(this);
+        this.toggleOrderModal = this.toggleOrderModal.bind(this);
+        this.toggleProjectNameModal = this.toggleProjectNameModal.bind(this);
+        this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -647,15 +647,15 @@ class AllBookingsPage extends React.Component {
         this.clearActivePopoverVar();
     }
 
-    toggleShowXLSModal() {
+    toggleXLSModal() {
         this.setState(prevState => ({isShowXLSModal: !prevState.isShowXLSModal}));
     }
 
-    toggleShowStatusLockModal() {
+    toggleStatusLockModal() {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
-    toggleShowCheckPodModal() {
+    toggleCheckPodModal() {
         this.setState(prevState => ({isShowCheckPodModal: !prevState.isShowCheckPodModal})); 
     }
 
@@ -681,23 +681,23 @@ class AllBookingsPage extends React.Component {
         this.setState({selectedBookingIds, allCheckStatus});
     }
 
-    toggleShowStatusInfoSlider() {
+    toggleStatusInfoSlider() {
         this.setState(prevState => ({isShowStatusInfoSlider: !prevState.isShowStatusInfoSlider})); 
     }
 
-    toggleShowFindModal() {
+    toggleFindModal() {
         this.setState(prevState => ({isShowFindModal: !prevState.isShowFindModal})); 
     }
 
-    toggleShowOrderModal() {
+    toggleOrderModal() {
         this.setState(prevState => ({isShowOrderModal: !prevState.isShowOrderModal})); 
     }
 
-    toggleShowProjectNameModal() {
+    toggleProjectNameModal() {
         this.setState(prevState => ({isShowProjectNameModal: !prevState.isShowProjectNameModal}));
     }
 
-    toggleShowBulkUpdateSlider() {
+    toggleBulkUpdateSlider() {
         this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
     }
 
@@ -1060,7 +1060,7 @@ class AllBookingsPage extends React.Component {
             const {startDate, endDate} = this.state;
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) {
-            this.toggleShowStatusInfoSlider();
+            this.toggleStatusInfoSlider();
         } else {
             this.props.setGetBookingsFilter('activeTabInd', activeTabInd);
             this.props.setGetBookingsFilter('columnFilters', {});
@@ -1096,7 +1096,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onCreateOrder(bookingIds, vx_freight_provider) {
-        this.toggleShowOrderModal();
+        this.toggleOrderModal();
         this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
         this.setState({
             selectedBookingIds: [],
@@ -1107,7 +1107,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickDownloadExcel() {
-        this.toggleShowXLSModal();
+        this.toggleXLSModal();
     }
 
     onClickBOOK() {
@@ -1345,7 +1345,7 @@ class AllBookingsPage extends React.Component {
             this.notify('Please select bookings to create Order!');
         } else {
             this.props.getBookingLinesCnt(selectedBookingIds);
-            this.toggleShowOrderModal();
+            this.toggleOrderModal();
         }
 
         // if (selectedBookingIds && selectedBookingIds.length === 0) {
@@ -1435,7 +1435,7 @@ class AllBookingsPage extends React.Component {
 
         if (clientname === 'dme') {
             if (booking.b_status_API === 'POD Delivered') {
-                this.setState({selectedOneBooking: booking}, () => this.toggleShowStatusLockModal());
+                this.setState({selectedOneBooking: booking}, () => this.toggleStatusLockModal());
             } else {
                 this.onChangeStatusLock(booking);
             }
@@ -1446,7 +1446,7 @@ class AllBookingsPage extends React.Component {
 
     onChangeStatusLock(booking) {
         if (booking.b_status_API === 'POD Delivered') {
-            this.toggleShowStatusLockModal();
+            this.toggleStatusLockModal();
         }
 
         booking.z_lock_status = !booking.z_lock_status;
@@ -1508,7 +1508,7 @@ class AllBookingsPage extends React.Component {
 
         if (downloadOption === 'check_pod') {
             this.setState({selectedOneBooking: booking});
-            this.toggleShowCheckPodModal();
+            this.toggleCheckPodModal();
         }
 
         this.setState({activeBookingId: booking.id});
@@ -1526,14 +1526,14 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status) {
-        this.toggleShowStatusInfoSlider();
+        this.toggleStatusInfoSlider();
         this.props.setAllGetBookingsFilter(moment(startDate).format('YYYY-MM-DD'), moment(endDate).format('YYYY-MM-DD'), clientPK, 0, this.state.pageItemCnt, 0, '-id', {}, 6, '', 'label', dme_delivery_status);
     }
 
     onClickSetProjectsName() {
         const { selectedBookingIds } = this.state;
         if (selectedBookingIds.length > 0) {
-            this.toggleShowProjectNameModal();
+            this.toggleProjectNameModal();
         } else {
             this.notify('Please select at least one booking');
         }
@@ -1542,7 +1542,7 @@ class AllBookingsPage extends React.Component {
     onUpdateProjectsName(name) {
         const { selectedBookingIds } = this.state;
         this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
-        this.toggleShowProjectNameModal();
+        this.toggleProjectNameModal();
     }
 
     onClickShowBulkUpdateButton() {
@@ -1553,7 +1553,7 @@ class AllBookingsPage extends React.Component {
         } else if (selectedBookingIds.length > 1000) {
             this.notify('Bulk operation can process 1000 bookings at once');
         } else {
-            this.toggleShowBulkUpdateSlider();
+            this.toggleBulkUpdateSlider();
         }
     }
 
@@ -1573,7 +1573,7 @@ class AllBookingsPage extends React.Component {
                 });
         }
 
-        this.toggleShowBulkUpdateSlider();
+        this.toggleBulkUpdateSlider();
         this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
@@ -2087,7 +2087,7 @@ class AllBookingsPage extends React.Component {
                                     </div>
                                 }
                             </div>
-                            <a onClick={() => this.toggleShowFindModal()}>
+                            <a onClick={() => this.toggleFindModal()}>
                                 <i className="fa fa-search-plus" aria-hidden="true"></i>
                             </a>
                             <div className="popup" onClick={(e) => this.onClickGetAll(e)}>
@@ -2946,13 +2946,13 @@ class AllBookingsPage extends React.Component {
 
                 <ProjectNameModal
                     isShowProjectNameModal={isShowProjectNameModal}
-                    toggleShowProjectNameModal={this.toggleShowProjectNameModal}
+                    toggleProjectNameModal={this.toggleProjectNameModal}
                     onUpdate={(name) => this.onUpdateProjectsName(name)}
                 />
 
                 <XLSModal
                     isShowXLSModal={isShowXLSModal}
-                    toggleShowXLSModal={this.toggleShowXLSModal}
+                    toggleXLSModal={this.toggleXLSModal}
                     allFPs={allFPs}
                     allClients={dmeClients}
                     selectedBookingIds={this.state.selectedBookingIds}
@@ -2961,21 +2961,21 @@ class AllBookingsPage extends React.Component {
 
                 <StatusLockModal
                     isOpen={isShowStatusLockModal}
-                    toggleShowStatusLockModal={this.toggleShowStatusLockModal}
+                    toggleStatusLockModal={this.toggleStatusLockModal}
                     booking={selectedOneBooking}
                     onClickUpdate={(booking) => this.onChangeStatusLock(booking)}
                 />
 
                 <CheckPodModal
                     isOpen={this.state.isShowCheckPodModal}
-                    toggleShowCheckPodModal={this.toggleShowCheckPodModal}
+                    toggleCheckPodModal={this.toggleCheckPodModal}
                     onClickSave={(id, booking) => this.props.updateBooking(id, booking)}
                     booking={this.state.selectedOneBooking}
                 />
 
                 <StatusInfoSlider
                     isOpen={this.state.isShowStatusInfoSlider}
-                    toggleShowStatusInfoSlider={this.toggleShowStatusInfoSlider}
+                    toggleStatusInfoSlider={this.toggleStatusInfoSlider}
                     onClickShowStatusInfo={(startDate, endDate, clientPK, dme_delivery_status) => this.onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status)}
                     startDate={startDate}
                     endDate={endDate}
@@ -2983,13 +2983,13 @@ class AllBookingsPage extends React.Component {
 
                 <FindModal
                     isOpen={this.state.isShowFindModal}
-                    toggleShowFindModal={this.toggleShowFindModal}
+                    toggleFindModal={this.toggleFindModal}
                     onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
                 />
 
                 <OrderModal
                     isOpen={this.state.isShowOrderModal}
-                    toggleShow={this.toggleShowOrderModal}
+                    toggle={this.toggleOrderModal}
                     selectedBookingIds={this.state.selectedBookingIds}
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
                     bookings={this.state.bookings}
@@ -2998,7 +2998,7 @@ class AllBookingsPage extends React.Component {
 
                 <BulkUpdateSlider
                     isOpen={this.state.isShowBulkUpdateSlider}
-                    toggleSlider={this.toggleShowBulkUpdateSlider}
+                    toggleSlider={this.toggleBulkUpdateSlider}
                     allBookingStatus={allBookingStatus}
                     selectedBookingIds={selectedBookingIds}
                     onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
