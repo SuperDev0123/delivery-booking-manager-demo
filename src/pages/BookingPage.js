@@ -829,7 +829,7 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_By_Date'] = null;
                 if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
                 else formInputs['pu_PickUp_By_Time_Hours'] = '';
-                if (!_.isNull(booking.pu_PickUp_By_Time_Minute)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
+                if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
                 else formInputs['pu_PickUp_By_Time_Minutes'] = '';
 
                 if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
