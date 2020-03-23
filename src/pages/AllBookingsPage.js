@@ -20,7 +20,7 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
+import { getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
@@ -38,6 +38,7 @@ import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 import FindModal from '../components/CommonModals/FindModal';
 import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
+import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -90,6 +91,7 @@ class AllBookingsPage extends React.Component {
             selectedWarehouseName: 'All',
             allBookingStatus: [],
             allFPs: [],
+            pricingAnalyses: [],
             isShowStatusLockModal: false,
             pageItemCnt: 100,
             pageInd: 0,
@@ -109,6 +111,7 @@ class AllBookingsPage extends React.Component {
             projectNames: [],
             projectName: '',
             isShowBulkUpdateSlider: false,
+            isShowPricingAnalyseSlider: false
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -123,6 +126,7 @@ class AllBookingsPage extends React.Component {
         this.toggleShowOrderModal = this.toggleShowOrderModal.bind(this);
         this.toggleShowProjectNameModal = this.toggleShowProjectNameModal.bind(this);
         this.toggleShowBulkUpdateSlider = this.toggleShowBulkUpdateSlider.bind(this);
+        this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -158,6 +162,7 @@ class AllBookingsPage extends React.Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
+        getPricingAnalysis: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -208,7 +213,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -322,6 +327,10 @@ class AllBookingsPage extends React.Component {
 
         if (projectNames) {
             this.setState({projectNames});
+        }
+
+        if (pricingAnalyses) {
+            this.setState({pricingAnalyses});
         }
 
         if (needUpdateBookings) {
@@ -699,6 +708,16 @@ class AllBookingsPage extends React.Component {
 
     toggleShowBulkUpdateSlider() {
         this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
+    }
+
+    togglePricingAnalyseSlider() {
+        let selectedBookingIds = this.state.selectedBookingIds;
+        if ( !this.state.isShowPricingAnalyseSlider ) {
+            console.log('getPricingAnalysis',selectedBookingIds);
+            this.props.getPricingAnalysis(selectedBookingIds);
+        }
+        
+        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));        
     }
 
     onClickAllTrigger() {
@@ -1550,6 +1569,10 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickPricingAnalyse() {
+        this.togglePricingAnalyseSlider();
+    }
+
     onClickBulkUpdate(field, value, bookingIds, optionalValue=null) {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
@@ -2184,6 +2207,7 @@ class AllBookingsPage extends React.Component {
                                                 clientname === 'dme' || clientname === 'biopak' ?
                                                     <div className="disp-inline-block">
                                                         <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                        <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                         <div className="disp-inline-block">
                                                             <LoadingOverlay
                                                                 active={false}
@@ -2997,6 +3021,12 @@ class AllBookingsPage extends React.Component {
                     onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
+                <PricingAnalyseSlider
+                    isOpen={this.state.isShowPricingAnalyseSlider}
+                    toggleSlider={this.togglePricingAnalyseSlider}
+                    pricingAnalyses={this.state.pricingAnalyses}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -3042,6 +3072,7 @@ const mapStateToProps = (state) => {
         allFPs: state.extra.allFPs,
         projectNames: state.extra.projectNames,
         projectName: state.booking.projectName,
+        pricingAnalyses: state.booking.pricingAnalyses,
     };
 };
 
@@ -3075,6 +3106,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllProjectNames: () => dispatch(getAllProjectNames()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
+        getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
     };
 };
 

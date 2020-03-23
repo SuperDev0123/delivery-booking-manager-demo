@@ -73,6 +73,8 @@ import {
     failedAutoAugment,
     successRevertAugment,
     failedRevertAugment,
+    successPricingAnalysis,
+    failedPricingAnalysis,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -347,6 +349,23 @@ export const revertAugmentBooking = (bookingId) => {
         axios(options)
             .then(({ data }) => dispatch(successRevertAugment(data)))
             .catch((error) => dispatch(failedRevertAugment(error)));
+    };
+};
+
+
+export const getPricingAnalysis = (bookingIds) => {
+    console.log('bookingIds', bookingIds);
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/pricing_analysis/`,
+        data: {'bookingIds': bookingIds}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successPricingAnalysis(data)))
+            .catch((error) => dispatch(failedPricingAnalysis(error)));
     };
 };
 
