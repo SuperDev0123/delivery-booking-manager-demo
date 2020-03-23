@@ -1,0 +1,2 @@
+export const SUCCESS_GET_COSTS = 'SUCCESS_GET_COSTS';
+export const FAILED_GET_COSTS = 'FAILED_GET_COSTS';

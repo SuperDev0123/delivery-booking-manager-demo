@@ -15,6 +15,11 @@ import { SqlQueryReducer } from './sqlQueryReducer';
 import { EmailTemplateReducer } from './emailTemplateReducer';
 import { UserReducer } from './userReducer';
 import { CronOptionReducer } from './cronOptionReducer';
+import { VehicleReducer } from './vehicleReducer';
+import { TimingReducer } from './timingReducer';
+import { AvailabilityReducer } from './availabilityReducer';
+import { CostReducer } from './costReducer';
+import { PricingRuleReducer } from './pricingRuleReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -31,5 +36,10 @@ export const AppReducer = combineReducers({
     sqlQuery: SqlQueryReducer,
     emailTemplate: EmailTemplateReducer,
     user: UserReducer,
-    cronOption: CronOptionReducer
+    cronOption: CronOptionReducer,
+    vehicle: VehicleReducer,
+    timing: TimingReducer,
+    availability: AvailabilityReducer,
+    cost: CostReducer,
+    pricingRule: PricingRuleReducer,
 });
