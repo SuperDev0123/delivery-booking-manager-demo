@@ -1178,9 +1178,9 @@ class BookingPage extends Component {
         if (fileOption === 'label') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                headers: {'Authorization': 'JWT ' + token },
-                data: {ids: selectedBookingIds, downloadOption: fileOption },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1195,9 +1195,9 @@ class BookingPage extends Component {
         } else if (fileOption === 'pod') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                headers: {'Authorization': 'JWT ' + token },
-                data: { ids: selectedBookingIds, downloadOption: fileOption },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: { ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1212,9 +1212,9 @@ class BookingPage extends Component {
         } else if (fileOption === 'pod_sog') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                headers: {'Authorization': 'JWT ' + token },
-                data: { ids: selectedBookingIds, downloadOption: fileOption },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: { ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 

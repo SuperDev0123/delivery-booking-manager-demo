@@ -751,8 +751,8 @@ class AllBookingsPage extends React.Component {
             if (downloadOption === 'label' || downloadOption === 'new_label') {
                 const options = {
                     method: 'post',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                    headers: {'Authorization': 'JWT ' + token },
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                    headers: {'Authorization': 'JWT ' + token},
                     data: {ids: selectedBookingIds, downloadOption: downloadOption},
                     responseType: 'blob', // important
                 };
@@ -784,7 +784,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_pod' && bookingIdsWithNewPOD.length !== 0) || (downloadOption === 'pod')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod' ? selectedBookingIds : bookingIdsWithNewPOD,
@@ -824,7 +824,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_pod_sog' && bookingIdsWithNewPODSOG.length !== 0) || (downloadOption === 'pod_sog')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod_sog' ? selectedBookingIds : bookingIdsWithNewPODSOG,
@@ -864,7 +864,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_connote' && bookingIdsWithNewConnote.length !== 0) || (downloadOption === 'connote')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'connote' ? selectedBookingIds : bookingIdsWithNewConnote,
@@ -910,8 +910,8 @@ class AllBookingsPage extends React.Component {
                 if (bookingIdsWithConnote.length > 0) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
-                        headers: {'Authorization': 'JWT ' + token },
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                        headers: {'Authorization': 'JWT ' + token},
                         data: {
                             ids: bookingIdsWithConnote,
                             downloadOption: 'connote',
@@ -934,8 +934,8 @@ class AllBookingsPage extends React.Component {
                 if (bookingIdsWithLabel.length > 0) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                        headers: {'Authorization': 'JWT ' + token },
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                        headers: {'Authorization': 'JWT ' + token},
                         data: {
                             ids: bookingIdsWithLabel,
                             downloadOption: 'label',
