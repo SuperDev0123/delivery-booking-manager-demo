@@ -82,6 +82,8 @@ import {
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
     FAILED_REVERT_AUGMENT,
+    SUCCESS_AUGMENT_PU_DATE,
+    FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -581,6 +583,16 @@ export const BookingReducer = (state = defaultState, {
         case FAILED_REVERT_AUGMENT:
             return {
                 ...state,
+            };
+        case SUCCESS_AUGMENT_PU_DATE:
+            return {
+                ...state,
+                booking: payload
+            };
+        case FAILED_AUGMENT_PU_DATE:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         case SET_FETCH_GEO_FLAG:
             return {

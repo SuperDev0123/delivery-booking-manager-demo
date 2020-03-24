@@ -37,7 +37,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -233,6 +233,7 @@ class BookingPage extends Component {
         autoAugmentBooking: PropTypes.func.isRequired,
         revertAugmentBooking: PropTypes.func.isRequired,
         checkAugmentedBooking: PropTypes.func.isRequired,
+        augmentPuDate: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
         deleteBookingLine: PropTypes.func.isRequired,
@@ -1416,6 +1417,12 @@ class BookingPage extends Component {
         }
     }
 
+    onClickAugmentPuDate() {
+        const {booking} = this.state;
+
+        this.setState({loadingBookingUpdate: true, curViewMode: 2});
+        this.props.augmentPuDate(booking.id);
+    }
 
     onClickBook() {
         const { booking, isBookedBooking, clientname } = this.state;
@@ -4374,7 +4381,27 @@ class BookingPage extends Component {
                                                 <div className="head text-white">
                                                     <ul>
                                                         <li>Project: {booking.b_booking_project}</li>
-                                                        <li><a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a></li>
+                                                        <li>
+                                                            {(clientname === 'dme' && isAutoAugmented === false) ?
+                                                                <button
+                                                                    className='btn btn-theme btn-autoaugment'
+                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    onClick={() => this.onClickAutoAugment()}
+                                                                >
+                                                                    AA
+                                                                </button>
+                                                                :
+                                                                <button
+                                                                    className='btn btn-theme btn-autoaugment'
+                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    onClick={() => this.onClickRevertAugment()}
+                                                                >
+                                                                    AA-R
+                                                                </button>
+                                                            }
+                                                            <a onClick={(e) => this.onClickAugmentPuDate(e)} ><i className="fa fa-calendar" aria-hidden="true"></i></a>
+                                                            <a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                                 <div className="pu-de-dates">
@@ -4601,25 +4628,6 @@ class BookingPage extends Component {
                                                             onClick={() => this.onClickUpdateBooking()}
                                                             disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU}
                                                         >Update</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        {(clientname === 'dme' && isAutoAugmented === false) ?
-                                                            <button
-                                                                className='btn btn-theme custom-theme'
-                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
-                                                                onClick={() => this.onClickAutoAugment()}
-                                                            >
-                                                                Auto Augment
-                                                            </button>
-                                                            :
-                                                            <button
-                                                                className='btn btn-theme custom-theme'
-                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
-                                                                onClick={() => this.onClickRevertAugment()}
-                                                            >
-                                                                Revert Augment
-                                                            </button>
-                                                        }
                                                     </div>
                                                     {
                                                         (clientname === 'dme') ?
@@ -5300,6 +5308,7 @@ const mapDispatchToProps = (dispatch) => {
         autoAugmentBooking: (bookingId) => dispatch(autoAugmentBooking(bookingId)),
         revertAugmentBooking: (bookingId) => dispatch(revertAugmentBooking(bookingId)),
         checkAugmentedBooking: (bookingId) => dispatch(checkAugmentedBooking(bookingId)),
+        augmentPuDate: (bookingId) => dispatch(augmentPuDate(bookingId)),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
