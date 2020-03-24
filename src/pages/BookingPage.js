@@ -4599,7 +4599,7 @@ class BookingPage extends Component {
                                                             className={(parseInt(curViewMode) === 2) ?
                                                                 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
                                                             onClick={() => this.onClickUpdateBooking()}
-                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU}
                                                         >Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
