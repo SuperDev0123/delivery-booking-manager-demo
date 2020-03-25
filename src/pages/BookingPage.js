@@ -890,8 +890,10 @@ class BookingPage extends Component {
                 else formInputs['vx_freight_provider'] = '';
                 if (!_.isNull(booking.vx_serviceName)) formInputs['vx_serviceName'] = booking.vx_serviceName;
                 else formInputs['vx_serviceName'] = '';
-                if (!_.isNull(booking.v_service_Type_2)) formInputs['v_service_Type_2'] = booking.v_service_Type_2;
-                else formInputs['v_service_Type_2'] = '';
+                if (!_.isNull(booking.vx_account_code)) formInputs['vx_account_code'] = booking.vx_account_code;
+                else formInputs['vx_account_code'] = '';
+                if (!_.isNull(booking.v_service_Type)) formInputs['v_service_Type'] = booking.v_service_Type;
+                else formInputs['v_service_Type'] = '';
                 if (!_.isNull(booking.fk_fp_pickup_id)) formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
                 else formInputs['fk_fp_pickup_id'] = '';
                 if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
@@ -910,13 +912,13 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = '$' + parseFloat(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = booking.inv_cost_quoted;
                 else formInputs['inv_cost_quoted'] = null;
-                if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = '$' + parseFloat(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = booking.inv_cost_actual;
                 else formInputs['inv_cost_actual'] = null;
-                if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = '$' + parseFloat(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = booking.inv_sell_quoted;
                 else formInputs['inv_sell_quoted'] = null;
-                if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
+                if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
                 else formInputs['inv_sell_actual'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
@@ -996,10 +998,8 @@ class BookingPage extends Component {
     }
 
     getTime(country, city) {
-        const timeZoneTable =
-        {
-            'Australia':
-            {
+        const timeZoneTable = {
+            'Australia': {
                 'ACT': 'Australia/Currie',
                 'NT': 'Australia/Darwin',
                 'SA': 'Australia/Adelaide',
@@ -1009,8 +1009,7 @@ class BookingPage extends Component {
                 'VIC': 'Australia/Melbourne',
                 'TAS': 'Australia/Hobart',
             },
-            'AU':
-            {
+            'AU': {
                 'ACT': 'Australia/Currie',
                 'NT': 'Australia/Darwin',
                 'SA': 'Australia/Adelaide',
@@ -1021,6 +1020,7 @@ class BookingPage extends Component {
                 'TAS': 'Australia/Hobart',
             }
         };
+
         if (timeZoneTable[country] == undefined || timeZoneTable[country] == 'undefined'  || timeZoneTable[country][city] == 'undefined' || timeZoneTable[country][city] == undefined) {
             return 'Australia/Currie';
         } else {
@@ -1063,7 +1063,8 @@ class BookingPage extends Component {
                 if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
                     event.target.name === 'pu_PickUp_By_Time_Minutes' ||
                     event.target.name === 'de_Deliver_From_Minutes' ||
-                    event.target.name === 'de_Deliver_By_Minutes') {
+                    event.target.name === 'de_Deliver_By_Minutes'
+                ) {
                     if (_.isNaN(parseInt(event.target.value))) {
                         alert('Please input correct minutes!');
                         canUpdateField = false;
@@ -1078,8 +1079,10 @@ class BookingPage extends Component {
                 if (e.target.name === 'inv_sell_quoted' ||
                     e.target.name === 'inv_cost_quoted' ||
                     e.target.name === 'inv_sell_actual' ||
-                    e.target.name === 'inv_cost_actual') {
+                    e.target.name === 'inv_cost_actual'
+                ) {
                     let value = e.target.value.replace(',', '').replace('$', '');
+
                     if (_.isNaN(parseFloat(value))) {
                         this.notify('Please input float number!');
                     } else {
@@ -1102,7 +1105,8 @@ class BookingPage extends Component {
         if (e.target.name === 'inv_sell_quoted' ||
             e.target.name === 'inv_cost_quoted' ||
             e.target.name === 'inv_sell_actual' ||
-            e.target.name === 'inv_cost_actual') {
+            e.target.name === 'inv_cost_actual'
+        ) {
             let value = e.target.value.replace(',', '').replace('$', '');
             formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
             booking[e.target.name] = value;
@@ -2548,12 +2552,21 @@ class BookingPage extends Component {
     onSelectPricing(pricingInfo) {
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
+
         formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
         booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
         booking['vx_account_code'] = pricingInfo['account_code'];
         formInputs['vx_account_code'] = pricingInfo['account_code'];
         booking['vx_serviceName'] = pricingInfo['service_name'];
-        formInputs['vx_serviceName'] = pricingInfo['vx_serviceName'];
+        formInputs['vx_serviceName'] = pricingInfo['service_name'];
+        booking['v_service_Type'] = pricingInfo['service_code'];
+        formInputs['v_service_Type'] = pricingInfo['service_code'];
+        booking['v_service_Type'] = pricingInfo['service_code'];
+        formInputs['v_service_Type'] = pricingInfo['service_code'];
+        booking['inv_cost_actual'] = pricingInfo['fee'];
+        formInputs['inv_cost_actual'] = pricingInfo['fee'];
+        booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
         this.setState({formInputs, booking, isBookingModified: true});
@@ -3372,35 +3385,18 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className='col-sm-2 form-group'>
-                                            <div>
-                                                <span>Service Name</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['vx_serviceName']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="vx_serviceName"
-                                                            value = {formInputs['vx_serviceName'] ? formInputs['vx_serviceName'] : ''}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
-                                                }
-                                            </div>
-                                        </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
-                                                <span>Service Type 2</span>
+                                                <span>Account Code</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['v_service_Type_2']}</p>
+                                                        <p className="show-mode">{formInputs['vx_account_code']}</p>
                                                         :
-                                                        <input
+                                                        <input 
                                                             className="form-control"
                                                             type="text"
-                                                            name="v_service_Type_2"
-                                                            value = {formInputs['v_service_Type_2'] ? formInputs['v_service_Type_2'] : ''}
+                                                            name="vx_account_code"
+                                                            value = {formInputs['vx_account_code'] ? formInputs['vx_account_code'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -3423,7 +3419,41 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-2 form-group">
+                                        <div className='col-sm-2 form-group'>
+                                            <div>
+                                                <span>Service Name</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['vx_serviceName']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="vx_serviceName"
+                                                            value = {formInputs['vx_serviceName'] ? formInputs['vx_serviceName'] : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span>Service Type</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['v_service_Type']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="v_service_Type"
+                                                            value = {formInputs['v_service_Type'] ? formInputs['v_service_Type'] : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-1 form-group">
                                             <div>
                                                 <span>Vehicle Type</span>
                                                 {
@@ -3476,42 +3506,44 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
+                                        <div className='col-sm-1 form-group'>
                                             <div>
                                                 <span>Quoted Cost</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_cost_quoted']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_cost_quoted"
-                                                            value = {formInputs['inv_cost_quoted'] ? formInputs['inv_cost_quoted'] : ''}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
-                                                        />
+                                                {parseInt(curViewMode) === 0 ?
+                                                    <p className="show-mode">{formInputs['inv_cost_quoted']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_cost_quoted"
+                                                        value = {formInputs['inv_cost_quoted'] ?
+                                                            '$' + parseFloat(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        onBlur={(e) => this.onHandleInputBlur(e)}
+                                                    />
                                                 }
                                             </div>
                                         </div>
-                                        <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
-                                            <div>
-                                                <span>Actual Cost</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        {clientname === 'dme' &&
+                                            <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
+                                                <div>
+                                                    <span>Actual Cost</span>
+                                                    {parseInt(curViewMode) === 0 ?
                                                         <p className="show-mode">{formInputs['inv_cost_actual']}</p>
                                                         :
                                                         <input
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_cost_actual"
-                                                            value = {formInputs['inv_cost_actual'] ?  formInputs['inv_cost_actual'] : ''}
+                                                            value = {formInputs['inv_cost_actual'] ?
+                                                                '$' + parseFloat(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                         <div className="col-sm-1 form-group">
                                             <div>
                                                 <span>Quoted Sell</span>
@@ -3523,31 +3555,35 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_sell_quoted"
-                                                            value = {formInputs['inv_sell_quoted'] ? formInputs['inv_sell_quoted'] : ''}
+                                                            value = {formInputs['inv_sell_quoted'] ?
+                                                                '$' + parseFloat(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
                                                 }
                                             </div>
                                         </div>
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Actual Sell</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_actual']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_sell_actual"
-                                                            value = {formInputs['inv_sell_actual'] ? formInputs['inv_sell_actual'] : ''}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
-                                                        />
-                                                }
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span>Actual Sell</span>
+                                                    {
+                                                        (parseInt(curViewMode) === 0) ?
+                                                            <p className="show-mode">{formInputs['inv_sell_actual']}</p>
+                                                            :
+                                                            <input
+                                                                className="form-control"
+                                                                type="text"
+                                                                name="inv_sell_actual"
+                                                                value = {formInputs['inv_sell_actual'] ?
+                                                                    '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
+                                                                onChange={(e) => this.onHandleInput(e)}
+                                                                onBlur={(e) => this.onHandleInputBlur(e)}
+                                                            />
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
