@@ -4599,14 +4599,14 @@ class BookingPage extends Component {
                                                             className={(parseInt(curViewMode) === 2) ?
                                                                 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
                                                             onClick={() => this.onClickUpdateBooking()}
-                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU}
+                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
                                                         >Update</button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme' && isAutoAugmented === false) ?
                                                             <button
                                                                 className='btn btn-theme custom-theme'
-                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking ? 'disabled' : ''}
                                                                 onClick={() => this.onClickAutoAugment()}
                                                             >
                                                                 Auto Augment
@@ -4614,7 +4614,7 @@ class BookingPage extends Component {
                                                             :
                                                             <button
                                                                 className='btn btn-theme custom-theme'
-                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking ? 'disabled' : ''}
                                                                 onClick={() => this.onClickRevertAugment()}
                                                             >
                                                                 Revert Augment
