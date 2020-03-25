@@ -85,6 +85,8 @@ import {
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
     FAILED_REVERT_AUGMENT,
+    SUCCESS_AUGMENT_PU_DATE,
+    FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -769,7 +771,6 @@ export function failedAutoAugment(error) {
     };
 }
 
-
 export function successRevertAugment(data) {
     return {
         type: SUCCESS_REVERT_AUGMENT,
@@ -781,6 +782,21 @@ export function successRevertAugment(data) {
 export function failedRevertAugment(error) {
     return {
         type: FAILED_REVERT_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successAugmentPuDate(data) {
+    return {
+        type: SUCCESS_AUGMENT_PU_DATE,
+        payload: data,
+        isAutoAugmented: false
+    };
+}
+
+export function failedAugmentPuDate(error) {
+    return {
+        type: FAILED_AUGMENT_PU_DATE,
         errorMessage: error.response.data.message
     };
 }
