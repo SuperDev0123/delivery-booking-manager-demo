@@ -3910,7 +3910,9 @@ class BookingPage extends Component {
                                                                         rows="1"
                                                                         cols="9"
                                                                         value={formInputs['pu_email_Group'] ? formInputs['pu_email_Group'] : ''} 
-                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                        onClick={() => this.notify('Please input emails with comma(,) delimiter')}
+                                                                    />
                                                             }
                                                         </div>
                                                     </div>
@@ -4292,7 +4294,9 @@ class BookingPage extends Component {
                                                                         rows="1"
                                                                         cols="9"
                                                                         value={formInputs['de_Email_Group_Emails'] ? formInputs['de_Email_Group_Emails'] : ''} 
-                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                        onClick={() => this.notify('Please input emails with comma(,) delimiter')}
+                                                                    />
                                                             }
                                                         </div>
                                                     </div>
