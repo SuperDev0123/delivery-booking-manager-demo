@@ -39,7 +39,7 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
-import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
+import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
@@ -251,6 +251,7 @@ class BookingPage extends Component {
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         fpBook: PropTypes.func.isRequired,
+        fpRebook: PropTypes.func.isRequired,
         fpPod: PropTypes.func.isRequired,
         fpEditBook: PropTypes.func.isRequired,
         fpLabel: PropTypes.func.isRequired,
@@ -1455,6 +1456,12 @@ class BookingPage extends Component {
                 this.setState({loadingBookingUpdate: true, curViewMode: 2});
             }
         }
+    }
+
+    onClickRebook() {
+        const { booking } = this.state;
+        this.props.fpRebook(booking.id, booking.vx_freight_provider);
+        this.setState({ loading: true, curViewMode: 0});
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
@@ -4650,13 +4657,21 @@ class BookingPage extends Component {
                                                             : null
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button
-                                                            className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickBook()}
-                                                            disabled={isBookedBooking ? 'disabled' : ''}
-                                                        >
-                                                            Book
-                                                        </button>
+                                                        {(clientname === 'dme' && isBookedBooking && !_.isUndefined(this.state.booking.vx_freight_provider) && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt')?
+                                                            <button
+                                                                className="btn btn-theme custom-theme"
+                                                                onClick={() => this.onClickRebook()}
+                                                            >
+                                                                Rebook
+                                                            </button>:
+                                                            <button
+                                                                className="btn btn-theme custom-theme"
+                                                                onClick={() => this.onClickBook()}
+                                                                disabled={isBookedBooking ? 'disabled' : ''}
+                                                            >
+                                                                Book
+                                                            </button> 
+                                                        }
                                                     </div>
                                                     {
                                                         (clientname === 'dme') ?
@@ -5328,6 +5343,7 @@ const mapDispatchToProps = (dispatch) => {
         deleteBookingLineDetail: (bookingLineDetail) => dispatch(deleteBookingLineDetail(bookingLineDetail)),
         updateBookingLineDetail: (bookingLineDetail) => dispatch(updateBookingLineDetail(bookingLineDetail)),
         fpBook: (bookingId, vx_freight_provider) => dispatch(fpBook(bookingId, vx_freight_provider)),
+        fpRebook: (bookingId, vx_freight_provider) => dispatch(fpRebook(bookingId, vx_freight_provider)),
         fpPod: (bookingId, vx_freight_provider) => dispatch(fpPod(bookingId, vx_freight_provider)),
         fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
         fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
