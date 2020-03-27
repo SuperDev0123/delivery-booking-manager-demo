@@ -6,7 +6,7 @@ import {
 export function successGetVehicles(data) {
     return {
         type: SUCCESS_GET_VEHICLES,
-        payload: data.results,
+        payload: data,
     };
 }
 

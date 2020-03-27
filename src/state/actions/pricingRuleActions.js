@@ -6,7 +6,7 @@ import {
 export function successGetPricingRules(data) {
     return {
         type: SUCCESS_GET_PRICING_RULES,
-        payload: data.results,
+        payload: data,
     };
 }
 
