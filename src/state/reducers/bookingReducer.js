@@ -21,6 +21,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    REBOOK_SUCCESS,
+    REBOOK_FAILED,
     POD_SUCCESS,
     POD_FAILED,
     GET_LABEL_SUCCESS,
@@ -361,6 +363,15 @@ export const BookingReducer = (state = defaultState, {
                 bookings: [],
             };
 
+        case REBOOK_SUCCESS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                needUpdateBookings: true,
+                needUpdateBooking: true,
+                bookings: [],
+            };
+
         case POD_SUCCESS:
             return {
                 ...state,
@@ -376,6 +387,13 @@ export const BookingReducer = (state = defaultState, {
             };
             
         case BOOK_FAILED:
+            return {
+                ...state,
+                needUpdateBookings: true,
+                errorMessage: errorMessage,
+                bookings: [],
+            };
+        case REBOOK_FAILED:
             return {
                 ...state,
                 needUpdateBookings: true,
