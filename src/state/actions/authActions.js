@@ -1,4 +1,19 @@
-import { SET_TOKEN, FAILED_GET_TOKEN, FAILED_VERIFY_TOKEN, SET_USER, FAILED_GET_USER, RESET_REDIRECT_STATE, SET_DME_CLIENTS, FAILED_GET_DME_CLIENTS, SET_CLIENT_PK, SUCCESS_RESET_PASSWORD, FAILED_RESET_PASSWORD, SUCCESS_RESET_PASSWORD_CONFIRM, FAILED_RESET_PASSWORD_CONFIRM } from '../constants/authConstants';
+import {
+    SET_TOKEN,
+    FAILED_GET_TOKEN,
+    FAILED_VERIFY_TOKEN,
+    SET_USER,
+    FAILED_GET_USER,
+    RESET_REDIRECT_STATE,
+    SET_DME_CLIENTS,
+    FAILED_GET_DME_CLIENTS,
+    SET_CLIENT_PK,
+    SUCCESS_RESET_PASSWORD,
+    FAILED_RESET_PASSWORD,
+    SUCCESS_RESET_PASSWORD_CONFIRM,
+    FAILED_RESET_PASSWORD_CONFIRM,
+    LOGOUT,
+} from '../constants/authConstants';
 
 export function setToken(token) {
     console.log('Token set: ', token);
@@ -23,7 +38,7 @@ export function detectTokenExpiration(data) {
         console.log('verifyToken response: ', data);
         return {
             type: SET_TOKEN,
-            errorMessage: data.token
+            errorMessage: ''
         };
     } else {
         console.log('Token expired');
@@ -91,7 +106,7 @@ export function setUser(username, clientname, clientId) {
         username,
         clientname,
         clientId,
-        isLoggedIn: 'true'
+        isLoggedIn: true
     };
 }
 
@@ -99,6 +114,7 @@ export function failedGetUser(error) {
     console.log('Error: ', error);
     return {
         type: FAILED_GET_USER,
+        isLoggedIn: false,
         errorMessage: 'Unable to get user with this token.'
     };
 }
@@ -128,5 +144,11 @@ export function setCurrentClientPK(clientPK) {
     return {
         type: SET_CLIENT_PK,
         clientPK: clientPK,
+    };
+}
+
+export function logoutUser() {
+    return {
+        type: LOGOUT,
     };
 }

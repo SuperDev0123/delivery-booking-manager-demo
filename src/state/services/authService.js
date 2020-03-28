@@ -1,6 +1,22 @@
 import axios from 'axios';
 
-import { setToken, failedGetToken, setUser, failedGetUser, detectTokenExpiration, failedVerifiyToken, resetRedirectState, setDMEClients, failedGetDMEClients, setCurrentClientPK, successResetPassword, failedResetPassword, successResetPasswordConfirm, failedResetPasswordConfirm } from '../actions/authActions';
+import {
+    setToken,
+    failedGetToken,
+    setUser,
+    failedGetUser,
+    detectTokenExpiration,
+    failedVerifiyToken,
+    resetRedirectState,
+    setDMEClients,
+    failedGetDMEClients,
+    setCurrentClientPK,
+    successResetPassword,
+    failedResetPassword,
+    successResetPasswordConfirm,
+    failedResetPasswordConfirm,
+    logoutUser,
+} from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getToken = (username, password) => {
@@ -98,4 +114,12 @@ export const cleanRedirectState = () => {
 
 export const setClientPK = (clientPK) => {
     return dispatch => dispatch(setCurrentClientPK(clientPK));
+};
+
+export const logout = () => {
+    console.log('@999 - logout');
+    localStorage.setItem('isLoggedIn', 'false');
+    localStorage.setItem('token', '');
+    localStorage.setItem('zohotoken', '');
+    return dispatch => dispatch(logoutUser());
 };

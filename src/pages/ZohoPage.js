@@ -26,7 +26,7 @@ class ZohoPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { getUser } from '../../state/services/authService';
+import { getUser, logout } from '../../state/services/authService';
 
 import logo from '../../public/images/logo-2.png';
 
@@ -20,6 +20,7 @@ class Header extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         getUser: PropTypes.func.isRequired,
+        logout: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -43,9 +44,7 @@ class Header extends Component {
     }
 
     logout() {
-        localStorage.setItem('isLoggedIn', 'false');
-        localStorage.setItem('token', '');
-        localStorage.setItem('zohotoken', '');
+        this.props.logout();
         this.props.history.push('/');
     }
 
@@ -54,6 +53,9 @@ class Header extends Component {
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
+        if (currentRoute.indexOf('admin') > -1) 
+            return null;
+        
         return (
             <header>
                 {
@@ -94,32 +96,33 @@ class Header extends Component {
                             </a>
 
                             <ul className="navbar-nav flex-row ml-auto d-md-flex">
-                                {
-                                    isLoggedIn === 'true' ?
-                                        <li className="nav-item dropdown show">
-                                            <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                                <i className="fa fa-user" aria-hidden="true"></i>
+                                {isLoggedIn === 'true' ?
+                                    <li className="nav-item dropdown show">
+                                        <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <i className="fa fa-user" aria-hidden="true"></i>
+                                        </a>
+                                        <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                                            <a className="dropdown-item cut-user-name">
+                                                <i>Logged in as {username}</i>
                                             </a>
-                                            <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-                                                <a className="dropdown-item cut-user-name">
-                                                    <i>Logged in as {username}</i>
-                                                </a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/upload">Upload Files</a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/booking">Booking</a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/allbookings">All Bookings</a>
-                                                <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
-                                                <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/reports">Reports</a>
-                                                <div className="dropdown-divider"></div>
-                                                <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
-                                            </div>
-                                        </li>
-                                        :
-                                        <li className="nav-item">
-                                            <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
-                                        </li>
+                                            <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
+                                            <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/admin">Go to Admin</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/upload">Upload Files</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/booking">Booking</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                            <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
+                                            <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/reports">Reports</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
+                                        </div>
+                                    </li>
+                                    :
+                                    <li className="nav-item">
+                                        <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
+                                    </li>
                                 }
                             </ul>
                         </nav>
@@ -140,6 +143,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getUser: (token) => dispatch(getUser(token)),
+        logout: () => dispatch(logout()),
     };
 };
 

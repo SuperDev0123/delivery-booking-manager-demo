@@ -37,7 +37,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -176,6 +176,7 @@ class BookingPage extends Component {
             isShowFPPricingSlider: false,
             isAutoAugmented: false,
             selectedFileOption: null,
+            uploadOption: null,
             xReadyStatus: null,
         };
 
@@ -232,6 +233,7 @@ class BookingPage extends Component {
         autoAugmentBooking: PropTypes.func.isRequired,
         revertAugmentBooking: PropTypes.func.isRequired,
         checkAugmentedBooking: PropTypes.func.isRequired,
+        augmentPuDate: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
         deleteBookingLine: PropTypes.func.isRequired,
@@ -241,7 +243,7 @@ class BookingPage extends Component {
         deleteBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getBooking: PropTypes.func.isRequired,
         getSuburbStrings: PropTypes.func.isRequired,
@@ -701,7 +703,7 @@ class BookingPage extends Component {
             this.setState({selectionChanged: 0});
             this.props.setFetchGeoInfoFlag(false);
         }
-
+     
         if (
             (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
             || (booking && this.state.loadingBookingSave && parseInt(this.state.curViewMode) === 1)
@@ -820,29 +822,30 @@ class BookingPage extends Component {
 
                 if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
                 else formInputs['puPickUpAvailFrom_Date'] = null;
-                if (booking.pu_PickUp_Avail_Time_Hours) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
-                else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
-                if (booking.pu_PickUp_Avail_Time_Minutes) formInputs['pu_PickUp_Avail_Time_Minutes'] = booking.pu_PickUp_Avail_Time_Minutes;
-                else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
+                if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
+                else formInputs['pu_PickUp_Avail_Time_Hours'] = '';
+                if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
+                else formInputs['pu_PickUp_Avail_Time_Minutes'] = '';
                 if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
                 else formInputs['pu_PickUp_By_Date'] = null;
-                if (booking.pu_PickUp_By_Time_Hours) formInputs['pu_PickUp_By_Time_Hours'] = booking.pu_PickUp_By_Time_Hours;
-                else formInputs['pu_PickUp_By_Time_Hours'] = null;
-                if (booking.pu_PickUp_By_Time_Minute) formInputs['pu_PickUp_By_Time_Minutes'] = booking.pu_PickUp_By_Time_Minutes;
-                else formInputs['pu_PickUp_By_Time_Minutes'] = null;
+                if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
+                else formInputs['pu_PickUp_By_Time_Hours'] = '';
+                if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
+                else formInputs['pu_PickUp_By_Time_Minutes'] = '';
 
                 if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
                 else formInputs['de_Deliver_From_Date'] = null;
-                if (booking.de_Deliver_From_Hours) formInputs['de_Deliver_From_Hours'] = booking.de_Deliver_From_Hours;
-                else formInputs['de_Deliver_From_Hours'] = null;
-                if (booking.de_Deliver_From_Minutes) formInputs['de_Deliver_From_Minutes'] = booking.de_Deliver_From_Minutes;
-                else formInputs['de_Deliver_From_Minutes'] = null;
+                if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
+                else formInputs['de_Deliver_From_Hours'] = '';
+                if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
+                else formInputs['de_Deliver_From_Minutes'] = '';
                 if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
                 else formInputs['de_Deliver_By_Date'] = null;
-                if (booking.de_Deliver_By_Hours) formInputs['de_Deliver_By_Hours'] = booking.de_Deliver_By_Hours;
-                else formInputs['de_Deliver_By_Hours'] = null;
-                if (booking.de_Deliver_By_Minutes) formInputs['de_Deliver_By_Minutes'] = booking.de_Deliver_By_Minutes;
-                else formInputs['de_Deliver_By_Minutes'] = null;
+                if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
+                else formInputs['de_Deliver_By_Hours'] = '';
+                if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
+                else formInputs['de_Deliver_By_Minutes'] = '';
+
                 if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
                 if (booking.fp_store_event_date) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
@@ -1169,14 +1172,16 @@ class BookingPage extends Component {
     }
 
     onClickDownloadFile(fileOption) {
+        const token = localStorage.getItem('token');
         const { booking } = this.state;
         const selectedBookingIds = [booking.id];
 
         if (fileOption === 'label') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                data: {ids: selectedBookingIds},
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1191,11 +1196,9 @@ class BookingPage extends Component {
         } else if (fileOption === 'pod') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                data: {
-                    ids: selectedBookingIds,
-                    downloadOption: fileOption,
-                },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: { ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1210,11 +1213,9 @@ class BookingPage extends Component {
         } else if (fileOption === 'pod_sog') {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
-                data: {
-                    ids: selectedBookingIds,
-                    downloadOption: fileOption,
-                },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                headers: {'Authorization': 'JWT ' + token},
+                data: { ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1235,13 +1236,14 @@ class BookingPage extends Component {
     }
 
     onClickConfirmDeleteFileBtn() {
+        const token = localStorage.getItem('token');
         const {booking, selectedFileOption} = this.state;
 
         const options = {
             method: 'delete',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
+            headers: {'Authorization': 'JWT ' + token },
             data: {bookingId: booking.id, deleteFileOption: selectedFileOption},
-            responseType: 'blob', // important
         };
 
         axios(options)
@@ -1415,6 +1417,12 @@ class BookingPage extends Component {
         }
     }
 
+    onClickAugmentPuDate() {
+        const {booking} = this.state;
+
+        this.setState({loadingBookingUpdate: true, curViewMode: 2});
+        this.props.augmentPuDate(booking.id);
+    }
 
     onClickBook() {
         const { booking, isBookedBooking, clientname } = this.state;
@@ -1622,17 +1630,21 @@ class BookingPage extends Component {
         e.preventDefault();
         const {booking} = this.state;
         if (booking != null && booking.id != null) {
-            if (!booking.vx_freight_provider) {
-                this.notify('Booking should have selected Freight Provider.');
-            } else if (type === 'attachments') {
-                this.attachmentsDz.processQueue();
-            } else if (type === 'label') {
-                this.labelDz.processQueue();
-            } else if (type === 'pod') {
-                this.podDz.processQueue();
-            }
+            const that = this;
+            this.setState({uploadOption: type});
+            setTimeout(() => {
+                if (!booking.vx_freight_provider) {
+                    that.notify('Please select a Freight Provider!');
+                } else if (type === 'attachment') {
+                    that.attachmentsDz.processQueue();
+                } else if (type === 'label') {
+                    that.labelDz.processQueue();
+                } else if (type === 'pod') {
+                    that.podDz.processQueue();
+                }
+            }, 300);
         } else {
-            this.notify('There is no booking data.');
+            this.notify('Plase select a Booking!');
         }
     }
 
@@ -1643,7 +1655,8 @@ class BookingPage extends Component {
     }
 
     handleFileSending(data, xhr, formData) {
-        formData.append('booking_id', this.state.booking.id);
+        formData.append('bookingId', this.state.booking.id);
+        formData.append('uploadOption', this.state.uploadOption);
     }
 
     handleAddedFiles(files) {
@@ -2066,7 +2079,7 @@ class BookingPage extends Component {
         const { curViewMode, isBookingModified } = this.state;
         let newViewMode = parseInt(e.target.value);
 
-        if (newViewMode !== 0 && isBookingModified) { // -> Create or Update
+        if (isBookingModified) { // -> Create or Update
             this.notify('You can lose modified booking info. Please update it');
         } else if (curViewMode === 1 && newViewMode === 2) { // Create -> Update
             this.notify('You can only change to `View` mode from `New From`.');
@@ -2088,6 +2101,11 @@ class BookingPage extends Component {
                 curViewMode: newViewMode,
                 isBookingModified: false
             }, () => this.afterSetState(1)); // Reload GEO info
+        } else if (curViewMode === 2 && newViewMode === 0) { // Update -> View
+            this.setState({
+                curViewMode: newViewMode,
+                isBookingModified: false
+            }); // Reload GEO info
         }
     }
 
@@ -2164,6 +2182,16 @@ class BookingPage extends Component {
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
 
+            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? null : formInputs['pu_PickUp_Avail_Time_Hours'];
+            formInputs['pu_PickUp_By_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours']) ? null : formInputs['pu_PickUp_By_Time_Hours'];
+            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? null : formInputs['de_Deliver_From_Hours'];
+            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? null : formInputs['de_Deliver_By_Hours'];
+
+            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? null : formInputs['pu_PickUp_Avail_Time_Minutes'];
+            formInputs['pu_PickUp_By_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes']) ? null : formInputs['pu_PickUp_By_Time_Minutes'];
+            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? null : formInputs['de_Deliver_From_Minutes'];
+            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? null : formInputs['de_Deliver_By_Minutes'];
+
             formInputs['pu_Address_State'] = puState ? puState.label : '';
             formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
             formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
@@ -2227,6 +2255,16 @@ class BookingPage extends Component {
                     bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
                     this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
                 }
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Hours = bookingToUpdate.pu_PickUp_Avail_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
+                bookingToUpdate.pu_PickUp_By_Time_Hours = bookingToUpdate.pu_PickUp_By_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
+                bookingToUpdate.de_Deliver_From_Hours = bookingToUpdate.de_Deliver_From_Hours === '' ? null : bookingToUpdate.de_Deliver_From_Hours;
+                bookingToUpdate.de_Deliver_By_Hours = bookingToUpdate.de_Deliver_By_Hours === '' ? null : bookingToUpdate.de_Deliver_By_Hours;
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = bookingToUpdate.pu_PickUp_Avail_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
+                bookingToUpdate.pu_PickUp_By_Time_Minutes = bookingToUpdate.pu_PickUp_By_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
+                bookingToUpdate.de_Deliver_From_Minutes = bookingToUpdate.de_Deliver_From_Minutes === '' ? null : bookingToUpdate.de_Deliver_From_Minutes;
+                bookingToUpdate.de_Deliver_By_Minutes = bookingToUpdate.de_Deliver_By_Minutes === '' ? null : bookingToUpdate.de_Deliver_By_Minutes;
 
                 bookingToUpdate.pu_Address_State = this.state.puState.label;
                 bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
@@ -2932,7 +2970,7 @@ class BookingPage extends Component {
                                         onChange={this.onChangeText.bind(this)} 
                                         onKeyPress={(e) => this.onKeyPress(e)} 
                                         placeholder="Enter Number(Enter)"
-                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''} 
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''}
                                     />
                                 </div>
                                 <div className="float-r disp-inline-block mar-right-20">
@@ -3852,7 +3890,7 @@ class BookingPage extends Component {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white panel-title">
+                                                    <div className="head text-white booking-panel-title">
                                                         PickUp Dates
                                                     </div>
                                                     <div className="row mt-1">
@@ -4343,7 +4381,27 @@ class BookingPage extends Component {
                                                 <div className="head text-white">
                                                     <ul>
                                                         <li>Project: {booking.b_booking_project}</li>
-                                                        <li><a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a></li>
+                                                        <li>
+                                                            {(clientname === 'dme' && isAutoAugmented === false) ?
+                                                                <button
+                                                                    className='btn btn-theme btn-autoaugment'
+                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    onClick={() => this.onClickAutoAugment()}
+                                                                >
+                                                                    AA
+                                                                </button>
+                                                                :
+                                                                <button
+                                                                    className='btn btn-theme btn-autoaugment'
+                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    onClick={() => this.onClickRevertAugment()}
+                                                                >
+                                                                    AA-R
+                                                                </button>
+                                                            }
+                                                            <a onClick={(e) => this.onClickAugmentPuDate(e)} ><i className="fa fa-calendar" aria-hidden="true"></i></a>
+                                                            <a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                                 <div className="pu-de-dates">
@@ -4381,18 +4439,15 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
-                                                                        {
-                                                                            !_.isNull(formInputs['puPickUpAvailFrom_Date']) && !_.isUndefined(formInputs['puPickUpAvailFrom_Date'] && !_.isEmpty(formInputs['puPickUpAvailFrom_Date'])) ?
-                                                                                <p className="time disp-inline-block">
-                                                                                    {
-                                                                                        formInputs['pu_PickUp_Avail_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_Avail_Time_Hours'] + ':'
-                                                                                    }
-                                                                                    {
-                                                                                        formInputs['pu_PickUp_Avail_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_Avail_Time_Minutes']
-                                                                                    }
-                                                                                </p>
-                                                                                :
-                                                                                null
+                                                                        {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours'] && !_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes'])) ?
+                                                                            <p className="time disp-inline-block">
+                                                                                {parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) < 10 ?
+                                                                                    `0${formInputs['pu_PickUp_Avail_Time_Hours']}:` : `${formInputs['pu_PickUp_Avail_Time_Hours']}:`
+                                                                                }
+                                                                                {parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) < 10 ?
+                                                                                    `0${formInputs['pu_PickUp_Avail_Time_Minutes']}:` : `${formInputs['pu_PickUp_Avail_Time_Minutes']}`
+                                                                                }
+                                                                            </p> : null
                                                                         }
                                                                     </label>
                                                                     :
@@ -4429,18 +4484,15 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
-                                                                        {
-                                                                            !_.isNull(formInputs['pu_PickUp_By_Date']) && !_.isUndefined(formInputs['pu_PickUp_By_Date'] && !_.isEmpty(formInputs['pu_PickUp_By_Date'])) ?
-                                                                                <p className="time disp-inline-block">
-                                                                                    {
-                                                                                        formInputs['pu_PickUp_By_Time_Hours'] === 0 ? '00:' : formInputs['pu_PickUp_By_Time_Hours'] + ':'
-                                                                                    }
-                                                                                    {
-                                                                                        formInputs['pu_PickUp_By_Time_Minutes'] === 0 ? '00' : formInputs['pu_PickUp_By_Time_Minutes']
-                                                                                    }
-                                                                                </p>
-                                                                                :
-                                                                                null
+                                                                        {!_.isNull(formInputs['pu_PickUp_By_Time_Hours'] && !_.isNull(formInputs['pu_PickUp_By_Time_Minutes'])) ?
+                                                                            <p className="time disp-inline-block">
+                                                                                {parseInt(formInputs['pu_PickUp_By_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Hours']) < 10 ?
+                                                                                    `0${formInputs['pu_PickUp_By_Time_Hours']}:` : `${formInputs['pu_PickUp_By_Time_Hours']}:`
+                                                                                }
+                                                                                {parseInt(formInputs['pu_PickUp_By_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Minutes']) < 10 ?
+                                                                                    `0${formInputs['pu_PickUp_By_Time_Minutes']}:` : `${formInputs['pu_PickUp_By_Time_Minutes']}`
+                                                                                }
+                                                                            </p> : null
                                                                         }
                                                                     </label>
                                                                     :
@@ -4477,18 +4529,15 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
-                                                                        {
-                                                                            !_.isNull(formInputs['de_Deliver_From_Date']) && !_.isUndefined(formInputs['de_Deliver_From_Date'] && !_.isEmpty(formInputs['de_Deliver_From_Date'])) ?
-                                                                                <p className="time disp-inline-block">
-                                                                                    {
-                                                                                        formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
-                                                                                    }
-                                                                                    {
-                                                                                        formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
-                                                                                    }
-                                                                                </p>
-                                                                                :
-                                                                                null
+                                                                        {!_.isNull(formInputs['de_Deliver_From_Hours'] && !_.isNull(formInputs['de_Deliver_From_Minutes'])) ?
+                                                                            <p className="time disp-inline-block">
+                                                                                {parseInt(formInputs['de_Deliver_From_Hours']) > -1 && parseInt(formInputs['de_Deliver_From_Hours']) < 10 ?
+                                                                                    `0${formInputs['de_Deliver_From_Hours']}:` : `${formInputs['de_Deliver_From_Hours']}:`
+                                                                                }
+                                                                                {parseInt(formInputs['de_Deliver_From_Minutes']) > -1 && parseInt(formInputs['de_Deliver_From_Minutes']) < 10 ?
+                                                                                    `0${formInputs['de_Deliver_From_Minutes']}:` : `${formInputs['de_Deliver_From_Minutes']}`
+                                                                                }
+                                                                            </p> : null
                                                                         }
                                                                     </label>
                                                                     :
@@ -4525,18 +4574,15 @@ class BookingPage extends Component {
                                                                         <p className="date disp-inline-block">
                                                                             {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}
                                                                         </p>
-                                                                        {
-                                                                            !_.isNull(formInputs['de_Deliver_By_Date']) && !_.isUndefined(formInputs['de_Deliver_By_Date'] && !_.isEmpty(formInputs['de_Deliver_By_Date'])) ?
-                                                                                <p className="time disp-inline-block">
-                                                                                    {
-                                                                                        formInputs['de_Deliver_From_Hours'] === 0 ? '00:' : formInputs['de_Deliver_From_Hours'] + ':'
-                                                                                    }
-                                                                                    {
-                                                                                        formInputs['de_Deliver_From_Minutes'] === 0 ? '00' : formInputs['de_Deliver_From_Minutes']
-                                                                                    }
-                                                                                </p>
-                                                                                :
-                                                                                null
+                                                                        {!_.isNull(formInputs['de_Deliver_By_Hours'] && !_.isNull(formInputs['de_Deliver_By_Minutes'])) ?
+                                                                            <p className="time disp-inline-block">
+                                                                                {parseInt(formInputs['de_Deliver_By_Hours']) > -1 && parseInt(formInputs['de_Deliver_By_Hours']) < 10 ?
+                                                                                    `0${formInputs['de_Deliver_By_Hours']}:` : `${formInputs['de_Deliver_By_Hours']}:`
+                                                                                }
+                                                                                {parseInt(formInputs['de_Deliver_By_Minutes']) > -1 && parseInt(formInputs['de_Deliver_By_Minutes']) < 10 ?
+                                                                                    `0${formInputs['de_Deliver_By_Minutes']}:` : `${formInputs['de_Deliver_By_Minutes']}`
+                                                                                }
+                                                                            </p> : null
                                                                         }
                                                                     </label>
                                                                     :
@@ -4579,26 +4625,9 @@ class BookingPage extends Component {
                                                         <button
                                                             className={(parseInt(curViewMode) === 2) ?
                                                                 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
-                                                            onClick={() => this.onClickUpdateBooking()}>Update</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        {(clientname === 'dme' && isAutoAugmented === false) ?
-                                                            <button
-                                                                className='btn btn-theme custom-theme'
-                                                                disabled={isBookedBooking}
-                                                                onClick={() => this.onClickAutoAugment()}
-                                                            >
-                                                                Auto Augment
-                                                            </button>
-                                                            :
-                                                            <button
-                                                                className='btn btn-theme custom-theme'
-                                                                disabled={isBookedBooking}
-                                                                onClick={() => this.onClickRevertAugment()}
-                                                            >
-                                                                Revert Augment
-                                                            </button>
-                                                        }
+                                                            onClick={() => this.onClickUpdateBooking()}
+                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
+                                                        >Update</button>
                                                     </div>
                                                     {
                                                         (clientname === 'dme') ?
@@ -4821,7 +4850,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
-                                                <form onSubmit={(e) => this.handlePost(e, 'attachments')}>
+                                                <form onSubmit={(e) => this.handlePost(e, 'attachment')}>
                                                     <DropzoneComponent
                                                         id="attachments-dz"
                                                         config={attachmentsDzConfig}
@@ -5279,6 +5308,7 @@ const mapDispatchToProps = (dispatch) => {
         autoAugmentBooking: (bookingId) => dispatch(autoAugmentBooking(bookingId)),
         revertAugmentBooking: (bookingId) => dispatch(revertAugmentBooking(bookingId)),
         checkAugmentedBooking: (bookingId) => dispatch(checkAugmentedBooking(bookingId)),
+        augmentPuDate: (bookingId) => dispatch(augmentPuDate(bookingId)),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),

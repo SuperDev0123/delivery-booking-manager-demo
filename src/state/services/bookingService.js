@@ -75,6 +75,8 @@ import {
     failedRevertAugment,
     successPricingAnalysis,
     failedPricingAnalysis,
+    successAugmentPuDate,
+    failedAugmentPuDate,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -354,7 +356,6 @@ export const revertAugmentBooking = (bookingId) => {
 
 
 export const getPricingAnalysis = (bookingIds) => {
-    console.log('bookingIds', bookingIds);
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
@@ -362,12 +363,30 @@ export const getPricingAnalysis = (bookingIds) => {
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/pricing_analysis/`,
         data: {'bookingIds': bookingIds}
     };
+
     return dispatch => {
         axios(options)
             .then(({ data }) => dispatch(successPricingAnalysis(data)))
             .catch((error) => dispatch(failedPricingAnalysis(error)));
     };
 };
+
+export const augmentPuDate = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/set_pu_date_augment/`,
+        data: {'bookingId': bookingId}
+    };
+
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successAugmentPuDate(data)))
+            .catch((error) => dispatch(failedAugmentPuDate(error)));
+    };
+};
+
 
 export const allTrigger = () => {
     const token = localStorage.getItem('token');
