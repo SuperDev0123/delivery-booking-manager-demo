@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-import _ from 'lodash';
 
 class PricingAnalyseSlider extends React.Component {
     constructor(props) {
@@ -20,20 +19,17 @@ class PricingAnalyseSlider extends React.Component {
 
         const analysesList = pricingAnalyses.map((analysis, index) => {
             return (
-                <tr key={index} style= {{ backgroundColor: analysis.service_name == '*'?'#919191':'white' }}>
+                <tr key={index} style= {{ backgroundColor: analysis.service_name == '*' ? '#919191' : 'white' }}>
                     <td>{index + 1}</td>
                     <td>{analysis.fp_name}</td>
                     <td>{analysis.service_name}</td>
+                    <td>{analysis.account_code}</td>
                     <td>{analysis.count}</td>
                     <td>{Number(analysis.min_price).toFixed(2)}</td>
                     <td>{Number(analysis.avg_price).toFixed(2)}</td>
                     <td>{Number(analysis.max_price).toFixed(2)}</td>
                 </tr>
             );
-        });
-
-        let totalAnalyzed = _.sumBy(analysesList, function (analysis) {
-            return analysis.count;
         });
 
         return(
@@ -44,10 +40,6 @@ class PricingAnalyseSlider extends React.Component {
                 subtitle='List View'
                 onRequestClose={this.props.toggleSlider}
             >
-                <div>
-                    <p>Total Analyzed : </p>
-                    <p> {totalAnalyzed} </p>
-                </div>
                 <div className="slider-content">
                     <div className="table-view">
                         <table className="table table-hover table-bordered sortable fixed_headers">
@@ -60,6 +52,9 @@ class PricingAnalyseSlider extends React.Component {
                                 </th>
                                 <th className="" scope="col" nowrap>
                                     <p>Service Name</p>
+                                </th>
+                                <th className="" scope="col" nowrap>
+                                    <p>Account Code</p>
                                 </th>
                                 <th className="" scope="col" nowrap>
                                     <p>Count</p>
