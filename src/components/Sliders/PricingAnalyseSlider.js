@@ -44,10 +44,10 @@ class PricingAnalyseSlider extends React.Component {
                 subtitle='List View'
                 onRequestClose={this.props.toggleSlider}
             >
-                {/* <div>
+                <div>
                     <p>Total Analyzed : </p>
                     <p> {totalAnalyzed} </p>
-                </div> */}
+                </div>
                 <div className="slider-content">
                     <div className="table-view">
                         <table className="table table-hover table-bordered sortable fixed_headers">
