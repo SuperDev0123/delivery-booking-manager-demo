@@ -14,7 +14,7 @@ import { getAllPricingRules } from '../../../../state/services/pricingRuleServic
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
-class PricingRules extends Component {
+class List extends Component {
     constructor(props) {
         super(props);
 
@@ -241,4 +241,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PricingRules));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(List));

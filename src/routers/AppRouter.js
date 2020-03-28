@@ -45,11 +45,13 @@ import AddSqlQuery from '../pages/admin/views/SqlQueries/AddSqlQuery';
 import EditSqlQuery from '../pages/admin/views/SqlQueries/EditSqlQuery';
 import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
 import PricingOnlyUpload from '../pages/admin/views/PricingOnly/Upload';
+import PricingRuleList from '../pages/admin/views/PricingRule/List';
+import PricingRuleUpload from '../pages/admin/views/PricingRule/Upload';
+import PricingRuleStatus from '../pages/admin/views/PricingRule/Status';
 import Vehicles from '../pages/admin/views/Vehicles/Vehicles';
 import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
-import PricingRules from '../pages/admin/views/PricingRules/PricingRules';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -96,7 +98,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/timings' component={Timings} />
                     <AdminPrivateRoute exact path='/admin/availabilities' component={Availabilities} />
                     <AdminPrivateRoute exact path='/admin/costs' component={Costs} />
-                    <AdminPrivateRoute exact path='/admin/pricingrules' component={PricingRules} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule' component={PricingRuleList} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                 </Main>
                 <Redirect to='/' />
             </Switch>

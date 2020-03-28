@@ -21,6 +21,7 @@ class SidebarPush extends React.Component {
                 providers: this.activeRoute(['providers', 'providers/add', 'providers/edit']),
                 providersCollapsed: true,
                 pricingOnlyCollapsed: true,
+                pricingRuleCollapsed: true,
             }
         };
         this.toggle = this.toggle.bind(this);
@@ -77,7 +78,7 @@ class SidebarPush extends React.Component {
     }
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -240,11 +241,46 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">Costs</span>
                             </Link>
                         </li>
-                        <li className={this.activeRoute('pricingrules') ? 'active' : ''}>
-                            <Link to="/admin/pricingrules" title="Pricing Rules">
-                                <i className="fa fa-fw fa-gavel"></i>
-                                <span className="menu-title">Pricing Rules</span>
-                            </Link>
+                        <li
+                            style={{ 'color': '#B3B8C3' }}
+                            className={
+                                this.activeRoute('pricing-rule') ||
+                                this.activeRoute('pricing-rule/upload') ||
+                                this.activeRoute('pricing-rule/status') ? 'active' : ''}
+                        >
+                            <a onClick={() => this.setState({ pricingRuleCollapsed: !pricingRuleCollapsed })}>
+                                <i className="fa fa-usd fa-fw"></i>
+                                <span className="menu-title">Pricing Rule</span>
+                            </a>
+                            <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingRuleCollapsed })}>
+                                <li>
+                                    <Link
+                                        title="View All Pricing Rule"
+                                        to="/admin/pricing-rule"
+                                        className={this.activeRoute(['pricing-rule']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">List</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        title="Upload new Pricing Rule sheet"
+                                        to="/admin/pricing-rule/upload"
+                                        className={this.activeRoute(['pricing-rule/upload']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">Upload sheet</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        title="Importing Statues"
+                                        to="/admin/pricing-rule/status"
+                                        className={this.activeRoute(['pricing-rule/status']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">Status</span>
+                                    </Link>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>
