@@ -6,7 +6,7 @@ import {
 export function successGetAvailabilities(data) {
     return {
         type: SUCCESS_GET_AVAILABILITIES,
-        payload: data.results,
+        payload: data,
     };
 }
 

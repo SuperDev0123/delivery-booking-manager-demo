@@ -6,7 +6,7 @@ import {
 export function successGetCosts(data) {
     return {
         type: SUCCESS_GET_COSTS,
-        payload: data.results,
+        payload: data,
     };
 }
 

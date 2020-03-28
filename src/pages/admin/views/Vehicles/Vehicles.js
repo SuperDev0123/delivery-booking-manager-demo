@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getAllVehicles } from '../../../../state/services/vehicleService';
+import { getVehicles } from '../../../../state/services/vehicleService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
@@ -35,7 +35,7 @@ class Vehicles extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getAllVehicles: PropTypes.func.isRequired,
+        getVehicles: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -78,7 +78,7 @@ class Vehicles extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getAllVehicles();
+        this.props.getVehicles();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -101,7 +101,7 @@ class Vehicles extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getAllVehicles();
+                this.props.getVehicles();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -234,7 +234,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getAllVehicles: () => dispatch(getAllVehicles()),
+        getVehicles: () => dispatch(getVehicles()),
     };
 };
 

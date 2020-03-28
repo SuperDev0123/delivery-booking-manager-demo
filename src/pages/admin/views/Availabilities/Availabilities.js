@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getAllAvailabilities } from '../../../../state/services/availabilityService';
+import { getAvailabilities } from '../../../../state/services/availabilityService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
@@ -36,7 +36,7 @@ class Availabilities extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getAllAvailabilities: PropTypes.func.isRequired,
+        getAvailabilities: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -79,7 +79,7 @@ class Availabilities extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getAllAvailabilities();
+        this.props.getAvailabilities();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -102,7 +102,7 @@ class Availabilities extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getAllAvailabilities();
+                this.props.getAvailabilities();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -237,7 +237,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getAllAvailabilities: () => dispatch(getAllAvailabilities()),
+        getAvailabilities: () => dispatch(getAvailabilities()),
     };
 };
 
