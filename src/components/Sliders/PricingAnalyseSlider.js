@@ -36,7 +36,7 @@ class PricingAnalyseSlider extends React.Component {
             <SlidingPane
                 className='fp-pricing-pan'
                 isOpen={isOpen}
-                title='Pricing Analyses Summary'
+                title='Price Analysis Summary'
                 subtitle='List View'
                 onRequestClose={this.props.toggleSlider}
             >
