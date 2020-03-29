@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getAllPricingRules } from '../../../../state/services/pricingRuleService';
+import { getPricingRules } from '../../../../state/services/pricingRuleService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
@@ -35,7 +35,7 @@ class List extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getAllPricingRules: PropTypes.func.isRequired,
+        getPricingRules: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -78,7 +78,7 @@ class List extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getAllPricingRules();
+        this.props.getPricingRules();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -101,7 +101,7 @@ class List extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getAllPricingRules();
+                this.props.getPricingRules();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -237,7 +237,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getAllPricingRules: () => dispatch(getAllPricingRules()),
+        getPricingRules: () => dispatch(getPricingRules()),
     };
 };
 
