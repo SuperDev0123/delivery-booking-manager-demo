@@ -790,9 +790,9 @@ class BookingPage extends Component {
                 else formInputs['booking_Created_For_Email'] = '';
                 if (booking.booking_Created_For != null) formInputs['booking_Created_For'] = booking.booking_Created_For;
                 else formInputs['booking_Created_For'] = '';
-                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = booking.b_booking_Category;
+                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = {'value': booking.b_booking_Category, 'label': booking.b_booking_Category};
                 else formInputs['b_booking_Category'] = '';
-                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = booking.b_booking_Priority;
+                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
                 else formInputs['b_booking_Priority'] = '';
 
                 if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
@@ -921,6 +921,8 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_quoted'] = null;
                 if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
                 else formInputs['inv_sell_actual'] = null;
+                if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
+                else formInputs['vx_futile_Booking_Notes'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
 
@@ -1618,6 +1620,12 @@ class BookingPage extends Component {
         } else if (fieldName === 'inv_billing_status') {
             formInputs['inv_billing_status'] = selectedOption.value;
             booking['inv_billing_status'] = formInputs['inv_billing_status'];
+        } else if (fieldName === 'b_booking_Priority') {
+            formInputs['b_booking_Priority'] = {'value': selectedOption.value, 'label': selectedOption.value};
+            booking['b_booking_Priority'] = selectedOption.value;
+        } else if (fieldName === 'b_booking_Category') {
+            formInputs['b_booking_Category'] = {'value': selectedOption.value, 'label': selectedOption.value};
+            booking['b_booking_Category'] = selectedOption.value;
         }
 
         this.setState({formInputs, booking, isBookingModified: true});
@@ -2885,6 +2893,26 @@ class BookingPage extends Component {
             return {value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code};
         });
 
+        const bookingCategroies = [
+            'Repairs & Spare Parts Expense',
+            'Refurbishment Expense',
+            'Salvage Expense',
+            'Samples & Sales Expens',
+            'Standard Sales',
+            'Testing Expense',
+            'Admin / Other',
+        ];
+
+        let bookingCategoryOptions = bookingCategroies.map((category) => {
+            return {value: category, label: category};
+        });
+
+        const bookingPriorities = ['Low', 'Standard', 'High', 'Critical'];
+
+        let bookingProioriyOptions = bookingPriorities.map((priority) => {
+            return {value: priority, label: priority};
+        });
+
         const currentWarehouseCodeOption = {
             value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
             label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
@@ -3241,32 +3269,30 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Category</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_booking_Category']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_booking_Category"
-                                                        value = {formInputs['b_booking_Category'] ? formInputs['b_booking_Category'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['b_booking_Category']}</p>
+                                                :
+                                                <Select
+                                                    value={formInputs['b_booking_Category']}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'b_booking_Category')}
+                                                    options={bookingCategoryOptions}
+                                                    placeholder='Select a Category'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Priority</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_booking_Priority']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_booking_Priority"
-                                                        value = {formInputs['b_booking_Priority'] ? formInputs['b_booking_Priority'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['b_booking_Priority']}</p>
+                                                :
+                                                <Select
+                                                    value={formInputs['b_booking_Priority']}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'b_booking_Priority')}
+                                                    options={bookingProioriyOptions}
+                                                    placeholder='Select a Priority'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                     </div>
@@ -4418,6 +4444,27 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
+                                                    {(clientname === 'dme') &&
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Futile Note</label>
+                                                            </div>
+                                                            <div className="col-sm-8">
+                                                                {(parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['vx_futile_Booking_Notes']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%"
+                                                                        className="textarea-width"
+                                                                        name="vx_futile_Booking_Notes"
+                                                                        rows="1"
+                                                                        cols="9"
+                                                                        value={formInputs['vx_futile_Booking_Notes'] ? formInputs['vx_futile_Booking_Notes'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </form>
                                             </div>
                                         </div>
