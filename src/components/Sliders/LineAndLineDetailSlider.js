@@ -503,22 +503,22 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Gap / RA</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="gap_ra" 
-                                                    value={lineDetailFormInputs['gap_ra']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
                                                 <p>Insurance Value</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
                                                     name="insuranceValueEach" 
                                                     value={lineDetailFormInputs['insuranceValueEach']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Gap / RA</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="gap_ra" 
+                                                    value={lineDetailFormInputs['gap_ra']} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
