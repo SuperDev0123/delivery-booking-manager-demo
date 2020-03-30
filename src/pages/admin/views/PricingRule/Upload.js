@@ -20,15 +20,15 @@ class Upload extends Component {
             selectedRuleType: null,
             ruleTypes: [
                 {
-                    'name': 'ruleType1',
+                    'name': 'rule_type_01',
                     'calcType': 'Cost for Vehicle for Postal Code to Postal Code',
                     'chargeRule': 'Booking Qty of the Matching "Charge UOM" x "Per UOM Charge"'
                 }, {
-                    'name': 'ruleType2',
+                    'name': 'rule_type_02',
                     'calcType': 'Cost from Postal Code to Postal Code for Pallet Dimensions',
                     'chargeRule': 'Booking Qty of the Matching "Charge UOM" x "Per UOM Charge"'
                 }, {
-                    'name': 'ruleType3',
+                    'name': 'rule_type_03',
                     'calcType': 'Cost for greater of Mass KG or Cubic KG from Postal Code to Postal Code',
                     'chargeRule': 'Greater of "Basic Charge" + (Booking Qty of the matching "Charge UOM" x "Per UOM Charge") OR "Basic Charge" + ((Length in meters x width in meters x height in meters x "M3 to KG Factor") x "Per UOM Charge")'
                 },
