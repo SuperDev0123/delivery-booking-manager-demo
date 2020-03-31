@@ -3303,7 +3303,7 @@ class BookingPage extends Component {
                                         <div className="col-sm-3 form-group">
                                             <span>Category</span>
                                             {(parseInt(curViewMode) === 0) ?
-                                                <p className="show-mode">{formInputs['b_booking_Category']}</p>
+                                                <p className="show-mode">{formInputs['b_booking_Category'] && formInputs['b_booking_Category'].value}</p>
                                                 :
                                                 <Select
                                                     value={formInputs['b_booking_Category']}
@@ -3317,7 +3317,7 @@ class BookingPage extends Component {
                                         <div className="col-sm-3 form-group">
                                             <span>Priority</span>
                                             {(parseInt(curViewMode) === 0) ?
-                                                <p className="show-mode">{formInputs['b_booking_Priority']}</p>
+                                                <p className="show-mode">{formInputs['b_booking_Priority'] && formInputs['b_booking_Priority'].value}</p>
                                                 :
                                                 <Select
                                                     value={formInputs['b_booking_Priority']}
