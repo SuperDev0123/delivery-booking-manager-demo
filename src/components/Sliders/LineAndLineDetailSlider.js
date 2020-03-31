@@ -170,8 +170,8 @@ class LineAndLineDetailSlider extends React.Component {
                         <td>{lineDetail.itemDescription}</td>
                         <td>{lineDetail.quantity}</td>
                         <td>{lineDetail.clientRefNumber}</td>
-                        <td>{lineDetail.gap_ra}</td>
                         <td>${lineDetail.insuranceValueEach}</td>
+                        <td>{lineDetail.gap_ra}</td>
                         <td>{lineDetail.itemFaultDescription}</td>
                         <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 2, index)}>Edit</Button></td>
                         <td className="duplicate">
