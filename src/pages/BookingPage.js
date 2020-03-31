@@ -340,7 +340,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, extraErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -446,12 +446,6 @@ class BookingPage extends Component {
 
         if (emailLogs) {
             this.setState({emailLogs});
-        }
-
-        if (extraErrorMessage) {
-            if (extraErrorMessage === 'Sent Email Successfully') {
-                this.props.getEmailLogs(booking.id);
-            }
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -579,6 +573,10 @@ class BookingPage extends Component {
                 setTimeout(() => {
                     that.setState({loading: true, curViewMode: 0});
                 }, 50);
+            }
+
+            if (bookingErrorMessage === 'Sent Email Successfully') {
+                this.props.getEmailLogs(booking.id);
             }
         }
 
