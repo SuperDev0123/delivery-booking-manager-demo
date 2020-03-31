@@ -340,7 +340,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, extraErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -446,6 +446,12 @@ class BookingPage extends Component {
 
         if (emailLogs) {
             this.setState({emailLogs});
+        }
+
+        if (extraErrorMessage) {
+            if (extraErrorMessage === 'Sent Email Successfully') {
+                this.props.getEmailLogs(booking.id);
+            }
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -5426,7 +5432,6 @@ const mapStateToProps = (state) => {
         availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
         allFPs: state.extra.allFPs,
-        bookingErrorMessage: state.booking.errorMessage,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
         needUpdateBooking: state.booking.needUpdateBooking,
@@ -5435,6 +5440,8 @@ const mapStateToProps = (state) => {
         pricingInfos: state.booking.pricingInfos,
         pricingInfosFlag: state.booking.pricingInfosFlag,
         emailLogs: state.extra.emailLogs,
+        extraErrorMessage: state.extra.errorMessage,
+        bookingErrorMessage: state.booking.errorMessage,
     };
 };
 
