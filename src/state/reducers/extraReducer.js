@@ -29,6 +29,9 @@ import {
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
     RESET_STORE_BOOKING_LOGS,
+    SUCCESS_GET_EMAIL_LOGS,
+    FAILED_GET_EMAIL_LOGS,
+    RESET_EMAIL_LOGS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -41,6 +44,7 @@ const defaultState = {
     needUpdateStatusDetails: false,
     needUpdateStatusInfo: false,
     projectNames: null,
+    emailLogs: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -61,6 +65,11 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_EMAIL_LOGS:
+            return {
+                ...state,
+                emailLogs: [],
+            };
         case RESET_STORE_BOOKING_LOGS:
             return {
                 ...state,
@@ -159,6 +168,11 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 projectNames: payload
             };
+        case SUCCESS_GET_EMAIL_LOGS:
+            return {
+                ...state,
+                emailLogs: payload
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -171,6 +185,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_API_BCLS:
         case FAILED_GET_STATUS_INFO:
         case FAILED_GET_PROJECT_NAMES:
+        case FAILED_GET_EMAIL_LOGS:
             return {
                 ...state,
                 errorMessage: errorMessage,
