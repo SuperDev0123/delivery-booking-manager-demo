@@ -87,6 +87,8 @@ import {
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
     FAILED_REVERT_AUGMENT,
+    SUCCESS_PRICING_ANALYSIS,
+    FAILED_PRICING_ANALYSIS,
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
@@ -802,6 +804,20 @@ export function successRevertAugment(data) {
 export function failedRevertAugment(error) {
     return {
         type: FAILED_REVERT_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successPricingAnalysis(data) {
+    return {
+        type: SUCCESS_PRICING_ANALYSIS,
+        payload: data.results
+    };
+}
+
+export function failedPricingAnalysis(error) {
+    return {
+        type: FAILED_PRICING_ANALYSIS,
         errorMessage: error.response.data.message
     };
 }
