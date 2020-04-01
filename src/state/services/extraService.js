@@ -30,6 +30,9 @@ import {
     resetProjectNames,
     successGetProjectNames,
     failedGetProjectNames,
+    resetEmailLogs,
+    successGetEmailLogs,
+    failedGetEmailLogs,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -217,5 +220,20 @@ export const getAllProjectNames = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetProjectNames(data)))
             .catch((error) => dispatch(failedGetProjectNames(error)));
+    };
+};
+
+export const getEmailLogs = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_email_logs/?bookingId=${bookingId}`,
+    };
+    return dispatch => {
+        dispatch(resetEmailLogs());
+        axios(options)
+            .then(({ data }) => dispatch(successGetEmailLogs(data)))
+            .catch((error) => dispatch(failedGetEmailLogs(error)));
     };
 };

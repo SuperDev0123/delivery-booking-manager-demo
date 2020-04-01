@@ -22,6 +22,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    REBOOK_SUCCESS,
+    REBOOK_FAILED,
     POD_SUCCESS,
     POD_FAILED,
     GET_LABEL_SUCCESS,
@@ -413,6 +415,15 @@ export function successFPBook(data) {
     };
 }
 
+export function successFPRebook(data) {
+    alert(data.message);
+
+    return {
+        type: REBOOK_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
 export function successFPPod(data) {
     alert(`${data.message}`);
 
@@ -436,6 +447,15 @@ export function failedFPBook(error) {
 
     return {
         type: BOOK_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function failedFPRebook(error) {
+    alert(`Failed ReBook: ${error.response.data.message}`);
+
+    return {
+        type: REBOOK_FAILED,
         errorMessage: error.response.data.message
     };
 }

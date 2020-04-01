@@ -29,6 +29,9 @@ import {
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
     RESET_STORE_BOOKING_LOGS,
+    SUCCESS_GET_EMAIL_LOGS,
+    FAILED_GET_EMAIL_LOGS,
+    RESET_EMAIL_LOGS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -237,5 +240,25 @@ export function failedGetProjectNames(error) {
 export function resetStoreBookingLogs() {
     return {
         type: RESET_STORE_BOOKING_LOGS,
+    };
+}
+
+export function successGetEmailLogs(data) {
+    return {
+        type: SUCCESS_GET_EMAIL_LOGS,
+        payload: data.results,
+    };
+}
+
+export function failedGetEmailLogs(error) {
+    return {
+        type: FAILED_GET_EMAIL_LOGS,
+        errorMessage: 'Unable to get Email Logs. Error:' + error,
+    };
+}
+
+export function resetEmailLogs() {
+    return {
+        type: RESET_EMAIL_LOGS,
     };
 }

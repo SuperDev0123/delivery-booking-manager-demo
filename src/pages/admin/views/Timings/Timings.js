@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getAllTimings } from '../../../../state/services/timingService';
+import { getTimings } from '../../../../state/services/timingService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
@@ -35,7 +35,7 @@ class Timings extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getAllTimings: PropTypes.func.isRequired,
+        getTimings: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -78,7 +78,7 @@ class Timings extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getAllTimings();
+        this.props.getTimings();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -101,7 +101,7 @@ class Timings extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getAllTimings();
+                this.props.getTimings();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -216,7 +216,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getAllTimings: () => dispatch(getAllTimings()),
+        getTimings: () => dispatch(getTimings()),
     };
 };
 

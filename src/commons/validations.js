@@ -87,6 +87,28 @@ const isFormValid = (formName, formFields) => {
         if (!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 100) {
             return 'DE Instruction is too long. Need to be shorter than 100 characters';
         }
+        if (!_.isEmpty(formFields['pu_email_Group'])) {
+            const emails = formFields['pu_email_Group'].split(',');
+
+            for (let i = 0; i < emails.length; i++) {
+                const email = emails[i].replace(' ', '');
+
+                if (!validateEmail(email)) {
+                    return `Invalid email address: ${email}`;
+                }
+            }
+        }
+        if (!_.isEmpty(formFields['de_Email_Group_Emails'])) {
+            const emails = formFields['de_Email_Group_Emails'].split(',');
+
+            for (let i = 0; i < emails.length; i++) {
+                const email = emails[i].replace(' ', '');
+
+                if (!validateEmail(email)) {
+                    return `Invalid email address: ${email}`;
+                }
+            }
+        }
     }
 
     return 'valid';
