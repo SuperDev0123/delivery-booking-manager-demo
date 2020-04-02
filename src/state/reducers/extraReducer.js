@@ -32,6 +32,12 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
+    SUCCESS_GET_BOOKING_SET, // BookingSet
+    FAILED_GET_BOOKING_SET, // *
+    SUCCESS_CREATE_BOOKING_SET, // *
+    FAILED_CREATE_BOOKING_SET, // *
+    SUCCESS_UPDATE_BOOKING_SET, // *
+    FAILED_UPDATE_BOOKING_SET, // BookingSet
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -45,6 +51,8 @@ const defaultState = {
     needUpdateStatusInfo: false,
     projectNames: null,
     emailLogs: [],
+    bookingset: null,
+    bookingsets: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -173,6 +181,21 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 emailLogs: payload
             };
+        case SUCCESS_CREATE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload
+            };
+        case SUCCESS_GET_BOOKING_SET:
+            return {
+                ...state,
+                bookingsets: payload
+            };
+        case SUCCESS_UPDATE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -186,6 +209,9 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_STATUS_INFO:
         case FAILED_GET_PROJECT_NAMES:
         case FAILED_GET_EMAIL_LOGS:
+        case FAILED_CREATE_BOOKING_SET:
+        case FAILED_GET_BOOKING_SET:
+        case FAILED_UPDATE_BOOKING_SET:
             return {
                 ...state,
                 errorMessage: errorMessage,

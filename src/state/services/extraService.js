@@ -33,6 +33,12 @@ import {
     resetEmailLogs,
     successGetEmailLogs,
     failedGetEmailLogs,
+    successGetBookingSet, // BookingSet
+    failedGetBookingSet, // *
+    successCreateBookingSet, // *
+    failedCreateBookingSet, // *
+    successUpdateBookingSet, // *
+    failedUpdateBookingSet, // BookingSet
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -235,5 +241,51 @@ export const getEmailLogs = (bookingId) => {
         axios(options)
             .then(({ data }) => dispatch(successGetEmailLogs(data)))
             .catch((error) => dispatch(failedGetEmailLogs(error)));
+    };
+};
+
+export const getBookingSets = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetBookingSet(data)))
+            .catch((error) => dispatch(failedGetBookingSet(error)));
+    };
+};
+
+export const createBookingSet = (bookingIds, name, note) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
+        data: {
+            bookingIds, name, note
+        }
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successCreateBookingSet(data)))
+            .catch((error) => dispatch(failedCreateBookingSet(error)));
+    };
+};
+
+export const updateBookingSet = (bookingIds, id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/${id}/`,
+        data: {bookingIds}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateBookingSet(data)))
+            .catch((error) => dispatch(failedUpdateBookingSet(error)));
     };
 };

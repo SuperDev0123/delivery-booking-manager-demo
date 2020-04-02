@@ -23,7 +23,7 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
+import { getAllBookingStatus, getAllFPs, getAllProjectNames, getBookingSets, createBookingSet, updateBookingSet } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
@@ -166,7 +166,10 @@ class AllBookingsPage extends React.Component {
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
         getPricingAnalysis: PropTypes.func.isRequired,
-        // getAllBookingSets: PropTypes.func.isRequired,
+        getBookingSets: PropTypes.func.isRequired,
+        createBookingSet: PropTypes.func.isRequired,
+        updateBookingSet: PropTypes.func.isRequired,
+        bookingsets: PropTypes.array,
     };
 
     componentDidMount() {
@@ -204,7 +207,6 @@ class AllBookingsPage extends React.Component {
         this.props.getAllBookingStatus();
         this.props.getAllFPs();
         this.props.getAllProjectNames();
-        // this.props.getAllBookingSets();
     }
 
     UNSAFE_componentWillMount() {
@@ -1611,6 +1613,15 @@ class AllBookingsPage extends React.Component {
 
     onClickPagination(pageInd) {
         this.props.setGetBookingsFilter('pageInd', pageInd);
+    }
+
+    onClickBookingSet() {
+        if (this.state.selectedBookingIds.length === 0) {
+            this.notify('Please select bookings!');
+        } else {
+            this.props.getBookingSets();
+            this.toggleBookingSetModal();
+        }
     }
 
     render() {
@@ -3051,7 +3062,12 @@ class AllBookingsPage extends React.Component {
 
                 <BookingSetModal
                     isOpen={this.state.isShowBookingSetModal}
-                    toggleSlider={this.toggleBookingSetModal}
+                    toggle={this.toggleBookingSetModal}
+                    notify={this.notify}
+                    bookingIds={this.state.selectedBookingIds}
+                    bookingsets={this.props.bookingsets}
+                    createBookingSet={this.props.createBookingSet}
+                    updateBookingSet={this.props.updateBookingSet}
                 />
 
                 <ToastContainer />
@@ -3100,6 +3116,7 @@ const mapStateToProps = (state) => {
         projectNames: state.extra.projectNames,
         projectName: state.booking.projectName,
         pricingAnalyses: state.booking.pricingAnalyses,
+        bookingsets: state.extra.bookingsets,
     };
 };
 
@@ -3134,6 +3151,9 @@ const mapDispatchToProps = (dispatch) => {
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
+        getBookingSets: () => dispatch(getBookingSets()),
+        createBookingSet: (bookingIds, name, note) => dispatch(createBookingSet(bookingIds, name, note)),
+        updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
     };
 };
 
