@@ -39,6 +39,7 @@ import FindModal from '../components/CommonModals/FindModal';
 import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
+import BookingSetModal from '../components/CommonModals/BookingSetModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -111,7 +112,8 @@ class AllBookingsPage extends React.Component {
             projectNames: [],
             projectName: '',
             isShowBulkUpdateSlider: false,
-            isShowPricingAnalyseSlider: false
+            isShowPricingAnalyseSlider: false,
+            isShowBookingSetModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -127,6 +129,7 @@ class AllBookingsPage extends React.Component {
         this.toggleProjectNameModal = this.toggleProjectNameModal.bind(this);
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
+        this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -163,6 +166,7 @@ class AllBookingsPage extends React.Component {
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
         getPricingAnalysis: PropTypes.func.isRequired,
+        // getAllBookingSets: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -200,6 +204,7 @@ class AllBookingsPage extends React.Component {
         this.props.getAllBookingStatus();
         this.props.getAllFPs();
         this.props.getAllProjectNames();
+        // this.props.getAllBookingSets();
     }
 
     UNSAFE_componentWillMount() {
@@ -718,6 +723,10 @@ class AllBookingsPage extends React.Component {
         }
         
         this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));        
+    }
+
+    toggleBookingSetModal() {
+        this.setState(prevState => ({isShowBookingSetModal: !prevState.isShowBookingSetModal}));
     }
 
     onClickAllTrigger() {
@@ -2150,15 +2159,21 @@ class AllBookingsPage extends React.Component {
                             <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
-                                    <i className="fa fa-file-excel-o" aria-hidden="true"></i>
+                                    <i className="fa fa-file-excel" aria-hidden="true"></i>
                                 </span>
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a 
+                            <a
                                 className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
                                 onClick={() => this.onClickMANI()}
                             >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
+                            </a>
+                            <a
+                                className={clientname && clientname === 'dme' ? '' : 'none'} 
+                                onClick={() => this.onClickBookingSet()}
+                            >
+                                <span title="Build a booking set"><i className="fa fa-layer-group"></i></span>
                             </a>
                             <a href="" className="help none"><i className="fa fa-sliders"></i></a>
                         </div>
@@ -3032,6 +3047,11 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowPricingAnalyseSlider}
                     toggleSlider={this.togglePricingAnalyseSlider}
                     pricingAnalyses={this.state.pricingAnalyses}
+                />
+
+                <BookingSetModal
+                    isOpen={this.state.isShowBookingSetModal}
+                    toggleSlider={this.toggleBookingSetModal}
                 />
 
                 <ToastContainer />

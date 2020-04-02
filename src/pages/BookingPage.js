@@ -4769,7 +4769,7 @@ class BookingPage extends Component {
                                                                     onClick={() => this.onClickOpenPricingSlider()}
                                                                     disabled={booking && !isBookedBooking ? '' : 'disabled'}
                                                                 >
-                                                                    <i className="fa fa-caret-square-o-left"></i>
+                                                                    <i className="fa fa-caret-square-left"></i>
                                                                 </button>
                                                             </div>
                                                             : null

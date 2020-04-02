@@ -112,7 +112,7 @@ class SidebarPush extends React.Component {
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
-                                                <i className="fa fa-user"></i>
+                                                <i className="fa fa-sign-out-alt"></i>
                                             </span><small>My Account</small>
                                         </a>
                                     </li>
@@ -193,7 +193,7 @@ class SidebarPush extends React.Component {
                         </li>
                         <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
                             <a onClick={() => this.setState({ pricingOnlyCollapsed: !pricingOnlyCollapsed })}>
-                                <i className="fa fa-usd fa-fw"></i>
+                                <i className="fa fa-fw fa-dollar-sign"></i>
                                 <span className="menu-title">Pricing Only</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingOnlyCollapsed })}>
@@ -231,13 +231,13 @@ class SidebarPush extends React.Component {
                         </li>
                         <li className={this.activeRoute('availabilities') ? 'active' : ''}>
                             <Link to="/admin/availabilities" title="Availabilities">
-                                <i className="fa fa-fw fa-clock-o"></i>
+                                <i className="fa fa-fw fa-clock"></i>
                                 <span className="menu-title">Availabilities</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('costs') ? 'active' : ''}>
                             <Link to="/admin/costs" title="Costs">
-                                <i className="fa fa-fw fa-dollar"></i>
+                                <i className="fa fa-fw fa-coins"></i>
                                 <span className="menu-title">Costs</span>
                             </Link>
                         </li>
@@ -249,7 +249,7 @@ class SidebarPush extends React.Component {
                                 this.activeRoute('pricing-rule/status') ? 'active' : ''}
                         >
                             <a onClick={() => this.setState({ pricingRuleCollapsed: !pricingRuleCollapsed })}>
-                                <i className="fa fa-usd fa-fw"></i>
+                                <i className="fa fa-usd fa-funnel-dollar"></i>
                                 <span className="menu-title">Pricing Rule</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingRuleCollapsed })}>
