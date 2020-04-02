@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getAllCosts } from '../../../../state/services/costService';
+import { getCosts } from '../../../../state/services/costService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
@@ -35,7 +35,7 @@ class Costs extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getAllCosts: PropTypes.func.isRequired,
+        getCosts: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -78,7 +78,7 @@ class Costs extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getAllCosts();
+        this.props.getCosts();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -101,7 +101,7 @@ class Costs extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getAllCosts();
+                this.props.getCosts();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -243,7 +243,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getAllCosts: () => dispatch(getAllCosts()),
+        getCosts: () => dispatch(getCosts()),
     };
 };
 

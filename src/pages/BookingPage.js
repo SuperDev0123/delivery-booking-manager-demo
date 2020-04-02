@@ -24,9 +24,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
+// Custom Modals
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
+// Custom Sliders
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
@@ -35,7 +37,8 @@ import NoteSlider from '../components/Sliders/NoteSlider';
 import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
-
+import EmailLogSlider from '../components/Sliders/EmailLogSlider';
+// Services
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
@@ -44,7 +47,8 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs } from '../state/services/extraService';
+// Validation
 import { isFormValid } from '../commons/validations';
 
 class BookingPage extends Component {
@@ -168,9 +172,11 @@ class BookingPage extends Component {
             isShowStatusNoteModal: false,
             isShowDeleteCommConfirmModal: false,
             isShowDeleteFileConfirmModal: false,
+            isShowEmailLogSlider: false,
             bookingId: null,
             apiBCLs: [],
             allFPs: [],
+            emailLogs: [],
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
@@ -222,6 +228,7 @@ class BookingPage extends Component {
         this.toggleDeleteCommConfirmModal = this.toggleDeleteCommConfirmModal.bind(this);
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
+        this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
     }
 
     static propTypes = {
@@ -291,6 +298,7 @@ class BookingPage extends Component {
         isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
+        getEmailLogs: PropTypes.func.isRequired,        
     };
 
     componentDidMount() {
@@ -332,7 +340,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -434,6 +442,10 @@ class BookingPage extends Component {
 
         if (pricingInfos && pricingInfosFlag) {
             this.setState({pricingInfos, loading: false});
+        }
+
+        if (emailLogs) {
+            this.setState({emailLogs});
         }
 
         if (qtyTotal && qtyTotal > 0) {
@@ -561,6 +573,10 @@ class BookingPage extends Component {
                 setTimeout(() => {
                     that.setState({loading: true, curViewMode: 0});
                 }, 50);
+            }
+
+            if (bookingErrorMessage === 'Sent Email Successfully') {
+                this.props.getEmailLogs(booking.id);
             }
         }
 
@@ -790,9 +806,9 @@ class BookingPage extends Component {
                 else formInputs['booking_Created_For_Email'] = '';
                 if (booking.booking_Created_For != null) formInputs['booking_Created_For'] = booking.booking_Created_For;
                 else formInputs['booking_Created_For'] = '';
-                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = booking.b_booking_Category;
+                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = {'value': booking.b_booking_Category, 'label': booking.b_booking_Category};
                 else formInputs['b_booking_Category'] = '';
-                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = booking.b_booking_Priority;
+                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
                 else formInputs['b_booking_Priority'] = '';
 
                 if (booking.eta_pu_by_datetime != null) formInputs['eta_pu_by_datetime'] = booking.eta_pu_by_datetime;
@@ -921,6 +937,8 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_quoted'] = null;
                 if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
                 else formInputs['inv_sell_actual'] = null;
+                if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
+                else formInputs['vx_futile_Booking_Notes'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
 
@@ -955,7 +973,6 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
-                this.props.checkAugmentedBooking(booking.id);
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false });
@@ -986,6 +1003,7 @@ class BookingPage extends Component {
 
     afterSetState(type, data) {
         if (type === 0) {
+            this.props.checkAugmentedBooking(data.id);
             this.props.getBookingLines(data.pk_booking_id);
             this.props.getBookingLineDetails(data.pk_booking_id);
             this.props.getComms(data.id);
@@ -993,6 +1011,7 @@ class BookingPage extends Component {
             this.props.getApiBCLs(data.id);
             this.props.setFetchGeoInfoFlag(true);
             this.props.getAttachmentHistory(data.pk_booking_id);
+            this.props.getEmailLogs(data.id);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
@@ -1618,6 +1637,12 @@ class BookingPage extends Component {
         } else if (fieldName === 'inv_billing_status') {
             formInputs['inv_billing_status'] = selectedOption.value;
             booking['inv_billing_status'] = formInputs['inv_billing_status'];
+        } else if (fieldName === 'b_booking_Priority') {
+            formInputs['b_booking_Priority'] = {'value': selectedOption.value, 'label': selectedOption.value};
+            booking['b_booking_Priority'] = selectedOption.value;
+        } else if (fieldName === 'b_booking_Category') {
+            formInputs['b_booking_Category'] = {'value': selectedOption.value, 'label': selectedOption.value};
+            booking['b_booking_Category'] = selectedOption.value;
         }
 
         this.setState({formInputs, booking, isBookingModified: true});
@@ -2042,6 +2067,10 @@ class BookingPage extends Component {
 
     toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
+
+    toggleEmailLogSlider() {
+        this.setState(prevState => ({isShowEmailLogSlider: !prevState.isShowEmailLogSlider}));
     }
 
     onClickSwitchClientNavIcon(e) {
@@ -2585,7 +2614,11 @@ class BookingPage extends Component {
         if (!booking) {
             this.notify('Please select booking!');
         } else {
-            this.props.sendEmail(booking.id, templateName);
+            if (templateName === 'Email Log') {
+                this.toggleEmailLogSlider();
+            } else {
+                this.props.sendEmail(booking.id, templateName);
+            }
         }
     }
 
@@ -2885,6 +2918,26 @@ class BookingPage extends Component {
             return {value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code};
         });
 
+        const bookingCategroies = [
+            'Repairs & Spare Parts Expense',
+            'Refurbishment Expense',
+            'Salvage Expense',
+            'Samples & Sales Expens',
+            'Standard Sales',
+            'Testing Expense',
+            'Admin / Other',
+        ];
+
+        let bookingCategoryOptions = bookingCategroies.map((category) => {
+            return {value: category, label: category};
+        });
+
+        const bookingPriorities = ['Low', 'Standard', 'High', 'Critical'];
+
+        let bookingProioriyOptions = bookingPriorities.map((priority) => {
+            return {value: priority, label: priority};
+        });
+
         const currentWarehouseCodeOption = {
             value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
             label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
@@ -2921,6 +2974,11 @@ class BookingPage extends Component {
             return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
         });
 
+        const generalEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
+        const podEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
+        const returnEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
+        const futileEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
+
         return (
             <div>
                 <div id="headr" className="col-md-12">
@@ -2946,10 +3004,13 @@ class BookingPage extends Component {
                         </div>
                         <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile</a>}
+
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD{podEmailCnt > 0 && ` (${podEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return{returnEmailCnt > 0 && ` (${returnEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile{futileEmailCnt > 0 && ` (${futileEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
+                        
                         <a className="none">?</a>
                         {
                             clientname === 'dme' &&
@@ -3241,32 +3302,30 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Category</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_booking_Category']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_booking_Category"
-                                                        value = {formInputs['b_booking_Category'] ? formInputs['b_booking_Category'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['b_booking_Category'] && formInputs['b_booking_Category'].value}</p>
+                                                :
+                                                <Select
+                                                    value={formInputs['b_booking_Category']}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'b_booking_Category')}
+                                                    options={bookingCategoryOptions}
+                                                    placeholder='Select a Category'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Priority</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_booking_Priority']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_booking_Priority"
-                                                        value = {formInputs['b_booking_Priority'] ? formInputs['b_booking_Priority'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['b_booking_Priority'] && formInputs['b_booking_Priority'].value}</p>
+                                                :
+                                                <Select
+                                                    value={formInputs['b_booking_Priority']}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'b_booking_Priority')}
+                                                    options={bookingProioriyOptions}
+                                                    placeholder='Select a Priority'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                     </div>
@@ -4418,6 +4477,27 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
+                                                    {(clientname === 'dme') &&
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Futile Note</label>
+                                                            </div>
+                                                            <div className="col-sm-8">
+                                                                {(parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['vx_futile_Booking_Notes']}</p>
+                                                                    :
+                                                                    <textarea 
+                                                                        width="100%"
+                                                                        className="textarea-width"
+                                                                        name="vx_futile_Booking_Notes"
+                                                                        rows="1"
+                                                                        cols="9"
+                                                                        value={formInputs['vx_futile_Booking_Notes'] ? formInputs['vx_futile_Booking_Notes'] : ''} 
+                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </form>
                                             </div>
                                         </div>
@@ -5295,6 +5375,12 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <EmailLogSlider
+                    isOpen={this.state.isShowEmailLogSlider}
+                    toggleSlider={this.toggleEmailLogSlider}
+                    emailLogs={this.state.emailLogs}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -5344,7 +5430,6 @@ const mapStateToProps = (state) => {
         availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
         allFPs: state.extra.allFPs,
-        bookingErrorMessage: state.booking.errorMessage,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
         needUpdateBooking: state.booking.needUpdateBooking,
@@ -5352,6 +5437,9 @@ const mapStateToProps = (state) => {
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         pricingInfosFlag: state.booking.pricingInfosFlag,
+        emailLogs: state.extra.emailLogs,
+        extraErrorMessage: state.extra.errorMessage,
+        bookingErrorMessage: state.booking.errorMessage,
     };
 };
 
@@ -5420,6 +5508,7 @@ const mapDispatchToProps = (dispatch) => {
         resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
+        getEmailLogs: (bookingId) => dispatch(getEmailLogs(bookingId)),
     };
 };
 

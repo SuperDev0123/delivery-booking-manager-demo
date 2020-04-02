@@ -84,6 +84,8 @@ import {
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
     FAILED_REVERT_AUGMENT,
+    SUCCESS_PRICING_ANALYSIS,
+    FAILED_PRICING_ANALYSIS,
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
@@ -124,6 +126,7 @@ const defaultState = {
     manifestReports: null,
     projectName: '',
     pricingInfos: [],
+    pricingAnalyses: [],
     pricingInfosFlag: false,
     isAutoSelected: false,
     isAutoAugmented: false
@@ -623,6 +626,16 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 booking: booking,
+            };
+        case SUCCESS_PRICING_ANALYSIS:
+            return {
+                ...state,
+                pricingAnalyses: payload,
+            };
+        case FAILED_PRICING_ANALYSIS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         case CLEAR_ERR_MSG:
             return {
