@@ -795,10 +795,10 @@ class BookingPage extends Component {
                 if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = booking.b_booking_Priority;
                 else formInputs['b_booking_Priority'] = '';
 
-                if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
-                else formInputs['vx_fp_pu_eta_time'] = null;
-                if (booking.vx_fp_del_eta_time != null) formInputs['vx_fp_del_eta_time'] = booking.vx_fp_del_eta_time;
-                else formInputs['vx_fp_del_eta_time'] = null;
+                if (booking.eta_pu_by_datetime != null) formInputs['eta_pu_by_datetime'] = booking.eta_pu_by_datetime;
+                else formInputs['eta_pu_by_datetime'] = null;
+                if (booking.eta_delivery_by_datetime != null) formInputs['eta_delivery_by_datetime'] = booking.eta_delivery_by_datetime;
+                else formInputs['eta_delivery_by_datetime'] = null;
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -2210,10 +2210,10 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
 
-            if (_.isUndefined(formInputs['vx_fp_pu_eta_time']))
-                formInputs['vx_fp_pu_eta_time'] = null;
-            if (_.isUndefined(formInputs['vx_fp_del_eta_time']))
-                formInputs['vx_fp_del_eta_time'] = null;
+            if (_.isUndefined(formInputs['eta_pu_by_datetime']))
+                formInputs['eta_pu_by_datetime'] = null;
+            if (_.isUndefined(formInputs['eta_delivery_by_datetime']))
+                formInputs['eta_delivery_by_datetime'] = null;
             if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
                 formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
             if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
@@ -2284,10 +2284,10 @@ class BookingPage extends Component {
                 bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
                 bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
 
-                if (_.isUndefined(bookingToUpdate['vx_fp_pu_eta_time']))
-                    bookingToUpdate['vx_fp_pu_eta_time'] = null;
-                if (_.isUndefined(bookingToUpdate['vx_fp_del_eta_time']))
-                    bookingToUpdate['vx_fp_del_eta_time'] = null;
+                if (_.isUndefined(bookingToUpdate['eta_pu_by_datetime']))
+                    bookingToUpdate['eta_pu_by_datetime'] = null;
+                if (_.isUndefined(bookingToUpdate['eta_delivery_by_datetime']))
+                    bookingToUpdate['eta_delivery_by_datetime'] = null;
                 if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
                     bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
                 if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
@@ -2491,9 +2491,9 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
-        } else if (fieldName === 'vx_fp_pu_eta_time' || 
+        } else if (fieldName === 'eta_pu_by_datetime' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
-            fieldName === 'vx_fp_del_eta_time' ||
+            fieldName === 'eta_delivery_by_datetime' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
@@ -3943,16 +3943,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by_datetime'] ? moment(formInputs['eta_pu_by_datetime']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'vx_fp_pu_eta_time')}
-                                                                            value={(!_.isNull(formInputs['vx_fp_pu_eta_time']) && !_.isUndefined(formInputs['vx_fp_pu_eta_time'])) ? moment(formInputs['vx_fp_pu_eta_time']).utc().toDate() : null}
+                                                                            onChange={(date) => this.onChangeDateTime(date, 'eta_pu_by_datetime')}
+                                                                            value={(!_.isNull(formInputs['eta_pu_by_datetime']) && !_.isUndefined(formInputs['eta_pu_by_datetime'])) ? moment(formInputs['eta_pu_by_datetime']).utc().toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['eta_pu_by_datetime'] ? moment(formInputs['eta_pu_by_datetime']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4315,19 +4315,19 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Delivery<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
+                                                            {  
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'z_calculated_ETA')}
+                                                                            selected={formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).toDate() : null}
+                                                                            onChange={(e) => this.onDateChange(e, 'eta_delivery_by_datetime')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
