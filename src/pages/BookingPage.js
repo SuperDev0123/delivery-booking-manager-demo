@@ -440,7 +440,7 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
-        if (pricingInfos && pricingInfosFlag) {
+        if (this.state.pricingInfos.length === 0 && pricingInfos && pricingInfosFlag) {
             this.setState({pricingInfos, loading: false});
         }
 
