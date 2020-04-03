@@ -2604,7 +2604,7 @@ class BookingPage extends Component {
         formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        this.setState({formInputs, booking, isBookingModified: true});
+        this.setState({formInputs, booking, isBookingModified: true, loading: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
     }
@@ -2631,6 +2631,7 @@ class BookingPage extends Component {
 
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented } = this.state;
+        
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',

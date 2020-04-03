@@ -1,6 +1,6 @@
 // Local
 export const HTTP_PROTOCOL = 'http';
-export const API_HOST = 'localhost:8000/api';       // Local Api
+// export const API_HOST = 'localhost:8000/api';       // Local Api
 export const STATIC_HOST = 'localhost:8000/static'; // Local Static
 
 // Zoho(Local)
@@ -11,7 +11,7 @@ export const ZOHO_ORG_ID = '7000200810';
 
 // DEV
 export const S3_URL = 'dme-pod-api-static.s3-ap-southeast-2.amazonaws.com';
-// export const API_HOST = '3.105.62.128/api';                 // Dev Api
+export const API_HOST = '3.105.62.128/api';                 // Dev Api
 // export const STATIC_HOST = S3_URL;                          // Dev Static
 
 // Zoho(Dev)
