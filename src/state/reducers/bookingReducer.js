@@ -291,7 +291,6 @@ export const BookingReducer = (state = defaultState, {
                 mappedBookings: mappedBookings
             };
         case SET_BOOKING_WITH_FILTER:
-            console.log('SET_BOOKING_WITH_FILTER', booking);
             return {
                 ...state,
                 booking: booking,
@@ -337,7 +336,6 @@ export const BookingReducer = (state = defaultState, {
                 bBooking: bBooking
             };
         case SET_BOOKING:
-            console.warn('SET_BOOKING', booking);
             return {
                 ...state,
                 booking: booking,

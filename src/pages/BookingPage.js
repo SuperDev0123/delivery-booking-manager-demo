@@ -811,10 +811,11 @@ class BookingPage extends Component {
                 if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
                 else formInputs['b_booking_Priority'] = '';
 
-                if (booking.eta_pu_by_datetime != null) formInputs['eta_pu_by_datetime'] = booking.eta_pu_by_datetime;
-                else formInputs['eta_pu_by_datetime'] = null;
-                if (booking.eta_delivery_by_datetime != null) formInputs['eta_delivery_by_datetime'] = booking.eta_delivery_by_datetime;
-                else formInputs['eta_delivery_by_datetime'] = null;
+                // Saved `ETA PU BY`, `ETA DE BY`
+                if (booking.s_05_Latest_Pick_Up_Date_TimeSet != null) formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = booking.s_05_Latest_Pick_Up_Date_TimeSet;
+                else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+                if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
+                else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -2239,10 +2240,10 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
 
-            if (_.isUndefined(formInputs['eta_pu_by_datetime']))
-                formInputs['eta_pu_by_datetime'] = null;
-            if (_.isUndefined(formInputs['eta_delivery_by_datetime']))
-                formInputs['eta_delivery_by_datetime'] = null;
+            if (_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']))
+                formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+            if (_.isUndefined(formInputs['s_06_Latest_Delivery_Date_TimeSet']))
+                formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
             if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
                 formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
             if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
@@ -2313,10 +2314,10 @@ class BookingPage extends Component {
                 bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
                 bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
 
-                if (_.isUndefined(bookingToUpdate['eta_pu_by_datetime']))
-                    bookingToUpdate['eta_pu_by_datetime'] = null;
-                if (_.isUndefined(bookingToUpdate['eta_delivery_by_datetime']))
-                    bookingToUpdate['eta_delivery_by_datetime'] = null;
+                if (_.isUndefined(bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet']))
+                    bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+                if (_.isUndefined(bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet']))
+                    bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet'] = null;
                 if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
                     bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
                 if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
@@ -2520,9 +2521,9 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
-        } else if (fieldName === 'eta_pu_by_datetime' || 
+        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
-            fieldName === 'eta_delivery_by_datetime' ||
+            fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
@@ -4000,18 +4001,20 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['eta_pu_by_datetime'] ? moment(formInputs['eta_pu_by_datetime']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                (isBookedBooking) ? 
+                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'eta_pu_by_datetime')}
-                                                                            value={(!_.isNull(formInputs['eta_pu_by_datetime']) && !_.isUndefined(formInputs['eta_pu_by_datetime'])) ? moment(formInputs['eta_pu_by_datetime']).utc().toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['eta_pu_by_datetime'] ? moment(formInputs['eta_pu_by_datetime']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
+                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().toDate() : null}
+                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4374,19 +4377,21 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Delivery<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {  
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).format('DD/MM/YYYY'): ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                (isBookedBooking) ?
+                                                                    <p className="show-mode">{formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'eta_delivery_by_datetime')}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['eta_delivery_by_datetime'] ? moment(formInputs['eta_delivery_by_datetime']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_de_by ? moment(booking.eta_de_by).format('DD/MM/YYYY'): ''}</p>
+                                                                :
+                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).toDate() : null}
+                                                                        onChange={(e) => this.onDateChange(e, 's_06_Latest_Delivery_Date_TimeSet')}
+                                                                        dateFormat="dd/MM/yyyy"
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{booking && booking.eta_de_by ? moment(booking.eta_de_by).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
