@@ -33,6 +33,8 @@ import {
     resetEmailLogs,
     successGetEmailLogs,
     failedGetEmailLogs,
+    successSaveStatusHistoryPuInfo,
+    failedSaveStatusHistoryPuInfo,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -236,4 +238,18 @@ export const getEmailLogs = (bookingId) => {
             .then(({ data }) => dispatch(successGetEmailLogs(data)))
             .catch((error) => dispatch(failedGetEmailLogs(error)));
     };
+};
+
+export const saveStatusHistoryPuInfo = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/update_last_with_pu_dates/`,
+        data: {'bookingId': bookingId},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSaveStatusHistoryPuInfo(data)))
+            .catch((error) => dispatch(failedSaveStatusHistoryPuInfo(error)));
 };

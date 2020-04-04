@@ -47,7 +47,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo } from '../state/services/extraService';
 // Validation
 import { isFormValid } from '../commons/validations';
 
@@ -298,7 +298,8 @@ class BookingPage extends Component {
         isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
-        getEmailLogs: PropTypes.func.isRequired,        
+        getEmailLogs: PropTypes.func.isRequired,    
+        saveStatusHistoryPuInfo: PropTypes.func.isRequired,    
     };
 
     componentDidMount() {
@@ -1486,6 +1487,11 @@ class BookingPage extends Component {
         const { booking } = this.state;
         this.props.fpRebook(booking.id, booking.vx_freight_provider);
         this.setState({ loading: true, curViewMode: 0});
+    }
+
+    onSavePuInfo () {
+        const { booking } = this.state;
+        this.props.saveStatusHistoryPuInfo(booking.id);
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
@@ -4781,19 +4787,28 @@ class BookingPage extends Component {
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme' && isBookedBooking && !_.isUndefined(this.state.booking.vx_freight_provider) && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt')?
-                                                            <button
-                                                                className="btn btn-theme custom-theme"
-                                                                onClick={() => this.onClickRebook()}
-                                                            >
-                                                                Rebook
-                                                            </button>:
+
+                                                            <div className="text-center mt-2 fixed-height half-size">
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onClickRebook()}
+                                                                >
+                                                                    Rebook Pu
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onSavePuInfo()}>
+                                                                    SH-PU
+                                                                </button>
+                                                            </div>
+                                                            :
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
                                                                 disabled={isBookedBooking ? 'disabled' : ''}
                                                             >
                                                                 Book
-                                                            </button> 
+                                                            </button>
                                                         }
                                                     </div>
                                                     {
@@ -5514,6 +5529,7 @@ const mapDispatchToProps = (dispatch) => {
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
         getEmailLogs: (bookingId) => dispatch(getEmailLogs(bookingId)),
+        saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
     };
 };
 

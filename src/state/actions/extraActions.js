@@ -32,6 +32,8 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -260,5 +262,17 @@ export function failedGetEmailLogs(error) {
 export function resetEmailLogs() {
     return {
         type: RESET_EMAIL_LOGS,
+    };
+}
+
+export function successSaveStatusHistoryPuInfo() {
+    return {
+        type: SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    };
+}
+
+export function failedSaveStatusHistoryPuInfo() {
+    return {
+        type: FAILED_STATUSHISTORY_SAVE_PU_INFO,
     };
 }
