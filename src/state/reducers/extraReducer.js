@@ -32,6 +32,8 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -65,6 +67,10 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case SUCCESS_STATUSHISTORY_SAVE_PU_INFO:
+            return {
+                ...state
+            };
         case RESET_EMAIL_LOGS:
             return {
                 ...state,
@@ -186,6 +192,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_STATUS_INFO:
         case FAILED_GET_PROJECT_NAMES:
         case FAILED_GET_EMAIL_LOGS:
+        case FAILED_STATUSHISTORY_SAVE_PU_INFO:
             return {
                 ...state,
                 errorMessage: errorMessage,
