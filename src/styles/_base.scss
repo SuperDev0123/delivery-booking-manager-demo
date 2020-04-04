@@ -24,28 +24,18 @@ body {
     border-bottom: 4px solid dodgerblue; 
 }
 
-.right {
-    float: right;
-}
+.right { float: right }
 
-.left {
-    float: left;
-}
+.left { float: left }
 
-.c-black {
-    color: black;
-}
+.c-black { color: black }
 
-.c-red {
-    color: red;
-}
+.c-red { color: red }
 
-.c-dme {
-    color: #048abb;
-}
+.c-dme { color: #048abb }
 
-.bold {
-    font-weight: bold;
-}
+.bold { font-weight: bold }
 
-.row:before, .row:after {display: none !important;}
+.row:before, .row:after { display: none !important }
+
+.text-center { text-align: center; }

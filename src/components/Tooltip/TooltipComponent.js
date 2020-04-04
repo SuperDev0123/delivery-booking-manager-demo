@@ -12,7 +12,11 @@ class TooltipItem extends React.Component {
     }
 
     static propTypes = {
-        booking: PropTypes.object.isRequired,
+        object: PropTypes.object.isRequired,
+        fields: PropTypes.array.isRequired,
+        name: PropTypes.string,
+        placement: PropTypes.string,
+        hideArrow: PropTypes.bool,
     };
 
     toggleTooltip() {
@@ -20,30 +24,28 @@ class TooltipItem extends React.Component {
     }
 
     render() {
-        const { booking } = this.props;
+        const { object, fields, name, placement, hideArrow } = this.props;
+        let initialName = 'booking';
+        let initialPlacement = 'left';
+        let initialHideArrow = false;
 
         return (
-            <div className="disp-inline-block">
-                {
-                    (booking.b_error_Capture.length > 0) ?
-                        <a href="#" className="dark-blue warning" id={'error-tooltip' + booking.id}>
-                            <i className="icon icon-warning"></i>
-                        </a>
-                        :
-                        <a>
-                            <i className="icon icon-printer transparent"></i>
-                        </a>
+            <Tooltip
+                placement={placement ? placement : initialPlacement}
+                isOpen={this.state.tooltipOpen}
+                target={`${name ? name : initialName}-${fields[0]}-tooltip-${object.id}`}
+                toggle={() => this.toggleTooltip()}
+                hideArrow={hideArrow ? hideArrow : initialHideArrow}
+                className={'object-tooltip'}>
+                {(fields.length === 2) ?
+                    <label>
+                        <small>{fields[0]}: {object[fields[0]]}</small><br />
+                        <small>{fields[1]}: {object[fields[1]]}</small>
+                    </label>
+                    :
+                    object[fields[0]]
                 }
-                <Tooltip
-                    placement='right'
-                    isOpen={this.state.tooltipOpen}
-                    target={'error-tooltip' + booking.id}
-                    toggle={() => this.toggleTooltip()}
-                    hideArrow={true}
-                    className='tooltipitem'>
-                    {booking.b_error_Capture}
-                </Tooltip>
-            </div>
+            </Tooltip>
         );
     }
 }

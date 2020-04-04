@@ -37,6 +37,7 @@ import {
     SET_LOCAL_FILTER_DOWNLOADOPTION,
     SET_LOCAL_FILTER_DMESTATUS,
     SET_LOCAL_FILTER_PROJECTNAME,
+    SET_LOCAL_FILTER_BOOKINGIDS,
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
     GET_LABEL_FAILED,
@@ -129,7 +130,8 @@ const defaultState = {
     pricingAnalyses: [],
     pricingInfosFlag: false,
     isAutoSelected: false,
-    isAutoAugmented: false
+    isAutoAugmented: false,
+    bookingIds: [],
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -140,6 +142,7 @@ export const BookingReducer = (state = defaultState, {
     errorMessage,
     bBooking,
     bookings,
+    bookingIds,
     bookingsCnt,
     booking,
     mappedBookings,
@@ -433,11 +436,11 @@ export const BookingReducer = (state = defaultState, {
                 downloadOption: downloadOption,
                 clientPK: clientPK,
                 pageItemCnt: pageItemCnt,
-                bookings: [],
                 dmeStatus: dmeStatus,
                 multiFindField: multiFindField,
                 multiFindValues: multiFindValues,
                 projectName: projectName,
+                bookingIds: bookingIds,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SELECTEDATE:
@@ -499,6 +502,12 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 projectName: payload,
+                needUpdateBookings: true,
+            };
+        case SET_LOCAL_FILTER_BOOKINGIDS:
+            return {
+                ...state,
+                bookingIds: payload,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_PAGEITEMCNT:

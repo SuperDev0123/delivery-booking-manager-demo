@@ -37,7 +37,10 @@ import {
     SUCCESS_CREATE_BOOKING_SET, // *
     FAILED_CREATE_BOOKING_SET, // *
     SUCCESS_UPDATE_BOOKING_SET, // *
-    FAILED_UPDATE_BOOKING_SET, // BookingSet
+    FAILED_UPDATE_BOOKING_SET, // *
+    SUCCESS_DELETE_BOOKING_SET, // *
+    FAILED_DELETE_BOOKING_SET, // *
+    RESET_BOOKING_SET_FLAGS, // BookingSet
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -49,6 +52,8 @@ const defaultState = {
     needUpdateStatusActions: false,
     needUpdateStatusDetails: false,
     needUpdateStatusInfo: false,
+    needUpdateBookingSets: false,
+    isBookingSetDeleted: false,
     projectNames: null,
     emailLogs: [],
     bookingset: null,
@@ -73,6 +78,12 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_BOOKING_SET_FLAGS:
+            return {
+                ...state,
+                isBookingSetDeleted: false,
+                needUpdateBookingSets: false,
+            };
         case RESET_EMAIL_LOGS:
             return {
                 ...state,
@@ -196,6 +207,13 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 bookingset: payload
             };
+        case SUCCESS_DELETE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload,
+                needUpdateBookingSets: true,
+                isBookingSetDeleted: true,
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -212,6 +230,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_CREATE_BOOKING_SET:
         case FAILED_GET_BOOKING_SET:
         case FAILED_UPDATE_BOOKING_SET:
+        case FAILED_DELETE_BOOKING_SET:
             return {
                 ...state,
                 errorMessage: errorMessage,

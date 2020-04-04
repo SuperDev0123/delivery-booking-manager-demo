@@ -38,7 +38,10 @@ import {
     successCreateBookingSet, // *
     failedCreateBookingSet, // *
     successUpdateBookingSet, // *
-    failedUpdateBookingSet, // BookingSet
+    failedUpdateBookingSet, // *
+    successDeleteBookingSet, // *
+    failedDeleteBookingSet, // BookingSet
+    resetBookingSetFlagsAction,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -288,4 +291,22 @@ export const updateBookingSet = (bookingIds, id) => {
             .then(({ data }) => dispatch(successUpdateBookingSet(data)))
             .catch((error) => dispatch(failedUpdateBookingSet(error)));
     };
+};
+
+export const deleteBookingSet = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/${id}/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteBookingSet(data)))
+            .catch((error) => dispatch(failedDeleteBookingSet(error)));
+    };
+};
+
+export const resetBookingSetFlags = () => {
+    return dispatch => dispatch(resetBookingSetFlagsAction());
 };

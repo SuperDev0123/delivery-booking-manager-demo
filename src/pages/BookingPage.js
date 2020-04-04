@@ -34,7 +34,7 @@ import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import ProjectDataSlider from '../components/Sliders/ProjectDataSlider';
 import NoteSlider from '../components/Sliders/NoteSlider';
-import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
+import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
@@ -2980,15 +2980,16 @@ class BookingPage extends Component {
         const futileEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
 
         return (
-            <div>
+            <div className="qbootstrap-nav header">
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
+                            <li className=""><a href="/bookingsets">BookingSets</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            <li className=""><Link to="/zoho">Zoho</Link></li>
-                            <li className={clientname === 'dme' ? '' : 'none'}><a onClick={(e) => this.onClickComms(e)}>Comms</a></li>
+                            {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                            {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className=""><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
@@ -3105,11 +3106,7 @@ class BookingPage extends Component {
                                             </button>
                                             <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
                                         </div>
-                                        <div className="col-sm-1">
-                                            <p className="text-white text-center">
-                                                <a href=""><i className="fas fa-file-alt text-white"></i></a>
-                                            </p>
-                                        </div>
+                                        <div className="col-sm-1"></div>
                                         <div className="col-sm-3">
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
@@ -3196,26 +3193,22 @@ class BookingPage extends Component {
                                                             {formInputs['dme_status_detail']}
                                                         </p>
                                             }
-                                            {
-                                                !_.isEmpty(formInputs['dme_status_detail']) ?
-                                                    <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
-                                                    :
-                                                    null
+                                            {!_.isEmpty(formInputs['dme_status_detail']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['dme_status_detail']} />
                                             }
                                         </div>
-                                        {
-                                            (isShowStatusDetailInput && parseInt(curViewMode) !== 0) &&
-                                                <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
-                                                    <span>New Status Detail</span><br />
-                                                    <input 
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="New Status Detail"
-                                                        name="new_dme_status_detail"
-                                                        value = {formInputs['new_dme_status_detail'] ? formInputs['new_dme_status_detail'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
-                                                </div>
+                                        {(isShowStatusDetailInput && parseInt(curViewMode) !== 0) &&
+                                            <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                                <span>New Status Detail</span><br />
+                                                <input 
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="New Status Detail"
+                                                    name="new_dme_status_detail"
+                                                    value = {formInputs['new_dme_status_detail'] ? formInputs['new_dme_status_detail'] : ''}
+                                                    onChange={(e) => this.onHandleInput(e)}
+                                                />
+                                            </div>
                                         }
                                         <div className="col-sm-3 form-group">
                                             <span>Status Action</span><br />
@@ -3247,11 +3240,8 @@ class BookingPage extends Component {
                                                             {formInputs['dme_status_action']}
                                                         </p>
                                             }
-                                            {
-                                                !_.isEmpty(formInputs['dme_status_action']) ?
-                                                    <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
-                                                    :
-                                                    null
+                                            {!_.isEmpty(formInputs['dme_status_action']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['dme_status_action']} />
                                             }
                                         </div>
                                         {
@@ -3375,11 +3365,8 @@ class BookingPage extends Component {
                                                         value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
                                                         onChange={(e) => this.onHandleInput(e)}/>
                                             }
-                                            {
-                                                !_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) ?
-                                                    <BookingTooltipItem booking={booking} fields={['dme_status_linked_reference_from_fp']} />
-                                                    :
-                                                    null
+                                            {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
@@ -3669,23 +3656,17 @@ class BookingPage extends Component {
                                     <div className='row col-sm-12 booking-form-02'>
                                         <div className={clientname === 'dme' ? 'col-sm-6 form-group' : 'none'}>
                                             <span>Invoice Billing Status Note</span>
-                                            {
-                                                <textarea 
-                                                    className="show-mode"
-                                                    id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
-                                                    name="inv_billing_status_note"
-                                                    value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
-                                                    onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
-                                                    rows="6"
-                                                    cols="83"
-                                                />
-                                                    
-                                            }
-                                            {
-                                                !_.isEmpty(formInputs['inv_billing_status_note']) ?
-                                                    <BookingTooltipItem booking={booking} fields={['inv_billing_status_note']} />
-                                                    :
-                                                    null
+                                            <textarea
+                                                className="show-mode"
+                                                id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
+                                                name="inv_billing_status_note"
+                                                value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
+                                                onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
+                                                rows="6"
+                                                cols="83"
+                                            />
+                                            {!_.isEmpty(formInputs['inv_billing_status_note']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
                                             }
                                         </div>
                                         <div className="col-sm-6 form-group">
@@ -3723,11 +3704,8 @@ class BookingPage extends Component {
                                                             cols="83"
                                                         />
                                             }
-                                            {
-                                                !_.isEmpty(formInputs['dme_status_history_notes']) ?
-                                                    <BookingTooltipItem booking={booking} fields={['dme_status_history_notes']} />
-                                                    :
-                                                    null
+                                            {!_.isEmpty(formInputs['dme_status_history_notes']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['dme_status_history_notes']} />
                                             }
                                         </div>
                                     </div>
@@ -3890,7 +3868,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Contact</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -3984,7 +3962,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1 none">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup Dates <a className="popup"><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Pickup Dates</label>
                                                         </div>
                                                         <div className='col-sm-8'>
                                                             <div className="input-group pad-left-20px">
@@ -3997,7 +3975,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">ETA Pickup <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">ETA Pickup </label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4017,7 +3995,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Given to transport<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Given to transport</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4037,7 +4015,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Transport Received<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Transport Received</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4274,7 +4252,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Contact <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Contact </label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4371,7 +4349,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">ETA Delivery<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">ETA Delivery</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4392,7 +4370,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Booking<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Delivery Booking</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4413,7 +4391,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Project Due Date<a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Project Due Date</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
@@ -4421,7 +4399,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Actual Delivery <a className="popup" href=""><i className="fas fa-file-alt"></i></a></label>
+                                                            <label className="" htmlFor="">Actual Delivery </label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {

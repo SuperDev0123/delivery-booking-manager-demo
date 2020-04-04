@@ -35,6 +35,7 @@ import {
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+    SET_LOCAL_FILTER_BOOKINGIDS,
     SET_LOCAL_FILTER_PROJECTNAME, // Filter end
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
@@ -178,6 +179,11 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_PROJECTNAME,
             payload: value,
         };
+    } else if (key === 'bookingIds') {
+        return {
+            type: SET_LOCAL_FILTER_BOOKINGIDS,
+            payload: value,
+        };
     }
 }
 
@@ -196,8 +202,25 @@ export function setAllLocalFilter(
     dmeStatus,
     multiFindField,
     multiFindValues,
-    projectName
+    projectName,
+    bookingIds,
 ) {
+    console.log('action - ', startDate,
+        endDate,
+        clientPK,
+        warehouseId,
+        pageItemCnt,
+        pageInd,
+        sortField,
+        columnFilters,
+        activeTabInd,
+        simpleSearchKeyword,
+        downloadOption,
+        dmeStatus,
+        multiFindField,
+        multiFindValues,
+        projectName,
+        bookingIds);
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,
@@ -215,6 +238,7 @@ export function setAllLocalFilter(
         multiFindField: multiFindField,
         multiFindValues: multiFindValues,
         projectName: projectName,
+        bookingIds: bookingIds,
     };
 }
 

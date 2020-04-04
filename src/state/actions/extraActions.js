@@ -37,7 +37,10 @@ import {
     SUCCESS_CREATE_BOOKING_SET, // *
     FAILED_CREATE_BOOKING_SET, // *
     SUCCESS_UPDATE_BOOKING_SET, // *
-    FAILED_UPDATE_BOOKING_SET, // BookingSet
+    FAILED_UPDATE_BOOKING_SET, // *
+    SUCCESS_DELETE_BOOKING_SET, // *
+    FAILED_DELETE_BOOKING_SET, // *
+    RESET_BOOKING_SET_FLAGS, // BookingSet
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -308,5 +311,25 @@ export function failedUpdateBookingSet(error) {
     return {
         type: FAILED_UPDATE_BOOKING_SET,
         errorMessage: 'Unable to update bookingset. Error:' + error,
+    };
+}
+
+export function successDeleteBookingSet(data) {
+    return {
+        type: SUCCESS_DELETE_BOOKING_SET,
+        payload: data,
+    };
+}
+
+export function failedDeleteBookingSet(error) {
+    return {
+        type: FAILED_DELETE_BOOKING_SET,
+        errorMessage: 'Unable to delete bookingset. Error:' + error,
+    };
+}
+
+export function resetBookingSetFlagsAction() {
+    return {
+        type: RESET_BOOKING_SET_FLAGS,
     };
 }

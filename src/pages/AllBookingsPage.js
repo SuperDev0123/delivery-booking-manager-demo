@@ -26,7 +26,6 @@ import { getBookingLineDetails } from '../state/services/bookingLineDetailsServi
 import { getAllBookingStatus, getAllFPs, getAllProjectNames, getBookingSets, createBookingSet, updateBookingSet } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import SimpleTooltipComponent from '../components/Tooltip/SimpleTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
@@ -1898,16 +1897,15 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
-                    <td className={(booking.b_error_Capture)
-                        ? 'dark-blue warning' : ''
-                    }>
-                        {
-                            (booking.b_error_Capture) ?
-                                <div className="booking-status">
-                                    <TooltipItem booking={booking} />
-                                </div>
-                                :
-                                null
+                    <td
+                        className={'text-center'}
+                        id={'booking-b_error_Capture-tooltip-' + booking.id}
+                    >
+                        {booking.b_error_Capture &&
+                            <React.Fragment>
+                                <i className="fa fa-exclamation-triangle c-red" aria-hidden="true"></i>
+                                <TooltipItem object={booking} fields={['b_error_Capture']} />
+                            </React.Fragment>
                         }
                     </td>
                     <td className={
@@ -1995,24 +1993,18 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td className={(sortField === 'dme_delivery_status_category') ? 'current' : ''} id={'booking-' + 'dme_delivery_status_category' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.dme_delivery_status_category}</p>
-                        {
-                            !_.isEmpty(booking.dme_delivery_status_category) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_delivery_status_category']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_delivery_status_category) &&
+                            <TooltipItem object={booking} fields={['dme_delivery_status_category']} />
                         }
                     </td>
                     <td className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
-                        {
-                            !_.isEmpty(booking.b_status) ?
-                                <BookingTooltipItem booking={booking} fields={['b_status']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.b_status) &&
+                            <TooltipItem object={booking} fields={['b_status']} />
                         }
                     </td>
-                    <td className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}>
-                        {booking.pu_PickUp_By_Date_DME ? moment(booking.pu_PickUp_By_Date_DME).format('DD/MM/YYYY') : ''}
+                    <td className={(sortField === 'pu_PickUp_By_Date') ? 'current' : ''}>
+                        {booking.pu_PickUp_By_Date ? moment(booking.pu_PickUp_By_Date).format('DD/MM/YYYY') : ''}
                     </td>
                     <td className={(sortField === 'de_Deliver_By_Date') ? 'current' : ''}>
                         {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY') : ''}
@@ -2037,11 +2029,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_detail') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.dme_status_detail}
-                        {
-                            !_.isEmpty(booking.dme_status_detail) && !_.isEmpty(booking.dme_status_detail) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_status_detail) &&
+                            <TooltipItem object={booking} fields={['dme_status_detail']} />
                         }
                     </td>
                     <td 
@@ -2049,11 +2038,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_action') ? 'current' : ''}
                     >
                         {booking.dme_status_action}
-                        {
-                            !_.isEmpty(booking.dme_status_action) && !_.isEmpty(booking.dme_status_action) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_status_action) &&
+                            <TooltipItem object={booking} fields={['dme_status_action']} />
                         }
                     </td>
                     <td className={(sortField === 'z_calculated_ETA') ? 'current' : ''}>
@@ -2064,11 +2050,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.de_to_PickUp_Instructions_Address}
-                        {
-                            !_.isEmpty(booking.de_to_PickUp_Instructions_Address) && !_.isEmpty(booking.de_to_PickUp_Instructions_Address) ?
-                                <BookingTooltipItem booking={booking} fields={['de_to_PickUp_Instructions_Address']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.de_to_PickUp_Instructions_Address) &&
+                            <TooltipItem object={booking} fields={['de_to_PickUp_Instructions_Address']} />
                         }
                     </td>
                     <td 
@@ -2076,11 +2059,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'b_booking_project') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.b_booking_project}
-                        {
-                            !_.isEmpty(booking.b_booking_project) && !_.isEmpty(booking.b_booking_project) ?
-                                <BookingTooltipItem booking={booking} fields={['b_booking_project']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.b_booking_project) &&
+                            <TooltipItem object={booking} fields={['b_booking_project']} />
                         }
                     </td>
                     <td 
@@ -2093,7 +2073,7 @@ class AllBookingsPage extends React.Component {
         });
 
         return (
-            <div className="qbootstrap-nav allbookings" >
+            <div className="qbootstrap-nav allbookings">
                 <LoadingOverlay
                     active={loadingDownload}
                     spinner
@@ -2104,14 +2084,10 @@ class AllBookingsPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
+                                <li className=""><a href="/bookingsets">BookingSets</a></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                {
-                                    clientname === 'dme' ? <li className=""><Link to="/comm">Comm</Link></li> : null
-                                    
-                                }
-                                {
-                                    clientname === 'dme' ? <li className=""><Link to="/zoho">Zoho</Link></li> : null
-                                }
+                                {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                                {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
@@ -2750,14 +2726,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('pu_PickUp_By_Date_DME')}
+                                                                className={(sortField === 'pu_PickUp_By_Date') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('pu_PickUp_By_Date')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Pickup Due</p>
                                                                 {
-                                                                    (sortField === 'pu_PickUp_By_Date_DME') ?
+                                                                    (sortField === 'pu_PickUp_By_Date') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2965,7 +2941,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="narrow-column"><i className="fa fa-lock"></i></th>
                                                             <th scope="col"><input type="text" name="dme_delivery_status_category" value={filterInputs['dme_delivery_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="pu_PickUp_By_Date_DME" value={filterInputs['pu_PickUp_By_Date_DME'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="delivery_booking" value={filterInputs['delivery_booking'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_given_to_transport_date_time" value={filterInputs['b_given_to_transport_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
