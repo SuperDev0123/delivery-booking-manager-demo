@@ -41,6 +41,8 @@ import {
     SUCCESS_DELETE_BOOKING_SET, // *
     FAILED_DELETE_BOOKING_SET, // *
     RESET_BOOKING_SET_FLAGS, // BookingSet
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -78,11 +80,17 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+<<<<<<< HEAD
         case RESET_BOOKING_SET_FLAGS:
             return {
                 ...state,
                 isBookingSetDeleted: false,
                 needUpdateBookingSets: false,
+=======
+        case SUCCESS_STATUSHISTORY_SAVE_PU_INFO:
+            return {
+                ...state
+>>>>>>> feat/get-off-fm
             };
         case RESET_EMAIL_LOGS:
             return {
@@ -227,10 +235,14 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_STATUS_INFO:
         case FAILED_GET_PROJECT_NAMES:
         case FAILED_GET_EMAIL_LOGS:
+<<<<<<< HEAD
         case FAILED_CREATE_BOOKING_SET:
         case FAILED_GET_BOOKING_SET:
         case FAILED_UPDATE_BOOKING_SET:
         case FAILED_DELETE_BOOKING_SET:
+=======
+        case FAILED_STATUSHISTORY_SAVE_PU_INFO:
+>>>>>>> feat/get-off-fm
             return {
                 ...state,
                 errorMessage: errorMessage,

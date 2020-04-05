@@ -109,6 +109,34 @@ const isFormValid = (formName, formFields) => {
                 }
             }
         }
+
+        // TNT Label
+        if (!_.isEmpty(formFields['vx_freight_provider']) &&
+            formFields['vx_freight_provider'] === 'TNT') {
+            if (_.isEmpty(formFields['pu_Phone_Main']) ||
+                (!_.isEmpty(formFields['pu_Phone_Main']) && formFields['pu_Phone_Main'].length > 13)
+            ) {
+                return 'Address.Phone must be between 0 and 13 characters.';
+            }
+
+            if (_.isEmpty(formFields['de_to_Phone_Main']) ||
+                (!_.isEmpty(formFields['de_to_Phone_Main']) && formFields['de_to_Phone_Main'].length > 13)
+            ) {
+                return 'Address.Phone must be between 0 and 13 characters.';
+            }
+
+            if (_.isEmpty(formFields['pu_Address_Street_1']) ||
+                (!_.isEmpty(formFields['pu_Address_Street_1']) && formFields['pu_Address_Street_1'].length > 30)
+            ) {
+                return 'Address.Street1 must be between 0 and 30 characters.';
+            }
+
+            if (_.isEmpty(formFields['de_To_Address_Street_1']) ||
+                (!_.isEmpty(formFields['de_To_Address_Street_1']) && formFields['de_To_Address_Street_1'].length > 30)
+            ) {
+                return 'Address.Street1 must be between 0 and 30 characters.';
+            }
+        }
     }
 
     return 'valid';

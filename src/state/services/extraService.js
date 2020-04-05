@@ -40,8 +40,10 @@ import {
     successUpdateBookingSet, // *
     failedUpdateBookingSet, // *
     successDeleteBookingSet, // *
-    failedDeleteBookingSet, // BookingSet
-    resetBookingSetFlagsAction,
+    failedDeleteBookingSet, // *
+    resetBookingSetFlagsAction, // BookingSet
+    successSaveStatusHistoryPuInfo,
+    failedSaveStatusHistoryPuInfo,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -247,6 +249,7 @@ export const getEmailLogs = (bookingId) => {
     };
 };
 
+<<<<<<< HEAD
 export const getBookingSets = () => {
     const token = localStorage.getItem('token');
     const options = {
@@ -262,10 +265,14 @@ export const getBookingSets = () => {
 };
 
 export const createBookingSet = (bookingIds, name, note) => {
+=======
+export const saveStatusHistoryPuInfo = (bookingId) => {
+>>>>>>> feat/get-off-fm
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+<<<<<<< HEAD
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
         data: {
             bookingIds, name, note
@@ -309,4 +316,13 @@ export const deleteBookingSet = (id) => {
 
 export const resetBookingSetFlags = () => {
     return dispatch => dispatch(resetBookingSetFlagsAction());
+=======
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/update_last_with_pu_dates/`,
+        data: {'bookingId': bookingId},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSaveStatusHistoryPuInfo(data)))
+            .catch((error) => dispatch(failedSaveStatusHistoryPuInfo(error)));
+>>>>>>> feat/get-off-fm
 };

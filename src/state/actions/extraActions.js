@@ -41,6 +41,8 @@ import {
     SUCCESS_DELETE_BOOKING_SET, // *
     FAILED_DELETE_BOOKING_SET, // *
     RESET_BOOKING_SET_FLAGS, // BookingSet
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -272,6 +274,7 @@ export function resetEmailLogs() {
     };
 }
 
+<<<<<<< HEAD
 export function successGetBookingSet(data) {
     return {
         type: SUCCESS_GET_BOOKING_SET,
@@ -333,3 +336,16 @@ export function resetBookingSetFlagsAction() {
         type: RESET_BOOKING_SET_FLAGS,
     };
 }
+=======
+export function successSaveStatusHistoryPuInfo() {
+    return {
+        type: SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    };
+}
+
+export function failedSaveStatusHistoryPuInfo() {
+    return {
+        type: FAILED_STATUSHISTORY_SAVE_PU_INFO,
+    };
+}
+>>>>>>> feat/get-off-fm

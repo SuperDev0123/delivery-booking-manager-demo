@@ -47,7 +47,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo } from '../state/services/extraService';
 // Validation
 import { isFormValid } from '../commons/validations';
 
@@ -298,7 +298,8 @@ class BookingPage extends Component {
         isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
-        getEmailLogs: PropTypes.func.isRequired,        
+        getEmailLogs: PropTypes.func.isRequired,    
+        saveStatusHistoryPuInfo: PropTypes.func.isRequired,    
     };
 
     componentDidMount() {
@@ -440,7 +441,7 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
-        if (pricingInfos && pricingInfosFlag) {
+        if (this.state.pricingInfos.length === 0 && pricingInfos && pricingInfosFlag) {
             this.setState({pricingInfos, loading: false});
         }
 
@@ -811,10 +812,11 @@ class BookingPage extends Component {
                 if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
                 else formInputs['b_booking_Priority'] = '';
 
-                if (booking.vx_fp_pu_eta_time != null) formInputs['vx_fp_pu_eta_time'] = booking.vx_fp_pu_eta_time;
-                else formInputs['vx_fp_pu_eta_time'] = null;
-                if (booking.vx_fp_del_eta_time != null) formInputs['vx_fp_del_eta_time'] = booking.vx_fp_del_eta_time;
-                else formInputs['vx_fp_del_eta_time'] = null;
+                // Saved `ETA PU BY`, `ETA DE BY`
+                if (booking.s_05_Latest_Pick_Up_Date_TimeSet != null) formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = booking.s_05_Latest_Pick_Up_Date_TimeSet;
+                else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+                if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
+                else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -1485,6 +1487,11 @@ class BookingPage extends Component {
         const { booking } = this.state;
         this.props.fpRebook(booking.id, booking.vx_freight_provider);
         this.setState({ loading: true, curViewMode: 0});
+    }
+
+    onSavePuInfo () {
+        const { booking } = this.state;
+        this.props.saveStatusHistoryPuInfo(booking.id);
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
@@ -2239,10 +2246,10 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
 
-            if (_.isUndefined(formInputs['vx_fp_pu_eta_time']))
-                formInputs['vx_fp_pu_eta_time'] = null;
-            if (_.isUndefined(formInputs['vx_fp_del_eta_time']))
-                formInputs['vx_fp_del_eta_time'] = null;
+            if (_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']))
+                formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+            if (_.isUndefined(formInputs['s_06_Latest_Delivery_Date_TimeSet']))
+                formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
             if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
                 formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
             if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
@@ -2313,10 +2320,10 @@ class BookingPage extends Component {
                 bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
                 bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
 
-                if (_.isUndefined(bookingToUpdate['vx_fp_pu_eta_time']))
-                    bookingToUpdate['vx_fp_pu_eta_time'] = null;
-                if (_.isUndefined(bookingToUpdate['vx_fp_del_eta_time']))
-                    bookingToUpdate['vx_fp_del_eta_time'] = null;
+                if (_.isUndefined(bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet']))
+                    bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+                if (_.isUndefined(bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet']))
+                    bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet'] = null;
                 if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
                     bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
                 if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
@@ -2520,9 +2527,9 @@ class BookingPage extends Component {
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
             commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
             this.setState({commFormInputs});
-        } else if (fieldName === 'vx_fp_pu_eta_time' || 
+        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
-            fieldName === 'vx_fp_del_eta_time' ||
+            fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
             formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
             booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
@@ -2603,7 +2610,7 @@ class BookingPage extends Component {
         formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        this.setState({formInputs, booking, isBookingModified: true});
+        this.setState({formInputs, booking, isBookingModified: true, loading: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
     }
@@ -2630,7 +2637,7 @@ class BookingPage extends Component {
 
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented } = this.state;
-
+        
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',
@@ -3978,18 +3985,20 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Pickup </label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                (isBookedBooking) ? 
+                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'vx_fp_pu_eta_time')}
-                                                                            value={(!_.isNull(formInputs['vx_fp_pu_eta_time']) && !_.isUndefined(formInputs['vx_fp_pu_eta_time'])) ? moment(formInputs['vx_fp_pu_eta_time']).utc().toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['vx_fp_pu_eta_time'] ? moment(formInputs['vx_fp_pu_eta_time']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment.tz(booking.eta_pu_by, 'Australia/Sydney').format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
+                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().toDate() : null}
+                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment.tz(booking.eta_pu_by, 'Australia/Sydney').format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4352,19 +4361,21 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">ETA Delivery</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                (isBookedBooking) ?
+                                                                    <p className="show-mode">{formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'z_calculated_ETA')}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['z_calculated_ETA'] ? moment(formInputs['z_calculated_ETA']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_de_by ? moment(booking.eta_de_by).format('DD/MM/YYYY'): ''}</p>
+                                                                :
+                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).toDate() : null}
+                                                                        onChange={(e) => this.onDateChange(e, 's_06_Latest_Delivery_Date_TimeSet')}
+                                                                        dateFormat="dd/MM/yyyy"
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{booking && booking.eta_de_by ? moment(booking.eta_de_by).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4754,19 +4765,28 @@ class BookingPage extends Component {
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme' && isBookedBooking && !_.isUndefined(this.state.booking.vx_freight_provider) && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt')?
-                                                            <button
-                                                                className="btn btn-theme custom-theme"
-                                                                onClick={() => this.onClickRebook()}
-                                                            >
-                                                                Rebook
-                                                            </button>:
+
+                                                            <div className="text-center mt-2 fixed-height half-size">
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onClickRebook()}
+                                                                >
+                                                                    Rebook Pu
+                                                                </button>
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onSavePuInfo()}>
+                                                                    SH-PU
+                                                                </button>
+                                                            </div>
+                                                            :
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
                                                                 disabled={isBookedBooking ? 'disabled' : ''}
                                                             >
                                                                 Book
-                                                            </button> 
+                                                            </button>
                                                         }
                                                     </div>
                                                     {
@@ -5487,6 +5507,7 @@ const mapDispatchToProps = (dispatch) => {
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
         getEmailLogs: (bookingId) => dispatch(getEmailLogs(bookingId)),
+        saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
     };
 };
 
