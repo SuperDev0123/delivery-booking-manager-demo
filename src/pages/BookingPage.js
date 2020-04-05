@@ -49,7 +49,7 @@ import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, upd
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo } from '../state/services/extraService';
 // Validation
-import { isFormValid } from '../commons/validations';
+import { isFormValid, isValid4Label } from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -1388,10 +1388,15 @@ class BookingPage extends Component {
     }
 
     onClickGetLabel() {
-        const {booking, isBookedBooking} = this.state;
+        const {booking, isBookedBooking, formInputs} = this.state;
 
         if (isBookedBooking) {
-            this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            const result = isValid4Label(formInputs);
+            if (result === 'valid') {
+                this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            } else {
+                this.notify(result);
+            }
         } else {
             this.notify('This booking is not Booked!');
         }
@@ -4786,19 +4791,23 @@ class BookingPage extends Component {
                                                             : null
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
-                                                        {(clientname === 'dme' && isBookedBooking && !_.isUndefined(this.state.booking.vx_freight_provider) && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt')?
-
+                                                        {(clientname === 'dme'
+                                                            && isBookedBooking
+                                                            && !_.isUndefined(this.state.booking.vx_freight_provider)
+                                                            && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
+                                                        ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onSavePuInfo()}
+                                                                >
+                                                                    SH-PU
+                                                                </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickRebook()}
                                                                 >
                                                                     Rebook Pu
-                                                                </button>
-                                                                <button
-                                                                    className="btn btn-theme custom-theme"
-                                                                    onClick={() => this.onSavePuInfo()}>
-                                                                    SH-PU
                                                                 </button>
                                                             </div>
                                                             :
