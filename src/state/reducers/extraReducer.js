@@ -69,7 +69,8 @@ export const ExtraReducer = (state = defaultState, {
     switch (type) {
         case SUCCESS_STATUSHISTORY_SAVE_PU_INFO:
             return {
-                ...state
+                ...state,
+                needUpdateStatusHistories: true,
             };
         case RESET_EMAIL_LOGS:
             return {
