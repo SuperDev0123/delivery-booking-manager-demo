@@ -4014,9 +4014,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ? 
-                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -4025,7 +4025,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy hh:mm a'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
