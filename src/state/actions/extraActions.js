@@ -274,7 +274,6 @@ export function resetEmailLogs() {
     };
 }
 
-<<<<<<< HEAD
 export function successGetBookingSet(data) {
     return {
         type: SUCCESS_GET_BOOKING_SET,
@@ -336,7 +335,7 @@ export function resetBookingSetFlagsAction() {
         type: RESET_BOOKING_SET_FLAGS,
     };
 }
-=======
+
 export function successSaveStatusHistoryPuInfo() {
     return {
         type: SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
@@ -348,4 +347,3 @@ export function failedSaveStatusHistoryPuInfo() {
         type: FAILED_STATUSHISTORY_SAVE_PU_INFO,
     };
 }
->>>>>>> feat/get-off-fm

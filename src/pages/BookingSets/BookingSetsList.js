@@ -127,7 +127,7 @@ class BookingSetList extends React.Component {
                 pageInd: pageInd,
                 bookingIds: bookingIds,
             });
-            this.props.getBookings('*', '2099-01-01', clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds);
         }
     }
 
