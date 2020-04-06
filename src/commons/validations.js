@@ -142,6 +142,18 @@ const isValid4Label = (formFields) => {
             return 'Address.Street1 must be between 0 and 30 characters.';
         }
 
+        if (_.isEmpty(formFields['pu_Address_street_2']) ||
+            (!_.isEmpty(formFields['pu_Address_street_2']) && formFields['pu_Address_street_2'].length > 30)
+        ) {
+            return 'Address.Street2 must be between 0 and 30 characters.';
+        }
+
+        if (_.isEmpty(formFields['de_To_Address_Street_2']) ||
+            (!_.isEmpty(formFields['de_To_Address_Street_2']) && formFields['de_To_Address_Street_2'].length > 30)
+        ) {
+            return 'Address.Street2 must be between 0 and 30 characters.';
+        }
+
         if (_.isEmpty(formFields['puCompany']) ||
             (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 30)
         ) {
