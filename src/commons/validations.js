@@ -148,8 +148,7 @@ const isValid4Label = (formFields) => {
             return 'Address.Street2 must be between 0 and 30 characters.';
         }
 
-        if (_.isEmpty(formFields['de_To_Address_Street_2']) ||
-            (!_.isEmpty(formFields['de_To_Address_Street_2']) && formFields['de_To_Address_Street_2'].length > 30)
+        if (!_.isEmpty(formFields['de_To_Address_Street_2']) && formFields['de_To_Address_Street_2'].length > 30
         ) {
             return 'Address.Street2 must be between 0 and 30 characters.';
         }
