@@ -97,7 +97,7 @@ class LineAndLineDetailSlider extends React.Component {
                 this.props.createBookingLine(lineFormInputs);
             } else if (lineOrLineDetail === 2) {
                 lineDetailFormInputs['fk_booking_id'] = this.props.booking.pk_booking_id;
-                lineDetailFormInputs['fk_booking_lines_id'] = lines[selectedLineIndex].pk_lines_id;
+                lineDetailFormInputs['fk_booking_lines_id'] = lines[selectedLineIndex].pk_booking_lines_id;
                 this.props.createBookingLineDetail(lineDetailFormInputs);
             }
         } else if (editMode === 2) {
@@ -131,6 +131,7 @@ class LineAndLineDetailSlider extends React.Component {
             line.e_Total_KG_weight = parseFloat(line.e_Total_KG_weight).toFixed(2);
             line.e_1_Total_dimCubicMeter = parseFloat(line.e_1_Total_dimCubicMeter).toFixed(2);
             line.total_2_cubic_mass_factor_calc = parseFloat(line.total_2_cubic_mass_factor_calc).toFixed(2);
+
             return (
                 <tr key={index} className={(index === selectedLineIndex) ? 'current' : ''}>
                     <td>{line.e_type_of_packaging}</td>
@@ -162,8 +163,7 @@ class LineAndLineDetailSlider extends React.Component {
         });
 
         const lineDetailList = lineDetails.map((lineDetail, index) => {
-            if (selectedLineIndex > -1 && 
-                parseInt(lines[selectedLineIndex].pk_lines_id) === parseInt(lineDetail.fk_booking_lines_id)) {
+            if (selectedLineIndex > -1 && lines[selectedLineIndex].pk_booking_lines_id === lineDetail.fk_booking_lines_id) {
                 return (
                     <tr key={index}>
                         <td>{lineDetail.modelNumber}</td>

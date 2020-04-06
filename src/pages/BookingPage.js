@@ -40,7 +40,7 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, resetPricingInfosFlag, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -49,7 +49,7 @@ import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, upd
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo } from '../state/services/extraService';
 // Validation
-import { isFormValid } from '../commons/validations';
+import { isFormValid, isValid4Label } from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -341,7 +341,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, pricingInfosFlag, isAutoAugmented, emailLogs} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -441,8 +441,8 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
-        if (this.state.pricingInfos.length === 0 && pricingInfos && pricingInfosFlag) {
-            this.setState({pricingInfos, loading: false});
+        if (pricingInfos) {
+            this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
         if (emailLogs) {
@@ -490,6 +490,7 @@ class BookingPage extends Component {
                 result['e_qty_shortages'] = bookingLine.e_qty_shortages ? bookingLine.e_qty_shortages : 0;
                 result['e_qty_scanned_fp'] = bookingLine.e_qty_scanned_fp ? bookingLine.e_qty_scanned_fp : 0;
                 result['is_scanned'] = bookingLine.is_scanned;
+                result['pk_booking_lines_id'] = bookingLine.pk_booking_lines_id;
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
@@ -563,8 +564,15 @@ class BookingPage extends Component {
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
                     this.notify('Now trying to get Label!');
-                    let currentBooking = this.state.booking;
-                    this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                    const currentBooking = this.state.booking;
+                    const res = isValid4Label(currentBooking);
+
+                    if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid'
+                    ) {
+                        this.notify(res);
+                    } else {
+                        this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                    }
                 }
             }
 
@@ -1388,10 +1396,15 @@ class BookingPage extends Component {
     }
 
     onClickGetLabel() {
-        const {booking, isBookedBooking} = this.state;
+        const {booking, isBookedBooking, formInputs} = this.state;
 
         if (isBookedBooking) {
-            this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            const result = isValid4Label(formInputs);
+            if (result === 'valid') {
+                this.props.fpLabel(booking.id, booking.vx_freight_provider);
+            } else {
+                this.notify(result);
+            }
         } else {
             this.notify('This booking is not Booked!');
         }
@@ -2587,9 +2600,9 @@ class BookingPage extends Component {
 
     onClickOpenPricingSlider() {
         const {booking} = this.state;
-        this.props.getPricingInfos(booking.pk_booking_id);
-        this.setState({loading: true});
+        this.setState({loadingPricingInfos: true});
         this.toggleFPPricingSlider();
+        this.props.getPricingInfos(booking.pk_booking_id);
     }
 
     onSelectPricing(pricingInfo) {
@@ -3987,9 +4000,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ? 
-                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment.tz(booking.eta_pu_by, 'Australia/Sydney').format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -3998,7 +4011,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy hh:mm a'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment.tz(booking.eta_pu_by, 'Australia/Sydney').format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4764,19 +4777,23 @@ class BookingPage extends Component {
                                                             : null
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
-                                                        {(clientname === 'dme' && isBookedBooking && !_.isUndefined(this.state.booking.vx_freight_provider) && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt')?
-
+                                                        {(clientname === 'dme'
+                                                            && isBookedBooking
+                                                            && !_.isUndefined(this.state.booking.vx_freight_provider)
+                                                            && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
+                                                        ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
+                                                                <button
+                                                                    className="btn btn-theme custom-theme"
+                                                                    onClick={() => this.onSavePuInfo()}
+                                                                >
+                                                                    SH-PU
+                                                                </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickRebook()}
                                                                 >
                                                                     Rebook Pu
-                                                                </button>
-                                                                <button
-                                                                    className="btn btn-theme custom-theme"
-                                                                    onClick={() => this.onSavePuInfo()}>
-                                                                    SH-PU
                                                                 </button>
                                                             </div>
                                                             :
@@ -5369,6 +5386,7 @@ class BookingPage extends Component {
                     toggleSlider={this.toggleFPPricingSlider}
                     pricingInfos={this.state.pricingInfos}
                     onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                    isLoading={this.state.loadingPricingInfos}
                     booking={booking}
                     clientname={clientname}
                 />
@@ -5434,7 +5452,6 @@ const mapStateToProps = (state) => {
         needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
-        pricingInfosFlag: state.booking.pricingInfosFlag,
         emailLogs: state.extra.emailLogs,
         extraErrorMessage: state.extra.errorMessage,
         bookingErrorMessage: state.booking.errorMessage,
@@ -5503,7 +5520,6 @@ const mapDispatchToProps = (dispatch) => {
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getAllFPs: () => dispatch(getAllFPs()),
-        resetPricingInfosFlag: () => dispatch(resetPricingInfosFlag()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
         getEmailLogs: (bookingId) => dispatch(getEmailLogs(bookingId)),

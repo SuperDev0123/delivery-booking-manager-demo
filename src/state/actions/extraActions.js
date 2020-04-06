@@ -336,8 +336,9 @@ export function resetBookingSetFlagsAction() {
     };
 }
 
-export function successSaveStatusHistoryPuInfo() {
+export function successSaveStatusHistoryPuInfo(data) {
     return {
+        payload: data.result,
         type: SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
     };
 }

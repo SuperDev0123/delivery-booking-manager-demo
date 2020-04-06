@@ -70,7 +70,6 @@ import {
     SUCCESS_FP_PRICING,
     FAILED_FP_PRICING,
     RESET_PRICING_INFOS,
-    RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
@@ -195,11 +194,6 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 pricingInfos: [],
-            };
-        case RESET_PRICING_INFOS_FLAG:
-            return {
-                ...state,
-                pricingInfosFlag: false,
             };
         case RESET_MANIFEST_REPORT:
             return {

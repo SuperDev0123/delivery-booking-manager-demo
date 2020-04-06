@@ -318,7 +318,7 @@ export const saveStatusHistoryPuInfo = (bookingId) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/update_last_with_pu_dates/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/create_with_pu_dates/`,
         data: {'bookingId': bookingId},
     };
     return dispatch =>

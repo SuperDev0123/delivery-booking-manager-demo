@@ -22,7 +22,7 @@ class FilesPage extends Component {
     };
 
     componentDidMount() {
-        this.props.getFiles('import');
+        this.props.getFiles('xls import');
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {

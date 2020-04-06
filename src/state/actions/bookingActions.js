@@ -73,7 +73,6 @@ import {
     SUCCESS_FP_PRICING,
     FAILED_FP_PRICING,
     RESET_PRICING_INFOS,
-    RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
@@ -738,12 +737,6 @@ export function failedGetManifestReport(error) {
     return {
         type: FAIELD_GET_MANIFEST_REPORT,
         errorMessage: error.response.data.message,
-    };
-}
-
-export function resetPricingInfosFlagAction() {
-    return {
-        type: RESET_PRICING_INFOS_FLAG,
     };
 }
 

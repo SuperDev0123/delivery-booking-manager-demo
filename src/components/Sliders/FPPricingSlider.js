@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { Button } from 'reactstrap';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import LoadingOverlay from 'react-loading-overlay';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -20,10 +20,18 @@ class FPPricingSlider extends React.Component {
         onSelectPricing: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
         clientname: PropTypes.string.isRequired,
+        isLoading: PropTypes.bool.isRequired,
     };
 
+    calcTotalValue(pricingInfo) {
+        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
+    }
+
     render() {
-        const {isOpen, pricingInfos, booking, clientname} = this.props;
+        const {isOpen, booking, clientname} = this.props;
+        let {pricingInfos} = this.props;
+
+        pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
             return (
@@ -41,7 +49,7 @@ class FPPricingSlider extends React.Component {
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
-                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2)}</td>
+                    <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
                     <td className="select">
                         <Button
                             color="primary"
@@ -65,44 +73,58 @@ class FPPricingSlider extends React.Component {
             >
                 <div className="slider-content">
                     <div className="table-view">
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <tr>
-                                <th className="" scope="col" nowrap>
-                                    <p>No</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Transporter</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Service</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Transport Days(working)</p>
-                                </th>
-                                {
-                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>FP Cost</p></th> : null
-                                }
-                                {
-                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>Fuel Levy %</p></th> : null
-                                }
-                                <th className="" scope="col" nowrap>
-                                    <p>Cost</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Tax ID</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Tax Value</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Total</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Action</p>
-                                </th>
-                            </tr>
-                            { pricingList }
-                        </table>
+                        <LoadingOverlay
+                            active={this.props.isLoading}
+                            spinner
+                            text='Loading...'
+                            styles={{
+                                spinner: (base) => ({
+                                    ...base,
+                                    '& svg circle': {
+                                        stroke: '#048abb'
+                                    }
+                                })
+                            }}
+                        >
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <tr>
+                                    <th className="" scope="col" nowrap>
+                                        <p>No</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Transporter</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Service</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Transport Days(working)</p>
+                                    </th>
+                                    {
+                                        clientname === 'dme' ? <th className="" scope="col" nowrap><p>FP Cost</p></th> : null
+                                    }
+                                    {
+                                        clientname === 'dme' ? <th className="" scope="col" nowrap><p>Fuel Levy %</p></th> : null
+                                    }
+                                    <th className="" scope="col" nowrap>
+                                        <p>Cost</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Tax ID</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Tax Value</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Total</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Action</p>
+                                    </th>
+                                </tr>
+                                { pricingList }
+                            </table>
+                        </LoadingOverlay>
                     </div>
                 </div>
             </SlidingPane>
