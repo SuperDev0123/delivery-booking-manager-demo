@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import LoadingOverlay from 'react-loading-overlay';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -20,6 +21,7 @@ class FPPricingSlider extends React.Component {
         onSelectPricing: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
         clientname: PropTypes.string.isRequired,
+        isLoading: PropTypes.bool.isRequired,
     };
 
     render() {
@@ -65,44 +67,50 @@ class FPPricingSlider extends React.Component {
             >
                 <div className="slider-content">
                     <div className="table-view">
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <tr>
-                                <th className="" scope="col" nowrap>
-                                    <p>No</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Transporter</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Service</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Transport Days(working)</p>
-                                </th>
-                                {
-                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>FP Cost</p></th> : null
-                                }
-                                {
-                                    clientname === 'dme' ? <th className="" scope="col" nowrap><p>Fuel Levy %</p></th> : null
-                                }
-                                <th className="" scope="col" nowrap>
-                                    <p>Cost</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Tax ID</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Tax Value</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Total</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Action</p>
-                                </th>
-                            </tr>
-                            { pricingList }
-                        </table>
+                        <LoadingOverlay
+                            active={this.props.isLoading}
+                            spinner
+                            text='Loading...'
+                        >
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <tr>
+                                    <th className="" scope="col" nowrap>
+                                        <p>No</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Transporter</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Service</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Transport Days(working)</p>
+                                    </th>
+                                    {
+                                        clientname === 'dme' ? <th className="" scope="col" nowrap><p>FP Cost</p></th> : null
+                                    }
+                                    {
+                                        clientname === 'dme' ? <th className="" scope="col" nowrap><p>Fuel Levy %</p></th> : null
+                                    }
+                                    <th className="" scope="col" nowrap>
+                                        <p>Cost</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Tax ID</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Tax Value</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Total</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap>
+                                        <p>Action</p>
+                                    </th>
+                                </tr>
+                                { pricingList }
+                            </table>
+                        </LoadingOverlay>
                     </div>
                 </div>
             </SlidingPane>
