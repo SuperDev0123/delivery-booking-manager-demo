@@ -564,8 +564,15 @@ class BookingPage extends Component {
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
                     this.notify('Now trying to get Label!');
-                    let currentBooking = this.state.booking;
-                    this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                    const currentBooking = this.state.booking;
+                    const res = isValid4Label(currentBooking);
+
+                    if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid'
+                    ) {
+                        this.notify(res);
+                    } else {
+                        this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
+                    }
                 }
             }
 
