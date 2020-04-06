@@ -2600,9 +2600,11 @@ class BookingPage extends Component {
 
     onClickOpenPricingSlider() {
         const {booking} = this.state;
-        this.props.getPricingInfos(booking.pk_booking_id);
         this.setState({loadingPricingInfos: true});
         this.toggleFPPricingSlider();
+        setTimeout( () => {
+            this.props.getPricingInfos(booking.pk_booking_id);
+        }, 500);
     }
 
     onSelectPricing(pricingInfo) {

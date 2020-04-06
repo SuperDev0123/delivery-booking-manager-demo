@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import { Button } from 'reactstrap';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -24,8 +23,15 @@ class FPPricingSlider extends React.Component {
         isLoading: PropTypes.bool.isRequired,
     };
 
+    calcTotalValue(pricingInfo) {
+        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
+    }
+
     render() {
-        const {isOpen, pricingInfos, booking, clientname} = this.props;
+        const {isOpen, booking, clientname} = this.props;
+        let {pricingInfos} = this.props;
+
+        pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
             return (
@@ -43,7 +49,7 @@ class FPPricingSlider extends React.Component {
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
-                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2)}</td>
+                    <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
                     <td className="select">
                         <Button
                             color="primary"
@@ -71,6 +77,14 @@ class FPPricingSlider extends React.Component {
                             active={this.props.isLoading}
                             spinner
                             text='Loading...'
+                            styles={{
+                                spinner: (base) => ({
+                                    ...base,
+                                    '& svg circle': {
+                                        stroke: '#048abb'
+                                    }
+                                })
+                            }}
                         >
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <tr>
