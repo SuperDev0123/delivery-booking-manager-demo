@@ -157,11 +157,10 @@ const isValid4Label = (formFields) => {
         if (_.isEmpty(formFields['pu_pickup_instructions_address']) ||
             (!_.isEmpty(formFields['pu_pickup_instructions_address']) && formFields['pu_pickup_instructions_address'].length > 80)
         ) {
-            return 'SpecialInstruction must be between 0 and 30 characters.';
+            return 'SpecialInstruction must be between 0 and 80 characters.';
         }
 
-        if (_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) ||
-            (!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 80)
+        if (!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 80
         ) {
             return 'SpecialInstruction must be between 0 and 80 characters.';
         }
