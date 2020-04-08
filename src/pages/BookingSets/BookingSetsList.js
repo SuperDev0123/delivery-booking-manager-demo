@@ -15,10 +15,11 @@ import LoadingOverlay from 'react-loading-overlay';
 import TooltipItem from '../../components/Tooltip/TooltipComponent';
 import SimpleTooltipComponent from '../../components/Tooltip/SimpleTooltipComponent';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
+import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
 // Services
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import { getBookingSets, deleteBookingSet, resetBookingSetFlags } from '../../state/services/extraService';
-import { getBookings, setGetBookingsFilter, setAllGetBookingsFilter } from '../../state/services/bookingService';
+import { getBookings, setGetBookingsFilter, setAllGetBookingsFilter, getPricingInfos, updateBooking } from '../../state/services/bookingService';
 
 class BookingSetList extends React.Component {
     constructor(props) {
@@ -29,6 +30,7 @@ class BookingSetList extends React.Component {
             bookingSets: [],
             clientname: null,
             isShowDeleteConfirmModal: false,
+            isShowFPPricingSlider: false,
             selectedBookingSet: null,
             bookings: [],
             bookingIds: [],
@@ -43,11 +45,15 @@ class BookingSetList extends React.Component {
             scrollLeft: 0,
             loading: false,
             sortDirection: 1,
+            pricingInfos: [],
+            loadingPricingInfos: false,
+            selectedBooking: null,
         };
 
         this.myRef = React.createRef();
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
+        this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
     }
 
     static propTypes = {
@@ -62,6 +68,8 @@ class BookingSetList extends React.Component {
         getBookings: PropTypes.func.isRequired,
         setAllGetBookingsFilter: PropTypes.func.isRequired,
         setGetBookingsFilter: PropTypes.func.isRequired,
+        getPricingInfos: PropTypes.func.isRequired,
+        updateBooking: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -78,7 +86,7 @@ class BookingSetList extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt } = newProps;
+        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt, pricingInfos } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -93,6 +101,10 @@ class BookingSetList extends React.Component {
 
         if (clientname) {
             this.setState({clientname});
+        }
+
+        if (pricingInfos) {
+            this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
         if (isBookingSetDeleted && needUpdateBookingSets) {
@@ -148,6 +160,10 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowDeleteConfirmModal: !prevState.isShowDeleteConfirmModal}));
     }
 
+    toggleFPPricingSlider() {
+        this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
+
     onClickDeleteBtn(selectedBookingSet) {
         this.setState({selectedBookingSet});
         this.toggleDeleteConfirmModal();
@@ -201,6 +217,27 @@ class BookingSetList extends React.Component {
         this.setState({activeBookingId: booking.id});
     }
 
+    onClickOpenPricingSlider(booking) {
+        this.setState({selectedBooking: booking, loadingPricingInfos: true});
+        this.toggleFPPricingSlider();
+        this.props.getPricingInfos(booking.pk_booking_id);
+    }
+
+    onSelectPricing(pricingInfo) {
+        const booking = this.state.selectedBooking;
+        booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        booking['vx_account_code'] = pricingInfo['account_code'];
+        booking['vx_serviceName'] = pricingInfo['service_name'];
+        booking['v_service_Type'] = pricingInfo['service_code'];
+        booking['inv_cost_actual'] = pricingInfo['fee'];
+        booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        booking['api_booking_quote'] = pricingInfo['id'];
+
+        this.setState({selectedBooking: booking, isBookingModified: true, loading: true, curViewMode: 0});
+        this.props.updateBooking(booking.id, booking);
+        this.toggleFPPricingSlider();
+    }
+
     render() {
         const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loading, activeBookingId } = this.state;
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -231,7 +268,7 @@ class BookingSetList extends React.Component {
                     className={(activeBookingId === booking.id) ? 'active' : 'inactive'}
                     onClick={() => this.onClickRow(booking)}
                 >
-                    <td>$</td>
+                    <td onClick={() => this.onClickOpenPricingSlider(booking)} className="bg-gray cur-pointer"><strong>$</strong></td>
                     <td 
                         id={'link-popover-' + booking.id} 
                         onClick={() => this.onClickLink(0, booking.id)}
@@ -358,7 +395,7 @@ class BookingSetList extends React.Component {
                         :
                         <React.Fragment>
                             <div className='buttons'>
-                                <Button className="primary">AAA</Button>
+                                <Button className="primary">Back to List</Button>
                             </div>
                             <LoadingOverlay spinner active={loading} text='Loading...'>
                                 <div className="table-responsive" onScroll={this.handleScroll} ref={this.myRef}>
@@ -713,6 +750,16 @@ class BookingSetList extends React.Component {
                     okBtnName={'Delete'}
                 />
 
+                <FPPricingSlider
+                    isOpen={this.state.isShowFPPricingSlider}
+                    toggleSlider={this.toggleFPPricingSlider}
+                    pricingInfos={this.state.pricingInfos}
+                    onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                    isLoading={this.state.loadingPricingInfos}
+                    booking={this.state.selectedBooking}
+                    clientname={clientname}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -724,11 +771,14 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         bookingSets: state.extra.bookingsets,
         isBookingSetDeleted: state.extra.isBookingSetDeleted,
+        needUpdateBooking: state.booking.needUpdateBooking,
         needUpdateBookingSets: state.extra.needUpdateBookingSets,
         clientname: state.auth.clientname,
         bookings: state.booking.bookings,
         bookingsCnt: state.booking.bookingsCnt,
         needUpdateBookings: state.booking.needUpdateBookings,
+        startDate: state.booking.startDate,
+        endDate: state.booking.endDate,
         pageItemCnt: state.booking.pageItemCnt,
         pageInd: state.booking.pageInd,
         pageCnt: state.booking.pageCnt,
@@ -740,6 +790,7 @@ const mapStateToProps = (state) => {
         downloadOption: state.booking.downloadOption,
         dmeStatus: state.booking.dmeStatus,
         bookingErrorMessage: state.booking.errorMessage,
+        pricingInfos: state.booking.pricingInfos,
     };
 };
 
@@ -753,6 +804,8 @@ const mapDispatchToProps = (dispatch) => {
         getBookingSets: () => dispatch(getBookingSets()),
         deleteBookingSet: (id) => dispatch(deleteBookingSet(id)),
         resetBookingSetFlags: () => dispatch(resetBookingSetFlags()),
+        getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
+        updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
     };
 };
 

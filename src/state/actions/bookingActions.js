@@ -204,22 +204,6 @@ export function setAllLocalFilter(
     projectName,
     bookingIds,
 ) {
-    console.log('action - ', startDate,
-        endDate,
-        clientPK,
-        warehouseId,
-        pageItemCnt,
-        pageInd,
-        sortField,
-        columnFilters,
-        activeTabInd,
-        simpleSearchKeyword,
-        downloadOption,
-        dmeStatus,
-        multiFindField,
-        multiFindValues,
-        projectName,
-        bookingIds);
     return {
         type: SET_LOCAL_FILTER_ALL,
         startDate: startDate,

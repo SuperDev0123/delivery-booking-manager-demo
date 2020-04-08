@@ -154,22 +154,6 @@ export const setAllGetBookingsFilter = (
     projectName=null,
     bookingIds=null,
 ) => {
-    console.log('service - ', startDate,
-        endDate,
-        clientPK,
-        warehouseId,
-        pageItemCnt,
-        pageInd,
-        sortField,
-        columnFilters,
-        activeTabInd,
-        simpleSearchKeyword,
-        downloadOption,
-        dmeStatus,
-        multiFindField,
-        multiFindValues,
-        projectName,
-        bookingIds);
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
         endDate,
