@@ -4,14 +4,12 @@
     .content {
         padding-top: 30px;
         padding-bottom: 30px;
-        width: 90%;
+        width: 96%;
         height: calc(100% - 43px);
         overflow-y: hidden;
         margin: 0 auto;
 
         table {
-            margin-top: 10px;
-
             th {
                 // color: #048abb;
                 background-color: #eee;
@@ -21,10 +19,15 @@
         div.buttons {
             margin-top: 0px;
         }
+
+        .bookingsets-table {
+            margin-top: 20px;
+        }
     }
 
     .table-responsive {
-        margin-top: 5px !important;
+        margin-top: 20px !important;
+        border: 1px solid lightgray;
         height: calc(100% - 50px);
         width: 100%;
         overflow-x: auto;
@@ -121,7 +124,7 @@
     $column_24_width: 110px;
     $column_25_width: 110px;
 
-    .fixed_headers{
+    .fixed_headers {
         table-layout: fixed;
 
         th { text-decoration: none }

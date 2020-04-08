@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class BookingSetModal extends Component {
@@ -38,7 +39,7 @@ class BookingSetModal extends Component {
         } else if (e.target.name === 'actionType') {
             this.setState({actionType: e.target.value});
         } else if (e.target.name === 'addTo') {
-            this.setState({selectedBookingSetId: e.target.value});
+            this.setState({selectedBookingSetId: parseInt(e.target.value)});
         }
     }
 
@@ -58,7 +59,13 @@ class BookingSetModal extends Component {
             if (!selectedBookingSetId) {
                 this.props.notify('Please select a BookingSet to add selected bookings');
             } else {
-                this.props.updateBookingSet(this.props.bookingIds, selectedBookingSetId);
+                const selectedBookingSet = this.props.bookingsets.find(bookingset => bookingset.id === selectedBookingSetId);
+                const exitingBookingIds = selectedBookingSet.booking_ids.split(', ');
+                const union = _.union(exitingBookingIds, this.props.bookingIds.map(id => id.toString()));
+                const joinStr = _.join(union, ', ');
+                selectedBookingSet.booking_ids = joinStr;
+
+                this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
                 this.props.toggle();
             }
         }
@@ -74,7 +81,9 @@ class BookingSetModal extends Component {
                     key={bookingset.id}
                     value={bookingset.id}
                     selected={selectedBookingSetId === bookingset.id ? 'selected' : ''}
-                >{bookingset.name}</option>
+                >
+                    {bookingset.name}
+                </option>
             );
         });
 

@@ -33,8 +33,8 @@ import {
     resetEmailLogs,
     successGetEmailLogs,
     failedGetEmailLogs,
-    successGetBookingSet, // BookingSet
-    failedGetBookingSet, // *
+    successGetBookingSets, // BookingSet
+    failedGetBookingSets, // *
     successCreateBookingSet, // *
     failedCreateBookingSet, // *
     successUpdateBookingSet, // *
@@ -258,8 +258,8 @@ export const getBookingSets = () => {
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successGetBookingSet(data)))
-            .catch((error) => dispatch(failedGetBookingSet(error)));
+            .then(({ data }) => dispatch(successGetBookingSets(data)))
+            .catch((error) => dispatch(failedGetBookingSets(error)));
     };
 };
 
@@ -280,13 +280,13 @@ export const createBookingSet = (bookingIds, name, note) => {
     };
 };
 
-export const updateBookingSet = (bookingIds, id) => {
+export const updateBookingSet = (id, bookingSet) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/${id}/`,
-        data: {bookingIds}
+        data: bookingSet
     };
     return dispatch => {
         axios(options)

@@ -32,8 +32,8 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
-    SUCCESS_GET_BOOKING_SET, // BookingSet
-    FAILED_GET_BOOKING_SET, // *
+    SUCCESS_GET_BOOKING_SETS, // BookingSet
+    FAILED_GET_BOOKING_SETS, // *
     SUCCESS_CREATE_BOOKING_SET, // *
     FAILED_CREATE_BOOKING_SET, // *
     SUCCESS_UPDATE_BOOKING_SET, // *
@@ -204,7 +204,7 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 bookingset: payload
             };
-        case SUCCESS_GET_BOOKING_SET:
+        case SUCCESS_GET_BOOKING_SETS:
             return {
                 ...state,
                 bookingsets: payload
@@ -212,7 +212,8 @@ export const ExtraReducer = (state = defaultState, {
         case SUCCESS_UPDATE_BOOKING_SET:
             return {
                 ...state,
-                bookingset: payload
+                bookingset: payload,
+                needUpdateBookingSets: true,
             };
         case SUCCESS_DELETE_BOOKING_SET:
             return {
@@ -235,7 +236,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_PROJECT_NAMES:
         case FAILED_GET_EMAIL_LOGS:
         case FAILED_CREATE_BOOKING_SET:
-        case FAILED_GET_BOOKING_SET:
+        case FAILED_GET_BOOKING_SETS:
         case FAILED_UPDATE_BOOKING_SET:
         case FAILED_DELETE_BOOKING_SET:
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:

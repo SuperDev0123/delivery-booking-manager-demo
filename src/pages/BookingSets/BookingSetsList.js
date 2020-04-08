@@ -18,7 +18,7 @@ import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
 // Services
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
-import { getBookingSets, deleteBookingSet, resetBookingSetFlags } from '../../state/services/extraService';
+import { getBookingSets, deleteBookingSet, updateBookingSet, resetBookingSetFlags } from '../../state/services/extraService';
 import { getBookings, setGetBookingsFilter, setAllGetBookingsFilter, getPricingInfos, updateBooking } from '../../state/services/bookingService';
 
 class BookingSetList extends React.Component {
@@ -30,6 +30,8 @@ class BookingSetList extends React.Component {
             bookingSets: [],
             clientname: null,
             isShowDeleteConfirmModal: false,
+            isShowPricingConfirmModal: false,
+            isShowBookConfirmModal: false,
             isShowFPPricingSlider: false,
             selectedBookingSet: null,
             bookings: [],
@@ -43,16 +45,19 @@ class BookingSetList extends React.Component {
             dmeClients: [],
             clientPK: 'dme',
             scrollLeft: 0,
-            loading: false,
+            loadingBookings: false,
+            loadingBookingSets: false,
+            loadingPricingInfos: false,
             sortDirection: 1,
             pricingInfos: [],
-            loadingPricingInfos: false,
             selectedBooking: null,
         };
 
         this.myRef = React.createRef();
         this.handleScroll = this.handleScroll.bind(this);
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
+        this.togglePricingConfirmModal = this.togglePricingConfirmModal.bind(this);
+        this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
     }
 
@@ -70,6 +75,7 @@ class BookingSetList extends React.Component {
         setGetBookingsFilter: PropTypes.func.isRequired,
         getPricingInfos: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
+        updateBookingSet: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -82,6 +88,7 @@ class BookingSetList extends React.Component {
             this.props.history.push('/');
         }
 
+        this.setState({loadingBookingSets: true});
         this.props.getBookingSets();
     }
 
@@ -95,10 +102,6 @@ class BookingSetList extends React.Component {
             this.props.history.push('/');
         }
 
-        if (bookingSets) {
-            this.setState({bookingSets});
-        }
-
         if (clientname) {
             this.setState({clientname});
         }
@@ -107,14 +110,21 @@ class BookingSetList extends React.Component {
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
-        if (isBookingSetDeleted && needUpdateBookingSets) {
+        if (this.state.loadingBookingSets && isBookingSetDeleted && needUpdateBookingSets) {
             this.notify('BookingSet has been deleted');
+            this.setState({loadingBookingSets: true});
             this.props.getBookingSets();
             this.props.resetBookingSetFlags();
         }
 
-        if (!_.isNull(bookingsCnt) && bookings) {
-            this.setState({ bookings, filteredBookingIds, bookingsCnt, loading: false });
+        if (this.state.loadingBookingSets && !_.isEmpty(bookingSets)) {
+            this.setState({bookingSets});
+            this.setState({loadingBookingSets: false});
+            this.notify('BookingSets are refreshed');
+        }
+
+        if (this.state.loadingBookings && !_.isNull(bookingsCnt) && !_.isEmpty(bookings)) {
+            this.setState({ bookings, filteredBookingIds, bookingsCnt, loadingBookings: false });
         }
 
         if (pageCnt) {
@@ -122,7 +132,7 @@ class BookingSetList extends React.Component {
         }
 
         if (needUpdateBookings) {
-            this.setState({loading: true});
+            this.setState({loadingBookings: true});
 
             // sortField
             if (!_.isEmpty(sortField)) {
@@ -160,6 +170,14 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowDeleteConfirmModal: !prevState.isShowDeleteConfirmModal}));
     }
 
+    togglePricingConfirmModal() {
+        this.setState(prevState => ({isShowPricingConfirmModal: !prevState.isShowPricingConfirmModal}));
+    }
+
+    toggleBookConfirmModal() {
+        this.setState(prevState => ({isShowBookConfirmModal: !prevState.isShowBookConfirmModal}));
+    }
+
     toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
@@ -169,14 +187,46 @@ class BookingSetList extends React.Component {
         this.toggleDeleteConfirmModal();
     }
 
+    onConfirmDelete() {
+        this.props.deleteBookingSet(this.state.selectedBookingSet.id);
+        this.setState({loadingBookingSets: true});
+        this.toggleDeleteConfirmModal();
+    }
+
+    onClickPricingBtn(selectedBookingSet) {
+        this.setState({selectedBookingSet});
+        this.togglePricingConfirmModal();
+    }
+
+    onConfirmPricing() {
+        const {selectedBookingSet} = this.state;
+        selectedBookingSet.status = 'Pricing again';
+        this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
+        this.setState({loadingBookingSets: true});
+        this.togglePricingConfirmModal();
+    }
+
+    onClickBookBtn(selectedBookingSet) {
+        this.setState({selectedBookingSet});
+        this.toggleBookConfirmModal();
+    }
+
+    onConfirmBook() {
+        const {selectedBookingSet} = this.state;
+        selectedBookingSet.status = 'Starting BOOK';
+        this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
+        this.setState({loadingBookingSets: true});
+        this.toggleBookConfirmModal();
+    }
+
+    onClickRefreshBookingSets() {
+        this.props.getBookingSets();
+        this.setState({loadingBookingSets: true});
+    }
+
     onClickShowBookingsBtn(selectedBookingSet) {
         this.setState({selectedBookingSet, viewMode: 1});
         this.props.setAllGetBookingsFilter('*', '2099-01-01', 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, null, selectedBookingSet.booking_ids);
-    }
-
-    onConfirmDelete() {
-        this.props.deleteBookingSet(this.state.selectedBookingSet.id);
-        this.toggleDeleteConfirmModal();
     }
 
     onChangeSortField(fieldName) {
@@ -233,13 +283,13 @@ class BookingSetList extends React.Component {
         booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        this.setState({selectedBooking: booking, isBookingModified: true, loading: true, curViewMode: 0});
+        this.setState({selectedBooking: booking, isBookingModified: true, loadingBookings: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
     }
 
     render() {
-        const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loading, activeBookingId } = this.state;
+        const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loadingBookings, loadingBookingSets, activeBookingId } = this.state;
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
@@ -250,13 +300,49 @@ class BookingSetList extends React.Component {
                     <td>{bookingSet.name}</td>
                     <td id={'booking-set-' + 'note' + '-tooltip-' + bookingSet.id}>
                         {bookingSet.note}
-                        {!_.isEmpty(bookingSet.note) && <TooltipItem object={bookingSet} placement={'top'}  name={'booking-set'} fields={['note']} />}
+                        {!_.isEmpty(bookingSet.note) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true}  name={'booking-set'} fields={['note']} />}
                     </td>
-                    <td>{bookingSet.status}</td>
+                    <td id={'booking-set-' + 'status' + '-tooltip-' + bookingSet.id}>
+                        {bookingSet.status}
+                        {!_.isEmpty(bookingSet.status) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true} name={'booking-set'} fields={['status']} />}
+                    </td>
                     <td>{bookingSet.z_createdByAccount}</td>
                     <td>{bookingSet.z_createdTimestamp && moment(bookingSet.z_createdTimestamp).format('ddd DD MMM YYYY hh:mm a')}</td>
-                    <td><Button color="primary" onClick={() => this.onClickShowBookingsBtn(bookingSet)}>Show Bookings</Button></td>
-                    <td><Button color="danger" onClick={() => this.onClickDeleteBtn(bookingSet)}>Delete</Button></td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickShowBookingsBtn(bookingSet)}
+                        >
+                            Show ({bookingSet.bookings_cnt})
+                        </Button>
+                    </td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickPricingBtn(bookingSet)}
+                            disabled={bookingSet.status.indexOf('In Progress') > -1 && 'disabled'}
+                        >
+                            Pricing
+                        </Button>
+                    </td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickBookBtn(bookingSet)}
+                            disabled={bookingSet.status.indexOf('Completed(Pricing)') === -1 && 'disabled'}
+                        >
+                            BOOK
+                        </Button>
+                    </td>
+                    <td>
+                        <Button
+                            color="danger"
+                            onClick={() => this.onClickDeleteBtn(bookingSet)}
+                            disabled={bookingSet.status.indexOf('In Progress') > -1 && 'disabled'}
+                        >
+                            Delete
+                        </Button>
+                    </td>
                 </tr>
             );
         });
@@ -280,13 +366,13 @@ class BookingSetList extends React.Component {
                             {booking.b_bookingID_Visual}
                         </span>
                     </td>
-                    <td className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
-                    <td className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
-                    <td className={(sortField === 'puCompany') ? 'current nowrap' : ' nowrap'}>{booking.puCompany}</td>
+                    <td className={(sortField === 'b_client_name') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name}</td>
+                    <td className={(sortField === 'b_client_name_sub') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name_sub}</td>
+                    <td className={(sortField === 'puCompany') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.puCompany}</td>
                     <td className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}>{booking.pu_Address_Suburb}</td>
                     <td className={(sortField === 'pu_Address_State') ? 'current' : ''}>{booking.pu_Address_State}</td>
                     <td className={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}>{booking.pu_Address_PostalCode}</td>
-                    <td className={(sortField === 'deToCompanyName') ? 'current nowrap' : ' nowrap'}>{booking.deToCompanyName}</td>
+                    <td className={(sortField === 'deToCompanyName') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.deToCompanyName}</td>
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
@@ -319,7 +405,7 @@ class BookingSetList extends React.Component {
                     </td>
                     <td 
                         id={'booking-' + 'de_to_PickUp_Instructions_Address' + '-tooltip-' + booking.id}
-                        className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
+                        className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap="true"' : 'nowrap="true"'}
                     >
                         {booking.de_to_PickUp_Instructions_Address}
                         {!_.isEmpty(booking.de_to_PickUp_Instructions_Address) &&
@@ -328,7 +414,7 @@ class BookingSetList extends React.Component {
                     </td>
                     <td 
                         id={'booking-' + 'b_booking_project' + '-tooltip-' + booking.id}
-                        className={(sortField === 'b_booking_project') ? 'current nowrap' : 'nowrap'}
+                        className={(sortField === 'b_booking_project') ? 'current nowrap="true"' : 'nowrap="true"'}
                     >
                         {booking.b_booking_project}
                         {!_.isEmpty(booking.b_booking_project) &&
@@ -336,7 +422,7 @@ class BookingSetList extends React.Component {
                         }
                     </td>
                     <td 
-                        className={(sortField === 'b_project_due_date') ? 'current nowrap' : 'nowrap'}
+                        className={(sortField === 'b_project_due_date') ? 'current nowrap="true"' : 'nowrap="true"'}
                     >
                         {booking.b_project_due_date && moment(booking.b_project_due_date).format('DD/MM/YYYY')}
                     </td>
@@ -374,40 +460,45 @@ class BookingSetList extends React.Component {
                     </div>
                 </div>
                 <div className="content">
-                    {this.state.viewMode === 0 ?
-                        <React.Fragment>
-                            <table className="table table-hover table-bordered sortable">
-                                <thead>
-                                    <th>No</th>
-                                    <th>Name</th>
-                                    <th>Note</th>
-                                    <th>Status</th>
-                                    <th>Created By</th>
-                                    <th>Created At</th>
-                                    <th>Show Bookings</th>
-                                    <th>Delete</th>
-                                </thead>
-                                <tbody>
-                                    { bookingSetsList }
-                                </tbody>
-                            </table>
-                        </React.Fragment>
-                        :
-                        <React.Fragment>
-                            <div className='buttons'>
-                                <Button className="primary">Back to List</Button>
-                            </div>
-                            <LoadingOverlay spinner active={loading} text='Loading...'>
+                    <LoadingOverlay spinner active={loadingBookings || loadingBookingSets} text='Loading...'>
+                        {this.state.viewMode === 0 ?
+                            <React.Fragment>
+                                <td>
+                                    <Button color="success" onClick={() => this.onClickRefreshBookingSets()}>Refresh</Button>
+                                </td>
+                                <table className="table table-hover table-bordered sortable bookingsets-table">
+                                    <thead>
+                                        <th>No</th>
+                                        <th>Name</th>
+                                        <th>Note</th>
+                                        <th>Status</th>
+                                        <th>Created By</th>
+                                        <th>Created At</th>
+                                        <th>Show Bookings</th>
+                                        <th>Pricing</th>
+                                        <th>BOOK</th>
+                                        <th>Delete</th>
+                                    </thead>
+                                    <tbody>
+                                        { bookingSetsList }
+                                    </tbody>
+                                </table>
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <div className='buttons'>
+                                    <Button className="primary" onClick={() => this.setState({viewMode: 0})}>Back to List</Button>
+                                </div>
                                 <div className="table-responsive" onScroll={this.handleScroll} ref={this.myRef}>
                                     <div className="tbl-header">
                                         <table className="table table-hover table-bordered sortable fixed_headers">
                                             <tr>
-                                                <th scope="col" nowrap>$</th>
+                                                <th scope="col" nowrap="true">$</th>
                                                 <th 
                                                     className={(sortField === 'b_bookingID_Visual') ? 'current' : ''} 
                                                     onClick={() => this.onChangeSortField('b_bookingID_Visual')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Booking ID</p>
                                                     {
@@ -422,7 +513,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_client_name') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_client_name')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Client</p>
                                                     {
@@ -437,7 +528,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_client_name_sub') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_client_name_sub')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Sub Client</p>
                                                     {
@@ -452,7 +543,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'puCompany') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('puCompany')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>From</p>
                                                     {
@@ -467,7 +558,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('pu_Address_Suburb')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>From Suburb</p>
                                                     {
@@ -482,7 +573,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'pu_Address_State') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('pu_Address_State')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>From State</p>
                                                     {
@@ -497,7 +588,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('pu_Address_PostalCode')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>From Postal Code</p>
                                                     {
@@ -512,7 +603,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'deToCompanyName') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('deToCompanyName')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>To</p>
                                                     {
@@ -527,7 +618,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('de_To_Address_Suburb')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>To Suburb</p>
                                                     {
@@ -542,7 +633,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'de_To_Address_State') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('de_To_Address_State')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>To State</p>
                                                     {
@@ -557,7 +648,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('de_To_Address_PostalCode')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>To Postal Code</p>
                                                     {
@@ -568,13 +659,13 @@ class BookingSetList extends React.Component {
                                                             : <i className="fa fa-sort"></i>
                                                     }
                                                 </th>
-                                                <th scope="col" nowrap><p>$ - Cost</p></th>
-                                                <th scope="col" nowrap><p>$ - ETA DE</p></th>
+                                                <th scope="col" nowrap="true"><p>$ - Cost</p></th>
+                                                <th scope="col" nowrap="true"><p>$ - ETA DE</p></th>
                                                 <th 
                                                     className={(sortField === 'vx_freight_provider') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('vx_freight_provider')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Freight Provider</p>
                                                     {
@@ -585,8 +676,8 @@ class BookingSetList extends React.Component {
                                                             : <i className="fa fa-sort"></i>
                                                     }
                                                 </th>
-                                                <th scope="col" nowrap><p>$ - Service Name</p></th>
-                                                <th scope="col" nowrap><p>$ - Account Code</p></th>
+                                                <th scope="col" nowrap="true"><p>$ - Service Name</p></th>
+                                                <th scope="col" nowrap="true"><p>$ - Account Code</p></th>
                                                 <th
                                                     id={'booking-column-header-tooltip-Error'}
                                                     className={(sortField === 'b_error_Capture') ? 'narrow-column current' : 'narrow-column'}
@@ -599,7 +690,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_clientReference_RA_Numbers')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Reference</p>
                                                     {
@@ -614,7 +705,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'vx_serviceName') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('vx_serviceName')} 
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Service</p>
                                                     {
@@ -629,7 +720,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_status') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_status')}
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Status</p>
                                                     {
@@ -644,7 +735,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'pu_PickUp_By_Date') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('pu_PickUp_By_Date')}
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Pickup Due</p>
                                                     {
@@ -659,7 +750,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('de_to_PickUp_Instructions_Address')}
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>DE Instruction</p>
                                                     {
@@ -674,7 +765,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_booking_project') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_booking_project')}
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Project Name</p>
                                                     {
@@ -689,7 +780,7 @@ class BookingSetList extends React.Component {
                                                     className={(sortField === 'b_project_due_date') ? 'current' : ''}
                                                     onClick={() => this.onChangeSortField('b_project_due_date')}
                                                     scope="col" 
-                                                    nowrap
+                                                    nowrap="true"
                                                 >
                                                     <p>Project Due Date</p>
                                                     {
@@ -702,31 +793,31 @@ class BookingSetList extends React.Component {
                                                 </th>
                                             </tr>
                                             <tr className="filter-tr">
-                                                <th scope="col"></th>
-                                                <th scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"></th>
-                                                <th scope="col"></th>
-                                                <th scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"></th>
-                                                <th scope="col"></th>
-                                                <th className=""></th>
-                                                <th scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="de_to_PickUp_Instructions_Address" value={filterInputs['de_to_PickUp_Instructions_Address'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="b_booking_project" value={filterInputs['b_booking_project'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                <th scope="col"><input type="text" name="b_project_due_date" value={filterInputs['b_project_due_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"></th>
+                                                <th scope="col" nowrap="true"></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"></th>
+                                                <th scope="col" nowrap="true"></th>
+                                                <th className="" nowrap="true"></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="de_to_PickUp_Instructions_Address" value={filterInputs['de_to_PickUp_Instructions_Address'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_booking_project" value={filterInputs['b_booking_project'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_project_due_date" value={filterInputs['b_project_due_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                             </tr>
                                         </table>
                                     </div>
@@ -736,9 +827,9 @@ class BookingSetList extends React.Component {
                                         </table>
                                     </div>
                                 </div>
-                            </LoadingOverlay>
-                        </React.Fragment>
-                    }
+                            </React.Fragment>
+                        }
+                    </LoadingOverlay>
                 </div>
 
                 <ConfirmModal
@@ -748,6 +839,24 @@ class BookingSetList extends React.Component {
                     title={`Delete BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to delete this BookingSet?'}
                     okBtnName={'Delete'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowPricingConfirmModal}
+                    onOk={() => this.onConfirmPricing()}
+                    onCancel={this.togglePricingConfirmModal}
+                    title={`Start get pricing for BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    text={'Are you sure you want to start pricing fot this BookingSet?'}
+                    okBtnName={'Start'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowBookConfirmModal}
+                    onOk={() => this.onConfirmBook()}
+                    onCancel={this.toggleBookConfirmModal}
+                    title={`BOOK all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
+                    text={'Are you sure you want to BOOK all bookings?'}
+                    okBtnName={'BOOK'}
                 />
 
                 <FPPricingSlider
@@ -806,6 +915,7 @@ const mapDispatchToProps = (dispatch) => {
         resetBookingSetFlags: () => dispatch(resetBookingSetFlags()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
+        updateBookingSet: (id, bookingSet) => dispatch(updateBookingSet(id, bookingSet)),
     };
 };
 

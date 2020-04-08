@@ -32,8 +32,8 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
-    SUCCESS_GET_BOOKING_SET, // BookingSet
-    FAILED_GET_BOOKING_SET, // *
+    SUCCESS_GET_BOOKING_SETS, // BookingSet
+    FAILED_GET_BOOKING_SETS, // *
     SUCCESS_CREATE_BOOKING_SET, // *
     FAILED_CREATE_BOOKING_SET, // *
     SUCCESS_UPDATE_BOOKING_SET, // *
@@ -274,16 +274,16 @@ export function resetEmailLogs() {
     };
 }
 
-export function successGetBookingSet(data) {
+export function successGetBookingSets(data) {
     return {
-        type: SUCCESS_GET_BOOKING_SET,
+        type: SUCCESS_GET_BOOKING_SETS,
         payload: data,
     };
 }
 
-export function failedGetBookingSet(error) {
+export function failedGetBookingSets(error) {
     return {
-        type: FAILED_GET_BOOKING_SET,
+        type: FAILED_GET_BOOKING_SETS,
         errorMessage: 'Unable to get bookingset. Error:' + error,
     };
 }
