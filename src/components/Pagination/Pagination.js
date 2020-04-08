@@ -20,7 +20,8 @@ class CustomPagination extends Component {
     componentDidMount() {
     }
 
-    onClickPaginationItem(type) {
+    onClickPaginationItem(event, type) {
+        event.preventDefault();
         const {pageCnt, pageInd} = this.props;
 
         if (pageCnt > 0) {
@@ -53,7 +54,10 @@ class CustomPagination extends Component {
                 <PaginationItem>
                     <PaginationLink 
                         href='#' 
-                        onClick={() => this.props.onClickPagination(i)}
+                        onClick={(event) => { 
+                            event.preventDefault();
+                            this.props.onClickPagination(i);
+                        }}
                         className={i === pageInd ? 'current' : null}
                     >
                         {i + 1}
@@ -67,7 +71,7 @@ class CustomPagination extends Component {
                 <PaginationItem>
                     <PaginationLink 
                         href='#'
-                        onClick={() => this.onClickPaginationItem('first')}
+                        onClick={(event) => this.onClickPaginationItem(event, 'first')}
                         className={pageCnt === 0 || pageInd === 0 ? 'disabled' : null}
                     >
                         &lt;&lt;
@@ -76,7 +80,7 @@ class CustomPagination extends Component {
                 <PaginationItem>
                     <PaginationLink
                         href='#' 
-                        onClick={() => this.onClickPaginationItem('prev')}
+                        onClick={(event) => this.onClickPaginationItem(event, 'prev')}
                         className={pageCnt === 0 || pageInd === 0 ? 'disabled' : null}
                     >
                         &lt;
@@ -85,8 +89,8 @@ class CustomPagination extends Component {
                 {paginationItems}
                 <PaginationItem>
                     <PaginationLink
-                        href='#' 
-                        onClick={() => this.onClickPaginationItem('next')}
+                        href='/#' 
+                        onClick={(event) => this.onClickPaginationItem(event, 'next')}
                         className={pageCnt === 0 || pageInd === pageCnt - 1 ? 'disabled' : null}
                     >
                         &gt;
@@ -95,7 +99,7 @@ class CustomPagination extends Component {
                 <PaginationItem>
                     <PaginationLink 
                         href='#' 
-                        onClick={() => this.onClickPaginationItem('last')}
+                        onClick={(event) => this.onClickPaginationItem(event, 'last')}
                         className={pageCnt === 0 || pageInd === pageCnt - 1 ? 'disabled' : null}
                     >
                         &gt;&gt;
