@@ -442,6 +442,10 @@ class BookingPage extends Component {
         }
 
         if (pricingInfos) {
+            if (this.state.pricingInfos.length != pricingInfos.length) {
+                this.props.getBooking(this.state.booking.id, 'id');
+                this.setState({loading: true, curViewMode: 0});
+            }
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
@@ -4556,6 +4560,15 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="pu-de-dates">
                                                     <div className="row mt-1">
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">Cutoff</label>
+                                                        </div>
+                                                        <div className="col-sm-9 mb-2">
+                                                            <p className="show-mode">
+                                                                {booking ? booking.s_02_Booking_Cutoff_Time : ''}
+                                                            </p>
+                                                        </div>
+
                                                         <div className="col-sm-3">
                                                             <label className="" htmlFor="">PU From</label>
                                                         </div>
