@@ -16,6 +16,7 @@ import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter }
 import Modal from 'react-modal';
 import CKEditor from 'ckeditor4-react';
 import DateTimePicker from 'react-datetime-picker';
+import TimePicker from 'react-time-picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
@@ -876,6 +877,8 @@ class BookingPage extends Component {
                 else formInputs['de_Deliver_By_Hours'] = '';
                 if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
                 else formInputs['de_Deliver_By_Minutes'] = '';
+                if (!_.isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
+                else formInputs['s_02_Booking_Cutoff_Time'] = null;
 
                 if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
                 else formInputs['b_project_due_date'] = null;
@@ -904,7 +907,7 @@ class BookingPage extends Component {
                 if (booking.v_FPBookingNumber != null) tempAdditionalServices.v_FPBookingNumber = booking.v_FPBookingNumber;
                 else tempAdditionalServices.v_FPBookingNumber = '';
                 if (booking.s_02_Booking_Cutoff_Time != null) tempAdditionalServices.s_02_Booking_Cutoff_Time = booking.s_02_Booking_Cutoff_Time;
-                else tempAdditionalServices.s_02_Booking_Cutoff_Time = '';
+                else tempAdditionalServices.s_02_Booking_Cutoff_Time = null;
                 if (booking.puPickUpAvailFrom_Date != null) tempAdditionalServices.puPickUpAvailFrom_Date = booking.puPickUpAvailFrom_Date;
                 else tempAdditionalServices.puPickUpAvailFrom_Date = '';
                 if (booking.z_CreatedTimestamp != null) tempAdditionalServices.z_CreatedTimestamp = booking.z_CreatedTimestamp;
@@ -2627,9 +2630,24 @@ class BookingPage extends Component {
         formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
+        const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['fk_freight_provider_id']);
+        booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
+        formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
+
         this.setState({formInputs, booking, isBookingModified: true, loading: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
+    }
+
+    onChangeTime(time, type) {
+        const {booking, formInputs} = this.state;
+
+        if (type === 's_02_Booking_Cutoff_Time') {
+            formInputs[type] = time;
+            booking[type] = time;
+        }
+
+        this.setState({formInputs});
     }
 
     onClickEnvelop(templateName) {
@@ -4583,15 +4601,6 @@ class BookingPage extends Component {
                                                 <div className="pu-de-dates">
                                                     <div className="row mt-1">
                                                         <div className="col-sm-3">
-                                                            <label className="" htmlFor="">Cutoff</label>
-                                                        </div>
-                                                        <div className="col-sm-9 mb-2">
-                                                            <p className="show-mode">
-                                                                {booking ? booking.s_02_Booking_Cutoff_Time : ''}
-                                                            </p>
-                                                        </div>
-
-                                                        <div className="col-sm-3">
                                                             <label className="" htmlFor="">PU From</label>
                                                         </div>
                                                         <div className="col-sm-9">
@@ -4769,6 +4778,26 @@ class BookingPage extends Component {
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
+                                                            }
+                                                        </div>
+                                                        <div className="col-sm-3">
+                                                            <label className="" htmlFor="">Cutoff</label>
+                                                        </div>
+                                                        <div className="col-sm-9 mb-2">
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">
+                                                                    {booking ? booking.s_02_Booking_Cutoff_Time : ''}
+                                                                </p>
+                                                                :
+                                                                (booking && clientname === 'dme' && !isBookedBooking) ?
+                                                                    <TimePicker
+                                                                        onChange={(time) => this.onChangeTime(time, 's_02_Booking_Cutoff_Time')}
+                                                                        value={formInputs['s_02_Booking_Cutoff_Time']}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">
+                                                                        {booking.s_02_Booking_Cutoff_Time}
+                                                                    </p>
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
