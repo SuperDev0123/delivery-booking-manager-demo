@@ -60,6 +60,7 @@ class FindModal extends Component {
                             <option value="b_client_sales_inv_num" selected="selected">SINV Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
                             <option value="b_bookingID_Visual">DME Booking Number</option>
+                            <option value="fk_fp_pickup_id">FP Pick Up ID</option>
                         </select>
                     </label>
                     <label>
