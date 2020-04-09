@@ -75,7 +75,7 @@ class BookingSetModal extends Component {
         const {isOpen, bookingsets} = this.props;
         const {name, note, actionType, selectedBookingSetId} = this.state;
 
-        const bookingsetsList = bookingsets.map(bookingset => {
+        const bookingsetsList = (bookingsets || []).map(bookingset => {
             return (
                 <option
                     key={bookingset.id}
