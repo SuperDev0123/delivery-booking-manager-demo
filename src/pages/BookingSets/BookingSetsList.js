@@ -18,7 +18,7 @@ import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
 // Services
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
-import { getBookingSets, deleteBookingSet, updateBookingSet, resetBookingSetFlags } from '../../state/services/extraService';
+import { getBookingSets, deleteBookingSet, updateBookingSet, resetBookingSetFlags, getAllFPs } from '../../state/services/extraService';
 import { getBookings, setGetBookingsFilter, setAllGetBookingsFilter, getPricingInfos, updateBooking } from '../../state/services/bookingService';
 
 class BookingSetList extends React.Component {
@@ -51,6 +51,7 @@ class BookingSetList extends React.Component {
             sortDirection: 1,
             pricingInfos: [],
             selectedBooking: null,
+            allFPs: [],
         };
 
         this.myRef = React.createRef();
@@ -76,6 +77,7 @@ class BookingSetList extends React.Component {
         getPricingInfos: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         updateBookingSet: PropTypes.func.isRequired,
+        getAllFPs: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -90,10 +92,11 @@ class BookingSetList extends React.Component {
 
         this.setState({loadingBookingSets: true});
         this.props.getBookingSets();
+        this.props.getAllFPs();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt, pricingInfos } = newProps;
+        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt, pricingInfos, allFPs } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -108,6 +111,10 @@ class BookingSetList extends React.Component {
 
         if (pricingInfos) {
             this.setState({pricingInfos, loadingPricingInfos: false});
+        }
+
+        if (allFPs) {
+            this.setState({ allFPs });
         }
 
         if (isBookingSetDeleted) {
@@ -293,6 +300,9 @@ class BookingSetList extends React.Component {
         booking['inv_cost_actual'] = pricingInfo['fee'];
         booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
+
+        const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['fk_freight_provider_id']);
+        booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
 
         this.setState({selectedBooking: booking, isBookingModified: true, loadingBookings: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
@@ -911,6 +921,7 @@ const mapStateToProps = (state) => {
         dmeStatus: state.booking.dmeStatus,
         bookingErrorMessage: state.booking.errorMessage,
         pricingInfos: state.booking.pricingInfos,
+        allFPs: state.extra.allFPs,
     };
 };
 
@@ -927,6 +938,7 @@ const mapDispatchToProps = (dispatch) => {
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         updateBookingSet: (id, bookingSet) => dispatch(updateBookingSet(id, bookingSet)),
+        getAllFPs: () => dispatch(getAllFPs()),
     };
 };
 
