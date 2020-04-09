@@ -110,17 +110,21 @@ class BookingSetList extends React.Component {
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
-        if (this.state.loadingBookingSets && isBookingSetDeleted && needUpdateBookingSets) {
+        if (isBookingSetDeleted) {
             this.notify('BookingSet has been deleted');
             this.setState({loadingBookingSets: true});
             this.props.getBookingSets();
             this.props.resetBookingSetFlags();
-        }
-
-        if (this.state.loadingBookingSets && !_.isEmpty(bookingSets)) {
+        } else if (this.state.loadingBookingSets && bookingSets) {
             this.setState({bookingSets});
             this.setState({loadingBookingSets: false});
             this.notify('BookingSets are refreshed');
+        }
+
+        if (needUpdateBookingSets) {
+            this.setState({loadingBookingSets: true});
+            this.props.getBookingSets();
+            this.props.resetBookingSetFlags();
         }
 
         if (this.state.loadingBookings && !_.isNull(bookingsCnt) && !_.isEmpty(bookings)) {
@@ -271,6 +275,13 @@ class BookingSetList extends React.Component {
         this.setState({selectedBooking: booking, loadingPricingInfos: true});
         this.toggleFPPricingSlider();
         this.props.getPricingInfos(booking.pk_booking_id);
+    }
+
+    onClickLink(num, bookingId) {
+        if (num === 0)
+            this.props.history.push('/booking?bookingid=' + bookingId);
+        else if (num === 1)
+            this.props.history.push('/booking?bookingid=' + bookingId);
     }
 
     onSelectPricing(pricingInfo) {
@@ -846,7 +857,7 @@ class BookingSetList extends React.Component {
                     onOk={() => this.onConfirmPricing()}
                     onCancel={this.togglePricingConfirmModal}
                     title={`Start get pricing for BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
-                    text={'Are you sure you want to start pricing fot this BookingSet?'}
+                    text={'Are you sure you want to restart pricing for this BookingSet?'}
                     okBtnName={'Start'}
                 />
 

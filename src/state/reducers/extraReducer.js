@@ -59,7 +59,7 @@ const defaultState = {
     projectNames: null,
     emailLogs: [],
     bookingset: null,
-    bookingsets: [],
+    bookingsets: null,
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -213,12 +213,14 @@ export const ExtraReducer = (state = defaultState, {
             return {
                 ...state,
                 bookingset: payload,
+                bookingsets: null,
                 needUpdateBookingSets: true,
             };
         case SUCCESS_DELETE_BOOKING_SET:
             return {
                 ...state,
                 bookingset: payload,
+                bookingsets: null,
                 needUpdateBookingSets: true,
                 isBookingSetDeleted: true,
             };
