@@ -397,11 +397,11 @@ class BookingSetList extends React.Component {
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
-                    <td>$ - price</td>
-                    <td>$ - ETA DE</td>
+                    <td>{booking.pricing_cost && `$${booking.pricing_cost.toFixed(2)}`}</td>
+                    <td>{booking.eta_de_by && moment(booking.eta_de_by).utc().format('DD/MM/YYYY')}</td>
                     <td className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
-                    <td>$ - service_name</td>
-                    <td>$ - account_code</td>
+                    <td>{booking.pricing_service_name}</td>
+                    <td>{booking.pricing_account_code}</td>
                     <td
                         className={'text-center'}
                         id={'booking-b_error_Capture-tooltip-' + booking.id}
