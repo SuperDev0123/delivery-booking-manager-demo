@@ -123,6 +123,11 @@ class LineAndLineDetailSlider extends React.Component {
         this.props.onClickDelete(typeNum, data);
     }
 
+    onCloseSlider() {
+        this.setState({selectedLineIndex: -1});
+        this.props.toggleLineSlider();
+    }
+
     render() {
         const { isOpen, lines, lineDetails, loadingBookingLine, loadingBookingLineDetail, packageTypes } = this.props;
         const { selectedLineIndex, editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs } = this.state;
@@ -169,10 +174,10 @@ class LineAndLineDetailSlider extends React.Component {
                         <td>{lineDetail.modelNumber}</td>
                         <td>{lineDetail.itemDescription}</td>
                         <td>{lineDetail.quantity}</td>
-                        <td>{lineDetail.clientRefNumber}</td>
+                        <td>{lineDetail.itemFaultDescription}</td>
                         <td>${lineDetail.insuranceValueEach}</td>
                         <td>{lineDetail.gap_ra}</td>
-                        <td>{lineDetail.itemFaultDescription}</td>
+                        <td>{lineDetail.clientRefNumber}</td>
                         <td className="edit"><Button color="primary" onClick={() => this.onClickEdit(2, 2, index)}>Edit</Button></td>
                         <td className="duplicate">
                             <Button color="primary" onClick={() => this.props.onClickDuplicate(1, {pk_id_lines_data: lineDetail.pk_id_lines_data})}>
@@ -200,7 +205,7 @@ class LineAndLineDetailSlider extends React.Component {
                 isOpen={isOpen}
                 title='Line And Line Detail Slider'
                 subtitle='Table view'
-                onRequestClose={this.props.toggleLineSlider}>
+                onRequestClose={() => this.onCloseSlider()}>
                 <div className="slider-content">
                     {
                         (editMode === 0) ?
@@ -294,7 +299,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                             <p>Qty</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
-                                                            <p>Client Reference #</p>
+                                                            <p>Fault Description</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
                                                             <p>Insurance Value</p>
@@ -303,7 +308,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                             <p>Gap / RA</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
-                                                            <p>Fault Description</p>
+                                                            <p>Client Reference #</p>
                                                         </th>
                                                         <th className="" scope="col" nowrap>
                                                             <p>Edit</p>
@@ -493,12 +498,12 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Client Reference #</p>
+                                                <p>Fault Description</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
-                                                    name="clientRefNumber" 
-                                                    value={lineDetailFormInputs['clientRefNumber']} 
+                                                    name="itemFaultDescription" 
+                                                    value={lineDetailFormInputs['itemFaultDescription']} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -523,20 +528,18 @@ class LineAndLineDetailSlider extends React.Component {
                                                 />
                                             </label>
                                             <label>
-                                                <p>Fault Description</p>
+                                                <p>Client Reference #</p>
                                                 <input 
                                                     className="form-control" 
                                                     type="text" 
-                                                    name="itemFaultDescription" 
-                                                    value={lineDetailFormInputs['itemFaultDescription']} 
+                                                    name="clientRefNumber" 
+                                                    value={lineDetailFormInputs['clientRefNumber']} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
                                             <label>
                                                 <Button color="primary" onClick={() => this.onSubmit()}>
-                                                    {
-                                                        (editMode === 1) ? 'Submit' : 'Update'
-                                                    }
+                                                    {(editMode === 1) ? 'Submit' : 'Update'}
                                                 </Button>{' '}
                                                 <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
                                             </label>
