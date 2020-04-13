@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import {
     DO_NOTHING,
     RESET_TICK_MANUAL_BOOK,
@@ -107,8 +108,8 @@ const defaultState = {
     closed: 0,
     missingLabels: 0,
     toProcess: 0,
-    startDate: '*',
-    endDate: '2099-01-01',
+    startDate: moment().tz('Australia/Sydney').toDate(),
+    endDate: moment().tz('Australia/Sydney').toDate(),
     warehouseId: 0,
     pageItemCnt: 100,
     pageInd: 0,
