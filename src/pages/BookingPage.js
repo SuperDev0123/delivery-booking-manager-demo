@@ -4091,7 +4091,7 @@ class BookingPage extends Component {
                                                                     name="pu_pickup_instructions_address"
                                                                     rows="1"
                                                                     cols="9"
-                                                                    value={formInputs['pu_pickup_instructions_address'] ? formInputs['pu_pickup_instructions_address'] : ''} 
+                                                                    value={formInputs['pu_pickup_instructions_address'] ? formInputs['pu_pickup_instructions_address'] : ''}
                                                                     onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -4102,15 +4102,15 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
-                                                                <p className="show-mode">{formInputs['de_to_Pick_Up_Instructions_Contact']}</p>
+                                                                <p className="show-mode">{formInputs['pu_PickUp_Instructions_Contact']}</p>
                                                                 :
                                                                 <textarea 
                                                                     width="100%"
                                                                     className="textarea-width"
-                                                                    name="de_to_Pick_Up_Instructions_Contact"
+                                                                    name="pu_PickUp_Instructions_Contact"
                                                                     rows="1"
                                                                     cols="9"
-                                                                    value={formInputs['de_to_Pick_Up_Instructions_Contact'] ? formInputs['de_to_Pick_Up_Instructions_Contact'] : ''} 
+                                                                    value={formInputs['pu_PickUp_Instructions_Contact'] ? formInputs['pu_PickUp_Instructions_Contact'] : ''} 
                                                                     onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -4477,7 +4477,7 @@ class BookingPage extends Component {
                                                                     name="de_to_PickUp_Instructions_Address"
                                                                     rows="1"
                                                                     cols="9"
-                                                                    value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''} 
+                                                                    value={formInputs['de_to_PickUp_Instructions_Address'] ? formInputs['de_to_PickUp_Instructions_Address'] : ''}
                                                                     onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -4488,15 +4488,15 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
-                                                                <p className="show-mode">{formInputs['pu_PickUp_Instructions_Contact']}</p>
+                                                                <p className="show-mode">{formInputs['de_to_Pick_Up_Instructions_Contact']}</p>
                                                                 :
                                                                 <textarea 
                                                                     width="100%"
                                                                     className="textarea-width"
-                                                                    name="pu_PickUp_Instructions_Contact"
+                                                                    name="de_to_Pick_Up_Instructions_Contact"
                                                                     rows="1"
                                                                     cols="9"
-                                                                    value={formInputs['pu_PickUp_Instructions_Contact'] ? formInputs['pu_PickUp_Instructions_Contact'] : ''} 
+                                                                    value={formInputs['de_to_Pick_Up_Instructions_Contact'] ? formInputs['de_to_Pick_Up_Instructions_Contact'] : ''} 
                                                                     onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
@@ -4516,7 +4516,7 @@ class BookingPage extends Component {
                                                                         name="vx_futile_Booking_Notes"
                                                                         rows="1"
                                                                         cols="9"
-                                                                        value={formInputs['vx_futile_Booking_Notes'] ? formInputs['vx_futile_Booking_Notes'] : ''} 
+                                                                        value={formInputs['vx_futile_Booking_Notes'] ? formInputs['vx_futile_Booking_Notes'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}/>
                                                                 }
                                                             </div>
