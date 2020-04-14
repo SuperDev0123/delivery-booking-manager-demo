@@ -7,7 +7,7 @@ import Clock from 'react-live-clock';
 import _ from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
@@ -1230,7 +1230,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'label_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'label_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -1247,7 +1247,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'pod_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'pod_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -1264,7 +1264,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'pod_signed_1_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'pod_signed_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -2469,10 +2469,10 @@ class BookingPage extends Component {
         }
 
         booking.z_lock_status = !booking.z_lock_status;
-        booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss');
+        booking.z_locked_status_time = moment().format('YYYY-MM-DD HH:mm:ss');
 
         if (!booking.z_lock_status) {
-            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            booking.b_status_API = 'status update ' + moment().format('DD_MM_YYYY');
         }
 
         this.props.updateBooking(booking.id, booking);
@@ -2545,7 +2545,7 @@ class BookingPage extends Component {
         if (fieldName === 'due_date_time') {
             commFormInputs['due_date_time'] = date;
             commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(date).utc().format('HH:mm:ss');
+            commFormInputs['due_by_time'] = moment(date).format('HH:mm:ss');
             this.setState({commFormInputs});
         } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
@@ -4008,7 +4008,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className='col-sm-8'>
                                                             <div className="input-group pad-left-20px">
-                                                                {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                                                                {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -4022,18 +4022,18 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ? 
-                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
-                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).utc().toDate() : null}
+                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).toDate() : null}
                                                                         format={'dd/MM/yyyy hh:mm a'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4044,16 +4044,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).utc().format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
-                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time'], moment.defaultFormatUtc).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time']).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).utc().format('DD/MM/YYYY HH:mm:ss') : null}</p>
+                                                                        <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : null}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4064,16 +4064,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).utc().format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time'], moment.defaultFormatUtc).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time']).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).utc().format('DD/MM/YYYY'): ''}</p>
+                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4450,16 +4450,16 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).toDate() : null}
+                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
                                                                             format={'dd/MM/yyyy hh:mm a'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp'], moment.defaultFormatUtc).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
