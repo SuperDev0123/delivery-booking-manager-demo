@@ -956,6 +956,8 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
+                if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
+                else formInputs['b_handling_Instructions'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
 
@@ -4074,6 +4076,25 @@ class BookingPage extends Component {
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Handling Inst</label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['b_handling_Instructions']}</p>
+                                                                :
+                                                                <textarea 
+                                                                    width="100%"
+                                                                    className="textarea-width"
+                                                                    name="b_handling_Instructions"
+                                                                    rows="1"
+                                                                    cols="9"
+                                                                    value={formInputs['b_handling_Instructions'] ? formInputs['b_handling_Instructions'] : ''}
+                                                                    onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
                                                     </div>
