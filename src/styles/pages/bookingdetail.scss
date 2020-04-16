@@ -1,5 +1,4 @@
-.prev-btn,
-.next-btn {
+.prev-btn, .next-btn, .refresh-btn {
     border: 1px solid grey;
     padding: 0px 12px;
 	font-size: 23px;
@@ -480,18 +479,6 @@ p.lock-status {
 			cursor: pointer;
 		}
 	}
-}
-
-.float-r {
-	float: right;
-}
-
-.float-l {
-	float: left;
-}
-
-.mar-right-20 {
-	margin-right: 20px;
 }
 
 .status-history-form,

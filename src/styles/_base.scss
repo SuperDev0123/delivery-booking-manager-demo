@@ -20,9 +20,11 @@ body {
     animation-name: fadeIn;
 }
 
-.navbar {
-    border-bottom: 4px solid dodgerblue; 
-}
+.navbar { border-bottom: 4px solid dodgerblue }
+
+.float-r { float: right }
+
+.float-l { float: left }
 
 .right { float: right }
 
@@ -39,3 +41,7 @@ body {
 .row:before, .row:after { display: none !important }
 
 .text-center { text-align: center; }
+
+.mar-right-20 { margin-right: 20px }
+
+.mar-left-20 { margin-left: 20px }

@@ -1152,21 +1152,6 @@ class BookingPage extends Component {
         }
     }
 
-    onClickPrev(e){
-        e.preventDefault();
-        const {prevBookingId, isBookingModified} = this.state;
-
-        if (isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
-        } else {
-            if (prevBookingId && prevBookingId > -1) {
-                this.props.getBooking(prevBookingId, 'id');
-            }
-
-            this.setState({loading: true, curViewMode: 0});
-        }
-    }
-
     onClickViewFile(fileOption) {
         const {booking} = this.state;
 
@@ -1307,7 +1292,22 @@ class BookingPage extends Component {
             });
     }
 
-    onClickNext(e){
+    onClickPrev(e){
+        e.preventDefault();
+        const {prevBookingId, isBookingModified} = this.state;
+
+        if (isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            if (prevBookingId && prevBookingId > -1) {
+                this.props.getBooking(prevBookingId, 'id');
+            }
+
+            this.setState({loading: true, curViewMode: 0});
+        }
+    }
+
+    onClickNext(e) {
         e.preventDefault();
         const {nextBookingId, isBookingModified} = this.state;
 
@@ -1318,6 +1318,18 @@ class BookingPage extends Component {
                 this.props.getBooking(nextBookingId, 'id');
             }
 
+            this.setState({loading: true, curViewMode: 0});
+        }
+    }
+
+    onClickRefreshBooking(e) {
+        e.preventDefault();
+        const {isBookingModified, booking} = this.state;
+
+        if (isBookingModified) {
+            alert('You can lose modified booking info. Please update it');
+        } else {
+            this.props.getBooking(booking.id, 'id');
             this.setState({loading: true, curViewMode: 0});
         }
     }
@@ -3140,7 +3152,7 @@ class BookingPage extends Component {
 
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-3">
+                                        <div className="col-sm-4">
                                             <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">
                                                 <i className="fa fa-caret-left"></i>
                                             </button>
@@ -3148,9 +3160,11 @@ class BookingPage extends Component {
                                             <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">
                                                 <i className="fa fa-caret-right"></i>
                                             </button>
+                                            <button onClick={(e) => this.onClickRefreshBooking(e)} disabled={!this.state.booking} className="btn btn-theme mar-left-20 refresh-btn">
+                                                <i className="fa fa-sync"></i>
+                                            </button>
                                             <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
                                         </div>
-                                        <div className="col-sm-1"></div>
                                         <div className="col-sm-3">
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
