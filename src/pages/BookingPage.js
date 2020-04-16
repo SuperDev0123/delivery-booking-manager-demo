@@ -1485,9 +1485,11 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const { booking, isBookedBooking, clientname } = this.state;
+        const { booking, isBookedBooking, clientname, isBookingModified } = this.state;
 
-        if (isBookedBooking) {
+        if (isBookingModified) {
+            this.notify('You can lose modified booking info. Please update it');
+        } else if (isBookedBooking) {
             this.notify('Error: This booking (' + booking.b_bookingID_Visual + ') for ' + clientname + ' - has already been booked"');
         } else {
             this.bulkBookingUpdate([booking.id], 'b_error_Capture', '');
