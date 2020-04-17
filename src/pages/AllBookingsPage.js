@@ -2981,6 +2981,7 @@ class AllBookingsPage extends React.Component {
                     toggleXLSModal={this.toggleXLSModal}
                     allFPs={allFPs}
                     allClients={dmeClients}
+                    clientname={clientname}
                     selectedBookingIds={this.state.selectedBookingIds}
                     generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client)}
                 />
