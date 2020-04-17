@@ -442,14 +442,6 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
-        if (pricingInfos) {
-            if (this.state.pricingInfos.length != pricingInfos.length) {
-                this.props.getBooking(this.state.booking.id, 'id');
-                this.setState({loading: true, curViewMode: 0});
-            }
-            this.setState({pricingInfos, loadingPricingInfos: false});
-        }
-
         if (emailLogs) {
             this.setState({emailLogs});
         }
@@ -998,6 +990,14 @@ class BookingPage extends Component {
                 if (!_.isNull(this.state.typed))
                     alert('There is no such booking with that DME/CON number.');
             }
+        }
+
+        if (pricingInfos) {
+            if (this.state.pricingInfos.length != pricingInfos.length) {
+                this.props.getBooking(this.state.booking.id, 'id');
+                this.setState({loading: true, curViewMode: 0});
+            }
+            this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
         if (attachments) {
