@@ -122,9 +122,9 @@ class List extends Component {
                     <td>{rule.service_timing_code}</td>
                     <td>{rule.calc_type}</td>
                     <td>{rule.charge_rule}</td>
-                    <td>{rule.cost_id}</td>
-                    <td>{rule.timing_id}</td>
-                    <td>{rule.vehicle_id}</td>
+                    <td>{rule.cost}</td>
+                    <td>{rule.etd}</td>
+                    <td>{rule.vehicle}</td>
                     <td>{rule.both_way}</td>
                     <td>{rule.pu_zone}</td>
                     <td>{rule.pu_state}</td>
@@ -189,7 +189,7 @@ class List extends Component {
                                             <th>Calc Type</th>
                                             <th>Charge Rule</th>
                                             <th>Cost Id</th>
-                                            <th>Timing Id</th>
+                                            <th>ETD Id</th>
                                             <th>Vehicle Id</th>
                                             <th>Both Way</th>
                                             <th>Pu Zone</th>

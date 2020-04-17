@@ -223,7 +223,7 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">Vehicles</span>
                             </Link>
                         </li>
-                        <li className={this.activeRoute('timings') ? 'active' : ''}>
+                        <li className={this.activeRoute('timings') ? 'active none' : 'none'}>
                             <Link to="/admin/timings" title="Timings">
                                 <i className="fa fa-fw fa-bell"></i>
                                 <span className="menu-title">Timings</span>
