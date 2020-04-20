@@ -11,6 +11,11 @@
 	button {
 		padding-top: 3px !important;
 		padding-bottom: 3px !important;
+
+		&.lowest, &.fastest {
+			margin-bottom: 10px;
+			margin-right: 10px;
+		}
 	}
 
 	.text-right {

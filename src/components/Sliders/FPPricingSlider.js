@@ -5,6 +5,7 @@ import moment from 'moment';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import LoadingOverlay from 'react-loading-overlay';
+import {sortBy} from 'lodash';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -28,9 +29,21 @@ class FPPricingSlider extends React.Component {
         return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
     }
 
+    onSelectLowest() {
+        const {pricingInfos} = this.props;
+        const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
+        this.props.onSelectPricing(sortedPricingInfos[0]);
+    }
+
+    onSelectFastest() {
+        const {pricingInfos} = this.props;
+        const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
+        this.props.onSelectPricing(sortedPricingInfos[0]);
+    }
+
     render() {
         const {isOpen, booking, clientname} = this.props;
-        let {pricingInfos} = this.props;
+        const {pricingInfos} = this.props;
 
         pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
 
@@ -48,7 +61,7 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
                     <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
                     <td className="text-right">
-                        {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY'): ''}
+                        {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                     </td>
                     <td className="select">
                         <Button
@@ -86,6 +99,22 @@ class FPPricingSlider extends React.Component {
                                 })
                             }}
                         >
+                            <Button
+                                className="lowest"
+                                color="primary"
+                                disabled={pricingInfos.length === 0 && 'disabled'}
+                                onClick={() => this.onSelectLowest('lowest')}
+                            >
+                                Select lowest price
+                            </Button>
+                            <Button
+                                className="fastest"
+                                color="primary"
+                                disabled={pricingInfos.length === 0 && 'disabled'}
+                                onClick={() => this.onSelectFastest('fastest')}
+                            >
+                                Select fastest price
+                            </Button>
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <tr>
                                     <th className="" scope="col" nowrap><p>No</p></th>

@@ -2646,7 +2646,8 @@ class BookingPage extends Component {
         formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['fk_freight_provider_id']);
+        const selectedFP = this.state.allFPs.find(
+            fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
