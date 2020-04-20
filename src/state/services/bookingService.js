@@ -19,6 +19,8 @@ import {
     failedGetUserDateFilterField,
     successFPBook, // FP Actions Begin
     failedFPBook, // "
+    successFPRebook,
+    failedFPRebook,
     successFPPod,
     failedFPPod,
     successFPEditBook, // "
@@ -67,6 +69,16 @@ import {
     successSendEmail,
     failedSendEmail,
     resetAutoSelectedAction,
+    successCheckAugmented,
+    failedCheckAugmented,
+    successAutoAugment,
+    failedAutoAugment,
+    successRevertAugment,
+    failedRevertAugment,
+    successPricingAnalysis,
+    failedPricingAnalysis,
+    successAugmentPuDate,
+    failedAugmentPuDate,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -86,6 +98,7 @@ export const getBookings = (
     multiFindField=null,
     multiFindValues='',
     projectName=null,
+    bookingIds=null,
 ) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -108,6 +121,7 @@ export const getBookings = (
             multiFindField: multiFindField,
             multiFindValues: multiFindValues,
             projectName: projectName,
+            bookingIds: bookingIds,
         }
     };
     return dispatch => {
@@ -138,6 +152,7 @@ export const setAllGetBookingsFilter = (
     multiFindField=null,
     multiFindValues='',
     projectName=null,
+    bookingIds=null,
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
         startDate,
@@ -155,6 +170,7 @@ export const setAllGetBookingsFilter = (
         multiFindField,
         multiFindValues,
         projectName,
+        bookingIds,
     ));
 };
 
@@ -301,6 +317,83 @@ export const saveBooking = (booking) => {
     };
 };
 
+export const checkAugmentedBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/check_augmented/?bookingId=` + bookingId,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCheckAugmented(data)))
+            .catch((error) => dispatch(failedCheckAugmented(error)));
+};
+
+export const autoAugmentBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/auto_augment/`,
+        data: {'bookingId': bookingId}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successAutoAugment(data)))
+            .catch((error) => dispatch(failedAutoAugment(error)));
+    };
+};
+
+export const revertAugmentBooking = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/revert_augment/`,
+        data: {'bookingId': bookingId}
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successRevertAugment(data)))
+            .catch((error) => dispatch(failedRevertAugment(error)));
+    };
+};
+
+
+export const getPricingAnalysis = (bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/pricing_analysis/`,
+        data: {'bookingIds': bookingIds}
+    };
+
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successPricingAnalysis(data)))
+            .catch((error) => dispatch(failedPricingAnalysis(error)));
+    };
+};
+
+export const augmentPuDate = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/set_pu_date_augment/`,
+        data: {'bookingId': bookingId}
+    };
+
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successAugmentPuDate(data)))
+            .catch((error) => dispatch(failedAugmentPuDate(error)));
+    };
+};
+
+
 export const allTrigger = () => {
     const token = localStorage.getItem('token');
     const options = {
@@ -328,6 +421,21 @@ export const fpBook = (bookingId, vx_freight_provider) => {
             .then(({data}) => dispatch(successFPBook(data)))
             .catch((error) => dispatch(failedFPBook(error)));
 };
+
+export const fpRebook = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/rebook/`
+    };
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successFPRebook(data)))
+            .catch((error) => dispatch(failedFPRebook(error)));
+};
+
 
 export const fpEditBook = (bookingId, vx_freight_provider) => {
     const token = localStorage.getItem('token');

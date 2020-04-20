@@ -6,7 +6,7 @@ import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter }
 class StatusLockModal extends Component {
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowStatusLockModal: PropTypes.func.isRequired,
+        toggleStatusLockModal: PropTypes.func.isRequired,
         onClickUpdate: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
     };
@@ -15,8 +15,8 @@ class StatusLockModal extends Component {
         const {isOpen, booking} = this.props;
 
         return (
-            <ReactstrapModal isOpen={isOpen} toggle={() => this.props.toggleShowStatusLockModal()} className="status-lock-modal">
-                <ModalHeader toggle={() => this.props.toggleShowStatusLockModal()}>Booking Lock Status Change</ModalHeader>
+            <ReactstrapModal isOpen={isOpen} toggle={() => this.props.toggleStatusLockModal()} className="status-lock-modal">
+                <ModalHeader toggle={() => this.props.toggleStatusLockModal()}>Booking Lock Status Change</ModalHeader>
                 <ModalBody>
                     <label>
                         {
@@ -27,7 +27,7 @@ class StatusLockModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.props.onClickUpdate(booking)}>Force Update</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowStatusLockModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleStatusLockModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

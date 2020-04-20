@@ -13,7 +13,7 @@ class ProjectNameModal extends Component {
 
     static propTypes = {
         isShowProjectNameModal: PropTypes.bool,
-        toggleShowProjectNameModal: PropTypes.func,
+        toggleProjectNameModal: PropTypes.func,
         onUpdate: PropTypes.func.required,
         name: PropTypes.string.required,
     };
@@ -39,8 +39,8 @@ class ProjectNameModal extends Component {
         const {isShowProjectNameModal} = this.props;
 
         return (
-            <ReactstrapModal isOpen={isShowProjectNameModal} toggle={() => this.props.toggleShowProjectNameModal()} className="status-note-modal">
-                <ModalHeader toggle={() => this.props.toggleShowProjectNameModal()}>Set Project Name</ModalHeader>
+            <ReactstrapModal isOpen={isShowProjectNameModal} toggle={() => this.props.toggleProjectNameModal()} className="status-note-modal">
+                <ModalHeader toggle={() => this.props.toggleProjectNameModal()}>Set Project Name</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Project Name: </p>
@@ -53,7 +53,7 @@ class ProjectNameModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.onUpdate()}>Save</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowProjectNameModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleProjectNameModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

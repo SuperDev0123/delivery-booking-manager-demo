@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 
 import moment from 'moment-timezone';
 import _ from 'lodash';
@@ -20,10 +21,11 @@ class PodsPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        clientname: PropTypes.string,
     };
 
     componentDidMount() {
@@ -98,9 +100,14 @@ class PodsPage extends React.Component {
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
-                            <li><a href="/booking">Header</a></li>
-                            <li><a href="/allbookings">All Bookings</a></li>
+                            <li><Link to="/booking">Header</Link></li>
+                            <li className=""><Link to="/allbookings">All Bookings</Link></li>
                             <li className="active"><a href="/pods">PODs</a></li>
+                            {this.props.clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                            {this.props.clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
+                            <li className=""><Link to="/reports">Reports</Link></li>
+                            <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
@@ -154,6 +161,7 @@ const mapStateToProps = (state) => {
         bookings: state.booking.bookings,
         redirect: state.auth.redirect,
         dmeClients: state.auth.dmeClients,
+        clientname: state.auth.clientname,
     };
 };
 
@@ -165,4 +173,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(PodsPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(PodsPage));

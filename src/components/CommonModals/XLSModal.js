@@ -27,11 +27,12 @@ class XLSModal extends Component {
 
     static propTypes = {
         isShowXLSModal: PropTypes.bool,
-        toggleShowXLSModal: PropTypes.func,
+        toggleXLSModal: PropTypes.func,
         generateXLS: PropTypes.func.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         allFPs: PropTypes.array.isRequired,
         allClients: PropTypes.array.isRequired,
+        clientname: PropTypes.string,
     };
 
     static defaultProps = {
@@ -137,11 +138,11 @@ class XLSModal extends Component {
             this.props.selectedBookingIds,
             b_client_name
         );
-        this.props.toggleShowXLSModal();
+        this.props.toggleXLSModal();
     }
 
     render() {
-        const {isShowXLSModal, allFPs, allClients, selectedBookingIds} = this.props;
+        const {isShowXLSModal, allFPs, allClients, selectedBookingIds, clientname} = this.props;
         const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName, useSelected, b_client_name} = this.state;
         let buttonStatus = false;
 
@@ -171,8 +172,8 @@ class XLSModal extends Component {
         });
 
         return (
-            <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleShowXLSModal()} className="xls-modal">
-                <ModalHeader toggle={() => this.props.toggleShowXLSModal()}>XLS Download</ModalHeader>
+            <ReactstrapModal isOpen={isShowXLSModal} toggle={() => this.props.toggleXLSModal()} className="xls-modal">
+                <ModalHeader toggle={() => this.props.toggleXLSModal()}>XLS Download</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Report Type: </p>
@@ -185,6 +186,7 @@ class XLSModal extends Component {
                             <option value="booking">Booking Report</option>
                             <option value="booking_line">Booking Line Report</option>
                             <option value="booking_with_gaps">Booking w/gaps</option>
+                            {clientname === 'dme' && <option value="dme_booking_with_gaps">DME Booking with GAPS report</option>}
                             <option value="whse">FP/Whse Report</option>
                             <option value="all">All</option>
                         </select>
@@ -258,7 +260,7 @@ class XLSModal extends Component {
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="secondary left" onClick={() => this.props.toggleShowXLSModal()}>Cancel</Button>
+                    <Button color="secondary left" onClick={() => this.props.toggleXLSModal()}>Cancel</Button>
                     <Button color="primary" disabled={!buttonStatus} onClick={() => this.onClickBuildAndSend()}>Build & Send</Button>
                 </ModalFooter>
             </ReactstrapModal>

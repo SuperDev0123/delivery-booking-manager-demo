@@ -1,36 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	    <title>Deliver Me</title>
+	    <base href="/">
+	    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet"crossorigin="anonymous">
+	</head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Deliver Me</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="//cdn.polyfill.io/v2/polyfill.min.js"></script>
-</head>
-
-<body>
-    <div id="app"></div>
-</body>
-
-<script type="text/javascript">
-	var $zoho = $zoho || {};
-		$zoho.salesiq = $zoho.salesiq || {
-			widgetcode: "f922c3ea25c7ce660fe029c4d83da17c3d2b74b8e16eea2312eed88efc6ac8bc",
-			values:{},
-			ready: function(){}
-		};
-	var d=document;
-	s=d.createElement("script");
-	s.type="text/javascript";
-	s.id="zsiqscript";
-	s.defer=true;
-	s.src="https://salesiq.zoho.com.au/widget";
-	t=d.getElementsByTagName("script")[0];
-	t.parentNode.insertBefore(s,t);
-	d.write("<div id='zsiqwidget'></div>");
-</script>
-
+	<body>
+	    <div id="app"></div>
+	    <script type="text/javascript">
+			var $zoho = $zoho || {};
+				$zoho.salesiq = $zoho.salesiq || {
+					widgetcode: "f922c3ea25c7ce660fe029c4d83da17c3d2b74b8e16eea2312eed88efc6ac8bc",
+					values:{},
+					ready: function(){}
+				};
+			var d=document;
+			s=d.createElement("script");
+			s.type="text/javascript";
+			s.id="zsiqscript";
+			s.defer=true;
+			s.src="https://salesiq.zoho.com.au/widget";
+			t=d.getElementsByTagName("script")[0];
+			t.parentNode.insertBefore(s,t);
+			d.write("<div id='zsiqwidget'></div>");
+		</script>
+	</body>
 </html>

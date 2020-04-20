@@ -36,7 +36,7 @@ class NoteSlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowNoteSlider: PropTypes.func.isRequired,
+        toggleNoteSlider: PropTypes.func.isRequired,
         createNote: PropTypes.func.isRequired,
         updateNote: PropTypes.func.isRequired,
         deleteNote: PropTypes.func.isRequired,
@@ -192,7 +192,7 @@ class NoteSlider extends React.Component {
                 isOpen={isOpen}
                 title='Note Panel'
                 subtitle={!isShowNoteForm ? 'List view' : 'Form view'}
-                onRequestClose={this.props.toggleShowNoteSlider}
+                onRequestClose={this.props.toggleNoteSlider}
             >
                 <div className="slider-content">
                     {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 
 import _ from 'lodash';
 import moment from 'moment-timezone';
@@ -49,7 +50,7 @@ class CommPage extends React.Component {
         };
 
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleShowNoteSlider = this.toggleShowNoteSlider.bind(this);
+        this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.myRef = React.createRef();
@@ -58,7 +59,7 @@ class CommPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getBooking: PropTypes.func.isRequired,
@@ -327,7 +328,7 @@ class CommPage extends React.Component {
         this.setState(prevState => ({isShowUpdateCommModal: !prevState.isShowUpdateCommModal}));
     }
 
-    toggleShowNoteSlider() {
+    toggleNoteSlider() {
         this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
@@ -461,11 +462,15 @@ class CommPage extends React.Component {
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
-                            <li><a onClick={(e) => this.onClickHeader(e)}>Header</a></li>
-                            <li><a href="/allbookings">All Bookings</a></li>
-                            <li className={clientname === 'dme' ? 'active ' : 'none'}><a>Comms</a></li>
-                            <li><a href="/bookinglines" className="none">Booking Lines</a></li>
-                            <li><a href="/bookinglinedetails" className="none">Booking Line Datas</a></li>
+                            <li><Link to="/booking">Header</Link></li>
+                            <li className=""><Link to="/allbookings">All Bookings</Link></li>
+                            <li className=""><a href="/bookingsets">BookingSets</a></li>
+                            <li className=""><a href="/pods">PODs</a></li>
+                            {clientname === 'dme' && <li className="active"><Link to="/comm">Comm</Link></li>}
+                            {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
+                            <li className=""><Link to="/reports">Reports</Link></li>
+                            <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
@@ -885,7 +890,7 @@ class CommPage extends React.Component {
 
                 <NoteSlider
                     isOpen={isNotePaneOpen}
-                    toggleShowNoteSlider={this.toggleShowNoteSlider}
+                    toggleNoteSlider={this.toggleNoteSlider}
                     notes={notes}
                     createNote={(newNote) => this.props.createNote(newNote)} 
                     updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
@@ -1024,4 +1029,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(CommPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(CommPage));

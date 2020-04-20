@@ -29,6 +29,20 @@ import {
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
     RESET_STORE_BOOKING_LOGS,
+    SUCCESS_GET_EMAIL_LOGS,
+    FAILED_GET_EMAIL_LOGS,
+    RESET_EMAIL_LOGS,
+    SUCCESS_GET_BOOKING_SETS, // BookingSet
+    FAILED_GET_BOOKING_SETS, // *
+    SUCCESS_CREATE_BOOKING_SET, // *
+    FAILED_CREATE_BOOKING_SET, // *
+    SUCCESS_UPDATE_BOOKING_SET, // *
+    FAILED_UPDATE_BOOKING_SET, // *
+    SUCCESS_DELETE_BOOKING_SET, // *
+    FAILED_DELETE_BOOKING_SET, // *
+    RESET_BOOKING_SET_FLAGS, // BookingSet
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -237,5 +251,100 @@ export function failedGetProjectNames(error) {
 export function resetStoreBookingLogs() {
     return {
         type: RESET_STORE_BOOKING_LOGS,
+    };
+}
+
+export function successGetEmailLogs(data) {
+    return {
+        type: SUCCESS_GET_EMAIL_LOGS,
+        payload: data.results,
+    };
+}
+
+export function failedGetEmailLogs(error) {
+    return {
+        type: FAILED_GET_EMAIL_LOGS,
+        errorMessage: 'Unable to get Email Logs. Error:' + error,
+    };
+}
+
+export function resetEmailLogs() {
+    return {
+        type: RESET_EMAIL_LOGS,
+    };
+}
+
+export function successGetBookingSets(data) {
+    return {
+        type: SUCCESS_GET_BOOKING_SETS,
+        payload: data,
+    };
+}
+
+export function failedGetBookingSets(error) {
+    return {
+        type: FAILED_GET_BOOKING_SETS,
+        errorMessage: 'Unable to get bookingset. Error:' + error,
+    };
+}
+
+export function successCreateBookingSet(data) {
+    return {
+        type: SUCCESS_CREATE_BOOKING_SET,
+        payload: data,
+    };
+}
+
+export function failedCreateBookingSet(error) {
+    return {
+        type: FAILED_CREATE_BOOKING_SET,
+        errorMessage: 'Unable to create bookingset. Error:' + error,
+    };
+}
+
+export function successUpdateBookingSet(data) {
+    return {
+        type: SUCCESS_UPDATE_BOOKING_SET,
+        payload: data,
+    };
+}
+
+export function failedUpdateBookingSet(error) {
+    return {
+        type: FAILED_UPDATE_BOOKING_SET,
+        errorMessage: 'Unable to update bookingset. Error:' + error,
+    };
+}
+
+export function successDeleteBookingSet(data) {
+    return {
+        type: SUCCESS_DELETE_BOOKING_SET,
+        payload: data,
+    };
+}
+
+export function failedDeleteBookingSet(error) {
+    return {
+        type: FAILED_DELETE_BOOKING_SET,
+        errorMessage: 'Unable to delete bookingset. Error:' + error,
+    };
+}
+
+export function resetBookingSetFlagsAction() {
+    return {
+        type: RESET_BOOKING_SET_FLAGS,
+    };
+}
+
+export function successSaveStatusHistoryPuInfo(data) {
+    return {
+        payload: data.result,
+        type: SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    };
+}
+
+export function failedSaveStatusHistoryPuInfo() {
+    return {
+        type: FAILED_STATUSHISTORY_SAVE_PU_INFO,
     };
 }

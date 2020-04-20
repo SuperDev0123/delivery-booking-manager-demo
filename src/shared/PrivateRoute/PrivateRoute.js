@@ -6,7 +6,7 @@ export function PrivateRoute({ component: Component, ...rest }) {
     return (
         <Route
             {...rest}
-            render={props =>
+            render = {props =>
                 isLogged() === 'true' ? 
                     (
                         <Component {...props} />
@@ -26,7 +26,7 @@ export function PrivateRoute({ component: Component, ...rest }) {
 }
 
 PrivateRoute.propTypes = {
-    location: PropTypes.object.isRequired,
+    location: PropTypes.object,
     component: PropTypes.object.isRequired,
     match: PropTypes.shape({
         params: PropTypes.shape({
@@ -35,7 +35,6 @@ PrivateRoute.propTypes = {
     }),
 };
 
-const isLogged = () =>
-{
+const isLogged = () => {
     return localStorage.getItem('isLoggedIn');
 };

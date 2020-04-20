@@ -1,3 +1,4 @@
+import moment from 'moment-timezone';
 import {
     DO_NOTHING,
     RESET_TICK_MANUAL_BOOK,
@@ -21,6 +22,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    REBOOK_SUCCESS,
+    REBOOK_FAILED,
     POD_SUCCESS,
     POD_FAILED,
     GET_LABEL_SUCCESS,
@@ -35,6 +38,7 @@ import {
     SET_LOCAL_FILTER_DOWNLOADOPTION,
     SET_LOCAL_FILTER_DMESTATUS,
     SET_LOCAL_FILTER_PROJECTNAME,
+    SET_LOCAL_FILTER_BOOKINGIDS,
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
     GET_LABEL_FAILED,
@@ -67,7 +71,6 @@ import {
     SUCCESS_FP_PRICING,
     FAILED_FP_PRICING,
     RESET_PRICING_INFOS,
-    RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
@@ -76,6 +79,16 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
+    SUCCESS_CHECK_AUGMENTED,
+    FAILED_CHECK_AUGMENTED,
+    SUCCESS_AUTO_AUGMENT,
+    FAILED_AUTO_AUGMENT,
+    SUCCESS_REVERT_AUGMENT,
+    FAILED_REVERT_AUGMENT,
+    SUCCESS_PRICING_ANALYSIS,
+    FAILED_PRICING_ANALYSIS,
+    SUCCESS_AUGMENT_PU_DATE,
+    FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -95,8 +108,8 @@ const defaultState = {
     closed: 0,
     missingLabels: 0,
     toProcess: 0,
-    startDate: '',
-    endDate: '',
+    startDate: moment().tz('Australia/Sydney').toDate(),
+    endDate: moment().tz('Australia/Sydney').toDate(),
     warehouseId: 0,
     pageItemCnt: 100,
     pageInd: 0,
@@ -114,8 +127,11 @@ const defaultState = {
     manifestReports: null,
     projectName: '',
     pricingInfos: [],
+    pricingAnalyses: [],
     pricingInfosFlag: false,
     isAutoSelected: false,
+    isAutoAugmented: false,
+    bookingIds: [],
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -126,6 +142,7 @@ export const BookingReducer = (state = defaultState, {
     errorMessage,
     bBooking,
     bookings,
+    bookingIds,
     bookingsCnt,
     booking,
     mappedBookings,
@@ -165,6 +182,7 @@ export const BookingReducer = (state = defaultState, {
     pageCnt,
     filteredBookingIds,
     isAutoSelected,
+    isAutoAugmented,
 }) => {
     switch (type) {
         case RESET_REFRESH_BOOKINGS_FLAG:
@@ -177,11 +195,6 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 pricingInfos: [],
-            };
-        case RESET_PRICING_INFOS_FLAG:
-            return {
-                ...state,
-                pricingInfosFlag: false,
             };
         case RESET_MANIFEST_REPORT:
             return {
@@ -351,6 +364,15 @@ export const BookingReducer = (state = defaultState, {
                 bookings: [],
             };
 
+        case REBOOK_SUCCESS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+                needUpdateBookings: true,
+                needUpdateBooking: true,
+                bookings: [],
+            };
+
         case POD_SUCCESS:
             return {
                 ...state,
@@ -366,6 +388,13 @@ export const BookingReducer = (state = defaultState, {
             };
             
         case BOOK_FAILED:
+            return {
+                ...state,
+                needUpdateBookings: true,
+                errorMessage: errorMessage,
+                bookings: [],
+            };
+        case REBOOK_FAILED:
             return {
                 ...state,
                 needUpdateBookings: true,
@@ -402,11 +431,11 @@ export const BookingReducer = (state = defaultState, {
                 downloadOption: downloadOption,
                 clientPK: clientPK,
                 pageItemCnt: pageItemCnt,
-                bookings: [],
                 dmeStatus: dmeStatus,
                 multiFindField: multiFindField,
                 multiFindValues: multiFindValues,
                 projectName: projectName,
+                bookingIds: bookingIds,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SELECTEDATE:
@@ -468,6 +497,12 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 projectName: payload,
+                needUpdateBookings: true,
+            };
+        case SET_LOCAL_FILTER_BOOKINGIDS:
+            return {
+                ...state,
+                bookingIds: payload,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_PAGEITEMCNT:
@@ -543,6 +578,47 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 errorMessage: errorMessage,
             };
+
+        case SUCCESS_AUTO_AUGMENT:
+            return {
+                ...state,
+                isAutoAugmented: true,
+                booking: payload
+            };
+        case FAILED_AUTO_AUGMENT:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+            };
+        case SUCCESS_CHECK_AUGMENTED:
+            return {
+                ...state,
+                isAutoAugmented: isAutoAugmented,
+            };
+        case FAILED_CHECK_AUGMENTED:
+            return {
+                ...state,
+            };
+        case SUCCESS_REVERT_AUGMENT:
+            return {
+                ...state,
+                isAutoAugmented: false,
+                booking: payload
+            };
+        case FAILED_REVERT_AUGMENT:
+            return {
+                ...state,
+            };
+        case SUCCESS_AUGMENT_PU_DATE:
+            return {
+                ...state,
+                booking: payload
+            };
+        case FAILED_AUGMENT_PU_DATE:
+            return {
+                ...state,
+                errorMessage: errorMessage,
+            };
         case SET_FETCH_GEO_FLAG:
             return {
                 ...state,
@@ -552,6 +628,16 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 booking: booking,
+            };
+        case SUCCESS_PRICING_ANALYSIS:
+            return {
+                ...state,
+                pricingAnalyses: payload,
+            };
+        case FAILED_PRICING_ANALYSIS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         case CLEAR_ERR_MSG:
             return {

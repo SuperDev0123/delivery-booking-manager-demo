@@ -27,8 +27,8 @@ const isFormValid = (formName, formFields) => {
         if (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 128) {
             return 'Delivery Entity is too long. Need to be shorter than 128 characters';
         } 
-        if (!_.isEmpty(formFields['pu_Address_Street_1']) && formFields['pu_Address_Street_1'].length > 40) {
-            return 'PU Street 1 is too long. Need to be shorter than 40 characters';
+        if (!_.isEmpty(formFields['pu_Address_Street_1']) && formFields['pu_Address_Street_1'].length > 80) {
+            return 'PU Street 1 is too long. Need to be shorter than 80 characters';
         } 
         if (!_.isEmpty(formFields['pu_Address_street_2']) && formFields['pu_Address_street_2'].length > 40) {
             return 'PU Street 2 is too long. Need to be shorter than 40 characters';
@@ -87,6 +87,90 @@ const isFormValid = (formName, formFields) => {
         if (!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 100) {
             return 'DE Instruction is too long. Need to be shorter than 100 characters';
         }
+        if (!_.isEmpty(formFields['pu_email_Group'])) {
+            const emails = formFields['pu_email_Group'].split(',');
+
+            for (let i = 0; i < emails.length; i++) {
+                const email = emails[i].replace(' ', '');
+
+                if (!validateEmail(email)) {
+                    return `Invalid email address: ${email}`;
+                }
+            }
+        }
+        if (!_.isEmpty(formFields['de_Email_Group_Emails'])) {
+            const emails = formFields['de_Email_Group_Emails'].split(',');
+
+            for (let i = 0; i < emails.length; i++) {
+                const email = emails[i].replace(' ', '');
+
+                if (!validateEmail(email)) {
+                    return `Invalid email address: ${email}`;
+                }
+            }
+        }
+    }
+
+    return 'valid';
+};
+
+const isValid4Label = (formFields) => {
+    // TNT Label
+    if (!_.isEmpty(formFields['vx_freight_provider']) &&
+        formFields['vx_freight_provider'] === 'TNT') {
+        if (_.isEmpty(formFields['pu_Phone_Main']) ||
+            (!_.isEmpty(formFields['pu_Phone_Main']) && formFields['pu_Phone_Main'].length > 13)
+        ) {
+            return 'Address.Phone must be between 0 and 13 characters.';
+        }
+
+        if (_.isEmpty(formFields['de_to_Phone_Main']) ||
+            (!_.isEmpty(formFields['de_to_Phone_Main']) && formFields['de_to_Phone_Main'].length > 13)
+        ) {
+            return 'Address.Phone must be between 0 and 13 characters.';
+        }
+
+        if (_.isEmpty(formFields['pu_Address_Street_1']) ||
+            (!_.isEmpty(formFields['pu_Address_Street_1']) && formFields['pu_Address_Street_1'].length > 30)
+        ) {
+            return 'Address.Street1 must be between 0 and 30 characters.';
+        }
+
+        if (_.isEmpty(formFields['de_To_Address_Street_1']) ||
+            (!_.isEmpty(formFields['de_To_Address_Street_1']) && formFields['de_To_Address_Street_1'].length > 30)
+        ) {
+            return 'Address.Street1 must be between 0 and 30 characters.';
+        }
+
+        if (!_.isEmpty(formFields['pu_Address_street_2']) && formFields['pu_Address_street_2'].length > 30) {
+            return 'Address.Street2 must be between 0 and 30 characters.';
+        }
+
+        if (_.isEmpty(formFields['puCompany']) ||
+            (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 30)
+        ) {
+            return 'Address.Name must be between 0 and 30 characters.';
+        }
+
+        if (_.isEmpty(formFields['deToCompanyName']) ||
+            (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 30)
+        ) {
+            return 'Address.Name must be between 0 and 30 characters.';
+        }
+
+        if (_.isEmpty(formFields['pu_pickup_instructions_address']) ||
+            (!_.isEmpty(formFields['pu_pickup_instructions_address']) && formFields['pu_pickup_instructions_address'].length > 80)
+        ) {
+            return 'SpecialInstruction must be between 0 and 80 characters.';
+        }
+    }
+
+    // Sendle Label
+    if (!_.isEmpty(formFields['vx_freight_provider']) && formFields['vx_freight_provider'] === 'Sendle') {
+        if (!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 80
+        ) {
+            return 'SpecialInstruction must be between 0 and 80 characters.';
+        }
     }
 
     return 'valid';
@@ -95,4 +179,5 @@ const isFormValid = (formName, formFields) => {
 module.exports = {
     isFormValid,
     validateEmail,
+    isValid4Label,
 };

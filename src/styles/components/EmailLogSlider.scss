@@ -1,0 +1,19 @@
+.email-logs-pan {
+	.tile > div {
+		width: 90%;
+		margin: 0 auto;
+		text-align: center;
+		height: 32px;
+		background-color: #17a2b8;
+		color: black;
+		font-size: 18px;
+
+		&.active {
+			background-color: lightcoral; 
+		}
+	}
+
+	table {
+		margin-top: 30px;
+	}
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
 // Comonents
 import ManifestReport from './_ManifestReport';
 // Services
@@ -18,7 +19,7 @@ class ReportPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         clientname: PropTypes.string.isRequired,
@@ -59,13 +60,15 @@ class ReportPage extends React.Component {
                 <div id="headr" className="col-md-12">
                     <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                         <ul className="nav nav-tabs">
-                            <li><a href="/booking">Header</a></li>
-                            <li><a href="/allbookings">All Bookings</a></li>
-                            <li><a href="/pods">PODs</a></li>
-                            {
-                                clientname === 'dme' && <li><a href="/comm">Comm</a></li>
-                            }
-                            <li className="active"><a href="/reports">Reports</a></li>
+                            <li><Link to="/booking">Header</Link></li>
+                            <li className=""><Link to="/allbookings">All Bookings</Link></li>
+                            <li className=""><a href="/bookingsets">BookingSets</a></li>
+                            <li className=""><a href="/pods">PODs</a></li>
+                            {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                            {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
+                            <li className="active"><Link to="/reports">Reports</Link></li>
+                            <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
@@ -114,4 +117,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReportPage);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ReportPage));

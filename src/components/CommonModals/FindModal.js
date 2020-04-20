@@ -16,7 +16,7 @@ class FindModal extends Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShowFindModal: PropTypes.func.isRequired,
+        toggleFindModal: PropTypes.func.isRequired,
         onFind: PropTypes.func.isRequired,
     };
 
@@ -52,13 +52,17 @@ class FindModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggleShowFindModal}>Find (Multiple) Modal</ModalHeader>
+                <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
                 <ModalBody>
                     <label>
                         <p>Select field to be searched: </p>
                         <select value={this.state.selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
                             <option value="b_client_sales_inv_num" selected="selected">SINV Number</option>
-                            <option value="v_FPBookingNumber" selected="selected">Consignment number</option>
+                            <option value="v_FPBookingNumber">Consignment Number</option>
+                            <option value="b_bookingID_Visual">DME Booking Number</option>
+                            <option value="fk_fp_pickup_id">FP Pickup ID</option>
+                            <option value="gap_ra">GAP/RA</option>
+                            <option value="clientRefNumber">Client Ref Number</option>
                         </select>
                     </label>
                     <label>
@@ -74,7 +78,7 @@ class FindModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={() => this.onSubmit()}>Find</Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShowFindModal()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggleFindModal()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

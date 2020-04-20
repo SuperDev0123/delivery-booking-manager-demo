@@ -14,7 +14,7 @@ class OrderModal extends Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleShow: PropTypes.func.isRequired,
+        toggle: PropTypes.func.isRequired,
         onCreateOrder: PropTypes.func.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         selectedBookingLinesCnt: PropTypes.number.isRequired,
@@ -33,7 +33,7 @@ class OrderModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggleShow}>FP Order Modal</ModalHeader>
+                <ModalHeader toggle={this.props.toggle}>FP Order Modal</ModalHeader>
                 <ModalBody>
                     <h4>
                         Please review info before creating the order.
@@ -59,7 +59,7 @@ class OrderModal extends Component {
                     >
                         Create
                     </Button>
-                    <Button color="secondary" onClick={() => this.props.toggleShow()}>Cancel</Button>
+                    <Button color="secondary" onClick={() => this.props.toggle()}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>
         );

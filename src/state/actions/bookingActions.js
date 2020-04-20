@@ -22,6 +22,8 @@ import {
     FAILED_GET_USER_DATE_FILTER_FIELD,
     BOOK_SUCCESS,
     BOOK_FAILED,
+    REBOOK_SUCCESS,
+    REBOOK_FAILED,
     POD_SUCCESS,
     POD_FAILED,
     GET_LABEL_SUCCESS,
@@ -33,6 +35,7 @@ import {
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_ACTIVE_TAB_IND,
     SET_LOCAL_FILTER_SIMPLESEARCHKEYWORD,
+    SET_LOCAL_FILTER_BOOKINGIDS,
     SET_LOCAL_FILTER_PROJECTNAME, // Filter end
     SET_FETCH_BOOKINGS_FLAG,
     SUCCESS_UPDATE_BOOKING,
@@ -70,7 +73,6 @@ import {
     SUCCESS_FP_PRICING,
     FAILED_FP_PRICING,
     RESET_PRICING_INFOS,
-    RESET_PRICING_INFOS_FLAG,
     SUCCESS_GET_PRICING_INFOS,
     SET_ERROR_MSG,
     SET_LOCAL_FILTER_PAGEITEMCNT,
@@ -79,6 +81,16 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
+    SUCCESS_CHECK_AUGMENTED,
+    FAILED_CHECK_AUGMENTED,
+    SUCCESS_AUTO_AUGMENT,
+    FAILED_AUTO_AUGMENT,
+    SUCCESS_REVERT_AUGMENT,
+    FAILED_REVERT_AUGMENT,
+    SUCCESS_PRICING_ANALYSIS,
+    FAILED_PRICING_ANALYSIS,
+    SUCCESS_AUGMENT_PU_DATE,
+    FAILED_AUGMENT_PU_DATE,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -166,6 +178,11 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_PROJECTNAME,
             payload: value,
         };
+    } else if (key === 'bookingIds') {
+        return {
+            type: SET_LOCAL_FILTER_BOOKINGIDS,
+            payload: value,
+        };
     }
 }
 
@@ -184,7 +201,8 @@ export function setAllLocalFilter(
     dmeStatus,
     multiFindField,
     multiFindValues,
-    projectName
+    projectName,
+    bookingIds,
 ) {
     return {
         type: SET_LOCAL_FILTER_ALL,
@@ -203,6 +221,7 @@ export function setAllLocalFilter(
         multiFindField: multiFindField,
         multiFindValues: multiFindValues,
         projectName: projectName,
+        bookingIds: bookingIds,
     };
 }
 
@@ -403,6 +422,15 @@ export function successFPBook(data) {
     };
 }
 
+export function successFPRebook(data) {
+    alert(data.message);
+
+    return {
+        type: REBOOK_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
 export function successFPPod(data) {
     alert(`${data.message}`);
 
@@ -426,6 +454,15 @@ export function failedFPBook(error) {
 
     return {
         type: BOOK_FAILED,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function failedFPRebook(error) {
+    alert(`Failed ReBook: ${error.response.data.message}`);
+
+    return {
+        type: REBOOK_FAILED,
         errorMessage: error.response.data.message
     };
 }
@@ -687,12 +724,6 @@ export function failedGetManifestReport(error) {
     };
 }
 
-export function resetPricingInfosFlagAction() {
-    return {
-        type: RESET_PRICING_INFOS_FLAG,
-    };
-}
-
 export function resetPricingInfosAction() {
     return {
         type: RESET_PRICING_INFOS,
@@ -731,5 +762,78 @@ export function failedSendEmail(error) {
 export function resetAutoSelectedAction() {
     return {
         type: RESET_AUTO_SELECTED,
+    };
+}
+
+export function successCheckAugmented(data) {
+    return {
+        type: SUCCESS_CHECK_AUGMENTED,
+        payload: data,
+        isAutoAugmented: data['isAutoAugmented'],
+    };
+}
+
+export function failedCheckAugmented() {
+    return {
+        type: FAILED_CHECK_AUGMENTED,
+    };
+}
+
+export function successAutoAugment(data) {
+    return {
+        type: SUCCESS_AUTO_AUGMENT,
+        payload: data,
+        isAutoAugmented: true
+    };
+}
+
+export function failedAutoAugment(error) {
+    return {
+        type: FAILED_AUTO_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successRevertAugment(data) {
+    return {
+        type: SUCCESS_REVERT_AUGMENT,
+        payload: data,
+        isAutoAugmented: false
+    };
+}
+
+export function failedRevertAugment(error) {
+    return {
+        type: FAILED_REVERT_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successPricingAnalysis(data) {
+    return {
+        type: SUCCESS_PRICING_ANALYSIS,
+        payload: data.results
+    };
+}
+
+export function failedPricingAnalysis(error) {
+    return {
+        type: FAILED_PRICING_ANALYSIS,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successAugmentPuDate(data) {
+    return {
+        type: SUCCESS_AUGMENT_PU_DATE,
+        payload: data,
+        isAutoAugmented: false
+    };
+}
+
+export function failedAugmentPuDate(error) {
+    return {
+        type: FAILED_AUGMENT_PU_DATE,
+        errorMessage: error.response.data.message
     };
 }

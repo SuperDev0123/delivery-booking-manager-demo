@@ -29,6 +29,20 @@ import {
     SUCCESS_GET_PROJECT_NAMES,
     FAILED_GET_PROJECT_NAMES,
     RESET_STORE_BOOKING_LOGS,
+    SUCCESS_GET_EMAIL_LOGS,
+    FAILED_GET_EMAIL_LOGS,
+    RESET_EMAIL_LOGS,
+    SUCCESS_GET_BOOKING_SETS, // BookingSet
+    FAILED_GET_BOOKING_SETS, // *
+    SUCCESS_CREATE_BOOKING_SET, // *
+    FAILED_CREATE_BOOKING_SET, // *
+    SUCCESS_UPDATE_BOOKING_SET, // *
+    FAILED_UPDATE_BOOKING_SET, // *
+    SUCCESS_DELETE_BOOKING_SET, // *
+    FAILED_DELETE_BOOKING_SET, // *
+    RESET_BOOKING_SET_FLAGS, // BookingSet
+    SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
+    FAILED_STATUSHISTORY_SAVE_PU_INFO,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -40,7 +54,12 @@ const defaultState = {
     needUpdateStatusActions: false,
     needUpdateStatusDetails: false,
     needUpdateStatusInfo: false,
+    needUpdateBookingSets: false,
+    isBookingSetDeleted: false,
     projectNames: null,
+    emailLogs: [],
+    bookingset: null,
+    bookingsets: null,
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -61,6 +80,22 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_BOOKING_SET_FLAGS:
+            return {
+                ...state,
+                isBookingSetDeleted: false,
+                needUpdateBookingSets: false,
+            };
+        case SUCCESS_STATUSHISTORY_SAVE_PU_INFO:
+            return {
+                ...state,
+                needUpdateStatusHistories: true,
+            };
+        case RESET_EMAIL_LOGS:
+            return {
+                ...state,
+                emailLogs: [],
+            };
         case RESET_STORE_BOOKING_LOGS:
             return {
                 ...state,
@@ -159,6 +194,36 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 projectNames: payload
             };
+        case SUCCESS_GET_EMAIL_LOGS:
+            return {
+                ...state,
+                emailLogs: payload
+            };
+        case SUCCESS_CREATE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload
+            };
+        case SUCCESS_GET_BOOKING_SETS:
+            return {
+                ...state,
+                bookingsets: payload
+            };
+        case SUCCESS_UPDATE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload,
+                bookingsets: null,
+                needUpdateBookingSets: true,
+            };
+        case SUCCESS_DELETE_BOOKING_SET:
+            return {
+                ...state,
+                bookingset: payload,
+                bookingsets: null,
+                needUpdateBookingSets: true,
+                isBookingSetDeleted: true,
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -171,6 +236,12 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_API_BCLS:
         case FAILED_GET_STATUS_INFO:
         case FAILED_GET_PROJECT_NAMES:
+        case FAILED_GET_EMAIL_LOGS:
+        case FAILED_CREATE_BOOKING_SET:
+        case FAILED_GET_BOOKING_SETS:
+        case FAILED_UPDATE_BOOKING_SET:
+        case FAILED_DELETE_BOOKING_SET:
+        case FAILED_STATUSHISTORY_SAVE_PU_INFO:
             return {
                 ...state,
                 errorMessage: errorMessage,

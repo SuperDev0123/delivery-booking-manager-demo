@@ -1,5 +1,4 @@
-.prev-btn,
-.next-btn {
+.prev-btn, .next-btn, .refresh-btn {
     border: 1px solid grey;
     padding: 0px 12px;
 	font-size: 23px;
@@ -77,7 +76,7 @@ p.dme-id {
 	width: 150px;
 }
 
-.panel-title {
+.booking-panel-title {
 	width: 110%;
 	margin-left: -5%;
 }
@@ -87,7 +86,7 @@ p.dme-id {
 }
 
 .textarea-width {
-	padding-left: 15px !important;
+	padding-left: 5px !important;
 }
 
 .create-comm {
@@ -482,18 +481,6 @@ p.lock-status {
 	}
 }
 
-.float-r {
-	float: right;
-}
-
-.float-l {
-	float: left;
-}
-
-.mar-right-20 {
-	margin-right: 20px;
-}
-
 .status-history-form,
 .booking-form-01, .booking-form-02 {
 	select {
@@ -582,6 +569,10 @@ p.lock-status {
 		float: right;
 		padding-right: 15px;
 		text-align: right;
+	}
+
+	.detail-tab {
+		textarea { height: 38px }
 	}
 }
 

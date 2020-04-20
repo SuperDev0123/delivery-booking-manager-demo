@@ -1,15 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import PropTypes from 'prop-types';
+
+import axios from 'axios';
+import moment from 'moment-timezone';
+
 import LoadingOverlay from 'react-loading-overlay';
 import SlideToggle from 'react-slide-toggle';
-// import Moment from 'moment';
 import ReactHtmlParser from 'react-html-parser';
 
 import { ZOHO_CLIENT_ID, ZOHO_ORG_ID, ZOHO_REDIRECT_URI } from '../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
-import moment from 'moment-timezone';
 
 class ZohoDetailsPage extends React.Component {
     intervalID;
@@ -42,7 +43,7 @@ class ZohoDetailsPage extends React.Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,

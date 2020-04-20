@@ -36,7 +36,7 @@ class UploadPage extends Component {
         this.componentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/share/upload/filename',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/import/',
         };
 
         this.dropzone = null;
@@ -46,7 +46,7 @@ class UploadPage extends Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
-        redirect: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
     };
@@ -96,7 +96,7 @@ class UploadPage extends Component {
         let that = this;
 
         axios({
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/share/upload-status/', // Dev
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/upload/status/', // Dev
             method: 'get',
             params: { filename: this.state.uploadedFileName.substring(this.state.uploadedFileName.indexOf('_') + 1) },
             headers: {
@@ -141,9 +141,10 @@ class UploadPage extends Component {
     handleFileSending(data, xhr, formData) {
         const {clientname, formInputs, username} = this.state;
         formData.append('username', username);
+        formData.append('uploadOption', 'import');
 
         if (clientname === 'dme') {
-            formData.append('uploader', formInputs['uploader']);
+            formData.append('uploader', formInputs['uploader']);            
         }
     }
 
