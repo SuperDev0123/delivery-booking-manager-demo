@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import '../styles/pages/dmeapiinv.scss';
 import { getFiles } from '../state/services/fileService';
-
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import { API_HOST, HTTP_PROTOCOL } from '../config';
+import axios from 'axios';
 
 class FilesPage extends Component {
     constructor(props) {
@@ -62,18 +63,29 @@ class FilesPage extends Component {
         );
     }
 
-    onClickDownload (file_name) {
-        console.log('file_name', file_name);
-    }
-
     buttonFormatter(cell, row) {
-        console.log('cell', cell);
-        console.log('row', row);
         return (
             <button
                 className="btn btn-primary"
                 onClick={() => {
-                    
+                    const token = localStorage.getItem('token');
+            
+                    const options = {
+                        method: 'post',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                        headers: {'Authorization': 'JWT ' + token},
+                        data: {fileName:row.file_name + cell,  downloadOption: 'xls import',},
+                        responseType: 'blob', // important
+                    };
+            
+                    axios(options).then((response) => {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', row.file_name + '.zip');
+                        document.body.appendChild(link);
+                        link.click();
+                    });
                 }}
             >
                 Download
