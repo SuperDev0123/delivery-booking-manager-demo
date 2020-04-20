@@ -67,11 +67,14 @@ class FilesPage extends Component {
     }
 
     buttonFormatter(cell, row) {
-        print('cell', cell);
+        console.log('cell', cell);
+        console.log('row', row);
         return (
             <button
                 className="btn btn-primary"
-                onClick={() => this.onClickDownload(row.file_name)}
+                onClick={() => {
+                    
+                }}
             >
                 Download
             </button>
