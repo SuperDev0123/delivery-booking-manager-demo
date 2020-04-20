@@ -5,12 +5,16 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import '../styles/pages/dmeapiinv.scss';
 import { getFiles } from '../state/services/fileService';
 
+import paginationFactory from 'react-bootstrap-table2-paginator';
+
 class FilesPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            files: []
+            files: [],
+            filteredFiles:[],
+            simpleSearchKeyword: ''
         };
     }
     static propTypes = {
@@ -35,11 +39,55 @@ class FilesPage extends Component {
 
         if (files) {
             this.setState({files});
+            this.setState({filteredFiles: files});
         }
     }
 
+    onInputChange(e) {
+        this.setState({simpleSearchKeyword: e.target.value});
+    }
+
+    noteFormatter(cell, row) {
+        if (row.b_bookingID_Visual) {
+            const url = `/booking?bookingId=${row.booking_id}`;
+            return (
+                <span>
+                    <a href={url}> { cell }</a>
+                </span>
+            );
+        }
+      
+        return (
+            <span></span>
+        );
+    }
+
+    onClickDownload (file_name) {
+        console.log('file_name', file_name);
+    }
+
+    buttonFormatter(cell, row) {
+        print('cell', cell);
+        return (
+            <button
+                className="btn btn-primary"
+                onClick={() => this.onClickDownload(row.file_name)}
+            >
+                Download
+            </button>
+        );
+    }
+
+    onSimpleSearch(e) {
+        e.preventDefault();
+        const {simpleSearchKeyword, files} = this.state;
+
+        const filteredFiles = files.filter((file) => file.file_name.indexOf(simpleSearchKeyword)>-1);
+        this.setState({filteredFiles});
+    }
+
     render() {
-        const { files } = this.state;
+        const { filteredFiles, simpleSearchKeyword } = this.state;
 
         const columns = [
             {
@@ -59,7 +107,15 @@ class FilesPage extends Component {
                 text: 'file_extension'
             }, {
                 dataField: 'note',
-                text: 'note'
+                text: 'note',
+            }, {
+                dataField: 'b_bookingID_Visual',
+                text:'Booking Visual ID',
+                formatter: this.noteFormatter
+            }, {
+                dataField: 'Actions',
+                text: 'Actions',
+                formatter: this.buttonFormatter
             }
         ];
 
@@ -70,15 +126,22 @@ class FilesPage extends Component {
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3>Files (Last 50s)</h3>
+                                    <h3>Files</h3>
+                                    <div>
+                                        <form onSubmit={(e) => this.onSimpleSearch(e)}>
+                                            <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
+                                        </form>
+                                    </div>
                                 </div>
+
                                 <div className="panel-body">
                                     <div className="table-responsive">
                                         <BootstrapTable
                                             keyField="id"
-                                            data={ files }
+                                            data={ filteredFiles }
                                             columns={ columns }
                                             bootstrap4={ true }
+                                            pagination={ paginationFactory() }
                                         />
                                     </div>
                                 </div>
