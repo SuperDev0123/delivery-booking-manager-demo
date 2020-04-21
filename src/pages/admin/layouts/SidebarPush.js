@@ -111,8 +111,8 @@ class SidebarPush extends React.Component {
                                     <li className="divider"></li>
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
-                                            <span className="icon">
-                                                <i className="fa fa-sign-out-alt"></i>
+                                            <span className="icon text-center">
+                                                <i className="fa fa-info"></i>
                                             </span><small>My Account</small>
                                         </a>
                                     </li>
@@ -130,10 +130,17 @@ class SidebarPush extends React.Component {
                                     </li>
                                     <li className="divider"></li>
                                     <li>
+                                        <a href='/home'>
+                                            <span className="icon"><i className="fa fa-user"></i></span>
+                                            <small>Switch to User mode</small>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href='#' onClick={e => { e.preventDefault(); this.logout(); }}>
                                             <span className="icon">
-                                                <i className="fa fa-sign-out"></i>
-                                            </span><small>Logout</small></a>
+                                                <i className="fa fa-sign-out-alt"></i>
+                                            </span><small>Logout</small>
+                                        </a>
                                     </li>
                                 </ul>
                             </DropdownMenu>

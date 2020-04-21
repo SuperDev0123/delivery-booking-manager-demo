@@ -110,6 +110,8 @@ class Header extends Component {
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/upload">Upload Files</a>
                                         <div className="dropdown-divider"></div>
+                                        <a className="dropdown-item" href="/files">Files</a>
+                                        <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/booking">Booking</a>
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/allbookings">All Bookings</a>
