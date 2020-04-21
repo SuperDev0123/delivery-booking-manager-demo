@@ -60,7 +60,7 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
                     <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
-                    <td className="text-right">
+                    <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                         {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                     </td>
                     <td className="select">
