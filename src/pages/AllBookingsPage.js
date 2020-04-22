@@ -1964,13 +1964,13 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td className={
-                        !_.isNull(booking.fk_manifest_id) ?
+                        !_.isNull(booking.manifest_timestamp) ?
                             'bg-yellow'
                             :
                             null
                     }>
                         {
-                            !_.isNull(booking.fk_manifest_id) ? <div className="pod-status">M</div> : null
+                            !_.isNull(booking.manifest_timestamp) ? <div className="pod-status">M</div> : null
                         }
                     </td>
                     <td className={
@@ -2605,8 +2605,8 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th
                                                                 id={'booking-column-header-tooltip-Manifest'}
-                                                                className={(sortField === 'fk_manifest_id') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('fk_manifest_id')} 
+                                                                className={(sortField === 'manifest_timestamp') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('manifest_timestamp')} 
                                                             >
                                                                 M
                                                                 <SimpleTooltipComponent text={'Manifest'} />
