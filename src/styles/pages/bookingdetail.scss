@@ -56,6 +56,16 @@ p.dme-id {
 	.col-sm-4, .col-sm-2, .col-sm-3, .col-sm-1 {
   		padding: 0 5px !important;
   	}
+
+  	.created-for-btn {
+  		text-align: center;
+
+  		button {
+  			margin-bottom: 0px;
+  			margin-top: 4px;
+			padding: 4px 12px;
+  		}
+  	}
 }
 
 .form-group {

@@ -3321,7 +3321,7 @@ class BookingPage extends Component {
                                         }
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-3 form-group">
+                                        <div className="col-sm-2 form-group">
                                             <span>Created For</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
@@ -3350,6 +3350,16 @@ class BookingPage extends Component {
                                                         onChange={(e) => this.onHandleInput(e)}
                                                     />
                                             }
+                                        </div>
+                                        <div className="col-sm-1 form-group created-for-btn">
+                                            <span>Update employee</span>
+                                            <Button
+                                                className="edit-lld-btn btn-primary"
+                                                onClick={() => this.onClickSaveCreatedForEmail()} 
+                                                disabled={parseInt(curViewMode) === 0 && 'disabled'}
+                                            >
+                                                <i className="fa fa-save" aria-hidden="true"></i>
+                                            </Button>
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Category</span>
