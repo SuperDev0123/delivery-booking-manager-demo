@@ -44,6 +44,8 @@ import {
     resetBookingSetFlagsAction, // BookingSet
     successSaveStatusHistoryPuInfo,
     failedSaveStatusHistoryPuInfo,
+    successUpdateClientEmployee,
+    failedUpdateClientEmployee,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -325,4 +327,18 @@ export const saveStatusHistoryPuInfo = (bookingId) => {
         axios(options)
             .then(({ data }) => dispatch(successSaveStatusHistoryPuInfo(data)))
             .catch((error) => dispatch(failedSaveStatusHistoryPuInfo(error)));
+};
+
+export const updateClientEmployee = (clientEmployee) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/${clientEmployee.pk_id_client_emp}/`,
+        data: clientEmployee,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateClientEmployee(data)))
+            .catch((error) => dispatch(failedUpdateClientEmployee(error)));
 };

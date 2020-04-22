@@ -63,7 +63,11 @@ p.dme-id {
   		button {
   			margin-bottom: 0px;
   			margin-top: 4px;
-			padding: 4px 12px;
+			padding: 4px 2px;
+
+			i {
+				font-size: 20px;
+			}
   		}
   	}
 }

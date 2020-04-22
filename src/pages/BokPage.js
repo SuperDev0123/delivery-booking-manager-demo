@@ -255,7 +255,7 @@ class BokPage extends Component {
                                 <div className="panel-body">
                                     <div className="table-responsive">
                                         <BootstrapTable
-                                            keyField="id"
+                                            keyField="pk_auto_id"
                                             data={ BOK_1_headers }
                                             columns={ columns1 }
                                             bootstrap4={ true }
@@ -274,7 +274,7 @@ class BokPage extends Component {
                                 <div className="panel-body">
                                     <div className="table-responsive">
                                         <BootstrapTable
-                                            keyField="id"
+                                            keyField="pk_lines_id"
                                             data={ BOK_2_lines }
                                             columns={ columns2 }
                                             bootstrap4={ true }

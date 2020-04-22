@@ -24,7 +24,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
-import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
+// import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 // Custom Modals
 import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
@@ -41,6 +41,7 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
+import { getCreatedForInfos } from '../state/services/userService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
@@ -48,7 +49,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label } from '../commons/validations';
 
@@ -178,6 +179,7 @@ class BookingPage extends Component {
             apiBCLs: [],
             allFPs: [],
             emailLogs: [],
+            createdForInfos: [],
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
@@ -228,6 +230,7 @@ class BookingPage extends Component {
         this.toggleStatusNoteModal = this.toggleStatusNoteModal.bind(this);
         this.toggleDeleteCommConfirmModal = this.toggleDeleteCommConfirmModal.bind(this);
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
+        this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
     }
@@ -299,8 +302,10 @@ class BookingPage extends Component {
         isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
-        getEmailLogs: PropTypes.func.isRequired,    
-        saveStatusHistoryPuInfo: PropTypes.func.isRequired,    
+        getEmailLogs: PropTypes.func.isRequired,
+        saveStatusHistoryPuInfo: PropTypes.func.isRequired,
+        getCreatedForInfos: PropTypes.func.isRequired,
+        updateClientEmployee: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -327,22 +332,26 @@ class BookingPage extends Component {
         }
 
         let that = this;
-        setTimeout(() => { 
+        setTimeout(() => {
             that.props.getAllBookingStatus();
-            that.props.getDMEClients();
+            that.props.getCreatedForInfos();
             that.props.getWarehouses();
+            that.props.getAllFPs();
+        }, 1000);
+
+        setTimeout(() => {
+            that.props.getDMEClients();
             that.props.getPackageTypes();
             that.props.getStatusDetails();
             that.props.getStatusActions();
             that.props.getAvailableCreators();
-            that.props.getAllFPs();
-        }, 1000);
+        }, 3000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -404,6 +413,10 @@ class BookingPage extends Component {
 
         if (needUpdateNotes) {
             this.props.getNotes(this.state.selectedCommId);
+        }
+
+        if (createdForInfos) {
+            this.setState({createdForInfos});
         }
 
         if (needUpdateStatusDetails) {
@@ -810,7 +823,7 @@ class BookingPage extends Component {
                 else formInputs['b_clientPU_Warehouse'] = '';
                 if (booking.booking_Created_For_Email != null) formInputs['booking_Created_For_Email'] = booking.booking_Created_For_Email;
                 else formInputs['booking_Created_For_Email'] = '';
-                if (booking.booking_Created_For != null) formInputs['booking_Created_For'] = booking.booking_Created_For;
+                if (booking.booking_Created_For) formInputs['booking_Created_For'] = {'value': booking.booking_Created_For, 'label': booking.booking_Created_For};
                 else formInputs['booking_Created_For'] = '';
                 if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = {'value': booking.b_booking_Category, 'label': booking.b_booking_Category};
                 else formInputs['b_booking_Category'] = '';
@@ -1263,33 +1276,61 @@ class BookingPage extends Component {
         this.toggleDeleteFileConfirmModal();
     }
 
-    onClickConfirmDeleteFileBtn() {
+    onClickConfirmBtn(type) {
         const token = localStorage.getItem('token');
         const {booking, selectedFileOption} = this.state;
 
-        const options = {
-            method: 'delete',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
-            headers: {'Authorization': 'JWT ' + token },
-            data: {bookingId: booking.id, deleteFileOption: selectedFileOption},
-        };
+        if (type === 'delete-file') {
+            const options = {
+                method: 'delete',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
+                headers: {'Authorization': 'JWT ' + token },
+                data: {bookingId: booking.id, deleteFileOption: selectedFileOption},
+            };
 
-        axios(options)
-            .then((response) => {
-                console.log('#301 - ', response.data);
+            axios(options)
+                .then((response) => {
+                    console.log('#301 - ', response.data);
 
-                if (selectedFileOption === 'label') {
-                    booking.z_label_url = null;
-                } else if (selectedFileOption === 'pod') {
-                    booking.z_pod_url = null;
+                    if (selectedFileOption === 'label') {
+                        booking.z_label_url = null;
+                    } else if (selectedFileOption === 'pod') {
+                        booking.z_pod_url = null;
+                    }
+
+                    this.toggleDeleteFileConfirmModal();
+                })
+                .catch(error => {
+                    this.notify('Failed to delete a file: ' + error);
+                    this.toggleDeleteFileConfirmModal();
+                });    
+        } else if (type === 'delete-comm') {
+            this.props.deleteComm(this.state.selectedCommId);
+            this.toggleDeleteCommConfirmModal();
+        } else if (type === 'booking_Created_For') {
+            const selectedCreatedFor = this.state.createdForInfos.filter(item => {
+                const name_last = item.name_last ? item.name_last : '';
+                const name_first = item.name_first ? item.name_first : '';
+
+                if (`${name_first} ${name_last}` === this.state.booking.booking_Created_For) {
+                    return true;
                 }
-
-                this.toggleDeleteFileConfirmModal();
-            })
-            .catch(error => {
-                this.notify('Failed to delete a file: ' + error);
-                this.toggleDeleteFileConfirmModal();
             });
+
+            if (selectedCreatedFor.length > 0 && this.state.booking.booking_Created_For_Email) {
+                const newEmployeeObj = {
+                    'pk_id_client_emp': selectedCreatedFor[0]['id'],
+                    'email': this.state.booking.booking_Created_For_Email
+                };
+                this.props.updateClientEmployee(newEmployeeObj);
+
+                setTimeout(() => {
+                    this.props.getCreatedForInfos();
+                }, 2000);
+            }
+
+            this.toggleUpdateCreatedForEmailConfirmModal();
+        }
     }
 
     onClickPrev(e){
@@ -1664,7 +1705,7 @@ class BookingPage extends Component {
     };
 
     handleChangeSelect = (selectedOption, fieldName) => {
-        const {formInputs, booking} = this.state;
+        const {formInputs, booking, createdForInfos} = this.state;
 
         if (fieldName === 'warehouse') {
             formInputs['b_client_warehouse_code'] = selectedOption.value;
@@ -1686,6 +1727,15 @@ class BookingPage extends Component {
         } else if (fieldName === 'b_booking_Category') {
             formInputs['b_booking_Category'] = {'value': selectedOption.value, 'label': selectedOption.value};
             booking['b_booking_Category'] = selectedOption.value;
+        } else if (fieldName == 'booking_Created_For') {
+            const createdForInfo = createdForInfos.filter(info => info.id === selectedOption.value);
+            formInputs['booking_Created_For'] = {'value': selectedOption.value, 'label': selectedOption.label};
+            booking['booking_Created_For'] = selectedOption.label;
+
+            if (createdForInfo.length > 0) {
+                formInputs['booking_Created_For_Email'] = createdForInfo[0]['email'];
+                booking['booking_Created_For_Email'] = createdForInfo[0]['email'];
+            }
         }
 
         this.setState({formInputs, booking, isBookingModified: true});
@@ -2086,6 +2136,10 @@ class BookingPage extends Component {
 
     toggleDeleteFileConfirmModal() {
         this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
+    }
+
+    toggleUpdateCreatedForEmailConfirmModal() {
+        this.setState(prevState => ({isShowUpdateCreatedForEmailConfirmModal: !prevState.isShowUpdateCreatedForEmailConfirmModal}));
     }
 
     toggleStatusHistorySlider() {
@@ -2527,8 +2581,6 @@ class BookingPage extends Component {
     }
 
     onClickConfirmDeleteCommBtn() {
-        this.props.deleteComm(this.state.selectedCommId);
-        this.toggleDeleteCommConfirmModal();
     }
 
     onDateChange(date, fieldName) {
@@ -2789,27 +2841,27 @@ class BookingPage extends Component {
             );
         };
 
-        const limitedHeightTitle = (cell, row) => {
-            return (
-                <div>
-                    <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_com_title' + '-tooltip-' + row.id}>
-                        {cell}
-                    </div>
-                    <CommTooltipItem comm={row} field={'dme_com_title'} />
-                </div>
-            );
-        };
+        // const limitedHeightTitle = (cell, row) => {
+        //     return (
+        //         <div>
+        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_com_title' + '-tooltip-' + row.id}>
+        //                 {cell}
+        //             </div>
+        //             <CommTooltipItem comm={row} field={'dme_com_title'} />
+        //         </div>
+        //     );
+        // };
 
-        const limitedHeightAction = (cell, row) => {
-            return (
-                <div>
-                    <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_action' + '-tooltip-' + row.id}>
-                        {cell}
-                    </div>
-                    <CommTooltipItem comm={row} field={'dme_action'} />
-                </div>
-            );
-        };
+        // const limitedHeightAction = (cell, row) => {
+        //     return (
+        //         <div>
+        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_action' + '-tooltip-' + row.id}>
+        //                 {cell}
+        //             </div>
+        //             <CommTooltipItem comm={row} field={'dme_action'} />
+        //         </div>
+        //     );
+        // };
 
         const columnCommunication = [
             {
@@ -2837,7 +2889,7 @@ class BookingPage extends Component {
                 style: {
                     width: '300px',
                 },
-                formatter: limitedHeightTitle,
+                // formatter: limitedHeightTitle,
             }, {
                 dataField: 'z_createdTimeStamp',
                 text: 'Date/Time Created',
@@ -2852,7 +2904,7 @@ class BookingPage extends Component {
                 style: {
                     width: '300px',
                 },
-                formatter: limitedHeightAction,
+                // formatter: limitedHeightAction,
             }, {
                 dataField: 'id',
                 text: 'Update',
@@ -3023,6 +3075,12 @@ class BookingPage extends Component {
             return (
                 <option key={index} value={availableCreator.username}>{availableCreator.first_name} {availableCreator.last_name}</option>
             );
+        });
+
+        const createdForInfosList = this.state.createdForInfos.map((createdForInfo) => {
+            const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
+            const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
+            return {value: createdForInfo.id, label: name_first + ' ' + name_last};
         });
 
         const statusActionOptions = statusActions.map((statusAction, key) => {
@@ -3321,42 +3379,40 @@ class BookingPage extends Component {
                                         }
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-2 form-group">
+                                        <div className={(parseInt(curViewMode) === 0) ? 'col-sm-3 form-group' : 'col-sm-2 form-group'}>
                                             <span>Created For</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['booking_Created_For']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="booking_Created_For"
-                                                        value = {formInputs['booking_Created_For'] ? formInputs['booking_Created_For'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['booking_Created_For'] && formInputs['booking_Created_For'].value}</p>
+                                                :
+                                                <Select
+                                                    value={formInputs['booking_Created_For']}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'booking_Created_For')}
+                                                    options={createdForInfosList}
+                                                    placeholder='Please select'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Created For Email</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="booking_Created_For_Email"
-                                                        value = {formInputs['booking_Created_For_Email'] ? formInputs['booking_Created_For_Email'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{formInputs['booking_Created_For_Email']}</p>
+                                                :
+                                                <input
+                                                    className="form-control"
+                                                    type="text"
+                                                    name="booking_Created_For_Email"
+                                                    value = {formInputs['booking_Created_For_Email'] ? formInputs['booking_Created_For_Email'] : ''}
+                                                    onChange={(e) => this.onHandleInput(e)}
+                                                />
                                             }
                                         </div>
-                                        <div className="col-sm-1 form-group created-for-btn">
-                                            <span>Update employee</span>
+                                        <div className={(parseInt(curViewMode) === 0) ? 'none' : 'col-sm-1 form-group created-for-btn'}>
+                                            <span>Update email</span>
                                             <Button
                                                 className="edit-lld-btn btn-primary"
-                                                onClick={() => this.onClickSaveCreatedForEmail()} 
-                                                disabled={parseInt(curViewMode) === 0 && 'disabled'}
+                                                onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
+                                                disabled={parseInt(curViewMode) === 0 || !this.state.booking.booking_Created_For_Email ? 'disabled' : ''}
                                             >
                                                 <i className="fa fa-save" aria-hidden="true"></i>
                                             </Button>
@@ -5010,7 +5066,7 @@ class BookingPage extends Component {
                                                     Edit Tracking
                                                 </Button>
                                                 <BootstrapTable
-                                                    keyField="id"
+                                                    keyField="qty"
                                                     data={ bookingTotals }
                                                     columns={ columnBookingTotals }
                                                     bootstrap4={ true }
@@ -5448,7 +5504,7 @@ class BookingPage extends Component {
 
                 <ConfirmModal
                     isOpen={this.state.isShowDeleteCommConfirmModal}
-                    onOk={() => this.onClickConfirmDeleteCommBtn()}
+                    onOk={() => this.onClickConfirmBtn('delete-comm')}
                     onCancel={this.toggleDeleteCommConfirmModal}
                     title={'Delete Comm Log'}
                     text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
@@ -5457,12 +5513,23 @@ class BookingPage extends Component {
 
                 <ConfirmModal
                     isOpen={this.state.isShowDeleteFileConfirmModal}
-                    onOk={() => this.onClickConfirmDeleteFileBtn()}
+                    onOk={() => this.onClickConfirmBtn('delete-file')}
                     onCancel={this.toggleDeleteFileConfirmModal}
                     title={this.state.selectedFileOption === 'label' ? 'Delete Label' : 'Delete POD'}
                     text={'Are you sure you want to delete this file?'}
                     okBtnName={'Delete'}
                 />
+
+                {booking && booking.booking_Created_For &&
+                    <ConfirmModal
+                        isOpen={this.state.isShowUpdateCreatedForEmailConfirmModal}
+                        onOk={() => this.onClickConfirmBtn('booking_Created_For')}
+                        onCancel={this.toggleUpdateCreatedForEmailConfirmModal}
+                        title={'Update Client Employee`s email'}
+                        text={`Are you sure you want to update email for ${booking.booking_Created_For.toUpperCase()}?`}
+                        okBtnName={'Update'}
+                    />
+                }
 
                 <ProjectDataSlider
                     isOpen={this.state.isShowProjectDataSlider}
@@ -5543,6 +5610,7 @@ const mapStateToProps = (state) => {
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         emailLogs: state.extra.emailLogs,
+        createdForInfos: state.user.createdForInfos,
         extraErrorMessage: state.extra.errorMessage,
         bookingErrorMessage: state.booking.errorMessage,
     };
@@ -5614,6 +5682,8 @@ const mapDispatchToProps = (dispatch) => {
         sendEmail: (bookingId, templateName) => dispatch(sendEmail(bookingId, templateName)),
         getEmailLogs: (bookingId) => dispatch(getEmailLogs(bookingId)),
         saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
+        getCreatedForInfos: () => dispatch(getCreatedForInfos()),
+        updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
     };
 };
 

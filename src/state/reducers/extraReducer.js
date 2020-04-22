@@ -43,6 +43,8 @@ import {
     RESET_BOOKING_SET_FLAGS, // BookingSet
     SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
+    SUCCESS_UPDATE_CLIENT_EMPLOYEE,
+    FAILED_UPDATE_CLIENT_EMPLOYEE,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -242,6 +244,8 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_UPDATE_BOOKING_SET:
         case FAILED_DELETE_BOOKING_SET:
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:
+        case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
+        case FAILED_UPDATE_CLIENT_EMPLOYEE:
             return {
                 ...state,
                 errorMessage: errorMessage,

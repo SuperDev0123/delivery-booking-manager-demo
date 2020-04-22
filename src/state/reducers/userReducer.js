@@ -10,20 +10,26 @@ import {
     SUCCESS_DELETE_USER,
     FAILED_DELETE_USER,
     SET_FETCH_USERS_FLAG,
-    SET_LOCAL_FILTER_CLIENTPK
+    SET_LOCAL_FILTER_CLIENTPK,
+    SUCCESS_GET_CREATED_FOR_INFOS,
+    FAILED_GET_CREATED_FOR_INFOS
 } from '../constants/userConstants';
 
 const defaultState = {
     allUsers: [],
     userDetails: {},
+    createdForInfos: [],
+    errorMessage: null
 };
 
 export const UserReducer = (state = defaultState, {
+    payload,
     type,
     allUsers,
     userDetails,
     clientPK,
-    needUpdateUsers
+    needUpdateUsers,
+    errorMessage
 }) => {
     switch (type) {
         case SUCCESS_GET_USERS:
@@ -32,31 +38,26 @@ export const UserReducer = (state = defaultState, {
                 allUsers: allUsers,
                 needUpdateUsers: false,
             };
-        case FAILED_GET_USERS:
         case SUCCESS_GET_USER:
             return {
                 ...state,
                 userDetails: userDetails
             };
-        case FAILED_GET_USER:
         case SUCCESS_CREATE_USER:
             return {
                 ...state,
                 needUpdateUserDetails: true
             };
-        case FAILED_CREATE_USER:
         case SUCCESS_UPDATE_USER:
             return {
                 ...state,
                 needUpdateUserDetails: true
             };
-        case FAILED_UPDATE_USER:
         case SUCCESS_DELETE_USER:
             return {
                 ...state,
                 needUpdateUserDetails: true
             };
-        case FAILED_DELETE_USER:
         case SET_FETCH_USERS_FLAG:
             return {
                 ...state,
@@ -68,6 +69,21 @@ export const UserReducer = (state = defaultState, {
                 clientPK: clientPK,
                 needUpdateUsers: true,
                 users: [],
+            };
+        case SUCCESS_GET_CREATED_FOR_INFOS:
+            return {
+                ...state,
+                createdForInfos: payload
+            };
+        case FAILED_GET_USERS:
+        case FAILED_GET_USER:
+        case FAILED_CREATE_USER:
+        case FAILED_UPDATE_USER:
+        case FAILED_DELETE_USER:
+        case FAILED_GET_CREATED_FOR_INFOS:
+            return {
+                ...state,
+                errorMessage: errorMessage,
             };
         default:
             return state;

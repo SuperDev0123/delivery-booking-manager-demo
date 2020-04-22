@@ -43,6 +43,8 @@ import {
     RESET_BOOKING_SET_FLAGS, // BookingSet
     SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
+    SUCCESS_UPDATE_CLIENT_EMPLOYEE,
+    FAILED_UPDATE_CLIENT_EMPLOYEE,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -346,5 +348,19 @@ export function successSaveStatusHistoryPuInfo(data) {
 export function failedSaveStatusHistoryPuInfo() {
     return {
         type: FAILED_STATUSHISTORY_SAVE_PU_INFO,
+    };
+}
+
+export function successUpdateClientEmployee() {
+    return {
+        type: SUCCESS_UPDATE_CLIENT_EMPLOYEE,
+        errorMessage: 'Successfully updated ClientEmployee',
+    };
+}
+
+export function failedUpdateClientEmployee(error) {
+    return {
+        type: FAILED_UPDATE_CLIENT_EMPLOYEE,
+        errorMessage: 'Unable to update ClientEmployee. Error:' + error,
     };
 }
