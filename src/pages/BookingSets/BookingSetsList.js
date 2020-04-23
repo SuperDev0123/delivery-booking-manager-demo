@@ -31,7 +31,7 @@ class BookingSetList extends React.Component {
             clientname: null,
             isShowDeleteConfirmModal: false,
             isShowPricingConfirmModal: false,
-            isShowPopConfirmModal: false,
+            isShowDropConfirmModal: false,
             isShowBookConfirmModal: false,
             isShowFPPricingSlider: false,
             selectedBookingSet: null,
@@ -63,7 +63,7 @@ class BookingSetList extends React.Component {
         this.togglePricingConfirmModal = this.togglePricingConfirmModal.bind(this);
         this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
-        this.togglePopConfirmModal = this.togglePopConfirmModal.bind(this);
+        this.toggleDropConfirmModal = this.toggleDropConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -193,8 +193,8 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowPricingConfirmModal: !prevState.isShowPricingConfirmModal}));
     }
 
-    togglePopConfirmModal() {
-        this.setState(prevState => ({isShowPopConfirmModal: !prevState.isShowPopConfirmModal}));
+    toggleDropConfirmModal() {
+        this.setState(prevState => ({isShowDropConfirmModal: !prevState.isShowDropConfirmModal}));
     }
 
     toggleBookConfirmModal() {
@@ -248,7 +248,7 @@ class BookingSetList extends React.Component {
     }
 
     onClickShowBtn(selectedBookingSet) {
-        this.setState({selectedBookingSet, viewMode: 1});
+        this.setState({selectedBookingSet, viewMode: 1, selectedBookingIds: []});
         this.props.setAllGetBookingsFilter('*', '2099-01-01', 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, null, selectedBookingSet.booking_ids);
     }
 
@@ -360,7 +360,7 @@ class BookingSetList extends React.Component {
         this.toggleFPPricingSlider();
     }
 
-    onConfirmPop() {
+    onConfirmDrop() {
         const {selectedBookingSet, selectedBookingIds, bookings} = this.state;
         const bookingIds = _.map(bookings, 'id');
         const remainingBookingIds = _.difference(bookingIds, selectedBookingIds);
@@ -369,7 +369,7 @@ class BookingSetList extends React.Component {
         selectedBookingSet['booking_ids'] = joinStr;
         this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
         this.setState({selectedBooking: [], allCheckStatus: 'None'});
-        this.togglePopConfirmModal();
+        this.toggleDropConfirmModal();
     }
 
     render() {
@@ -574,10 +574,10 @@ class BookingSetList extends React.Component {
                                 <div className='buttons'>
                                     <Button className="btn btn-primary" onClick={() => this.setState({viewMode: 0})}>Back to List</Button>
                                     <Button
-                                        className="btn btn-danger float-right" onClick={() => this.togglePopConfirmModal()}
+                                        className="btn btn-danger float-right" onClick={() => this.toggleDropConfirmModal()}
                                         disabled={selectedBookingIds.length === 0 && 'disabled'}
                                     >
-                                        Pop from SET
+                                        Drop from SET
                                     </Button>
                                 </div>
                                 <div className="table-responsive" onScroll={this.handleScroll} ref={this.myRef}>
@@ -960,12 +960,12 @@ class BookingSetList extends React.Component {
                 />
 
                 <ConfirmModal
-                    isOpen={this.state.isShowPopConfirmModal}
-                    onOk={() => this.onConfirmPop()}
-                    onCancel={this.togglePopConfirmModal}
-                    title={'Pop bookings from this set'}
-                    text={`Are you sure you want to pop ${selectedBookingIds.length} booking(s) from this set?`}
-                    okBtnName={'Confirm'}
+                    isOpen={this.state.isShowDropConfirmModal}
+                    onOk={() => this.onConfirmDrop()}
+                    onCancel={this.toggleDropConfirmModal}
+                    title={'Drop bookings from this set'}
+                    text={`${selectedBookingIds.length} booking(s) are selected, will you continue to drop?`}
+                    okBtnName={'Continue'}
                 />
 
                 <FPPricingSlider
