@@ -674,28 +674,6 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowCheckPodModal: !prevState.isShowCheckPodModal})); 
     }
 
-    onCheck(e, id) {
-        const { filteredBookingIds } = this.state;
-        let selectedBookingIds = this.state.selectedBookingIds;
-        let allCheckStatus = '';
-
-        if (!e.target.checked) {
-            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
-        } else {
-            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
-        }
-
-        if (selectedBookingIds.length === filteredBookingIds.length) {
-            allCheckStatus = 'All';
-        } else if (selectedBookingIds.length === 0) {
-            allCheckStatus = 'None';
-        } else {
-            allCheckStatus = 'Some';
-        }
-
-        this.setState({selectedBookingIds, allCheckStatus});
-    }
-
     toggleStatusInfoSlider() {
         this.setState(prevState => ({isShowStatusInfoSlider: !prevState.isShowStatusInfoSlider})); 
     }
@@ -1105,6 +1083,28 @@ class AllBookingsPage extends React.Component {
         // this.props.setGetBookingsFilter('date', {startDate, endDate});
         // localStorage.setItem('today', startDate);
         // this.setState({startDate, selectedBookingIds: [], allCheckStatus: false});
+    }
+
+    onCheck(e, id) {
+        const { filteredBookingIds } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = '';
+
+        if (!e.target.checked) {
+            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
+        } else {
+            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
+        }
+
+        if (selectedBookingIds.length === filteredBookingIds.length) {
+            allCheckStatus = 'All';
+        } else if (selectedBookingIds.length === 0) {
+            allCheckStatus = 'None';
+        } else {
+            allCheckStatus = 'Some';
+        }
+
+        this.setState({selectedBookingIds, allCheckStatus});
     }
 
     onCheckAll() {
@@ -2084,7 +2084,7 @@ class AllBookingsPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
-                                <li className=""><a href="/bookingsets">BookingSets</a></li>
+                                <li className=""><a href="/bookingsets">Booking Sets</a></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
                                 {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                                 {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}

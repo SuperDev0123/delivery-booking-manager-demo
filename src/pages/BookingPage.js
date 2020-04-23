@@ -3103,7 +3103,7 @@ class BookingPage extends Component {
                         <ul className="nav nav-tabs">
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
-                            <li className=""><a href="/bookingsets">BookingSets</a></li>
+                            <li className=""><a href="/bookingsets">Booking Sets</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
                             {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}

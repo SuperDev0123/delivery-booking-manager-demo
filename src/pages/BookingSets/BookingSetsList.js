@@ -31,12 +31,15 @@ class BookingSetList extends React.Component {
             clientname: null,
             isShowDeleteConfirmModal: false,
             isShowPricingConfirmModal: false,
+            isShowPopConfirmModal: false,
             isShowBookConfirmModal: false,
             isShowFPPricingSlider: false,
             selectedBookingSet: null,
             bookings: [],
             bookingIds: [],
             filterInputs: [],
+            selectedBookingIds: [],
+            allCheckStatus: 'None',
             pageItemCnt: 100,
             pageInd: 0,
             pageCnt: 0,
@@ -60,6 +63,7 @@ class BookingSetList extends React.Component {
         this.togglePricingConfirmModal = this.togglePricingConfirmModal.bind(this);
         this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
+        this.togglePopConfirmModal = this.togglePopConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -132,6 +136,10 @@ class BookingSetList extends React.Component {
             this.setState({loadingBookingSets: true});
             this.props.getBookingSets();
             this.props.resetBookingSetFlags();
+
+            if (this.state.viewMode === 1) {
+                this.props.setGetBookingsFilter('bookingIds', this.state.selectedBookingSet.booking_ids);
+            }
         }
 
         if (this.state.loadingBookings && !_.isNull(bookingsCnt) && !_.isEmpty(bookings)) {
@@ -185,6 +193,10 @@ class BookingSetList extends React.Component {
         this.setState(prevState => ({isShowPricingConfirmModal: !prevState.isShowPricingConfirmModal}));
     }
 
+    togglePopConfirmModal() {
+        this.setState(prevState => ({isShowPopConfirmModal: !prevState.isShowPopConfirmModal}));
+    }
+
     toggleBookConfirmModal() {
         this.setState(prevState => ({isShowBookConfirmModal: !prevState.isShowBookConfirmModal}));
     }
@@ -235,7 +247,7 @@ class BookingSetList extends React.Component {
         this.setState({loadingBookingSets: true});
     }
 
-    onClickShowBookingsBtn(selectedBookingSet) {
+    onClickShowBtn(selectedBookingSet) {
         this.setState({selectedBookingSet, viewMode: 1});
         this.props.setAllGetBookingsFilter('*', '2099-01-01', 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, null, selectedBookingSet.booking_ids);
     }
@@ -274,6 +286,45 @@ class BookingSetList extends React.Component {
         }
     }
 
+    onCheck(e, id) {
+        const { bookings } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = '';
+
+        if (!e.target.checked) {
+            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
+        } else {
+            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
+        }
+
+        if (selectedBookingIds.length === bookings.length) {
+            allCheckStatus = 'All';
+        } else if (selectedBookingIds.length === 0) {
+            allCheckStatus = 'None';
+        } else {
+            allCheckStatus = 'Some';
+        }
+
+        this.setState({selectedBookingIds, allCheckStatus});
+    }
+
+    onCheckAll() {
+        const { bookings } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = this.state.allCheckStatus;
+
+        if ((selectedBookingIds.length > 0 && selectedBookingIds.length < bookings.length)
+            || selectedBookingIds.length === bookings.length) { // If selected `All` or `Some`
+            selectedBookingIds = [];
+            allCheckStatus = 'None';
+        } else if (selectedBookingIds.length === 0) { // If selected `None`
+            selectedBookingIds = _.map(bookings, 'id');
+            allCheckStatus = 'All';
+        }
+
+        this.setState({allCheckStatus, selectedBookingIds});
+    }
+
     onClickRow(booking) {
         this.setState({activeBookingId: booking.id});
     }
@@ -309,8 +360,20 @@ class BookingSetList extends React.Component {
         this.toggleFPPricingSlider();
     }
 
+    onConfirmPop() {
+        const {selectedBookingSet, selectedBookingIds, bookings} = this.state;
+        const bookingIds = _.map(bookings, 'id');
+        const remainingBookingIds = _.difference(bookingIds, selectedBookingIds);
+        const joinStr = _.join(remainingBookingIds, ', ');
+
+        selectedBookingSet['booking_ids'] = joinStr;
+        this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
+        this.setState({selectedBooking: [], allCheckStatus: 'None'});
+        this.togglePopConfirmModal();
+    }
+
     render() {
-        const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loadingBookings, loadingBookingSets, activeBookingId } = this.state;
+        const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loadingBookings, loadingBookingSets, activeBookingId, allCheckStatus, selectedBookingIds } = this.state;
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
@@ -332,7 +395,7 @@ class BookingSetList extends React.Component {
                     <td>
                         <Button
                             color="primary"
-                            onClick={() => this.onClickShowBookingsBtn(bookingSet)}
+                            onClick={() => this.onClickShowBtn(bookingSet)}
                         >
                             Show ({bookingSet.bookings_cnt})
                         </Button>
@@ -375,6 +438,7 @@ class BookingSetList extends React.Component {
                     className={(activeBookingId === booking.id) ? 'active' : 'inactive'}
                     onClick={() => this.onClickRow(booking)}
                 >
+                    <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td onClick={() => this.onClickOpenPricingSlider(booking)} className="bg-gray cur-pointer"><strong>$</strong></td>
                     <td 
                         id={'link-popover-' + booking.id} 
@@ -458,7 +522,7 @@ class BookingSetList extends React.Component {
                         <ul className="nav nav-tabs">
                             <li><Link to="/booking">Header</Link></li>
                             <li className=""><Link to="/allbookings">All Bookings</Link></li>
-                            <li className="active"><a href="/bookingsets">BookingSets</a></li>
+                            <li className="active"><a href="/bookingsets">Booking Sets</a></li>
                             <li className=""><a href="/pods">PODs</a></li>
                             {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
@@ -508,12 +572,19 @@ class BookingSetList extends React.Component {
                             :
                             <React.Fragment>
                                 <div className='buttons'>
-                                    <Button className="primary" onClick={() => this.setState({viewMode: 0})}>Back to List</Button>
+                                    <Button className="btn btn-primary" onClick={() => this.setState({viewMode: 0})}>Back to List</Button>
+                                    <Button
+                                        className="btn btn-danger float-right" onClick={() => this.togglePopConfirmModal()}
+                                        disabled={selectedBookingIds.length === 0 && 'disabled'}
+                                    >
+                                        Pop from SET
+                                    </Button>
                                 </div>
                                 <div className="table-responsive" onScroll={this.handleScroll} ref={this.myRef}>
                                     <div className="tbl-header">
                                         <table className="table table-hover table-bordered sortable fixed_headers">
                                             <tr>
+                                                <th className=""></th>
                                                 <th scope="col" nowrap="true">$</th>
                                                 <th 
                                                     className={(sortField === 'b_bookingID_Visual') ? 'current' : ''} 
@@ -814,6 +885,14 @@ class BookingSetList extends React.Component {
                                                 </th>
                                             </tr>
                                             <tr className="filter-tr">
+                                                <th>
+                                                    <input
+                                                        type="checkbox"
+                                                        className={(allCheckStatus === 'All' || allCheckStatus === 'None') ? 'checkall' : 'checkall some'}
+                                                        checked={allCheckStatus !== 'None' ? 'checked' : ''}
+                                                        onChange={() => this.onCheckAll()}
+                                                    />
+                                                </th>
                                                 <th scope="col" nowrap="true"></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -878,6 +957,15 @@ class BookingSetList extends React.Component {
                     title={`BOOK all bookings of BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to BOOK all bookings?'}
                     okBtnName={'BOOK'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowPopConfirmModal}
+                    onOk={() => this.onConfirmPop()}
+                    onCancel={this.togglePopConfirmModal}
+                    title={'Pop bookings from this set'}
+                    text={`Are you sure you want to pop ${selectedBookingIds.length} booking(s) from this set?`}
+                    okBtnName={'Confirm'}
                 />
 
                 <FPPricingSlider

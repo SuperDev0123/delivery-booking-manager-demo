@@ -338,7 +338,7 @@ class ZohoPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className=""><Link to="/allbookings">All Bookings</Link></li>
-                                <li className=""><a href="/bookingsets">BookingSets</a></li>
+                                <li className=""><a href="/bookingsets">Booking Sets</a></li>
                                 <li className=""><a href="/pods">PODs</a></li>
                                 {this.props.clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                                 {this.props.clientname === 'dme' && <li className="active"><Link to="/zoho">Zoho</Link></li>}
