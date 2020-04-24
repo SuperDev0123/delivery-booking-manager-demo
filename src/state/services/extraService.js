@@ -265,14 +265,14 @@ export const getBookingSets = () => {
     };
 };
 
-export const createBookingSet = (bookingIds, name, note) => {
+export const createBookingSet = (bookingIds, name, note, auto_select_type) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
         data: {
-            bookingIds, name, note
+            bookingIds, name, note, auto_select_type
         }
     };
     return dispatch => {

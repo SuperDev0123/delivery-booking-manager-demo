@@ -3129,7 +3129,7 @@ const mapDispatchToProps = (dispatch) => {
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
         getBookingSets: () => dispatch(getBookingSets()),
-        createBookingSet: (bookingIds, name, note) => dispatch(createBookingSet(bookingIds, name, note)),
+        createBookingSet: (bookingIds, name, note, auto_select_type) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type)),
         updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
     };
 };

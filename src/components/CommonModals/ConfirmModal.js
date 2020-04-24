@@ -11,10 +11,12 @@ class ConfirmModal extends Component {
         title: PropTypes.string.isRequired,
         text: PropTypes.string.isRequired,
         okBtnName: PropTypes.string.isRequired,
+        onOk2: PropTypes.func,
+        ok2BtnName: PropTypes.string,
     };
 
     render() {
-        const {isOpen, text, title, okBtnName} = this.props;
+        const {isOpen, text, title, okBtnName, ok2BtnName} = this.props;
 
         return (
             <ReactstrapModal isOpen={isOpen} className="confirm-modal">
@@ -24,6 +26,9 @@ class ConfirmModal extends Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color={okBtnName === 'Delete' ? 'danger' : 'primary'} onClick={this.props.onOk}>{okBtnName}</Button>
+                    {ok2BtnName &&
+                        <Button color={okBtnName === 'Delete' ? 'danger' : 'primary'} onClick={this.props.onOk2}>{ok2BtnName}</Button>
+                    }
                     <Button color="secondary" onClick={this.props.onCancel}>Cancel</Button>
                 </ModalFooter>
             </ReactstrapModal>

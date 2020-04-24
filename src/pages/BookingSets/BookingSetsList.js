@@ -221,9 +221,10 @@ class BookingSetList extends React.Component {
         this.togglePricingConfirmModal();
     }
 
-    onConfirmPricing() {
+    onConfirmPricing(type) {
         const {selectedBookingSet} = this.state;
         selectedBookingSet.status = 'Pricing again';
+        selectedBookingSet.auto_select_type = type === 'lowest';
         this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
         this.setState({loadingBookingSets: true});
         this.togglePricingConfirmModal();
@@ -406,7 +407,7 @@ class BookingSetList extends React.Component {
                             onClick={() => this.onClickPricingBtn(bookingSet)}
                             disabled={bookingSet.status.indexOf('In Progress') > -1 && 'disabled'}
                         >
-                            Pricing
+                            Pricing ({bookingSet.auto_select_type ? 'Lowest' : 'Fastest'})
                         </Button>
                     </td>
                     <td>
@@ -943,11 +944,13 @@ class BookingSetList extends React.Component {
 
                 <ConfirmModal
                     isOpen={this.state.isShowPricingConfirmModal}
-                    onOk={() => this.onConfirmPricing()}
+                    onOk={() => this.onConfirmPricing('lowest')}
+                    onOk2={() => this.onConfirmPricing('fastest')}
                     onCancel={this.togglePricingConfirmModal}
                     title={`Start get pricing for BookingSet (${selectedBookingSet && selectedBookingSet.name})`}
                     text={'Are you sure you want to restart pricing for this BookingSet?'}
-                    okBtnName={'Start'}
+                    okBtnName={'Lowest Pricing'}
+                    ok2BtnName={'Fastest Pricing'}
                 />
 
                 <ConfirmModal

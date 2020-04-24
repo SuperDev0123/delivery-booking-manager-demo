@@ -12,7 +12,8 @@ class BookingSetModal extends Component {
             name: null,
             note: null,
             actionType: 'create',
-            selectedBookingSetId: null,
+            selectedBookingSet: null,
+            auto_select_type: true,
         };
     }
 
@@ -32,6 +33,8 @@ class BookingSetModal extends Component {
     };
 
     handleInputChange(e) {
+        const {bookingsets} = this.props;
+
         if (e.target.name === 'name') {
             this.setState({name: e.target.value});
         } else if (e.target.name === 'note') {
@@ -39,12 +42,13 @@ class BookingSetModal extends Component {
         } else if (e.target.name === 'actionType') {
             this.setState({actionType: e.target.value});
         } else if (e.target.name === 'addTo') {
-            this.setState({selectedBookingSetId: parseInt(e.target.value)});
+            this.setState({selectedBookingSet: bookingsets.filter(set => 
+                parseInt(set.id) === parseInt(e.target.value))[0]});
         }
     }
 
     onClickOkBtn() {
-        const {name, note, actionType, selectedBookingSetId} = this.state;
+        const {name, note, actionType, selectedBookingSet, auto_select_type} = this.state;
 
         if (actionType === 'create') {
             if (!name) {
@@ -52,14 +56,13 @@ class BookingSetModal extends Component {
             } else if (!note) {
                 this.props.notify('Note is required');
             } else {
-                this.props.createBookingSet(this.props.bookingIds, name, note);
+                this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type);
                 this.props.toggle();
             }
         } else {
-            if (!selectedBookingSetId) {
+            if (!selectedBookingSet) {
                 this.props.notify('Please select a BookingSet to add selected bookings');
             } else {
-                const selectedBookingSet = this.props.bookingsets.find(bookingset => bookingset.id === selectedBookingSetId);
                 const exitingBookingIds = selectedBookingSet.booking_ids.split(', ');
                 const union = _.union(exitingBookingIds, this.props.bookingIds.map(id => id.toString()));
                 const joinStr = _.join(union, ', ');
@@ -71,16 +74,27 @@ class BookingSetModal extends Component {
         }
     }
 
+    onClickRadio(type) {
+        const {selectedBookingSet} = this.state;
+
+        if (selectedBookingSet) {
+            selectedBookingSet['auto_select_type'] = type === 'lowest';
+            this.setState({selectedBookingSet});
+        } else {
+            this.setState({auto_select_type: type === 'lowest'});
+        }
+    }
+
     render() {
         const {isOpen, bookingsets} = this.props;
-        const {name, note, actionType, selectedBookingSetId} = this.state;
+        const {name, note, actionType, selectedBookingSet, auto_select_type} = this.state;
 
         const bookingsetsList = (bookingsets || []).map(bookingset => {
             return (
                 <option
                     key={bookingset.id}
                     value={bookingset.id}
-                    selected={selectedBookingSetId === bookingset.id ? 'selected' : ''}
+                    selected={selectedBookingSet && selectedBookingSet.id === bookingset.id ? 'selected' : ''}
                 >
                     {bookingset.name}
                 </option>
@@ -102,7 +116,7 @@ class BookingSetModal extends Component {
                     <label>
                         <p>Add to:</p>
                         <select
-                            value={selectedBookingSetId}
+                            value={selectedBookingSet && selectedBookingSet.id}
                             name="addTo"
                             onChange={(e) => this.handleInputChange(e)}
                             disabled={actionType === 'add' ? '' : 'disabled'}
@@ -110,6 +124,21 @@ class BookingSetModal extends Component {
                             <option value="" selected disabled hidden>Select a BookingSet</option>
                             {bookingsetsList}
                         </select>
+                    </label><br />
+                    <label>
+                        <p>Auto Select type:</p>
+                        <input type="radio"
+                            id="auto-select-lowest"
+                            checked={selectedBookingSet ? selectedBookingSet.auto_select_type : auto_select_type}
+                            onChange={() => this.onClickRadio('lowest')}
+                        />
+                        <label htmlFor="auto-select-lowest">Lowest</label>
+                        <input type="radio"
+                            id="auto-select-fastest"
+                            checked={selectedBookingSet ? !selectedBookingSet.auto_select_type : !auto_select_type}
+                            onChange={() => this.onClickRadio('fastest')}
+                        />
+                        <label htmlFor="auto-select-fastest">Fastest</label>
                     </label><br />
                     <label>
                         <p>Name:</p>
