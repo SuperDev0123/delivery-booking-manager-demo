@@ -431,29 +431,27 @@ input.orange-color {
 	margin-top: 2px;
 }
 
-p.lock-status {
+p.status-icon {
+	width: 33px;
+	height: 33px;
 	background: white;
 	border-radius: 20px;
-	padding-left: 7px;
-	padding-right: 7px;
-	padding-top: 3px !important;
-	margin-left: 15px;
-	margin-top: 3px;
+	padding-top: 4px !important;
+	margin-left: 10px;
 
-	&.status-active {
-	  color: red;
-	  cursor: pointer;
+	&.active {
+		color: red;
+		cursor: pointer;
 	}
 
-	&.status-inactive {
-	  color: gray;
-	  cursor: pointer;
+	&.inactive {
+		color: gray;
+		cursor: pointer;
 	}
 
-	&.status-active,
-	&.status-inactive {
-	  font-size: 18px;
-	  text-align: center;
+	&.active, &.inactive {
+		font-size: 18px;
+		text-align: center;
 	}
 }
 

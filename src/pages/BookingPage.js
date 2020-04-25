@@ -3230,23 +3230,42 @@ class BookingPage extends Component {
                                             <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
                                         </div>
                                         <div className="col-sm-5">
-                                            <ul className="grid-head none">
-                                                <li><button className="btn btn-light btn-theme">Preview</button></li>
-                                                <li><button className="btn btn-light btn-theme">Email</button></li>
-                                                <li><button className="btn btn-light btn-theme">Print PDF</button></li>
-                                                <li><button className="btn btn-light btn-theme">Undo</button></li>
-                                            </ul>
-                                            
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
                                                 <p>{isBookingSelected ? booking.b_status : '***'}</p>
-                                                <p className={booking.z_lock_status ? 'lock-status status-active' : 'lock-status status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                                                <p 
+                                                    id={'booking-' + 'b_status_API' + '-tooltip-' + booking.id}
+                                                    className={booking.b_status_API ? 'status-icon active' : 'status-icon inactive'}
+                                                >
+                                                    <i className="fa fa-truck"></i>
+                                                    {!_.isEmpty(booking.b_status_API) &&
+                                                        <TooltipItem object={booking} placement='top' fields={['b_status_API']} />
+                                                    }
+                                                </p>
+                                                <p 
+                                                    id={'booking-' + 'b_error_Capture' + '-tooltip-' + booking.id}
+                                                    className={booking.b_error_Capture ? 'status-icon active' : 'status-icon inactive'}
+                                                >
+                                                    <i className="fa fa-exclamation-triangle"></i>
+                                                    {!_.isEmpty(booking.b_error_Capture) &&
+                                                        <TooltipItem object={booking} placement='top' fields={['b_error_Capture']} />
+                                                    }
+                                                </p>
+                                                <p 
+                                                    id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
+                                                    className={booking.b_booking_Notes ? 'status-icon active' : 'status-icon inactive'}
+                                                >
+                                                    <i className="fa fa-sticky-note"></i>
+                                                    {!_.isEmpty(booking.b_booking_Notes) &&
+                                                        <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
+                                                    }
+                                                </p>
+                                                <p className={booking.z_lock_status ? 'status-icon active' : 'status-icon inactive'} onClick={() => this.onClickStatusLock(booking)}>
                                                     <i className="fa fa-lock"></i>
                                                 </p>
                                             </label>
                                         </div>
                                     </div>
-                                    <div className="clearfix"></div>
                                 </div>
 
                                 <div className="main-fields-section">

@@ -27,7 +27,7 @@ class TooltipItem extends React.Component {
         const { object, fields, name, placement, hideArrow } = this.props;
         let initialName = 'booking';
         let initialPlacement = 'left';
-        let initialHideArrow = false;
+        let initialHideArrow = true;
 
         return (
             <Tooltip
