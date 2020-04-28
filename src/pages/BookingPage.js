@@ -4921,25 +4921,22 @@ class BookingPage extends Component {
                                                             disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
                                                         >Update</button>
                                                     </div>
-                                                    {
-                                                        (clientname === 'dme') ?
-                                                            <div className="text-center mt-2 fixed-height pricing-btns">
-                                                                <button
-                                                                    className="btn btn-theme custom-theme"
-                                                                    onClick={() => this.onClickFC()}
-                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
-                                                                >
-                                                                    Price & Time Calc(FC)
-                                                                </button>
-                                                                <button
-                                                                    className="btn btn-theme custom-theme"
-                                                                    onClick={() => this.onClickOpenPricingSlider()}
-                                                                    disabled={booking && !isBookedBooking ? '' : 'disabled'}
-                                                                >
-                                                                    <i className="fa fa-caret-square-left"></i>
-                                                                </button>
-                                                            </div>
-                                                            : null
+                                                    {(clientname === 'dme') &&
+                                                        <div className="text-center mt-2 fixed-height pricing-btns">
+                                                            <button
+                                                                className="btn btn-theme custom-theme"
+                                                                onClick={() => this.onClickFC()}
+                                                                disabled={booking && !isBookedBooking ? '' : 'disabled'}
+                                                            >
+                                                                Price & Time Calc(FC)
+                                                            </button>
+                                                            <button
+                                                                className="btn btn-theme custom-theme"
+                                                                onClick={() => this.onClickOpenPricingSlider()}
+                                                            >
+                                                                <i className="fa fa-caret-square-left"></i>
+                                                            </button>
+                                                        </div>
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
@@ -5564,6 +5561,7 @@ class BookingPage extends Component {
                     onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
                     isLoading={this.state.loadingPricingInfos}
                     booking={booking}
+                    isBooked={isBookedBooking}
                     clientname={clientname}
                 />
 

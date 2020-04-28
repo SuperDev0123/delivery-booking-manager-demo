@@ -23,6 +23,7 @@ class FPPricingSlider extends React.Component {
         booking: PropTypes.object.isRequired,
         clientname: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
+        isBooked: PropTypes.bool.isRequired,
     };
 
     calcTotalValue(pricingInfo) {
@@ -42,7 +43,7 @@ class FPPricingSlider extends React.Component {
     }
 
     render() {
-        const {isOpen, booking, clientname} = this.props;
+        const {isOpen, booking, clientname, isBooked} = this.props;
         const {pricingInfos} = this.props;
 
         pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
@@ -66,7 +67,7 @@ class FPPricingSlider extends React.Component {
                     <td className="select">
                         <Button
                             color="primary"
-                            disabled={booking.api_booking_quote === pricingInfo.id ? 'disabled': null}
+                            disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
                             onClick={() => this.props.onSelectPricing(pricingInfo)}
                         >
                             Select
