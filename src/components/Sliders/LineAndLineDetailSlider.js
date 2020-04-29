@@ -83,6 +83,11 @@ class LineAndLineDetailSlider extends React.Component {
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
             lineDetailFormInputs[name] = value;
+
+            if (!value) {
+                lineDetailFormInputs[name] = null;
+            }
+
             this.setState({lineDetailFormInputs});
         }
     }
