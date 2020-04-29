@@ -103,7 +103,7 @@ class FPPricingSlider extends React.Component {
                             <Button
                                 className="lowest"
                                 color="primary"
-                                disabled={pricingInfos.length === 0 && 'disabled'}
+                                disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
                                 onClick={() => this.onSelectLowest('lowest')}
                             >
                                 Select lowest price
@@ -111,7 +111,7 @@ class FPPricingSlider extends React.Component {
                             <Button
                                 className="fastest"
                                 color="primary"
-                                disabled={pricingInfos.length === 0 && 'disabled'}
+                                disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
                                 onClick={() => this.onSelectFastest('fastest')}
                             >
                                 Select fastest price
