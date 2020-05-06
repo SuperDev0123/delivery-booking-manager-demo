@@ -35,6 +35,10 @@ p.dme-id {
 
 ._loading_overlay_wrapper {
 	.detail-tab {
+		.row {
+			width: 100%;
+		}
+
 		.col-sm-4 {
 			padding: 0 !important;
 		}

@@ -39,6 +39,8 @@ import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
+// Permission
+import { onlyDME, overCompany } from '../commons/permissions';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -219,7 +221,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses, roleCode } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -319,12 +321,8 @@ class AllBookingsPage extends React.Component {
             this.setState({dmeClients});
         }
 
-        if (clientname) {
-            this.setState({clientname});
-        }
-
         if (username) {
-            this.setState({username});
+            this.setState({clientname, roleCode, username});
         }
 
         if (selectedBookingLinesCnt) {
@@ -1460,9 +1458,9 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickStatusLock(booking) {
-        const { clientname } = this.state;
+        const { roleCode } = this.state;
 
-        if (clientname === 'dme') {
+        if (onlyDME(roleCode)) {
             if (booking.b_status_API === 'POD Delivered') {
                 this.setState({selectedOneBooking: booking}, () => this.toggleStatusLockModal());
             } else {
@@ -1624,7 +1622,7 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus, roleCode } = this.state;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2084,10 +2082,10 @@ class AllBookingsPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
-                                <li className=""><a href="/bookingsets">Booking Sets</a></li>
+                                {onlyDME(roleCode) && <li className=""><a href="/bookingsets">Booking Sets</a></li>}
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
-                                {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
+                                <li className=""><Link to="/comm">Comm</Link></li>
+                                {onlyDME(roleCode) && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
@@ -2097,8 +2095,7 @@ class AllBookingsPage extends React.Component {
                             <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                             <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
-                                {
-                                    showSimpleSearchBox &&
+                                {showSimpleSearchBox &&
                                     <div ref={this.setWrapperRef}>
                                         <form onSubmit={(e) => this.onSimpleSearch(e)}>
                                             <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
@@ -2144,20 +2141,20 @@ class AllBookingsPage extends React.Component {
                                 }
                             </div>
                             <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
-                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
+                            <a className={onlyDME(roleCode) ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
                                     <i className="fa fa-file-excel" aria-hidden="true"></i>
                                 </span>
                             </a>
-                            <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
+                            <a className={onlyDME(roleCode) ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
                             <a
-                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                className={clientname && (onlyDME(roleCode) || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
                                 onClick={() => this.onClickMANI()}
                             >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
                             </a>
                             <a
-                                className={clientname && clientname === 'dme' ? '' : 'none'} 
+                                className={clientname && onlyDME(roleCode) ? '' : 'none'} 
                                 onClick={() => this.onClickBookingSet()}
                             >
                                 <span title="Build a booking set"><i className="fa fa-layer-group"></i></span>
@@ -2187,75 +2184,94 @@ class AllBookingsPage extends React.Component {
                                             />
                                             <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                                             <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
-                                            {
-                                                (clientname === 'dme') ?
-                                                    <label className="left-30px right-10px">
-                                                        Client: 
-                                                        <select 
-                                                            id="client-select" 
-                                                            required 
-                                                            onChange={(e) => this.onSelected(e, 'client')} 
-                                                            value={clientPK}>
-                                                            { clientOptionsList }
-                                                        </select>
-                                                    </label>
-                                                    :
-                                                    null
-                                            }
-                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
-                                            <select 
-                                                id="warehouse" 
-                                                required 
-                                                onChange={(e) => this.onSelected(e, 'warehouse')} 
-                                                value={selectedWarehouseId}
-                                            >
-                                                <option value="all">All</option>
-                                                { warehousesList }
-                                            </select>
-                                            {
-                                                clientname === 'dme' || clientname === 'biopak' ?
-                                                    <div className="disp-inline-block">
-                                                        <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
-                                                        <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
-                                                        <div className="disp-inline-block">
-                                                            <LoadingOverlay
-                                                                active={false}
-                                                                spinner={<BarLoader color={'#FFF'} />}
-                                                                text=''
-                                                            >
-                                                                <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
-                                                                <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                                            </LoadingOverlay>
-                                                        </div>
-                                                    </div>
-                                                    : null
-                                            }
-                                        </div>
-                                        <div className="row">
-                                            <div className="project-name-select">
+                                            {overCompany(roleCode) &&
                                                 <label className="left-30px right-10px">
-                                                    Project Name: 
+                                                    Client: 
                                                     <select 
-                                                        id="project-name-select" 
+                                                        id="client-select" 
                                                         required 
-                                                        onChange={(e) => this.onSelected(e, 'projectName')} 
-                                                        value={projectName}
-                                                    >
-                                                        <option value="" selected disabled hidden>Select a project name</option>
-                                                        { projectNameOptions }
+                                                        onChange={(e) => this.onSelected(e, 'client')} 
+                                                        value={clientPK}>
+                                                        { clientOptionsList }
                                                     </select>
                                                 </label>
+                                            }
+                                            {overCompany(roleCode) &&
+                                                <label className={onlyDME(roleCode) ? 'right-10px' : 'left-30px right-10px' }>
+                                                    Warehouse: 
+                                                    <select 
+                                                        id="warehouse" 
+                                                        required 
+                                                        onChange={(e) => this.onSelected(e, 'warehouse')} 
+                                                        value={selectedWarehouseId}
+                                                    >
+                                                        <option value="all">All</option>
+                                                        { warehousesList }
+                                                    </select>
+                                                </label>
+                                            }
+                                            
+                                            <div className="disp-inline-block">
+                                                {onlyDME(roleCode) &&
+                                                    <button
+                                                        className="btn btn-primary left-10px right-10px"
+                                                        onClick={() => this.onClickShowBulkUpdateButton()}
+                                                    >
+                                                            Update(bulk)
+                                                    </button>
+                                                }
+                                                {onlyDME(roleCode) &&
+                                                    <button
+                                                        className="btn btn-primary"
+                                                        onClick={() => this.onClickPricingAnalyse()}
+                                                    >
+                                                        Price Analysis
+                                                    </button>
+                                                }
+                                                <div className="disp-inline-block">
+                                                    <LoadingOverlay
+                                                        active={false}
+                                                        spinner={<BarLoader color={'#FFF'} />}
+                                                        text='Processing...'
+                                                    >
+                                                        {(onlyDME(roleCode) || clientname === 'biopak') &&
+                                                            <button
+                                                                className="btn btn-primary get-label"
+                                                                onClick={() => this.onClickGetLabel()}
+                                                            >
+                                                                Get Label
+                                                            </button>
+                                                        }
+                                                        {onlyDME(roleCode) &&
+                                                            <button
+                                                                className="btn btn-primary get-label"
+                                                                onClick={() => this.onClickGetCSV()}
+                                                            >
+                                                                Get CSV
+                                                            </button>
+                                                        }
+                                                    </LoadingOverlay>
+                                                </div>
                                             </div>
                                         </div>
-                                        <ul className="filter-conditions none">
-                                            <li><a onClick={() => this.onClickTab(1)}>Errors to Correct ({errorsToCorrect})</a></li>
-                                            <li><a onClick={() => this.onClickTab(2)}>Missing Labels ({missingLabels})</a></li>
-                                            <li><a onClick={() => this.onClickTab(3)}>To Manifest ({toManifest})</a></li>
-                                            <li><a onClick={() => this.onClickTab(4)}>To Process ({toProcess})</a></li>
-                                            <li><a onClick={() => this.onClickTab(5)}>Closed ({closed})</a></li>
-                                        </ul>
+                                        {onlyDME(roleCode) &&
+                                            <div className="row">
+                                                <div className="project-name-select">
+                                                    <label className="left-30px right-10px">
+                                                        Project Name: 
+                                                        <select 
+                                                            id="project-name-select" 
+                                                            required 
+                                                            onChange={(e) => this.onSelected(e, 'projectName')} 
+                                                            value={projectName}
+                                                        >
+                                                            <option value="" selected disabled hidden>Select a project name</option>
+                                                            { projectNameOptions }
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="tabs">
                                             <Nav tabs>
                                                 <NavItem>
@@ -2282,22 +2298,26 @@ class AllBookingsPage extends React.Component {
                                                         Errors to Correct ({errorsToCorrect})
                                                     </NavLink>
                                                 </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 2 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(2)}
-                                                    >
-                                                        Missing Labels ({missingLabels})
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 3 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(3)}
-                                                    >
-                                                        To Manifest ({toManifest})
-                                                    </NavLink>
-                                                </NavItem>
+                                                {onlyDME(roleCode) &&
+                                                    <NavItem>
+                                                        <NavLink
+                                                            className={activeTabInd === 2 ? 'active' : ''}
+                                                            onClick={() => this.onClickTab(2)}
+                                                        >
+                                                            Missing Labels ({missingLabels})
+                                                        </NavLink>
+                                                    </NavItem>
+                                                }
+                                                {onlyDME(roleCode) &&
+                                                    <NavItem>
+                                                        <NavLink
+                                                            className={activeTabInd === 3 ? 'active' : ''}
+                                                            onClick={() => this.onClickTab(3)}
+                                                        >
+                                                            To Manifest ({toManifest})
+                                                        </NavLink>
+                                                    </NavItem>
+                                                }
                                                 <NavItem>
                                                     <NavLink
                                                         className={activeTabInd === 4 ? 'active' : ''}
@@ -3087,6 +3107,7 @@ const mapStateToProps = (state) => {
         dmeClients: state.auth.dmeClients,
         clientname: state.auth.clientname,
         username: state.auth.username,
+        roleCode: state.auth.roleCode,
         clientPK: state.booking.clientPK,
         allBookingStatus: state.extra.allBookingStatus,
         allFPs: state.extra.allFPs,
