@@ -36,6 +36,7 @@ export const AuthReducer = (state = defaultState, {
     username,
     clientname,
     clientId,
+    roleCode,
     isLoggedIn,
     dmeClients,
     clientPK
@@ -103,6 +104,7 @@ export const AuthReducer = (state = defaultState, {
                 clientname: clientname,
                 clientId: clientId,
                 isLoggedIn: isLoggedIn,
+                roleCode: roleCode,
                 redirect : false,
             };
         case FAILED_GET_USER:

@@ -99,13 +99,14 @@ export function failedResetPasswordConfirm(error) {
     };
 }
 
-export function setUser(username, clientname, clientId) {
+export function setUser(username, clientname, clientId, roleCode) {
     localStorage.setItem('isLoggedIn', 'true');
     return {
         type: SET_USER,
         username,
         clientname,
         clientId,
+        roleCode,
         isLoggedIn: true
     };
 }

@@ -52,6 +52,8 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label } from '../commons/validations';
+// Permission
+import { onlyDME, overCompany } from '../commons/permissions';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -356,7 +358,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, roleCode, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -366,14 +368,14 @@ class BookingPage extends Component {
             this.props.history.push('/');
         }
 
-        if (clientname) {
-            this.setState({clientname});
-        }
-
         if (username) {
             let commFormInputs = this.state.commFormInputs;
             commFormInputs['assigned_to'] = username;
             this.setState({username, commFormInputs});
+        }
+
+        if (clientname) {
+            this.setState({clientId, roleCode, clientname});
         }
 
         if (allFPs) {
@@ -392,10 +394,6 @@ class BookingPage extends Component {
 
         if (dmeClients) {
             this.setState({dmeClients});
-        }
-
-        if (clientId) {
-            this.setState({clientId});
         }
 
         if (comms) {
@@ -1095,12 +1093,12 @@ class BookingPage extends Component {
     }
 
     onHandleInput(e) {
-        const {isBookedBooking, clientname, formInputs, booking} = this.state;
+        const {isBookedBooking, roleCode, formInputs, booking, clientname} = this.state;
 
-        if (clientname === 'dme' ||
+        if (onlyDME(roleCode) ||
             isBookedBooking === false || 
-            (clientname.lower() === 'biopak' && !booking.manifest_timestamp))
-        {
+            (clientname.lower() === 'biopak' && !booking.manifest_timestamp)
+        ) {
             if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
                 this.setState({isShowStatusDetailInput: true});
             } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
@@ -1682,7 +1680,7 @@ class BookingPage extends Component {
     }
 
     handleChangeState = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
+        if (this.state.isBookedBooking == false || onlyDME(this.state.roleCode)) {
             if (num === 0) {
                 this.props.getSuburbStrings('postalcode', selectedOption.label);
                 this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
@@ -1696,7 +1694,7 @@ class BookingPage extends Component {
     };
 
     handleChangePostalCode = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
+        if (this.state.isBookedBooking == false || onlyDME(this.state.roleCode)) {
             if (num === 0) {
                 this.props.getSuburbStrings('suburb', selectedOption.label);
                 this.setState({puPostalCode: selectedOption, puSuburb: null, puSuburbs: [], selectionChanged: 1, loadingGeoPU: true});
@@ -1710,7 +1708,7 @@ class BookingPage extends Component {
     };
 
     handleChangeSuburb = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
+        if (this.state.isBookedBooking == false || onlyDME(this.state.roleCode)) {
             if (num === 0) {
                 this.setState({ puSuburb: selectedOption});    
             } else if (num === 1) {
@@ -1938,9 +1936,9 @@ class BookingPage extends Component {
         const name = target.name;
 
         if (name === 'tickManualBook') {
-            const {booking, clientname} = this.state;
+            const {booking, roleCode} = this.state;
 
-            if (clientname === 'dme') {
+            if (onlyDME(roleCode)) {
                 this.props.tickManualBook(booking.id);
                 this.setState({loadingBookingUpdate: true, curViewMode: 2});
             } else {
@@ -2537,9 +2535,9 @@ class BookingPage extends Component {
     }
 
     onClickStatusLock(booking) {
-        const { clientname } = this.state;
+        const { roleCode } = this.state;
 
-        if (clientname === 'dme') {
+        if (onlyDME(roleCode)) {
             if (booking.b_status_API === 'POD Delivered') {
                 this.toggleStatusLockModal();
             } else {
@@ -2757,8 +2755,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets } = this.state;
-        
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, roleCode, zoho_tickets} = this.state;
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',
@@ -3143,41 +3140,25 @@ class BookingPage extends Component {
                         <ul className="nav nav-tabs">
                             <li className="active"><Link to="/booking">Header</Link></li>
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
-                            <li className=""><a href="/bookingsets">Booking Sets</a></li>
-                            <li className=""><Link to="/pods">PODs</Link></li>
-                            {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
-                            {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
-                            <li className=""><Link to="/reports">Reports</Link></li>
+                            {onlyDME(roleCode) && <li className=""><a href="/bookingsets">Booking Sets</a></li>}
+                            {overCompany(roleCode) && <li className=""><Link to="/pods">PODs</Link></li>}
+                            {overCompany(roleCode) && <li className=""><Link to="/comm">Comm</Link></li>}
+                            {onlyDME(roleCode) && <li className=""><Link to="/zoho">Zoho</Link></li>}
+                            <li><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                             <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
-                        <a className="none"><i className="icon-plus" aria-hidden="true"></i></a>
-                        <div className="none">
-                            <i className="icon-search3" aria-hidden="true"></i>
-                        </div>
-                        <div className="none">
-                            <i className="icon icon-th-list" aria-hidden="true"></i>
-                        </div>
-                        <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
-                        <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
-
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD{podEmailCnt > 0 && ` (${podEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return{returnEmailCnt > 0 && ` (${returnEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile{futileEmailCnt > 0 && ` (${futileEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
-                        
-                        <a className="none">?</a>
-                        {
-                            clientname === 'dme' &&
-                                <a 
-                                    className='cur-pointer'
-                                    onClick={(e) => this.onClickSwitchClientNavIcon(e)}
-                                >
-                                    <i className="fa fa-users" aria-hidden="true"></i>
-                                </a>
+                        <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>
+                        <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD{podEmailCnt > 0 && ` (${podEmailCnt})`}</a>
+                        {onlyDME(roleCode) && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return{returnEmailCnt > 0 && ` (${returnEmailCnt})`}</a>}
+                        {onlyDME(roleCode) && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile{futileEmailCnt > 0 && ` (${futileEmailCnt})`}</a>}
+                        {onlyDME(roleCode) && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
+                        {onlyDME(roleCode) &&
+                            <a className='cur-pointer' onClick={(e) => this.onClickSwitchClientNavIcon(e)}>
+                                <i className="fa fa-users" aria-hidden="true"></i>
+                            </a>
                         }
                     </div>
                 </div>
@@ -3352,7 +3333,7 @@ class BookingPage extends Component {
                                                         {formInputs['dme_status_detail']}
                                                     </p>
                                                     :
-                                                    clientname === 'dme' ?
+                                                    onlyDME(roleCode) ?
                                                         <select
                                                             id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
                                                             name="dme_status_detail"
@@ -3375,8 +3356,8 @@ class BookingPage extends Component {
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_detail']} />
                                             }
                                         </div>
-                                        {(isShowStatusDetailInput && parseInt(curViewMode) !== 0) &&
-                                            <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                        {(isShowStatusDetailInput && parseInt(curViewMode) !== 0 && onlyDME(roleCode)) &&
+                                            <div className='col-sm-3 form-group'>
                                                 <span>New Status Detail</span><br />
                                                 <input 
                                                     className="form-control"
@@ -3399,7 +3380,7 @@ class BookingPage extends Component {
                                                         {formInputs['dme_status_action']}
                                                     </p>
                                                     :
-                                                    clientname === 'dme' ?
+                                                    onlyDME(roleCode) ?
                                                         <select
                                                             id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
                                                             name="dme_status_action"
@@ -3423,8 +3404,8 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         {
-                                            (isShowStatusActionInput && parseInt(curViewMode) !== 0) &&
-                                                <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                            (isShowStatusActionInput && parseInt(curViewMode) !== 0 && onlyDME(roleCode)) &&
+                                                <div className='col-sm-3 form-group'>
                                                     <span>New Status Detail</span><br />
                                                     <input 
                                                         className="form-control"
@@ -3505,93 +3486,94 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                     </div>
-
-                                    <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-2 form-group">
-                                            <span>Warehouse Code</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                    :
-                                                    <Select
-                                                        value={currentWarehouseCodeOption}
-                                                        onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
-                                                        options={warehouseCodeOptions}
-                                                        placeholder='Select a warehouse'
-                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                    />
-                                            }
-                                        </div>
-                                        <div className='col-sm-2 form-group'>
-                                            <span>Warehouse Name</span><br />
-                                            <input
-                                                className="form-control"
-                                                disabled="disabled"
-                                                type="text"
-                                                value={formInputs['b_clientPU_Warehouse'] ? formInputs['b_clientPU_Warehouse'] : ''}
-                                            />
-                                        </div>
-                                        <div className="col-sm-2 form-group">
-                                            <span>Linked Reference</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p 
-                                                        className="show-mode"
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                    >
-                                                        {formInputs['dme_status_linked_reference_from_fp']}
-                                                    </p>
-                                                    :
-                                                    <input 
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="Linked Reference"
-                                                        name="dme_status_linked_reference_from_fp"
-                                                        value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
-                                            }
-                                            {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
-                                                <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
-                                            }
-                                        </div>
-                                        <div className="col-sm-3 form-group">
-                                            <span>Your Invoice No</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_client_sales_inv_num']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_client_sales_inv_num"
-                                                        value = {formInputs['b_client_sales_inv_num'] ? formInputs['b_client_sales_inv_num'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
-                                            }
-                                        </div>
-                                        <div className="col-sm-3 form-group">
-                                            <span>Your PO No</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['b_client_order_num']}</p>
-                                                    :
-                                                    <input 
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="b_client_order_num"
-                                                        value = {formInputs['b_client_order_num'] ? formInputs['b_client_order_num'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className="row col-sm-12 booking-form-01">
-                                        <div className="col-sm-2 form-group">
-                                            <div>
-                                                <span>Consignment Number</span>
+                                    {overCompany(roleCode) &&
+                                        <div className="row col-sm-12 booking-form-01">
+                                            <div className="col-sm-2 form-group">
+                                                <span>Warehouse Code</span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                        :
+                                                        <Select
+                                                            value={currentWarehouseCodeOption}
+                                                            onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
+                                                            options={warehouseCodeOptions}
+                                                            placeholder='Select a warehouse'
+                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                        />
+                                                }
+                                            </div>
+                                            <div className='col-sm-2 form-group'>
+                                                <span>Warehouse Name</span><br />
+                                                <input
+                                                    className="form-control"
+                                                    disabled="disabled"
+                                                    type="text"
+                                                    value={formInputs['b_clientPU_Warehouse'] ? formInputs['b_clientPU_Warehouse'] : ''}
+                                                />
+                                            </div>
+                                            <div className="col-sm-2 form-group">
+                                                <span>Linked Reference</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p 
+                                                            className="show-mode"
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                        >
+                                                            {formInputs['dme_status_linked_reference_from_fp']}
+                                                        </p>
+                                                        :
+                                                        <input 
+                                                            id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                            className="form-control"
+                                                            type="text"
+                                                            placeholder="Linked Reference"
+                                                            name="dme_status_linked_reference_from_fp"
+                                                            value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
+                                                            onChange={(e) => this.onHandleInput(e)}/>
+                                                }
+                                                {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
+                                                    <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
+                                                }
+                                            </div>
+                                            <div className="col-sm-3 form-group">
+                                                <span>Your Invoice No</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_client_sales_inv_num']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="b_client_sales_inv_num"
+                                                            value = {formInputs['b_client_sales_inv_num'] ? formInputs['b_client_sales_inv_num'] : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                            <div className="col-sm-3 form-group">
+                                                <span>Your PO No</span>
+                                                {
+                                                    (parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['b_client_order_num']}</p>
+                                                        :
+                                                        <input 
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="b_client_order_num"
+                                                            value = {formInputs['b_client_order_num'] ? formInputs['b_client_order_num'] : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                    <div className="row col-sm-12 booking-form-01">
+                                        {onlyDME(roleCode) &&
+                                            <div className="col-sm-2 form-group">    
+                                                <div>
+                                                    <span>Consignment Number</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['v_FPBookingNumber']}</p>
                                                         :
                                                         <input
@@ -3602,14 +3584,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['v_FPBookingNumber'] ? formInputs['v_FPBookingNumber'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-sm-2 form-group">
-                                            <div>
-                                                <span>Freight Provider</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className="col-sm-2 form-group">
+                                                <div>
+                                                    <span>Freight Provider</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['vx_freight_provider']}</p>
                                                         :
                                                         <Select
@@ -3619,14 +3602,15 @@ class BookingPage extends Component {
                                                             placeholder='Select a FP'
                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-sm-2 form-group">
-                                            <div>
-                                                <span>Account Code</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className="col-sm-2 form-group">
+                                                <div>
+                                                    <span>Account Code</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['vx_account_code']}</p>
                                                         :
                                                         <input 
@@ -3636,14 +3620,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['vx_account_code'] ? formInputs['vx_account_code'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-sm-2 form-group">
-                                            <div>
-                                                <span>PU / Booking ID</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className="col-sm-2 form-group">
+                                                <div>
+                                                    <span>PU / Booking ID</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['fk_fp_pickup_id']}</p>
                                                         :
                                                         <input 
@@ -3653,14 +3638,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['fk_fp_pickup_id'] ? formInputs['fk_fp_pickup_id'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='col-sm-2 form-group'>
-                                            <div>
-                                                <span>Service Name</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-2 form-group'>
+                                                <div>
+                                                    <span>Service Name</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['vx_serviceName']}</p>
                                                         :
                                                         <input
@@ -3670,14 +3656,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['vx_serviceName'] ? formInputs['vx_serviceName'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Service Type</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {overCompany(roleCode) &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span>Service Type</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['v_service_Type']}</p>
                                                         :
                                                         <input
@@ -3687,14 +3674,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['v_service_Type'] ? formInputs['v_service_Type'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Vehicle Type</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {overCompany(roleCode) &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span>Vehicle Type</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['v_vehicle_Type']}</p>
                                                         :
                                                         <input 
@@ -3704,16 +3692,15 @@ class BookingPage extends Component {
                                                             value = {formInputs['v_vehicle_Type'] ? formInputs['v_vehicle_Type'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div className="row col-sm-12 booking-form-01">
-                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
-                                            <div>
-                                                <span>Invoice Billing Status</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-3 form-group'>
+                                                <div>
+                                                    <span>Invoice Billing Status</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_billing_status']}</p>
                                                         :
                                                         <Select
@@ -3723,14 +3710,15 @@ class BookingPage extends Component {
                                                             placeholder='Select a Inv/Billing status'
                                                             noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className={clientname === 'dme' ? 'col-sm-3 form-group': 'none'}>
-                                            <div>
-                                                <span>FP Invoice No</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-3 form-group'>
+                                                <div>
+                                                    <span>FP Invoice No</span>
+                                                    {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['fp_invoice_no']}</p>
                                                         :
                                                         <input
@@ -3740,28 +3728,31 @@ class BookingPage extends Component {
                                                             value = {formInputs['fp_invoice_no']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className='col-sm-1 form-group'>
-                                            <div>
-                                                <span>Quoted Cost</span>
-                                                {parseInt(curViewMode) === 0 ?
-                                                    <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(booking.inv_cost_quoted).toFixed(2)}`}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_cost_quoted"
-                                                        value = {formInputs['inv_cost_quoted']}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
-                                                }
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-1 form-group'>
+                                                <div>
+                                                    <span>Quoted Cost</span>
+                                                    {parseInt(curViewMode) === 0 ?
+                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(booking.inv_cost_quoted).toFixed(2)}`}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_cost_quoted"
+                                                            value = {formInputs['inv_cost_quoted']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        {clientname === 'dme' &&
-                                            <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
+                                        }
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-1 form-group'>
                                                 <div>
                                                     <span>Actual Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
@@ -3779,24 +3770,26 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Quoted Sell</span>
-                                                {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(booking.inv_sell_quoted).toFixed(2)}`}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_sell_quoted"
-                                                        value = {formInputs['inv_sell_quoted']}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
-                                                }
+                                        {overCompany(roleCode) &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span>Quoted Sell</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(booking.inv_sell_quoted).toFixed(2)}`}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_sell_quoted"
+                                                            value = {formInputs['inv_sell_quoted']}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                        {clientname === 'dme' &&
+                                        }
+                                        {overCompany(roleCode) &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
                                                     <span>Actual Sell</span>
@@ -3815,43 +3808,67 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-2 form-group">
-                                            <div>
-                                                <span>DME Invoice No</span>
-                                                {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_dme_invoice_no']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_dme_invoice_no"
-                                                        value = {formInputs['inv_dme_invoice_no'] ? formInputs['inv_dme_invoice_no'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
-                                                }
+                                        {overCompany(roleCode) &&
+                                            <div className="col-sm-2 form-group">
+                                                <div>
+                                                    <span>DME Invoice No</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_dme_invoice_no']}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_dme_invoice_no"
+                                                            value = {formInputs['inv_dme_invoice_no'] ? formInputs['inv_dme_invoice_no'] : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                        />
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                     </div>
                                     <div className='row col-sm-12 booking-form-02'>
-                                        <div className={clientname === 'dme' ? 'col-sm-6 form-group' : 'none'}>
-                                            <span>Invoice Billing Status Note</span>
-                                            <textarea
-                                                className="show-mode"
-                                                id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
-                                                name="inv_billing_status_note"
-                                                value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
-                                                onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
-                                                rows="6"
-                                                cols="83"
-                                            />
-                                            {!_.isEmpty(formInputs['inv_billing_status_note']) &&
-                                                <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
-                                            }
-                                        </div>
+                                        {onlyDME(roleCode) &&
+                                            <div className='col-sm-6 form-group'>
+                                                <span>Invoice Billing Status Note</span>
+                                                <textarea
+                                                    className="show-mode"
+                                                    id={'booking-' + 'inv_billing_status_note' + '-tooltip-' + booking.id}
+                                                    name="inv_billing_status_note"
+                                                    value={formInputs['inv_billing_status_note'] ? formInputs['inv_billing_status_note'] : ''} 
+                                                    onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
+                                                    rows="6"
+                                                    cols="83"
+                                                />
+                                                {!_.isEmpty(formInputs['inv_billing_status_note']) &&
+                                                    <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
+                                                }
+                                            </div>
+                                        }
                                         <div className="col-sm-6 form-group">
                                             <span>Status History Note</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <textarea 
+                                                    className="show-mode"
+                                                    onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
+                                                    id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                    value={formInputs['dme_status_history_notes']}
+                                                    disabled='disabled'
+                                                    rows="6"
+                                                    cols="83"
+                                                />
+                                                :
+                                                onlyDME(roleCode) ?
+                                                    <textarea 
+                                                        className="show-mode"
+                                                        id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                        name="dme_status_linked_reference_from_fp"
+                                                        value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
+                                                        onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
+                                                        rows="6"
+                                                        cols="83"
+                                                    />
+                                                    :
                                                     <textarea 
                                                         className="show-mode"
                                                         onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
@@ -3861,34 +3878,12 @@ class BookingPage extends Component {
                                                         rows="6"
                                                         cols="83"
                                                     />
-                                                    :
-                                                    clientname === 'dme' ?
-                                                        <textarea 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            name="dme_status_linked_reference_from_fp"
-                                                            value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            rows="6"
-                                                            cols="83"
-                                                        />
-                                                        :
-                                                        <textarea 
-                                                            className="show-mode"
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            value={formInputs['dme_status_history_notes']}
-                                                            disabled='disabled'
-                                                            rows="6"
-                                                            cols="83"
-                                                        />
                                             }
                                             {!_.isEmpty(formInputs['dme_status_history_notes']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_history_notes']} />
                                             }
                                         </div>
                                     </div>
-                                    <div className="clearfix"></div>
                                 </div>
                                 <div className="detail-tab">
                                     <div className="row">
@@ -4163,7 +4158,7 @@ class BookingPage extends Component {
                                                                     :
                                                                     <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                 :
-                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                (onlyDME(roleCode) && isBookedBooking) ?
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
                                                                         value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).toDate() : null}
@@ -4179,18 +4174,17 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Given to transport</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                onlyDME(roleCode) ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
+                                                                        value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time']).toDate() : null}
+                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                    />
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
-                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : null}</p>
+                                                                    <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : null}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4199,18 +4193,17 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Transport Received</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                                :
+                                                                onlyDME(roleCode) ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
+                                                                        value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time']).toDate() : null}
+                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                    />
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4290,20 +4283,20 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="clearfix"></div>
                                                 </form>
                                             </div>
-                                            <div className="clearfix"></div>
                                         </div>
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
-                                                    <ul>
-                                                        <li>Delivery Details</li>
-                                                        <li className="peclock" >
-                                                            <Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.deTimeZone} />
-                                                        </li>
-                                                    </ul>
+                                                    {overCompany(roleCode) &&
+                                                        <ul>
+                                                            <li>Delivery Details</li>
+                                                            <li className="peclock" >
+                                                                <Clock format={'DD MMM YYYY h:mm:ss A'} ticking={true} timezone={this.state.deTimeZone} />
+                                                            </li>
+                                                        </ul>
+                                                    }
                                                 </div>
                                                 <form action="">
                                                     <div className="progress">
@@ -4450,13 +4443,13 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Contact </label>
-                                                        </div>
-                                                        <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
+                                                    {overCompany(roleCode) &&
+                                                        <div className="row mt-1">
+                                                            <div className="col-sm-4">
+                                                                <label className="" htmlFor="">Contact </label>
+                                                            </div>
+                                                            <div className="col-sm-8">
+                                                                {(parseInt(curViewMode) === 0) ?
                                                                     <p className="show-mode">{formInputs['de_to_Contact_F_LName']}</p>
                                                                     :
                                                                     <input 
@@ -4465,9 +4458,10 @@ class BookingPage extends Component {
                                                                         className="form-control"
                                                                         value = {formInputs['de_to_Contact_F_LName'] ? formInputs['de_to_Contact_F_LName'] : ''} 
                                                                         onChange={(e) => this.onHandleInput(e)} />
-                                                            }
+                                                                }
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    }
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Tel</label>
@@ -4558,7 +4552,7 @@ class BookingPage extends Component {
                                                                     :
                                                                     <p className="show-mode">{booking && booking.eta_de_by ? moment(booking.eta_de_by).format('DD/MM/YYYY'): ''}</p>
                                                                 :
-                                                                (clientname === 'dme' && isBookedBooking) ?
+                                                                (onlyDME(roleCode) && isBookedBooking) ?
                                                                     <DatePicker
                                                                         className="date"
                                                                         selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).toDate() : null}
@@ -4575,19 +4569,18 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Delivery Booking</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                :
+                                                                onlyDME(roleCode) ?
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                        onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
+                                                                        dateFormat="dd/MM/yyyy"
+                                                                    />
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
-                                                                            dateFormat="dd/MM/yyyy"
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
+                                                                    <p className="show-mode">{formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4604,18 +4597,17 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Actual Delivery </label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                onlyDME(roleCode) ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
+                                                                        value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
+                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                    />
                                                                     :
-                                                                    (clientname === 'dme') ?
-                                                                        <DateTimePicker
-                                                                            onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
-                                                                        />
-                                                                        :
-                                                                        <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4657,7 +4649,7 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    {(clientname === 'dme') &&
+                                                    {onlyDME(roleCode) &&
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
                                                                 <label className="" htmlFor="">Futile Note</label>
@@ -4685,9 +4677,9 @@ class BookingPage extends Component {
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
                                                     <ul>
-                                                        <li>Project: {booking.b_booking_project}</li>
+                                                        {onlyDME(roleCode) && <li>Project: {booking.b_booking_project}</li>}
                                                         <li>
-                                                            {(clientname === 'dme' && isAutoAugmented === false) ?
+                                                            {(onlyDME(roleCode) && isAutoAugmented === false) ?
                                                                 <button
                                                                     className='btn btn-theme btn-autoaugment'
                                                                     disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
@@ -4705,7 +4697,9 @@ class BookingPage extends Component {
                                                                 </button>
                                                             }
                                                             <a onClick={(e) => this.onClickAugmentPuDate(e)} ><i className="fa fa-calendar" aria-hidden="true"></i></a>
-                                                            <a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                                            {onlyDME(roleCode) &&
+                                                                <a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                                            }
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -4923,7 +4917,7 @@ class BookingPage extends Component {
                                                                     {booking ? booking.s_02_Booking_Cutoff_Time : ''}
                                                                 </p>
                                                                 :
-                                                                (booking && clientname === 'dme' && !isBookedBooking) ?
+                                                                (booking && onlyDME(roleCode) && !isBookedBooking) ?
                                                                     <TimePicker
                                                                         onChange={(time) => this.onChangeTime(time, 's_02_Booking_Cutoff_Time')}
                                                                         value={formInputs['s_02_Booking_Cutoff_Time']}
@@ -4954,7 +4948,7 @@ class BookingPage extends Component {
                                                             disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
                                                         >Update</button>
                                                     </div>
-                                                    {(clientname === 'dme') &&
+                                                    {onlyDME(roleCode) &&
                                                         <div className="text-center mt-2 fixed-height pricing-btns">
                                                             <button
                                                                 className="btn btn-theme custom-theme"
@@ -4972,7 +4966,7 @@ class BookingPage extends Component {
                                                         </div>
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
-                                                        {(clientname === 'dme'
+                                                        {(onlyDME(roleCode)
                                                             && isBookedBooking
                                                             && !_.isUndefined(this.state.booking.vx_freight_provider)
                                                             && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
@@ -5001,20 +4995,17 @@ class BookingPage extends Component {
                                                             </button>
                                                         }
                                                     </div>
-                                                    {
-                                                        (clientname === 'dme') ?
-                                                            <div className="text-center mt-2 fixed-height manual-book">
-                                                                <input
-                                                                    name="tickManualBook"
-                                                                    type="checkbox"
-                                                                    checked={formInputs['x_manual_booked_flag']}
-                                                                    onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={isBookedBooking ? 'disabled' : ''}
-                                                                />
-                                                                <p>Manual Book</p>
-                                                            </div>
-                                                            :
-                                                            null
+                                                    {onlyDME(roleCode) &&
+                                                        <div className="text-center mt-2 fixed-height manual-book">
+                                                            <input
+                                                                name="tickManualBook"
+                                                                type="checkbox"
+                                                                checked={formInputs['x_manual_booked_flag']}
+                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                disabled={isBookedBooking ? 'disabled' : ''}
+                                                            />
+                                                            <p>Manual Book</p>
+                                                        </div>
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
@@ -5056,16 +5047,16 @@ class BookingPage extends Component {
                                                             Reprint
                                                         </button>
                                                     </div>
-                                                    <div className="text-center mt-2 fixed-height half-size">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickTrackingStatus()}>Status(Test)</button>
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod(Test)</button>
-                                                        
-                                                    </div>
+                                                    {onlyDME(roleCode) && 
+                                                        <div className="text-center mt-2 fixed-height half-size">
+                                                            <button className="btn btn-theme custom-theme" onClick={() => this.onClickTrackingStatus()}>Status(Test)</button>
+                                                            <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod(Test)</button>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="clearfix"></div>
                                 </div>
                             </div>
                         </div>
@@ -5080,28 +5071,17 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                {
-                                                    clientname === 'dme' ?
-                                                        <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
-                                                        : null
+                                                {onlyDME(roleCode) &&
+                                                    <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
                                                 }
-                                                {
-                                                    clientname === 'dme' ?
-                                                        <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
-                                                        : null
+                                                {onlyDME(roleCode) &&
+                                                    <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
                                                 }
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
-                                                <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Attachments({cntAttachments})</a></li>
+                                                {overCompany(roleCode) &&
+                                                    <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Label & Pod</a></li>
+                                                }
                                             </ul>
-                                        </div>
-                                        <div className="tab-select-outer none">
-                                            <select id="tab-select">
-                                                <option value="#tab01">Shipment Packages / Goods</option>
-                                                <option value="#tab02">Additional Services & Options</option>
-                                                <option value="#tab03">Communication Log</option>
-                                                <option value="#tab04">Attachments</option>
-                                                <option value="#tab05">Label & Pod</option>
-                                            </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
@@ -5661,6 +5641,7 @@ const mapStateToProps = (state) => {
         clientname: state.auth.clientname,
         username: state.auth.username,
         clientId: state.auth.clientId,
+        roleCode: state.auth.roleCode,
         warehouses: state.warehouse.warehouses,
         dmeClients: state.auth.dmeClients,
         clientPK: state.auth.clientPK,
