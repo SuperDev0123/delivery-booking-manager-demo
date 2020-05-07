@@ -45,6 +45,9 @@ import {
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
     SUCCESS_UPDATE_CLIENT_EMPLOYEE,
     FAILED_UPDATE_CLIENT_EMPLOYEE,
+    SUCCESS_GET_ZOHO_TICKETS,
+    FAILED_GET_ZOHO_TICKETS,
+    RESET_ZOHO_TICKETS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -62,6 +65,8 @@ const defaultState = {
     emailLogs: [],
     bookingset: null,
     bookingsets: null,
+    zoho_tickets: [],
+    loadingZohoTickets: false
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -123,6 +128,12 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 statusHistories: null,
                 needUpdateStatusHistories: false,
+            };
+        case RESET_ZOHO_TICKETS:
+            return {
+                ...state,
+                zoho_tickets: [],
+                loadingZohoTickets: true, 
             };
         case SUCCESS_GET_PACKAGETYPES:
             return {
@@ -225,6 +236,17 @@ export const ExtraReducer = (state = defaultState, {
                 bookingsets: null,
                 needUpdateBookingSets: true,
                 isBookingSetDeleted: true,
+            };
+        case SUCCESS_GET_ZOHO_TICKETS:
+            return {
+                ...state,
+                zoho_tickets: payload,
+                loadingZohoTickets: false
+            };
+        case FAILED_GET_ZOHO_TICKETS:
+            return {
+                ...state,
+                loadingZohoTickets: false
             };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:

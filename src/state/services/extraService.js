@@ -46,6 +46,9 @@ import {
     failedSaveStatusHistoryPuInfo,
     successUpdateClientEmployee,
     failedUpdateClientEmployee,
+    successGetZohoTickets,
+    failedGetZohoTickets,
+    resetZohoTickets,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -341,4 +344,20 @@ export const updateClientEmployee = (clientEmployee) => {
         axios(options)
             .then(({ data }) => dispatch(successUpdateClientEmployee(data)))
             .catch((error) => dispatch(failedUpdateClientEmployee(error)));
+};
+
+
+export const getZohoTickets = (dmeid) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_all_zoho_tickets/?dmeid=${dmeid}`,
+    };
+    return dispatch => {
+        dispatch(resetZohoTickets());
+        axios(options)
+            .then(({ data }) => dispatch(successGetZohoTickets(data.tickets)))
+            .catch((error) => dispatch(failedGetZohoTickets(error)));
+    };
 };

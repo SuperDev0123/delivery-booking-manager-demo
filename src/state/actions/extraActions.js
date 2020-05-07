@@ -45,6 +45,9 @@ import {
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
     SUCCESS_UPDATE_CLIENT_EMPLOYEE,
     FAILED_UPDATE_CLIENT_EMPLOYEE,
+    SUCCESS_GET_ZOHO_TICKETS,
+    FAILED_GET_ZOHO_TICKETS,
+    RESET_ZOHO_TICKETS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -362,5 +365,26 @@ export function failedUpdateClientEmployee(error) {
     return {
         type: FAILED_UPDATE_CLIENT_EMPLOYEE,
         errorMessage: 'Unable to update ClientEmployee. Error:' + error,
+    };
+}
+
+export function successGetZohoTickets(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_TICKETS,
+        payload: data,
+        errorMessage: 'Successfully get zoho tickets',
+    };
+}
+
+export function failedGetZohoTickets(error) {
+    return {
+        type: FAILED_GET_ZOHO_TICKETS,
+        errorMessage: 'Unable to get zoho tickets. Error:' + error,
+    };
+}
+
+export function resetZohoTickets() {
+    return {
+        type: RESET_ZOHO_TICKETS,
     };
 }
