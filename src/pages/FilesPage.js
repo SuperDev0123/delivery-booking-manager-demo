@@ -7,6 +7,7 @@ import { getFiles } from '../state/services/fileService';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { API_HOST, HTTP_PROTOCOL } from '../config';
 import axios from 'axios';
+import LoadingOverlay from 'react-loading-overlay';
 
 class FilesPage extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class FilesPage extends Component {
         this.state = {
             files: [],
             filteredFiles:[],
+            loadingFiles: false,
             simpleSearchKeyword: ''
         };
     }
@@ -24,6 +26,7 @@ class FilesPage extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
+        loadingFiles: PropTypes.bool.isRequired,
     };
 
     componentDidMount() {
@@ -31,7 +34,7 @@ class FilesPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {redirect, files} = newProps;
+        const {redirect, files, loadingFiles} = newProps;
 
         if (redirect) {
             this.props.cleanRedirectState();
@@ -41,6 +44,10 @@ class FilesPage extends Component {
         if (files) {
             this.setState({files});
             this.setState({filteredFiles: files});
+        }
+
+        if ( this.props.loadingFiles != loadingFiles) {
+            this.setState({loadingFiles});
         }
     }
 
@@ -97,7 +104,7 @@ class FilesPage extends Component {
         e.preventDefault();
         const {simpleSearchKeyword, files} = this.state;
 
-        const filteredFiles = files.filter((file) => file.file_name.indexOf(simpleSearchKeyword)>-1);
+        const filteredFiles = files.filter((file) => file.file_name.indexOf(simpleSearchKeyword)>-1 || (file.b_bookingID_Visual && String(file.b_bookingID_Visual).indexOf(simpleSearchKeyword)> -1));
         this.setState({filteredFiles});
     }
 
@@ -149,17 +156,23 @@ class FilesPage extends Component {
                                     </div>
                                 </div>
 
-                                <div className="panel-body">
-                                    <div className="table-responsive">
-                                        <BootstrapTable
-                                            keyField="id"
-                                            data={ filteredFiles }
-                                            columns={ columns }
-                                            bootstrap4={ true }
-                                            pagination={ paginationFactory() }
-                                        />
+                                <LoadingOverlay
+                                    active={this.state.loadingFiles}
+                                    spinner
+                                    text='Loading...'
+                                >
+                                    <div className="panel-body">
+                                        <div className="table-responsive">
+                                            <BootstrapTable
+                                                keyField="id"
+                                                data={ filteredFiles }
+                                                columns={ columns }
+                                                bootstrap4={ true }
+                                                pagination={ paginationFactory() }
+                                            />
+                                        </div>
                                     </div>
-                                </div>
+                                </LoadingOverlay>
                             </div>
                         </div>
                     </div>
@@ -175,6 +188,7 @@ const mapStateToProps = (state) => {
         errorMessage: state.auth.errorMessage,
         redirect: state.auth.redirect,
         files: state.files.files,
+        loadingFiles: state.files.loadingFiles,
     };
 };
 
