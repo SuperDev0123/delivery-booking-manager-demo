@@ -3073,7 +3073,7 @@ class BookingPage extends Component {
             'Repairs & Spare Parts Expense',
             'Refurbishment Expense',
             'Salvage Expense',
-            'Samples & Sales Expens',
+            'Samples & Sales Expense',
             'Standard Sales',
             'Testing Expense',
             'Admin / Other',
