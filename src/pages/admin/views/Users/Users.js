@@ -9,7 +9,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-
+import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
@@ -176,7 +176,13 @@ class Users extends Component {
                 </div>
             );
         };
-
+    
+        const datetimeFormatter = (cell) => {
+            if (cell)
+                return (
+                    moment(cell).format('DD/MM/YYYY HH:mm:ss')
+                );
+        };
 
         const tableColumns = [
             {
@@ -211,7 +217,8 @@ class Users extends Component {
                 dataField: 'last_login',
                 text: 'Last Login',
                 editable: true,
-                style: editableStyle
+                style: editableStyle,
+                formatter: datetimeFormatter,
             }, {
                 dataField: 'is_active',
                 text: 'Status',
