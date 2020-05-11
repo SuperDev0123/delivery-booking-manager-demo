@@ -3745,7 +3745,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-1 form-group">
                                             <div>
-                                                <span>Invliced Sell</span>
+                                                <span className="c-red">Invoiced $</span>
                                                 {(parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(booking.inv_sell_quoted).toFixed(2)}`}</p>
                                                     :
@@ -3798,25 +3798,23 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        {clientname === 'dme' &&
-                                            <div className="col-sm-1 form-group">
-                                                <div>
-                                                    <span>Actual Sell</span>
-                                                    {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(booking.inv_sell_actual).toFixed(2)}`}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_sell_actual"
-                                                            value = {formInputs['inv_sell_actual']}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
-                                                        />
-                                                    }
-                                                </div>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span className="c-red">Actual $</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(booking.inv_sell_actual).toFixed(2)}`}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_sell_actual"
+                                                        value = {formInputs['inv_sell_actual']}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        onBlur={(e) => this.onHandleInputBlur(e)}
+                                                    />
+                                                }
                                             </div>
-                                        }
+                                        </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
