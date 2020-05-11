@@ -122,6 +122,12 @@ class SidebarPush extends React.Component {
                                             </span><small>Messages</small></a>
                                     </li>
                                     <li>
+                                        <a href='/'>
+                                            <span className="icon">
+                                                <i className="fa fa-envelope"></i>
+                                            </span><small>Main Menu</small></a>
+                                    </li>
+                                    <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-cog"></i>
