@@ -965,13 +965,13 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (booking.inv_cost_quoted && !_.isNaN(parseFloat(booking.inv_cost_quoted))) formInputs['inv_cost_quoted'] = '$' + parseFloat(booking.inv_cost_quoted).toFixed(2);
+                if (booking.inv_cost_quoted && !_.isNaN(parseFloat(booking.inv_cost_quoted))) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
                 else formInputs['inv_cost_quoted'] = null;
-                if (booking.inv_cost_actual && !_.isNaN(parseFloat(booking.inv_cost_actual))) formInputs['inv_cost_actual'] = '$' + parseFloat(booking.inv_cost_actual).toFixed(2);
+                if (booking.inv_cost_actual && !_.isNaN(parseFloat(booking.inv_cost_actual))) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
                 else formInputs['inv_cost_actual'] = null;
-                if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = '$' + parseFloat(booking.inv_sell_quoted).toFixed(2);
+                if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
                 else formInputs['inv_sell_quoted'] = null;
-                if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = '$' + parseFloat(booking.inv_sell_actual).toFixed(2);
+                if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
