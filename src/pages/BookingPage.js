@@ -1155,8 +1155,9 @@ class BookingPage extends Component {
                     } else if (_.isNaN(parseFloat(value))) {
                         this.notify('Please input float number!');
                     } else {
+                        let value = e.target.value.replace(',', '').replace('$', '');
                         formInputs[e.target.name] = value;
-                        booking[e.target.name] = value;
+                        booking[e.target.name] = parseFloat(value).toFixed(2);
                     }
                 } else {
                     formInputs[e.target.name] = e.target.value;
@@ -1165,20 +1166,6 @@ class BookingPage extends Component {
 
                 this.setState({ formInputs, booking, isBookingModified: true });
             }
-        }
-    }
-
-    onHandleInputBlur(e) {
-        let {formInputs, booking} = this.state;
-
-        if (e.target.name === 'inv_sell_quoted' ||
-            e.target.name === 'inv_cost_quoted' ||
-            e.target.name === 'inv_sell_actual' ||
-            e.target.name === 'inv_cost_actual'
-        ) {
-            let value = e.target.value.replace(',', '').replace('$', '');
-            formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-            booking[e.target.name] = value;
         }
     }
 
@@ -3756,7 +3743,6 @@ class BookingPage extends Component {
                                                             name="inv_cost_quoted"
                                                             value = {formInputs['inv_cost_quoted']}
                                                             onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
                                                     }
                                                 </div>
@@ -3774,7 +3760,6 @@ class BookingPage extends Component {
                                                         name="inv_cost_actual"
                                                         value = {formInputs['inv_cost_actual']}
                                                         onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
                                                 }
                                             </div>
@@ -3792,7 +3777,6 @@ class BookingPage extends Component {
                                                             name="inv_sell_quoted"
                                                             value = {formInputs['inv_sell_quoted']}
                                                             onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
                                                     }
                                                 </div>
@@ -3810,7 +3794,6 @@ class BookingPage extends Component {
                                                         name="inv_sell_actual"
                                                         value = {formInputs['inv_sell_actual']}
                                                         onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
                                                 }
                                             </div>
