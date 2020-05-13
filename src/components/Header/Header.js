@@ -105,18 +105,18 @@ class Header extends Component {
                                         <a className="dropdown-item cut-user-name">
                                             <i>Logged in as {username}</i>
                                         </a>
-                                        <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
-                                        <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/admin">Go to Admin</a>
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/upload">Upload Files</a>
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/files">Files</a>
+                                        {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                        {clientname === 'dme' && <a className='dropdown-item' href="/admin">Go to Admin</a>}
+                                        {clientname === 'dme' && <div className="dropdown-divider"></div>}
+                                        {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
+                                        {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
+                                        {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/booking">Booking</a>
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/allbookings">All Bookings</a>
-                                        <div className={clientname === 'dme' ? 'dropdown-divider' : 'none'}></div>
-                                        <a className={clientname === 'dme' ? 'dropdown-item' : 'none'} href="/reports">Reports</a>
+                                        {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                        {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
                                     </div>
