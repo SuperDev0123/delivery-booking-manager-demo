@@ -214,6 +214,13 @@ class Users extends Component {
                 editable: true,
                 style: editableStyle
             }, {
+                dataField: 'status_time',
+                text: 'Status Time',
+                editable: true,
+                style: editableStyle,
+                formatter: datetimeFormatter,
+            }, 
+            {
                 dataField: 'last_login',
                 text: 'Last Login',
                 editable: true,
