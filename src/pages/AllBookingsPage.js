@@ -20,13 +20,12 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
+import { getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
-import { getAllBookingStatus, getAllFPs, getAllProjectNames } from '../state/services/extraService';
+import { getAllBookingStatus, getAllFPs, getAllProjectNames, getBookingSets, createBookingSet, updateBookingSet } from '../state/services/extraService';
 // Components
 import TooltipItem from '../components/Tooltip/TooltipComponent';
-import BookingTooltipItem from '../components/Tooltip/BookingTooltipComponent';
 import SimpleTooltipComponent from '../components/Tooltip/SimpleTooltipComponent';
 import EditablePopover from '../components/Popovers/EditablePopover';
 import XLSModal from '../components/CommonModals/XLSModal';
@@ -38,6 +37,8 @@ import StatusInfoSlider from '../components/Sliders/StatusInfoSlider';
 import FindModal from '../components/CommonModals/FindModal';
 import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
+import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
+import BookingSetModal from '../components/CommonModals/BookingSetModal';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -90,6 +91,7 @@ class AllBookingsPage extends React.Component {
             selectedWarehouseName: 'All',
             allBookingStatus: [],
             allFPs: [],
+            pricingAnalyses: [],
             isShowStatusLockModal: false,
             pageItemCnt: 100,
             pageInd: 0,
@@ -109,6 +111,8 @@ class AllBookingsPage extends React.Component {
             projectNames: [],
             projectName: '',
             isShowBulkUpdateSlider: false,
+            isShowPricingAnalyseSlider: false,
+            isShowBookingSetModal: false,
         };
 
         this.togglePopover = this.togglePopover.bind(this);
@@ -123,6 +127,8 @@ class AllBookingsPage extends React.Component {
         this.toggleOrderModal = this.toggleOrderModal.bind(this);
         this.toggleProjectNameModal = this.toggleProjectNameModal.bind(this);
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
+        this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
+        this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
         this.myRef = React.createRef();
     }
 
@@ -158,6 +164,11 @@ class AllBookingsPage extends React.Component {
         clearErrorMessage: PropTypes.bool.isRequired,
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
+        getPricingAnalysis: PropTypes.func.isRequired,
+        getBookingSets: PropTypes.func.isRequired,
+        createBookingSet: PropTypes.func.isRequired,
+        updateBookingSet: PropTypes.func.isRequired,
+        bookingsets: PropTypes.array,
     };
 
     componentDidMount() {
@@ -208,7 +219,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -322,6 +333,10 @@ class AllBookingsPage extends React.Component {
 
         if (projectNames) {
             this.setState({projectNames});
+        }
+
+        if (pricingAnalyses) {
+            this.setState({pricingAnalyses});
         }
 
         if (needUpdateBookings) {
@@ -659,28 +674,6 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowCheckPodModal: !prevState.isShowCheckPodModal})); 
     }
 
-    onCheck(e, id) {
-        const { filteredBookingIds } = this.state;
-        let selectedBookingIds = this.state.selectedBookingIds;
-        let allCheckStatus = '';
-
-        if (!e.target.checked) {
-            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
-        } else {
-            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
-        }
-
-        if (selectedBookingIds.length === filteredBookingIds.length) {
-            allCheckStatus = 'All';
-        } else if (selectedBookingIds.length === 0) {
-            allCheckStatus = 'None';
-        } else {
-            allCheckStatus = 'Some';
-        }
-
-        this.setState({selectedBookingIds, allCheckStatus});
-    }
-
     toggleStatusInfoSlider() {
         this.setState(prevState => ({isShowStatusInfoSlider: !prevState.isShowStatusInfoSlider})); 
     }
@@ -699,6 +692,20 @@ class AllBookingsPage extends React.Component {
 
     toggleBulkUpdateSlider() {
         this.setState(prevState => ({isShowBulkUpdateSlider: !prevState.isShowBulkUpdateSlider}));
+    }
+
+    togglePricingAnalyseSlider() {
+        let selectedBookingIds = this.state.selectedBookingIds;
+        if ( !this.state.isShowPricingAnalyseSlider ) {
+            console.log('getPricingAnalysis',selectedBookingIds);
+            this.props.getPricingAnalysis(selectedBookingIds);
+        }
+        
+        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));        
+    }
+
+    toggleBookingSetModal() {
+        this.setState(prevState => ({isShowBookingSetModal: !prevState.isShowBookingSetModal}));
     }
 
     onClickAllTrigger() {
@@ -751,8 +758,8 @@ class AllBookingsPage extends React.Component {
             if (downloadOption === 'label' || downloadOption === 'new_label') {
                 const options = {
                     method: 'post',
-                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                    headers: {'Authorization': 'JWT ' + token },
+                    url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                    headers: {'Authorization': 'JWT ' + token},
                     data: {ids: selectedBookingIds, downloadOption: downloadOption},
                     responseType: 'blob', // important
                 };
@@ -784,7 +791,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_pod' && bookingIdsWithNewPOD.length !== 0) || (downloadOption === 'pod')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod' ? selectedBookingIds : bookingIdsWithNewPOD,
@@ -824,7 +831,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_pod_sog' && bookingIdsWithNewPODSOG.length !== 0) || (downloadOption === 'pod_sog')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pod/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'pod_sog' ? selectedBookingIds : bookingIdsWithNewPODSOG,
@@ -864,7 +871,7 @@ class AllBookingsPage extends React.Component {
                 if ((downloadOption === 'new_connote' && bookingIdsWithNewConnote.length !== 0) || (downloadOption === 'connote')) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                         headers: {'Authorization': 'JWT ' + token },
                         data: {
                             ids: downloadOption === 'connote' ? selectedBookingIds : bookingIdsWithNewConnote,
@@ -910,8 +917,8 @@ class AllBookingsPage extends React.Component {
                 if (bookingIdsWithConnote.length > 0) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-connote/',
-                        headers: {'Authorization': 'JWT ' + token },
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                        headers: {'Authorization': 'JWT ' + token},
                         data: {
                             ids: bookingIdsWithConnote,
                             downloadOption: 'connote',
@@ -934,8 +941,8 @@ class AllBookingsPage extends React.Component {
                 if (bookingIdsWithLabel.length > 0) {
                     const options = {
                         method: 'post',
-                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download-pdf/',
-                        headers: {'Authorization': 'JWT ' + token },
+                        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+                        headers: {'Authorization': 'JWT ' + token},
                         data: {
                             ids: bookingIdsWithLabel,
                             downloadOption: 'label',
@@ -1076,6 +1083,28 @@ class AllBookingsPage extends React.Component {
         // this.props.setGetBookingsFilter('date', {startDate, endDate});
         // localStorage.setItem('today', startDate);
         // this.setState({startDate, selectedBookingIds: [], allCheckStatus: false});
+    }
+
+    onCheck(e, id) {
+        const { filteredBookingIds } = this.state;
+        let selectedBookingIds = this.state.selectedBookingIds;
+        let allCheckStatus = '';
+
+        if (!e.target.checked) {
+            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
+        } else {
+            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
+        }
+
+        if (selectedBookingIds.length === filteredBookingIds.length) {
+            allCheckStatus = 'All';
+        } else if (selectedBookingIds.length === 0) {
+            allCheckStatus = 'None';
+        } else {
+            allCheckStatus = 'Some';
+        }
+
+        this.setState({selectedBookingIds, allCheckStatus});
     }
 
     onCheckAll() {
@@ -1557,6 +1586,10 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onClickPricingAnalyse() {
+        this.togglePricingAnalyseSlider();
+    }
+
     onClickBulkUpdate(field, value, bookingIds, optionalValue=null) {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
@@ -1579,6 +1612,15 @@ class AllBookingsPage extends React.Component {
 
     onClickPagination(pageInd) {
         this.props.setGetBookingsFilter('pageInd', pageInd);
+    }
+
+    onClickBookingSet() {
+        if (this.state.selectedBookingIds.length === 0) {
+            this.notify('Please select bookings!');
+        } else {
+            this.props.getBookingSets();
+            this.toggleBookingSetModal();
+        }
     }
 
     render() {
@@ -1855,16 +1897,15 @@ class AllBookingsPage extends React.Component {
                     <td className={(sortField === 'de_To_Address_Suburb') ? 'current' : ''}>{booking.de_To_Address_Suburb}</td>
                     <td className={(sortField === 'de_To_Address_State') ? 'current' : ''}>{booking.de_To_Address_State}</td>
                     <td className={(sortField === 'de_To_Address_PostalCode') ? 'current' : ''}>{booking.de_To_Address_PostalCode}</td>
-                    <td className={(booking.b_error_Capture)
-                        ? 'dark-blue warning' : ''
-                    }>
-                        {
-                            (booking.b_error_Capture) ?
-                                <div className="booking-status">
-                                    <TooltipItem booking={booking} />
-                                </div>
-                                :
-                                null
+                    <td
+                        className={'text-center'}
+                        id={'booking-b_error_Capture-tooltip-' + booking.id}
+                    >
+                        {booking.b_error_Capture &&
+                            <React.Fragment>
+                                <i className="fa fa-exclamation-triangle c-red" aria-hidden="true"></i>
+                                <TooltipItem object={booking} fields={['b_error_Capture']} />
+                            </React.Fragment>
                         }
                     </td>
                     <td className={
@@ -1923,13 +1964,13 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td className={
-                        !_.isNull(booking.fk_manifest_id) ?
+                        !_.isNull(booking.manifest_timestamp) ?
                             'bg-yellow'
                             :
                             null
                     }>
                         {
-                            !_.isNull(booking.fk_manifest_id) ? <div className="pod-status">M</div> : null
+                            !_.isNull(booking.manifest_timestamp) ? <div className="pod-status">M</div> : null
                         }
                     </td>
                     <td className={
@@ -1952,24 +1993,18 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td className={(sortField === 'dme_delivery_status_category') ? 'current' : ''} id={'booking-' + 'dme_delivery_status_category' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.dme_delivery_status_category}</p>
-                        {
-                            !_.isEmpty(booking.dme_delivery_status_category) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_delivery_status_category']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_delivery_status_category) &&
+                            <TooltipItem object={booking} fields={['dme_delivery_status_category']} />
                         }
                     </td>
                     <td className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
-                        {
-                            !_.isEmpty(booking.b_status) ?
-                                <BookingTooltipItem booking={booking} fields={['b_status']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.b_status) &&
+                            <TooltipItem object={booking} fields={['b_status']} />
                         }
                     </td>
-                    <td className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}>
-                        {booking.pu_PickUp_By_Date_DME ? moment(booking.pu_PickUp_By_Date_DME).format('DD/MM/YYYY') : ''}
+                    <td className={(sortField === 'pu_PickUp_By_Date') ? 'current' : ''}>
+                        {booking.pu_PickUp_By_Date ? moment(booking.pu_PickUp_By_Date).format('DD/MM/YYYY') : ''}
                     </td>
                     <td className={(sortField === 'de_Deliver_By_Date') ? 'current' : ''}>
                         {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY') : ''}
@@ -1994,11 +2029,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_detail') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.dme_status_detail}
-                        {
-                            !_.isEmpty(booking.dme_status_detail) && !_.isEmpty(booking.dme_status_detail) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_status_detail']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_status_detail) &&
+                            <TooltipItem object={booking} fields={['dme_status_detail']} />
                         }
                     </td>
                     <td 
@@ -2006,11 +2038,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_action') ? 'current' : ''}
                     >
                         {booking.dme_status_action}
-                        {
-                            !_.isEmpty(booking.dme_status_action) && !_.isEmpty(booking.dme_status_action) ?
-                                <BookingTooltipItem booking={booking} fields={['dme_status_action']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.dme_status_action) &&
+                            <TooltipItem object={booking} fields={['dme_status_action']} />
                         }
                     </td>
                     <td className={(sortField === 'z_calculated_ETA') ? 'current' : ''}>
@@ -2021,11 +2050,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.de_to_PickUp_Instructions_Address}
-                        {
-                            !_.isEmpty(booking.de_to_PickUp_Instructions_Address) && !_.isEmpty(booking.de_to_PickUp_Instructions_Address) ?
-                                <BookingTooltipItem booking={booking} fields={['de_to_PickUp_Instructions_Address']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.de_to_PickUp_Instructions_Address) &&
+                            <TooltipItem object={booking} fields={['de_to_PickUp_Instructions_Address']} />
                         }
                     </td>
                     <td 
@@ -2033,11 +2059,8 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'b_booking_project') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.b_booking_project}
-                        {
-                            !_.isEmpty(booking.b_booking_project) && !_.isEmpty(booking.b_booking_project) ?
-                                <BookingTooltipItem booking={booking} fields={['b_booking_project']} />
-                                :
-                                null
+                        {!_.isEmpty(booking.b_booking_project) &&
+                            <TooltipItem object={booking} fields={['b_booking_project']} />
                         }
                     </td>
                     <td 
@@ -2050,7 +2073,7 @@ class AllBookingsPage extends React.Component {
         });
 
         return (
-            <div className="qbootstrap-nav allbookings" >
+            <div className="qbootstrap-nav allbookings">
                 <LoadingOverlay
                     active={loadingDownload}
                     spinner
@@ -2061,14 +2084,10 @@ class AllBookingsPage extends React.Component {
                             <ul className="nav nav-tabs">
                                 <li><Link to="/booking">Header</Link></li>
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
+                                <li className=""><a href="/bookingsets">Booking Sets</a></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                {
-                                    clientname === 'dme' ? <li className=""><Link to="/comm">Comm</Link></li> : null
-                                    
-                                }
-                                {
-                                    clientname === 'dme' ? <li className=""><Link to="/zoho">Zoho</Link></li> : null
-                                }
+                                {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                                {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
                                 <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
@@ -2127,15 +2146,21 @@ class AllBookingsPage extends React.Component {
                             <a className="none" href=""><i className="icon-calendar3" aria-hidden="true"></i></a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickDownloadExcel()}>
                                 <span title="Build XLS report">
-                                    <i className="fa fa-file-excel-o" aria-hidden="true"></i>
+                                    <i className="fa fa-file-excel" aria-hidden="true"></i>
                                 </span>
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
-                            <a 
+                            <a
                                 className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
                                 onClick={() => this.onClickMANI()}
                             >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
+                            </a>
+                            <a
+                                className={clientname && clientname === 'dme' ? '' : 'none'} 
+                                onClick={() => this.onClickBookingSet()}
+                            >
+                                <span title="Build a booking set"><i className="fa fa-layer-group"></i></span>
                             </a>
                             <a href="" className="help none"><i className="fa fa-sliders"></i></a>
                         </div>
@@ -2191,6 +2216,7 @@ class AllBookingsPage extends React.Component {
                                                 clientname === 'dme' || clientname === 'biopak' ?
                                                     <div className="disp-inline-block">
                                                         <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                        <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                         <div className="disp-inline-block">
                                                             <LoadingOverlay
                                                                 active={false}
@@ -2579,8 +2605,8 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th
                                                                 id={'booking-column-header-tooltip-Manifest'}
-                                                                className={(sortField === 'fk_manifest_id') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('fk_manifest_id')} 
+                                                                className={(sortField === 'manifest_timestamp') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('manifest_timestamp')} 
                                                             >
                                                                 M
                                                                 <SimpleTooltipComponent text={'Manifest'} />
@@ -2700,14 +2726,14 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                className={(sortField === 'pu_PickUp_By_Date_DME') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('pu_PickUp_By_Date_DME')}
+                                                                className={(sortField === 'pu_PickUp_By_Date') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('pu_PickUp_By_Date')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Pickup Due</p>
                                                                 {
-                                                                    (sortField === 'pu_PickUp_By_Date_DME') ?
+                                                                    (sortField === 'pu_PickUp_By_Date') ?
                                                                         (sortDirection > 0) ?
                                                                             <i className="fa fa-sort-up"></i>
                                                                             : <i className="fa fa-sort-down"></i>
@@ -2915,7 +2941,7 @@ class AllBookingsPage extends React.Component {
                                                             <th className="narrow-column"><i className="fa fa-lock"></i></th>
                                                             <th scope="col"><input type="text" name="dme_delivery_status_category" value={filterInputs['dme_delivery_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th scope="col"><input type="text" name="pu_PickUp_By_Date_DME" value={filterInputs['pu_PickUp_By_Date_DME'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="delivery_booking" value={filterInputs['delivery_booking'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th scope="col"><input type="text" name="b_given_to_transport_date_time" value={filterInputs['b_given_to_transport_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -2955,6 +2981,7 @@ class AllBookingsPage extends React.Component {
                     toggleXLSModal={this.toggleXLSModal}
                     allFPs={allFPs}
                     allClients={dmeClients}
+                    clientname={clientname}
                     selectedBookingIds={this.state.selectedBookingIds}
                     generateXLS={(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client) => this.props.generateXLS(startDate, endDate, emailAddr, vx_freight_provider, report_type, showFieldName, useSelected, selectedBookingIds, pk_id_dme_client)}
                 />
@@ -3004,6 +3031,22 @@ class AllBookingsPage extends React.Component {
                     onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
+                <PricingAnalyseSlider
+                    isOpen={this.state.isShowPricingAnalyseSlider}
+                    toggleSlider={this.togglePricingAnalyseSlider}
+                    pricingAnalyses={this.state.pricingAnalyses}
+                />
+
+                <BookingSetModal
+                    isOpen={this.state.isShowBookingSetModal}
+                    toggle={this.toggleBookingSetModal}
+                    notify={this.notify}
+                    bookingIds={this.state.selectedBookingIds}
+                    bookingsets={this.props.bookingsets}
+                    createBookingSet={this.props.createBookingSet}
+                    updateBookingSet={this.props.updateBookingSet}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -3049,6 +3092,8 @@ const mapStateToProps = (state) => {
         allFPs: state.extra.allFPs,
         projectNames: state.extra.projectNames,
         projectName: state.booking.projectName,
+        pricingAnalyses: state.booking.pricingAnalyses,
+        bookingsets: state.extra.bookingsets,
     };
 };
 
@@ -3082,6 +3127,10 @@ const mapDispatchToProps = (dispatch) => {
         getAllProjectNames: () => dispatch(getAllProjectNames()),
         calcCollected: (bookingIds, type) => dispatch(calcCollected(bookingIds, type)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
+        getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
+        getBookingSets: () => dispatch(getBookingSets()),
+        createBookingSet: (bookingIds, name, note, auto_select_type) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type)),
+        updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
     };
 };
 

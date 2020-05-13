@@ -4,23 +4,24 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 // Libs
 import axios from 'axios';
+import moment from 'moment-timezone';
 // Components
 import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getVehicles } from '../../../../state/services/vehicleService';
+import { getFiles } from '../../../../state/services/fileService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
-class Vehicles extends Component {
+class Status extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: false,
-            allVehicles: [],
+            files: [],
             selectedFile: null,
             selectedFileOption: null,
             isShowDeleteFileConfirmModal: false,
@@ -35,7 +36,7 @@ class Vehicles extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getVehicles: PropTypes.func.isRequired,
+        getFiles: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -53,7 +54,7 @@ class Vehicles extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, allVehicles } = newProps;
+        const { redirect, files } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -62,8 +63,8 @@ class Vehicles extends Component {
             this.props.history.push('/admin');
         }
 
-        if (allVehicles) {
-            this.setState({allVehicles, loading: false});
+        if (files) {
+            this.setState({files, loading: false});
             this.notify('Refreshed!');
         }
     }
@@ -78,7 +79,7 @@ class Vehicles extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getVehicles();
+        this.props.getFiles('pricing-rule');
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -101,7 +102,7 @@ class Vehicles extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getVehicles();
+                this.props.getFiles('pricing-rule');
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -110,32 +111,55 @@ class Vehicles extends Component {
             });
     }
 
-    render() {
-        const { loading, allVehicles } = this.state;
+    onClickDownloadFile(file, downloadOption) {
+        const token = localStorage.getItem('token');
 
-        const timingList = allVehicles.map((vehicle, index) => {
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+            headers: {'Authorization': 'JWT ' + token },
+            data: {downloadOption: downloadOption, fileName: file.file_name},
+            responseType: 'blob', // important
+        };
+
+        axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'pricing-rule__' + file.file_name + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                this.notify('Failed to download files: ' + error);
+            });
+    }
+
+    render() {
+        const { loading, files } = this.state;
+
+        const fileList = files.map((file, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{vehicle.description}</td>
-                    <td>{vehicle.dim_UOM}</td>
-                    <td>{vehicle.max_length}</td>
-                    <td>{vehicle.max_width}</td>
-                    <td>{vehicle.max_height}</td>
-                    <td>{vehicle.mass_UOM}</td>
-                    <td>{vehicle.pallets}</td>
-                    <td>{vehicle.pallet_UOM}</td>
-                    <td>{vehicle.max_pallet_length}</td>
-                    <td>{vehicle.max_pallet_height}</td>
-                    <td>{vehicle.base_charge}</td>
-                    <td>{vehicle.min_charge}</td>
-                    <td>{vehicle.limited_state}</td>
-                    <td>{vehicle.freight_provider}</td>
-                    <td>{vehicle.max_mass}</td>
+                    <td>{file.file_name}</td>
+                    <td>{file.file_path}</td>
+                    <td>{moment(file.z_createdTimestamp).format('DD/MM/YYYY HH:mm')}</td>
+                    <td>{file.z_createdByAccount}</td>
+                    <td>{file.note}</td>
+                    <td>
+                        <button 
+                            className="btn btn-primary"
+                            onClick={() => this.onClickDownloadFile(file, 'pricing-rule')}
+                        >
+                            Download
+                        </button>
+                    </td>
                     <td>
                         <button
                             className="btn btn-danger"
-                            onClick={() => this.onClickDeleteFile(vehicle, 'pricing-only')}
+                            onClick={() => this.onClickDeleteFile(file, 'pricing-rule')}
                         >
                             Delete
                         </button>
@@ -145,15 +169,16 @@ class Vehicles extends Component {
         });
 
         return (
-            <div className="pricing-only">
+            <div className="pricing-rule">
                 <div className="pageheader">
-                    <h1>Vehicles</h1>
+                    <h1>List</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href="/">Dashboard</a>
                             </li>
-                            <li className="active">Vehicles</li>
+                            <li><a href="/pricing-rule">Pricing Rule</a></li>
+                            <li className="active">List</li>
                         </ol>
                     </div>
                 </div>
@@ -181,25 +206,16 @@ class Vehicles extends Component {
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
                                             <th>No</th>
-                                            <th>Description</th>
-                                            <th>Dim UOM</th>
-                                            <th>Max Length</th>
-                                            <th>Max Width</th>
-                                            <th>Max Height</th>
-                                            <th>Mass UOM</th>
-                                            <th>Pallets</th>
-                                            <th>Pallets UOM</th>
-                                            <th>Max Pallet Length</th>
-                                            <th>Max Pallet Height</th>
-                                            <th>Base Charge</th>
-                                            <th>Min Charge</th>
-                                            <th>Limited State</th>
-                                            <th>Frieght Provider</th>
-                                            <th>Max mass</th>
+                                            <th>File Name</th>
+                                            <th>File Path</th>
+                                            <th>Created At</th>
+                                            <th>Created By</th>
+                                            <th>Note</th>
+                                            <th>Download</th>
                                             <th>Delete</th>
                                         </thead>
                                         <tbody>
-                                            {timingList}
+                                            {fileList}
                                         </tbody>
                                     </table>
                                 </div>
@@ -212,7 +228,7 @@ class Vehicles extends Component {
                     onOk={() => this.onClickConfirmDeleteFileBtn()}
                     onCancel={this.toggleDeleteFileConfirmModal}
                     title={'Delete File'}
-                    text={'Are you sure you want to delete source file and result file?'}
+                    text={'Are you sure you want to delete import file?'}
                     okBtnName={'Delete'}
                 />
 
@@ -226,7 +242,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allVehicles: state.vehicle.allVehicles
+        files: state.files.files,
     };
 };
 
@@ -234,8 +250,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getVehicles: () => dispatch(getVehicles()),
+        getFiles: (fileType) => dispatch(getFiles(fileType)),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Vehicles));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Status));

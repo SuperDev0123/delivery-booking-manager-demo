@@ -10,8 +10,26 @@ import {
     SUCCESS_DELETE_USER,
     FAILED_DELETE_USER,
     SET_LOCAL_FILTER_CLIENTPK,
-    SET_FETCH_USERS_FLAG
+    SET_FETCH_USERS_FLAG,
+    SUCCESS_GET_CREATED_FOR_INFOS,
+    FAILED_GET_CREATED_FOR_INFOS
 } from '../constants/userConstants';
+
+export function setLocalFilter(key, value) {
+    if (key === 'clientPK') {
+        return {
+            type: SET_LOCAL_FILTER_CLIENTPK,
+            clientPK: value,
+        };
+    }
+}
+
+export function setNeedUpdateUsersFlag(boolFlag) {
+    return {
+        type: SET_FETCH_USERS_FLAG,
+        needUpdateUsers: boolFlag,
+    };
+}
 
 export function successGetAllUsers(data) {
     return {
@@ -83,19 +101,16 @@ export function failedDeleteUser(error) {
     };
 }
 
-export function setLocalFilter(key, value) {
-    if (key === 'clientPK') {
-        return {
-            type: SET_LOCAL_FILTER_CLIENTPK,
-            clientPK: value,
-        };
-    }
-}
-
-export function setNeedUpdateUsersFlag(boolFlag) {
+export function successGetCreatedForInfos(data) {
     return {
-        type: SET_FETCH_USERS_FLAG,
-        needUpdateUsers: boolFlag,
+        type: SUCCESS_GET_CREATED_FOR_INFOS,
+        payload: data.results
     };
 }
 
+export function failedGetCreatedForInfos(error) {
+    return {
+        type: FAILED_GET_CREATED_FOR_INFOS,
+        errorMessage: 'Unable to get created for infos, error: ' + error
+    };
+}

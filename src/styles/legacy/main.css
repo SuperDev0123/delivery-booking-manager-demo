@@ -59,6 +59,24 @@ ul.grid-head li:last-child {
 	color: #0189b9;
 	border-color: #0189b9;
 }
+
+.btn-autoaugment {
+	font-size: 14px !important;
+	border-radius: 6px !important;
+	border: 1px solid !important;
+	padding: 3px 15px !important;
+	-webkit-transition: background-color 0.5s ease-out;
+	-moz-transition: background-color 0.5s ease-out;
+	-o-transition: background-color 0.5s ease-out;
+	transition: background-color 0.5s ease-out;
+}
+
+.btn-autoaugment:hover{
+	background-color: #0189b9 !important;
+	color: #fff !important;
+	border-color: #005B7B !important;
+}
+
 section.booking .grid .head{
 	background-color: #0189b9;
 	padding: 5px;

@@ -1,6 +1,21 @@
 import axios from 'axios';
 
-import { successGetAllUsers, failedGetAllUsers, successGetUser, failedGetUser, successCreateUser, failedCreateUser, successUpdateUser, failedUpdateUser, successDeleteUser, failedDeleteUser, setLocalFilter, setNeedUpdateUsersFlag } from '../actions/userActions';
+import {
+    successGetAllUsers,
+    failedGetAllUsers,
+    successGetUser,
+    failedGetUser,
+    successCreateUser,
+    failedCreateUser,
+    successUpdateUser,
+    failedUpdateUser,
+    successDeleteUser,
+    failedDeleteUser,
+    setLocalFilter,
+    setNeedUpdateUsersFlag,
+    successGetCreatedForInfos,
+    failedGetCreatedForInfos
+} from '../actions/userActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getAllUsers = (clientPK=0) => {
@@ -73,6 +88,20 @@ export const deleteUserDetails = (data) => {
         axios(options)
             .then(({ data }) => dispatch(successDeleteUser(data)))
             .catch((error) => dispatch(failedDeleteUser(error)));
+};
+
+export const getCreatedForInfos = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_created_for_infos/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetCreatedForInfos(data)))
+            .catch((error) => dispatch(failedGetCreatedForInfos(error)));
 };
 
 export const setNeedUpdateUsersState = (boolFlag) => {

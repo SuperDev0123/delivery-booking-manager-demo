@@ -6,12 +6,12 @@ import {
 } from '../actions/costActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getAllCosts = () => {
+export const getCosts = () => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/costs/get_all`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/costs/`,
     };
     
     return dispatch =>

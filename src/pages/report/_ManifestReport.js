@@ -39,11 +39,13 @@ class ManifestReport extends React.Component {
 
     onClickDownload(report) {
         this.setState({loading: true});
+        const token = localStorage.getItem('token');
 
         const options = {
             method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/download-manifest/',
-            data: {z_manifest_url: report.z_manifest_url},
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+            headers: {'Authorization': 'JWT ' + token},
+            data: {z_manifest_url: report.z_manifest_url, downloadOption: 'manifest',},
             responseType: 'blob', // important
         };
 
@@ -94,7 +96,7 @@ class ManifestReport extends React.Component {
                     <table>
                         <thead>
                             <tr>
-                                <th>No.</th>
+                                <th>No</th>
                                 <th>Date</th>
                                 <th>Warehouse</th>
                                 <th>Count</th>

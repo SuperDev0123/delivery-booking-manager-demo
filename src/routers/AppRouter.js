@@ -17,6 +17,7 @@ import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
 import AllBookingsPage from '../pages/AllBookingsPage';
+import BookingSetsPage from '../pages/BookingSets/BookingSetsList';
 import UploadPage from '../pages/UploadPage';
 import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
@@ -45,11 +46,13 @@ import AddSqlQuery from '../pages/admin/views/SqlQueries/AddSqlQuery';
 import EditSqlQuery from '../pages/admin/views/SqlQueries/EditSqlQuery';
 import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
 import PricingOnlyUpload from '../pages/admin/views/PricingOnly/Upload';
+import PricingRuleList from '../pages/admin/views/PricingRule/List';
+import PricingRuleUpload from '../pages/admin/views/PricingRule/Upload';
+import PricingRuleStatus from '../pages/admin/views/PricingRule/Status';
 import Vehicles from '../pages/admin/views/Vehicles/Vehicles';
 import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
-import PricingRules from '../pages/admin/views/PricingRules/PricingRules';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -67,6 +70,7 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
                 <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
                 <PrivateRoute exact path='/allbookings' component={AllBookingsPage} />
+                <PrivateRoute exact path='/bookingsets' component={BookingSetsPage} />
                 <PrivateRoute exact path='/upload' component={UploadPage} />
                 <PrivateRoute exact path='/comm' component={CommPage} />
                 <PrivateRoute exact path='/pods' component={PodsPage} />
@@ -96,7 +100,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/timings' component={Timings} />
                     <AdminPrivateRoute exact path='/admin/availabilities' component={Availabilities} />
                     <AdminPrivateRoute exact path='/admin/costs' component={Costs} />
-                    <AdminPrivateRoute exact path='/admin/pricingrules' component={PricingRules} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule' component={PricingRuleList} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
+                    <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                 </Main>
                 <Redirect to='/' />
             </Switch>

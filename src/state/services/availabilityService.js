@@ -6,12 +6,12 @@ import {
 } from '../actions/availabilityActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
-export const getAllAvailabilities = () => {
+export const getAvailabilities = () => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/availabilities/get_all`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/availabilities/`,
     };
     
     return dispatch =>

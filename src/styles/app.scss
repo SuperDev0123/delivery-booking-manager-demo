@@ -12,6 +12,7 @@
 // Pages
 @import './pages/admin.scss';
 @import './pages/allbookings.scss';
+@import './pages/bookingsets.scss';
 @import './pages/bookingdetail.scss';
 @import './pages/login.scss';
 @import './pages/pods.scss';
@@ -36,3 +37,5 @@
 @import './components/ProjectDataSlider.scss';
 @import './components/FPPricingSlider.scss';
 @import './components/BulkUpdateSlider.scss';
+@import './components/EmailLogSlider.scss';
+@import './components/BookingSetModal.scss';

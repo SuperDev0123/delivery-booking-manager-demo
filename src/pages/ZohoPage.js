@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import axios from 'axios';
 import PropTypes from 'prop-types';
-import LoadingOverlay from 'react-loading-overlay';
 import { withRouter, Link } from 'react-router-dom';
+
+import axios from 'axios';
+
+import LoadingOverlay from 'react-loading-overlay';
 
 import { ZOHO_CLIENT_ID, ZOHO_ORG_ID, ZOHO_REDIRECT_URI } from '../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
@@ -29,6 +31,7 @@ class ZohoPage extends React.Component {
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        clientname: PropTypes.string,
         cleanRedirectState: PropTypes.func.isRequired,
     };
 
@@ -333,10 +336,15 @@ class ZohoPage extends React.Component {
                     <div id="headr" className="col-md-12">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                             <ul className="nav nav-tabs">
-                                <li><a href="/booking">Header</a></li>
-                                <li><a href="/allbookings">All Bookings</a></li>
-                                <li><a href="/pods">PODs</a></li>
-                                <li className="active"><a href="/zoho">Zoho</a></li>
+                                <li><Link to="/booking">Header</Link></li>
+                                <li className=""><Link to="/allbookings">All Bookings</Link></li>
+                                <li className=""><a href="/bookingsets">Booking Sets</a></li>
+                                <li className=""><a href="/pods">PODs</a></li>
+                                {this.props.clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
+                                {this.props.clientname === 'dme' && <li className="active"><Link to="/zoho">Zoho</Link></li>}
+                                <li className=""><Link to="/reports">Reports</Link></li>
+                                <li className="none"><a href="/bookinglines">Booking Lines</a></li>
+                                <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
                             </ul>
                         </div>
                         <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
@@ -382,6 +390,7 @@ const mapStateToProps = (state) => {
         //tickets: state.ticket.tickets,
         dmeClients: state.auth.dmeClients,
         redirect: state.auth.redirect,
+        clientname: state.auth.clientname,
     };
 };
 

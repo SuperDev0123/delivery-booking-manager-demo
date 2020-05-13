@@ -1,0 +1,44 @@
+.bookingset-modal {
+	top: 200px;
+
+	.modal-header h5 {
+		font-size: 20px !important;
+		font-weight: bold;
+	}
+
+	label {
+		width: 100%;
+
+		p {
+			width: 30%;
+			display: inline-block;
+			vertical-align: top;
+			margin-top: 5px;
+		}
+
+		>input {
+			width: 60%;
+			display: inline-block;
+
+			&.checkbox {
+				float: unset !important;
+				margin-left: 24px;
+			}
+		}
+
+		>label {
+			width: 70px;
+			display: inline-block;;
+		}
+
+		>input[type="radio"] {
+			width: 20px;
+			display: inline-block;
+		}
+
+		>textarea {
+			width: 60%;
+			display: inline-block;
+		}
+	}
+}

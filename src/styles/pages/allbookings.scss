@@ -722,6 +722,10 @@ header > .qbootstrap-nav {
 
     ul {
       display: inline-block;
+
+      li.nav-item a.nav-link {
+        color: #048fc2;
+      }
     }
 
     p {

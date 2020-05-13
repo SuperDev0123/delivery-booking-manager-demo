@@ -21,6 +21,7 @@ class SidebarPush extends React.Component {
                 providers: this.activeRoute(['providers', 'providers/add', 'providers/edit']),
                 providersCollapsed: true,
                 pricingOnlyCollapsed: true,
+                pricingRuleCollapsed: true,
             }
         };
         this.toggle = this.toggle.bind(this);
@@ -77,7 +78,7 @@ class SidebarPush extends React.Component {
     }
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -110,8 +111,8 @@ class SidebarPush extends React.Component {
                                     <li className="divider"></li>
                                     <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
-                                            <span className="icon">
-                                                <i className="fa fa-user"></i>
+                                            <span className="icon text-center">
+                                                <i className="fa fa-info"></i>
                                             </span><small>My Account</small>
                                         </a>
                                     </li>
@@ -135,10 +136,17 @@ class SidebarPush extends React.Component {
                                     </li>
                                     <li className="divider"></li>
                                     <li>
+                                        <a href='/home'>
+                                            <span className="icon"><i className="fa fa-user"></i></span>
+                                            <small>Switch to User mode</small>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href='#' onClick={e => { e.preventDefault(); this.logout(); }}>
                                             <span className="icon">
-                                                <i className="fa fa-sign-out"></i>
-                                            </span><small>Logout</small></a>
+                                                <i className="fa fa-sign-out-alt"></i>
+                                            </span><small>Logout</small>
+                                        </a>
                                     </li>
                                 </ul>
                             </DropdownMenu>
@@ -198,7 +206,7 @@ class SidebarPush extends React.Component {
                         </li>
                         <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
                             <a onClick={() => this.setState({ pricingOnlyCollapsed: !pricingOnlyCollapsed })}>
-                                <i className="fa fa-usd fa-fw"></i>
+                                <i className="fa fa-fw fa-dollar-sign"></i>
                                 <span className="menu-title">Pricing Only</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingOnlyCollapsed })}>
@@ -228,7 +236,7 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">Vehicles</span>
                             </Link>
                         </li>
-                        <li className={this.activeRoute('timings') ? 'active' : ''}>
+                        <li className={this.activeRoute('timings') ? 'active none' : 'none'}>
                             <Link to="/admin/timings" title="Timings">
                                 <i className="fa fa-fw fa-bell"></i>
                                 <span className="menu-title">Timings</span>
@@ -236,21 +244,56 @@ class SidebarPush extends React.Component {
                         </li>
                         <li className={this.activeRoute('availabilities') ? 'active' : ''}>
                             <Link to="/admin/availabilities" title="Availabilities">
-                                <i className="fa fa-fw fa-clock-o"></i>
+                                <i className="fa fa-fw fa-clock"></i>
                                 <span className="menu-title">Availabilities</span>
                             </Link>
                         </li>
                         <li className={this.activeRoute('costs') ? 'active' : ''}>
                             <Link to="/admin/costs" title="Costs">
-                                <i className="fa fa-fw fa-dollar"></i>
+                                <i className="fa fa-fw fa-coins"></i>
                                 <span className="menu-title">Costs</span>
                             </Link>
                         </li>
-                        <li className={this.activeRoute('pricingrules') ? 'active' : ''}>
-                            <Link to="/admin/pricingrules" title="Pricing Rules">
-                                <i className="fa fa-fw fa-gavel"></i>
-                                <span className="menu-title">Pricing Rules</span>
-                            </Link>
+                        <li
+                            style={{ 'color': '#B3B8C3' }}
+                            className={
+                                this.activeRoute('pricing-rule') ||
+                                this.activeRoute('pricing-rule/upload') ||
+                                this.activeRoute('pricing-rule/status') ? 'active' : ''}
+                        >
+                            <a onClick={() => this.setState({ pricingRuleCollapsed: !pricingRuleCollapsed })}>
+                                <i className="fa fa-usd fa-funnel-dollar"></i>
+                                <span className="menu-title">Pricing Rule</span>
+                            </a>
+                            <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingRuleCollapsed })}>
+                                <li>
+                                    <Link
+                                        title="View All Pricing Rule"
+                                        to="/admin/pricing-rule"
+                                        className={this.activeRoute(['pricing-rule']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">List</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        title="Upload new Pricing Rule sheet"
+                                        to="/admin/pricing-rule/upload"
+                                        className={this.activeRoute(['pricing-rule/upload']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">Upload sheet</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link
+                                        title="Importing Statues"
+                                        to="/admin/pricing-rule/status"
+                                        className={this.activeRoute(['pricing-rule/status']) ? 'active' : ''}
+                                    >
+                                        <span className="submenu-title">Status</span>
+                                    </Link>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>

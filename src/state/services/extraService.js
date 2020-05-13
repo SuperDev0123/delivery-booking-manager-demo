@@ -30,6 +30,25 @@ import {
     resetProjectNames,
     successGetProjectNames,
     failedGetProjectNames,
+    resetEmailLogs,
+    successGetEmailLogs,
+    failedGetEmailLogs,
+    successGetBookingSets, // BookingSet
+    failedGetBookingSets, // *
+    successCreateBookingSet, // *
+    failedCreateBookingSet, // *
+    successUpdateBookingSet, // *
+    failedUpdateBookingSet, // *
+    successDeleteBookingSet, // *
+    failedDeleteBookingSet, // *
+    resetBookingSetFlagsAction, // BookingSet
+    successSaveStatusHistoryPuInfo,
+    failedSaveStatusHistoryPuInfo,
+    successUpdateClientEmployee,
+    failedUpdateClientEmployee,
+    successGetZohoTickets,
+    failedGetZohoTickets,
+    resetZohoTickets,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -217,5 +236,128 @@ export const getAllProjectNames = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetProjectNames(data)))
             .catch((error) => dispatch(failedGetProjectNames(error)));
+    };
+};
+
+export const getEmailLogs = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_email_logs/?bookingId=${bookingId}`,
+    };
+    return dispatch => {
+        dispatch(resetEmailLogs());
+        axios(options)
+            .then(({ data }) => dispatch(successGetEmailLogs(data)))
+            .catch((error) => dispatch(failedGetEmailLogs(error)));
+    };
+};
+
+export const getBookingSets = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetBookingSets(data)))
+            .catch((error) => dispatch(failedGetBookingSets(error)));
+    };
+};
+
+export const createBookingSet = (bookingIds, name, note, auto_select_type) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
+        data: {
+            bookingIds, name, note, auto_select_type
+        }
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successCreateBookingSet(data)))
+            .catch((error) => dispatch(failedCreateBookingSet(error)));
+    };
+};
+
+export const updateBookingSet = (id, bookingSet) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/${id}/`,
+        data: bookingSet
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateBookingSet(data)))
+            .catch((error) => dispatch(failedUpdateBookingSet(error)));
+    };
+};
+
+export const deleteBookingSet = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/${id}/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteBookingSet(data)))
+            .catch((error) => dispatch(failedDeleteBookingSet(error)));
+    };
+};
+
+export const resetBookingSetFlags = () => {
+    return dispatch => dispatch(resetBookingSetFlagsAction());
+};
+
+export const saveStatusHistoryPuInfo = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/create_with_pu_dates/`,
+        data: {'bookingId': bookingId},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSaveStatusHistoryPuInfo(data)))
+            .catch((error) => dispatch(failedSaveStatusHistoryPuInfo(error)));
+};
+
+export const updateClientEmployee = (clientEmployee) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/${clientEmployee.pk_id_client_emp}/`,
+        data: clientEmployee,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateClientEmployee(data)))
+            .catch((error) => dispatch(failedUpdateClientEmployee(error)));
+};
+
+
+export const getZohoTickets = (dmeid) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_all_zoho_tickets/?dmeid=${dmeid}`,
+    };
+    return dispatch => {
+        dispatch(resetZohoTickets());
+        axios(options)
+            .then(({ data }) => dispatch(successGetZohoTickets(data.tickets)))
+            .catch((error) => dispatch(failedGetZohoTickets(error)));
     };
 };

@@ -6,7 +6,7 @@ import {
 export function successGetTimings(data) {
     return {
         type: SUCCESS_GET_TIMINGS,
-        payload: data.results,
+        payload: data,
     };
 }
 

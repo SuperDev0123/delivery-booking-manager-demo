@@ -32,6 +32,7 @@ class XLSModal extends Component {
         selectedBookingIds: PropTypes.array.isRequired,
         allFPs: PropTypes.array.isRequired,
         allClients: PropTypes.array.isRequired,
+        clientname: PropTypes.string,
     };
 
     static defaultProps = {
@@ -141,7 +142,7 @@ class XLSModal extends Component {
     }
 
     render() {
-        const {isShowXLSModal, allFPs, allClients, selectedBookingIds} = this.props;
+        const {isShowXLSModal, allFPs, allClients, selectedBookingIds, clientname} = this.props;
         const {startDate, endDate, emailAddr, errorMessage, vx_freight_provider, report_type, showFieldName, useSelected, b_client_name} = this.state;
         let buttonStatus = false;
 
@@ -185,7 +186,13 @@ class XLSModal extends Component {
                             <option value="booking">Booking Report</option>
                             <option value="booking_line">Booking Line Report</option>
                             <option value="booking_with_gaps">Booking w/gaps</option>
+                            {clientname === 'dme' && <option value="dme_booking_with_gaps">DME Booking with GAPS report</option>}
                             <option value="whse">FP/Whse Report</option>
+                            {clientname === 'dme' && <option value="booked_bookings">Booked Bookings report</option>}
+                            {clientname === 'dme' && <option value="picked_up_bookings">Picked up Bookings report</option>}
+                            {clientname === 'dme' && <option value="box">Box Bookings report</option>}
+                            {clientname === 'dme' && <option value="futile">Futile Bookings report</option>}
+                            {clientname === 'dme' && <option value="goods_delivered">Goods Delivered report</option>}
                             <option value="all">All</option>
                         </select>
                     </label>

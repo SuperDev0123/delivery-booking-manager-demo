@@ -20,32 +20,36 @@ body {
     animation-name: fadeIn;
 }
 
-.navbar {
-    border-bottom: 4px solid dodgerblue; 
-}
+.navbar { border-bottom: 4px solid dodgerblue }
 
-.right {
-    float: right;
-}
+.float-r { float: right }
 
-.left {
-    float: left;
-}
+.float-l { float: left }
 
-.c-black {
-    color: black;
-}
+.right { float: right }
 
-.c-red {
-    color: red;
-}
+.left { float: left }
 
-.c-dme {
-    color: #048abb;
-}
+.c-black { color: black }
 
-.bold {
-    font-weight: bold;
-}
+.c-red { color: red }
 
-.row:before, .row:after {display: none !important;}
+.c-dme { color: #048abb }
+
+.bold { font-weight: bold }
+
+.row:before, .row:after { display: none !important }
+
+.text-center { text-align: center; }
+
+.mar-right-20 { margin-right: 20px }
+
+.mar-left-20 { margin-left: 20px }
+
+.bg-gray { background-color: gray }
+
+.bg-green { background-color: green }
+
+.bg-lightgreen { background-color: lightgreen }
+
+.bg-blue { background-color: blue }

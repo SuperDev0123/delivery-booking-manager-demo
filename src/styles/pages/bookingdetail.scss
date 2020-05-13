@@ -1,5 +1,4 @@
-.prev-btn,
-.next-btn {
+.prev-btn, .next-btn, .refresh-btn {
     border: 1px solid grey;
     padding: 0px 12px;
 	font-size: 23px;
@@ -57,6 +56,20 @@ p.dme-id {
 	.col-sm-4, .col-sm-2, .col-sm-3, .col-sm-1 {
   		padding: 0 5px !important;
   	}
+
+  	.created-for-btn {
+  		text-align: center;
+
+  		button {
+  			margin-bottom: 0px;
+  			margin-top: 4px;
+			padding: 4px 2px;
+
+			i {
+				font-size: 20px;
+			}
+  		}
+  	}
 }
 
 .form-group {
@@ -87,7 +100,7 @@ p.dme-id {
 }
 
 .textarea-width {
-	padding-left: 15px !important;
+	padding-left: 5px !important;
 }
 
 .create-comm {
@@ -418,29 +431,27 @@ input.orange-color {
 	margin-top: 2px;
 }
 
-p.lock-status {
+p.status-icon {
+	width: 33px;
+	height: 33px;
 	background: white;
 	border-radius: 20px;
-	padding-left: 7px;
-	padding-right: 7px;
-	padding-top: 3px !important;
-	margin-left: 15px;
-	margin-top: 3px;
+	padding-top: 4px !important;
+	margin-left: 10px;
 
-	&.status-active {
-	  color: red;
-	  cursor: pointer;
+	&.active {
+		color: red;
+		cursor: pointer;
 	}
 
-	&.status-inactive {
-	  color: gray;
-	  cursor: pointer;
+	&.inactive {
+		color: gray;
+		cursor: pointer;
 	}
 
-	&.status-active,
-	&.status-inactive {
-	  font-size: 18px;
-	  text-align: center;
+	&.active, &.inactive {
+		font-size: 18px;
+		text-align: center;
 	}
 }
 
@@ -480,18 +491,6 @@ p.lock-status {
 			cursor: pointer;
 		}
 	}
-}
-
-.float-r {
-	float: right;
-}
-
-.float-l {
-	float: left;
-}
-
-.mar-right-20 {
-	margin-right: 20px;
 }
 
 .status-history-form,
