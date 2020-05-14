@@ -3759,13 +3759,13 @@ class BookingPage extends Component {
                                                 <div>
                                                     <span>Quoted Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
-                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(booking.inv_cost_quoted).toFixed(2)}`}</p>
+                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(formInputs['inv_cost_quoted']).toFixed(2)}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_cost_quoted"
-                                                            value = {formInputs['inv_cost_quoted'] && `$${booking.inv_cost_quoted}`}
+                                                            value = {formInputs['inv_cost_quoted'] && `$${formInputs['inv_cost_quoted']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -3777,13 +3777,13 @@ class BookingPage extends Component {
                                             <div>
                                                 <span>Actual Cost</span>
                                                 {parseInt(curViewMode) === 0 ?
-                                                    <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(booking.inv_cost_actual).toFixed(2)}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(formInputs['inv_cost_actual']).toFixed(2)}`}</p>
                                                     :
                                                     <input
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_cost_actual"
-                                                        value = {formInputs['inv_cost_actual'] && `$${booking.inv_cost_actual}`}
+                                                        value = {formInputs['inv_cost_actual'] && `$${formInputs['inv_cost_actual']}`}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -3795,13 +3795,13 @@ class BookingPage extends Component {
                                                 <div>
                                                     <span className="c-red">Quoted $</span>
                                                     {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(booking.inv_sell_quoted).toFixed(2)}`}</p>
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_sell_quoted"
-                                                            value = {formInputs['inv_sell_quoted'] && `$${booking.inv_sell_quoted}`}
+                                                            value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -3813,13 +3813,13 @@ class BookingPage extends Component {
                                             <div>
                                                 <span className="c-red">Actual $</span>
                                                 {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(booking.inv_sell_actual).toFixed(2)}`}</p>
+                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                     :
                                                     <input
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_sell_actual"
-                                                        value = {formInputs['inv_sell_actual'] && `$${booking.inv_sell_actual}`}
+                                                        value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
