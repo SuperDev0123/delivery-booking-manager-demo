@@ -62,7 +62,6 @@ export const AuthReducer = (state = defaultState, {
             };
         case FAILED_GET_TOKEN:
         case FAILED_VERIFY_TOKEN:
-            console.log('FAILED_VERIFY_TOKEN');
             return {
                 ...state,
                 errorMessage: errorMessage,
