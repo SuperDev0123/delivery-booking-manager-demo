@@ -37,10 +37,9 @@ class SidebarPush extends React.Component {
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-
         if (token && token.length > 0) {
             this.props.verifyToken();
-            this.props.getUser();
+            this.props.getUser(token);
         } else {
             this.props.logout();
             this.props.history.push('/admin');
@@ -311,7 +310,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => dispatch(logout()),
         verifyToken: () => dispatch(verifyToken()),
-        getUser: () => dispatch(getUser()),
+        getUser: (token) => dispatch(getUser(token)),
     };
 };
 

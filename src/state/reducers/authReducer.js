@@ -61,35 +61,21 @@ export const AuthReducer = (state = defaultState, {
                 redirect : false,
             };
         case FAILED_GET_TOKEN:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-                redirect : true,
-            };
         case FAILED_VERIFY_TOKEN:
+            console.log('FAILED_VERIFY_TOKEN');
             return {
                 ...state,
                 errorMessage: errorMessage,
                 redirect : true,
             };
         case SUCCESS_RESET_PASSWORD:
-            return {
-                ...state,
-                successMessage: successMessage,
-                errorMessage: null
-            };
-        case FAILED_RESET_PASSWORD:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-                successMessage: null
-            };
         case SUCCESS_RESET_PASSWORD_CONFIRM:
             return {
                 ...state,
                 successMessage: successMessage,
                 errorMessage: null
             };
+        case FAILED_RESET_PASSWORD:
         case FAILED_RESET_PASSWORD_CONFIRM:
             return {
                 ...state,

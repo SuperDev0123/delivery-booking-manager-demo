@@ -93,7 +93,7 @@ class FreightProviders extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.fp_company_name}</td>
                     <td>{fp.fp_address_country}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
+                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
                 </tr>
             );
         });
