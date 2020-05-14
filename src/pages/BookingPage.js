@@ -1149,7 +1149,7 @@ class BookingPage extends Component {
                 ) {
                     let value = e.target.value.replace(',', '').replace('$', '');
 
-                    if (value == '') {
+                    if (value == '' || value == null) {
                         formInputs[e.target.name] = null;
                         booking[e.target.name] = null;
                     // } else if (value && _.isNaN(parseFloat(value))) {
@@ -1178,8 +1178,16 @@ class BookingPage extends Component {
             e.target.name === 'inv_cost_actual'
         ) {
             let value = e.target.value.replace(',', '').replace('$', '');
-            formInputs[e.target.name] = parseFloat(value).toFixed(2);
-            booking[e.target.name] = parseFloat(value).toFixed(2);
+
+            if (value == '' || value == null) {
+                formInputs[e.target.name] = null;
+                booking[e.target.name] = null;
+            // } else if (value && _.isNaN(parseFloat(value))) {
+                // this.notify('Please input float number!');
+            } else {
+                formInputs[e.target.name] = parseFloat(value).toFixed(2);
+                booking[e.target.name] = parseFloat(value).toFixed(2);
+            }
         }
 
         this.setState({ formInputs, booking });
