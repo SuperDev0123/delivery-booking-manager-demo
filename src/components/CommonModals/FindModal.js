@@ -20,7 +20,9 @@ class FindModal extends Component {
 
         if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
             const foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName]);
-            const missedValueSet = _.difference(this.state.valueSet.split('\n'), foundValueSet);
+            let valueSet = this.state.valueSet.split('\n');
+            valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
+            const missedValueSet = _.difference(valueSet, foundValueSet);
             
             if (missedValueSet.length > 0) {
                 const valueSet = _.concat(missedValueSet, [''], foundValueSet);
