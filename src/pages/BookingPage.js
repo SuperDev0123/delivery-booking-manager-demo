@@ -7,9 +7,9 @@ import Clock from 'react-live-clock';
 import _ from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
+// import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -215,6 +215,7 @@ class BookingPage extends Component {
             postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/',
         };
 
+        moment.tz.setDefault('Etc/UTC');
         this.attachmentsDz = null;
         this.labelDz = null;
         this.podDz = null;
@@ -2686,8 +2687,9 @@ class BookingPage extends Component {
             }
             this.setState({formInputs, booking});
         } else {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            var offset = new Date().getTimezoneOffset();
+            formInputs[fieldName] = moment(date).utcOffset(offset).format('YYYY-MM-DD HH:mm:ss');
+            booking[fieldName] = moment(date).utcOffset(-1 * offset).format('YYYY-MM-DD HH:mm:ss');
             this.setState({formInputs, booking});
         }
 
@@ -2769,7 +2771,7 @@ class BookingPage extends Component {
 
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets } = this.state;
-        
+
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',
@@ -3256,8 +3258,10 @@ class BookingPage extends Component {
                                             :
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ? moment(booking.b_dateBookedDate).toDate() : null}
-                                                format={'dd/MM/yyyy hh:mm a'}
+                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ?
+                                                    new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                                format={'dd/MM/yyyy HH:mm'}
+                                                locale={'en'}
                                             />
                                     }
                                 </div>
@@ -3779,14 +3783,17 @@ class BookingPage extends Component {
                                                 {parseInt(curViewMode) === 0 ?
                                                     <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(formInputs['inv_cost_actual']).toFixed(2)}`}</p>
                                                     :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_cost_actual"
-                                                        value = {formInputs['inv_cost_actual'] && `$${formInputs['inv_cost_actual']}`}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
+                                                    clientname === 'dme' ?
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_cost_actual"
+                                                            value = {formInputs['inv_cost_actual'] && `$${formInputs['inv_cost_actual']}`}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                        :
+                                                        <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(formInputs['inv_cost_actual']).toFixed(2)}`}</p>
                                                 }
                                             </div>
                                         </div>
@@ -3815,14 +3822,17 @@ class BookingPage extends Component {
                                                 {(parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                     :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_sell_actual"
-                                                        value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
+                                                    clientname === 'dme' ?
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_sell_actual"
+                                                            value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                        :
+                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                 }
                                             </div>
                                         </div>
@@ -5145,11 +5155,11 @@ class BookingPage extends Component {
                                                         keyField='pk_lines_id'
                                                         data={ products }
                                                         columns={ bookingLineColumns }
-                                                        cellEdit={ cellEditFactory({ 
-                                                            mode: 'click',
-                                                            blurToSave: false,
-                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
-                                                        })}
+                                                        // cellEdit={ cellEditFactory({ 
+                                                        //     mode: 'click',
+                                                        //     blurToSave: false,
+                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
+                                                        // })}
                                                         bootstrap4={ true }
                                                     />
                                                 </LoadingOverlay>
@@ -5163,11 +5173,11 @@ class BookingPage extends Component {
                                                         keyField="pk_id_lines_data"
                                                         data={ bookingLineDetailsProduct }
                                                         columns={ bookingLineDetailsColumns }
-                                                        cellEdit={ cellEditFactory({ 
-                                                            mode: 'click',
-                                                            blurToSave: true,
-                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
-                                                        })}
+                                                        // cellEdit={ cellEditFactory({ 
+                                                        //     mode: 'click',
+                                                        //     blurToSave: true,
+                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
+                                                        // })}
                                                         bootstrap4={ true }
                                                     />
                                                 </LoadingOverlay>
