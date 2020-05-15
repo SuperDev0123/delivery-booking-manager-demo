@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class FindModal extends Component {
@@ -14,14 +15,33 @@ class FindModal extends Component {
         };
     }
 
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { bookings } = newProps;
+
+        if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
+            const foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName]);
+            const missedValueSet = _.difference(this.state.valueSet.split('\n'), foundValueSet);
+            
+            if (missedValueSet.length > 0) {
+                const valueSet = _.concat(missedValueSet, [''], foundValueSet);
+                this.setState({
+                    valueSet: valueSet.join('\n'),
+                    errorMessage: 'You can see empty line on textarea, keys above it are not found, below are found'
+                });
+            }
+        }
+    }
+
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         toggleFindModal: PropTypes.func.isRequired,
         onFind: PropTypes.func.isRequired,
+        bookings: PropTypes.array.isRequired,
     };
 
     static defaultProps = {
         isOpen: false,
+        bookings: [],
     };
 
     onInputChange(e, type) {
@@ -37,11 +57,16 @@ class FindModal extends Component {
         let valueSet = this.state.valueSet;
 
         if (!this.state.valueSet) {
-            alert('Please input value set.');
+            this.setState({errorMessage: 'Please input keys with newline!'});
         } else {
             this.setState({errorMessage: null});
-            
-            valueSet = valueSet.split('\n').map(value => value.replace(/\s/g,'')).join(', ');
+
+            // Delete all empty lines first
+            valueSet = valueSet.split('\n');
+            valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
+            this.setState({valueSet: valueSet.join('\n')});
+
+            valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
             this.props.onFind(selectedFieldName, valueSet);
         }
     }

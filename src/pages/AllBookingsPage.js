@@ -3012,6 +3012,7 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowFindModal}
                     toggleFindModal={this.toggleFindModal}
                     onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
+                    bookings={bookings}
                 />
 
                 <OrderModal
