@@ -297,6 +297,11 @@ class AllBookingsPage extends React.Component {
         }
 
         if (warehouses) {
+            warehouses.sort(function(a, b) {
+                var nameA = a.warehousename.toUpperCase();
+                var nameB = b.warehousename.toUpperCase();
+                return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+            });
             this.setState({ warehouses });
         }
 
@@ -317,6 +322,12 @@ class AllBookingsPage extends React.Component {
         }
 
         if (dmeClients) {
+            dmeClients.sort(function(a, b) {
+                var companyA = a.company_name.toUpperCase();
+                var companyB = b.company_name.toUpperCase();
+                return (companyA < companyB) ? -1 : (companyA > companyB) ? 1 : 0;
+            });
+
             this.setState({dmeClients});
         }
 
