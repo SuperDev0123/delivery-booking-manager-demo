@@ -2687,9 +2687,9 @@ class BookingPage extends Component {
             }
             this.setState({formInputs, booking});
         } else {
-            var offset = new Date().getTimezoneOffset();
-            formInputs[fieldName] = moment(date).utcOffset(offset).format('YYYY-MM-DD HH:mm:ss');
-            booking[fieldName] = moment(date).utcOffset(-1 * offset).format('YYYY-MM-DD HH:mm:ss');
+            var tzOffset = -1 * new Date().getTimezoneOffset();
+            formInputs[fieldName] = moment(date).utcOffset(tzOffset).format('YYYY-MM-DD HH:mm:ss');
+            booking[fieldName] = moment(date).utcOffset(tzOffset).format('YYYY-MM-DD HH:mm:ss');
             this.setState({formInputs, booking});
         }
 

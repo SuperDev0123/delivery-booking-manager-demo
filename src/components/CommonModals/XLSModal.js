@@ -23,6 +23,8 @@ class XLSModal extends Component {
             showFieldName: false,
             useSelected: false,
         };
+
+        this.tzOffset = -1 * new Date().getTimezoneOffset();
     }
 
     static propTypes = {
@@ -56,9 +58,9 @@ class XLSModal extends Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').toDate();
+                startDate = moment().utcOffset(this.tzOffset).toDate();
             } else {
-                startDate = moment(date).toDate();
+                startDate = moment(date).utcOffset(this.tzOffset).toDate();
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
@@ -69,9 +71,9 @@ class XLSModal extends Component {
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').toDate();
+                endDate = moment().utcOffset(this.tzOffset).toDate();
             } else {
-                endDate = moment(date).toDate();
+                endDate = moment(date).utcOffset(this.tzOffset).toDate();
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {

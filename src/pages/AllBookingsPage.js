@@ -115,6 +115,8 @@ class AllBookingsPage extends React.Component {
             isShowBookingSetModal: false,
         };
 
+        this.tzOffset = -1 * new Date().getTimezoneOffset();
+        this.myRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -129,7 +131,6 @@ class AllBookingsPage extends React.Component {
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
-        this.myRef = React.createRef();
     }
 
     static propTypes = {
@@ -491,9 +492,9 @@ class AllBookingsPage extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').toDate();
+                startDate = moment().utcOffset(this.tzOffset).toDate();
             } else {
-                startDate = moment(date).toDate();
+                startDate = moment(date).utcOffset(this.tzOffset).toDate();
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
@@ -506,14 +507,14 @@ class AllBookingsPage extends React.Component {
             localStorage.setItem('today', startDate);
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').toDate();
+                endDate = moment().utcOffset(this.tzOffset).toDate();
             } else {
-                endDate = moment(date).toDate();
+                endDate = moment(date).utcOffset(this.tzOffset).toDate();
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {
                 startDate = endDate;
-                this.setState({startDate, endDate});    
+                this.setState({startDate, endDate});
             } else {
                 this.setState({endDate});
             }
