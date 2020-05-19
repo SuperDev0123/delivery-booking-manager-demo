@@ -115,7 +115,6 @@ class AllBookingsPage extends React.Component {
             isShowBookingSetModal: false,
         };
 
-        this.tzOffset = -1 * new Date().getTimezoneOffset();
         this.myRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -492,9 +491,9 @@ class AllBookingsPage extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().utcOffset(this.tzOffset).toDate();
+                startDate = moment().toDate();
             } else {
-                startDate = moment(date).utcOffset(this.tzOffset).toDate();
+                startDate = moment(date).toDate();
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
@@ -507,9 +506,9 @@ class AllBookingsPage extends React.Component {
             localStorage.setItem('today', startDate);
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().utcOffset(this.tzOffset).toDate();
+                endDate = moment().toDate();
             } else {
-                endDate = moment(date).utcOffset(this.tzOffset).toDate();
+                endDate = moment(date).toDate();
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {

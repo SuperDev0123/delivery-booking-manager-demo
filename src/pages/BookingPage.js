@@ -2687,9 +2687,8 @@ class BookingPage extends Component {
             }
             this.setState({formInputs, booking});
         } else {
-            var tzOffset = -1 * new Date().getTimezoneOffset();
-            formInputs[fieldName] = moment(date).utcOffset(tzOffset).format('YYYY-MM-DD HH:mm:ss');
-            booking[fieldName] = moment(date).utcOffset(tzOffset).format('YYYY-MM-DD HH:mm:ss');
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
             this.setState({formInputs, booking});
         }
 
@@ -3258,10 +3257,9 @@ class BookingPage extends Component {
                                             :
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ?
-                                                    new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) &&
+                                                    moment(booking.b_dateBookedDate).toDate()}
                                                 format={'dd/MM/yyyy HH:mm'}
-                                                locale={'en'}
                                             />
                                     }
                                 </div>
