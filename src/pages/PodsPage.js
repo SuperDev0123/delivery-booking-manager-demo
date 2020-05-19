@@ -7,6 +7,8 @@ import moment from 'moment-timezone';
 import _ from 'lodash';
 
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
+// Constants
+import { STATIC_HOST, HTTP_PROTOCOL } from '../config';
 
 class PodsPage extends React.Component {
     constructor(props) {
@@ -60,6 +62,18 @@ class PodsPage extends React.Component {
         }
     }
 
+    onClickImg(e, booking, type) {
+        e.preventDefault();
+
+        if (type === 'POD') {
+            const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_url, '_blank');
+            win.focus();
+        } else if (type === 'POD_SOG') {
+            const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
+            win.focus();
+        }
+    }
+
     render() {
         const { bookings } = this.state;
 
@@ -81,16 +95,21 @@ class PodsPage extends React.Component {
                     <td>{booking.b_status}</td>
                     <td>{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('ddd DD MMM YYYY'): ''}</td>
                     <td>
-                        { 
-                            ((booking.z_pod_url && !_.isEmpty(booking.z_pod_url)) ||
-                            (booking.z_pod_signed_url && !_.isEmpty(booking.z_pod_signed_url))) ?
-                                <span>Y</span>
-                                :
-                                <span>N</span>
+                        {((booking.z_pod_url && !_.isEmpty(booking.z_pod_url)) ||
+                        (booking.z_pod_signed_url && !_.isEmpty(booking.z_pod_signed_url))) ?
+                            <span>Y</span> : <span>N</span>
                         }
                     </td>
-                    <td>{booking.z_pod_url}</td>
-                    <td>{booking.z_pod_signed_url}</td>
+                    <td>{booking.z_pod_url && 
+                            <a onClick={(e) => this.onClickImg(e, booking, 'POD')} className="padding-0 cursor-pointer">
+                                <img src={HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_url} />
+                            </a>}
+                    </td>
+                    <td>{booking.z_pod_signed_url && 
+                            <a onClick={(e) => this.onClickImg(e, booking, 'POD_SOG')} className="padding-0 cursor-pointer">
+                                <img src={HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url} />
+                            </a>}
+                    </td>
                 </tr>
             );
         });
