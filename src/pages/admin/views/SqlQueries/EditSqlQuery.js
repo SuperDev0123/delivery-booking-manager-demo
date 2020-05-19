@@ -95,7 +95,7 @@ class EditSqlQueries extends Component {
         }
 
         if (sqlQueryDetails && !queryResult) {
-            const { sql_title,  sql_query, sql_description, sql_notes } = sql_description;
+            const { sql_title,  sql_query, sql_description, sql_notes } = sqlQueryDetails;
             this.setState({ sqlQueryDetails });
             this.setState({ id: sqlQueryDetails.id });
             this.setState({ sql_title, sql_query, sql_description, sql_notes });
@@ -182,7 +182,26 @@ class EditSqlQueries extends Component {
             blurToSave: true
         });
 
+       
         let tableColumns = [];
+
+        const allowedColumns = ['suburb'];
+
+        if(queryResult && queryResult.length>0){
+            queryResult.map((row, index) => {
+                return (
+                    <tr key={index}>
+                        {Object.keys(queryResult[0]).map((row1, index1) => 
+                            <td data-column={row1} key={index1}>{row[row1]}</td>
+                        )}
+                    </tr>
+                );
+            });
+            
+            Object.keys(queryResult[0]).map((row, index) => {
+                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row), index: index});
+            });
+        }
 
         return (
             <div>
