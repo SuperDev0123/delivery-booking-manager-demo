@@ -15,6 +15,8 @@ class EditablePopover extends React.Component {
             formInputs: {},
             selectedDate: null,
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

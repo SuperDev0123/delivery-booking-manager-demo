@@ -115,6 +115,7 @@ class AllBookingsPage extends React.Component {
             isShowBookingSetModal: false,
         };
 
+        moment.tz.setDefault('Etc/UTC');
         this.myRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
@@ -189,8 +190,8 @@ class AllBookingsPage extends React.Component {
         if (today) {
             this.props.setNeedUpdateBookingsState(true);
         } else {
-            startDate = moment().tz('Australia/Sydney').toDate();
-            dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+            startDate = moment().toDate();
+            dateParam = moment().format('YYYY-MM-DD');
 
             this.setState({ 
                 startDate: moment(startDate).toDate(),
@@ -355,8 +356,8 @@ class AllBookingsPage extends React.Component {
 
             // startDate
             if (_.isEmpty(startDate)) {
-                const startDate = moment().tz('Australia/Sydney').toDate();
-                const dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                const startDate = moment().toDate();
+                const dateParam = moment().format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
                 this.setState({startDate: moment(startDate).toDate()});
                 return;
@@ -1833,8 +1834,8 @@ class AllBookingsPage extends React.Component {
                                 <span></span>
                                 <span>
                                     <strong>Contact:</strong> {booking.booking_Created_For}<br />
-                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp, moment.defaultFormatUtc).format('DD MMM YYYY')}<br />
-                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).utc().format('DD MMM YYYY')}
+                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
                                 </span>
                             </div>
                         </PopoverBody>
@@ -2027,13 +2028,13 @@ class AllBookingsPage extends React.Component {
                         <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
                     </td>
                     <td className={(sortField === 'b_given_to_transport_date_time') ? 'current' : ''}>
-                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 'fp_received_date_time') ? 'current' : ''}>
-                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
-                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td 
                         id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}

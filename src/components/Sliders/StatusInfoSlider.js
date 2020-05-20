@@ -26,6 +26,8 @@ class StatusInfoSlider extends React.Component {
             dmeClients: [],
             statusInfo: [],
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

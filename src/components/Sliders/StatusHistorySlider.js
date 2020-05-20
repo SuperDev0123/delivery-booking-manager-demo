@@ -24,6 +24,8 @@ class StatusHistorySlider extends React.Component {
             errorMessage: '',
             selectedStatusHistoryInd: -1,
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

@@ -13,6 +13,8 @@ class StoreBookingLogSlider extends React.Component {
 
         this.state = {
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

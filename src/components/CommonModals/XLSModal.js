@@ -24,7 +24,7 @@ class XLSModal extends Component {
             useSelected: false,
         };
 
-        this.tzOffset = -1 * new Date().getTimezoneOffset();
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {
@@ -58,9 +58,9 @@ class XLSModal extends Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().utcOffset(this.tzOffset).toDate();
+                startDate = moment().toDate();
             } else {
-                startDate = moment(date).utcOffset(this.tzOffset).toDate();
+                startDate = moment(date).toDate();
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
@@ -71,9 +71,9 @@ class XLSModal extends Component {
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().utcOffset(this.tzOffset).toDate();
+                endDate = moment().toDate();
             } else {
-                endDate = moment(date).utcOffset(this.tzOffset).toDate();
+                endDate = moment(date).toDate();
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {

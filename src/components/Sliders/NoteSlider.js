@@ -30,6 +30,7 @@ class NoteSlider extends React.Component {
             },
         };
 
+        moment.tz.setDefault('Etc/UTC');
         this.toggleNoteDetailModal = this.toggleNoteDetailModal.bind(this);
         this.toggleDeleteNoteConfirmModal = this.toggleDeleteNoteConfirmModal.bind(this);
     }

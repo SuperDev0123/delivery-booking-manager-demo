@@ -24,6 +24,8 @@ class ProjectDataSlider extends React.Component {
             b_project_due_date: null,
             errorMessage: '',
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

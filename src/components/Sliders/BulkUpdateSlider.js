@@ -19,6 +19,8 @@ class BulkUpdateSlider extends React.Component {
             optionalValue: null,
             errorMsg: null,
         };
+
+        moment.tz.setDefault('Etc/UTC');
     }
 
     static propTypes = {

@@ -64,9 +64,8 @@ class Users extends Component {
             this.props.history.push('/admin');
         }
 
-        if (allUsers) {
-            this.setState({ allUsers });
-            this.setState({ loading: false });
+        if (this.state.loading && allUsers && allUsers.length > 0) {
+            this.setState({ allUsers, loading: false });
         }
 
         if (dmeClients) {
@@ -77,7 +76,9 @@ class Users extends Component {
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
                 this.setState({ clientPK });
             }
+
             this.props.getAllUsers(clientPK);
+            this.setState({ loading: true });
         }
     }
 
@@ -116,7 +117,7 @@ class Users extends Component {
             buttons: [
                 {
                     label: 'Ok',
-                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); this.props.setNeedUpdateUsersState(true); }
+                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); }
                 },
                 {
                     label: 'Cancel',
@@ -124,7 +125,7 @@ class Users extends Component {
                 }
             ]
         });
-        this.setState({ loading: false });
+        this.setState({ loading: true });
         event.preventDefault();
     }
 
@@ -256,25 +257,25 @@ class Users extends Component {
                     </div>
                 </div>
                 <section id="main-content" className="container animated fadeInUp">
-                    {loading ? (
-                        <LoadingOverlay
-                            active={loading}
-                            spinner
-                            text='Loading...'
-                        />
-                    ) : (
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="panel panel-default">
-                                    <div className="panel-heading">
-                                        <h3 className="panel-title">Users List</h3>
-                                        <div className="actions pull-right">
-                                            <a className="btn btn-success" href="/admin/users/add">
-                                                Add New
-                                            </a>
-                                        </div>
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="panel panel-default">
+                                <div className="panel-heading">
+                                    <h3 className="panel-title">Users List</h3>
+                                    <div className="actions pull-right">
+                                        <a className="btn btn-success" href="/admin/users/add">
+                                            Add New
+                                        </a>
                                     </div>
-                                    <div className="panel-body">
+                                </div>
+                                <div className="panel-body">
+                                    {loading ? (
+                                        <LoadingOverlay
+                                            active={loading}
+                                            spinner
+                                            text='Loading...'
+                                        />
+                                    ) : (
                                         <ToolkitProvider
                                             keyField="id"
                                             data={ allUsers }
@@ -308,11 +309,11 @@ class Users extends Component {
                                                 </div>
                                             )}
                                         </ToolkitProvider>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </section>
             </div>
         );
