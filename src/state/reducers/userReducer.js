@@ -50,14 +50,16 @@ export const UserReducer = (state = defaultState, {
             };
         case SUCCESS_UPDATE_USER:
             for (let user of allUsers) {
-                if(user.id === userDetails.results.id) {
+                if (user.id === userDetails.results.id) {
                     user.is_active = userDetails.results.is_active;
                 }
             }
+
             return {
                 ...state,
                 allUsers,
-                needUpdateUserDetails: true
+                needUpdateUserDetails: true,
+                needUpdateUsers: true,
             };
         case SUCCESS_DELETE_USER:
             return {
