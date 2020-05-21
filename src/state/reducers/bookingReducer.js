@@ -421,6 +421,7 @@ export const BookingReducer = (state = defaultState, {
         case SET_LOCAL_FILTER_ALL:
             return {
                 ...state,
+                bookings: [],
                 startDate: startDate,
                 endDate: endDate,
                 warehouseId: warehouseId,

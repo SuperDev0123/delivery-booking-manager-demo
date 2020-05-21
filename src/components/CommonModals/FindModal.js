@@ -19,7 +19,7 @@ class FindModal extends Component {
         const { bookings } = newProps;
 
         if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
-            const foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName]);
+            const foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName].toString());
             let valueSet = this.state.valueSet.split('\n');
             valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
             const missedValueSet = _.difference(valueSet, foundValueSet);
@@ -28,7 +28,8 @@ class FindModal extends Component {
                 const valueSet = _.concat(missedValueSet, [''], foundValueSet);
                 this.setState({
                     valueSet: valueSet.join('\n'),
-                    errorMessage: 'You can see empty line on textarea, keys above it are not found, below are found'
+                    missedValueSet,
+                    errorMessage: 'If something is not found from your list it will be shown above the blank line.'
                 });
             }
         }
@@ -61,12 +62,10 @@ class FindModal extends Component {
         if (!this.state.valueSet) {
             this.setState({errorMessage: 'Please input keys with newline!'});
         } else {
-            this.setState({errorMessage: null});
-
-            // Delete all empty lines first
+            // Delete all empty lines and duplicated lines
             valueSet = valueSet.split('\n');
-            valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
-            this.setState({valueSet: valueSet.join('\n')});
+            valueSet = _.uniq(_.filter(valueSet, (value) => {return value.length > 0;}));
+            this.setState({valueSet: valueSet.join('\n'), errorMessage: ''});
 
             valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
             this.props.onFind(selectedFieldName, valueSet);
@@ -84,7 +83,7 @@ class FindModal extends Component {
                     <label>
                         <p>Select field to be searched: </p>
                         <select value={this.state.selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
-                            <option value="b_client_sales_inv_num" selected="selected">SINV Number</option>
+                            <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
                             <option value="clientRefNumber">Client Ref Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
                             <option value="b_bookingID_Visual">DME Booking Number</option>
