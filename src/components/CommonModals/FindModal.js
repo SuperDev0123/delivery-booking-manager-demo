@@ -64,6 +64,11 @@ class FindModal extends Component {
         } else {
             // Delete all empty lines and duplicated lines
             valueSet = valueSet.split('\n');
+
+            // Trim spaces
+            valueSet = _.map(valueSet, value => {return value.trim();});
+
+            // Eliminate duplicated lines
             valueSet = _.uniq(_.filter(valueSet, (value) => {return value.length > 0;}));
             this.setState({valueSet: valueSet.join('\n'), errorMessage: ''});
 
