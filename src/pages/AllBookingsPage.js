@@ -83,7 +83,7 @@ class AllBookingsPage extends React.Component {
             dmeClients: [],
             clientname: null,
             username: null,
-            clientPK: 'dme',
+            clientPK: 0,
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
             scrollLeft: 0,

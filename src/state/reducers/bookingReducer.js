@@ -132,6 +132,7 @@ const defaultState = {
     isAutoSelected: false,
     isAutoAugmented: false,
     bookingIds: [],
+    clientPK: 0,
 };
 
 export const BookingReducer = (state = defaultState, {
