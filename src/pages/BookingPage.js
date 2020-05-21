@@ -3797,43 +3797,47 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span className="c-red">Quoted $</span>
-                                                {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_sell_quoted"
-                                                        value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
-                                                }
-                                            </div>
-                                        </div>
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span className="c-red">Actual $</span>
-                                                {(parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
-                                                    :
-                                                    clientname === 'dme' ?
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span className="c-red">Quoted $</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
+                                                        :
                                                         <input
                                                             className="form-control"
                                                             type="text"
-                                                            name="inv_sell_actual"
-                                                            value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
+                                                            name="inv_sell_quoted"
+                                                            value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
-                                                        :
-                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span className="c-red">Actual $</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                        :
+                                                        clientname === 'dme' ?
+                                                            <input
+                                                                className="form-control"
+                                                                type="text"
+                                                                name="inv_sell_actual"
+                                                                value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
+                                                                onChange={(e) => this.onHandleInput(e)}
+                                                                onBlur={(e) => this.onHandleInputBlur(e)}
+                                                            />
+                                                            :
+                                                            <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
