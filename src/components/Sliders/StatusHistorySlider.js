@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
 import SlidingPane from 'react-sliding-pane';
@@ -25,7 +25,8 @@ class StatusHistorySlider extends React.Component {
             selectedStatusHistoryInd: -1,
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
     }
 
     static propTypes = {
@@ -114,8 +115,12 @@ class StatusHistorySlider extends React.Component {
     }
 
     onChangeDateTime(date, fieldName) {
+        let conveted_date = moment(date).tz('Etc/UTC');
+        conveted_date = conveted_date.add(this.tzOffset, 'h');
+        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+
         if (fieldName === 'event_time_stamp') {
-            this.setState({event_time_stamp: date});
+            this.setState({event_time_stamp: conveted_date});
         }
     }
 
@@ -207,7 +212,8 @@ class StatusHistorySlider extends React.Component {
                                     <p>Event time</p>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'event_time_stamp')}
-                                        value={event_time_stamp}
+                                        value={event_time_stamp ? new Date(moment(event_time_stamp).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                        format={'dd/MM/yyyy HH:mm'}
                                     />
                                 </label>
                                 <label>

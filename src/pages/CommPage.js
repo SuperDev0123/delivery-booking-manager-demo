@@ -49,6 +49,8 @@ class CommPage extends React.Component {
             isUpdatingComm: false,
         };
 
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
         this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -371,10 +373,13 @@ class CommPage extends React.Component {
 
     onChangeDateTime(date) {
         const commFormInputs = this.state.commFormInputs;
+        let conveted_date = moment(date).tz('Etc/UTC');
+        conveted_date = conveted_date.add(this.tzOffset, 'h');
+        conveted_date = moment(conveted_date).tz('Australia/Sydney');
 
         commFormInputs['due_date_time'] = date;
-        commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-        commFormInputs['due_by_time'] = moment(date).format('HH:mm:ss');
+        commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
+        commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
         this.setState({commFormInputs});
     }
 
@@ -966,7 +971,8 @@ class CommPage extends React.Component {
                             <p>Due Date Time</p>
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date)}
-                                value={commFormInputs['due_date_time']}
+                                value={new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'UTC'}))}
+                                format={'dd/MM/yyyy HH:mm'}
                             />
                         </label>
                         <label>

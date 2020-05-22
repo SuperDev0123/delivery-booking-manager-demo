@@ -25,7 +25,8 @@ class ProjectDataSlider extends React.Component {
             errorMessage: '',
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
     }
 
     static propTypes = {
@@ -70,16 +71,20 @@ class ProjectDataSlider extends React.Component {
     }
 
     onChangeDate(date, fieldName) {
+        let conveted_date = moment(date).tz('Etc/UTC');
+        conveted_date = conveted_date.add(this.tzOffset, 'h');
+        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+
         if (fieldName === 'b_project_opened') {
-            this.setState({b_project_opened: date});
+            this.setState({b_project_opened: conveted_date});
         } else if (fieldName === 'b_project_inventory_due') {
-            this.setState({b_project_inventory_due: date});
+            this.setState({b_project_inventory_due: conveted_date});
         } else if (fieldName === 'b_project_wh_unpack') {
-            this.setState({b_project_wh_unpack: date});
+            this.setState({b_project_wh_unpack: conveted_date});
         } else if (fieldName === 'b_project_dd_receive_date') {
-            this.setState({b_project_dd_receive_date: date});
+            this.setState({b_project_dd_receive_date: conveted_date});
         } else if (fieldName === 'b_project_due_date') {
-            this.setState({b_project_due_date: moment(date).format('YYYY-MM-DD')});
+            this.setState({b_project_due_date: moment(conveted_date).format('YYYY-MM-DD')});
         }
     }
 
@@ -109,32 +114,32 @@ class ProjectDataSlider extends React.Component {
                                 <p>Project Opened</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_opened')}
-                                    value={b_project_opened ? moment(b_project_opened).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={b_project_opened ? new Date(moment(b_project_opened).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
                             <label>
                                 <p>Project Inventory Due</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_inventory_due')}
-                                    value={b_project_inventory_due ? moment(b_project_inventory_due).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={b_project_inventory_due ? new Date(moment(b_project_inventory_due).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
                             <label>
                                 <p>Project Wh Pack</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_wh_unpack')}
-                                    value={b_project_wh_unpack ? moment(b_project_wh_unpack).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={b_project_wh_unpack ? new Date(moment(b_project_wh_unpack).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
                             <label>
                                 <p>Project DD Receive Date</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_dd_receive_date')}
-                                    value={b_project_dd_receive_date ? moment(b_project_dd_receive_date).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={b_project_dd_receive_date ? new Date(moment(b_project_dd_receive_date).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
                             <label>

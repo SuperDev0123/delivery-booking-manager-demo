@@ -20,7 +20,8 @@ class BulkUpdateSlider extends React.Component {
             errorMsg: null,
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
     }
 
     static propTypes = {
@@ -73,11 +74,15 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onChangeDateTime(dateTime, valueType=null) {
+        let conveted_date = moment(dateTime).tz('Etc/UTC');
+        conveted_date = conveted_date.add(this.tzOffset, 'h');
+        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+
         if (dateTime) {
             if (valueType === 'optionalValue') {
-                this.setState({optionalValue: moment(dateTime).format('YYYY-MM-DD HH:mm:ss')});
+                this.setState({optionalValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
             } else {
-                this.setState({selectedValue: moment(dateTime).format('YYYY-MM-DD HH:mm:ss')});
+                this.setState({selectedValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
             }
 
             this.setState({errorMsg: null});
@@ -250,8 +255,8 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'fp_received_date_time') ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
-                                    value={selectedValue ? moment(selectedValue).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={selectedValue ? new Date(moment(selectedValue).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                                 : null
                         }
@@ -266,8 +271,8 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'status' && selectedValue === 'In Transit' ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
-                                    value={optionalValue ? moment(optionalValue).toDate() : null}
-                                    format={'dd/MM/yyyy hh:mm a'}
+                                    value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    format={'dd/MM/yyyy HH:mm'}
                                 />
                                 : null
                         }
