@@ -19,8 +19,25 @@ class FindModal extends Component {
         const { bookings } = newProps;
 
         if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
-            const foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName].toString());
+            let foundValueSet = [];
             let valueSet = this.state.valueSet.split('\n');
+
+            if (this.state.selectedFieldName === 'clientRefNumber') {
+                bookings.map(booking => {
+                    foundValueSet = _.concat(foundValueSet, booking['clientRefNumbers'].split(', '));
+                    return true;
+                });
+                foundValueSet = _.intersect(valueSet, foundValueSet);
+            } else if (this.state.selectedFieldName === 'gap_ra') {
+                bookings.map(booking => {
+                    foundValueSet = _.concat(foundValueSet, booking['gap_ras'].split(', '));
+                    return true;
+                });
+                foundValueSet = _.intersection(valueSet, foundValueSet);
+            } else {
+                foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName].toString());
+            }
+
             valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
             const missedValueSet = _.difference(valueSet, foundValueSet);
             
