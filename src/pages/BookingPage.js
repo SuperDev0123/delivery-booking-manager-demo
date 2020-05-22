@@ -4883,7 +4883,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(booking.pu_PickUp_By_Date) : null}
+                                                                            selected={formInputs['de_Deliver_From_Date'] ? new Date(booking.de_Deliver_From_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
