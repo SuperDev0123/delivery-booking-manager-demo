@@ -4594,7 +4594,7 @@ class BookingPage extends Component {
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DatePicker
                                                                         className="date"
-                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).toDate() : null}
+                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? new Date(formInputs['s_06_Latest_Delivery_Date_TimeSet']) : null}
                                                                         onChange={(e) => this.onDateChange(e, 's_06_Latest_Delivery_Date_TimeSet')}
                                                                         dateFormat="dd/MM/yyyy"
                                                                     />
@@ -4615,7 +4615,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                            selected={formInputs['fp_store_event_date'] ? new Date(formInputs['fp_store_event_date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
@@ -4793,7 +4793,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).toDate() : null}
+                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(booking.puPickUpAvailFrom_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4838,7 +4838,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).toDate() : null}
+                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(booking.pu_PickUp_By_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4883,7 +4883,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).toDate() : null}
+                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(booking.pu_PickUp_By_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4928,7 +4928,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            selected={formInputs['de_Deliver_By_Date'] ? new Date(booking.de_Deliver_By_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
