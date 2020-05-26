@@ -47,7 +47,6 @@ class EditSqlQueries extends Component {
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-
     }
 
     static propTypes = {
@@ -115,6 +114,48 @@ class EditSqlQueries extends Component {
 
     closeModal() {
         this.setState({ modalIsOpen: false });
+    }
+
+    exportCSV() {
+        var rows = [];
+
+        const { queryResult } = this.state;
+
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            let headers = [];
+            Object.keys(queryResult[0]).map((row, index) => {
+                headers.push(row);
+                console.log(index);
+            });
+
+            rows.push(headers);
+
+
+
+            for( const query of queryResult) {
+                let data = [];
+                Object.keys(query).map((row1, index1) => {
+                    data.push(query[row1]);
+                    console.log(index1);
+                });
+
+                rows.push(data);
+            }
+        }
+
+        var csvContent = 'data:text/csv;charset=utf-8,';
+        rows.forEach(function(rowArray) {
+            var row = rowArray.join(',');
+            csvContent += row + '\r\n';
+        });
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'download.csv');
+        document.body.appendChild(link); // Required for FF
+        link.click();
+
     }
 
     onInputChange(event) {
@@ -186,8 +227,8 @@ class EditSqlQueries extends Component {
         let tableColumns = [];
 
         const allowedColumns = ['suburb'];
-
-        if(queryResult && queryResult.length>0){
+        
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
             queryResult.map((row, index) => {
                 return (
                     <tr key={index}>
@@ -281,11 +322,11 @@ class EditSqlQueries extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Query Result</h3>
                                     <div className="actions pull-right">
-                                        <button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
+                                        <button type="button" disabled={!(queryResult && queryResult.length > 0 && typeof queryResult != 'string')} onClick={()=>this.exportCSV()} className="btn btn-primary">Export</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
                                     </div>
                                 </div>
                                 <div className="panel-body" style={{ maxHeight: '452px', overflowY: 'auto' }}>
-                                    {queryResult && queryResult.length > 0 && queryTables && queryTables.length > 0 ? (
+                                    {queryResult && queryResult.length > 0 && typeof queryResult != 'string' && queryTables && queryTables.length > 0 ? (
                                         <BootstrapTable
                                             remote={{ cellEdit: true }}
                                             keyField={queryTables[4]}
@@ -294,7 +335,7 @@ class EditSqlQueries extends Component {
                                             cellEdit={cellEdit}
                                             onTableChange={this.handleTableChange}
                                         />
-                                    ) : ( <code>Make changes in query and click on run button to get result.</code> )}
+                                    ) : (typeof queryResult == 'string')?<code>{queryResult}</code>:<code>Make changes in query and click on run button to get result.</code>}
                                 </div>
                             </div>
                         </div>
