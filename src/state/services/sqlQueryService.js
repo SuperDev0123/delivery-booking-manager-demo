@@ -76,7 +76,7 @@ export const validateSqlQueryDetails = (data) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/validate/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/execute/`,
         data: data
     };
     return dispatch =>

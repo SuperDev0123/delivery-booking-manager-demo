@@ -90,16 +90,17 @@ export function failedDeleteSqlQueryDetails(error) {
 export function successValidateSqlQueryDetails(data) {
     return {
         type: SUCCESS_VALIDATE_SQL_QUERY,
-        queryResult: (data.results)?data.results:data.error,
-        queryTables: (data.results)?data.tables:data.error,
+        queryResult: data.results,
+        queryTables: data.tables,
         validSqlQueryDetails: (data.results)?true:false
     };
 }
 
 export function failedValidateSqlQueryDetails(error) {
+    console.log('failedValidateSqlQueryDetails', error.response.data.message);
     return {
         type: FAILED_VALIDATE_SQL_QUERY,
-        errorMessage: 'Unable to validate sql query, error: ' + error,
+        errorMessage: 'Unable to validate sql query, error: ' +  error.response.data.message,
     };
 }
 

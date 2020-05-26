@@ -11,6 +11,8 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 const customStyles = {
     content: {
         top: '50%',
@@ -47,6 +49,7 @@ class EditSqlQueries extends Component {
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleTableChange = this.handleTableChange.bind(this);
     }
 
     static propTypes = {
@@ -79,7 +82,7 @@ class EditSqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -101,6 +104,10 @@ class EditSqlQueries extends Component {
         }
         if (rerunValidateSqlQueryDetails) {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
+        }
+
+        if (errorMessage) {
+            this.notify(errorMessage);
         }
     }
 
@@ -129,9 +136,6 @@ class EditSqlQueries extends Component {
             });
 
             rows.push(headers);
-
-
-
             for( const query of queryResult) {
                 let data = [];
                 Object.keys(query).map((row1, index1) => {
@@ -192,7 +196,6 @@ class EditSqlQueries extends Component {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
         }
         this.setState({ loading: false, modalIsOpen: false, updateQueries: [] });
-        //this.props.history.push('/admin/sqlqueries');
         event.preventDefault();
     }
 
@@ -215,30 +218,23 @@ class EditSqlQueries extends Component {
         }, 2000);
     }
 
-    render() {
-        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+    notify = (text) => {
+        toast(text);
+    };
 
+    render() {
+        const { sql_title, sql_query, sql_description, sql_notes, queryResult, loading, updateQueries, queryTables } = this.state;
+
+
+        let tableColumns = [];
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-       
-        let tableColumns = [];
-
         const allowedColumns = ['suburb'];
         
         if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
-            queryResult.map((row, index) => {
-                return (
-                    <tr key={index}>
-                        {Object.keys(queryResult[0]).map((row1, index1) => 
-                            <td data-column={row1} key={index1}>{row[row1]}</td>
-                        )}
-                    </tr>
-                );
-            });
-            
             Object.keys(queryResult[0]).map((row, index) => {
                 tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row), index: index});
             });
@@ -298,7 +294,7 @@ class EditSqlQueries extends Component {
 
                                         <div className="form-group">
                                             <label className="control-label" htmlFor="sql_description">Description</label>
-                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Title" onChange={(e) => this.onInputChange(e)} value={sql_description || ''} >{sql_description}</textarea>
+                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Description" onChange={(e) => this.onInputChange(e)} value={sql_description || ''} >{sql_description}</textarea>
                                         </div>
 
                                         <div className="form-group required">
@@ -311,7 +307,7 @@ class EditSqlQueries extends Component {
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
                                             <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} value={sql_notes || ''} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title === '' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Submit</button>
                                     </form>
                                 </div>
                             </div>
@@ -342,6 +338,7 @@ class EditSqlQueries extends Component {
 
                     </div>
                 </section>
+                <ToastContainer/>
             </div>
         );
     }
@@ -354,6 +351,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
+        errorMessage: state.sqlQuery.errorMessage,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
