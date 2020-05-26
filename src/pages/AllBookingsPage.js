@@ -115,7 +115,7 @@ class AllBookingsPage extends React.Component {
             isShowBookingSetModal: false,
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
         this.myRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);

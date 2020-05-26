@@ -16,7 +16,7 @@ class EditablePopover extends React.Component {
             selectedDate: null,
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
     }
 
     static propTypes = {
@@ -96,15 +96,12 @@ class EditablePopover extends React.Component {
                 className='edit-cell-popover'
             >
                 <PopoverBody>
-                    {
-                        inputType === 'datepicker' && !_.isNull(selectedDate) ?
-                            <DatePicker
-                                selected={moment(selectedDate).toDate()}
-                                onChange={(e) => this.onDateChange(e)}
-                                dateFormat="dd MMM yyyy"
-                            />
-                            :
-                            null
+                    {(inputType === 'datepicker' && !_.isNull(selectedDate)) &&
+                        <DatePicker
+                            selected={new Date(selectedDate)}
+                            onChange={(e) => this.onDateChange(e)}
+                            dateFormat="dd MMM yyyy"
+                        />
                     }
                     <Button color="primary" onClick={() => this.onClickChange()}>Change</Button>
                     <Button color="secondary" onClick={() => this.onClickCancel()}>Cancel</Button>

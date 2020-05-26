@@ -27,7 +27,7 @@ class StatusInfoSlider extends React.Component {
             statusInfo: [],
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
     }
 
     static propTypes = {
@@ -46,10 +46,10 @@ class StatusInfoSlider extends React.Component {
         const { startDate, endDate } = this.props;
 
         if (_.isEmpty(startDate)) {
-            this.setState({startDate: moment().tz('Australia/Sydney').toDate(), endDate: moment().tz('Australia/Sydney').toDate()});
+            this.setState({startDate: new Date(), endDate: new Date()});
             this.props.setStatusInfoFilter(
-                moment().tz('Australia/Sydney').format('YYYY-MM-DD'),
-                moment().tz('Australia/Sydney').format('YYYY-MM-DD')
+                moment().format('YYYY-MM-DD'),
+                moment().format('YYYY-MM-DD')
             );
         } else {
             this.setState({ startDate, endDate });
@@ -84,7 +84,7 @@ class StatusInfoSlider extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').toDate();
+                startDate = new Date();
             } else {
                 startDate = moment(date).toDate();
             }
@@ -97,7 +97,7 @@ class StatusInfoSlider extends React.Component {
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').toDate();
+                endDate = new Date();
             } else {
                 endDate = moment(date).toDate();
             }

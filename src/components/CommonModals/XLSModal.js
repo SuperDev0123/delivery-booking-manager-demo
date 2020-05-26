@@ -24,7 +24,7 @@ class XLSModal extends Component {
             useSelected: false,
         };
 
-        moment.tz.setDefault('Etc/UTC');
+        moment.tz.setDefault('Australia/Sydney');
     }
 
     static propTypes = {
