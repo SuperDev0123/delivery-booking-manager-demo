@@ -16,26 +16,26 @@ class FindModal extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings } = newProps;
+        const { bookings, selectedFieldName } = newProps;
 
         if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
             let foundValueSet = [];
             let valueSet = this.state.valueSet.split('\n');
 
-            if (this.state.selectedFieldName === 'clientRefNumber') {
+            if (selectedFieldName === 'clientRefNumber') {
                 bookings.map(booking => {
                     foundValueSet = _.concat(foundValueSet, booking['clientRefNumbers'].split(', '));
                     return true;
                 });
                 foundValueSet = _.intersect(valueSet, foundValueSet);
-            } else if (this.state.selectedFieldName === 'gap_ra') {
+            } else if (selectedFieldName === 'gap_ra') {
                 bookings.map(booking => {
                     foundValueSet = _.concat(foundValueSet, booking['gap_ras'].split(', '));
                     return true;
                 });
                 foundValueSet = _.intersection(valueSet, foundValueSet);
-            } else {
-                foundValueSet = bookings.map(booking => booking[this.state.selectedFieldName].toString());
+            } else if (selectedFieldName && booking[selectedFieldName]) {
+                foundValueSet = bookings.map(booking => booking[selectedFieldName].toString());
             }
 
             valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
