@@ -151,7 +151,7 @@ class Vehicles extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href="/admin">Home</a>
                             </li>
                             <li className="active">Vehicles</li>
                         </ol>

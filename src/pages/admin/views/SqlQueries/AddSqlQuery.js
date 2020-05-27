@@ -204,9 +204,9 @@ class AddSqlQueries extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href="/admin">Home</a>
                             </li>
-                            <li><a href="/sqlqueries">SQL Queries</a></li>
+                            <li><a href="/admin/sqlqueries">SQL Queries</a></li>
                             <li className="active">Add New</li>
                         </ol>
                     </div>

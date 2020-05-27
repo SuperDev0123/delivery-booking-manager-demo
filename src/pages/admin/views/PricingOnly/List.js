@@ -175,7 +175,7 @@ class List extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href="/admin">Home</a>
                             </li>
                             <li><a href="/pricing-only">Pricing Only</a></li>
                             <li className="active">List</li>
