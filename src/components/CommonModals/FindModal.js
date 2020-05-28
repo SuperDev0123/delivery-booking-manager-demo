@@ -34,8 +34,12 @@ class FindModal extends Component {
                     return true;
                 });
                 foundValueSet = _.intersection(valueSet, foundValueSet);
-            } else if (selectedFieldName && booking[selectedFieldName]) {
-                foundValueSet = bookings.map(booking => booking[selectedFieldName].toString());
+            } else if (selectedFieldName) {
+                foundValueSet = bookings.map(booking => {
+                    if (booking[selectedFieldName]) {
+                        return booking[selectedFieldName].toString();
+                    }
+                });
             }
 
             valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
