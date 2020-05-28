@@ -90,11 +90,23 @@ class FindModal extends Component {
             valueSet = _.map(valueSet, value => {return value.trim();});
 
             // Eliminate duplicated lines
-            valueSet = _.uniq(_.filter(valueSet, (value) => {return value.length > 0;}));
+            valueSet = _.uniq(_.filter(valueSet, value => {return value.length > 0;}));
             this.setState({valueSet: valueSet.join('\n'), errorMessage: ''});
 
-            valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
-            this.props.onFind(selectedFieldName, valueSet);
+            if (selectedFieldName === 'b_bookingID_Visual') {
+                let nonIntegers = [];
+                nonIntegers = _.filter(valueSet, value => _.isNaN(parseInt(value)));
+
+                if (nonIntegers.length > 0) {
+                    this.setState({errorMessage: 'DME Booking numbers should be integers.'});
+                } else {
+                    valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
+                    this.props.onFind(selectedFieldName, valueSet);
+                }
+            } else {
+                valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
+                this.props.onFind(selectedFieldName, valueSet);
+            }
         }
     }
 
