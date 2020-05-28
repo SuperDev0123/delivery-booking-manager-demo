@@ -95,7 +95,7 @@ class FindModal extends Component {
 
             if (selectedFieldName === 'b_bookingID_Visual') {
                 let nonIntegers = [];
-                nonIntegers = _.filter(valueSet, value => _.isNaN(parseInt(value)));
+                nonIntegers = _.filter(valueSet, value => isNaN(value));
 
                 if (nonIntegers.length > 0) {
                     this.setState({errorMessage: 'DME Booking numbers should be integers.'});
