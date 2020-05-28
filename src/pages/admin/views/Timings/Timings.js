@@ -36,6 +36,7 @@ class Timings extends Component {
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getTimings: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -208,7 +209,8 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allTimings: state.timing.allTimings
+        allTimings: state.timing.allTimings,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

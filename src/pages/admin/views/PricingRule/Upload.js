@@ -58,6 +58,7 @@ class Upload extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -144,7 +145,7 @@ class Upload extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Home</a></li>
+                            <li><a href={this.props.urlAdminHome}>Home</a></li>
                             <li><a href="/pricing-only">Pricing Rules</a></li>
                             <li className="active">Upload</li>
                         </ol>
@@ -198,6 +199,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         username: state.auth.username,
         clientname: state.auth.clientname,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

@@ -38,6 +38,7 @@ class EditUser extends Component {
         updateUserDetails: PropTypes.func.isRequired,
         deleteFpCarrier: PropTypes.func.isRequired,
         deleteFpZone: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -110,7 +111,7 @@ class EditUser extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Home</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li><a href="/admin/users">Edit User</a></li>
                             <li className="active">Edit</li>
@@ -189,7 +190,8 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         pageCnt: state.fp.pageCnt,
         pageItemCnt: state.fp.pageItemCnt,
-        pageInd: state.fp.pageInd
+        pageInd: state.fp.pageInd,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

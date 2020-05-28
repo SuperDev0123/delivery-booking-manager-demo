@@ -36,6 +36,7 @@ class Vehicles extends Component {
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getVehicles: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -151,7 +152,7 @@ class Vehicles extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Home</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Vehicles</li>
                         </ol>
@@ -226,7 +227,8 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allVehicles: state.vehicle.allVehicles
+        allVehicles: state.vehicle.allVehicles,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

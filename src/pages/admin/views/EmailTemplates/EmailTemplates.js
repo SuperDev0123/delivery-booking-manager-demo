@@ -28,6 +28,7 @@ class EmailTemplates extends Component {
         getAllEmailTemplates: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteEmailTemplateDetails: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -139,7 +140,7 @@ class EmailTemplates extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Home</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Email Templates</li>
                         </ol>
@@ -159,6 +160,7 @@ const mapStateToProps = (state) => {
         allEmailTemplates: state.emailTemplate.allEmailTemplates,
         username: state.auth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

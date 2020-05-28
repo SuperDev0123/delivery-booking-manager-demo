@@ -63,6 +63,7 @@ class EditSqlQueries extends Component {
         validateSqlQueryDetails: PropTypes.func.isRequired,
         updateSqlQueryDetails: PropTypes.func.isRequired,
         runUpdateSqlQueryDetails: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -265,7 +266,7 @@ class EditSqlQueries extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Home</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li><a href="/admin/sqlqueries">SQL Queries</a></li>
                             <li className="active">Edit</li>
@@ -353,6 +354,7 @@ const mapStateToProps = (state) => {
         queryTables: state.sqlQuery.queryTables,
         errorMessage: state.sqlQuery.errorMessage,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
+        urlAdminHome: state.url.urlAdminHome,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
 };

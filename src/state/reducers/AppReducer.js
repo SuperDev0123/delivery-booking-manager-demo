@@ -20,6 +20,7 @@ import { TimingReducer } from './timingReducer';
 import { AvailabilityReducer } from './availabilityReducer';
 import { CostReducer } from './costReducer';
 import { PricingRuleReducer } from './pricingRuleReducer';
+import { UrlAdminReducer } from './urlAdminReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -42,4 +43,5 @@ export const AppReducer = combineReducers({
     availability: AvailabilityReducer,
     cost: CostReducer,
     pricingRule: PricingRuleReducer,
+    url: UrlAdminReducer,
 });
