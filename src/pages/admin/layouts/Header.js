@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 const $ = window.$;
 
 class Header extends Component {
@@ -19,9 +18,7 @@ class Header extends Component {
         return (
             <header id="header">
                 <div className="brand">
-                    <Link to="/admin" className="logo">
-                        <span>DME</span>ADMIN
-                    </Link>
+                    <a href="/admin" className="logo"><span>DME</span>ADMIN</a>
                 </div>
                 <ul className="nav navbar-nav navbar-left">
                     <li className="toggle-navigation toggle-left">

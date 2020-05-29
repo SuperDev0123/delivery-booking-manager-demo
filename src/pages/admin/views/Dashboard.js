@@ -16,6 +16,11 @@ class Dashboard extends Component {
                 <div className="pageheader">
                     <h1>Dashboard</h1>
                     <p className="description">Welcome to DME Admin Panel</p>
+
+                    <p>
+                        DME ADMIN PANEL 
+                        IN DEVELOPMENT
+                    </p>
                 </div>
             </div>
         );

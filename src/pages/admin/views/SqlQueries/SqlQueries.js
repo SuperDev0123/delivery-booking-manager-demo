@@ -31,6 +31,7 @@ class SqlQueries extends Component {
         getAllSqlQueries: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteSqlQueryDetails: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -141,7 +142,7 @@ class SqlQueries extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">SQL Queries</li>
                         </ol>
@@ -205,6 +206,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         needUpdateSqlQueries: state.sqlQuery.needUpdateSqlQueries,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

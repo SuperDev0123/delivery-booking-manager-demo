@@ -36,6 +36,7 @@ class Costs extends Component {
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getCosts: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -156,7 +157,7 @@ class Costs extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Costs</li>
                         </ol>
@@ -236,6 +237,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         username: state.auth.username,
         allCosts: state.cost.allCosts,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

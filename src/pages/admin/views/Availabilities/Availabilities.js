@@ -37,6 +37,7 @@ class Availabilities extends Component {
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAvailabilities: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -153,7 +154,7 @@ class Availabilities extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Availabilities</li>
                         </ol>
@@ -229,7 +230,8 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allAvailabilities: state.availability.allAvailabilities
+        allAvailabilities: state.availability.allAvailabilities,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

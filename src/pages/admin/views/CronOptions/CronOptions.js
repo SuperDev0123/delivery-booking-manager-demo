@@ -33,6 +33,7 @@ class CronOptions extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         updateCronOptionDetails: PropTypes.func.isRequired,
         allCronOptions: PropTypes.object.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -135,7 +136,7 @@ class CronOptions extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Cron Options</li>
                         </ol>
@@ -198,6 +199,7 @@ const mapStateToProps = (state) => {
         allCronOptions: state.cronOption.allCronOptions,
         username: state.auth.username,
         needUpdateCronOptions: state.cronOption.needUpdateCronOptions,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 
