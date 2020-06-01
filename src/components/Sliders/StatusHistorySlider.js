@@ -115,9 +115,8 @@ class StatusHistorySlider extends React.Component {
     }
 
     onChangeDateTime(date, fieldName) {
-        let conveted_date = moment(date).tz('Etc/UTC');
-        conveted_date = conveted_date.add(this.tzOffset, 'h');
-        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
 
         if (fieldName === 'event_time_stamp') {
             this.setState({event_time_stamp: conveted_date});
@@ -144,8 +143,8 @@ class StatusHistorySlider extends React.Component {
                     <small> Status Detail: {statusHistory.dme_status_detail} </small><br/>
                     <small> Status Action: {statusHistory.dme_status_action} </small><br/>
                     <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
-                    <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''} </small><br/>
-                    <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''} </small>
+                    <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY HH:mm:ss') : ''} </small><br/>
+                    <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''} </small>
                     {
                         (clientname === 'dme') ?
                             <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
@@ -212,7 +211,7 @@ class StatusHistorySlider extends React.Component {
                                     <p>Event time</p>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'event_time_stamp')}
-                                        value={event_time_stamp ? new Date(moment(event_time_stamp).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                        value={event_time_stamp ? new Date(moment(event_time_stamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                         format={'dd/MM/yyyy HH:mm'}
                                     />
                                 </label>

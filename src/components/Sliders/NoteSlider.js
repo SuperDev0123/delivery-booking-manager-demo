@@ -110,9 +110,8 @@ class NoteSlider extends React.Component {
 
     onChangeDateTime(date) {
         const noteFormInputs = this.state.noteFormInputs;
-        let conveted_date = moment(date).tz('Etc/UTC');
-        conveted_date = conveted_date.add(this.tzOffset, 'h');
-        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
 
         noteFormInputs['updated_timestamp'] = date;
         noteFormInputs['note_date_updated'] = moment(conveted_date).format('YYYY-MM-DD');
@@ -257,7 +256,7 @@ class NoteSlider extends React.Component {
                                     <p>Updated Timestamp</p>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date)}
-                                        value={noteFormInputs['updated_timestamp'] ? new Date(moment(noteFormInputs['updated_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                        value={noteFormInputs['updated_timestamp'] ? new Date(moment(noteFormInputs['updated_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                         format={'dd/MM/yyyy HH:mm'}
                                     />
                                 </label>

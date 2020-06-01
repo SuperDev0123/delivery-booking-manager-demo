@@ -373,9 +373,8 @@ class CommPage extends React.Component {
 
     onChangeDateTime(date) {
         const commFormInputs = this.state.commFormInputs;
-        let conveted_date = moment(date).tz('Etc/UTC');
-        conveted_date = conveted_date.add(this.tzOffset, 'h');
-        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
 
         commFormInputs['due_date_time'] = date;
         commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
@@ -971,7 +970,7 @@ class CommPage extends React.Component {
                             <p>Due Date Time</p>
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date)}
-                                value={new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'UTC'}))}
+                                value={new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                 format={'dd/MM/yyyy HH:mm'}
                             />
                         </label>

@@ -71,9 +71,8 @@ class ProjectDataSlider extends React.Component {
     }
 
     onChangeDate(date, fieldName) {
-        let conveted_date = moment(date).tz('Etc/UTC');
-        conveted_date = conveted_date.add(this.tzOffset, 'h');
-        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
 
         if (fieldName === 'b_project_opened') {
             this.setState({b_project_opened: conveted_date});
@@ -114,7 +113,7 @@ class ProjectDataSlider extends React.Component {
                                 <p>Project Opened</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_opened')}
-                                    value={b_project_opened ? new Date(moment(b_project_opened).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={b_project_opened ? new Date(moment(b_project_opened).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
@@ -122,7 +121,7 @@ class ProjectDataSlider extends React.Component {
                                 <p>Project Inventory Due</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_inventory_due')}
-                                    value={b_project_inventory_due ? new Date(moment(b_project_inventory_due).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={b_project_inventory_due ? new Date(moment(b_project_inventory_due).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
@@ -130,7 +129,7 @@ class ProjectDataSlider extends React.Component {
                                 <p>Project Wh Pack</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_wh_unpack')}
-                                    value={b_project_wh_unpack ? new Date(moment(b_project_wh_unpack).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={b_project_wh_unpack ? new Date(moment(b_project_wh_unpack).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
@@ -138,7 +137,7 @@ class ProjectDataSlider extends React.Component {
                                 <p>Project DD Receive Date</p>
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDate(date, 'b_project_dd_receive_date')}
-                                    value={b_project_dd_receive_date ? new Date(moment(b_project_dd_receive_date).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={b_project_dd_receive_date ? new Date(moment(b_project_dd_receive_date).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                             </label>
