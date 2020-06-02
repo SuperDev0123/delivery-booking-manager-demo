@@ -96,12 +96,6 @@ class CronOptions extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.allCronOptions.length > 0 && this.props.allCronOptions !== prevProps.allCronOptions) {
-            this.notify('Data updated!');
-        }
-    }
-
     render() {
         const { allCronOptions } = this.state;
         const tableData = allCronOptions.map((item, index) => {
