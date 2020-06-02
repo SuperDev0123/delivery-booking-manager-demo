@@ -4,24 +4,22 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 // Libs
 import axios from 'axios';
-import moment from 'moment-timezone';
 // Components
 import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getFiles } from '../../../../state/services/fileService';
+import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
-class List extends Component {
+class Clients extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: false,
-            files: [],
+            dmeClients: [],
             selectedFile: null,
             selectedFileOption: null,
             isShowDeleteFileConfirmModal: false,
@@ -36,8 +34,8 @@ class List extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getFiles: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -55,7 +53,7 @@ class List extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, files } = newProps;
+        const { redirect, dmeClients } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -64,10 +62,12 @@ class List extends Component {
             this.props.history.push('/admin');
         }
 
-        if (files) {
-            this.setState({files, loading: false});
+        if (dmeClients) {
+            console.log('dmeClients', dmeClients);
+            this.setState({ dmeClients, loading: false});
             this.notify('Refreshed!');
         }
+    
     }
 
     notify = (text) => {
@@ -80,7 +80,7 @@ class List extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getFiles('pricing-only');
+        this.props.getDMEClients();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -103,7 +103,7 @@ class List extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getFiles('pricing-only');
+                this.props.getDMEClients();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -112,58 +112,26 @@ class List extends Component {
             });
     }
 
-    onClickDownloadFile(file, downloadOption) {
-        const token = localStorage.getItem('token');
-
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
-            headers: {'Authorization': 'JWT ' + token },
-            data: {downloadOption: downloadOption, fileName: file.file_name},
-            responseType: 'blob', // important
-        };
-
-        axios(options)
-            .then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'pricing-only__' + file.file_name + '.zip');
-                document.body.appendChild(link);
-                link.click();
-            })
-            .catch(error => {
-                this.notify('Failed to download files: ' + error);
-            });
-    }
-
     render() {
-        const { loading, files } = this.state;
+        const { loading, dmeClients } = this.state;
 
-        const fileList = files.map((file, index) => {
+        const clientsList = dmeClients.map((client, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{file.file_name}</td>
-                    <td>{file.file_path}</td>
-                    <td>{moment(file.z_createdTimestamp).format('DD/MM/YYYY HH:mm')}</td>
-                    <td>{file.z_createdByAccount}</td>
-                    <td>{file.note}</td>
+                    <td>{client.company_name}</td>
+                    <td>{client.dme_account_num}</td>
+                    <td>{client.phone}</td>
+                    <td>{client.client_filter_date_field}</td>
+                    <td>{client.current_freight_provider}</td>
+                    <td>{client.client_mark_up_percent}</td>
+                    <td>{client.client_min_markup_startingcostvalue}</td>
+                    <td>{client.client_min_markup_value}</td>
+                    <td>{client.augment_pu_by_time}</td>
+                    <td>{client.augment_pu_available_time}</td>
+                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
                     <td>
-                        <button 
-                            className="btn btn-primary"
-                            onClick={() => this.onClickDownloadFile(file, 'pricing-only')}
-                        >
-                            Download
-                        </button>
-                    </td>
-                    <td>
-                        <button
-                            className="btn btn-danger"
-                            onClick={() => this.onClickDeleteFile(file, 'pricing-only')}
-                        >
-                            Delete
-                        </button>
+                        {client.num_client_products>0?<a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>View</a>:null}
                     </td>
                 </tr>
             );
@@ -172,14 +140,13 @@ class List extends Component {
         return (
             <div className="pricing-only">
                 <div className="pageheader">
-                    <h1>List</h1>
+                    <h1>Clients</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
+                            <li><a href="/admin">Home</a>
                             </li>
-                            <li><a href="/pricing-only">Quote Shipping Histories</a></li>
-                            <li className="active">List</li>
+                            <li className="active">Clients</li>
                         </ol>
                     </div>
                 </div>
@@ -207,16 +174,21 @@ class List extends Component {
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
                                             <th>No</th>
-                                            <th>File Name</th>
-                                            <th>File Path</th>
-                                            <th>Created At</th>
-                                            <th>Created By</th>
-                                            <th>Note</th>
-                                            <th>Download</th>
-                                            <th>Delete</th>
+                                            <th>Company Name</th>
+                                            <th>DME Account Number</th>
+                                            <th>Phone</th>
+                                            <th>Client Filter Date Field</th>
+                                            <th>Freight Provider</th>
+                                            <th>Client Mark_up percent</th>
+                                            <th>Client Min Markup Startingcostvalue</th>
+                                            <th>Client Min Markup value</th>
+                                            <th>Augment By Time</th>
+                                            <th>Augment Available Time</th>
+                                            <th>Actions</th>
+                                            <th>Products</th>
                                         </thead>
                                         <tbody>
-                                            {fileList}
+                                            {clientsList}
                                         </tbody>
                                     </table>
                                 </div>
@@ -243,8 +215,8 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        files: state.files.files,
         urlAdminHome: state.url.urlAdminHome,
+        dmeClients: state.auth.dmeClients,
     };
 };
 
@@ -252,8 +224,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getFiles: (fileType) => dispatch(getFiles(fileType)),
+        getDMEClients: () => dispatch(getDMEClients()),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(List));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Clients));

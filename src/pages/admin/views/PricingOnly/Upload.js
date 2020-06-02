@@ -100,7 +100,7 @@ class Upload extends Component {
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a></li>
-                            <li><a href="/pricing-only">Pricing Only</a></li>
+                            <li><a href="/pricing-only">Quote Shipping Histories</a></li>
                             <li className="active">Upload</li>
                         </ol>
                     </div>
