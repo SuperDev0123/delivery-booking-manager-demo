@@ -49,6 +49,8 @@ import {
     successGetZohoTickets,
     failedGetZohoTickets,
     resetZohoTickets,
+    successGetDMEClientProducts,
+    failedGetDMEClientProducts,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -360,4 +362,21 @@ export const getZohoTickets = (dmeid) => {
             .then(({ data }) => dispatch(successGetZohoTickets(data.tickets)))
             .catch((error) => dispatch(failedGetZohoTickets(error)));
     };
+};
+
+export const getDMEClientProducts = (client_id) => {
+    const token = localStorage.getItem('token');
+
+    const options = {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_client_products/?client_id=${client_id}`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetDMEClientProducts(data)))
+            .catch((error) => dispatch(failedGetDMEClientProducts(error)) );
 };

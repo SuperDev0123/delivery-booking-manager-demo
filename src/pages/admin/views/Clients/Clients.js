@@ -10,8 +10,10 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
+import { getDMEClientProducts } from '../../../../state/services/extraService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
+import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
 
 class Clients extends Component {
     constructor(props) {
@@ -23,9 +25,13 @@ class Clients extends Component {
             selectedFile: null,
             selectedFileOption: null,
             isShowDeleteFileConfirmModal: false,
+            isShowFPPricingSlider: false,
+            loadingClientProducts: false,
+            clientProducts: [],
         };
 
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
+        this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
     }
 
     static propTypes = {
@@ -36,6 +42,8 @@ class Clients extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        clientProducts: PropTypes.array.isRequired,
+        getDMEClientProducts: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -53,7 +61,7 @@ class Clients extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, dmeClients } = newProps;
+        const { redirect, dmeClients, clientProducts } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -66,6 +74,10 @@ class Clients extends Component {
             console.log('dmeClients', dmeClients);
             this.setState({ dmeClients, loading: false});
             this.notify('Refreshed!');
+        }
+
+        if (clientProducts) {
+            this.setState({ clientProducts, loadingClientProducts: false});
         }
     
     }
@@ -112,6 +124,17 @@ class Clients extends Component {
             });
     }
 
+    toggleFPPricingSlider() {
+        this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
+
+    onClickOpenPricingSlider(client_id) {
+        console.log('client_id', client_id);
+        this.setState({loadingClientProducts: true});
+        this.toggleFPPricingSlider();
+        this.props.getDMEClientProducts(client_id);
+    }
+
     render() {
         const { loading, dmeClients } = this.state;
 
@@ -131,7 +154,7 @@ class Clients extends Component {
                     <td>{client.augment_pu_available_time}</td>
                     <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
                     <td>
-                        {client.num_client_products>0?<a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>View</a>:null}
+                        {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client.pk_id_dme_client)}>View</button>:null}
                     </td>
                 </tr>
             );
@@ -205,6 +228,14 @@ class Clients extends Component {
                     okBtnName={'Delete'}
                 />
 
+                <ClientProductSlider
+                    isOpen={this.state.isShowFPPricingSlider}
+                    toggleSlider={this.toggleFPPricingSlider}
+                    clientProducts={this.state.clientProducts}
+                    isLoading={this.state.loadingClientProducts}
+                />
+
+
                 <ToastContainer />
             </div>
         );
@@ -217,6 +248,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         urlAdminHome: state.url.urlAdminHome,
         dmeClients: state.auth.dmeClients,
+        clientProducts: state.extra.clientProducts,
     };
 };
 
@@ -225,6 +257,7 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
+        getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id))
     };
 };
 

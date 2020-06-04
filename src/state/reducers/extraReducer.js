@@ -48,6 +48,8 @@ import {
     SUCCESS_GET_ZOHO_TICKETS,
     FAILED_GET_ZOHO_TICKETS,
     RESET_ZOHO_TICKETS,
+    SUCCESS_GET_CLIENT_PRODUCTS,
+    FAILED_GET_CLIENT_PRODUCTS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -66,7 +68,8 @@ const defaultState = {
     bookingset: null,
     bookingsets: null,
     zoho_tickets: [],
-    loadingZohoTickets: false
+    loadingZohoTickets: false,
+    clientProducts: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -242,6 +245,15 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 zoho_tickets: payload,
                 loadingZohoTickets: false
+            };
+        case SUCCESS_GET_CLIENT_PRODUCTS:
+            return {
+                ...state,
+                clientProducts: payload
+            };
+        case FAILED_GET_CLIENT_PRODUCTS:
+            return {
+                ...state
             };
         case FAILED_GET_ZOHO_TICKETS:
             return {

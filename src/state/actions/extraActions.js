@@ -48,6 +48,8 @@ import {
     SUCCESS_GET_ZOHO_TICKETS,
     FAILED_GET_ZOHO_TICKETS,
     RESET_ZOHO_TICKETS,
+    SUCCESS_GET_CLIENT_PRODUCTS,
+    FAILED_GET_CLIENT_PRODUCTS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -386,5 +388,20 @@ export function failedGetZohoTickets(error) {
 export function resetZohoTickets() {
     return {
         type: RESET_ZOHO_TICKETS,
+    };
+}
+
+export function successGetDMEClientProducts(data) {
+    return {
+        type: SUCCESS_GET_CLIENT_PRODUCTS,
+        payload: data.results,
+        errorMessage: 'Successfully get client products',
+    };
+}
+
+export function failedGetDMEClientProducts(error) {
+    return {
+        type: FAILED_GET_CLIENT_PRODUCTS,
+        errorMessage: 'Unable to get client products. Error:' + error,
     };
 }
