@@ -847,10 +847,15 @@ class BookingPage extends Component {
                 else formInputs['b_booking_Priority'] = '';
 
                 // Saved `ETA PU BY`, `ETA DE BY`
+                if (booking.eta_pu_by != null) formInputs['eta_pu_by'] = booking.eta_pu_by;
+                else formInputs['eta_pu_by'] = null;
+                if (booking.eta_de_by != null) formInputs['eta_de_by'] = booking.eta_de_by;
+                else formInputs['eta_de_by'] = null;
                 if (booking.s_05_Latest_Pick_Up_Date_TimeSet != null) formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = booking.s_05_Latest_Pick_Up_Date_TimeSet;
                 else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
                 if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
                 else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
+
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -4190,7 +4195,7 @@ class BookingPage extends Component {
                                                                 (isBookedBooking) ? 
                                                                     <p className="show-mode">{formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -4200,7 +4205,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -5092,7 +5097,6 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height half-size">
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickTrackingStatus()}>Status(Test)</button>
                                                         <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod(Test)</button>
-                                                        
                                                     </div>
                                                 </div>
                                             </div>
