@@ -50,6 +50,8 @@ import {
     RESET_ZOHO_TICKETS,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
+    SUCCESS_DELETE_CLIENT_PRODUCTS,
+    FAILED_DELETE_CLIENT_PRODUCTS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -403,5 +405,20 @@ export function failedGetDMEClientProducts(error) {
     return {
         type: FAILED_GET_CLIENT_PRODUCTS,
         errorMessage: 'Unable to get client products. Error:' + error,
+    };
+}
+
+export function successDeleteClientProduct(id, data) {
+    data.id = id;
+    return {
+        type: SUCCESS_DELETE_CLIENT_PRODUCTS,
+        payload: data,
+    };
+}
+
+export function failedDeleteClientProduct() {
+    return {
+        type: FAILED_DELETE_CLIENT_PRODUCTS,
+        errorMessage: 'Failed to delete client product',
     };
 }

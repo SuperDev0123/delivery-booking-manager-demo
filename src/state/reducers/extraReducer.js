@@ -50,6 +50,8 @@ import {
     RESET_ZOHO_TICKETS,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
+    SUCCESS_DELETE_CLIENT_PRODUCTS,
+    FAILED_DELETE_CLIENT_PRODUCTS
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -251,9 +253,21 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 clientProducts: payload
             };
+        case SUCCESS_DELETE_CLIENT_PRODUCTS: 
+            var clientProducts = [];
+            for (const clientProduct of state.clientProducts) {
+                if ( clientProduct.id != payload.id) {
+                    clientProducts.push(clientProduct);
+                }
+            }
+            return {
+                ...state,
+                clientProducts: clientProducts
+            };
         case FAILED_GET_CLIENT_PRODUCTS:
             return {
-                ...state
+                ...state,
+                clientProducts: []
             };
         case FAILED_GET_ZOHO_TICKETS:
             return {
@@ -280,6 +294,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:
         case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
+        case FAILED_DELETE_CLIENT_PRODUCTS:
             return {
                 ...state,
                 errorMessage: errorMessage,

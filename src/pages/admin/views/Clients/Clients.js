@@ -10,7 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getDMEClientProducts } from '../../../../state/services/extraService';
+import { getDMEClientProducts, deleteClientProduct } from '../../../../state/services/extraService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
@@ -28,10 +28,12 @@ class Clients extends Component {
             isShowFPPricingSlider: false,
             loadingClientProducts: false,
             clientProducts: [],
+            clientName: ''
         };
 
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
+        this.onClickDelete = this.onClickDelete.bind(this);
     }
 
     static propTypes = {
@@ -44,6 +46,7 @@ class Clients extends Component {
         getDMEClients: PropTypes.func.isRequired,
         clientProducts: PropTypes.array.isRequired,
         getDMEClientProducts: PropTypes.func.isRequired,
+        deleteClientProduct: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -71,7 +74,6 @@ class Clients extends Component {
         }
 
         if (dmeClients) {
-            console.log('dmeClients', dmeClients);
             this.setState({ dmeClients, loading: false});
             this.notify('Refreshed!');
         }
@@ -128,16 +130,20 @@ class Clients extends Component {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
     }
 
-    onClickOpenPricingSlider(client_id) {
-        console.log('client_id', client_id);
-        this.setState({loadingClientProducts: true});
+    onClickOpenPricingSlider(client) {
+        console.log('client', client);
+        this.setState({loadingClientProducts: true, clientName:client.company_name});
         this.toggleFPPricingSlider();
-        this.props.getDMEClientProducts(client_id);
+        this.props.getDMEClientProducts(client.pk_id_dme_client);
+    }
+
+    onClickDelete(id) {
+        console.log('id', id, this.props);
+        this.props.deleteClientProduct(id);
     }
 
     render() {
-        const { loading, dmeClients } = this.state;
-
+        const { loading, dmeClients, clientName, loadingClientProducts, clientProducts, isShowFPPricingSlider} = this.state;
         const clientsList = dmeClients.map((client, index) => {
             return (
                 <tr key={index}>
@@ -154,7 +160,7 @@ class Clients extends Component {
                     <td>{client.augment_pu_available_time}</td>
                     <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
                     <td>
-                        {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client.pk_id_dme_client)}>View</button>:null}
+                        {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>:null}
                     </td>
                 </tr>
             );
@@ -229,10 +235,12 @@ class Clients extends Component {
                 />
 
                 <ClientProductSlider
-                    isOpen={this.state.isShowFPPricingSlider}
+                    isOpen={isShowFPPricingSlider}
                     toggleSlider={this.toggleFPPricingSlider}
-                    clientProducts={this.state.clientProducts}
-                    isLoading={this.state.loadingClientProducts}
+                    clientProducts={clientProducts}
+                    isLoading={loadingClientProducts}
+                    clientName={clientName}
+                    onClickDelete={this.onClickDelete}
                 />
 
 
@@ -257,7 +265,8 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
-        getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id))
+        getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id)),
+        deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
     };
 };
 

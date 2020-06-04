@@ -51,6 +51,8 @@ import {
     resetZohoTickets,
     successGetDMEClientProducts,
     failedGetDMEClientProducts,
+    successDeleteClientProduct,
+    failedDeleteClientProduct,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -373,10 +375,25 @@ export const getDMEClientProducts = (client_id) => {
             'Content-Type': 'application/json',
             'Authorization': 'JWT ' + token
         },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_client_products/?client_id=${client_id}`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/get/?client_id=${client_id}`,
     };
     return dispatch =>
         axios(options)
             .then(({ data }) => dispatch(successGetDMEClientProducts(data)))
             .catch((error) => dispatch(failedGetDMEClientProducts(error)) );
+};
+
+
+export const deleteClientProduct = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/${id}/delete`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteClientProduct(id, data)))
+            .catch((error) => dispatch(failedDeleteClientProduct(error)));
+    };
 };
