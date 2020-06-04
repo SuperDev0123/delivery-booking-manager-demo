@@ -51,7 +51,8 @@ export const UserReducer = (state = defaultState, {
         case SUCCESS_UPDATE_USER:
             return {
                 ...state,
-                needUpdateUserDetails: true
+                allUsers: [],
+                needUpdateUsers: true,
             };
         case SUCCESS_DELETE_USER:
             return {

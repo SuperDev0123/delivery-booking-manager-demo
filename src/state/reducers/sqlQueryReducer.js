@@ -17,7 +17,8 @@ import {
 
 const defaultState = {
     allSqlQueries: [],
-    sqlQueryDetails: {}
+    sqlQueryDetails: {},
+    errorMessage: ''
 };
 
 export const SqlQueryReducer = (state = defaultState, {
@@ -27,7 +28,8 @@ export const SqlQueryReducer = (state = defaultState, {
     validSqlQueryDetails,
     queryResult,
     queryTables,
-    rerunValidateSqlQueryDetails
+    rerunValidateSqlQueryDetails,
+    errorMessage
 }) => {
     switch (type) {
         case SUCCESS_GET_ALL_SQL_QUERIES:
@@ -40,25 +42,29 @@ export const SqlQueryReducer = (state = defaultState, {
         case SUCCESS_GET_SQL_QUERY:
             return {
                 ...state,
-                sqlQueryDetails: sqlQueryDetails
+                sqlQueryDetails: sqlQueryDetails,
+                errorMessage: errorMessage
             };
         case FAILED_GET_SQL_QUERY:
         case SUCCESS_CREATE_SQL_QUERY:
             return {
                 ...state,
                 needUpdateSqlQueries: true,
+                errorMessage: errorMessage
             };
         case FAILED_CREATE_SQL_QUERY:
         case SUCCESS_UPDATE_SQL_QUERY:
             return {
                 ...state,
-                needUpdateSqlQueryDetails: true
+                needUpdateSqlQueryDetails: true,
+                errorMessage: errorMessage
             };
         case FAILED_UPDATE_SQL_QUERY:
         case SUCCESS_DELETE_SQL_QUERY:
             return {
                 ...state,
-                needUpdateSqlQueryDetails: true
+                needUpdateSqlQueryDetails: true,
+                errorMessage: errorMessage
             };
         case FAILED_DELETE_SQL_QUERY:
         case SUCCESS_VALIDATE_SQL_QUERY:
@@ -66,13 +72,15 @@ export const SqlQueryReducer = (state = defaultState, {
                 ...state,
                 validSqlQueryDetails: validSqlQueryDetails,
                 queryResult: queryResult,
-                queryTables: queryTables
+                queryTables: queryTables,
+                errorMessage: errorMessage
             };
         case FAILED_VALIDATE_SQL_QUERY:
         case SUCCESS_RERUNVALIDATE_SQL_QUERY:
             return {
                 ...state,
-                rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails
+                rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails,
+                errorMessage: errorMessage
             };
         case FAILED_RERUNVALIDATE_SQL_QUERY:
         default:

@@ -7,9 +7,9 @@ import Clock from 'react-live-clock';
 import _ from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
+// import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -49,7 +49,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label } from '../commons/validations';
 
@@ -82,6 +82,7 @@ class BookingPage extends Component {
             loadingBookingLineDetail: false,
             loadingBookingSave: false,
             loadingBookingUpdate: false,
+            loadingZohoTickets: false,
             loadingComm: false,
             products: [],
             bookingLinesListProduct: [],
@@ -187,6 +188,7 @@ class BookingPage extends Component {
             selectedFileOption: null,
             uploadOption: null,
             xReadyStatus: null,
+            zoho_tickets: []
         };
 
         this.djsConfig = {
@@ -213,6 +215,8 @@ class BookingPage extends Component {
             postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/pod/',
         };
 
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
         this.attachmentsDz = null;
         this.labelDz = null;
         this.podDz = null;
@@ -306,6 +310,7 @@ class BookingPage extends Component {
         saveStatusHistoryPuInfo: PropTypes.func.isRequired,
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
+        getZohoTickets: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -323,6 +328,7 @@ class BookingPage extends Component {
 
         if (bookingId != null) {
             this.props.getBooking(bookingId, 'id');
+            this.props.getZohoTickets(bookingId);
             this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
             this.props.getBooking();
@@ -345,13 +351,14 @@ class BookingPage extends Component {
             that.props.getStatusDetails();
             that.props.getStatusActions();
             that.props.getAvailableCreators();
+
         }, 3000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -402,6 +409,14 @@ class BookingPage extends Component {
             this.setState({comms: newComms, cntComms, loadingComm: false});
         }
 
+        if ( zoho_tickets ) {
+            this.setState({zoho_tickets});
+        }
+
+        if (this.state.loadingZohoTickets != loadingZohoTickets) {
+            this.setState({loadingZohoTickets});
+        }
+        
         if (notes) {
             this.setState({notes});
         }
@@ -765,6 +780,7 @@ class BookingPage extends Component {
                     (this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate) 
                     && booking.pk_booking_id
                 ) {
+                    this.props.getZohoTickets(booking.id);
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -951,13 +967,13 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (!_.isNaN(booking.inv_cost_quoted) && !_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = booking.inv_cost_quoted;
+                if (booking.inv_cost_quoted && !_.isNaN(parseFloat(booking.inv_cost_quoted))) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
                 else formInputs['inv_cost_quoted'] = null;
-                if (!_.isNaN(booking.inv_cost_actual) && !_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = booking.inv_cost_actual;
+                if (booking.inv_cost_actual && !_.isNaN(parseFloat(booking.inv_cost_actual))) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
                 else formInputs['inv_cost_actual'] = null;
-                if (!_.isNaN(booking.inv_sell_quoted) && !_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = booking.inv_sell_quoted;
+                if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
                 else formInputs['inv_sell_quoted'] = null;
-                if (!_.isNaN(booking.inv_sell_actual) && !_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = booking.inv_sell_actual;
+                if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
@@ -1135,11 +1151,15 @@ class BookingPage extends Component {
                 ) {
                     let value = e.target.value.replace(',', '').replace('$', '');
 
-                    if (_.isNaN(parseFloat(value))) {
-                        this.notify('Please input float number!');
+                    if (value == '' || value == null) {
+                        formInputs[e.target.name] = null;
+                        booking[e.target.name] = null;
+                    // } else if (value && _.isNaN(parseFloat(value))) {
+                        // this.notify('Please input float number!');
                     } else {
-                        formInputs[e.target.name] = e.target.value;
-                        booking[e.target.name] = e.target.value;
+                        let value = e.target.value.replace(',', '').replace('$', '');
+                        formInputs[e.target.name] = value;
+                        booking[e.target.name] = value;
                     }
                 } else {
                     formInputs[e.target.name] = e.target.value;
@@ -1160,9 +1180,19 @@ class BookingPage extends Component {
             e.target.name === 'inv_cost_actual'
         ) {
             let value = e.target.value.replace(',', '').replace('$', '');
-            formInputs[e.target.name] = '$' + parseFloat(value).toLocaleString(navigator.language, { minimumFractionDigits: 2 });
-            booking[e.target.name] = value;
+
+            if (value == '' || value == null) {
+                formInputs[e.target.name] = null;
+                booking[e.target.name] = null;
+            // } else if (value && _.isNaN(parseFloat(value))) {
+                // this.notify('Please input float number!');
+            } else {
+                formInputs[e.target.name] = parseFloat(value).toFixed(2);
+                booking[e.target.name] = parseFloat(value).toFixed(2);
+            }
         }
+
+        this.setState({ formInputs, booking });
     }
 
     onClickViewFile(fileOption) {
@@ -2610,24 +2640,27 @@ class BookingPage extends Component {
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
 
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+
         if (fieldName === 'due_date_time') {
-            commFormInputs['due_date_time'] = date;
-            commFormInputs['due_by_date'] = moment(date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(date).format('HH:mm:ss');
+            commFormInputs['due_date_time'] = conveted_date;
+            commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
+            commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
             this.setState({commFormInputs});
         } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
             this.setState({formInputs, booking});
         } else if (fieldName === 'b_given_to_transport_date_time') {
-            if (date) {
-                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-                booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            if (conveted_date) {
+                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                booking['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
             } else {
                 formInputs[fieldName] = null;
                 booking[fieldName] = null;
@@ -2642,24 +2675,24 @@ class BookingPage extends Component {
             }
             this.setState({formInputs, booking});
         } else if (fieldName === 'fp_received_date_time') {
-            if (!date) {
+            if (!conveted_date) {
                 formInputs['z_calculated_ETA'] = null;
                 booking['z_calculated_ETA'] = null;
                 formInputs[fieldName] = null;
                 booking[fieldName] = null;
-            } else if (date && !booking.b_given_to_transport_date_time) {
-                formInputs['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                booking['z_calculated_ETA'] = moment(date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-                booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            } else if (conveted_date && !booking.b_given_to_transport_date_time) {
+                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                booking['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
             } else {
-                formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-                booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
             }
             this.setState({formInputs, booking});
         } else {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD HH:mm:ss');
+            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
             this.setState({formInputs, booking});
         }
 
@@ -2692,10 +2725,10 @@ class BookingPage extends Component {
         formInputs['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
         formInputs['v_service_Type'] = pricingInfo['service_code'];
-        booking['inv_cost_actual'] = pricingInfo['fee'];
-        formInputs['inv_cost_actual'] = pricingInfo['fee'];
-        booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
-        formInputs['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        booking['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
+        formInputs['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
+        booking['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        formInputs['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
         const selectedFP = this.state.allFPs.find(
@@ -2740,8 +2773,7 @@ class BookingPage extends Component {
     }
 
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented } = this.state;
-        
+        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets } = this.state;
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',
@@ -2922,6 +2954,29 @@ class BookingPage extends Component {
             },
         ];
 
+        const columnZohoTickets = [
+            {
+                dataField: 'id',
+                text: 'Ticket Id'
+            }, {
+                dataField: 'subject',
+                text: 'Subject'
+            }, {
+                dataField: 'email',
+                text: 'Email-Id'
+            }, {
+                dataField: 'status',
+                text: 'Status'
+            }, {
+                dataField: 'id',
+                text: 'View',
+                formatter:  (cell, row) => {
+                    console.log(cell,row);
+                    return (<Link to={'/zohodetails?id='+row.id}><i className="fa fa-eye"></i> </Link>);
+                }
+            }
+        ];
+
         const columnAttachments = [
             {
                 dataField: 'no',
@@ -3033,7 +3088,7 @@ class BookingPage extends Component {
             'Repairs & Spare Parts Expense',
             'Refurbishment Expense',
             'Salvage Expense',
-            'Samples & Sales Expens',
+            'Samples & Sales Expense',
             'Standard Sales',
             'Testing Expense',
             'Admin / Other',
@@ -3201,12 +3256,16 @@ class BookingPage extends Component {
                                     <span>Booked Date:</span>
                                     {
                                         (parseInt(curViewMode) === 0) ?
-                                            <p className="show-mode">{!_.isNull(booking) && !_.isUndefined(booking.b_dateBookedDate) ? moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                            <p className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</p>
                                             :
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={(!_.isNull(booking) && !_.isNull(booking.b_dateBookedDate) && !_.isUndefined(booking.b_dateBookedDate)) ? moment(booking.b_dateBookedDate).toDate() : null}
-                                                format={'dd/MM/yyyy hh:mm a'}
+                                                value={(!_.isNull(booking) &&
+                                                    !_.isNull(booking.b_dateBookedDate) &&
+                                                    !_.isUndefined(booking.b_dateBookedDate)) &&
+                                                    new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                }
+                                                format={'dd/MM/yyyy HH:mm'}
                                             />
                                     }
                                 </div>
@@ -3697,43 +3756,24 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="fp_invoice_no"
-                                                            value = {formInputs['fp_invoice_no'] ? formInputs['fp_invoice_no'] : ''}
+                                                            value = {formInputs['fp_invoice_no']}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
                                             </div>
                                         </div>
-                                        <div className='col-sm-1 form-group'>
-                                            <div>
-                                                <span>Quoted Cost</span>
-                                                {parseInt(curViewMode) === 0 ?
-                                                    <p className="show-mode">{formInputs['inv_cost_quoted']}</p>
-                                                    :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        name="inv_cost_quoted"
-                                                        value = {formInputs['inv_cost_quoted'] ?
-                                                            '$' + parseFloat(booking.inv_cost_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                        onBlur={(e) => this.onHandleInputBlur(e)}
-                                                    />
-                                                }
-                                            </div>
-                                        </div>
                                         {clientname === 'dme' &&
-                                            <div className={clientname === 'dme' ? 'col-sm-1 form-group': 'none'}>
+                                            <div className='col-sm-1 form-group'>
                                                 <div>
-                                                    <span>Actual Cost</span>
+                                                    <span>Quoted Cost</span>
                                                     {parseInt(curViewMode) === 0 ?
-                                                        <p className="show-mode">{formInputs['inv_cost_actual']}</p>
+                                                        <p className="show-mode">{formInputs['inv_cost_quoted'] && `$${parseFloat(formInputs['inv_cost_quoted']).toFixed(2)}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"
                                                             type="text"
-                                                            name="inv_cost_actual"
-                                                            value = {formInputs['inv_cost_actual'] ?
-                                                                '$' + parseFloat(booking.inv_cost_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
+                                                            name="inv_cost_quoted"
+                                                            value = {formInputs['inv_cost_quoted'] && `$${formInputs['inv_cost_quoted']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -3741,42 +3781,65 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Quoted Sell</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_quoted']}</p>
+                                        {clientname === 'dme' &&
+                                            <div className='col-sm-1 form-group'>
+                                                <div>
+                                                    <span>Actual Cost</span>
+                                                    {parseInt(curViewMode) === 0 ?
+                                                        <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(formInputs['inv_cost_actual']).toFixed(2)}`}</p>
+                                                        :
+                                                        clientname === 'dme' ?
+                                                            <input
+                                                                className="form-control"
+                                                                type="text"
+                                                                name="inv_cost_actual"
+                                                                value = {formInputs['inv_cost_actual'] && `$${formInputs['inv_cost_actual']}`}
+                                                                onChange={(e) => this.onHandleInput(e)}
+                                                                onBlur={(e) => this.onHandleInputBlur(e)}
+                                                            />
+                                                            :
+                                                            <p className="show-mode">{formInputs['inv_cost_actual'] && `$${parseFloat(formInputs['inv_cost_actual']).toFixed(2)}`}</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span className="c-red">Quoted $</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
                                                         :
                                                         <input
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_sell_quoted"
-                                                            value = {formInputs['inv_sell_quoted'] ?
-                                                                '$' + parseFloat(booking.inv_sell_quoted).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
+                                                            value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
-                                                }
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
-                                                    <span>Actual Sell</span>
-                                                    {
-                                                        (parseInt(curViewMode) === 0) ?
-                                                            <p className="show-mode">{formInputs['inv_sell_actual']}</p>
-                                                            :
+                                                    <span className="c-red">Actual $</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                        :
+                                                        clientname === 'dme' ?
                                                             <input
                                                                 className="form-control"
                                                                 type="text"
                                                                 name="inv_sell_actual"
-                                                                value = {formInputs['inv_sell_actual'] ?
-                                                                    '$' + parseFloat(booking.inv_sell_actual).toLocaleString(navigator.language, { minimumFractionDigits: 2 }) : ''}
+                                                                value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
                                                                 onChange={(e) => this.onHandleInput(e)}
                                                                 onBlur={(e) => this.onHandleInputBlur(e)}
                                                             />
+                                                            :
+                                                            <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                     }
                                                 </div>
                                             </div>
@@ -3784,17 +3847,16 @@ class BookingPage extends Component {
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
-                                                {
-                                                    (parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_dme_invoice_no']}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_dme_invoice_no"
-                                                            value = {formInputs['inv_dme_invoice_no'] ? formInputs['inv_dme_invoice_no'] : ''}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                        />
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_dme_invoice_no']}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_dme_invoice_no"
+                                                        value = {formInputs['inv_dme_invoice_no'] ? formInputs['inv_dme_invoice_no'] : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    />
                                                 }
                                             </div>
                                         </div>
@@ -4133,8 +4195,9 @@ class BookingPage extends Component {
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
-                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) ? moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).toDate() : null}
-                                                                        format={'dd/MM/yyyy hh:mm a'}
+                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) &&
+                                                                        new Date(moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                        format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
                                                                     <p className="show-mode">{booking && booking.eta_pu_by ? moment(booking.eta_pu_by).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
@@ -4153,8 +4216,9 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
-                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) ? moment(formInputs['b_given_to_transport_date_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) &&
+                                                                            new Date(moment(formInputs['b_given_to_transport_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                            format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['b_given_to_transport_date_time'] ? moment(formInputs['b_given_to_transport_date_time']).format('DD/MM/YYYY HH:mm:ss') : null}</p>
@@ -4173,8 +4237,9 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) ? moment(formInputs['fp_received_date_time']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) &&
+                                                                            new Date(moment(booking.fp_received_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                            format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
@@ -4528,7 +4593,7 @@ class BookingPage extends Component {
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DatePicker
                                                                         className="date"
-                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? moment(formInputs['s_06_Latest_Delivery_Date_TimeSet']).toDate() : null}
+                                                                        selected={formInputs['s_06_Latest_Delivery_Date_TimeSet'] ? new Date(formInputs['s_06_Latest_Delivery_Date_TimeSet']) : null}
                                                                         onChange={(e) => this.onDateChange(e, 's_06_Latest_Delivery_Date_TimeSet')}
                                                                         dateFormat="dd/MM/yyyy"
                                                                     />
@@ -4549,7 +4614,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['fp_store_event_date'] ? moment(formInputs['fp_store_event_date']).toDate() : null}
+                                                                            selected={formInputs['fp_store_event_date'] ? new Date(formInputs['fp_store_event_date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'fp_store_event_date')}
                                                                             dateFormat="dd/MM/yyyy"
                                                                         />
@@ -4578,8 +4643,9 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate() : null}
-                                                                            format={'dd/MM/yyyy hh:mm a'}
+                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) &&
+                                                                            new Date(moment(booking.s_21_Actual_Delivery_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                            format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['s_21_Actual_Delivery_TimeStamp'] ? moment(formInputs['s_21_Actual_Delivery_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
@@ -4726,7 +4792,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).toDate() : null}
+                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(booking.puPickUpAvailFrom_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4771,7 +4837,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).toDate() : null}
+                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(booking.pu_PickUp_By_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4816,7 +4882,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).toDate() : null}
+                                                                            selected={formInputs['de_Deliver_From_Date'] ? new Date(booking.de_Deliver_From_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4861,7 +4927,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).toDate() : null}
+                                                                            selected={formInputs['de_Deliver_By_Date'] ? new Date(booking.de_Deliver_By_Date) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -5052,8 +5118,13 @@ class BookingPage extends Component {
                                                         <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
                                                         : null
                                                 }
-                                                <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Attachments({cntAttachments})</a></li>
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Label & Pod</a></li>
+                                                {
+                                                    clientname === 'dme' ?
+                                                        <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
+                                                        : null
+                                                }
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
+                                                <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
                                             </ul>
                                         </div>
                                         <div className="tab-select-outer none">
@@ -5096,11 +5167,11 @@ class BookingPage extends Component {
                                                         keyField='pk_lines_id'
                                                         data={ products }
                                                         columns={ bookingLineColumns }
-                                                        cellEdit={ cellEditFactory({ 
-                                                            mode: 'click',
-                                                            blurToSave: false,
-                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
-                                                        })}
+                                                        // cellEdit={ cellEditFactory({ 
+                                                        //     mode: 'click',
+                                                        //     blurToSave: false,
+                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
+                                                        // })}
                                                         bootstrap4={ true }
                                                     />
                                                 </LoadingOverlay>
@@ -5114,11 +5185,11 @@ class BookingPage extends Component {
                                                         keyField="pk_id_lines_data"
                                                         data={ bookingLineDetailsProduct }
                                                         columns={ bookingLineDetailsColumns }
-                                                        cellEdit={ cellEditFactory({ 
-                                                            mode: 'click',
-                                                            blurToSave: true,
-                                                            afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
-                                                        })}
+                                                        // cellEdit={ cellEditFactory({ 
+                                                        //     mode: 'click',
+                                                        //     blurToSave: true,
+                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
+                                                        // })}
                                                         bootstrap4={ true }
                                                     />
                                                 </LoadingOverlay>
@@ -5159,6 +5230,22 @@ class BookingPage extends Component {
                                             </LoadingOverlay>
                                         </div>
                                         <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
+                                            <LoadingOverlay
+                                                active={this.state.loadingZohoTickets}
+                                                spinner
+                                                text='Loading Zoho tickets...'
+                                            >
+                                                <div className="tab-inner">
+                                                    <BootstrapTable
+                                                        keyField="id"
+                                                        data={ zoho_tickets }
+                                                        columns={ columnZohoTickets }
+                                                        bootstrap4={ true }
+                                                    />
+                                                </div>
+                                            </LoadingOverlay>
+                                        </div>
+                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handlePost(e, 'attachment')}>
                                                     <DropzoneComponent
@@ -5179,7 +5266,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {isBookingSelected ?
                                                 <div className="row">
                                                     <div className="col-6">
@@ -5417,8 +5504,9 @@ class BookingPage extends Component {
                             <p>Due Date Time</p>
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
-                                value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) ? commFormInputs['due_date_time'] : null}
-                                format={'dd/MM/yyyy hh:mm a'}
+                                value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) &&
+                                new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                format={'dd/MM/yyyy HH:mm'}
                             />
                         </label>
                         <label>
@@ -5630,6 +5718,8 @@ const mapStateToProps = (state) => {
         createdForInfos: state.user.createdForInfos,
         extraErrorMessage: state.extra.errorMessage,
         bookingErrorMessage: state.booking.errorMessage,
+        zoho_tickets: state.extra.zoho_tickets,
+        loadingZohoTickets: state.extra.loadingZohoTickets,
     };
 };
 
@@ -5701,6 +5791,7 @@ const mapDispatchToProps = (dispatch) => {
         saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
+        getZohoTickets:  (dmeid) => dispatch(getZohoTickets(dmeid)),
     };
 };
 

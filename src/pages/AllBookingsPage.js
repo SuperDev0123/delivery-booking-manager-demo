@@ -83,7 +83,7 @@ class AllBookingsPage extends React.Component {
             dmeClients: [],
             clientname: null,
             username: null,
-            clientPK: 'dme',
+            clientPK: 0,
             hasSuccessSearchAndFilterOptions: false,
             successSearchFilterOptions: {},
             scrollLeft: 0,
@@ -115,6 +115,8 @@ class AllBookingsPage extends React.Component {
             isShowBookingSetModal: false,
         };
 
+        moment.tz.setDefault('Australia/Sydney');
+        this.myRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -129,7 +131,6 @@ class AllBookingsPage extends React.Component {
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
-        this.myRef = React.createRef();
     }
 
     static propTypes = {
@@ -182,23 +183,11 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        const today = localStorage.getItem('today');
-        let startDate = '';
-        let dateParam = '';
-
-        if (today) {
-            this.props.setNeedUpdateBookingsState(true);
-        } else {
-            startDate = moment().tz('Australia/Sydney').toDate();
-            dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
-
-            this.setState({ 
-                startDate: moment(startDate).toDate(),
-                endDate: moment(startDate).toDate(),
-            });
-
-            this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
-        }
+        // Set initial date range filter values
+        const startDate = moment().toDate();
+        const dateParam = moment().format('YYYY-MM-DD');
+        this.setState({startDate: startDate, endDate: startDate});
+        this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
 
         this.props.getDMEClients();
         this.props.getWarehouses();
@@ -296,6 +285,11 @@ class AllBookingsPage extends React.Component {
         }
 
         if (warehouses) {
+            warehouses.sort(function(a, b) {
+                var nameA = a.warehousename.toUpperCase();
+                var nameB = b.warehousename.toUpperCase();
+                return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+            });
             this.setState({ warehouses });
         }
 
@@ -316,6 +310,12 @@ class AllBookingsPage extends React.Component {
         }
 
         if (dmeClients) {
+            dmeClients.sort(function(a, b) {
+                var companyA = a.company_name.toUpperCase();
+                var companyB = b.company_name.toUpperCase();
+                return (companyA < companyB) ? -1 : (companyA > companyB) ? 1 : 0;
+            });
+
             this.setState({dmeClients});
         }
 
@@ -344,13 +344,13 @@ class AllBookingsPage extends React.Component {
 
             // startDate
             if (_.isEmpty(startDate)) {
-                const startDate = moment().tz('Australia/Sydney').toDate();
-                const dateParam = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
+                const startDate = moment().toDate();
+                const dateParam = moment().format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
-                this.setState({startDate: moment(startDate).toDate()});
+                this.setState({startDate});
                 return;
             } else if (startDate !== '*') {
-                this.setState({startDate: moment(startDate).toDate()});
+                this.setState({startDate});
             }
 
             // endDate
@@ -358,10 +358,10 @@ class AllBookingsPage extends React.Component {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
-                this.setState({endDate: moment(endDate).toDate()});
+                this.setState({endDate: endDate});
                 return;
             } else {
-                this.setState({endDate: moment(endDate).toDate()});
+                this.setState({endDate});
             }
 
             // sortField
@@ -491,42 +491,40 @@ class AllBookingsPage extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').toDate();
+                startDate = moment().toDate();
             } else {
-                startDate = moment(date).toDate();
+                startDate = date;
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
-                endDate = startDate;
-                this.setState({startDate, endDate});    
+                this.setState({
+                    startDate: moment(startDate).format('YYYY-MM-DD'),
+                    endDate: moment(startDate).format('YYYY-MM-DD')
+                });    
             } else {
-                this.setState({startDate});
+                this.setState({startDate: moment(startDate).format('YYYY-MM-DD')});
             }
-
-            localStorage.setItem('today', startDate);
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').toDate();
+                endDate = moment().toDate();
             } else {
-                endDate = moment(date).toDate();
+                endDate = date;
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {
-                startDate = endDate;
-                this.setState({startDate, endDate});    
+                this.setState({
+                    startDate: moment(endDate).format('YYYY-MM-DD'),
+                    endDate: moment(endDate).format('YYYY-MM-DD')
+                });
             } else {
-                this.setState({endDate});
+                this.setState({endDate: moment(endDate).format('YYYY-MM-DD')});
             }
         }
     }
 
     onClickDateFilter() {
         const { startDate, endDate } = this.state;
-
-        this.props.setGetBookingsFilter('date', {
-            startDate: moment(startDate).format('YYYY-MM-DD'), 
-            endDate: moment(endDate).format('YYYY-MM-DD'),
-        });
+        this.props.setGetBookingsFilter('date', {startDate, endDate});
         this.props.setGetBookingsFilter('columnFilters', {});
         this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
@@ -547,7 +545,7 @@ class AllBookingsPage extends React.Component {
         } else if (src === 'status') {
             this.setState({selectedStatusValue: e.target.value});
         } else if (src === 'projectName') {
-            const {today} = this.state;
+            const today = moment().format('YYYY-MM-DD');
             const projectName = e.target.value;
             this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
@@ -768,7 +766,7 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
@@ -804,7 +802,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -844,7 +842,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -884,7 +882,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -930,7 +928,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -954,7 +952,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -1479,10 +1477,10 @@ class AllBookingsPage extends React.Component {
         }
 
         booking.z_lock_status = !booking.z_lock_status;
-        booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss');
+        booking.z_locked_status_time = moment().utc().format('YYYY-MM-DD HH:mm:ss');
 
         if (!booking.z_lock_status) {
-            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            booking.b_status_API = 'status update ' + moment().utc().format('DD_MM_YYYY');
         }
 
         this.props.updateBooking(booking.id, booking);
@@ -1822,8 +1820,8 @@ class AllBookingsPage extends React.Component {
                                 <span></span>
                                 <span>
                                     <strong>Contact:</strong> {booking.booking_Created_For}<br />
-                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp, moment.defaultFormatUtc).format('DD MMM YYYY')}<br />
-                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).utc().format('DD MMM YYYY')}
+                                    <strong>Actual Pickup Time:</strong> {moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD MMM YYYY')}<br />
+                                    <strong>Actual Deliver Time:</strong> {moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD MMM YYYY')}
                                 </span>
                             </div>
                         </PopoverBody>
@@ -2016,13 +2014,13 @@ class AllBookingsPage extends React.Component {
                         <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
                     </td>
                     <td className={(sortField === 'b_given_to_transport_date_time') ? 'current' : ''}>
-                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 'fp_received_date_time') ? 'current' : ''}>
-                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
-                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).utc().format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td 
                         id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
@@ -2176,12 +2174,12 @@ class AllBookingsPage extends React.Component {
                                         <div className="row filter-controls">
                                             <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
-                                                selected={startDate}
+                                                selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
                                             <DatePicker
-                                                selected={endDate}
+                                                selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
@@ -3012,6 +3010,7 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowFindModal}
                     toggleFindModal={this.toggleFindModal}
                     onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
+                    bookings={bookings}
                 />
 
                 <OrderModal

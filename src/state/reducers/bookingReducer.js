@@ -132,6 +132,7 @@ const defaultState = {
     isAutoSelected: false,
     isAutoAugmented: false,
     bookingIds: [],
+    clientPK: 0,
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -421,6 +422,7 @@ export const BookingReducer = (state = defaultState, {
         case SET_LOCAL_FILTER_ALL:
             return {
                 ...state,
+                bookings: [],
                 startDate: startDate,
                 endDate: endDate,
                 warehouseId: warehouseId,

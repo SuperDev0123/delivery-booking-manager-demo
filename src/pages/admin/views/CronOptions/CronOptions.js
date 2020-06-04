@@ -33,6 +33,7 @@ class CronOptions extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         updateCronOptionDetails: PropTypes.func.isRequired,
         allCronOptions: PropTypes.object.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -95,36 +96,31 @@ class CronOptions extends Component {
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.allCronOptions.length > 0 && this.props.allCronOptions !== prevProps.allCronOptions) {
-            this.notify('Data updated!');
-        }
-    }
-
     render() {
         const { allCronOptions } = this.state;
         const tableData = allCronOptions.map((item, index) => {
-            return (
-                <tr key={index}>
-                    <td>{item.option_name}</td>
-                    <td><input name={item.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={item.option_value} checked={(item.option_value == 1) ? true : false} /></td>
-                    <td width="50">{item.option_description}</td>
-                    <td>{item.option_schedule}</td>
-                    <td>{item.start_time}</td>
-                    <td>{item.end_time}</td>
-                    <td>{item.start_count}</td>
-                    <td>{item.end_count}</td>
-                    <td>{item.elapsed_seconds}</td>
-                    <td>
-                        {item.is_running == 1 ? ( <button className="btn btn-success btn-sm">Running</button> ) : ( <button className="btn btn-warn btn-sm">Not Running</button> )}
-                    </td>
-                    <td>{item.z_createdByAccount}</td>
-                    <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_createdTimeStamp} /></td>
-                    {/*<td>{item.z_downloadedByAccount}</td>
-                    <td><Moment date={item.z_downloadedTimeStamp} /></td>
-                    <td><a className="btn btn-info btn-sm" href={"/providers/edit/"+item.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, item)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>*/}
-                </tr>
-            );
+            if (item.show_in_admin)
+                return (
+                    <tr key={index}>
+                        <td>{item.option_name}</td>
+                        <td><input name={item.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={item.option_value} checked={(item.option_value == 1) ? true : false} /></td>
+                        <td width="50">{item.option_description}</td>
+                        <td>{item.option_schedule}</td>
+                        <td>{item.start_time}</td>
+                        <td>{item.end_time}</td>
+                        <td>{item.start_count}</td>
+                        <td>{item.end_count}</td>
+                        <td>{item.elapsed_seconds}</td>
+                        <td>
+                            {item.is_running == 1 ? ( <button className="btn btn-success btn-sm">Running</button> ) : ( <button className="btn btn-warn btn-sm">Not Running</button> )}
+                        </td>
+                        <td>{item.z_createdByAccount}</td>
+                        <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_createdTimeStamp} /></td>
+                        {/*<td>{item.z_downloadedByAccount}</td>
+                        <td><Moment date={item.z_downloadedTimeStamp} /></td>
+                        <td><a className="btn btn-info btn-sm" href={"/providers/edit/"+item.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, item)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>*/}
+                    </tr>
+                );
         });
 
         return (
@@ -135,7 +131,7 @@ class CronOptions extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Cron Options</li>
                         </ol>
@@ -198,6 +194,7 @@ const mapStateToProps = (state) => {
         allCronOptions: state.cronOption.allCronOptions,
         username: state.auth.username,
         needUpdateCronOptions: state.cronOption.needUpdateCronOptions,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

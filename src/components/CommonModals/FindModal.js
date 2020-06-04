@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class FindModal extends Component {
@@ -14,14 +15,57 @@ class FindModal extends Component {
         };
     }
 
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const { bookings, selectedFieldName } = newProps;
+
+        if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
+            let foundValueSet = [];
+            let valueSet = this.state.valueSet.split('\n');
+
+            if (selectedFieldName === 'clientRefNumber') {
+                bookings.map(booking => {
+                    foundValueSet = _.concat(foundValueSet, booking['clientRefNumbers'].split(', '));
+                    return true;
+                });
+                foundValueSet = _.intersect(valueSet, foundValueSet);
+            } else if (selectedFieldName === 'gap_ra') {
+                bookings.map(booking => {
+                    foundValueSet = _.concat(foundValueSet, booking['gap_ras'].split(', '));
+                    return true;
+                });
+                foundValueSet = _.intersection(valueSet, foundValueSet);
+            } else if (selectedFieldName) {
+                foundValueSet = bookings.map(booking => {
+                    if (booking[selectedFieldName]) {
+                        return booking[selectedFieldName].toString();
+                    }
+                });
+            }
+
+            valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
+            const missedValueSet = _.difference(valueSet, foundValueSet);
+            
+            if (missedValueSet.length > 0) {
+                const valueSet = _.concat(missedValueSet, [''], foundValueSet);
+                this.setState({
+                    valueSet: valueSet.join('\n'),
+                    missedValueSet,
+                    errorMessage: 'If something is not found from your list it will be shown above the blank line.'
+                });
+            }
+        }
+    }
+
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         toggleFindModal: PropTypes.func.isRequired,
         onFind: PropTypes.func.isRequired,
+        bookings: PropTypes.array.isRequired,
     };
 
     static defaultProps = {
         isOpen: false,
+        bookings: [],
     };
 
     onInputChange(e, type) {
@@ -37,12 +81,32 @@ class FindModal extends Component {
         let valueSet = this.state.valueSet;
 
         if (!this.state.valueSet) {
-            alert('Please input value set.');
+            this.setState({errorMessage: 'Please input keys with newline!'});
         } else {
-            this.setState({errorMessage: null});
-            
-            valueSet = valueSet.split('\n').map(value => value.replace(/\s/g,'')).join(', ');
-            this.props.onFind(selectedFieldName, valueSet);
+            // Delete all empty lines and duplicated lines
+            valueSet = valueSet.split('\n');
+
+            // Trim spaces
+            valueSet = _.map(valueSet, value => {return value.trim();});
+
+            // Eliminate duplicated lines
+            valueSet = _.uniq(_.filter(valueSet, value => {return value.length > 0;}));
+            this.setState({valueSet: valueSet.join('\n'), errorMessage: ''});
+
+            if (selectedFieldName === 'b_bookingID_Visual') {
+                let nonIntegers = [];
+                nonIntegers = _.filter(valueSet, value => isNaN(value));
+
+                if (nonIntegers.length > 0) {
+                    this.setState({errorMessage: 'DME Booking numbers should be integers.'});
+                } else {
+                    valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
+                    this.props.onFind(selectedFieldName, valueSet);
+                }
+            } else {
+                valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
+                this.props.onFind(selectedFieldName, valueSet);
+            }
         }
     }
 
@@ -57,12 +121,12 @@ class FindModal extends Component {
                     <label>
                         <p>Select field to be searched: </p>
                         <select value={this.state.selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
-                            <option value="b_client_sales_inv_num" selected="selected">SINV Number</option>
+                            <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
+                            <option value="clientRefNumber">Client Ref Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
                             <option value="b_bookingID_Visual">DME Booking Number</option>
                             <option value="fk_fp_pickup_id">FP Pickup ID</option>
                             <option value="gap_ra">GAP/RA</option>
-                            <option value="clientRefNumber">Client Ref Number</option>
                         </select>
                     </label>
                     <label>

@@ -23,6 +23,8 @@ class XLSModal extends Component {
             showFieldName: false,
             useSelected: false,
         };
+
+        moment.tz.setDefault('Australia/Sydney');
     }
 
     static propTypes = {
@@ -56,7 +58,7 @@ class XLSModal extends Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().tz('Australia/Sydney').toDate();
+                startDate = moment().toDate();
             } else {
                 startDate = moment(date).toDate();
             }
@@ -69,7 +71,7 @@ class XLSModal extends Component {
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
-                endDate = moment().tz('Australia/Sydney').toDate();
+                endDate = moment().toDate();
             } else {
                 endDate = moment(date).toDate();
             }

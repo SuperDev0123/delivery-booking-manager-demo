@@ -49,6 +49,7 @@ class EditFreightProviders extends Component {
         match: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         updateFpDetail: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -174,9 +175,9 @@ class EditFreightProviders extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/providers">Freight Providers</a></li>
+                            <li><a href="/admin/providers">Freight Providers</a></li>
                             <li className="active">Edit</li>
                         </ol>
                     </div>
@@ -253,6 +254,7 @@ const mapStateToProps = (state) => {
         pageInd: state.fp.pageInd,
         needUpdateFpCarriers: state.fp.needUpdateFpCarriers,
         needUpdateFpZones: state.fp.needUpdateFpZones,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

@@ -11,6 +11,8 @@ import cellEditFactory from 'react-bootstrap-table2-editor';
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 const customStyles = {
     content: {
         top: '50%',
@@ -47,7 +49,7 @@ class EditSqlQueries extends Component {
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
-
+        this.handleTableChange = this.handleTableChange.bind(this);
     }
 
     static propTypes = {
@@ -61,6 +63,7 @@ class EditSqlQueries extends Component {
         validateSqlQueryDetails: PropTypes.func.isRequired,
         updateSqlQueryDetails: PropTypes.func.isRequired,
         runUpdateSqlQueryDetails: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -80,7 +83,7 @@ class EditSqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -95,13 +98,17 @@ class EditSqlQueries extends Component {
         }
 
         if (sqlQueryDetails && !queryResult) {
-            const { sql_title,  sql_query, sql_description, sql_notes } = sql_description;
+            const { sql_title,  sql_query, sql_description, sql_notes } = sqlQueryDetails;
             this.setState({ sqlQueryDetails });
             this.setState({ id: sqlQueryDetails.id });
             this.setState({ sql_title, sql_query, sql_description, sql_notes });
         }
         if (rerunValidateSqlQueryDetails) {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
+        }
+
+        if (errorMessage) {
+            this.notify(errorMessage);
         }
     }
 
@@ -115,6 +122,45 @@ class EditSqlQueries extends Component {
 
     closeModal() {
         this.setState({ modalIsOpen: false });
+    }
+
+    exportCSV() {
+        var rows = [];
+
+        const { queryResult } = this.state;
+
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            let headers = [];
+            Object.keys(queryResult[0]).map((row, index) => {
+                headers.push(row);
+                console.log(index);
+            });
+
+            rows.push(headers);
+            for( const query of queryResult) {
+                let data = [];
+                Object.keys(query).map((row1, index1) => {
+                    data.push(query[row1]);
+                    console.log(index1);
+                });
+
+                rows.push(data);
+            }
+        }
+
+        var csvContent = 'data:text/csv;charset=utf-8,';
+        rows.forEach(function(rowArray) {
+            var row = rowArray.join(',');
+            csvContent += row + '\r\n';
+        });
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'download.csv');
+        document.body.appendChild(link); // Required for FF
+        link.click();
+
     }
 
     onInputChange(event) {
@@ -151,7 +197,6 @@ class EditSqlQueries extends Component {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
         }
         this.setState({ loading: false, modalIsOpen: false, updateQueries: [] });
-        //this.props.history.push('/admin/sqlqueries');
         event.preventDefault();
     }
 
@@ -174,15 +219,27 @@ class EditSqlQueries extends Component {
         }, 2000);
     }
 
-    render() {
-        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+    notify = (text) => {
+        toast(text);
+    };
 
+    render() {
+        const { sql_title, sql_query, sql_description, sql_notes, queryResult, loading, updateQueries, queryTables } = this.state;
+
+
+        let tableColumns = [];
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-        let tableColumns = [];
+        const allowedColumns = ['suburb'];
+        
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            Object.keys(queryResult[0]).map((row, index) => {
+                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row), index: index});
+            });
+        }
 
         return (
             <div>
@@ -209,9 +266,9 @@ class EditSqlQueries extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/sqlqueries">SQL Queries</a></li>
+                            <li><a href="/admin/sqlqueries">SQL Queries</a></li>
                             <li className="active">Edit</li>
                         </ol>
                     </div>
@@ -238,7 +295,7 @@ class EditSqlQueries extends Component {
 
                                         <div className="form-group">
                                             <label className="control-label" htmlFor="sql_description">Description</label>
-                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Title" onChange={(e) => this.onInputChange(e)} value={sql_description || ''} >{sql_description}</textarea>
+                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Description" onChange={(e) => this.onInputChange(e)} value={sql_description || ''} >{sql_description}</textarea>
                                         </div>
 
                                         <div className="form-group required">
@@ -251,7 +308,7 @@ class EditSqlQueries extends Component {
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
                                             <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} value={sql_notes || ''} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title === '' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Submit</button>
                                     </form>
                                 </div>
                             </div>
@@ -262,11 +319,11 @@ class EditSqlQueries extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Query Result</h3>
                                     <div className="actions pull-right">
-                                        <button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
+                                        <button type="button" disabled={!(queryResult && queryResult.length > 0 && typeof queryResult != 'string')} onClick={()=>this.exportCSV()} className="btn btn-primary">Export</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
                                     </div>
                                 </div>
                                 <div className="panel-body" style={{ maxHeight: '452px', overflowY: 'auto' }}>
-                                    {queryResult && queryResult.length > 0 && queryTables && queryTables.length > 0 ? (
+                                    {queryResult && queryResult.length > 0 && typeof queryResult != 'string' && queryTables && queryTables.length > 0 ? (
                                         <BootstrapTable
                                             remote={{ cellEdit: true }}
                                             keyField={queryTables[4]}
@@ -275,13 +332,14 @@ class EditSqlQueries extends Component {
                                             cellEdit={cellEdit}
                                             onTableChange={this.handleTableChange}
                                         />
-                                    ) : ( <code>Make changes in query and click on run button to get result.</code> )}
+                                    ) : (typeof queryResult == 'string')?<code>{queryResult}</code>:<code>Make changes in query and click on run button to get result.</code>}
                                 </div>
                             </div>
                         </div>
 
                     </div>
                 </section>
+                <ToastContainer/>
             </div>
         );
     }
@@ -294,7 +352,9 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
+        errorMessage: state.sqlQuery.errorMessage,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
+        urlAdminHome: state.url.urlAdminHome,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
 };

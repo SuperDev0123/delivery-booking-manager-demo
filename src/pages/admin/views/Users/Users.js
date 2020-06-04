@@ -9,7 +9,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
-
+import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
@@ -38,6 +38,7 @@ class Users extends Component {
         getDMEClients: PropTypes.func.isRequired,
         setGetUsersFilter: PropTypes.func.isRequired,
         setNeedUpdateUsersState: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -64,9 +65,8 @@ class Users extends Component {
             this.props.history.push('/admin');
         }
 
-        if (allUsers) {
-            this.setState({ allUsers });
-            this.setState({ loading: false });
+        if (this.state.loading && allUsers && allUsers.length > 0) {
+            this.setState({ allUsers, loading: false });
         }
 
         if (dmeClients) {
@@ -77,7 +77,9 @@ class Users extends Component {
             if (clientPK !== 0 || _.isUndefined(clientPK)) {
                 this.setState({ clientPK });
             }
+
             this.props.getAllUsers(clientPK);
+            this.setState({ loading: true });
         }
     }
 
@@ -116,7 +118,7 @@ class Users extends Component {
             buttons: [
                 {
                     label: 'Ok',
-                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); this.props.setNeedUpdateUsersState(true); }
+                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); }
                 },
                 {
                     label: 'Cancel',
@@ -124,7 +126,7 @@ class Users extends Component {
                 }
             ]
         });
-        this.setState({ loading: false });
+        this.setState({ loading: true });
         event.preventDefault();
     }
 
@@ -176,7 +178,13 @@ class Users extends Component {
                 </div>
             );
         };
-
+    
+        const datetimeFormatter = (cell) => {
+            if (cell)
+                return (
+                    moment(cell).format('DD/MM/YYYY HH:mm:ss')
+                );
+        };
 
         const tableColumns = [
             {
@@ -208,10 +216,18 @@ class Users extends Component {
                 editable: true,
                 style: editableStyle
             }, {
+                dataField: 'status_time',
+                text: 'Status Time',
+                editable: true,
+                style: editableStyle,
+                formatter: datetimeFormatter,
+            }, 
+            {
                 dataField: 'last_login',
                 text: 'Last Login',
                 editable: true,
-                style: editableStyle
+                style: editableStyle,
+                formatter: datetimeFormatter,
             }, {
                 dataField: 'is_active',
                 text: 'Status',
@@ -236,31 +252,31 @@ class Users extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Admin</a></li>
+                            <li><a href={this.props.urlAdminHome}>Home</a></li>
                             <li className="active">Users</li>
                         </ol>
                     </div>
                 </div>
                 <section id="main-content" className="container animated fadeInUp">
-                    {loading ? (
-                        <LoadingOverlay
-                            active={loading}
-                            spinner
-                            text='Loading...'
-                        />
-                    ) : (
-                        <div className="row">
-                            <div className="col-md-12">
-                                <div className="panel panel-default">
-                                    <div className="panel-heading">
-                                        <h3 className="panel-title">Users List</h3>
-                                        <div className="actions pull-right">
-                                            <a className="btn btn-success" href="/admin/users/add">
-                                                Add New
-                                            </a>
-                                        </div>
+                    <div className="row">
+                        <div className="col-md-12">
+                            <div className="panel panel-default">
+                                <div className="panel-heading">
+                                    <h3 className="panel-title">Users List</h3>
+                                    <div className="actions pull-right">
+                                        <a className="btn btn-success" href="/admin/users/add">
+                                            Add New
+                                        </a>
                                     </div>
-                                    <div className="panel-body">
+                                </div>
+                                <div className="panel-body">
+                                    {loading ? (
+                                        <LoadingOverlay
+                                            active={loading}
+                                            spinner
+                                            text='Loading...'
+                                        />
+                                    ) : (
                                         <ToolkitProvider
                                             keyField="id"
                                             data={ allUsers }
@@ -294,11 +310,11 @@ class Users extends Component {
                                                 </div>
                                             )}
                                         </ToolkitProvider>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </section>
             </div>
         );
@@ -314,6 +330,7 @@ const mapStateToProps = (state) => {
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

@@ -37,6 +37,7 @@ class List extends Component {
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getFiles: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -175,9 +176,9 @@ class List extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/pricing-only">Pricing Only</a></li>
+                            <li><a href="/pricing-only">Quote Shipping Histories</a></li>
                             <li className="active">List</li>
                         </ol>
                     </div>
@@ -243,6 +244,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         username: state.auth.username,
         files: state.files.files,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

@@ -29,6 +29,7 @@ class FreightProviders extends Component {
         getAllFPs: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         deleteFpDetail: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -93,7 +94,7 @@ class FreightProviders extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.fp_company_name}</td>
                     <td>{fp.fp_address_country}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
+                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + fp.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
                 </tr>
             );
         });
@@ -105,7 +106,7 @@ class FreightProviders extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li className="active">Freight Providers</li>
                         </ol>
@@ -157,6 +158,7 @@ const mapStateToProps = (state) => {
         allFPs: state.fp.allFPs,
         username: state.auth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

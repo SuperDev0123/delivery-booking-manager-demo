@@ -25,6 +25,7 @@ class AddFreightProviders extends Component {
         redirect: PropTypes.bool.isRequired,
         createFpDetail: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -76,9 +77,9 @@ class AddFreightProviders extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/providers">Freight Providers</a></li>
+                            <li><a href="/admin/providers">Freight Providers</a></li>
                             <li className="active">Add New</li>
                         </ol>
                     </div>
@@ -128,6 +129,7 @@ const mapStateToProps = (state) => {
         fp_company_name: state.fp.fp_company_name,
         fp_address_country: state.fp.fp_address_country,
         username: state.auth.username,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

@@ -37,10 +37,9 @@ class SidebarPush extends React.Component {
 
     componentDidMount() {
         const token = localStorage.getItem('token');
-
         if (token && token.length > 0) {
             this.props.verifyToken();
-            this.props.getUser();
+            this.props.getUser(token);
         } else {
             this.props.logout();
             this.props.history.push('/admin');
@@ -123,6 +122,12 @@ class SidebarPush extends React.Component {
                                             </span><small>Messages</small></a>
                                     </li>
                                     <li>
+                                        <a href='/'>
+                                            <span className="icon">
+                                                <i className="fa fa-envelope"></i>
+                                            </span><small>Main Menu</small></a>
+                                    </li>
+                                    <li>
                                         <a href='#' onClick={e => e.preventDefault()}>
                                             <span className="icon">
                                                 <i className="fa fa-cog"></i>
@@ -201,7 +206,7 @@ class SidebarPush extends React.Component {
                         <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('pricing-only') || this.activeRoute('pricing-only/upload') ? 'active' : ''}>
                             <a onClick={() => this.setState({ pricingOnlyCollapsed: !pricingOnlyCollapsed })}>
                                 <i className="fa fa-fw fa-dollar-sign"></i>
-                                <span className="menu-title">Pricing Only</span>
+                                <span className="menu-title">Quote Shipping Histories</span>
                             </a>
                             <ul className={classNames({ 'nav-sub': true, 'collapse': !pricingOnlyCollapsed })}>
                                 <li>
@@ -224,6 +229,26 @@ class SidebarPush extends React.Component {
                                 </li>
                             </ul>
                         </li>
+
+                        <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
+                            <a onClick={() => this.setState({ providersCollapsed: !providersCollapsed })}>
+                                <i className="fa fa-bars fa-fw"></i>
+                                <span className="menu-title">Freight Providers</span>
+                            </a>
+                            <ul className={classNames({ 'nav-sub': true, 'collapse': !providersCollapsed })}>
+                                <li>
+                                    <Link title="View All Freight Providers" to="/admin/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
+                                        <span className="submenu-title">All</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link title="Add New Freight Providers" to="/admin/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
+                                        <span className="submenu-title">Add New</span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </li>
+                        
                         <li className={this.activeRoute('vehicles') ? 'active' : ''}>
                             <Link to="/admin/vehicles" title="Vehicles">
                                 <i className="fa fa-fw fa-truck"></i>
@@ -248,6 +273,13 @@ class SidebarPush extends React.Component {
                                 <span className="menu-title">Costs</span>
                             </Link>
                         </li>
+                        <li className={this.activeRoute('clients') ? 'active' : ''}>
+                            <Link to="/admin/clients" title="Clients">
+                                <i className="fa fa-fw fa-coins"></i>
+                                <span className="menu-title">Clients</span>
+                            </Link>
+                        </li>
+
                         <li
                             style={{ 'color': '#B3B8C3' }}
                             className={
@@ -311,7 +343,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         logout: () => dispatch(logout()),
         verifyToken: () => dispatch(verifyToken()),
-        getUser: () => dispatch(getUser()),
+        getUser: (token) => dispatch(getUser(token)),
     };
 };
 
