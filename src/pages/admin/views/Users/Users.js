@@ -38,6 +38,7 @@ class Users extends Component {
         getDMEClients: PropTypes.func.isRequired,
         setGetUsersFilter: PropTypes.func.isRequired,
         setNeedUpdateUsersState: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -251,7 +252,7 @@ class Users extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/admin">Admin</a></li>
+                            <li><a href={this.props.urlAdminHome}>Home</a></li>
                             <li className="active">Users</li>
                         </ol>
                     </div>
@@ -329,6 +330,7 @@ const mapStateToProps = (state) => {
         needUpdateUserDetails: state.user.needUpdateUserDetails,
         needUpdateUsers: state.user.needUpdateUsers,
         clientPK: state.user.clientPK,
+        urlAdminHome: state.url.urlAdminHome,
     };
 };
 

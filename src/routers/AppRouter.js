@@ -54,6 +54,7 @@ import Vehicles from '../pages/admin/views/Vehicles/Vehicles';
 import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
+import Clients from '../pages/admin/views/Clients/Clients';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -105,6 +106,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule' component={PricingRuleList} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
+                    <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
                 </Main>
                 <Redirect to='/' />
             </Switch>

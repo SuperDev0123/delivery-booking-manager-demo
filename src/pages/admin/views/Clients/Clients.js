@@ -9,18 +9,17 @@ import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getTimings } from '../../../../state/services/timingService';
+import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
-class Timings extends Component {
+class Clients extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: false,
-            allTimings: [],
+            dmeClients: [],
             selectedFile: null,
             selectedFileOption: null,
             isShowDeleteFileConfirmModal: false,
@@ -35,8 +34,8 @@ class Timings extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getTimings: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -54,7 +53,7 @@ class Timings extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, allTimings } = newProps;
+        const { redirect, dmeClients } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -63,10 +62,12 @@ class Timings extends Component {
             this.props.history.push('/admin');
         }
 
-        if (allTimings) {
-            this.setState({allTimings, loading: false});
+        if (dmeClients) {
+            console.log('dmeClients', dmeClients);
+            this.setState({ dmeClients, loading: false});
             this.notify('Refreshed!');
         }
+    
     }
 
     notify = (text) => {
@@ -79,7 +80,7 @@ class Timings extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getTimings();
+        this.props.getDMEClients();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -102,7 +103,7 @@ class Timings extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getTimings();
+                this.props.getDMEClients();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -112,25 +113,25 @@ class Timings extends Component {
     }
 
     render() {
-        const { loading, allTimings } = this.state;
+        const { loading, dmeClients } = this.state;
 
-        const timingList = allTimings.map((timing, index) => {
+        const clientsList = dmeClients.map((client, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{timing.time_UOM}</td>
-                    <td>{timing.min}</td>
-                    <td>{timing.max}</td>
-                    <td>{timing.booking_cut_off_time}</td>
-                    <td>{timing.collected_by}</td>
-                    <td>{timing.delivered_by}</td>
+                    <td>{client.company_name}</td>
+                    <td>{client.dme_account_num}</td>
+                    <td>{client.phone}</td>
+                    <td>{client.client_filter_date_field}</td>
+                    <td>{client.current_freight_provider}</td>
+                    <td>{client.client_mark_up_percent}</td>
+                    <td>{client.client_min_markup_startingcostvalue}</td>
+                    <td>{client.client_min_markup_value}</td>
+                    <td>{client.augment_pu_by_time}</td>
+                    <td>{client.augment_pu_available_time}</td>
+                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
                     <td>
-                        <button
-                            className="btn btn-danger"
-                            onClick={() => this.onClickDeleteFile(timing, 'pricing-only')}
-                        >
-                            Delete
-                        </button>
+                        {client.num_client_products>0?<a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>View</a>:null}
                     </td>
                 </tr>
             );
@@ -139,13 +140,13 @@ class Timings extends Component {
         return (
             <div className="pricing-only">
                 <div className="pageheader">
-                    <h1>Timings</h1>
+                    <h1>Clients</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href="/admin">Home</a>
                             </li>
-                            <li className="active">Timings</li>
+                            <li className="active">Clients</li>
                         </ol>
                     </div>
                 </div>
@@ -173,16 +174,21 @@ class Timings extends Component {
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <thead>
                                             <th>No</th>
-                                            <th>Time UOM</th>
-                                            <th>Min</th>
-                                            <th>Max</th>
-                                            <th>Booking Cut off Time</th>
-                                            <th>Collected by</th>
-                                            <th>Delivered by</th>
-                                            <th>Delete</th>
+                                            <th>Company Name</th>
+                                            <th>DME Account Number</th>
+                                            <th>Phone</th>
+                                            <th>Client Filter Date Field</th>
+                                            <th>Freight Provider</th>
+                                            <th>Client Mark_up percent</th>
+                                            <th>Client Min Markup Startingcostvalue</th>
+                                            <th>Client Min Markup value</th>
+                                            <th>Augment By Time</th>
+                                            <th>Augment Available Time</th>
+                                            <th>Actions</th>
+                                            <th>Products</th>
                                         </thead>
                                         <tbody>
-                                            {timingList}
+                                            {clientsList}
                                         </tbody>
                                     </table>
                                 </div>
@@ -209,8 +215,8 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allTimings: state.timing.allTimings,
         urlAdminHome: state.url.urlAdminHome,
+        dmeClients: state.auth.dmeClients,
     };
 };
 
@@ -218,8 +224,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getTimings: () => dispatch(getTimings()),
+        getDMEClients: () => dispatch(getDMEClients()),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Timings));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Clients));

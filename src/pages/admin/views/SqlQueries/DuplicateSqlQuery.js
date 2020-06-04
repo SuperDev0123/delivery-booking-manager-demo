@@ -63,6 +63,7 @@ class DuplicateSqlQueries extends Component {
         updateSqlQueryDetails: PropTypes.func.isRequired,
         createSqlQueryDetails: PropTypes.func.isRequired,
         runUpdateSqlQueryDetails: PropTypes.func.isRequired,
+        urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
@@ -270,9 +271,9 @@ class DuplicateSqlQueries extends Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href="/">Dashboard</a>
+                            <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/sqlqueries">SQL Queries</a></li>
+                            <li><a href="/admin/sqlqueries">SQL Queries</a></li>
                             <li className="active">Duplicate</li>
                         </ol>
                     </div>
@@ -356,6 +357,7 @@ const mapStateToProps = (state) => {
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
+        urlAdminHome: state.url.urlAdminHome,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
 };
