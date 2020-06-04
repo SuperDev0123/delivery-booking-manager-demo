@@ -128,7 +128,7 @@ export function resetRedirectState() {
 export function setDMEClients(data) {
     return {
         type: SET_DME_CLIENTS,
-        dmeClients: data.dme_clients,
+        dmeClients: data.results,
     };
 }
 
