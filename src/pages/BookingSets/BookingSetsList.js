@@ -454,7 +454,7 @@ class BookingSetList extends React.Component {
                     </td>
                     <td className={(sortField === 'b_client_name') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name}</td>
                     <td className={(sortField === 'b_client_name_sub') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name_sub}</td>
-                    <td className={(sortField === 'b_booking_Category') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_booking_Category}</td>
+                    <td className={(sortField === 'b_booking_Category') ? 'current' : ''}>{booking.b_booking_Category}</td>
                     <td className={(sortField === 'puCompany') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.puCompany}</td>
                     <td className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}>{booking.pu_Address_Suburb}</td>
                     <td className={(sortField === 'pu_Address_State') ? 'current' : ''}>{booking.pu_Address_State}</td>
