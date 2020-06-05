@@ -51,7 +51,9 @@ import {
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
-    FAILED_DELETE_CLIENT_PRODUCTS
+    FAILED_DELETE_CLIENT_PRODUCTS,
+    SUCCESS_CREATE_CLIENT_PRODUCTS,
+    FAILED_CREATE_CLIENT_PRODUCTS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -253,6 +255,10 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 clientProducts: payload
             };
+        case SUCCESS_CREATE_CLIENT_PRODUCTS:
+            return {
+                ...state,
+            };
         case SUCCESS_DELETE_CLIENT_PRODUCTS: 
             var clientProducts = [];
             for (const clientProduct of state.clientProducts) {
@@ -295,6 +301,7 @@ export const ExtraReducer = (state = defaultState, {
         case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_DELETE_CLIENT_PRODUCTS:
+        case FAILED_CREATE_CLIENT_PRODUCTS:
             return {
                 ...state,
                 errorMessage: errorMessage,

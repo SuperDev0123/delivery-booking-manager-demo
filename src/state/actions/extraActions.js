@@ -52,6 +52,8 @@ import {
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
     FAILED_DELETE_CLIENT_PRODUCTS,
+    SUCCESS_CREATE_CLIENT_PRODUCTS,
+    FAILED_CREATE_CLIENT_PRODUCTS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -420,5 +422,18 @@ export function failedDeleteClientProduct() {
     return {
         type: FAILED_DELETE_CLIENT_PRODUCTS,
         errorMessage: 'Failed to delete client product',
+    };
+}
+
+export function successCreateClientProduct() {
+    return {
+        type: SUCCESS_CREATE_CLIENT_PRODUCTS
+    };
+}
+
+export function failedCreateClientProduct() {
+    return {
+        type: FAILED_CREATE_CLIENT_PRODUCTS,
+        errorMessage: 'Failed to create client product',
     };
 }

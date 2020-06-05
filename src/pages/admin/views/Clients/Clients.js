@@ -2,17 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-// Libs
-import axios from 'axios';
-// Components
-import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getDMEClientProducts, deleteClientProduct } from '../../../../state/services/extraService';
-// Constants
-import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
+import { getDMEClientProducts, deleteClientProduct, createClientProduct } from '../../../../state/services/extraService';
 import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
 
 class Clients extends Component {
@@ -22,18 +16,15 @@ class Clients extends Component {
         this.state = {
             loading: false,
             dmeClients: [],
-            selectedFile: null,
-            selectedFileOption: null,
-            isShowDeleteFileConfirmModal: false,
-            isShowFPPricingSlider: false,
+            isShowClientProductSlider: false,
             loadingClientProducts: false,
             clientProducts: [],
-            clientName: ''
+            dmeClient: {}
         };
 
-        this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
-        this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
+        this.toggleClientProductSlider = this.toggleClientProductSlider.bind(this);
         this.onClickDelete = this.onClickDelete.bind(this);
+        this.onClickSubmit = this.onClickSubmit.bind(this);
     }
 
     static propTypes = {
@@ -47,6 +38,7 @@ class Clients extends Component {
         clientProducts: PropTypes.array.isRequired,
         getDMEClientProducts: PropTypes.func.isRequired,
         deleteClientProduct: PropTypes.func.isRequired,
+        createClientProduct: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -88,62 +80,32 @@ class Clients extends Component {
         toast(text);
     };
 
-    toggleDeleteFileConfirmModal() {
-        this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
-    }
-
     onClickRefresh() {
         this.setState({loading: true});
         this.props.getDMEClients();
     }
 
-    onClickDeleteFile(file, fileOption) {
-        this.setState({selectedFile: file, selectedFileOption: fileOption});
-        this.toggleDeleteFileConfirmModal();
-    }
-
-    onClickConfirmDeleteFileBtn() {
-        const token = localStorage.getItem('token');
-        const {selectedFile, selectedFileOption} = this.state;
-
-        const options = {
-            method: 'delete',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
-            headers: {'Authorization': 'JWT ' + token },
-            data: {deleteFileOption: selectedFileOption, fileName: selectedFile.file_name},
-        };
-
-        axios(options)
-            .then((response) => {
-                console.log('#301 - ', response.data);
-                this.notify('Deleted successfully!');
-                this.props.getDMEClients();
-                this.toggleDeleteFileConfirmModal();
-            })
-            .catch(error => {
-                this.notify('Failed to delete a file: ' + error);
-                this.toggleDeleteFileConfirmModal();
-            });
-    }
-
-    toggleFPPricingSlider() {
-        this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    toggleClientProductSlider() {
+        this.setState(prevState => ({isShowClientProductSlider: !prevState.isShowClientProductSlider}));
     }
 
     onClickOpenPricingSlider(client) {
-        console.log('client', client);
-        this.setState({loadingClientProducts: true, clientName:client.company_name});
-        this.toggleFPPricingSlider();
+        this.setState({loadingClientProducts: true, dmeClient:client});
+        this.toggleClientProductSlider();
         this.props.getDMEClientProducts(client.pk_id_dme_client);
     }
 
     onClickDelete(id) {
-        console.log('id', id, this.props);
         this.props.deleteClientProduct(id);
     }
 
+    onClickSubmit(clientProductsFormInputs) {
+        this.props.createClientProduct(clientProductsFormInputs);
+        this.toggleClientProductSlider();
+    }
+
     render() {
-        const { loading, dmeClients, clientName, loadingClientProducts, clientProducts, isShowFPPricingSlider} = this.state;
+        const { loading, dmeClients, dmeClient, loadingClientProducts, clientProducts, isShowClientProductSlider} = this.state;
         const clientsList = dmeClients.map((client, index) => {
             return (
                 <tr key={index}>
@@ -225,22 +187,14 @@ class Clients extends Component {
                         )}
                 </section>
 
-                <ConfirmModal
-                    isOpen={this.state.isShowDeleteFileConfirmModal}
-                    onOk={() => this.onClickConfirmDeleteFileBtn()}
-                    onCancel={this.toggleDeleteFileConfirmModal}
-                    title={'Delete File'}
-                    text={'Are you sure you want to delete source file and result file?'}
-                    okBtnName={'Delete'}
-                />
-
                 <ClientProductSlider
-                    isOpen={isShowFPPricingSlider}
-                    toggleSlider={this.toggleFPPricingSlider}
+                    isOpen={isShowClientProductSlider}
+                    toggleSlider={this.toggleClientProductSlider}
                     clientProducts={clientProducts}
                     isLoading={loadingClientProducts}
-                    clientName={clientName}
+                    dmeClient={dmeClient}
                     onClickDelete={this.onClickDelete}
+                    onClickSubmit={this.onClickSubmit}
                 />
 
 
@@ -267,6 +221,7 @@ const mapDispatchToProps = (dispatch) => {
         getDMEClients: () => dispatch(getDMEClients()),
         getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id)),
         deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
+        createClientProduct: (clientProduct) => dispatch(createClientProduct(clientProduct)),
     };
 };
 
