@@ -454,6 +454,7 @@ class BookingSetList extends React.Component {
                     </td>
                     <td className={(sortField === 'b_client_name') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name}</td>
                     <td className={(sortField === 'b_client_name_sub') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_client_name_sub}</td>
+                    <td className={(sortField === 'b_booking_Category') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.b_booking_Category}</td>
                     <td className={(sortField === 'puCompany') ? 'current nowrap="true"' : ' nowrap="true"'}>{booking.puCompany}</td>
                     <td className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}>{booking.pu_Address_Suburb}</td>
                     <td className={(sortField === 'pu_Address_State') ? 'current' : ''}>{booking.pu_Address_State}</td>
@@ -626,6 +627,21 @@ class BookingSetList extends React.Component {
                                                     <p>Sub Client</p>
                                                     {
                                                         (sortField === 'b_client_name_sub') ?
+                                                            (sortDirection > 0) ?
+                                                                <i className="fa fa-sort-up"></i>
+                                                                : <i className="fa fa-sort-down"></i>
+                                                            : <i className="fa fa-sort"></i>
+                                                    }
+                                                </th>
+                                                <th 
+                                                    className={(sortField === 'b_booking_Category') ? 'current' : ''}
+                                                    onClick={() => this.onChangeSortField('b_booking_Category')} 
+                                                    scope="col" 
+                                                    nowrap="true"
+                                                >
+                                                    <p>Category</p>
+                                                    {
+                                                        (sortField === 'b_booking_Category') ?
                                                             (sortDirection > 0) ?
                                                                 <i className="fa fa-sort-up"></i>
                                                                 : <i className="fa fa-sort-down"></i>
@@ -898,6 +914,7 @@ class BookingSetList extends React.Component {
                                                 <th scope="col" nowrap="true"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                <th scope="col" nowrap="true"><input type="text" name="b_booking_Category" value={filterInputs['b_booking_Category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                 <th scope="col" nowrap="true"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
