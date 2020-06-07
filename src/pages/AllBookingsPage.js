@@ -183,23 +183,11 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        const today = localStorage.getItem('today');
-        let startDate = '';
-        let dateParam = '';
-
-        if (today) {
-            this.props.setNeedUpdateBookingsState(true);
-        } else {
-            startDate = moment().toDate();
-            dateParam = moment().format('YYYY-MM-DD');
-
-            this.setState({ 
-                startDate: moment(startDate).toDate(),
-                endDate: moment(startDate).toDate(),
-            });
-
-            this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
-        }
+        // Set initial date range filter values
+        const startDate = moment().toDate();
+        const dateParam = moment().format('YYYY-MM-DD');
+        this.setState({startDate: startDate, endDate: startDate});
+        this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
 
         this.props.getDMEClients();
         this.props.getWarehouses();
@@ -359,10 +347,10 @@ class AllBookingsPage extends React.Component {
                 const startDate = moment().toDate();
                 const dateParam = moment().format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
-                this.setState({startDate: moment(startDate).toDate()});
+                this.setState({startDate});
                 return;
             } else if (startDate !== '*') {
-                this.setState({startDate: moment(startDate).toDate()});
+                this.setState({startDate});
             }
 
             // endDate
@@ -370,10 +358,10 @@ class AllBookingsPage extends React.Component {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
-                this.setState({endDate: moment(endDate).toDate()});
+                this.setState({endDate: endDate});
                 return;
             } else {
-                this.setState({endDate: moment(endDate).toDate()});
+                this.setState({endDate});
             }
 
             // sortField
@@ -505,40 +493,38 @@ class AllBookingsPage extends React.Component {
             if (_.isNull(date)) {
                 startDate = moment().toDate();
             } else {
-                startDate = moment(date).toDate();
+                startDate = date;
             }
 
             if (moment(startDate) > moment(this.state.endDate)) {
-                endDate = startDate;
-                this.setState({startDate, endDate});    
+                this.setState({
+                    startDate: moment(startDate).format('YYYY-MM-DD'),
+                    endDate: moment(startDate).format('YYYY-MM-DD')
+                });    
             } else {
-                this.setState({startDate});
+                this.setState({startDate: moment(startDate).format('YYYY-MM-DD')});
             }
-
-            localStorage.setItem('today', startDate);
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
                 endDate = moment().toDate();
             } else {
-                endDate = moment(date).toDate();
+                endDate = date;
             }
 
             if (moment(endDate) < moment(this.state.startDate)) {
-                startDate = endDate;
-                this.setState({startDate, endDate});
+                this.setState({
+                    startDate: moment(endDate).format('YYYY-MM-DD'),
+                    endDate: moment(endDate).format('YYYY-MM-DD')
+                });
             } else {
-                this.setState({endDate});
+                this.setState({endDate: moment(endDate).format('YYYY-MM-DD')});
             }
         }
     }
 
     onClickDateFilter() {
         const { startDate, endDate } = this.state;
-
-        this.props.setGetBookingsFilter('date', {
-            startDate: moment(startDate).format('YYYY-MM-DD'), 
-            endDate: moment(endDate).format('YYYY-MM-DD'),
-        });
+        this.props.setGetBookingsFilter('date', {startDate, endDate});
         this.props.setGetBookingsFilter('columnFilters', {});
         this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
@@ -559,7 +545,7 @@ class AllBookingsPage extends React.Component {
         } else if (src === 'status') {
             this.setState({selectedStatusValue: e.target.value});
         } else if (src === 'projectName') {
-            const {today} = this.state;
+            const today = moment().format('YYYY-MM-DD');
             const projectName = e.target.value;
             this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
@@ -780,7 +766,7 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                    link.setAttribute('download', 'labels_' + selectedWarehouseName + '_' + selectedBookingIds.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
@@ -816,7 +802,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_' + selectedWarehouseName + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -856,7 +842,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_signed' + selectedWarehouseName + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -896,7 +882,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -942,7 +928,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedWarehouseName + '_' + bookingIdsWithConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -966,7 +952,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'label_' + selectedWarehouseName + '_' + bookingIdsWithLabel.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -1491,10 +1477,10 @@ class AllBookingsPage extends React.Component {
         }
 
         booking.z_lock_status = !booking.z_lock_status;
-        booking.z_locked_status_time = moment().tz('Etc/GMT').format('YYYY-MM-DD HH:mm:ss');
+        booking.z_locked_status_time = moment().utc().format('YYYY-MM-DD HH:mm:ss');
 
         if (!booking.z_lock_status) {
-            booking.b_status_API = 'status update ' + moment().tz('Etc/GMT').format('DD_MM_YYYY');
+            booking.b_status_API = 'status update ' + moment().utc().format('DD_MM_YYYY');
         }
 
         this.props.updateBooking(booking.id, booking);
@@ -2188,12 +2174,12 @@ class AllBookingsPage extends React.Component {
                                         <div className="row filter-controls">
                                             <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
-                                                selected={startDate}
+                                                selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
                                             <DatePicker
-                                                selected={endDate}
+                                                selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />

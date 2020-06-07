@@ -74,9 +74,8 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onChangeDateTime(dateTime, valueType=null) {
-        let conveted_date = moment(dateTime).tz('Etc/UTC');
-        conveted_date = conveted_date.add(this.tzOffset, 'h');
-        conveted_date = moment(conveted_date).tz('Australia/Sydney');
+        let conveted_date = moment(dateTime).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                    // UTC -> Sydney
 
         if (dateTime) {
             if (valueType === 'optionalValue') {
@@ -255,7 +254,7 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'fp_received_date_time') ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'selectedValue')}
-                                    value={selectedValue ? new Date(moment(selectedValue).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={selectedValue ? new Date(moment(selectedValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                                 : null
@@ -271,7 +270,7 @@ class BulkUpdateSlider extends React.Component {
                             selectedField === 'status' && selectedValue === 'In Transit' ?
                                 <DateTimePicker
                                     onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
-                                    value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'UTC'})) : null}
+                                    value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                     format={'dd/MM/yyyy HH:mm'}
                                 />
                                 : null

@@ -101,29 +101,30 @@
     $column_3_width: 100px;
     $column_4_width: 100px;
     $column_5_width: 100px;
-    $column_6_width: 250px;
+    $column_6_width: 100px;
     $column_7_width: 250px;
-    $column_8_width: 70px;
+    $column_8_width: 250px;
     $column_9_width: 70px;
-    $column_10_width: 250px;
+    $column_10_width: 70px;
 
     $column_11_width: 250px;
-    $column_12_width: 70px;
+    $column_12_width: 250px;
     $column_13_width: 70px;
-    $column_14_width: 50px;
-    $column_15_width: 90px;
+    $column_14_width: 70px;
+    $column_15_width: 50px;
     $column_16_width: 90px;
     $column_17_width: 90px;
     $column_18_width: 90px;
-    $column_19_width: 30px;
-    $column_20_width: 90px;
+    $column_19_width: 90px;
+    $column_20_width: 30px;
 
     $column_21_width: 90px;
-    $column_22_width: 110px;
+    $column_22_width: 90px;
     $column_23_width: 110px;
     $column_24_width: 110px;
     $column_25_width: 110px;
     $column_26_width: 110px;
+    $column_27_width: 110px;
 
     .fixed_headers {
         table-layout: fixed;
@@ -149,26 +150,26 @@
         td:nth-child(5), th:nth-child(5) { width: $column_5_width; }
         td:nth-child(5) p, th:nth-child(5) p { width: 80px }
         td:nth-child(6), th:nth-child(6) { width: $column_6_width; }
-        td:nth-child(6) p, th:nth-child(6) p { width: 120px }
+        td:nth-child(6) p, th:nth-child(6) p { width: 80px }
         td:nth-child(7), th:nth-child(7) { width: $column_7_width; }
         td:nth-child(7) p, th:nth-child(7) p { width: 120px }
         td:nth-child(8), th:nth-child(8) { width: $column_8_width; }
-        td:nth-child(8) p, th:nth-child(8) p { width: 50px }
+        td:nth-child(8) p, th:nth-child(8) p { width: 120px }
         td:nth-child(9), th:nth-child(9) { width: $column_9_width; }
         td:nth-child(9) p, th:nth-child(9) p { width: 50px }
         td:nth-child(10), th:nth-child(10) { width: $column_10_width; }
-        td:nth-child(10) p, th:nth-child(10) p { width: 120px }
+        td:nth-child(10) p, th:nth-child(10) p { width: 50px }
 
         td:nth-child(11), th:nth-child(11) { width: $column_11_width; }
         td:nth-child(11) p, th:nth-child(11) p { width: 120px }
         td:nth-child(12), th:nth-child(12) { width: $column_12_width; }
-        td:nth-child(12) p, th:nth-child(12) p { width: 50px }
+        td:nth-child(12) p, th:nth-child(12) p { width: 120px }
         td:nth-child(13), th:nth-child(13) { width: $column_13_width; }
         td:nth-child(13) p, th:nth-child(13) p { width: 50px }
         td:nth-child(14), th:nth-child(14) { width: $column_14_width; }
-        td:nth-child(14) p, th:nth-child(14) p { width: 30px }
+        td:nth-child(14) p, th:nth-child(14) p { width: 50px }
         td:nth-child(15), th:nth-child(15) { width: $column_15_width; }
-        td:nth-child(15) p, th:nth-child(15) p { width: 70px }
+        td:nth-child(15) p, th:nth-child(15) p { width: 30px }
         td:nth-child(16), th:nth-child(16) { width: $column_16_width; }
         td:nth-child(16) p, th:nth-child(16) p { width: 70px }
         td:nth-child(17), th:nth-child(17) { width: $column_17_width; }
@@ -178,20 +179,22 @@
         td:nth-child(19), th:nth-child(19) { width: $column_19_width; }
         td:nth-child(19) p, th:nth-child(19) p { width: 70px }
         td:nth-child(20), th:nth-child(20) { width: $column_20_width; }
-        td:nth-child(20) p, th:nth-child(20) p { width: 30px }
+        td:nth-child(20) p, th:nth-child(20) p { width: 70px }
 
         td:nth-child(21), th:nth-child(21) { width: $column_21_width; }
-        td:nth-child(21) p, th:nth-child(21) p { width: 70px }
+        td:nth-child(21) p, th:nth-child(21) p { width: 30px }
         td:nth-child(22), th:nth-child(22) { width: $column_22_width; }
         td:nth-child(22) p, th:nth-child(22) p { width: 70px }
         td:nth-child(23), th:nth-child(23) { width: $column_23_width; }
-        td:nth-child(23) p, th:nth-child(23) p { width: 90px }
+        td:nth-child(23) p, th:nth-child(23) p { width: 70px }
         td:nth-child(24), th:nth-child(24) { width: $column_24_width; }
         td:nth-child(24) p, th:nth-child(24) p { width: 90px }
         td:nth-child(25), th:nth-child(25) { width: $column_25_width; }
         td:nth-child(25) p, th:nth-child(25) p { width: 90px }
         td:nth-child(26), th:nth-child(26) { width: $column_26_width; }
         td:nth-child(26) p, th:nth-child(26) p { width: 90px }
+        td:nth-child(27), th:nth-child(27) { width: $column_27_width; }
+        td:nth-child(27) p, th:nth-child(27) p { width: 90px }
         
         tr:nth-child(1), tr:nth-child(2) {
             color: #048abb;
