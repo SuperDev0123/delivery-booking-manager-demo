@@ -7,6 +7,8 @@ import {
     RESET_REDIRECT_STATE,
     SET_DME_CLIENTS,
     FAILED_GET_DME_CLIENTS,
+    SET_SUB_CLIENTS,
+    FAILED_GET_SUB_CLIENTS,
     SET_CLIENT_PK,
     SUCCESS_RESET_PASSWORD,
     FAILED_RESET_PASSWORD,
@@ -25,6 +27,7 @@ const defaultState = {
     isLoggedIn: false,
     redirect: false,
     dmeClients: [],
+    subClients: [],
     clientPK: null,
 };
 
@@ -37,8 +40,8 @@ export const AuthReducer = (state = defaultState, {
     clientname,
     clientId,
     isLoggedIn,
-    dmeClients,
-    clientPK
+    clientPK,
+    payload,
 }) => {
     switch (type) {
         case LOGOUT:
@@ -105,10 +108,17 @@ export const AuthReducer = (state = defaultState, {
         case SET_DME_CLIENTS:
             return {
                 ...state,
-                dmeClients: dmeClients,
+                dmeClients: payload,
+                redirect : false,
+            };
+        case SET_SUB_CLIENTS:
+            return {
+                ...state,
+                subClients: payload,
                 redirect : false,
             };
         case FAILED_GET_DME_CLIENTS:
+        case FAILED_GET_SUB_CLIENTS:
             return {
                 ...state,
                 errorMessage: errorMessage,

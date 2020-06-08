@@ -30,6 +30,7 @@ class BulkUpdateSlider extends React.Component {
         allBookingStatus: PropTypes.array.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         onUpdate: PropTypes.func.isRequired,
+        subClients: PropTypes.func.isRequired,
     };
 
     onClickCancel() {
@@ -43,6 +44,16 @@ class BulkUpdateSlider extends React.Component {
 
         if (selectedField === 'status' && selectedValue === 'In Transit' && !optionalValue) {
             this.setState({errorMsg: 'Event Date Time is required!'});
+        } else if (selectedField === 'b_client_name_sub' && selectedValue) {
+            const {subClients} = this.props;
+            const selectedSubClient = subClients.find(subClient => subClient.company_name === selectedValue);
+
+            if (selectedSubClient) {
+                this.props.onUpdate('sub_client_id', selectedSubClient.pk_id_dme_client, selectedBookingIds, optionalValue);
+                this.setState({selectedValue: null, selectedField: null, optionalValue: null, errorMsg: null});
+            } else {
+                this.setState({errorMsg: 'Please select sub client.'});
+            }
         } else {
             this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
             this.setState({selectedValue: null, selectedField: null, optionalValue: null, errorMsg: null});
@@ -89,10 +100,13 @@ class BulkUpdateSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, allBookingStatus } = this.props;
+        const { isOpen, allBookingStatus, subClients } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        });
+        const subClientsList = subClients.map((subClient, index) => {
+            return (<option key={index} value={subClients.pk_id_dme_client}>{subClient.company_name}</option>);
         });
 
         return (
@@ -184,6 +198,14 @@ class BulkUpdateSlider extends React.Component {
                                 : null
                         }
                         {
+                            selectedField === 'b_client_name_sub' ?
+                                <select onChange={(e) => this.onSelected(e, 'value')}>
+                                    <option value="" disabled>-------------  Select Sub Client  -------------</option>
+                                    { subClientsList }
+                                </select>
+                                : null
+                        }
+                        {
                             selectedField &&
                             (selectedField === 'dme_status_detail' ||
                             selectedField === 'dme_status_action' ||
@@ -204,8 +226,7 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField &&
-                            (selectedField === 'b_client_name_sub' ||
-                            selectedField === 'puCompany' ||
+                            (selectedField === 'puCompany' ||
                             selectedField === 'pu_Address_Street_1' ||
                             selectedField === 'pu_Address_street_2' ||
                             selectedField === 'pu_Address_Country' ||

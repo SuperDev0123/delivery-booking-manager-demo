@@ -9,7 +9,9 @@ import {
     failedVerifiyToken,
     resetRedirectState,
     setDMEClients,
+    setSubClients,
     failedGetDMEClients,
+    failedGetSubClients,
     setCurrentClientPK,
     successResetPassword,
     failedResetPassword,
@@ -106,6 +108,23 @@ export const getDMEClients = () => {
         axios(options)
             .then(({ data }) => dispatch(setDMEClients(data)))
             .catch((error) => dispatch(failedGetDMEClients(error)) );
+};
+
+export const getSubClients = () => {
+    const token = localStorage.getItem('token');
+
+    const options = {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/users/get_sub_clients/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(setSubClients(data)))
+            .catch((error) => dispatch(failedGetSubClients(error)) );
 };
 
 export const cleanRedirectState = () => {

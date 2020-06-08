@@ -7,6 +7,8 @@ import {
     RESET_REDIRECT_STATE,
     SET_DME_CLIENTS,
     FAILED_GET_DME_CLIENTS,
+    SET_SUB_CLIENTS,
+    FAILED_GET_SUB_CLIENTS,
     SET_CLIENT_PK,
     SUCCESS_RESET_PASSWORD,
     FAILED_RESET_PASSWORD,
@@ -128,7 +130,7 @@ export function resetRedirectState() {
 export function setDMEClients(data) {
     return {
         type: SET_DME_CLIENTS,
-        dmeClients: data.results,
+        payload: data.results,
     };
 }
 
@@ -137,6 +139,21 @@ export function failedGetDMEClients(error) {
     return {
         type: FAILED_GET_DME_CLIENTS,
         errorMessage: 'Unable to get dme clients.'
+    };
+}
+
+export function setSubClients(data) {
+    return {
+        type: SET_SUB_CLIENTS,
+        payload: data.results,
+    };
+}
+
+export function failedGetSubClients(error) {
+    console.log('Error: ', error);
+    return {
+        type: FAILED_GET_SUB_CLIENTS,
+        errorMessage: 'Unable to get dme sub clients.'
     };
 }
 

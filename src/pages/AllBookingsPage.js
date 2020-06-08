@@ -18,7 +18,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Constants
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
-import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
+import { verifyToken, cleanRedirectState, getDMEClients, getSubClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
@@ -169,6 +169,8 @@ class AllBookingsPage extends React.Component {
         getBookingSets: PropTypes.func.isRequired,
         createBookingSet: PropTypes.func.isRequired,
         updateBookingSet: PropTypes.func.isRequired,
+        getSubClients: PropTypes.func.isRequired,
+        subClients: PropTypes.array.isRequired,
         bookingsets: PropTypes.array,
     };
 
@@ -189,12 +191,16 @@ class AllBookingsPage extends React.Component {
         this.setState({startDate: startDate, endDate: startDate});
         this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
 
-        this.props.getDMEClients();
-        this.props.getWarehouses();
-        this.props.getUserDateFilterField();
-        this.props.getAllBookingStatus();
-        this.props.getAllFPs();
-        this.props.getAllProjectNames();
+        let that = this;
+        setTimeout(() => {
+            that.props.getDMEClients();
+            that.props.getWarehouses();
+            that.props.getUserDateFilterField();
+            that.props.getAllBookingStatus();
+            that.props.getAllFPs();
+            that.props.getAllProjectNames();
+            that.props.getSubClients();
+        }, 1000);
     }
 
     UNSAFE_componentWillMount() {
@@ -3027,6 +3033,7 @@ class AllBookingsPage extends React.Component {
                     toggleSlider={this.toggleBulkUpdateSlider}
                     allBookingStatus={allBookingStatus}
                     selectedBookingIds={selectedBookingIds}
+                    subClients={this.props.subClients}
                     onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
@@ -3084,6 +3091,7 @@ const mapStateToProps = (state) => {
         multiFindValues: state.booking.multiFindValues,
         bookingErrorMessage: state.booking.errorMessage,
         dmeClients: state.auth.dmeClients,
+        subClients: state.auth.subClients,
         clientname: state.auth.clientname,
         username: state.auth.username,
         clientPK: state.booking.clientPK,
@@ -3130,6 +3138,7 @@ const mapDispatchToProps = (dispatch) => {
         getBookingSets: () => dispatch(getBookingSets()),
         createBookingSet: (bookingIds, name, note, auto_select_type) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type)),
         updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
+        getSubClients: () => dispatch(getSubClients()),
     };
 };
 

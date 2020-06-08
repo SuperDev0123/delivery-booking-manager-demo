@@ -40,7 +40,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
-import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
+import { verifyToken, cleanRedirectState, getDMEClients, getSubClients, setClientPK } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
@@ -311,6 +311,8 @@ class BookingPage extends Component {
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
+        getSubClients: PropTypes.func.isRequired,
+        subClients: PropTypes.array.isRequired,
     };
 
     componentDidMount() {
@@ -347,11 +349,11 @@ class BookingPage extends Component {
 
         setTimeout(() => {
             that.props.getDMEClients();
+            that.props.getSubClients();
             that.props.getPackageTypes();
             that.props.getStatusDetails();
             that.props.getStatusActions();
             that.props.getAvailableCreators();
-
         }, 3000);
 
         Modal.setAppElement(this.el);
@@ -1747,21 +1749,22 @@ class BookingPage extends Component {
             formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
             booking['b_client_warehouse_code'] = formInputs['b_client_warehouse_code'];
             booking['b_clientPU_Warehouse'] = formInputs['b_clientPU_Warehouse'];
-        } else if (fieldName === 'b_client_name') {
-            formInputs['b_client_name'] = selectedOption.value;
-            booking['b_client_name'] = formInputs['b_client_name'];
-        } else if (fieldName === 'vx_freight_provider') {
-            formInputs['vx_freight_provider'] = selectedOption.value;
-            booking['vx_freight_provider'] = formInputs['vx_freight_provider'];
-        } else if (fieldName === 'inv_billing_status') {
-            formInputs['inv_billing_status'] = selectedOption.value;
-            booking['inv_billing_status'] = formInputs['inv_billing_status'];
-        } else if (fieldName === 'b_booking_Priority') {
-            formInputs['b_booking_Priority'] = {'value': selectedOption.value, 'label': selectedOption.value};
-            booking['b_booking_Priority'] = selectedOption.value;
-        } else if (fieldName === 'b_booking_Category') {
-            formInputs['b_booking_Category'] = {'value': selectedOption.value, 'label': selectedOption.value};
-            booking['b_booking_Category'] = selectedOption.value;
+        } else if (
+            fieldName === 'b_client_name' ||
+            fieldName === 'vx_freight_provider' ||
+            fieldName === 'inv_billing_status' ||
+            fieldName === 'b_booking_Priority' ||
+            fieldName === 'b_booking_Category'
+        ) {
+            formInputs[fieldName] = selectedOption.value;
+            booking[fieldName] = formInputs[fieldName];
+            formInputs['b_client_name_sub'] = null;
+            formInputs['sub_client_id'] = null;
+            booking['sub_client'] = null;
+        } else if (fieldName === 'b_client_name_sub') {
+            formInputs[fieldName] = selectedOption.label;
+            formInputs['sub_client_id'] = selectedOption.value;
+            booking['sub_client'] = selectedOption.value;
         } else if (fieldName == 'booking_Created_For') {
             const createdForInfo = createdForInfos.filter(info => info.id === selectedOption.value);
             formInputs['booking_Created_For'] = {'value': selectedOption.value, 'label': selectedOption.label};
@@ -2779,6 +2782,8 @@ class BookingPage extends Component {
 
     render() {
         const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets } = this.state;
+        const {subClients} = this.props;
+
         const bookingLineColumns = [
             {
                 dataField: 'e_type_of_packaging',
@@ -3119,6 +3124,17 @@ class BookingPage extends Component {
         });
         const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
 
+        const selectedClientPK = dmeClients.length > 0
+            ? dmeClients.filter(client => client.company_name === booking.b_client_name)[0].pk_id_dme_client
+            : null;
+        const subClientOptions = subClients
+            .filter(subClient => selectedClientPK === subClient.parent)
+            .map(subClient => {
+                return {value: subClient.pk_id_dme_client, label: subClient.company_name};
+            });
+
+        const currentSubClientOption = {value: booking.sub_client, label: formInputs['b_client_name_sub']};
+
         const fpOptions = allFPs.map((fp) => {
             return {value: fp.fp_company_name, label: fp.fp_company_name};
         });
@@ -3335,7 +3351,7 @@ class BookingPage extends Component {
                                 <div className="main-fields-section">
                                     <div className="row col-sm-12 booking-form-01">
                                         <div className="col-sm-3 form-group">
-                                            <span>Client Name</span>
+                                            <span>Client</span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['b_client_name']}</p>
@@ -3344,7 +3360,7 @@ class BookingPage extends Component {
                                                         value={currentClientnameOption}
                                                         onChange={(e) => this.handleChangeSelect(e, 'b_client_name')}
                                                         options={clientnameOptions}
-                                                        placeholder='Select a client'
+                                                        placeholder='Select Client'
                                                         noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                     />
                                             }
@@ -3355,13 +3371,12 @@ class BookingPage extends Component {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['b_client_name_sub']}</p>
                                                     :
-                                                    <input
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder=""
-                                                        name="b_client_name_sub"
-                                                        value = {formInputs['b_client_name_sub'] ? formInputs['b_client_name_sub'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
+                                                    <Select
+                                                        value={currentSubClientOption}
+                                                        onChange={(e) => this.handleChangeSelect(e, 'b_client_name_sub')}
+                                                        options={subClientOptions}
+                                                        placeholder='Select sub Client'
+                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                     />
                                             }
                                         </div>
@@ -5701,6 +5716,7 @@ const mapStateToProps = (state) => {
         clientId: state.auth.clientId,
         warehouses: state.warehouse.warehouses,
         dmeClients: state.auth.dmeClients,
+        subClients: state.auth.subClients,
         clientPK: state.auth.clientPK,
         noBooking: state.booking.noBooking,
         packageTypes: state.extra.packageTypes,
@@ -5796,6 +5812,7 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (dmeid) => dispatch(getZohoTickets(dmeid)),
+        getSubClients:  (dmeid) => dispatch(getSubClients(dmeid)),
     };
 };
 
