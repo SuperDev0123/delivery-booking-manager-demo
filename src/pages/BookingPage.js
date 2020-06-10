@@ -2247,9 +2247,8 @@ class BookingPage extends Component {
         }
     }
 
-    onChangeViewMode(e) {
+    onChangeViewMode(newViewMode) {
         const { curViewMode, isBookingModified } = this.state;
-        let newViewMode = parseInt(e.target.value);
 
         if (isBookingModified) { // -> Create or Update
             this.notify('You can lose modified booking info. Please update it');
@@ -3206,18 +3205,18 @@ class BookingPage extends Component {
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-6">
-                                <div className="text-left content view-select">
-                                    <span>Booking Mode</span>
-                                    <br />
-                                    <select
-                                        onChange = {(e) => this.onChangeViewMode(e)}
-                                        value = {curViewMode}
-                                    >
-                                        <option value="0">View</option>
-                                        <option value="2">Edit</option>
-                                        <option value="1">New Form</option>
-                                    </select>
-                                </div>
+                                <Button
+                                    className={curViewMode === 0 ? 'active view-mode-btn' : 'view-mode-btn'}
+                                    onClick={() => this.onChangeViewMode(0)}
+                                >View</Button>
+                                <Button
+                                    className={curViewMode === 2 ? 'active view-mode-btn' : 'view-mode-btn'}
+                                    onClick={() => this.onChangeViewMode(2)}
+                                >Edit</Button>
+                                <Button
+                                    className={curViewMode === 1 ? 'active view-mode-btn' : 'view-mode-btn'}
+                                    onClick={() => this.onChangeViewMode(1)}
+                                >New Booking</Button>
                             </div>
                             <div className="col-sm-6 pad-top-8">
                                 <div className="float-r disp-inline-block form-group">
