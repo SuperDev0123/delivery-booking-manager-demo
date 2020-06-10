@@ -63,7 +63,7 @@ class StatusHistorySlider extends React.Component {
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ss') : null;
+                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ssZ') : null;
                 this.props.OnCreateStatusHistory(statusHistory);
                 this.setState({
                     viewMode: 0, 
@@ -80,7 +80,7 @@ class StatusHistorySlider extends React.Component {
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
-                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ss') : null;
+                statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ssZ') : null;
 
                 if (selectedStatusHistoryInd === 0) {
                     this.props.OnUpdateStatusHistory(statusHistory, true);

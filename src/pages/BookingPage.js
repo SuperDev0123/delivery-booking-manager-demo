@@ -4173,16 +4173,6 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1 none">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup Dates</label>
-                                                        </div>
-                                                        <div className='col-sm-8'>
-                                                            <div className="input-group pad-left-20px">
-                                                                {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <div className="head text-white booking-panel-title">
                                                         PickUp Dates
                                                     </div>
@@ -4248,6 +4238,26 @@ class BookingPage extends Component {
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Actual Delivery </label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                (clientname === 'dme') ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
+                                                                        value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) &&
+                                                                        new Date(moment(booking.s_20_Actual_Pickup_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                        format={'dd/MM/yyyy HH:mm'}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
