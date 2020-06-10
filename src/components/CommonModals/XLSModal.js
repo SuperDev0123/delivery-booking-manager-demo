@@ -198,30 +198,34 @@ class XLSModal extends Component {
                             <option value="all">All</option>
                         </select>
                     </label>
-                    <label>
-                        <p>Client: </p>
-                        <select
-                            required 
-                            name="b_client_name" 
-                            onChange={(e) => this.onInputChange(e, 'b_client_name')}
-                            value = {b_client_name} >
-                            <option value="" selected disabled hidden>Select a Client</option>
-                            <option value="All">All</option>
-                            {clientList}
-                        </select>
-                    </label>
-                    <label>
-                        <p>Freight Provider: </p>
-                        <select
-                            required 
-                            name="vx_freight_provider" 
-                            onChange={(e) => this.onInputChange(e, 'vx_freight_provider')}
-                            value = {vx_freight_provider} >
-                            <option value="" selected disabled hidden>Select a FP</option>
-                            <option value="All">All</option>
-                            {fpList}
-                        </select>
-                    </label>
+                    {!useSelected &&
+                        <label>
+                            <p>Client: </p>
+                            <select
+                                required 
+                                name="b_client_name" 
+                                onChange={(e) => this.onInputChange(e, 'b_client_name')}
+                                value = {b_client_name} >
+                                <option value="" selected disabled hidden>Select a Client</option>
+                                <option value="All">All</option>
+                                {clientList}
+                            </select>
+                        </label>
+                    }
+                    {!useSelected &&
+                        <label>
+                            <p>Freight Provider: </p>
+                            <select
+                                required 
+                                name="vx_freight_provider" 
+                                onChange={(e) => this.onInputChange(e, 'vx_freight_provider')}
+                                value = {vx_freight_provider} >
+                                <option value="" selected disabled hidden>Select a FP</option>
+                                <option value="All">All</option>
+                                {fpList}
+                            </select>
+                        </label>
+                    }
                     <label>
                         <p>Use selected: </p>
                         <input
@@ -232,29 +236,27 @@ class XLSModal extends Component {
                             onChange={(e) => this.onInputChange(e, 'useSelected')}
                         />
                     </label>
-                    {
-                        !useSelected &&
-                            <label>
-                                <p>Start Date: </p>
-                                <DatePicker
-                                    selected={startDate}
-                                    onChange={(e) => this.onDateChange(e, 'startDate')}
-                                    dateFormat="dd MMM yyyy"
-                                    disabled={useSelected ? 'disabled' : null}
-                                />
-                            </label>
+                    {!useSelected &&
+                        <label>
+                            <p>Start Date: </p>
+                            <DatePicker
+                                selected={startDate}
+                                onChange={(e) => this.onDateChange(e, 'startDate')}
+                                dateFormat="dd MMM yyyy"
+                                disabled={useSelected ? 'disabled' : null}
+                            />
+                        </label>
                     }
-                    {
-                        !useSelected &&
-                            <label>
-                                <p>End Date: </p>
-                                <DatePicker
-                                    selected={endDate}
-                                    onChange={(e) => this.onDateChange(e, 'endDate')}
-                                    dateFormat="dd MMM yyyy"
-                                    disabled={useSelected ? 'disabled' : null}
-                                />
-                            </label>
+                    {!useSelected &&
+                        <label>
+                            <p>End Date: </p>
+                            <DatePicker
+                                selected={endDate}
+                                onChange={(e) => this.onDateChange(e, 'endDate')}
+                                dateFormat="dd MMM yyyy"
+                                disabled={useSelected ? 'disabled' : null}
+                            />
+                        </label>
                     }
                     <label>
                         <p>Email address: </p>
