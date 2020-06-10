@@ -398,7 +398,7 @@ export function resetZohoTickets() {
 export function successGetDMEClientProducts(data) {
     return {
         type: SUCCESS_GET_CLIENT_PRODUCTS,
-        payload: data.results,
+        payload: data,
         errorMessage: 'Successfully get client products',
     };
 }
