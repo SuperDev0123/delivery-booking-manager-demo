@@ -48,6 +48,12 @@ import {
     SUCCESS_GET_ZOHO_TICKETS,
     FAILED_GET_ZOHO_TICKETS,
     RESET_ZOHO_TICKETS,
+    SUCCESS_GET_CLIENT_PRODUCTS,
+    FAILED_GET_CLIENT_PRODUCTS,
+    SUCCESS_DELETE_CLIENT_PRODUCTS,
+    FAILED_DELETE_CLIENT_PRODUCTS,
+    SUCCESS_CREATE_CLIENT_PRODUCTS,
+    FAILED_CREATE_CLIENT_PRODUCTS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -66,7 +72,8 @@ const defaultState = {
     bookingset: null,
     bookingsets: null,
     zoho_tickets: [],
-    loadingZohoTickets: false
+    loadingZohoTickets: false,
+    clientProducts: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -243,6 +250,31 @@ export const ExtraReducer = (state = defaultState, {
                 zoho_tickets: payload,
                 loadingZohoTickets: false
             };
+        case SUCCESS_GET_CLIENT_PRODUCTS:
+            return {
+                ...state,
+                clientProducts: payload
+            };
+        case SUCCESS_CREATE_CLIENT_PRODUCTS:
+            return {
+                ...state,
+            };
+        case SUCCESS_DELETE_CLIENT_PRODUCTS: 
+            var clientProducts = [];
+            for (const clientProduct of state.clientProducts) {
+                if ( clientProduct.id != payload.id) {
+                    clientProducts.push(clientProduct);
+                }
+            }
+            return {
+                ...state,
+                clientProducts: clientProducts
+            };
+        case FAILED_GET_CLIENT_PRODUCTS:
+            return {
+                ...state,
+                clientProducts: []
+            };
         case FAILED_GET_ZOHO_TICKETS:
             return {
                 ...state,
@@ -268,6 +300,8 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:
         case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
+        case FAILED_DELETE_CLIENT_PRODUCTS:
+        case FAILED_CREATE_CLIENT_PRODUCTS:
             return {
                 ...state,
                 errorMessage: errorMessage,

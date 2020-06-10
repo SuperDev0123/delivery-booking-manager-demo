@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-// Libs
-import axios from 'axios';
-// Components
-import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-// Constants
-import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
+import { getDMEClientProducts, deleteClientProduct, createClientProduct } from '../../../../state/services/extraService';
+import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
 
 class Clients extends Component {
     constructor(props) {
@@ -20,12 +16,15 @@ class Clients extends Component {
         this.state = {
             loading: false,
             dmeClients: [],
-            selectedFile: null,
-            selectedFileOption: null,
-            isShowDeleteFileConfirmModal: false,
+            isShowClientProductSlider: false,
+            loadingClientProducts: false,
+            clientProducts: [],
+            dmeClient: {}
         };
 
-        this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
+        this.toggleClientProductSlider = this.toggleClientProductSlider.bind(this);
+        this.onClickDelete = this.onClickDelete.bind(this);
+        this.onClickSubmit = this.onClickSubmit.bind(this);
     }
 
     static propTypes = {
@@ -36,6 +35,10 @@ class Clients extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        clientProducts: PropTypes.array.isRequired,
+        getDMEClientProducts: PropTypes.func.isRequired,
+        deleteClientProduct: PropTypes.func.isRequired,
+        createClientProduct: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -53,7 +56,7 @@ class Clients extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, dmeClients } = newProps;
+        const { redirect, dmeClients, clientProducts } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -63,9 +66,12 @@ class Clients extends Component {
         }
 
         if (dmeClients) {
-            console.log('dmeClients', dmeClients);
             this.setState({ dmeClients, loading: false});
             this.notify('Refreshed!');
+        }
+
+        if (clientProducts) {
+            this.setState({ clientProducts, loadingClientProducts: false});
         }
     
     }
@@ -74,47 +80,32 @@ class Clients extends Component {
         toast(text);
     };
 
-    toggleDeleteFileConfirmModal() {
-        this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
-    }
-
     onClickRefresh() {
         this.setState({loading: true});
         this.props.getDMEClients();
     }
 
-    onClickDeleteFile(file, fileOption) {
-        this.setState({selectedFile: file, selectedFileOption: fileOption});
-        this.toggleDeleteFileConfirmModal();
+    toggleClientProductSlider() {
+        this.setState(prevState => ({isShowClientProductSlider: !prevState.isShowClientProductSlider}));
     }
 
-    onClickConfirmDeleteFileBtn() {
-        const token = localStorage.getItem('token');
-        const {selectedFile, selectedFileOption} = this.state;
+    onClickOpenPricingSlider(client) {
+        this.setState({loadingClientProducts: true, dmeClient:client});
+        this.toggleClientProductSlider();
+        this.props.getDMEClientProducts(client.pk_id_dme_client);
+    }
 
-        const options = {
-            method: 'delete',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
-            headers: {'Authorization': 'JWT ' + token },
-            data: {deleteFileOption: selectedFileOption, fileName: selectedFile.file_name},
-        };
+    onClickDelete(id) {
+        this.props.deleteClientProduct(id);
+    }
 
-        axios(options)
-            .then((response) => {
-                console.log('#301 - ', response.data);
-                this.notify('Deleted successfully!');
-                this.props.getDMEClients();
-                this.toggleDeleteFileConfirmModal();
-            })
-            .catch(error => {
-                this.notify('Failed to delete a file: ' + error);
-                this.toggleDeleteFileConfirmModal();
-            });
+    onClickSubmit(clientProductsFormInputs) {
+        this.props.createClientProduct(clientProductsFormInputs);
+        this.toggleClientProductSlider();
     }
 
     render() {
-        const { loading, dmeClients } = this.state;
-
+        const { loading, dmeClients, dmeClient, loadingClientProducts, clientProducts, isShowClientProductSlider} = this.state;
         const clientsList = dmeClients.map((client, index) => {
             return (
                 <tr key={index}>
@@ -131,7 +122,7 @@ class Clients extends Component {
                     <td>{client.augment_pu_available_time}</td>
                     <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
                     <td>
-                        {client.num_client_products>0?<a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>View</a>:null}
+                        {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>:null}
                     </td>
                 </tr>
             );
@@ -196,14 +187,16 @@ class Clients extends Component {
                         )}
                 </section>
 
-                <ConfirmModal
-                    isOpen={this.state.isShowDeleteFileConfirmModal}
-                    onOk={() => this.onClickConfirmDeleteFileBtn()}
-                    onCancel={this.toggleDeleteFileConfirmModal}
-                    title={'Delete File'}
-                    text={'Are you sure you want to delete source file and result file?'}
-                    okBtnName={'Delete'}
+                <ClientProductSlider
+                    isOpen={isShowClientProductSlider}
+                    toggleSlider={this.toggleClientProductSlider}
+                    clientProducts={clientProducts}
+                    isLoading={loadingClientProducts}
+                    dmeClient={dmeClient}
+                    onClickDelete={this.onClickDelete}
+                    onClickSubmit={this.onClickSubmit}
                 />
+
 
                 <ToastContainer />
             </div>
@@ -217,6 +210,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         urlAdminHome: state.url.urlAdminHome,
         dmeClients: state.auth.dmeClients,
+        clientProducts: state.extra.clientProducts,
     };
 };
 
@@ -225,6 +219,9 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
+        getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id)),
+        deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
+        createClientProduct: (clientProduct) => dispatch(createClientProduct(clientProduct)),
     };
 };
 

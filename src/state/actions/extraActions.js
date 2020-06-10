@@ -48,6 +48,12 @@ import {
     SUCCESS_GET_ZOHO_TICKETS,
     FAILED_GET_ZOHO_TICKETS,
     RESET_ZOHO_TICKETS,
+    SUCCESS_GET_CLIENT_PRODUCTS,
+    FAILED_GET_CLIENT_PRODUCTS,
+    SUCCESS_DELETE_CLIENT_PRODUCTS,
+    FAILED_DELETE_CLIENT_PRODUCTS,
+    SUCCESS_CREATE_CLIENT_PRODUCTS,
+    FAILED_CREATE_CLIENT_PRODUCTS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -386,5 +392,48 @@ export function failedGetZohoTickets(error) {
 export function resetZohoTickets() {
     return {
         type: RESET_ZOHO_TICKETS,
+    };
+}
+
+export function successGetDMEClientProducts(data) {
+    return {
+        type: SUCCESS_GET_CLIENT_PRODUCTS,
+        payload: data.results,
+        errorMessage: 'Successfully get client products',
+    };
+}
+
+export function failedGetDMEClientProducts(error) {
+    return {
+        type: FAILED_GET_CLIENT_PRODUCTS,
+        errorMessage: 'Unable to get client products. Error:' + error,
+    };
+}
+
+export function successDeleteClientProduct(id, data) {
+    data.id = id;
+    return {
+        type: SUCCESS_DELETE_CLIENT_PRODUCTS,
+        payload: data,
+    };
+}
+
+export function failedDeleteClientProduct() {
+    return {
+        type: FAILED_DELETE_CLIENT_PRODUCTS,
+        errorMessage: 'Failed to delete client product',
+    };
+}
+
+export function successCreateClientProduct() {
+    return {
+        type: SUCCESS_CREATE_CLIENT_PRODUCTS
+    };
+}
+
+export function failedCreateClientProduct() {
+    return {
+        type: FAILED_CREATE_CLIENT_PRODUCTS,
+        errorMessage: 'Failed to create client product',
     };
 }

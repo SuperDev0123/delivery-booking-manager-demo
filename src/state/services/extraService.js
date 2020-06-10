@@ -49,6 +49,12 @@ import {
     successGetZohoTickets,
     failedGetZohoTickets,
     resetZohoTickets,
+    successGetDMEClientProducts,
+    failedGetDMEClientProducts,
+    successDeleteClientProduct,
+    failedDeleteClientProduct,
+    successCreateClientProduct,
+    failedCreateClientProduct
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -360,4 +366,50 @@ export const getZohoTickets = (dmeid) => {
             .then(({ data }) => dispatch(successGetZohoTickets(data.tickets)))
             .catch((error) => dispatch(failedGetZohoTickets(error)));
     };
+};
+
+export const getDMEClientProducts = (client_id) => {
+    const token = localStorage.getItem('token');
+
+    const options = {
+        method: 'get',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'JWT ' + token
+        },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/get/?client_id=${client_id}`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetDMEClientProducts(data)))
+            .catch((error) => dispatch(failedGetDMEClientProducts(error)) );
+};
+
+
+export const deleteClientProduct = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/${id}/delete`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteClientProduct(id, data)))
+            .catch((error) => dispatch(failedDeleteClientProduct(error)));
+    };
+};
+
+export const createClientProduct = (clientProduct) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/add/`,
+        data: clientProduct,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateClientProduct(data)))
+            .catch((error) => dispatch(failedCreateClientProduct(error)));
 };
