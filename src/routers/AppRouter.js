@@ -58,6 +58,7 @@ import Clients from '../pages/admin/views/Clients/Clients';
 
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
+import ClientRas from '../pages/admin/customerdashboard/ClientRas/ClientRas';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -114,6 +115,7 @@ export const AppRouter = () => (
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
                     <AdminPrivateRoute exact path='/customerdashboard/dashboard' component={CustomerDashboard} />
+                    <AdminPrivateRoute exact path='/customerdashboard/client-ras' component={ClientRas} />
                 </Main>
 
                 <Redirect to='/' />
