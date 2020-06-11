@@ -56,6 +56,8 @@ import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
 
+import CustomerLogin from '../pages/admin/customerdashboard/Login';
+
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
         <Fragment>
@@ -107,7 +109,11 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
+
+                    <Route exact path='/customerdashboard' component={ CustomerLogin } />
+                    <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
                 </Main>
+
                 <Redirect to='/' />
             </Switch>
             <Footer />
