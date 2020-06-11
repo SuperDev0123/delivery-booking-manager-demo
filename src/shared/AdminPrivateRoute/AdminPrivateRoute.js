@@ -3,6 +3,11 @@ import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export function AdminPrivateRoute({ component: Component, ...rest }) {
+    let pathname = '/admin/login';
+    console.log(window.document.location);
+    // if (window.document.location.pathname.indexOf('customerdashboard') > -1) 
+    //     pathname = '/customerdashboard/login';
+
     return (
         <Route
             {...rest}
@@ -15,7 +20,7 @@ export function AdminPrivateRoute({ component: Component, ...rest }) {
                     (
                         <Redirect
                             to={{
-                                pathname: '/admin/login',
+                                pathname: pathname,
                                 state: { from: props.location }
                             }}
                         />

@@ -57,6 +57,7 @@ import Costs from '../pages/admin/views/Costs/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
 
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
+import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
@@ -112,6 +113,7 @@ export const AppRouter = () => (
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
+                    <AdminPrivateRoute exact path='/customerdashboard/dashboard' component={CustomerDashboard} />
                 </Main>
 
                 <Redirect to='/' />
