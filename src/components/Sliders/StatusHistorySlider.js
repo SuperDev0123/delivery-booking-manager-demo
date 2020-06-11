@@ -22,7 +22,6 @@ class StatusHistorySlider extends React.Component {
             },
             event_time_stamp: null,
             errorMessage: '',
-            selectedStatusHistoryInd: -1,
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -54,7 +53,7 @@ class StatusHistorySlider extends React.Component {
 
     onClickSave() {
         const {booking} = this.props;
-        const {saveMode, selectedStatusHistoryInd, event_time_stamp} = this.state;
+        const {saveMode, event_time_stamp} = this.state;
         let statusHistory = _.clone(this.state.formInputs);
 
         if (saveMode === 0) {        
@@ -81,12 +80,7 @@ class StatusHistorySlider extends React.Component {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
                 statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ssZ') : null;
-
-                if (selectedStatusHistoryInd === 0) {
-                    this.props.OnUpdateStatusHistory(statusHistory, true);
-                } else {
-                    this.props.OnUpdateStatusHistory(statusHistory, false);
-                }
+                this.props.OnUpdateStatusHistory(statusHistory);
 
                 this.setState({
                     viewMode: 0,
@@ -127,7 +121,7 @@ class StatusHistorySlider extends React.Component {
         const formInputs = _.clone(this.props.statusHistories[index]);
 
         formInputs['event_time_stamp'] = formInputs['event_time_stamp'] ? moment(formInputs['event_time_stamp']).toDate() : null;
-        this.setState({formInputs, viewMode: 1, saveMode: 1, selectedStatusHistoryInd: index});
+        this.setState({formInputs, viewMode: 1, saveMode: 1});
     }
 
     render() {
