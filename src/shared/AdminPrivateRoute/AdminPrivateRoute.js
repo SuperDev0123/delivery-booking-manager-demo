@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 
 export function AdminPrivateRoute({ component: Component, ...rest }) {
     let pathname = '/admin/login';
-    console.log(window.document.location);
-    // if (window.document.location.pathname.indexOf('customerdashboard') > -1) 
-    //     pathname = '/customerdashboard/login';
+
+    if (window.document.location.pathname.indexOf('customerdashboard') > -1) 
+        pathname = '/customerdashboard/login';
 
     return (
         <Route
