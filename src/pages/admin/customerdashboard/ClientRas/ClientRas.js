@@ -154,13 +154,13 @@ class ClientRas extends Component {
         return (
             <div className="pricing-only">
                 <div className="pageheader">
-                    <h1>Client Ras</h1>
+                    <h1>Return Authorization</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href="/customerdashboard">Home</a>
                             </li>
-                            <li className="active">Client Ras</li>
+                            <li className="active">Return Authorization</li>
                         </ol>
                     </div>
                 </div>
@@ -176,7 +176,7 @@ class ClientRas extends Component {
                         (
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Client Ras</h3>
+                                    <h3 className="panel-title">Return Authorization</h3>
                                     <div className="actions pull-right">
                                         <a className="btn btn-success" href="/providers/add">Add New</a>
                                     </div>

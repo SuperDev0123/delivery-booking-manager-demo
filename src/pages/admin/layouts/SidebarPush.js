@@ -366,9 +366,9 @@ class SidebarPush extends React.Component {
                             </li>
 
                             <li className={this.activeRoute('client-ras') ? 'active' : ''}>
-                                <Link to={`${baseUrl}/client-ras`} title="client Ras">
+                                <Link to={`${baseUrl}/client-ras`} title="Return Authorization">
                                     <i className="fa fa-fw fa-tachometer"></i>
-                                    <span className="menu-title">Client Ras</span>
+                                    <span className="menu-title">Return Authorization</span>
                                 </Link>
                             </li>
                         </ul>
