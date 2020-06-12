@@ -61,11 +61,26 @@ export const SqlQueryReducer = (state = defaultState, {
             };
         case FAILED_UPDATE_SQL_QUERY:
         case SUCCESS_DELETE_SQL_QUERY:
+           
+            console.log('SUCCESS_DELETE_SQL_QUERY', sqlQueryDetails);
+            var SqlQueries = [];
+            for (const sqlQuery of state.allSqlQueries) {
+                if ( sqlQuery.id != sqlQueryDetails.id) {
+                    SqlQueries.push(sqlQuery);
+                }
+            }
             return {
                 ...state,
+                allSqlQueries: SqlQueries,
                 needUpdateSqlQueryDetails: true,
                 errorMessage: errorMessage
             };
+
+            // return {
+            //     ...state,
+            //     needUpdateSqlQueryDetails: true,
+            //     errorMessage: errorMessage
+            // };
         case FAILED_DELETE_SQL_QUERY:
         case SUCCESS_VALIDATE_SQL_QUERY:
             return {
