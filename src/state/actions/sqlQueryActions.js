@@ -18,7 +18,7 @@ import {
 export function successGetAllSqlQueries(data) {
     return {
         type: SUCCESS_GET_ALL_SQL_QUERIES,
-        allSqlQueries: data.results,
+        allSqlQueries: data.result,
         needUpdateSqlQueries: false
     };
 }
@@ -73,7 +73,9 @@ export function failedUpdateSqlQueryDetails(error) {
     };
 }
 
-export function successDeleteSqlQueryDetails(data) {
+export function successDeleteSqlQueryDetails(id, data) {
+    console.log('successDeleteSqlQueryDetails', data, id);
+    data.id = id;
     return {
         type: SUCCESS_DELETE_SQL_QUERY,
         sqlQueryDetails: data

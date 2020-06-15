@@ -170,14 +170,22 @@ class AddSqlQueries extends Component {
     }
 
     render() {
-        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+        const { sql_title, sql_query, sql_description, sql_notes, queryResult, loading, updateQueries, queryTables } = this.state;
 
+        let tableColumns = [];
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-        let tableColumns = [];
+        const allowedColumns = ['suburb'];
+        
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            Object.keys(queryResult[0]).map((row, index) => {
+                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row), index: index});
+            });
+        }
+        console.log('render',sql_title, loading);
 
         return (
             <div>
@@ -249,7 +257,7 @@ class AddSqlQueries extends Component {
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
                                             <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title === '' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Submit</button>
                                     </form>
 
 
