@@ -7,6 +7,7 @@ import Modal from 'react-modal';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
+import { ToastContainer, toast } from 'react-toastify';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
@@ -73,7 +74,7 @@ class AddSqlQueries extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage, needUpdateSqlQueries } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -103,7 +104,22 @@ class AddSqlQueries extends Component {
         if (rerunValidateSqlQueryDetails) {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
         }
+
+        console.log('@1 - ', this.state.loading, errorMessage);
+        if (this.state.loading && errorMessage) {
+            this.setState({ loading: false });
+            this.notify(errorMessage);
+        }
+
+        if (this.state.loading && needUpdateSqlQueries) {
+            this.setState({ loading: false });
+            this.props.history.push('/admin/sqlqueries');
+        }
     }
+
+    notify = (text) => {
+        toast(text);
+    };
 
     openModal() {
         this.setState({ modalIsOpen: true });
@@ -122,19 +138,17 @@ class AddSqlQueries extends Component {
     }
 
     onSubmit(event) {
-        this.setState({ loading: true });
         const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
+
         this.props.createSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username });
-        this.setState({ loading: false });
-        this.props.history.push('/admin/sqlqueries');
+        this.setState({ loading: true });
         event.preventDefault();
     }
 
     onValidate(event) {
-        this.setState({ loading: true });
         const { sql_title, sql_query, sql_description, sql_notes } = this.state;
         this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
-        this.setState({ loading: false });
+        this.setState({ loading: true });
         event.preventDefault();
     }
 
@@ -290,6 +304,8 @@ class AddSqlQueries extends Component {
 
                     </div>
                 </section>
+
+                <ToastContainer/>
             </div>
         );
     }
@@ -307,7 +323,9 @@ const mapStateToProps = (state) => {
         queryTables: state.sqlQuery.queryTables,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
         urlAdminHome: state.url.urlAdminHome,
-        rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
+        rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails,
+        needUpdateSqlQueries: state.sqlQuery.needUpdateSqlQueries,
+        errorMessage: state.sqlQuery.errorMessage,
     };
 };
 

@@ -18,86 +18,74 @@ import {
 const defaultState = {
     allSqlQueries: [],
     sqlQueryDetails: {},
+    needUpdateSqlQueries: false,
     errorMessage: ''
 };
 
 export const SqlQueryReducer = (state = defaultState, {
     type,
-    allSqlQueries,
-    sqlQueryDetails,
+    payload,
     validSqlQueryDetails,
     queryResult,
     queryTables,
-    rerunValidateSqlQueryDetails,
     errorMessage
 }) => {
     switch (type) {
         case SUCCESS_GET_ALL_SQL_QUERIES:
             return {
                 ...state,
-                allSqlQueries: allSqlQueries,
-                needUpdateSqlQueries: false
+                allSqlQueries: payload,
+                needUpdateSqlQueries: false,
+                errorMessage: null,
             };
-        case FAILED_GET_ALL_SQL_QUERIES:
         case SUCCESS_GET_SQL_QUERY:
             return {
                 ...state,
-                sqlQueryDetails: sqlQueryDetails,
-                errorMessage: errorMessage
+                sqlQueryDetails: payload,
+                errorMessage: null,
             };
-        case FAILED_GET_SQL_QUERY:
         case SUCCESS_CREATE_SQL_QUERY:
             return {
                 ...state,
                 needUpdateSqlQueries: true,
-                errorMessage: errorMessage
+                errorMessage: null,
             };
-        case FAILED_CREATE_SQL_QUERY:
         case SUCCESS_UPDATE_SQL_QUERY:
             return {
                 ...state,
-                needUpdateSqlQueryDetails: true,
-                errorMessage: errorMessage
+                needUpdateSqlQueries: true,
+                errorMessage: null,
             };
-        case FAILED_UPDATE_SQL_QUERY:
         case SUCCESS_DELETE_SQL_QUERY:
-           
-            console.log('SUCCESS_DELETE_SQL_QUERY', sqlQueryDetails);
-            var SqlQueries = [];
-            for (const sqlQuery of state.allSqlQueries) {
-                if ( sqlQuery.id != sqlQueryDetails.id) {
-                    SqlQueries.push(sqlQuery);
-                }
-            }
             return {
                 ...state,
-                allSqlQueries: SqlQueries,
-                needUpdateSqlQueryDetails: true,
-                errorMessage: errorMessage
+                needUpdateSqlQueries: true,
+                errorMessage: null,
             };
-
-            // return {
-            //     ...state,
-            //     needUpdateSqlQueryDetails: true,
-            //     errorMessage: errorMessage
-            // };
-        case FAILED_DELETE_SQL_QUERY:
         case SUCCESS_VALIDATE_SQL_QUERY:
             return {
                 ...state,
                 validSqlQueryDetails: validSqlQueryDetails,
                 queryResult: queryResult,
                 queryTables: queryTables,
-                errorMessage: errorMessage
+                errorMessage: null,
             };
-        case FAILED_VALIDATE_SQL_QUERY:
         case SUCCESS_RERUNVALIDATE_SQL_QUERY:
             return {
                 ...state,
-                rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails,
-                errorMessage: errorMessage
+                rerunValidateSqlQueryDetails: payload,
             };
         case FAILED_RERUNVALIDATE_SQL_QUERY:
+        case FAILED_GET_ALL_SQL_QUERIES:
+        case FAILED_VALIDATE_SQL_QUERY:
+        case FAILED_DELETE_SQL_QUERY:
+        case FAILED_UPDATE_SQL_QUERY:
+        case FAILED_CREATE_SQL_QUERY:
+        case FAILED_GET_SQL_QUERY:
+            return {
+                ...state,
+                errorMessage: errorMessage
+            };
         default:
             return state;
     }

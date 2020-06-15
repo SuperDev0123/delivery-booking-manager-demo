@@ -110,6 +110,11 @@ class EditSqlQueries extends Component {
         if (errorMessage) {
             this.notify(errorMessage);
         }
+
+        if (this.state.loading && !errorMessage) {
+            this.setState({ loading: false });
+            this.props.history.push('/admin/sqlqueries');
+        }
     }
 
     openModal() {
@@ -172,8 +177,7 @@ class EditSqlQueries extends Component {
         const { id, sql_title, sql_query, sql_description, sql_notes, username } = this.state;
         let data = { id: id, sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username };
         this.props.updateSqlQueryDetails(data);
-        this.setState({ loading: false });
-        this.props.history.push('/admin/sqlqueries');
+        this.setState({ loading: true });
         event.preventDefault();
     }
 
@@ -339,6 +343,7 @@ class EditSqlQueries extends Component {
 
                     </div>
                 </section>
+
                 <ToastContainer/>
             </div>
         );
