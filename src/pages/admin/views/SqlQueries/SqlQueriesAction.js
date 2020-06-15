@@ -207,7 +207,6 @@ class SqlQueriesAction extends Component {
                 }
                 else {
                     this.props.createSqlQueryDetails(data);
-                    this.props.history.push('/admin/sqlqueries');
                 }
                 break;
             case 'edit':
