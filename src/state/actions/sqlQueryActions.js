@@ -82,7 +82,7 @@ export function successDeleteSqlQueryDetails() {
 export function failedDeleteSqlQueryDetails(error) {
     return {
         type: FAILED_DELETE_SQL_QUERY,
-        errorMessage: 'Error: ' + error.response.data,
+        errorMessage: 'Error: ' + JSON.stringify(error.response.data),
     };
 }
 
@@ -96,10 +96,9 @@ export function successValidateSqlQueryDetails(data) {
 }
 
 export function failedValidateSqlQueryDetails(error) {
-    console.log('failedValidateSqlQueryDetails', error.response.data.message);
     return {
         type: FAILED_VALIDATE_SQL_QUERY,
-        errorMessage: 'Error: ' +  error.response.data.message,
+        errorMessage: 'Error: ' + JSON.stringify(error.response.data),
     };
 }
 
