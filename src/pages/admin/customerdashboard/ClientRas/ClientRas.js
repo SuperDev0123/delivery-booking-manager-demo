@@ -160,15 +160,13 @@ class ClientRas extends Component {
                     </div>
                 </div>
                 <section id="main-content" className="animated fadeInUp">
-                    {loading ? (
-                        <LoadingOverlay
-                            active={loading}
-                            spinner
-                            text='Loading...'
-                        />
-                    )
-                        :
-                        (
+                    <LoadingOverlay
+                        active={loading}
+                        spinner
+                        text='Loading...'
+                    />
+                    <div className="row">
+                        <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Return Authorization</h3>
@@ -209,7 +207,8 @@ class ClientRas extends Component {
                                     </table>
                                 </div>
                             </div>
-                        )}
+                        </div>
+                    </div>
                 </section>
 
                 <ConfirmModal
