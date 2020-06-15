@@ -8,6 +8,7 @@ class CustomPagination extends Component {
         super(props);
 
         this.state = {
+
         };
     }
 
@@ -22,7 +23,7 @@ class CustomPagination extends Component {
 
     onClickPaginationItem(type) {
         const {pageCnt, pageInd} = this.props;
-
+        
         if (pageCnt > 0) {
             if (type === 'first' && pageInd !== 0) {
                 this.props.onClickPagination(0);
@@ -38,6 +39,7 @@ class CustomPagination extends Component {
 
     render() {
         const {pageCnt, pageInd} = this.props;
+
         let startInd = 0, endInd = 4;
 
         if (pageCnt > 5 && pageInd > 2) {
@@ -52,7 +54,7 @@ class CustomPagination extends Component {
             paginationItems.push(
                 <PaginationItem>
                     <PaginationLink 
-                        href='#' 
+                        href='javscript: void(0)' 
                         onClick={() => this.props.onClickPagination(i)}
                         className={i === pageInd ? 'current' : null}
                     >
@@ -66,7 +68,7 @@ class CustomPagination extends Component {
             <Pagination size='sm' aria-label='Page navigation example'>
                 <PaginationItem>
                     <PaginationLink 
-                        href='#'
+                        href='javscript: void(0)' 
                         onClick={() => this.onClickPaginationItem('first')}
                         className={pageCnt === 0 || pageInd === 0 ? 'disabled' : null}
                     >
@@ -75,7 +77,7 @@ class CustomPagination extends Component {
                 </PaginationItem>
                 <PaginationItem>
                     <PaginationLink
-                        href='#' 
+                        href='javscript: void(0)' 
                         onClick={() => this.onClickPaginationItem('prev')}
                         className={pageCnt === 0 || pageInd === 0 ? 'disabled' : null}
                     >
@@ -85,7 +87,7 @@ class CustomPagination extends Component {
                 {paginationItems}
                 <PaginationItem>
                     <PaginationLink
-                        href='#' 
+                        href='javscript: void(0)' 
                         onClick={() => this.onClickPaginationItem('next')}
                         className={pageCnt === 0 || pageInd === pageCnt - 1 ? 'disabled' : null}
                     >
@@ -94,7 +96,7 @@ class CustomPagination extends Component {
                 </PaginationItem>
                 <PaginationItem>
                     <PaginationLink 
-                        href='#' 
+                        href='javscript: void(0)' 
                         onClick={() => this.onClickPaginationItem('last')}
                         className={pageCnt === 0 || pageInd === pageCnt - 1 ? 'disabled' : null}
                     >

@@ -557,6 +557,8 @@ class BookingPage extends Component {
 
         if (needUpdateStatusHistories && booking && booking.pk_booking_id) {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
+            this.props.getBooking(booking.id, 'id');
+            this.setState({loading: true, curViewMode: 0});
         }
 
         if (bBooking) {
@@ -2475,67 +2477,15 @@ class BookingPage extends Component {
     }
 
     OnCreateStatusHistory(statusHistory) {
-        let newBooking = this.state.booking;
-
-        statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
-        statusHistory['dme_status_action'] = newBooking.dme_status_action;
-        statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
+        const {booking} = this.state;
+        statusHistory['dme_status_detail'] = booking.dme_status_detail;
+        statusHistory['dme_status_action'] = booking.dme_status_action;
+        statusHistory['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
         this.props.createStatusHistory(statusHistory);
-
-        if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                .add(newBooking.delivery_kpi_days, 'd')
-                .format('YYYY-MM-DD');
-            newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
-        } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-            if (!newBooking.b_given_to_transport_date_time) {
-                newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:mm:ss');
-                newBooking.z_calculated_ETA = moment()
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-            } else {
-                newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-            }
-        }
-
-        newBooking.b_status = statusHistory['status_last'];
-        this.props.updateBooking(this.state.booking.id, newBooking);
-        this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
     }
 
-    OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
-        let newBooking = this.state.booking;
-
-        // statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
-        // statusHistory['dme_status_action'] = newBooking.dme_status_action;
-        // statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
+    OnUpdateStatusHistory(statusHistory) {
         this.props.updateStatusHistory(statusHistory);
-
-        if (needToUpdateBooking) {
-            if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-                newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
-            } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-                if (!newBooking.b_given_to_transport_date_time) {
-                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:mm:ss');
-                    newBooking.z_calculated_ETA = moment()
-                        .add(newBooking.delivery_kpi_days, 'd')
-                        .format('YYYY-MM-DD');
-                } else {
-                    newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
-                        .add(newBooking.delivery_kpi_days, 'd')
-                        .format('YYYY-MM-DD');
-                }
-            }
-
-            newBooking.b_status = statusHistory['status_last'];
-            this.props.updateBooking(this.state.booking.id, newBooking);
-            this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
-        }
     }
 
     onClickComms(e) {
@@ -4172,16 +4122,6 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="row mt-1 none">
-                                                        <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup Dates</label>
-                                                        </div>
-                                                        <div className='col-sm-8'>
-                                                            <div className="input-group pad-left-20px">
-                                                                {formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                     <div className="head text-white booking-panel-title">
                                                         PickUp Dates
                                                     </div>
@@ -4247,6 +4187,26 @@ class BookingPage extends Component {
                                                                         />
                                                                         :
                                                                         <p className="show-mode">{formInputs['fp_received_date_time'] ? moment(formInputs['fp_received_date_time']).format('DD/MM/YYYY'): ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Actual PickUp </label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                (clientname === 'dme') ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
+                                                                        value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) &&
+                                                                        new Date(moment(booking.s_20_Actual_Pickup_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                        format={'dd/MM/yyyy HH:mm'}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{formInputs['s_20_Actual_Pickup_TimeStamp'] ? moment(formInputs['s_20_Actual_Pickup_TimeStamp']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -5575,7 +5535,7 @@ class BookingPage extends Component {
                     toggleStatusHistorySlider={this.toggleStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
-                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
+                    OnUpdateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     clientname={clientname}
                 />
 

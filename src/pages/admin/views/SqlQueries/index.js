@@ -19,7 +19,7 @@ class SqlQueries extends Component {
         this.state = {
             allSqlQueries: [],
             username: null,
-            loading: true,
+            loading: false,
         };
     }
     
@@ -35,7 +35,6 @@ class SqlQueries extends Component {
     }
 
     componentDidMount() {
-        //this.setState({loading: true});
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
@@ -46,31 +45,33 @@ class SqlQueries extends Component {
             this.props.history.push('/admin');
         }
 
+        this.setState({ loading: true });
         this.props.getAllSqlQueries();
-        
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, allSqlQueries, needUpdateSqlQueries } = newProps;
         const currentRoute = this.props.location.pathname;
+
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
+
         if (allSqlQueries) {
-            this.setState({ allSqlQueries });
-            this.setState({loading: false});
+            this.setState({ allSqlQueries, loading: false });
         }
-        if(needUpdateSqlQueries){
+
+        if (needUpdateSqlQueries) {
             this.props.getAllSqlQueries();
+            this.setState({ allSqlQueries: [], loading: true });
         }
     }
 
     removeSqlQueryDetails(event, fp){
-        this.setState({loading: true});
         confirmAlert({
-            title: 'Confirm to delete SQL Query',
+            title: 'Confirm to delete a SQL Query',
             message: 'Are you sure to do this?',
             buttons: [
                 {
@@ -84,7 +85,7 @@ class SqlQueries extends Component {
             ]
         });
         
-        this.setState({loading: false});
+        this.setState({loading: true});
         event.preventDefault();
     }
 
@@ -102,8 +103,8 @@ class SqlQueries extends Component {
         const actionButton = (cell, row) => {
             return (
                 <div>
-                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/edit/'+row.id}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;&nbsp;
-                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/duplicate/'+row.id}><i className="fa fa-clone"></i></a>
+                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/edit/'+row.id +'?action=edit'}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;&nbsp;
+                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/duplicate/'+row.id+'?action=duplicate'}><i className="fa fa-clone"></i></a>
                 &nbsp;&nbsp;&nbsp;<a className="btn btn-danger btn-sm" onClick={(e) => this.removeSqlQueryDetails(e, row)}><i className="fa fa-trash"></i></a>
                 </div>
             );
@@ -162,7 +163,7 @@ class SqlQueries extends Component {
                                     <div className="panel-heading">
                                         <h3 className="panel-title">SQL Queries</h3>
                                         <div className="actions pull-right">
-                                            <a className="btn btn-success" href="/admin/sqlqueries/add">Add New</a>
+                                            <a className="btn btn-success" href="/admin/sqlqueries/add?action=add">Add New</a>
                                         </div>
                                     </div>
 

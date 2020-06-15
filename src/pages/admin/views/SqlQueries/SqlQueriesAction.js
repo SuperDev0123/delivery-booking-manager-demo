@@ -9,7 +9,9 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { createSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
+import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails, createSqlQueryDetails } from '../../../../state/services/sqlQueryService';
+
+import { ToastContainer, toast } from 'react-toastify';
 
 const customStyles = {
     content: {
@@ -25,12 +27,14 @@ const customStyles = {
 // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement('#app');
 
-class AddSqlQueries extends Component {
+class SqlQueriesAction extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             modalIsOpen: false,
+            sqlQueryDetails: { sql_title: '', sql_query: '', sql_description: '', sql_notes: '' },
+            id: 0,
             sql_title: '',
             sql_query: '',
             sql_description: '',
@@ -38,14 +42,14 @@ class AddSqlQueries extends Component {
             loading: false,
             queryResult: [],
             validSqlQueryDetails: false,
-            updateQueries: [],
-            queryTables: [],
             rerunValidateSqlQueryDetails: false,
+            updateQueries: [],
+            queryTables: []
         };
-
         this.openModal = this.openModal.bind(this);
         this.afterOpenModal = this.afterOpenModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+        this.handleTableChange = this.handleTableChange.bind(this);
     }
 
     static propTypes = {
@@ -53,14 +57,19 @@ class AddSqlQueries extends Component {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
-        createSqlQueryDetails: PropTypes.func.isRequired,
+        match: PropTypes.object.isRequired,
+        getSqlQueryDetails: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         validateSqlQueryDetails: PropTypes.func.isRequired,
+        updateSqlQueryDetails: PropTypes.func.isRequired,
+        createSqlQueryDetails: PropTypes.func.isRequired,
         runUpdateSqlQueryDetails: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
+        const action = this.getParamAction();
+
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
@@ -70,38 +79,51 @@ class AddSqlQueries extends Component {
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
+
+        if (action === 'edit' || action === 'duplicate') {
+            const id = this.props.match.params.id;
+            this.props.getSqlQueryDetails(id);
+        }   
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails } = newProps;
+        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage, needUpdateSqlQueries } = newProps;
+
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
-        this.setState({ validSqlQueryDetails: validSqlQueryDetails, rerunValidateSqlQueryDetails: rerunValidateSqlQueryDetails });
+
+        this.setState({ validSqlQueryDetails, rerunValidateSqlQueryDetails });
 
         if (queryResult) {
             this.setState({ queryResult, queryTables });
         }
-        if (sql_title) {
-            this.setState({ sql_title });
-        }
-        if (sql_query) {
-            this.setState({ sql_query });
-        }
 
-        if (sql_description) {
-            this.setState({ sql_description });
+        if (sqlQueryDetails && !queryResult) {
+            const { sql_title,  sql_query, sql_description, sql_notes } = sqlQueryDetails;
+            this.setState({ sqlQueryDetails });
+            this.setState({ id: sqlQueryDetails.id });
+            this.setState({ sql_title, sql_query, sql_description, sql_notes });
         }
-
-        if (sql_notes) {
-            this.setState({ sql_notes });
-        }
-
         if (rerunValidateSqlQueryDetails) {
             this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
+        }
+
+        if (errorMessage) {
+            this.notify(errorMessage);
+        }
+
+        if (this.state.loading && !errorMessage) {
+            this.setState({ loading: false });
+            this.props.history.push('/admin/sqlqueries');
+        }
+
+        if (needUpdateSqlQueries) {
+            this.setState({ loading: false });
+            this.props.history.push('/admin/sqlqueries');
         }
     }
 
@@ -117,16 +139,82 @@ class AddSqlQueries extends Component {
         this.setState({ modalIsOpen: false });
     }
 
+    exportCSV() {
+        var rows = [];
+
+        const { queryResult } = this.state;
+
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            let headers = [];
+            Object.keys(queryResult[0]).map((row, index) => {
+                headers.push(row);
+                console.log(index);
+            });
+
+            rows.push(headers);
+            for( const query of queryResult) {
+                let data = [];
+                Object.keys(query).map((row1, index1) => {
+                    data.push(query[row1]);
+                    console.log(index1);
+                });
+
+                rows.push(data);
+            }
+        }
+
+        var csvContent = 'data:text/csv;charset=utf-8,';
+        rows.forEach(function(rowArray) {
+            var row = rowArray.join(',');
+            csvContent += row + '\r\n';
+        });
+
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'download.csv');
+        document.body.appendChild(link); // Required for FF
+        link.click();
+
+    }
+
     onInputChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
 
+    getParamAction() {
+        const search = this.props.location.search;
+        const params = new URLSearchParams(search);
+        const action = params.get('action');
+        return action;
+    }
+
     onSubmit(event) {
+        const action = this.getParamAction();
+
         this.setState({ loading: true });
-        const { sql_title, sql_query, sql_description, sql_notes, username } = this.state;
-        this.props.createSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username });
+        const { id, sql_title, sql_query, sql_description, sql_notes, username } = this.state;
+
+        let data = { id: id, sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username };
+
+        switch(action) {
+            case 'add':
+                this.props.createSqlQueryDetails(data);
+                break;
+            case 'duplicate':
+                if ( this.state.sqlQueryDetails.sql_title === sql_title ) {
+                    this.notify('name already exists, please rename and try to save again.');
+                }
+                else {
+                    this.props.createSqlQueryDetails(data);
+                }
+                break;
+            case 'edit':
+                this.props.updateSqlQueryDetails(data);
+                break;
+        }
+
         this.setState({ loading: false });
-        this.props.history.push('/admin/sqlqueries');
         event.preventDefault();
     }
 
@@ -140,19 +228,22 @@ class AddSqlQueries extends Component {
 
     onUpdate(event) {
         this.setState({ loading: true });
-        const { sql_title, sql_description, sql_notes, updateQueries } = this.state;
-
+        const { sql_title, sql_query, sql_description, sql_notes, updateQueries } = this.state;
+        let i = 0;
         updateQueries.forEach((query) => {
             this.props.runUpdateSqlQueryDetails({ sql_title: sql_title, sql_query: query, sql_description: sql_description, sql_notes: sql_notes });
+            i++;
         });
-
+        if (i == updateQueries.length) {
+            this.props.validateSqlQueryDetails({ sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes });
+        }
         this.setState({ loading: false, modalIsOpen: false, updateQueries: [] });
         event.preventDefault();
     }
 
     handleTableChange = (type, { data, cellEdit: { rowId, dataField, newValue } }) => {
         setTimeout(() => {
-            this.state.updateQueries.push('UPDATE ' + this.state.queryTables[0] + ' SET ' + dataField + ' = "' + newValue + '" WHERE ' + this.state.queryTables[4] + ' = "' + rowId + '"');
+            this.state.updateQueries.push('UPDATE ' + this.state.queryTables[0] + ' SET ' + dataField + ' = "' + newValue + '" WHERE ' + this.state.queryTables[4] + ' = ' + rowId);
             const result = data.map((row) => {
                 if (row[this.state.queryTables[4]] === rowId) {
                     const newRow = { ...row };
@@ -169,15 +260,31 @@ class AddSqlQueries extends Component {
         }, 2000);
     }
 
-    render() {
-        const { sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, loading, updateQueries, queryTables } = this.state;
+    notify = (text) => {
+        toast(text);
+    };
 
+    toCamelCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    render() {
+        const { sql_title, sql_query, sql_description, sql_notes, queryResult, loading, updateQueries, queryTables } = this.state;
+        const action = this.getParamAction();
+
+        let tableColumns = [];
         const cellEdit = cellEditFactory({
             mode: 'dbclick',
             blurToSave: true
         });
 
-        let tableColumns = [];
+        const allowedColumns = ['suburb'];
+        
+        if(queryResult && typeof queryResult != 'string' && queryResult.length>0){
+            Object.keys(queryResult[0]).map((row, index) => {
+                tableColumns.push({dataField: row, text: row, editable: allowedColumns.includes(row), index: index});
+            });
+        }
 
         return (
             <div>
@@ -200,14 +307,14 @@ class AddSqlQueries extends Component {
                     <button type="button" onClick={(e) => this.onUpdate(e)} disabled={updateQueries.length === 0} className="btn btn-success pull-right">Apply</button>&nbsp;&nbsp;<button type="button" onClick={this.closeModal} className="btn btn-primary pull-right">Cancel</button>&nbsp;&nbsp;
                 </Modal>
                 <div className="pageheader">
-                    <h1>Add SQL Query</h1>
+                    <h1>{this.toCamelCase(action)} SQL Query</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li><a href="/admin/sqlqueries">SQL Queries</a></li>
-                            <li className="active">Add New</li>
+                            <li className="active">{this.toCamelCase(action)}</li>
                         </ol>
                     </div>
                 </div>
@@ -217,42 +324,37 @@ class AddSqlQueries extends Component {
                         spinner
                         text='Loading...'
                     />
+
                     <div className="row">
                         <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Add New</h3>
-                                    <div className="actions pull-right">
-
-                                    </div>
+                                    <h3 className="panel-title">{this.toCamelCase(action)} SQL Query <b>{sql_title}</b></h3>
                                 </div>
                                 <div className="panel-body">
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
                                         <div className="form-group required">
                                             <label className="control-label" htmlFor="sql_title">Title</label>
-                                            <input name="sql_title" required="required" type="text" className="form-control" id="sql_title" placeholder="Enter Title" value={sql_title} onChange={(e) => this.onInputChange(e)} />
+                                            <input name="sql_title" required="required" type="text" className="form-control" id="sql_title" placeholder="Enter Title" value={sql_title || ''} onChange={(e) => this.onInputChange(e)} />
                                         </div>
 
                                         <div className="form-group">
                                             <label className="control-label" htmlFor="sql_description">Description</label>
-                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Description" onChange={(e) => this.onInputChange(e)} >{sql_description}</textarea>
+                                            <textarea name="sql_description" type="text" className="form-control" id="sql_description" placeholder="Enter Description" onChange={(e) => this.onInputChange(e)} value={sql_description || ''} >{sql_description}</textarea>
                                         </div>
 
                                         <div className="form-group required">
                                             <label className="control-label" htmlFor="sql_query">SQL Query</label>
-                                            <textarea name="sql_query" required="required" type="text" className="form-control" id="sql_query" placeholder="Enter SQL Query" onChange={(e) => { this.setState({ validSqlQueryDetails: false }); this.onInputChange(e); }}>{sql_query}</textarea>
+                                            <textarea name="sql_query" required="required" type="text" className="form-control" id="sql_query" placeholder="Enter Query" onChange={(e) => { this.setState({ validSqlQueryDetails: false }); this.onInputChange(e); }} value={sql_query || ''}>{sql_query}</textarea>
                                             <button style={{ float: 'right' }} type="button" disabled={sql_query === '' || loading} onClick={(e) => this.onValidate(e)} className="btn btn-info">Run</button>
                                         </div>
 
-
                                         <div className="form-group">
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
-                                            <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} >{sql_notes}</textarea>
+                                            <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} value={sql_notes || ''} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title === '' || !validSqlQueryDetails || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Save</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>
@@ -262,7 +364,7 @@ class AddSqlQueries extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Query Result</h3>
                                     <div className="actions pull-right">
-                                        <button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
+                                        <button type="button" disabled={!(queryResult && queryResult.length > 0 && typeof queryResult != 'string')} onClick={()=>this.exportCSV()} className="btn btn-primary">Export</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={(e) => { this.onValidate(e); this.setState({ updateQueries: [] }); }} className="btn btn-primary">Discard</button>&nbsp;&nbsp;<button type="button" disabled={updateQueries.length === 0} onClick={this.openModal} className="btn btn-success">Apply</button>
                                     </div>
                                 </div>
                                 <div className="panel-body" style={{ maxHeight: '452px', overflowY: 'auto' }}>
@@ -282,6 +384,8 @@ class AddSqlQueries extends Component {
 
                     </div>
                 </section>
+
+                <ToastContainer/>
             </div>
         );
     }
@@ -294,11 +398,14 @@ const mapStateToProps = (state) => {
         sql_query: state.sqlQuery.sql_query,
         sql_description: state.sqlQuery.sql_description,
         sql_notes: state.sqlQuery.sql_notes,
+        sqlQueryDetails: state.sqlQuery.sqlQueryDetails,
         username: state.auth.username,
         queryResult: state.sqlQuery.queryResult,
         queryTables: state.sqlQuery.queryTables,
+        errorMessage: state.sqlQuery.errorMessage,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
         urlAdminHome: state.url.urlAdminHome,
+        needUpdateSqlQueries: state.sqlQuery.needUpdateSqlQueries,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
 };
@@ -307,10 +414,12 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
+        getSqlQueryDetails: (fp_id) => dispatch(getSqlQueryDetails(fp_id)),
         createSqlQueryDetails: (data) => dispatch(createSqlQueryDetails(data)),
+        updateSqlQueryDetails: (emailTemplateDetails) => dispatch(updateSqlQueryDetails(emailTemplateDetails)),
         validateSqlQueryDetails: (data) => dispatch(validateSqlQueryDetails(data)),
         runUpdateSqlQueryDetails: (data) => dispatch(runUpdateSqlQueryDetails(data)),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AddSqlQueries));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SqlQueriesAction));

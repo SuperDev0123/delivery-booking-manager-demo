@@ -8,7 +8,7 @@ export const getAllSqlQueries = () => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/get_all/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/`,
     };
     return dispatch =>
         axios(options)
@@ -58,16 +58,17 @@ export const updateSqlQueryDetails = (data) => {
 };
 
 export const deleteSqlQueryDetails = (data) => {
+    const {id} = data;
     const token = localStorage.getItem('token');
     const options = {
         method: 'delete',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/`+data.id+'/delete/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/sqlqueries/`+id+'/delete/',
         data: data
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successDeleteSqlQueryDetails(data)))
+            .then(({ data }) => dispatch(successDeleteSqlQueryDetails(id, data)))
             .catch((error) => dispatch(failedDeleteSqlQueryDetails(error)));
 };
 
