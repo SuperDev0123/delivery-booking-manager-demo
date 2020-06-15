@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import Moment from 'react-moment';
 // Libs
 import axios from 'axios';
 // Components
@@ -135,10 +134,6 @@ class ClientRas extends Component {
                     <td>{item.description}</td>
                     <td>{item.serial_number}</td>
                     <td>{item.product_in_box}</td>
-                    <td>{item.z_createdByAccount}</td>
-                    <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_createdTimeStamp} /></td>
-                    <td>{item.z_modifiedByAccount}</td>
-                    <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_modifiedTimeStamp} /></td>
                     <td>
                         <button
                             className="btn btn-danger"
@@ -206,10 +201,6 @@ class ClientRas extends Component {
                                             <th>Description</th>
                                             <th>Serial number</th>
                                             <th>Product In Box</th>
-                                            <th>Created By Account</th>
-                                            <th>Created Timestamp</th>
-                                            <th>Modified By Account</th>
-                                            <th>Modified Timestamp</th>
                                             <th>Actions</th>
                                         </thead>
                                         <tbody>
