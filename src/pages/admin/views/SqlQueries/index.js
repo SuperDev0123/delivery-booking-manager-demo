@@ -103,8 +103,8 @@ class SqlQueries extends Component {
         const actionButton = (cell, row) => {
             return (
                 <div>
-                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/edit/'+row.id}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;&nbsp;
-                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/duplicate/'+row.id}><i className="fa fa-clone"></i></a>
+                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/edit/'+row.id +'?action=edit'}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;&nbsp;
+                    <a className="btn btn-success btn-sm" href={'/admin/sqlqueries/duplicate/'+row.id+'?action=duplicate'}><i className="fa fa-clone"></i></a>
                 &nbsp;&nbsp;&nbsp;<a className="btn btn-danger btn-sm" onClick={(e) => this.removeSqlQueryDetails(e, row)}><i className="fa fa-trash"></i></a>
                 </div>
             );
@@ -163,7 +163,7 @@ class SqlQueries extends Component {
                                     <div className="panel-heading">
                                         <h3 className="panel-title">SQL Queries</h3>
                                         <div className="actions pull-right">
-                                            <a className="btn btn-success" href="/admin/sqlqueries/add">Add New</a>
+                                            <a className="btn btn-success" href="/admin/sqlqueries/add?action=add">Add New</a>
                                         </div>
                                     </div>
 

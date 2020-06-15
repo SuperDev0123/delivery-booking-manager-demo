@@ -9,7 +9,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails } from '../../../../state/services/sqlQueryService';
+import { getSqlQueryDetails, updateSqlQueryDetails, validateSqlQueryDetails, runUpdateSqlQueryDetails, createSqlQueryDetails } from '../../../../state/services/sqlQueryService';
 
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -27,7 +27,7 @@ const customStyles = {
 // Make sure to bind modal to your appElement (http://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement('#app');
 
-class EditSqlQueries extends Component {
+class SqlQueriesAction extends Component {
     constructor(props) {
         super(props);
 
@@ -62,12 +62,13 @@ class EditSqlQueries extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         validateSqlQueryDetails: PropTypes.func.isRequired,
         updateSqlQueryDetails: PropTypes.func.isRequired,
+        createSqlQueryDetails: PropTypes.func.isRequired,
         runUpdateSqlQueryDetails: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
     }
 
     componentDidMount() {
-        const id = this.props.match.params.id;
+        const action = this.getParamAction();
 
         const token = localStorage.getItem('token');
 
@@ -79,11 +80,15 @@ class EditSqlQueries extends Component {
             this.props.history.push('/admin');
         }
 
-        this.props.getSqlQueryDetails(id);
+        if (action === 'edit' || action === 'duplicate') {
+            const id = this.props.match.params.id;
+            this.props.getSqlQueryDetails(id);
+        }   
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage } = newProps;
+        const { redirect, sqlQueryDetails, sql_title, sql_query, sql_description, sql_notes, validSqlQueryDetails, queryResult, queryTables, rerunValidateSqlQueryDetails, errorMessage, needUpdateSqlQueries } = newProps;
+
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -112,6 +117,11 @@ class EditSqlQueries extends Component {
         }
 
         if (this.state.loading && !errorMessage) {
+            this.setState({ loading: false });
+            this.props.history.push('/admin/sqlqueries');
+        }
+
+        if (needUpdateSqlQueries) {
             this.setState({ loading: false });
             this.props.history.push('/admin/sqlqueries');
         }
@@ -172,12 +182,39 @@ class EditSqlQueries extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
+    getParamAction() {
+        const search = this.props.location.search;
+        const params = new URLSearchParams(search);
+        const action = params.get('action');
+        return action;
+    }
+
     onSubmit(event) {
+        const action = this.getParamAction();
+
         this.setState({ loading: true });
         const { id, sql_title, sql_query, sql_description, sql_notes, username } = this.state;
+
         let data = { id: id, sql_title: sql_title, sql_query: sql_query, sql_description: sql_description, sql_notes: sql_notes, z_createdByAccount: username };
-        this.props.updateSqlQueryDetails(data);
-        this.setState({ loading: true });
+
+        switch(action) {
+            case 'add':
+                this.props.createSqlQueryDetails(data);
+                break;
+            case 'duplicate':
+                if ( this.state.sqlQueryDetails.sql_title === sql_title ) {
+                    this.notify('name already exists, please rename and try to save again.');
+                }
+                else {
+                    this.props.createSqlQueryDetails(data);
+                }
+                break;
+            case 'edit':
+                this.props.updateSqlQueryDetails(data);
+                break;
+        }
+
+        this.setState({ loading: false });
         event.preventDefault();
     }
 
@@ -227,9 +264,13 @@ class EditSqlQueries extends Component {
         toast(text);
     };
 
+    toCamelCase = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     render() {
         const { sql_title, sql_query, sql_description, sql_notes, queryResult, loading, updateQueries, queryTables } = this.state;
-
+        const action = this.getParamAction();
 
         let tableColumns = [];
         const cellEdit = cellEditFactory({
@@ -266,14 +307,14 @@ class EditSqlQueries extends Component {
                     <button type="button" onClick={(e) => this.onUpdate(e)} disabled={updateQueries.length === 0} className="btn btn-success pull-right">Apply</button>&nbsp;&nbsp;<button type="button" onClick={this.closeModal} className="btn btn-primary pull-right">Cancel</button>&nbsp;&nbsp;
                 </Modal>
                 <div className="pageheader">
-                    <h1>Edit SQL Query</h1>
+                    <h1>{this.toCamelCase(action)} SQL Query</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
                             <li><a href="/admin/sqlqueries">SQL Queries</a></li>
-                            <li className="active">Edit</li>
+                            <li className="active">{this.toCamelCase(action)}</li>
                         </ol>
                     </div>
                 </div>
@@ -288,7 +329,7 @@ class EditSqlQueries extends Component {
                         <div className="col-md-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
-                                    <h3 className="panel-title">Edit SQL Query <b>{sql_title}</b></h3>
+                                    <h3 className="panel-title">{this.toCamelCase(action)} SQL Query <b>{sql_title}</b></h3>
                                 </div>
                                 <div className="panel-body">
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
@@ -312,7 +353,7 @@ class EditSqlQueries extends Component {
                                             <label className="control-label" htmlFor="sql_notes">Notes</label>
                                             <textarea name="sql_notes" type="text" className="form-control" id="sql_notes" placeholder="Enter Notes" onChange={(e) => this.onInputChange(e)} value={sql_notes || ''} >{sql_notes}</textarea>
                                         </div>
-                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Submit</button>
+                                        <button disabled={sql_title === '' || loading} type="submit" className="btn btn-primary">Save</button>
                                     </form>
                                 </div>
                             </div>
@@ -353,6 +394,10 @@ class EditSqlQueries extends Component {
 const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
+        sql_title: state.sqlQuery.sql_title,
+        sql_query: state.sqlQuery.sql_query,
+        sql_description: state.sqlQuery.sql_description,
+        sql_notes: state.sqlQuery.sql_notes,
         sqlQueryDetails: state.sqlQuery.sqlQueryDetails,
         username: state.auth.username,
         queryResult: state.sqlQuery.queryResult,
@@ -360,6 +405,7 @@ const mapStateToProps = (state) => {
         errorMessage: state.sqlQuery.errorMessage,
         validSqlQueryDetails: state.sqlQuery.validSqlQueryDetails,
         urlAdminHome: state.url.urlAdminHome,
+        needUpdateSqlQueries: state.sqlQuery.needUpdateSqlQueries,
         rerunValidateSqlQueryDetails: state.sqlQuery.rerunValidateSqlQueryDetails
     };
 };
@@ -369,10 +415,11 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getSqlQueryDetails: (fp_id) => dispatch(getSqlQueryDetails(fp_id)),
+        createSqlQueryDetails: (data) => dispatch(createSqlQueryDetails(data)),
         updateSqlQueryDetails: (emailTemplateDetails) => dispatch(updateSqlQueryDetails(emailTemplateDetails)),
         validateSqlQueryDetails: (data) => dispatch(validateSqlQueryDetails(data)),
         runUpdateSqlQueryDetails: (data) => dispatch(runUpdateSqlQueryDetails(data)),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditSqlQueries));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SqlQueriesAction));
