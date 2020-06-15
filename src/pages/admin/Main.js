@@ -49,7 +49,7 @@ class Main extends Component {
     render() {
         const token = localStorage.getItem('token');
 
-        if (this.props.history.location.pathname.indexOf('admin') > -1)
+        if (this.props.history.location.pathname.indexOf('admin') > -1 || this.props.history.location.pathname.indexOf('customerdashboard') > -1)
             return (
                 <React.Fragment>
                     {token ? (
@@ -65,23 +65,6 @@ class Main extends Component {
                     )}
                 </React.Fragment>
             );
-        else if (this.props.history.location.pathname.indexOf('customerdashboard') > -1) 
-            return (
-                <React.Fragment>
-                    {token ? (
-                        <React.Fragment>
-                            <MainWrapper>
-                                {this.props.children}
-                            </MainWrapper>
-                        </React.Fragment>
-                    ) : (
-                        <LoginWrapper>
-                            {this.props.children}
-                        </LoginWrapper>
-                    )}
-                </React.Fragment>
-            );
-        
     }
 }
 

@@ -185,7 +185,7 @@ class SidebarPush extends React.Component {
                     </div>
                 </div>
                 {
-                    baseUrl === 'admin'? <nav className="sidebarNav">
+                    baseUrl === '/admin'? <nav className="sidebarNav">
                         <h5 className="sidebar-header">Navigation</h5>
                         <ul className="nav nav-pills nav-stacked">
                             <li className={this.activeRoute('dashboard') ? 'active' : ''}>
