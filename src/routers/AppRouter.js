@@ -58,7 +58,7 @@ import Clients from '../pages/admin/views/Clients/Clients';
 
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
-import ClientRas from '../pages/admin/customerdashboard/ClientRas/ClientRas';
+import ClientRas from '../pages/admin/customerdashboard/ClientRas';
 
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
