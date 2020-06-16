@@ -3227,14 +3227,26 @@ class BookingPage extends Component {
                                 <div className="head">
                                     <div className="row">
                                         <div className="col-sm-4">
-                                            <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">
+                                            <button
+                                                onClick={(e) => this.onClickPrev(e)}
+                                                disabled={this.state.prevBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
+                                                className="btn btn-theme prev-btn"
+                                            >
                                                 <i className="fa fa-caret-left"></i>
                                             </button>
                                             <p className="text-white disp-inline-block dme-id">DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
-                                            <button onClick={(e) => this.onClickNext(e)} disabled={this.state.nextBookingId == 0} className="btn btn-theme next-btn">
+                                            <button
+                                                onClick={(e) => this.onClickNext(e)}
+                                                disabled={this.state.nextBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
+                                                className="btn btn-theme next-btn"
+                                            >
                                                 <i className="fa fa-caret-right"></i>
                                             </button>
-                                            <button onClick={(e) => this.onClickRefreshBooking(e)} disabled={!this.state.booking} className="btn btn-theme mar-left-20 refresh-btn">
+                                            <button
+                                                onClick={(e) => this.onClickRefreshBooking(e)}
+                                                disabled={!booking || curViewMode === 1 ? 'disabled' : null}
+                                                className="btn btn-theme mar-left-20 refresh-btn"
+                                            >
                                                 <i className="fa fa-sync"></i>
                                             </button>
                                             <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
@@ -4956,13 +4968,14 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickFC()}
-                                                                disabled={booking && !isBookedBooking ? '' : 'disabled'}
+                                                                disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
                                                             >
                                                                 Price & Time Calc(FC)
                                                             </button>
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickOpenPricingSlider()}
+                                                                disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
                                                             >
                                                                 <i className="fa fa-caret-square-left"></i>
                                                             </button>
@@ -4970,7 +4983,7 @@ class BookingPage extends Component {
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
-                                                            && isBookedBooking
+                                                            && (booking && !isBookedBooking)
                                                             && !_.isUndefined(this.state.booking.vx_freight_provider)
                                                             && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
@@ -4992,7 +5005,7 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
-                                                                disabled={isBookedBooking ? 'disabled' : ''}
+                                                                disabled={(booking && !isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                             >
                                                                 Book
                                                             </button>
@@ -5006,7 +5019,7 @@ class BookingPage extends Component {
                                                                     type="checkbox"
                                                                     checked={formInputs['x_manual_booked_flag']}
                                                                     onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={isBookedBooking ? 'disabled' : ''}
+                                                                    disabled={(booking && !isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
                                                                 <p>Manual Book</p>
                                                             </div>
@@ -5032,36 +5045,52 @@ class BookingPage extends Component {
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickDuplicate(2)}>Duplicate Booking</button>
-                                                    </div>
-                                                    <div className="text-center mt-2 fixed-height">
-                                                        <button className="btn btn-theme custom-theme none" onClick={() => this.onClickLabel(booking, 'label')}><i className="icon icon-printer"></i> Print</button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickDuplicate(2)}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Duplicate Booking
+                                                        </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickGetLabel()}
-                                                            disabled={booking && booking.z_label_url && booking.z_label_url.length > 0 ? 'disabled' : ''}
+                                                            disabled={(booking && booking.z_label_url && booking.z_label_url.length > 0)
+                                                                || (curViewMode === 1) ? 'disabled' : ''}
                                                         >
                                                             Get Label
                                                         </button>
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickReprintLabel()}
-                                                            disabled={booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt' ? 'disabled' : ''}
+                                                            disabled={(booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt')
+                                                                || (curViewMode === 1) ? 'disabled' : ''}
                                                         >
                                                             Reprint
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickTrackingStatus()}>Status(Test)</button>
-                                                        <button className="btn btn-theme custom-theme" onClick={() => this.onClickPOD()}>Pod(Test)</button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickTrackingStatus()}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Status
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickPOD()}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Pod
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="clearfix"></div>
                                 </div>
                             </div>
                         </div>
@@ -5074,7 +5103,7 @@ class BookingPage extends Component {
                                     <div className="tabs">
                                         <div className="tab-button-outer">
                                             <ul id="tab-button">
-                                                <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({qtyTotal})</a></li>
+                                                <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({curViewMode === 1 ? 0 : qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
                                                 {
                                                     clientname === 'dme' ?
@@ -5086,7 +5115,7 @@ class BookingPage extends Component {
                                                         <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
                                                         : null
                                                 }
-                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({cntAttachments})</a></li>
+                                                <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({curViewMode === 1 ? 0 : cntAttachments})</a></li>
                                                 <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
                                             </ul>
                                         </div>
@@ -5100,63 +5129,67 @@ class BookingPage extends Component {
                                             </select>
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
-                                                <Button 
-                                                    className="edit-lld-btn btn-primary"
-                                                    onClick={this.toggleLineSlider} 
-                                                    disabled={!isBookingSelected || (isBookedBooking && clientname !== 'dme')}
-                                                >
-                                                    Edit
-                                                </Button>
-                                                <Button 
-                                                    className="edit-lld-btn btn-primary"
-                                                    onClick={this.toggleLineTrackingSlider} 
-                                                    disabled={!isBookingSelected}
-                                                >
-                                                    Edit Tracking
-                                                </Button>
-                                                <BootstrapTable
-                                                    keyField="qty"
-                                                    data={ bookingTotals }
-                                                    columns={ columnBookingTotals }
-                                                    bootstrap4={ true }
-                                                />
-                                                <LoadingOverlay
-                                                    active={this.state.loadingBookingLine}
-                                                    spinner
-                                                    text='Loading...'
-                                                >
+                                            {curViewMode === 1 ?
+                                                <label className='red'>Not available on `New Booking` mode</label>
+                                                :
+                                                <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
+                                                    <Button 
+                                                        className="edit-lld-btn btn-primary"
+                                                        onClick={this.toggleLineSlider} 
+                                                        disabled={!isBookingSelected || (isBookedBooking && clientname !== 'dme')}
+                                                    >
+                                                        Edit
+                                                    </Button>
+                                                    <Button 
+                                                        className="edit-lld-btn btn-primary"
+                                                        onClick={this.toggleLineTrackingSlider}
+                                                        disabled={!isBookingSelected}
+                                                    >
+                                                        Edit Tracking
+                                                    </Button>
                                                     <BootstrapTable
-                                                        keyField='pk_lines_id'
-                                                        data={ products }
-                                                        columns={ bookingLineColumns }
-                                                        // cellEdit={ cellEditFactory({ 
-                                                        //     mode: 'click',
-                                                        //     blurToSave: false,
-                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
-                                                        // })}
+                                                        keyField="qty"
+                                                        data={ bookingTotals }
+                                                        columns={ columnBookingTotals }
                                                         bootstrap4={ true }
                                                     />
-                                                </LoadingOverlay>
-                                                <hr />
-                                                <LoadingOverlay
-                                                    active={this.state.loadingBookingLineDetail}
-                                                    spinner
-                                                    text='Loading...'
-                                                >
-                                                    <BootstrapTable
-                                                        keyField="pk_id_lines_data"
-                                                        data={ bookingLineDetailsProduct }
-                                                        columns={ bookingLineDetailsColumns }
-                                                        // cellEdit={ cellEditFactory({ 
-                                                        //     mode: 'click',
-                                                        //     blurToSave: true,
-                                                        //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
-                                                        // })}
-                                                        bootstrap4={ true }
-                                                    />
-                                                </LoadingOverlay>
-                                            </div>
+                                                    <LoadingOverlay
+                                                        active={this.state.loadingBookingLine}
+                                                        spinner
+                                                        text='Loading...'
+                                                    >
+                                                        <BootstrapTable
+                                                            keyField='pk_lines_id'
+                                                            data={ products }
+                                                            columns={ bookingLineColumns }
+                                                            // cellEdit={ cellEditFactory({ 
+                                                            //     mode: 'click',
+                                                            //     blurToSave: false,
+                                                            //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
+                                                            // })}
+                                                            bootstrap4={ true }
+                                                        />
+                                                    </LoadingOverlay>
+                                                    <hr />
+                                                    <LoadingOverlay
+                                                        active={this.state.loadingBookingLineDetail}
+                                                        spinner
+                                                        text='Loading...'
+                                                    >
+                                                        <BootstrapTable
+                                                            keyField="pk_id_lines_data"
+                                                            data={ bookingLineDetailsProduct }
+                                                            columns={ bookingLineDetailsColumns }
+                                                            // cellEdit={ cellEditFactory({ 
+                                                            //     mode: 'click',
+                                                            //     blurToSave: true,
+                                                            //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
+                                                            // })}
+                                                            bootstrap4={ true }
+                                                        />
+                                                    </LoadingOverlay>
+                                                </div>
+                                            }
                                         </div>
                                         <div id="tab02" className={activeTabInd === 1 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="tab-inner">
