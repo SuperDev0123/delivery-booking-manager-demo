@@ -557,6 +557,8 @@ class BookingPage extends Component {
 
         if (needUpdateStatusHistories && booking && booking.pk_booking_id) {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
+            this.props.getBooking(booking.id, 'id');
+            this.setState({loading: true, curViewMode: 0});
         }
 
         if (bBooking) {
@@ -2476,67 +2478,15 @@ class BookingPage extends Component {
     }
 
     OnCreateStatusHistory(statusHistory) {
-        let newBooking = this.state.booking;
-
-        statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
-        statusHistory['dme_status_action'] = newBooking.dme_status_action;
-        statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
+        const {booking} = this.state;
+        statusHistory['dme_status_detail'] = booking.dme_status_detail;
+        statusHistory['dme_status_action'] = booking.dme_status_action;
+        statusHistory['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
         this.props.createStatusHistory(statusHistory);
-
-        if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-            newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                .add(newBooking.delivery_kpi_days, 'd')
-                .format('YYYY-MM-DD');
-            newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
-        } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-            if (!newBooking.b_given_to_transport_date_time) {
-                newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:mm:ss');
-                newBooking.z_calculated_ETA = moment()
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-            } else {
-                newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-            }
-        }
-
-        newBooking.b_status = statusHistory['status_last'];
-        this.props.updateBooking(this.state.booking.id, newBooking);
-        this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
     }
 
-    OnUpdateStatusHistory(statusHistory, needToUpdateBooking) {
-        let newBooking = this.state.booking;
-
-        // statusHistory['dme_status_detail'] = newBooking.dme_status_detail;
-        // statusHistory['dme_status_action'] = newBooking.dme_status_action;
-        // statusHistory['dme_status_linked_reference_from_fp'] = newBooking.dme_status_linked_reference_from_fp;
+    OnUpdateStatusHistory(statusHistory) {
         this.props.updateStatusHistory(statusHistory);
-
-        if (needToUpdateBooking) {
-            if (statusHistory['status_last'] === 'In Transit' && statusHistory['event_time_stamp']) {
-                newBooking.z_calculated_ETA = moment(statusHistory['event_time_stamp'])
-                    .add(newBooking.delivery_kpi_days, 'd')
-                    .format('YYYY-MM-DD');
-                newBooking.b_given_to_transport_date_time = statusHistory['event_time_stamp'];
-            } else if (statusHistory['status_last'] === 'In Transit' && !statusHistory['event_time_stamp']) {
-                if (!newBooking.b_given_to_transport_date_time) {
-                    newBooking.b_given_to_transport_date_time = moment().format('YYYY-MM-DD HH:mm:ss');
-                    newBooking.z_calculated_ETA = moment()
-                        .add(newBooking.delivery_kpi_days, 'd')
-                        .format('YYYY-MM-DD');
-                } else {
-                    newBooking.z_calculated_ETA = moment(newBooking.b_given_to_transport_date_time)
-                        .add(newBooking.delivery_kpi_days, 'd')
-                        .format('YYYY-MM-DD');
-                }
-            }
-
-            newBooking.b_status = statusHistory['status_last'];
-            this.props.updateBooking(this.state.booking.id, newBooking);
-            this.setState({loadingBookingUpdate: true, curViewMode: 2, isBookingModified: false});
-        }
     }
 
     onClickComms(e) {
@@ -3277,7 +3227,7 @@ class BookingPage extends Component {
 
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-4">
+                                        <div className="col-sm-7">
                                             <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">
                                                 <i className="fa fa-caret-left"></i>
                                             </button>
@@ -3288,10 +3238,11 @@ class BookingPage extends Component {
                                             <button onClick={(e) => this.onClickRefreshBooking(e)} disabled={!this.state.booking} className="btn btn-theme mar-left-20 refresh-btn">
                                                 <i className="fa fa-sync"></i>
                                             </button>
-                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
-                                        </div>
-                                        <div className="col-sm-3">
-                                            <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
+                                            {(curViewMode !== 1
+                                                && booking && booking.x_booking_Created_With
+                                                && booking.x_booking_Created_With.indexOf('Duped') !== -1) &&
+                                                <label className="mar-left-20 color-white">({booking.x_booking_Created_With})</label>
+                                            }
                                         </div>
                                         <div className="col-sm-5">
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
@@ -5586,7 +5537,7 @@ class BookingPage extends Component {
                     toggleStatusHistorySlider={this.toggleStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
                     OnCreateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnCreateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
-                    OnUpdateStatusHistory={(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, needToUpdateBooking, isShowStatusDetailInput, isShowStatusActionInput)}
+                    OnUpdateStatusHistory={(statusHistory, isShowStatusDetailInput, isShowStatusActionInput) => this.OnUpdateStatusHistory(statusHistory, isShowStatusDetailInput, isShowStatusActionInput)}
                     clientname={clientname}
                 />
 

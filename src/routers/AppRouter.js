@@ -41,10 +41,8 @@ import CronOptions from '../pages/admin/views/CronOptions/CronOptions';
 import FreightProviders from '../pages/admin/views/FreightProviders/FreightProviders';
 import AddFreightProviders from '../pages/admin/views/FreightProviders/AddFreightProviders';
 import EditFreightProviders from '../pages/admin/views/FreightProviders/EditFreightProviders';
-import SqlQueries from '../pages/admin/views/SqlQueries/SqlQueries';
-import AddSqlQuery from '../pages/admin/views/SqlQueries/AddSqlQuery';
-import EditSqlQuery from '../pages/admin/views/SqlQueries/EditSqlQuery';
-import DuplicateSqlQuery from '../pages/admin/views/SqlQueries/DuplicateSqlQuery';
+import SqlQueries from '../pages/admin/views/SqlQueries';
+import SqlQueriesAction from '../pages/admin/views/SqlQueries/SqlQueriesAction';
 import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
 import PricingOnlyUpload from '../pages/admin/views/PricingOnly/Upload';
 import PricingRuleList from '../pages/admin/views/PricingRule/List';
@@ -94,9 +92,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/emails/add' component={AddEmailTemplates} />
                     <AdminPrivateRoute exact path='/admin/emails/edit/:id' component={EditEmailTemplates} />
                     <AdminPrivateRoute exact path='/admin/sqlqueries' component={SqlQueries} />
-                    <AdminPrivateRoute exact path='/admin/sqlqueries/add' component={AddSqlQuery} />
-                    <AdminPrivateRoute exact path='/admin/sqlqueries/edit/:id' component={EditSqlQuery} />
-                    <AdminPrivateRoute exact path='/admin/sqlqueries/duplicate/:id' component={DuplicateSqlQuery} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries/add' component={SqlQueriesAction} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries/edit/:id' component={SqlQueriesAction} />
+                    <AdminPrivateRoute exact path='/admin/sqlqueries/duplicate/:id' component={SqlQueriesAction} />
                     <AdminPrivateRoute exact path='/admin/crons' component={CronOptions} />
                     <AdminPrivateRoute exact path='/admin/providers' component={FreightProviders} />
                     <AdminPrivateRoute exact path='/admin/providers/add' component={AddFreightProviders} />
