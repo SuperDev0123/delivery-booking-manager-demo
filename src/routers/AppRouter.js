@@ -57,7 +57,7 @@ import Clients from '../pages/admin/views/Clients/Clients';
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
 import ClientRas from '../pages/admin/customerdashboard/ClientRas';
-
+import ClientRasAction from '../pages/admin/customerdashboard/ClientRas/ClientRasAction';
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
         <Fragment>
@@ -114,6 +114,9 @@ export const AppRouter = () => (
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
                     <AdminPrivateRoute exact path='/customerdashboard/dashboard' component={CustomerDashboard} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras' component={ClientRas} />
+                    <AdminPrivateRoute exact path='/customerdashboard/client-ras/add' component={ClientRasAction} />
+                    <AdminPrivateRoute exact path='/customerdashboard/client-ras/edit/:id' component={ClientRasAction} />
+                    <AdminPrivateRoute exact path='/customerdashboard/client-ras/duplicate/:id' component={ClientRasAction} />
                 </Main>
 
                 <Redirect to='/' />

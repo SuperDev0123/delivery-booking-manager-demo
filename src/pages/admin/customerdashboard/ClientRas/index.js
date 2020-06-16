@@ -3,17 +3,17 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 // Libs
-import axios from 'axios';
 // Components
 import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getClientRas } from '../../../../state/services/clientRasService';
+import { getAllClientRas, deleteClientRas } from '../../../../state/services/clientRasService';
 // Constants
-import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
-
+import BootstrapTable from 'react-bootstrap-table-next';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
+import { confirmAlert } from 'react-confirm-alert';
 class ClientRas extends Component {
     constructor(props) {
         super(props);
@@ -35,8 +35,9 @@ class ClientRas extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getClientRas: PropTypes.func.isRequired,
+        getAllClientRas: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
+        deleteClientRas: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -80,7 +81,7 @@ class ClientRas extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getClientRas();
+        this.props.getAllClientRas();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -88,63 +89,70 @@ class ClientRas extends Component {
         this.toggleDeleteFileConfirmModal();
     }
 
-    onClickConfirmDeleteFileBtn() {
-        const token = localStorage.getItem('token');
-        const {selectedFile, selectedFileOption} = this.state;
-
-        const options = {
-            method: 'delete',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/delete-file/',
-            headers: {'Authorization': 'JWT ' + token },
-            data: {deleteFileOption: selectedFileOption, fileName: selectedFile.file_name},
-        };
-
-        axios(options)
-            .then((response) => {
-                console.log('#301 - ', response.data);
-                this.notify('Deleted successfully!');
-                this.props.getClientRas();
-                this.toggleDeleteFileConfirmModal();
-            })
-            .catch(error => {
-                this.notify('Failed to delete a file: ' + error);
-                this.toggleDeleteFileConfirmModal();
-            });
+    removeClientRasDetails(event, fp){
+        confirmAlert({
+            title: 'Confirm to delete a Client Ras',
+            message: 'Are you sure to do this?',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => {this.props.deleteClientRas(fp);this.props.getAllClientRas();}
+                },
+                {
+                    label: 'No',
+                    onClick: () => console.log('Click No')
+                }
+            ]
+        });
+        
+        this.setState({loading: true});
+        event.preventDefault();
     }
-
     render() {
         const { loading, clientRases } = this.state;
+        const { SearchBar } = Search;
 
-        const clientRasesList = clientRases.map((item, index) => {
+        const actionButton = (cell, row) => {
             return (
-                <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{item.ra_number}</td>
-                    <td>{item.dme_number}</td>
-                    <td>{item.name_first}</td>
-                    <td>{item.name_surname}</td>
-                    <td>{item.phone_mobile}</td>
-                    <td>{item.address1}</td>
-                    <td>{item.address2}</td>
-                    <td>{item.suburb}</td>
-                    <td>{item.postal_code}</td>
-                    <td>{item.state}</td>
-                    <td>{item.country}</td>
-                    <td>{item.item_model_num}</td>
-                    <td>{item.description}</td>
-                    <td>{item.serial_number}</td>
-                    <td>{item.product_in_box}</td>
-                    <td>
-                        <button
-                            className="btn btn-danger"
-                            onClick={() => this.onClickDeleteFile(item, 'pricing-only')}
-                        >
-                            Delete
-                        </button>
-                    </td>
-                </tr>
+                <div>
+                    <a className="btn btn-success btn-sm" href={'/customerdashboard/client-ras/edit/'+row.id +'?action=edit'}><i className="fa fa-edit"></i></a>&nbsp;&nbsp;&nbsp;
+                    <a className="btn btn-success btn-sm" href={'/customerdashboard/client-ras/duplicate/'+row.id+'?action=duplicate'}><i className="fa fa-clone"></i></a>
+                &nbsp;&nbsp;&nbsp;<a className="btn btn-danger btn-sm" onClick={(e) => this.removeClientRasDetails(e, row)}><i className="fa fa-trash"></i></a>
+                </div>
             );
-        });
+        };
+
+        const tableColumns = [
+            {
+                dataField: 'id',
+                text: 'ID',
+                editable: false,
+                style: {
+                    backgroundColor: 'lightgray',
+                    cursor: 'not-allowed',
+                },
+            }, 
+            { dataField: 'ra_number', text: 'Ra Number' }, 
+            { dataField: 'dme_number', text: 'DME Number'}, 
+            { dataField: 'name_first', text: 'First Name'}, 
+            { dataField: 'name_surname', text: 'SurName'}, 
+            { dataField: 'phone_mobile', text: 'Mobile Phone'}, 
+            { dataField: 'address1', text: 'Address1'}, 
+            { dataField: 'address2', text: 'Address2'}, 
+            { dataField: 'suburb', text: 'Suburb'}, 
+            { dataField: 'postal_code', text: 'Postal Code'}, 
+            { dataField: 'state', text: 'State'}, 
+            { dataField: 'country', text: 'Country'}, 
+            { dataField: 'item_model_num', text: 'Item Model Num'}, 
+            { dataField: 'description', text: 'Description'}, 
+            { dataField: 'serial_number', text: 'Serial number'}, 
+            { dataField: 'product_in_box', text: 'Product In Box'}, 
+            {
+                dataField: 'button',
+                text: 'Actions',
+                formatter: actionButton
+            }
+        ];
 
         return (
             <div className="pricing-only">
@@ -171,40 +179,30 @@ class ClientRas extends Component {
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Return Authorization</h3>
                                     <div className="actions pull-right">
-                                        <a className="btn btn-success" href="/providers/add">Add New</a>
+                                        <a className="btn btn-success" href="/customerdashboard/client-ras/add?action=add">Add New</a>
                                     </div>
                                 </div>
                                 <div className="panel-body">
-                                    <button
-                                        className="btn btn-success btn-refresh"
-                                        onClick={() => this.onClickRefresh()}
+                                    <ToolkitProvider
+                                        id="sql_queries"
+                                        keyField="id"
+                                        data={clientRases}
+                                        columns={tableColumns}
+                                        bootstrap4={true}
+                                        search
                                     >
-                                        Refresh
-                                    </button> 
-                                    <table className="table table-hover table-bordered sortable fixed_headers">
-                                        <thead>
-                                            <th>No</th>
-                                            <th>RA Number</th>
-                                            <th>DME Number</th>
-                                            <th>First Name</th>
-                                            <th>SurName</th>
-                                            <th>Mobile Phone</th>
-                                            <th>Address1</th>
-                                            <th>Address2</th>
-                                            <th>Suburb</th>
-                                            <th>Postal Code</th>
-                                            <th>State</th>
-                                            <th>Country</th>
-                                            <th>Item Model Num</th>
-                                            <th>Description</th>
-                                            <th>Serial number</th>
-                                            <th>Product In Box</th>
-                                            <th>Actions</th>
-                                        </thead>
-                                        <tbody>
-                                            {clientRasesList}
-                                        </tbody>
-                                    </table>
+                                        {
+                                            props => (
+                                                <div>
+                                                    <SearchBar {...props.searchProps} />
+                                                    <hr />
+                                                    <BootstrapTable id="sql_queries"
+                                                        {...props.baseProps}
+                                                    />
+                                                </div>
+                                            )
+                                        }
+                                    </ToolkitProvider>
                                 </div>
                             </div>
                         </div>
@@ -239,7 +237,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getClientRas: () => dispatch(getClientRas()),
+        getAllClientRas: () => dispatch(getAllClientRas()),
+        deleteClientRas: (data) => dispatch(deleteClientRas(data)),
     };
 };
 
