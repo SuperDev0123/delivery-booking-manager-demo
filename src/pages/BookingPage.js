@@ -3227,7 +3227,7 @@ class BookingPage extends Component {
 
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-4">
+                                        <div className="col-sm-7">
                                             <button onClick={(e) => this.onClickPrev(e)} disabled={this.state.prevBookingId == 0} className="btn btn-theme prev-btn">
                                                 <i className="fa fa-caret-left"></i>
                                             </button>
@@ -3238,10 +3238,11 @@ class BookingPage extends Component {
                                             <button onClick={(e) => this.onClickRefreshBooking(e)} disabled={!this.state.booking} className="btn btn-theme mar-left-20 refresh-btn">
                                                 <i className="fa fa-sync"></i>
                                             </button>
-                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
-                                        </div>
-                                        <div className="col-sm-3">
-                                            <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
+                                            {(curViewMode !== 1
+                                                && booking && booking.x_booking_Created_With
+                                                && booking.x_booking_Created_With.indexOf('Duped') !== -1) &&
+                                                <label className="mar-left-20 color-white">({booking.x_booking_Created_With})</label>
+                                            }
                                         </div>
                                         <div className="col-sm-5">
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
