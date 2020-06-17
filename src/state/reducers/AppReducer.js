@@ -21,6 +21,7 @@ import { AvailabilityReducer } from './availabilityReducer';
 import { CostReducer } from './costReducer';
 import { PricingRuleReducer } from './pricingRuleReducer';
 import { UrlAdminReducer } from './urlAdminReducer';
+import { ClientRasReducer } from './ClientRasReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -44,4 +45,5 @@ export const AppReducer = combineReducers({
     cost: CostReducer,
     pricingRule: PricingRuleReducer,
     url: UrlAdminReducer,
+    clientRas: ClientRasReducer,
 });
