@@ -782,7 +782,7 @@ class BookingPage extends Component {
                     (this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate) 
                     && booking.pk_booking_id
                 ) {
-                    this.props.getZohoTickets(booking.id);
+                    this.props.getZohoTickets(booking.b_bookingID_Visual);
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -3226,7 +3226,7 @@ class BookingPage extends Component {
 
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-4">
+                                        <div className="col-sm-7">
                                             <button
                                                 onClick={(e) => this.onClickPrev(e)}
                                                 disabled={this.state.prevBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
@@ -3249,10 +3249,11 @@ class BookingPage extends Component {
                                             >
                                                 <i className="fa fa-sync"></i>
                                             </button>
-                                            <button onClick={(e) => this.onClickComms(e)} className="btn btn-primary btn-comms none">comms</button>
-                                        </div>
-                                        <div className="col-sm-3">
-                                            <p className="text-white text-right none">AUS Mon 18:00 2018-02-04</p>
+                                            {(curViewMode !== 1
+                                                && booking && booking.x_booking_Created_With
+                                                && booking.x_booking_Created_With.indexOf('Duped') !== -1) &&
+                                                <label className="mar-left-20 color-white">({booking.x_booking_Created_With})</label>
+                                            }
                                         </div>
                                         <div className="col-sm-5">
                                             <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
@@ -5787,7 +5788,7 @@ const mapDispatchToProps = (dispatch) => {
         saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
-        getZohoTickets:  (dmeid) => dispatch(getZohoTickets(dmeid)),
+        getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
     };
 };
 
