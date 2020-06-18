@@ -592,13 +592,13 @@ p.status-icon {
 	}
 }
 
+.checkbox {
+	width: 30px;
+	height: 30px;
+	display: inline-block;;
+}
 
 div.manual-book {
-	input {
-		height: 30px;
-		width: 30px;
-	}
-
 	p {
 		font-size: 16px;
 		display: inline-block;

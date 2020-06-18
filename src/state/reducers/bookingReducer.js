@@ -195,7 +195,7 @@ export const BookingReducer = (state = defaultState, {
         case RESET_PRICING_INFOS:
             return {
                 ...state,
-                pricingInfos: [],
+                pricingInfos: null,
             };
         case RESET_MANIFEST_REPORT:
             return {
@@ -647,9 +647,6 @@ export const BookingReducer = (state = defaultState, {
                 errorMessage: '',
             };
         case DO_NOTHING:
-            return {
-                ...state,
-            };
         default:
             return state;
     }

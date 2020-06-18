@@ -1966,6 +1966,11 @@ class BookingPage extends Component {
             } else {
                 alert('Only `DME` role users can use this feature');
             }
+        } else if (name === 'b_send_POD_eMail') {
+            let newBooking = this.state.booking;
+            newBooking.b_send_POD_eMail = !newBooking.b_send_POD_eMail;
+            this.props.updateBooking(newBooking.id, newBooking);
+            this.setState({loadingBookingUpdate: true, isBookingModified: false});
         } else {
             this.setState({[name]: value});
         }
@@ -4945,18 +4950,29 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
-                                                            <label className="" htmlFor="">Gaps</label>
+                                                            <label className="" htmlFor="">POD Email</label>
                                                         </div>
                                                         <div className="col-sm-9">
-                                                            <label className="show-mode">
-                                                                {booking ? booking.client_item_references : ''}
-                                                            </label>
+                                                            {isBookingSelected &&
+                                                                <input
+                                                                    className="checkbox"
+                                                                    name="b_send_POD_eMail"
+                                                                    type="checkbox"
+                                                                    checked={booking.b_send_POD_eMail}
+                                                                    onChange={(e) => this.handleInputChange(e)}
+                                                                    disabled={(clientname !== 'dme') || (curViewMode === 1) ? 'disabled' : ''}
+                                                                />
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="buttons">
                                                     <div className="text-center mt-2 fixed-height form-view-btns">
-                                                        <button className={(parseInt(curViewMode) === 1) ? 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} onClick={() => this.onClickCreateBooking()}>Create</button>
+                                                        <button
+                                                            className={(parseInt(curViewMode) === 1) ?
+                                                                'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} 
+                                                            onClick={() => this.onClickCreateBooking()}
+                                                        >Create</button>
                                                         <button
                                                             className={(parseInt(curViewMode) === 2) ?
                                                                 'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
@@ -5016,6 +5032,7 @@ class BookingPage extends Component {
                                                         (clientname === 'dme') ?
                                                             <div className="text-center mt-2 fixed-height manual-book">
                                                                 <input
+                                                                    className="checkbox"
                                                                     name="tickManualBook"
                                                                     type="checkbox"
                                                                     checked={formInputs['x_manual_booked_flag']}
