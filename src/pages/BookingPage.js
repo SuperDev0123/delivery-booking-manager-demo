@@ -782,7 +782,7 @@ class BookingPage extends Component {
                     (this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate) 
                     && booking.pk_booking_id
                 ) {
-                    this.props.getZohoTickets(booking.id);
+                    this.props.getZohoTickets(booking.b_bookingID_Visual);
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -5756,7 +5756,7 @@ const mapDispatchToProps = (dispatch) => {
         saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
-        getZohoTickets:  (dmeid) => dispatch(getZohoTickets(dmeid)),
+        getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
     };
 };
 
