@@ -150,11 +150,8 @@ class BookingPage extends Component {
             ],
             clientname: null,
             isBookingSelected: false,
-            warehouses: [],
             isShowSwitchClientModal: false,
-            dmeClients: [],
             statusHistories: [],
-            clientPK: null,
             typed: null,
             isShowLineSlider: false,
             isShowStatusHistorySlider: false,
@@ -167,7 +164,6 @@ class BookingPage extends Component {
             activeTabInd: 0,
             statusDetails: [],
             statusActions: [],
-            availableCreators: [],
             isShowStatusLockModal: false,
             isShowProjectDataSlider: false,
             isShowStatusDetailInput: false,
@@ -178,8 +174,6 @@ class BookingPage extends Component {
             isShowEmailLogSlider: false,
             bookingId: null,
             apiBCLs: [],
-            allFPs: [],
-            emailLogs: [],
             createdForInfos: [],
             currentNoteModalField: null,
             pricingInfos: [],
@@ -220,7 +214,6 @@ class BookingPage extends Component {
         this.attachmentsDz = null;
         this.labelDz = null;
         this.podDz = null;
-        this.handleOnSelectLineRow = this.handleOnSelectLineRow.bind(this);
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
@@ -311,6 +304,14 @@ class BookingPage extends Component {
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
+        // Data
+        allFPs: PropTypes.array.isRequired,
+        dmeClients: PropTypes.array.isRequired,
+        warehouses: PropTypes.array.isRequired,
+        emailLogs: PropTypes.array.isRequired,
+        availableCreators: PropTypes.array.isRequired,
+        clientPK: PropTypes.string.isRequired,
+        clientId: PropTypes.string.isRequired,
     };
 
     componentDidMount() {
@@ -351,14 +352,13 @@ class BookingPage extends Component {
             that.props.getStatusDetails();
             that.props.getStatusActions();
             that.props.getAvailableCreators();
-
         }, 3000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, clientId, warehouses, dmeClients, clientPK, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, availableCreators, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, allFPs, qtyTotal, cntComms, cntAttachments, isTickedManualBook, needUpdateBooking, pricingInfos, isAutoAugmented, emailLogs, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -376,28 +376,6 @@ class BookingPage extends Component {
             let commFormInputs = this.state.commFormInputs;
             commFormInputs['assigned_to'] = username;
             this.setState({username, commFormInputs});
-        }
-
-        if (allFPs) {
-            this.setState({ allFPs });
-        }
-
-        if (availableCreators) {
-            this.setState({availableCreators});
-        }
-
-        if (clientPK) {
-            const formInputs = this.state.formInputs;
-            formInputs['b_client_name'] = this.state.dmeClients[parseInt(clientPK)].company_name;
-            this.setState({clientPK, formInputs});
-        }
-
-        if (dmeClients) {
-            this.setState({dmeClients});
-        }
-
-        if (clientId) {
-            this.setState({clientId});
         }
 
         if (comms) {
@@ -442,10 +420,6 @@ class BookingPage extends Component {
             this.props.getStatusActions();
         }
 
-        if (warehouses) {
-            this.setState({warehouses});
-        }
-
         if (packageTypes) {
             this.setState({packageTypes});
         }
@@ -470,20 +444,8 @@ class BookingPage extends Component {
             this.setState({apiBCLs});
         }
 
-        if (emailLogs) {
-            this.setState({emailLogs});
-        }
-
         if (qtyTotal && qtyTotal > 0) {
             this.setState({ qtyTotal, cntAttachments });
-        }
-
-        if (isTickedManualBook === false) {
-            let currentBooking = this.state.booking;
-            let formInputs = this.state.formInputs;
-            currentBooking.x_manual_booked_flag = !formInputs['x_manual_booked_flag'];
-            formInputs['x_manual_booked_flag'] = !formInputs['x_manual_booked_flag'];
-            this.setState({booking: currentBooking, formInputs, loadingBookingUpdate: false});
         }
 
         if (bookingLines) {
@@ -594,8 +556,7 @@ class BookingPage extends Component {
                     const currentBooking = this.state.booking;
                     const res = isValid4Label(currentBooking);
 
-                    if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid'
-                    ) {
+                    if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid') {
                         this.notify(res);
                     } else {
                         this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
@@ -626,14 +587,18 @@ class BookingPage extends Component {
                 if (booking && booking.pu_Address_State) {
                     let states = _.clone(puStates);
                     let bHas = false;
+
                     for (let i = 0; i < states.length; i++ ){
                         if (states[i].label == booking.pu_Address_State) {
                             bHas = true;
                             break;
                         }
                     }
-                    if (bHas == false)
+
+                    if (bHas == false) {
                         states.push({'value':booking.pu_Address_State, 'label': booking.pu_Address_State});
+                    }
+
                     this.setState({puStates: states});        
                 } else {
                     this.setState({puStates});             
@@ -649,14 +614,18 @@ class BookingPage extends Component {
                 if (booking && booking.pu_Address_PostalCode) {
                     let postalcodes = _.clone(puPostalCodes);
                     let bHas = false;
+
                     for (let i = 0; i < postalcodes.length; i++ ){
                         if (postalcodes[i].label == booking.pu_Address_PostalCode) {
                             bHas = true;
                             break;
                         }
                     }
-                    if (bHas == false)
+
+                    if (bHas == false) {
                         postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
+                    }
+
                     this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
                 } else {
                     this.setState({puPostalCodes, loadingGeoPU: false});
@@ -670,14 +639,18 @@ class BookingPage extends Component {
                     if (booking && booking.pu_Address_Suburb) {
                         let suburbs = _.clone(puSuburbs);
                         let bHas = false;
+
                         for (let i = 0; i < suburbs.length; i++){
                             if (suburbs[i].label == booking.pu_Address_Suburb) {
                                 bHas = true;
                                 break;
                             }
                         }
-                        if (bHas == false)
+
+                        if (bHas == false) {
                             suburbs.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
+                        }
+
                         this.setState({puSuburbs: suburbs, loadingGeoPU: false});
                     } else {
                         this.setState({puSuburbs, loadingGeoPU: false});
@@ -693,14 +666,18 @@ class BookingPage extends Component {
                 if (booking && booking.de_To_Address_State) {
                     let states = _.clone(deToStates);
                     let bHas = false;
+
                     for (let i = 0; i < states.length; i++ ){
                         if (states[i].label == booking.de_To_Address_State) {
                             bHas = true;
                             break;
                         }
                     }
-                    if (bHas == false)
+
+                    if (bHas == false) {
                         states.push({'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State});
+                    }
+
                     this.setState({deToStates: states});        
                 } else {
                     this.setState({deToStates});                    
@@ -716,14 +693,18 @@ class BookingPage extends Component {
                 if (booking && booking.de_To_Address_PostalCode) {
                     let postalcode = _.clone(deToPostalCodes);
                     let bHas = false;
+
                     for (let i = 0; i < postalcode.length; i++ ){
                         if (postalcode[i].label == booking.de_To_Address_PostalCode) {
                             bHas = true;
                             break;
                         }
                     }
-                    if (bHas == false)
+
+                    if (bHas == false) {
                         postalcode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
+                    }
+
                     this.setState({deToPostalCodes: postalcode, loadingGeoDeTo: false});        
                 } else {
                     this.setState({deToPostalCodes, loadingGeoDeTo: false});             
@@ -737,14 +718,18 @@ class BookingPage extends Component {
                     if (booking && booking.de_To_Address_Suburb) {
                         let suburbs = _.clone(deToSuburbs);
                         let bHas = false;
+
                         for (let i = 0; i < suburbs.length; i++ ){
                             if (suburbs[i].label == booking.de_To_Address_Suburb) {
                                 bHas = true;
                                 break;
                             }
                         }
-                        if (bHas == false)
+
+                        if (bHas == false) {
                             suburbs.push({'value':booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb});
+                        }
+
                         this.setState({deToSuburbs: suburbs});        
                     } else {
                         this.setState({deToSuburbs});             
@@ -787,6 +772,11 @@ class BookingPage extends Component {
                 }
 
                 let formInputs = this.state.formInputs;
+
+                if (this.props.clientPK) {
+                    formInputs['b_client_name'] = this.props.dmeClients[parseInt(this.props.clientPK)].company_name;
+                }
+
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
@@ -988,7 +978,6 @@ class BookingPage extends Component {
                 else formInputs['b_handling_Instructions'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
                 
-
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
 
@@ -1022,7 +1011,7 @@ class BookingPage extends Component {
 
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
-                this.setState({ formInputs: {}, loading: false });
+                this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
                 if (!_.isNull(this.state.typed))
                     alert('There is no such booking with that DME/CON number.');
             }
@@ -1056,6 +1045,10 @@ class BookingPage extends Component {
         }
     }
 
+    notify = (text) => {
+        toast(text);
+    };
+
     afterSetState(type, data) {
         if (type === 0) {
             this.props.checkAugmentedBooking(data.id);
@@ -1070,6 +1063,76 @@ class BookingPage extends Component {
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
+    }
+
+    calcBookingLine(booking, bookingLines) {
+        let qty = 0;
+        let total_qty_collected = 0;
+        let total_qty_scanned = 0;
+        let b_fp_qty_delivered = 0;
+        let total_kgs = 0;
+        let cubic_meter = 0;
+
+        let newBookingLines = bookingLines.map((bookingLine) => {
+            if (bookingLine.e_weightUOM) {
+                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
+                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach * 1000;
+                else
+                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
+            } else {
+                bookingLine['total_kgs'] = 0;
+            }
+
+            if (bookingLine.e_dimUOM) {
+                if (bookingLine.e_dimUOM.toUpperCase() === 'CM' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'CENTIMETER')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'M')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+                else if (bookingLine.e_dimUOM.toUpperCase() === 'MILIMETER' ||
+                    bookingLine.e_dimUOM.toUpperCase() === 'MM')
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
+                else
+                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
+            } else {
+                bookingLine['cubic_meter'] = 0;
+            }
+
+            qty += bookingLine.e_qty;
+            total_kgs += bookingLine['total_kgs'];
+            cubic_meter += bookingLine['cubic_meter'];
+            total_qty_collected += bookingLine['e_qty_collected'];
+            total_qty_scanned += bookingLine['e_qty_scanned_fp'];
+            return bookingLine;
+        });
+
+        if (booking) {
+            b_fp_qty_delivered = booking.b_fp_qty_delivered;
+        }
+
+        this.setState({
+            bookingTotals: [{
+                id: 0,
+                qty,
+                total_qty_collected,
+                total_qty_scanned,
+                b_fp_qty_delivered: b_fp_qty_delivered,
+                total_kgs: total_kgs.toFixed(2),
+                cubic_meter: cubic_meter.toFixed(2)
+            }]
+        });
+
+        return newBookingLines;
     }
 
     getTime(country, city) {
@@ -1101,105 +1164,6 @@ class BookingPage extends Component {
         } else {
             return timeZoneTable[country][city];
         }
-    }
-
-    onHandleInput(e) {
-        const {isBookedBooking, clientname, formInputs, booking} = this.state;
-
-        if (clientname === 'dme' ||
-            isBookedBooking === false || 
-            (clientname.lower() === 'biopak' && !booking.manifest_timestamp))
-        {
-            if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
-                this.setState({isShowStatusDetailInput: true});
-            } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
-                this.setState({isShowStatusDetailInput: false});
-            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
-                this.setState({isShowStatusActionInput: true});
-            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
-                this.setState({isShowStatusDetailInput: false});
-            }
-
-            let canUpdateField = true;
-            if (!_.isEmpty(event.target.value)) {
-                if (event.target.name === 'pu_PickUp_Avail_Time_Hours' ||
-                    event.target.name === 'pu_PickUp_By_Time_Hours' ||
-                    event.target.name === 'de_Deliver_From_Hours' ||
-                    event.target.name === 'de_Deliver_By_Hours') {
-                    if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct hour!');
-                        canUpdateField = false;
-                    } else if (parseInt(event.target.value) > 23) {
-                        alert('Please input correct hour!');
-                        canUpdateField = false;
-                    }
-                }
-
-                if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
-                    event.target.name === 'pu_PickUp_By_Time_Minutes' ||
-                    event.target.name === 'de_Deliver_From_Minutes' ||
-                    event.target.name === 'de_Deliver_By_Minutes'
-                ) {
-                    if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct minutes!');
-                        canUpdateField = false;
-                    } else if (parseInt(event.target.value) > 59) {
-                        alert('Please input correct minutes!');
-                        canUpdateField = false;
-                    }
-                }
-            }
-
-            if (canUpdateField) {
-                if (e.target.name === 'inv_sell_quoted' ||
-                    e.target.name === 'inv_cost_quoted' ||
-                    e.target.name === 'inv_sell_actual' ||
-                    e.target.name === 'inv_cost_actual'
-                ) {
-                    let value = e.target.value.replace(',', '').replace('$', '');
-
-                    if (value == '' || value == null) {
-                        formInputs[e.target.name] = null;
-                        booking[e.target.name] = null;
-                    // } else if (value && _.isNaN(parseFloat(value))) {
-                        // this.notify('Please input float number!');
-                    } else {
-                        let value = e.target.value.replace(',', '').replace('$', '');
-                        formInputs[e.target.name] = value;
-                        booking[e.target.name] = value;
-                    }
-                } else {
-                    formInputs[e.target.name] = e.target.value;
-                    booking[e.target.name] = e.target.value;
-                }
-
-                this.setState({ formInputs, booking, isBookingModified: true });
-            }
-        }
-    }
-
-    onHandleInputBlur(e) {
-        let {formInputs, booking} = this.state;
-
-        if (e.target.name === 'inv_sell_quoted' ||
-            e.target.name === 'inv_cost_quoted' ||
-            e.target.name === 'inv_sell_actual' ||
-            e.target.name === 'inv_cost_actual'
-        ) {
-            let value = e.target.value.replace(',', '').replace('$', '');
-
-            if (value == '' || value == null) {
-                formInputs[e.target.name] = null;
-                booking[e.target.name] = null;
-            // } else if (value && _.isNaN(parseFloat(value))) {
-                // this.notify('Please input float number!');
-            } else {
-                formInputs[e.target.name] = parseFloat(value).toFixed(2);
-                booking[e.target.name] = parseFloat(value).toFixed(2);
-            }
-        }
-
-        this.setState({ formInputs, booking });
     }
 
     onClickViewFile(fileOption) {
@@ -1370,118 +1334,6 @@ class BookingPage extends Component {
         }
     }
 
-    onClickPrev(e){
-        e.preventDefault();
-        const {prevBookingId, isBookingModified} = this.state;
-
-        if (isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
-        } else {
-            if (prevBookingId && prevBookingId > -1) {
-                this.props.getBooking(prevBookingId, 'id');
-            }
-
-            this.setState({loading: true, curViewMode: 0});
-        }
-    }
-
-    onClickNext(e) {
-        e.preventDefault();
-        const {nextBookingId, isBookingModified} = this.state;
-
-        if (isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
-        } else {
-            if (nextBookingId && nextBookingId > -1) {
-                this.props.getBooking(nextBookingId, 'id');
-            }
-
-            this.setState({loading: true, curViewMode: 0});
-        }
-    }
-
-    onClickRefreshBooking(e) {
-        e.preventDefault();
-        const {isBookingModified, booking} = this.state;
-
-        if (isBookingModified) {
-            alert('You can lose modified booking info. Please update it');
-        } else {
-            this.props.getBooking(booking.id, 'id');
-            this.setState({loading: true, curViewMode: 0});
-        }
-    }
-
-    calcBookingLine(booking, bookingLines) {
-        let qty = 0;
-        let total_qty_collected = 0;
-        let total_qty_scanned = 0;
-        let b_fp_qty_delivered = 0;
-        let total_kgs = 0;
-        let cubic_meter = 0;
-
-        let newBookingLines = bookingLines.map((bookingLine) => {
-            if (bookingLine.e_weightUOM) {
-                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
-                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
-                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
-                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach * 1000;
-                else
-                    bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-            } else {
-                bookingLine['total_kgs'] = 0;
-            }
-
-            if (bookingLine.e_dimUOM) {
-                if (bookingLine.e_dimUOM.toUpperCase() === 'CM' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'CENTIMETER')
-                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'M')
-                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'MILIMETER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'MM')
-                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
-                else
-                    bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-            } else {
-                bookingLine['cubic_meter'] = 0;
-            }
-
-            qty += bookingLine.e_qty;
-            total_kgs += bookingLine['total_kgs'];
-            cubic_meter += bookingLine['cubic_meter'];
-            total_qty_collected += bookingLine['e_qty_collected'];
-            total_qty_scanned += bookingLine['e_qty_scanned_fp'];
-            return bookingLine;
-        });
-
-        if (booking) {
-            b_fp_qty_delivered = booking.b_fp_qty_delivered;
-        }
-
-        this.setState({
-            bookingTotals: [{
-                id: 0,
-                qty,
-                total_qty_collected,
-                total_qty_scanned,
-                b_fp_qty_delivered: b_fp_qty_delivered,
-                total_kgs: total_kgs.toFixed(2),
-                cubic_meter: cubic_meter.toFixed(2)
-            }]
-        });
-
-        return newBookingLines;
-    }
-
     onClickTrackingStatus() {
         const { booking } = this.state;
 
@@ -1499,6 +1351,7 @@ class BookingPage extends Component {
 
         if (isBookedBooking) {
             const result = isValid4Label(formInputs);
+
             if (result === 'valid') {
                 this.props.fpLabel(booking.id, booking.vx_freight_provider);
             } else {
@@ -1578,8 +1431,10 @@ class BookingPage extends Component {
                     if (booking.vx_freight_provider) {
                         if (booking.vx_freight_provider.toLowerCase() === 'cope') {
                             this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
-                        } else if (booking.vx_freight_provider.toLowerCase() === 'allied'
-                            || booking.vx_freight_provider.toLowerCase() === 'act') {
+                        } else if (
+                            booking.vx_freight_provider.toLowerCase() === 'allied' ||
+                            booking.vx_freight_provider.toLowerCase() === 'act'
+                        ) {
                             this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
                         } else {
                             this.props.fpBook(booking.id, booking.vx_freight_provider);
@@ -1588,7 +1443,7 @@ class BookingPage extends Component {
                         this.notify('Can not *Book* since booking has no Freight Provider');
                     }
                 } else {
-                    alert('Please Find any booking and then click this!');
+                    this.notify('Please Find any booking and then click this!');
                 }
             } else { // Manual booking
                 this.props.manualBook(booking.id);
@@ -1673,28 +1528,21 @@ class BookingPage extends Component {
         if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
 
-            if((selected == undefined) || (selected == '')){
-                alert('id value is empty');
+            if ((selected == undefined) || (selected == '')) {
+                this.notify('id value is empty');
                 return;
             }
-            if((typed == undefined) || (typed == '')){
-                alert('id value is empty');
+
+            if ((typed == undefined) || (typed == '')) {
+                this.notify('id value is empty');
                 return;
             }
+
             this.props.getBooking(typed, selected);
             this.setState({loading: true, curViewMode: 0});
         }
 
         this.setState({typed});
-    }
-
-    handleOnSelectLineRow(row, isSelect) {
-        if (isSelect) {
-            const {bookingLinesListProduct} = this.state;
-            var a = bookingLinesListProduct.indexOf(row);
-            // console.log('@a value' + a);
-            this.setState({deletedBookingLine: a});
-        }
     }
 
     onChangeText(e) {
@@ -1741,45 +1589,394 @@ class BookingPage extends Component {
         }
     };
 
+    onHandleInput(e) {
+        const {isBookedBooking, clientname, formInputs, booking} = this.state;
+
+        if (clientname === 'dme' ||
+            isBookedBooking === false || 
+            (clientname.lower() === 'biopak' && !booking.manifest_timestamp))
+        {
+            if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
+                this.setState({isShowStatusDetailInput: true});
+            } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
+                this.setState({isShowStatusDetailInput: false});
+            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+                this.setState({isShowStatusActionInput: true});
+            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+                this.setState({isShowStatusDetailInput: false});
+            }
+
+            let canUpdateField = true;
+            if (!_.isEmpty(event.target.value)) {
+                if (event.target.name === 'pu_PickUp_Avail_Time_Hours' ||
+                    event.target.name === 'pu_PickUp_By_Time_Hours' ||
+                    event.target.name === 'de_Deliver_From_Hours' ||
+                    event.target.name === 'de_Deliver_By_Hours') {
+                    if (_.isNaN(parseInt(event.target.value))) {
+                        alert('Please input correct hour!');
+                        canUpdateField = false;
+                    } else if (parseInt(event.target.value) > 23) {
+                        alert('Please input correct hour!');
+                        canUpdateField = false;
+                    }
+                }
+
+                if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
+                    event.target.name === 'pu_PickUp_By_Time_Minutes' ||
+                    event.target.name === 'de_Deliver_From_Minutes' ||
+                    event.target.name === 'de_Deliver_By_Minutes'
+                ) {
+                    if (_.isNaN(parseInt(event.target.value))) {
+                        alert('Please input correct minutes!');
+                        canUpdateField = false;
+                    } else if (parseInt(event.target.value) > 59) {
+                        alert('Please input correct minutes!');
+                        canUpdateField = false;
+                    }
+                }
+            }
+
+            if (canUpdateField) {
+                if (e.target.name === 'inv_sell_quoted' ||
+                    e.target.name === 'inv_cost_quoted' ||
+                    e.target.name === 'inv_sell_actual' ||
+                    e.target.name === 'inv_cost_actual'
+                ) {
+                    let value = e.target.value.replace(',', '').replace('$', '');
+
+                    if (value == '' || value == null) {
+                        formInputs[e.target.name] = null;
+                    } else {
+                        let value = e.target.value.replace(',', '').replace('$', '');
+                        formInputs[e.target.name] = value;
+                    }
+                } else {
+                    formInputs[e.target.name] = e.target.value;
+                }
+
+                this.setState({ formInputs, isBookingModified: true });
+            }
+        }
+    }
+
+    onHandleInputBlur(e) {
+        let {formInputs} = this.state;
+
+        if (e.target.name === 'inv_sell_quoted' ||
+            e.target.name === 'inv_cost_quoted' ||
+            e.target.name === 'inv_sell_actual' ||
+            e.target.name === 'inv_cost_actual'
+        ) {
+            let value = e.target.value.replace(',', '').replace('$', '');
+
+            if (value == '' || value == null) {
+                formInputs[e.target.name] = null;
+            // } else if (value && _.isNaN(parseFloat(value))) {
+                // this.notify('Please input float number!');
+            } else {
+                formInputs[e.target.name] = parseFloat(value).toFixed(2);
+            }
+        }
+
+        this.setState({ formInputs });
+    }
+
     handleChangeSelect = (selectedOption, fieldName) => {
-        const {formInputs, booking, createdForInfos} = this.state;
+        const {formInputs, createdForInfos} = this.state;
 
         if (fieldName === 'warehouse') {
             formInputs['b_client_warehouse_code'] = selectedOption.value;
             formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
-            booking['b_client_warehouse_code'] = formInputs['b_client_warehouse_code'];
-            booking['b_clientPU_Warehouse'] = formInputs['b_clientPU_Warehouse'];
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
-            booking['b_client_name'] = formInputs['b_client_name'];
         } else if (fieldName === 'vx_freight_provider') {
             formInputs['vx_freight_provider'] = selectedOption.value;
-            booking['vx_freight_provider'] = formInputs['vx_freight_provider'];
         } else if (fieldName === 'inv_billing_status') {
             formInputs['inv_billing_status'] = selectedOption.value;
-            booking['inv_billing_status'] = formInputs['inv_billing_status'];
         } else if (fieldName === 'b_booking_Priority') {
             formInputs['b_booking_Priority'] = {'value': selectedOption.value, 'label': selectedOption.value};
-            booking['b_booking_Priority'] = selectedOption.value;
         } else if (fieldName === 'b_booking_Category') {
             formInputs['b_booking_Category'] = {'value': selectedOption.value, 'label': selectedOption.value};
-            booking['b_booking_Category'] = selectedOption.value;
         } else if (fieldName == 'booking_Created_For') {
             const createdForInfo = createdForInfos.filter(info => info.id === selectedOption.value);
             formInputs['booking_Created_For'] = {'value': selectedOption.value, 'label': selectedOption.label};
-            booking['booking_Created_For'] = selectedOption.label;
 
             if (createdForInfo.length > 0) {
                 formInputs['booking_Created_For_Email'] = createdForInfo[0]['email'];
-                booking['booking_Created_For_Email'] = createdForInfo[0]['email'];
             }
         }
 
-        this.setState({formInputs, booking, isBookingModified: true});
+        this.setState({formInputs, isBookingModified: true});
+    }
+
+    onDateChange(date, fieldName) {
+        const formInputs = this.state.formInputs;
+
+        if (date) {
+            formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
+        } else {
+            formInputs[fieldName] = null;
+        }
+
+        if (fieldName === 'fp_store_event_date') {
+            formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
+            formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
+        }
+
+        this.setState({formInputs, isBookingModified: true});
+    }
+
+    onChangeDateTime(date, fieldName) {
+        const commFormInputs = this.state.commFormInputs;
+        const formInputs = this.state.formInputs;
+        const booking = this.state.booking;
+
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+
+        if (fieldName === 'due_date_time') {
+            commFormInputs['due_date_time'] = conveted_date;
+            commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
+            commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
+            this.setState({commFormInputs});
+        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
+            fieldName === 's_20_Actual_Pickup_TimeStamp' ||
+            fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
+            fieldName === 's_21_Actual_Delivery_TimeStamp') {
+            formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            this.setState({formInputs});
+        } else if (fieldName === 'b_given_to_transport_date_time') {
+            if (conveted_date) {
+                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            } else {
+                formInputs[fieldName] = null;
+
+                if (booking.fp_received_date_time) {
+                    formInputs['z_calculated_ETA'] = moment(booking.fp_received_date_time).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                } else {
+                    formInputs['z_calculated_ETA'] = null;
+                }
+            }
+            this.setState({formInputs});
+        } else if (fieldName === 'fp_received_date_time') {
+            if (!conveted_date) {
+                formInputs['z_calculated_ETA'] = null;
+                formInputs[fieldName] = null;
+            } else if (conveted_date && !booking.b_given_to_transport_date_time) {
+                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            } else {
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            }
+            this.setState({formInputs});
+        } else {
+            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            this.setState({formInputs});
+        }
+
+        this.setState({isBookingModified: true});
+    }
+
+    handleInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        if (name === 'tickManualBook') {
+            const {booking, clientname} = this.state;
+
+            if (clientname === 'dme') {
+                this.props.tickManualBook(booking.id);
+                this.setState({loadingBookingUpdate: true, curViewMode: 2});
+            } else {
+                this.notify('Only `DME` role users can use this feature');
+            }
+        } else if (name === 'b_send_POD_eMail') {
+            let newBooking = this.state.booking;
+            newBooking.b_send_POD_eMail = !newBooking.b_send_POD_eMail;
+            this.props.updateBooking(newBooking.id, newBooking);
+            this.setState({loadingBookingUpdate: true});
+        } else {
+            this.setState({[name]: value});
+        }
+    }
+
+    onChangeTime(time, type) {
+        const {formInputs} = this.state;
+
+        if (type === 's_02_Booking_Cutoff_Time') {
+            formInputs[type] = time;
+        }
+
+        this.setState({formInputs});
+    }
+
+    handleRadioInputChange(type) {
+        const {formInputs} = this.state;
+        formInputs['x_ReadyStatus'] = type;
+        this.setState({formInputs});
+    }
+
+    onClickCreateBooking() {
+        const {formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
+        const {clientPK, clientId} = this.props;
+
+        if (isShowStatusDetailInput && 
+            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) {
+            alert('Please select or input Status Detail');
+        } else if (isShowStatusActionInput && 
+            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
+            alert('Please select or input Status Action');
+        } else if (parseInt(this.state.curViewMode) === 1) {
+            if (isShowStatusDetailInput) {
+                formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
+                this.props.createStatusDetail(formInputs['dme_status_detail']);
+            }
+
+            if (isShowStatusActionInput) {
+                formInputs['dme_status_action'] = formInputs['new_dme_status_action'];
+                this.props.createStatusAction(formInputs['dme_status_action']);
+            }
+
+            if (clientPK === 0 || clientname !== 'dme') {
+                formInputs['z_CreatedByAccount'] = clientname;
+                // formInputs['b_client_name'] = clientname;
+                formInputs['kf_client_id'] = clientId;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+
+                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
+                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+                    formInputs['fk_client_warehouse'] = 100;
+                }
+            } else {
+                formInputs['z_CreatedByAccount'] = 'dme';
+
+                let ind = 0;
+                for (let i = 0; i < this.props.dmeClients.length; i++) {
+                    if (parseInt(this.props.dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
+                        ind = i;
+                        break;
+                    }
+                }
+
+                formInputs['kf_client_id'] = this.props.dmeClients[ind].dme_account_num;
+                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+            }
+
+            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? null : formInputs['pu_PickUp_Avail_Time_Hours'];
+            formInputs['pu_PickUp_By_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours']) ? null : formInputs['pu_PickUp_By_Time_Hours'];
+            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? null : formInputs['de_Deliver_From_Hours'];
+            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? null : formInputs['de_Deliver_By_Hours'];
+
+            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? null : formInputs['pu_PickUp_Avail_Time_Minutes'];
+            formInputs['pu_PickUp_By_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes']) ? null : formInputs['pu_PickUp_By_Time_Minutes'];
+            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? null : formInputs['de_Deliver_From_Minutes'];
+            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? null : formInputs['de_Deliver_By_Minutes'];
+
+            formInputs['pu_Address_State'] = puState ? puState.label : '';
+            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
+            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
+            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
+            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
+            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+
+            if (_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']))
+                formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+            if (_.isUndefined(formInputs['s_06_Latest_Delivery_Date_TimeSet']))
+                formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
+            if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
+                formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
+            if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
+                formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
+
+            formInputs['b_status'] = 'Entered';
+
+            const res = isFormValid('booking', formInputs);
+            if (res === 'valid') {
+                this.props.saveBooking(formInputs);
+                this.setState({loadingBookingSave: true});
+            } else {
+                this.notify(res);
+            }
+        }
+    }
+
+    onClickUpdateBooking() {
+        const {clientname, isBookedBooking, booking} = this.state;
+
+        if (isBookedBooking &&
+            clientname.toLowerCase() !== 'dme' &&
+            clientname.toLowerCase() !== 'biopak')
+        {
+            this.notify('Booking is already Booked!');
+        } else if (clientname.toLowerCase() === 'biopak' &&
+            !_.isNull(booking.manifest_timestamp) &&
+            !_.isUndefined(booking.manifest_timestamp) &&
+            !_.isEmpty(booking.manifest_timestamp))
+        {
+            this.notify('Booking is already Manifested!');
+        }
+        else {
+            const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
+            let bookingToUpdate = this.state.booking;
+
+            if (isShowStatusDetailInput && 
+                (_.isNull(bookingToUpdate.new_dme_status_detail) || _.isEmpty(bookingToUpdate.new_dme_status_detail))) {
+                alert('Please select or input Status Detail');
+            } else if (isShowStatusActionInput && 
+                (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
+                alert('Please select or input Status Action');
+            } else if (parseInt(this.state.curViewMode) === 2) {
+                if (isShowStatusDetailInput) {
+                    bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
+                    this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
+                }
+
+                if (isShowStatusActionInput) {
+                    bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
+                    this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
+                }
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Hours = bookingToUpdate.pu_PickUp_Avail_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
+                bookingToUpdate.pu_PickUp_By_Time_Hours = bookingToUpdate.pu_PickUp_By_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
+                bookingToUpdate.de_Deliver_From_Hours = bookingToUpdate.de_Deliver_From_Hours === '' ? null : bookingToUpdate.de_Deliver_From_Hours;
+                bookingToUpdate.de_Deliver_By_Hours = bookingToUpdate.de_Deliver_By_Hours === '' ? null : bookingToUpdate.de_Deliver_By_Hours;
+
+                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = bookingToUpdate.pu_PickUp_Avail_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
+                bookingToUpdate.pu_PickUp_By_Time_Minutes = bookingToUpdate.pu_PickUp_By_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
+                bookingToUpdate.de_Deliver_From_Minutes = bookingToUpdate.de_Deliver_From_Minutes === '' ? null : bookingToUpdate.de_Deliver_From_Minutes;
+                bookingToUpdate.de_Deliver_By_Minutes = bookingToUpdate.de_Deliver_By_Minutes === '' ? null : bookingToUpdate.de_Deliver_By_Minutes;
+
+                bookingToUpdate.pu_Address_State = this.state.puState.label;
+                bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
+                bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
+                bookingToUpdate.de_To_Address_State = this.state.deToState.label;
+                bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
+                bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
+
+                if (_.isUndefined(bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet']))
+                    bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+                if (_.isUndefined(bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet']))
+                    bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet'] = null;
+                if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
+                    bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
+                if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
+                    bookingToUpdate['s_21_Actual_Delivery_TimeStamp'] = null;
+
+                const res = isFormValid('booking', bookingToUpdate);
+                if (res === 'valid') {
+                    this.props.updateBooking(booking.id, bookingToUpdate);
+                    this.setState({loadingBookingUpdate: true, isBookingModified: false});
+                } else {
+                    this.notify(res);
+                }
+            }
+        }
     }
 
     getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
-        const warehouses = this.state.warehouses;
+        const {warehouses} = this.props;
 
         for (let i = 0; i < warehouses.length; i++) {
             if (warehouses[i].client_warehouse_code === warehouseCode) {
@@ -1792,9 +1989,10 @@ class BookingPage extends Component {
         }
     }
 
-    handlePost(e, type) {
+    handleUpload(e, type) {
         e.preventDefault();
         const {booking} = this.state;
+
         if (booking != null && booking.id != null) {
             const that = this;
             this.setState({uploadOption: type});
@@ -1868,7 +2066,7 @@ class BookingPage extends Component {
             this.setState({loadingBookingLineDetail: true});
         } else if (typeNum === 2) { // On click `Duplicate Booking` button
             if (!booking.hasOwnProperty('id')) {
-                alert('Please select a booking.');
+                this.notify('Please select a booking.');
             } else {
                 this.toggleDuplicateBookingOptionsModal();
             }
@@ -1881,7 +2079,7 @@ class BookingPage extends Component {
     }
 
     onClickDeleteLineOrLineData(typeNum, row) {
-        console.log('onDelete: ', typeNum, row);
+        console.log('#204 onDelete: ', typeNum, row);
 
         if (typeNum === 0) { // Duplicate line
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
@@ -1892,28 +2090,6 @@ class BookingPage extends Component {
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
         }
-    }
-
-    onUpdateBookingLine(oldValue, newValue, row, column) {
-        console.log('onUpdateBookingLine: ', row, oldValue, newValue, column);
-
-        let products = this.state.products;
-        let updatedBookingLine = { pk_lines_id: row.pk_lines_id };
-        updatedBookingLine[column.dataField] = newValue;
-        updatedBookingLine['e_1_Total_dimCubicMeter'] = this.getCubicMeter(row);
-        updatedBookingLine['total_2_cubic_mass_factor_calc'] = Number.parseFloat(updatedBookingLine['e_1_Total_dimCubicMeter']).toFixed(4) * 250;
-        updatedBookingLine['e_Total_KG_weight'] = this.getTotalWeight(row);
-
-        for (let i = 0; i < products.length; i++) {
-            if (products[i].pk_lines_id === row.pk_lines_id) {
-                products[i]['e_Total_KG_weight'] = updatedBookingLine['e_Total_KG_weight'].toFixed(2);
-                products[i]['e_1_Total_dimCubicMeter'] = updatedBookingLine['e_1_Total_dimCubicMeter'].toFixed(2);
-                products[i]['total_2_cubic_mass_factor_calc'] = updatedBookingLine['total_2_cubic_mass_factor_calc'].toFixed(2);
-            }
-        }
-        
-        this.props.updateBookingLine(updatedBookingLine);
-        this.setState({loadingBookingLine: true, products});
     }
 
     getCubicMeter(row) {
@@ -1939,41 +2115,8 @@ class BookingPage extends Component {
             return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) * 1000;
     }
 
-    onUpdateBookingLineDetail(oldValue, newValue, row, column) {
-        console.log('onUpdateBookingLineDetail: ', row, oldValue, newValue, column);
-
-        let updatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
-        updatedBookingLineDetail[column.dataField] = newValue;
-        this.props.updateBookingLineDetail(updatedBookingLineDetail);
-        this.setState({loadingBookingLineDetail: true});
-    }
-
     toggleDuplicateBookingOptionsModal() {
         this.setState(prevState => ({isShowDuplicateBookingOptionsModal: !prevState.isShowDuplicateBookingOptionsModal}));
-    }
-
-    handleInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        if (name === 'tickManualBook') {
-            const {booking, clientname} = this.state;
-
-            if (clientname === 'dme') {
-                this.props.tickManualBook(booking.id);
-                this.setState({loadingBookingUpdate: true, curViewMode: 2});
-            } else {
-                alert('Only `DME` role users can use this feature');
-            }
-        } else if (name === 'b_send_POD_eMail') {
-            let newBooking = this.state.booking;
-            newBooking.b_send_POD_eMail = !newBooking.b_send_POD_eMail;
-            this.props.updateBooking(newBooking.id, newBooking);
-            this.setState({loadingBookingUpdate: true, isBookingModified: false});
-        } else {
-            this.setState({[name]: value});
-        }
     }
 
     handleCommModalInputChange(event) {
@@ -2237,9 +2380,51 @@ class BookingPage extends Component {
         const {booking} = this.state;
 
         if (!booking) {
-            alert('Please select booking to edit');
+            this.notify('Please select booking to edit');
         } else {
             this.props.fpEditBook(booking.id, booking.vx_freight_provider);
+        }
+    }
+
+    onClickPrev(e){
+        e.preventDefault();
+        const {prevBookingId, isBookingModified} = this.state;
+
+        if (isBookingModified) {
+            this.notify('You can lose modified booking info. Please update it');
+        } else {
+            if (prevBookingId && prevBookingId > -1) {
+                this.props.getBooking(prevBookingId, 'id');
+            }
+
+            this.setState({loading: true, curViewMode: 0});
+        }
+    }
+
+    onClickNext(e) {
+        e.preventDefault();
+        const {nextBookingId, isBookingModified} = this.state;
+
+        if (isBookingModified) {
+            this.notify('You can lose modified booking info. Please update it');
+        } else {
+            if (nextBookingId && nextBookingId > -1) {
+                this.props.getBooking(nextBookingId, 'id');
+            }
+
+            this.setState({loading: true, curViewMode: 0});
+        }
+    }
+
+    onClickRefreshBooking(e) {
+        e.preventDefault();
+        const {isBookingModified, booking} = this.state;
+
+        if (isBookingModified) {
+            this.notify('You can lose modified booking info. Please update it');
+        } else {
+            this.props.getBooking(booking.id, 'id');
+            this.setState({loading: true, curViewMode: 0});
         }
     }
 
@@ -2289,8 +2474,10 @@ class BookingPage extends Component {
 
     showCreateView() {
         const {isBookingSelected} = this.state;
-        
+        const {clientPK} = this.props;
+
         if (isBookingSelected) {
+            console.log('@1 - ', this.props.dmeClients, this.props.clientPK);
             this.setState({
                 isBookingSelected: false, 
                 products: [], 
@@ -2305,169 +2492,9 @@ class BookingPage extends Component {
                 formInputs: {
                     pu_Address_Country: 'AU',
                     de_To_Address_Country: 'AU',
+                    b_client_name: this.props.dmeClients[parseInt(clientPK)].company_name,
                 },
             });
-        }
-    }
-
-    notify = (text) => {
-        toast(text);
-    };
-
-    onClickCreateBooking() {
-        const {formInputs, clientname, clientId, dmeClients, clientPK, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
-
-        if (isShowStatusDetailInput && 
-            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) {
-            alert('Please select or input Status Detail');
-        } else if (isShowStatusActionInput && 
-            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
-            alert('Please select or input Status Action');
-        } else if (parseInt(this.state.curViewMode) === 1) {
-            if (isShowStatusDetailInput) {
-                formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
-                this.props.createStatusDetail(formInputs['dme_status_detail']);
-            }
-
-            if (isShowStatusActionInput) {
-                formInputs['dme_status_action'] = formInputs['new_dme_status_action'];
-                this.props.createStatusAction(formInputs['dme_status_action']);
-            }
-
-            if (clientPK === 0 || clientname !== 'dme') {
-                formInputs['z_CreatedByAccount'] = clientname;
-                // formInputs['b_client_name'] = clientname;
-                formInputs['kf_client_id'] = clientId;
-                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-
-                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
-                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
-                    formInputs['fk_client_warehouse'] = 100;
-                }
-            } else {
-                formInputs['z_CreatedByAccount'] = 'dme';
-
-                let ind = 0;
-                for (let i = 0; i < dmeClients.length; i++) {
-                    if (parseInt(dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
-                        ind = i;
-                        break;
-                    }
-                }
-
-                // formInputs['b_client_name'] = dmeClients[ind].company_name;
-                formInputs['kf_client_id'] = dmeClients[ind].dme_account_num;
-                formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-            }
-
-            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? null : formInputs['pu_PickUp_Avail_Time_Hours'];
-            formInputs['pu_PickUp_By_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours']) ? null : formInputs['pu_PickUp_By_Time_Hours'];
-            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? null : formInputs['de_Deliver_From_Hours'];
-            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? null : formInputs['de_Deliver_By_Hours'];
-
-            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? null : formInputs['pu_PickUp_Avail_Time_Minutes'];
-            formInputs['pu_PickUp_By_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes']) ? null : formInputs['pu_PickUp_By_Time_Minutes'];
-            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? null : formInputs['de_Deliver_From_Minutes'];
-            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? null : formInputs['de_Deliver_By_Minutes'];
-
-            formInputs['pu_Address_State'] = puState ? puState.label : '';
-            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
-            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
-            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
-            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
-            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
-
-            if (_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']))
-                formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
-            if (_.isUndefined(formInputs['s_06_Latest_Delivery_Date_TimeSet']))
-                formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
-            if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
-                formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
-            if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
-                formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
-
-            formInputs['b_status'] = 'Entered';
-
-            const res = isFormValid('booking', formInputs);
-            if (res === 'valid') {
-                this.props.saveBooking(formInputs);
-                this.setState({loadingBookingSave: true});
-            } else {
-                this.notify(res);
-            }
-        }
-    }
-
-    onClickUpdateBooking() {
-        const {clientname, isBookedBooking, booking} = this.state;
-
-        if (isBookedBooking &&
-            clientname.toLowerCase() !== 'dme' &&
-            clientname.toLowerCase() !== 'biopak')
-        {
-            this.notify('Booking is already Booked!');
-        } else if (clientname.toLowerCase() === 'biopak' &&
-            !_.isNull(booking.manifest_timestamp) &&
-            !_.isUndefined(booking.manifest_timestamp) &&
-            !_.isEmpty(booking.manifest_timestamp))
-        {
-            this.notify('Booking is already Manifested!');
-        }
-        else {
-            const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
-            let bookingToUpdate = this.state.booking;
-
-            if (isShowStatusDetailInput && 
-                (_.isNull(bookingToUpdate.new_dme_status_detail) || _.isEmpty(bookingToUpdate.new_dme_status_detail))) {
-                alert('Please select or input Status Detail');
-            } else if (isShowStatusActionInput && 
-                (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
-                alert('Please select or input Status Action');
-            } else if (parseInt(this.state.curViewMode) === 2) {
-                if (isShowStatusDetailInput) {
-                    bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
-                    this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
-                }
-
-                if (isShowStatusActionInput) {
-                    bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
-                    this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
-                }
-
-                bookingToUpdate.pu_PickUp_Avail_Time_Hours = bookingToUpdate.pu_PickUp_Avail_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
-                bookingToUpdate.pu_PickUp_By_Time_Hours = bookingToUpdate.pu_PickUp_By_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
-                bookingToUpdate.de_Deliver_From_Hours = bookingToUpdate.de_Deliver_From_Hours === '' ? null : bookingToUpdate.de_Deliver_From_Hours;
-                bookingToUpdate.de_Deliver_By_Hours = bookingToUpdate.de_Deliver_By_Hours === '' ? null : bookingToUpdate.de_Deliver_By_Hours;
-
-                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = bookingToUpdate.pu_PickUp_Avail_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
-                bookingToUpdate.pu_PickUp_By_Time_Minutes = bookingToUpdate.pu_PickUp_By_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
-                bookingToUpdate.de_Deliver_From_Minutes = bookingToUpdate.de_Deliver_From_Minutes === '' ? null : bookingToUpdate.de_Deliver_From_Minutes;
-                bookingToUpdate.de_Deliver_By_Minutes = bookingToUpdate.de_Deliver_By_Minutes === '' ? null : bookingToUpdate.de_Deliver_By_Minutes;
-
-                bookingToUpdate.pu_Address_State = this.state.puState.label;
-                bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
-                bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
-                bookingToUpdate.de_To_Address_State = this.state.deToState.label;
-                bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
-                bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
-
-                if (_.isUndefined(bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet']))
-                    bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
-                if (_.isUndefined(bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet']))
-                    bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet'] = null;
-                if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
-                    bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
-                if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
-                    bookingToUpdate['s_21_Actual_Delivery_TimeStamp'] = null;
-
-                const res = isFormValid('booking', bookingToUpdate);
-                if (res === 'valid') {
-                    this.props.updateBooking(booking.id, bookingToUpdate);
-                    this.setState({loadingBookingUpdate: true, isBookingModified: false});
-                } else {
-                    this.notify(res);
-                }
-            }
         }
     }
 
@@ -2483,6 +2510,7 @@ class BookingPage extends Component {
 
     OnCreateStatusHistory(statusHistory) {
         const {booking} = this.state;
+
         statusHistory['dme_status_detail'] = booking.dme_status_detail;
         statusHistory['dme_status_action'] = booking.dme_status_action;
         statusHistory['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
@@ -2518,7 +2546,7 @@ class BookingPage extends Component {
                 this.onChangeStatusLock(booking);
             }
         } else {
-            alert('Locked status only allowed by dme user');
+            this.notify('Locked status only allowed by dme user');
         }
     }
 
@@ -2543,119 +2571,26 @@ class BookingPage extends Component {
     }
 
     onUpdateStatusNote(note) {
-        let newBooking = this.state.booking;
         let formInputs = this.state.formInputs;
         const {currentNoteModalField} = this.state;
 
-        newBooking[currentNoteModalField] = note;
         formInputs[currentNoteModalField] = note;
-        this.setState({booking: newBooking, formInputs, isBookingModified: true});
+        this.setState({formInputs, isBookingModified: true});
         this.toggleStatusNoteModal();
     }
 
     onClearStatusNote() {
-        let newBooking = this.state.booking;
         let formInputs = this.state.formInputs;
         const {currentNoteModalField} = this.state;
 
-        newBooking[currentNoteModalField] = '';
         formInputs[currentNoteModalField] = '';
-        this.setState({booking: newBooking, formInputs, isBookingModified: true});
+        this.setState({formInputs, isBookingModified: true});
         this.toggleStatusNoteModal();
     }
 
     onDeleteBtnClick(commId) {
         this.setState({selectedCommId: commId});
         this.toggleDeleteCommConfirmModal();
-    }
-
-    onClickConfirmDeleteCommBtn() {
-    }
-
-    onDateChange(date, fieldName) {
-        const formInputs = this.state.formInputs;
-        const booking = this.state.booking;
-
-        if (date) {
-            formInputs[fieldName] = moment(date).format('YYYY-MM-DD');
-            booking[fieldName] = moment(date).format('YYYY-MM-DD');
-        } else {
-            formInputs[fieldName] = null;
-            booking[fieldName] = null;
-        }
-
-        if (fieldName === 'fp_store_event_date') {
-            formInputs['de_Deliver_From_Date'] = formInputs[fieldName];
-            formInputs['de_Deliver_By_Date'] = formInputs[fieldName];
-            booking['de_Deliver_From_Date'] = booking[fieldName];
-            booking['de_Deliver_By_Date'] = booking[fieldName];
-        }
-
-        this.setState({formInputs, booking, isBookingModified: true});
-    }
-
-    onChangeDateTime(date, fieldName) {
-        const commFormInputs = this.state.commFormInputs;
-        const formInputs = this.state.formInputs;
-        const booking = this.state.booking;
-
-        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
-
-        if (fieldName === 'due_date_time') {
-            commFormInputs['due_date_time'] = conveted_date;
-            commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
-            this.setState({commFormInputs});
-        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
-            fieldName === 's_20_Actual_Pickup_TimeStamp' ||
-            fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
-            fieldName === 's_21_Actual_Delivery_TimeStamp') {
-            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            this.setState({formInputs, booking});
-        } else if (fieldName === 'b_given_to_transport_date_time') {
-            if (conveted_date) {
-                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                booking['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            } else {
-                formInputs[fieldName] = null;
-                booking[fieldName] = null;
-
-                if (booking.fp_received_date_time) {
-                    formInputs['z_calculated_ETA'] = moment(booking.fp_received_date_time).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                    booking['z_calculated_ETA'] = moment(booking.fp_received_date_time).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                } else {
-                    formInputs['z_calculated_ETA'] = null;
-                    booking['z_calculated_ETA'] = null;
-                }
-            }
-            this.setState({formInputs, booking});
-        } else if (fieldName === 'fp_received_date_time') {
-            if (!conveted_date) {
-                formInputs['z_calculated_ETA'] = null;
-                booking['z_calculated_ETA'] = null;
-                formInputs[fieldName] = null;
-                booking[fieldName] = null;
-            } else if (conveted_date && !booking.b_given_to_transport_date_time) {
-                formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                booking['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            } else {
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-                booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            }
-            this.setState({formInputs, booking});
-        } else {
-            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
-            this.setState({formInputs, booking});
-        }
-
-        this.setState({isBookingModified: true});
     }
 
     onClickFC() { // On click Freight Calculation button
@@ -2666,10 +2601,9 @@ class BookingPage extends Component {
     }
 
     onClickOpenPricingSlider() {
-        const {booking} = this.state;
         this.setState({loadingPricingInfos: true});
         this.toggleFPPricingSlider();
-        this.props.getPricingInfos(booking.pk_booking_id);
+        this.props.getPricingInfos(this.state.booking.pk_booking_id);
     }
 
     onSelectPricing(pricingInfo) {
@@ -2690,25 +2624,14 @@ class BookingPage extends Component {
         formInputs['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        const selectedFP = this.state.allFPs.find(
+        const selectedFP = this.props.allFPs.find(
             fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
-        this.setState({formInputs, booking, isBookingModified: true, loading: true, curViewMode: 0});
+        this.setState({formInputs, booking, loading: true, curViewMode: 0});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
-    }
-
-    onChangeTime(time, type) {
-        const {booking, formInputs} = this.state;
-
-        if (type === 's_02_Booking_Cutoff_Time') {
-            formInputs[type] = time;
-            booking[type] = time;
-        }
-
-        this.setState({formInputs});
     }
 
     onClickEnvelop(templateName) {
@@ -2725,16 +2648,20 @@ class BookingPage extends Component {
         }
     }
 
-    onClickRadio(type) {
-        const { booking } = this.state;
-        booking['x_ReadyStatus'] = type;
-        this.setState({booking});
-    }
-
     render() {
-        const {isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, warehouses, isShowSwitchClientModal, dmeClients, clientPK, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, availableCreators, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, allFPs, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets } = this.state;
+        const {
+            isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowSwitchClientModal, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+        } = this.state;
+        const {
+            warehouses, emailLogs, availableCreators, clientPK
+        } = this.props;
+
         const bookingLineColumns = [
             {
+                dataField: 'pk_lines_id',
+                text: 'Id',
+                hidden: true,
+            }, {
                 dataField: 'e_type_of_packaging',
                 text: 'Packaging',
             }, {
@@ -2778,6 +2705,10 @@ class BookingPage extends Component {
 
         const bookingLineDetailsColumns = [
             {
+                dataField: 'pk_id_lines_data',
+                text: 'Id',
+                hidden: true,
+            }, {
                 dataField: 'modelNumber',
                 text: 'Model'
             }, {
@@ -2801,36 +2732,36 @@ class BookingPage extends Component {
             }
         ];
 
-        const datetimeFormatter = (cell) => {
-            return (
-                moment(cell).format('DD/MM/YYYY HH:mm:ss')
-            );
-        };
+        // const datetimeFormatter = (cell) => {
+        //     return (
+        //         moment(cell).format('DD/MM/YYYY HH:mm:ss')
+        //     );
+        // };
 
-        const commIdCell = (cell, row) => {
-            let that = this;
-            return (
-                <div className="comm-id-cell, cur-pointer" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
-            );
-        };
+        // const commIdCell = (cell, row) => {
+        //     let that = this;
+        //     return (
+        //         <div className="comm-id-cell, cur-pointer" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
+        //     );
+        // };
 
-        const commUpdateCell = (cell, row) => {
-            let that = this;
-            return (
-                <Button className="comm-update-cell" color="primary" onClick={() => that.onUpdateBtnClick('comm', row)}>
-                    <i className="icon icon-edit"></i>
-                </Button>
-            );
-        };
+        // const commUpdateCell = (cell, row) => {
+        //     let that = this;
+        //     return (
+        //         <Button className="comm-update-cell" color="primary" onClick={() => that.onUpdateBtnClick('comm', row)}>
+        //             <i className="icon icon-edit"></i>
+        //         </Button>
+        //     );
+        // };
 
-        const commDeleteCell = (cell, row) => {
-            let that = this;
-            return (
-                <Button className="comm-delete-cell" color="danger" onClick={() => that.onDeleteBtnClick(row.id)}>
-                    <i className="icon icon-trash"></i>
-                </Button>
-            );
-        };
+        // const commDeleteCell = (cell, row) => {
+        //     let that = this;
+        //     return (
+        //         <Button className="comm-delete-cell" color="danger" onClick={() => that.onDeleteBtnClick(row.id)}>
+        //             <i className="icon icon-trash"></i>
+        //         </Button>
+        //     );
+        // };
 
         // const limitedHeightTitle = (cell, row) => {
         //     return (
@@ -2854,75 +2785,79 @@ class BookingPage extends Component {
         //     );
         // };
 
-        const columnCommunication = [
-            {
-                dataField: 'index',
-                text: 'No',
-                style: {
-                    width: '30px',
-                },
-                formatter: commIdCell,
-            }, {
-                dataField: 'dme_notes_type',
-                text: 'Type',
-                style: {
-                    width: '40px',
-                },
-            }, {
-                dataField: 'assigned_to',
-                text: 'Assigned',
-                style: {
-                    width: '40px',
-                },
-            }, {
-                dataField: 'dme_com_title',
-                text: 'Title',
-                style: {
-                    width: '300px',
-                },
-                // formatter: limitedHeightTitle,
-            }, {
-                dataField: 'z_createdTimeStamp',
-                text: 'Date/Time Created',
-                formatter: datetimeFormatter,
-            }, {
-                dataField: 'due_by_datetime',
-                text: 'Date/Time Due',
-                formatter: datetimeFormatter,
-            }, {
-                dataField: 'dme_action',
-                text: 'Action Task',
-                style: {
-                    width: '300px',
-                },
-                // formatter: limitedHeightAction,
-            }, {
-                dataField: 'id',
-                text: 'Update',
-                style: {
-                    width: '20px',
-                },
-                formatter: commUpdateCell,
-            }, {
-                dataField: 'id',
-                text: 'Delete',
-                style: {
-                    width: '20px',
-                },
-                formatter: commDeleteCell,
-            },
-        ];
+        // const columnCommunication = [
+        //     {
+        //         dataField: 'id',
+        //         text: 'Id',
+        //         hidden: true,
+        //     }, {
+        //         dataField: 'index',
+        //         text: 'No',
+        //         style: {
+        //             width: '30px',
+        //         },
+        //         formatter: commIdCell,
+        //     }, {
+        //         dataField: 'dme_notes_type',
+        //         text: 'Type',
+        //         style: {
+        //             width: '40px',
+        //         },
+        //     }, {
+        //         dataField: 'assigned_to',
+        //         text: 'Assigned',
+        //         style: {
+        //             width: '40px',
+        //         },
+        //     }, {
+        //         dataField: 'dme_com_title',
+        //         text: 'Title',
+        //         style: {
+        //             width: '300px',
+        //         },
+        //         // formatter: limitedHeightTitle,
+        //     }, {
+        //         dataField: 'z_createdTimeStamp',
+        //         text: 'Date/Time Created',
+        //         formatter: datetimeFormatter,
+        //     }, {
+        //         dataField: 'due_by_datetime',
+        //         text: 'Date/Time Due',
+        //         formatter: datetimeFormatter,
+        //     }, {
+        //         dataField: 'dme_action',
+        //         text: 'Action Task',
+        //         style: {
+        //             width: '300px',
+        //         },
+        //         // formatter: limitedHeightAction,
+        //     }, {
+        //         dataField: 'id',
+        //         text: 'Update',
+        //         style: {
+        //             width: '20px',
+        //         },
+        //         formatter: commUpdateCell,
+        //     }, {
+        //         dataField: 'id',
+        //         text: 'Delete',
+        //         style: {
+        //             width: '20px',
+        //         },
+        //         formatter: commDeleteCell,
+        //     },
+        // ];
 
         const columnZohoTickets = [
             {
-                dataField: 'id',
-                text: 'Ticket Id'
+                dataField: 'ticketNumber',
+                text: 'Ticket Number'
             }, {
                 dataField: 'subject',
                 text: 'Subject'
             }, {
                 dataField: 'email',
-                text: 'Email-Id'
+                text: 'Email'
             }, {
                 dataField: 'status',
                 text: 'Status'
@@ -2930,7 +2865,7 @@ class BookingPage extends Component {
                 dataField: 'id',
                 text: 'View',
                 formatter:  (cell, row) => {
-                    console.log(cell,row);
+                    console.log(cell, row);
                     return (<Link to={'/zohodetails?id='+row.id}><i className="fa fa-eye"></i> </Link>);
                 }
             }
@@ -3068,12 +3003,12 @@ class BookingPage extends Component {
             label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
         };
 
-        const clientnameOptions = dmeClients.map((client) => {
+        const clientnameOptions = this.props.dmeClients.map((client) => {
             return {value: client.company_name, label: client.company_name};
         });
         const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
 
-        const fpOptions = allFPs.map((fp) => {
+        const fpOptions = this.props.allFPs.map((fp) => {
             return {value: fp.fp_company_name, label: fp.fp_company_name};
         });
         const currentFPOption = {value: formInputs['vx_freight_provider'], label: formInputs['vx_freight_provider']};
@@ -3105,10 +3040,10 @@ class BookingPage extends Component {
             return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
         });
 
-        const generalEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
-        const podEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
-        const returnEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
-        const futileEmailCnt = this.state.emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
+        const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
+        const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
+        const returnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
+        const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
 
         return (
             <div className="qbootstrap-nav header">
@@ -4158,7 +4093,7 @@ class BookingPage extends Component {
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
                                                                         value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) &&
-                                                                        new Date(moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                        new Date(moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
@@ -4200,7 +4135,7 @@ class BookingPage extends Component {
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
                                                                             value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) &&
-                                                                            new Date(moment(booking.fp_received_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                            new Date(moment(formInputs['fp_received_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
@@ -4220,7 +4155,7 @@ class BookingPage extends Component {
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
                                                                         value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) &&
-                                                                        new Date(moment(booking.s_20_Actual_Pickup_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                        new Date(moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
@@ -4290,17 +4225,16 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">Reference No</label>
                                                         </div>
                                                         <div className="col-sm-8">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['b_clientReference_RA_Numbers']}</p>
-                                                                    :
-                                                                    <input
-                                                                        type="text"
-                                                                        name="b_clientReference_RA_Numbers"
-                                                                        className="form-control"
-                                                                        value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
-                                                                        disabled={(booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
-                                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{formInputs['b_clientReference_RA_Numbers']}</p>
+                                                                :
+                                                                <input
+                                                                    type="text"
+                                                                    name="b_clientReference_RA_Numbers"
+                                                                    className="form-control"
+                                                                    value = {formInputs['b_clientReference_RA_Numbers'] ? formInputs['b_clientReference_RA_Numbers'] : ''} 
+                                                                    disabled={(booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                                    onChange={(e) => this.onHandleInput(e)}/>
                                                             }
                                                         </div>
                                                     </div>
@@ -4626,7 +4560,7 @@ class BookingPage extends Component {
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
                                                                             value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) &&
-                                                                            new Date(moment(booking.s_21_Actual_Delivery_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
+                                                                            new Date(moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
@@ -4733,16 +4667,16 @@ class BookingPage extends Component {
                                                             <input type="radio"
                                                                 id="available-from"
                                                                 value="Available From"
-                                                                checked={booking.x_ReadyStatus === 'Available From'}
-                                                                onChange={() => this.onClickRadio('Available From')} />
+                                                                checked={formInputs['x_ReadyStatus'] === 'Available From'}
+                                                                onChange={() => this.handleRadioInputChange('Available From')} />
                                                             <label htmlFor="available-from">&nbsp;&nbsp;Available From</label>
                                                         </div>
                                                         <div className="col-sm-4">
                                                             <input type="radio"
                                                                 id="available-now"
                                                                 value="Available Now"
-                                                                checked={booking.x_ReadyStatus === 'Available Now'}
-                                                                onChange={() => this.onClickRadio('Available Now')} />
+                                                                checked={formInputs['x_ReadyStatus'] === 'Available Now'}
+                                                                onChange={() => this.handleRadioInputChange('Available Now')} />
                                                             <label htmlFor="available-now">&nbsp;&nbsp;Available Now</label>
                                                         </div>
                                                     </div>
@@ -4774,7 +4708,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(booking.puPickUpAvailFrom_Date) : null}
+                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(formInputs['puPickUpAvailFrom_Date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4819,7 +4753,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(booking.pu_PickUp_By_Date) : null}
+                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(formInputs['pu_PickUp_By_Date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4864,7 +4798,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_From_Date'] ? new Date(booking.de_Deliver_From_Date) : null}
+                                                                            selected={formInputs['de_Deliver_From_Date'] ? new Date(formInputs['de_Deliver_From_Date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -4909,7 +4843,7 @@ class BookingPage extends Component {
                                                                     <div>
                                                                         <DatePicker
                                                                             className="date"
-                                                                            selected={formInputs['de_Deliver_By_Date'] ? new Date(booking.de_Deliver_By_Date) : null}
+                                                                            selected={formInputs['de_Deliver_By_Date'] ? new Date(formInputs['de_Deliver_By_Date']) : null}
                                                                             onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
                                                                             dateFormat="dd MMM yyyy"
                                                                         />
@@ -5037,7 +4971,7 @@ class BookingPage extends Component {
                                                                     type="checkbox"
                                                                     checked={formInputs['x_manual_booked_flag']}
                                                                     onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={(booking && !isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                    disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
                                                                 <p>Manual Book</p>
                                                             </div>
@@ -5166,7 +5100,7 @@ class BookingPage extends Component {
                                                         Edit Tracking
                                                     </Button>
                                                     <BootstrapTable
-                                                        keyField="qty"
+                                                        keyField="id"
                                                         data={ bookingTotals }
                                                         columns={ columnBookingTotals }
                                                         bootstrap4={ true }
@@ -5177,14 +5111,9 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField='pk_lines_id'
+                                                            keyField='id'
                                                             data={ products }
                                                             columns={ bookingLineColumns }
-                                                            // cellEdit={ cellEditFactory({ 
-                                                            //     mode: 'click',
-                                                            //     blurToSave: false,
-                                                            //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLine(oldValue, newValue, row, column); }
-                                                            // })}
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
@@ -5195,14 +5124,9 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField="pk_id_lines_data"
+                                                            keyField="id"
                                                             data={ bookingLineDetailsProduct }
                                                             columns={ bookingLineDetailsColumns }
-                                                            // cellEdit={ cellEditFactory({ 
-                                                            //     mode: 'click',
-                                                            //     blurToSave: true,
-                                                            //     afterSaveCell: (oldValue, newValue, row, column) => { this.onUpdateBookingLineDetail(oldValue, newValue, row, column); }
-                                                            // })}
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
@@ -5234,12 +5158,12 @@ class BookingPage extends Component {
                                                 text='Loading Communications...'
                                             >
                                                 <div className="tab-inner">
-                                                    <BootstrapTable
-                                                        keyField="id"
+                                                    {/*<BootstrapTable
+                                                        keyField="id0"
                                                         data={ comms }
                                                         columns={ columnCommunication }
                                                         bootstrap4={ true }
-                                                    />
+                                                    />*/}
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
@@ -5251,8 +5175,8 @@ class BookingPage extends Component {
                                             >
                                                 <div className="tab-inner">
                                                     <BootstrapTable
-                                                        keyField="id"
-                                                        data={ zoho_tickets }
+                                                        keyField="ticketNumber"
+                                                        data={zoho_tickets}
                                                         columns={ columnZohoTickets }
                                                         bootstrap4={ true }
                                                     />
@@ -5261,7 +5185,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
-                                                <form onSubmit={(e) => this.handlePost(e, 'attachment')}>
+                                                <form onSubmit={(e) => this.handleUpload(e, 'attachment')}>
                                                     <DropzoneComponent
                                                         id="attachments-dz"
                                                         config={attachmentsDzConfig}
@@ -5285,7 +5209,7 @@ class BookingPage extends Component {
                                                 <div className="row">
                                                     <div className="col-6">
                                                         <label>Label upload</label>
-                                                        <form onSubmit={(e) => this.handlePost(e, 'label')}>
+                                                        <form onSubmit={(e) => this.handleUpload(e, 'label')}>
                                                             <DropzoneComponent
                                                                 id="label-dz"
                                                                 config={labelDzConfig}
@@ -5321,7 +5245,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="col-6">
                                                         <label>POD upload</label>
-                                                        <form onSubmit={(e) => this.handlePost(e, 'pod')}>
+                                                        <form onSubmit={(e) => this.handleUpload(e, 'pod')}>
                                                             <DropzoneComponent
                                                                 id="pod-dz"
                                                                 config={podDzConfig}
@@ -5543,7 +5467,7 @@ class BookingPage extends Component {
                     isShowSwitchClientModal={isShowSwitchClientModal}
                     toggleSwitchClientModal={this.toggleSwitchClientModal}
                     onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
-                    clients={dmeClients}
+                    clients={this.props.dmeClients}
                     selectedClientPK={clientPK}
                 />
 
@@ -5670,7 +5594,7 @@ class BookingPage extends Component {
                 <EmailLogSlider
                     isOpen={this.state.isShowEmailLogSlider}
                     toggleSlider={this.toggleEmailLogSlider}
-                    emailLogs={this.state.emailLogs}
+                    emailLogs={emailLogs}
                 />
 
                 <ToastContainer />

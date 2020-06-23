@@ -74,6 +74,7 @@ const defaultState = {
     zoho_tickets: [],
     loadingZohoTickets: false,
     clientProducts: [],
+    allFPs: [],
 };
 
 export const ExtraReducer = (state = defaultState, {

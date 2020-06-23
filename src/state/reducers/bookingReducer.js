@@ -1,7 +1,6 @@
 import moment from 'moment-timezone';
 import {
     DO_NOTHING,
-    RESET_TICK_MANUAL_BOOK,
     RESET_ATTACHMENTS,
     RESET_BOOKING,
     SET_ATTACHMENTS,
@@ -201,11 +200,6 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 manifestReports: null,
-            };
-        case RESET_TICK_MANUAL_BOOK:
-            return {
-                ...state,
-                isTickedManualBook: null,
             };
         case RESET_ATTACHMENTS:
             return {
@@ -537,11 +531,6 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 needUpdateBookings: true,
             };
-        case FAILED_TICK_MANUAL_BOOK:
-            return {
-                ...state,
-                isTickedManualBook: false,
-            };
         case SUCCESS_GET_MANIFEST_REPORT:
             return {
                 ...state,
@@ -564,33 +553,11 @@ export const BookingReducer = (state = defaultState, {
                 errorMessage: errorMessage,
                 isAutoSelected: isAutoSelected,
             };
-        case SET_ERROR_MSG:
-        case CHANGE_STATUS_FAILED:
-        case BOOK_CANCEL_FAILED:
-        case BOOK_EDIT_FAILED:
-        case FAILED_GET_ORDER_SUMMARY:
-        case FAILED_CALC_COLLECTED:
-        case FAILED_MANUAL_BOOK:
-        case FAIELD_GET_MANIFEST_REPORT:
-        case GET_TRACK_FAILED:
-        case FAILED_FP_PRICING:
-        case SUCCESS_SEND_EMAIL:
-        case FAILED_SEND_EMAIL:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-            };
-
         case SUCCESS_AUTO_AUGMENT:
             return {
                 ...state,
                 isAutoAugmented: true,
                 booking: payload
-            };
-        case FAILED_AUTO_AUGMENT:
-            return {
-                ...state,
-                errorMessage: errorMessage,
             };
         case SUCCESS_CHECK_AUGMENTED:
             return {
@@ -616,11 +583,6 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 booking: payload
             };
-        case FAILED_AUGMENT_PU_DATE:
-            return {
-                ...state,
-                errorMessage: errorMessage,
-            };
         case SET_FETCH_GEO_FLAG:
             return {
                 ...state,
@@ -636,6 +598,21 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 pricingAnalyses: payload,
             };
+        case FAILED_AUTO_AUGMENT:
+        case FAILED_AUGMENT_PU_DATE:
+        case FAILED_TICK_MANUAL_BOOK:
+        case SET_ERROR_MSG:
+        case CHANGE_STATUS_FAILED:
+        case BOOK_CANCEL_FAILED:
+        case BOOK_EDIT_FAILED:
+        case FAILED_GET_ORDER_SUMMARY:
+        case FAILED_CALC_COLLECTED:
+        case FAILED_MANUAL_BOOK:
+        case FAIELD_GET_MANIFEST_REPORT:
+        case GET_TRACK_FAILED:
+        case FAILED_FP_PRICING:
+        case SUCCESS_SEND_EMAIL:
+        case FAILED_SEND_EMAIL:
         case FAILED_PRICING_ANALYSIS:
             return {
                 ...state,
