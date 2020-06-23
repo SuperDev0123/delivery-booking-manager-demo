@@ -26,7 +26,7 @@ import user from '../public/images/user.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 // Custom Modals
-import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
+// import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
 // Custom Sliders
@@ -40,7 +40,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
-import { verifyToken, cleanRedirectState, getDMEClients, setClientPK } from '../state/services/authService';
+import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
 // FP Services
@@ -218,7 +218,7 @@ class BookingPage extends Component {
         this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
         this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
         this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
-        this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
+        // this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleLineSlider = this.toggleLineSlider.bind(this);
         this.toggleLineTrackingSlider = this.toggleLineTrackingSlider.bind(this);
         this.toggleStatusHistorySlider = this.toggleStatusHistorySlider.bind(this);
@@ -280,7 +280,6 @@ class BookingPage extends Component {
         deleteNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
-        setClientPK: PropTypes.func.isRequired,
         fpCancelBook: PropTypes.func.isRequired,
         getBookingStatusHistory: PropTypes.func.isRequired,
         getPackageTypes: PropTypes.func.isRequired,
@@ -310,7 +309,6 @@ class BookingPage extends Component {
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
         availableCreators: PropTypes.array.isRequired,
-        clientPK: PropTypes.string.isRequired,
         clientId: PropTypes.string.isRequired,
     };
 
@@ -773,10 +771,6 @@ class BookingPage extends Component {
 
                 let formInputs = this.state.formInputs;
 
-                if (this.props.clientPK) {
-                    formInputs['b_client_name'] = this.props.dmeClients[parseInt(this.props.clientPK)].company_name;
-                }
-
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
@@ -873,28 +867,28 @@ class BookingPage extends Component {
                 if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
                 else formInputs['puPickUpAvailFrom_Date'] = null;
                 if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
-                else formInputs['pu_PickUp_Avail_Time_Hours'] = '';
+                else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
                 if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
-                else formInputs['pu_PickUp_Avail_Time_Minutes'] = '';
+                else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
                 if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
                 else formInputs['pu_PickUp_By_Date'] = null;
                 if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
-                else formInputs['pu_PickUp_By_Time_Hours'] = '';
+                else formInputs['pu_PickUp_By_Time_Hours'] = null;
                 if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
-                else formInputs['pu_PickUp_By_Time_Minutes'] = '';
+                else formInputs['pu_PickUp_By_Time_Minutes'] = null;
 
                 if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
                 else formInputs['de_Deliver_From_Date'] = null;
                 if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
-                else formInputs['de_Deliver_From_Hours'] = '';
+                else formInputs['de_Deliver_From_Hours'] = null;
                 if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
-                else formInputs['de_Deliver_From_Minutes'] = '';
+                else formInputs['de_Deliver_From_Minutes'] = null;
                 if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
                 else formInputs['de_Deliver_By_Date'] = null;
                 if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
-                else formInputs['de_Deliver_By_Hours'] = '';
+                else formInputs['de_Deliver_By_Hours'] = null;
                 if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
-                else formInputs['de_Deliver_By_Minutes'] = '';
+                else formInputs['de_Deliver_By_Minutes'] = null;
                 if (!_.isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
                 else formInputs['s_02_Booking_Cutoff_Time'] = null;
 
@@ -1820,14 +1814,16 @@ class BookingPage extends Component {
 
     onClickCreateBooking() {
         const {formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
-        const {clientPK, clientId} = this.props;
+        const {clientId} = this.props;
 
         if (isShowStatusDetailInput && 
-            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) {
-            alert('Please select or input Status Detail');
+            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) 
+        {
+            this.notify('Please select or input Status Detail');
         } else if (isShowStatusActionInput && 
-            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) {
-            alert('Please select or input Status Action');
+            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) 
+        {
+            this.notify('Please select or input Status Action');
         } else if (parseInt(this.state.curViewMode) === 1) {
             if (isShowStatusDetailInput) {
                 formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
@@ -1839,22 +1835,17 @@ class BookingPage extends Component {
                 this.props.createStatusAction(formInputs['dme_status_action']);
             }
 
-            if (clientPK === 0 || clientname !== 'dme') {
+            if (clientname !== 'dme') {
                 formInputs['z_CreatedByAccount'] = clientname;
                 // formInputs['b_client_name'] = clientname;
                 formInputs['kf_client_id'] = clientId;
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
-
-                if (!formInputs.hasOwnProperty('b_client_warehouse_code')) {
-                    formInputs['b_client_warehouse_code'] = 'No - Warehouse';
-                    formInputs['fk_client_warehouse'] = 100;
-                }
             } else {
                 formInputs['z_CreatedByAccount'] = 'dme';
 
                 let ind = 0;
                 for (let i = 0; i < this.props.dmeClients.length; i++) {
-                    if (parseInt(this.props.dmeClients[i].pk_id_dme_client) === parseInt(clientPK)) {
+                    if (parseInt(this.props.dmeClients[i].company_name) === clientname) {
                         ind = i;
                         break;
                     }
@@ -1864,32 +1855,13 @@ class BookingPage extends Component {
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
 
-            formInputs['pu_PickUp_Avail_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Hours']) ? null : formInputs['pu_PickUp_Avail_Time_Hours'];
-            formInputs['pu_PickUp_By_Time_Hours'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Hours']) ? null : formInputs['pu_PickUp_By_Time_Hours'];
-            formInputs['de_Deliver_From_Hours'] = _.isEmpty(formInputs['de_Deliver_From_Hours']) ? null : formInputs['de_Deliver_From_Hours'];
-            formInputs['de_Deliver_By_Hours'] = _.isEmpty(formInputs['de_Deliver_By_Hours']) ? null : formInputs['de_Deliver_By_Hours'];
-
-            formInputs['pu_PickUp_Avail_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_Avail_Time_Minutes']) ? null : formInputs['pu_PickUp_Avail_Time_Minutes'];
-            formInputs['pu_PickUp_By_Time_Minutes'] = _.isEmpty(formInputs['pu_PickUp_By_Time_Minutes']) ? null : formInputs['pu_PickUp_By_Time_Minutes'];
-            formInputs['de_Deliver_From_Minutes'] = _.isEmpty(formInputs['de_Deliver_From_Minutes']) ? null : formInputs['de_Deliver_From_Minutes'];
-            formInputs['de_Deliver_By_Minutes'] = _.isEmpty(formInputs['de_Deliver_By_Minutes']) ? null : formInputs['de_Deliver_By_Minutes'];
-
             formInputs['pu_Address_State'] = puState ? puState.label : '';
             formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
             formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
             formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
-
-            if (_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']))
-                formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
-            if (_.isUndefined(formInputs['s_06_Latest_Delivery_Date_TimeSet']))
-                formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
-            if (_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp']))
-                formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
-            if (_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp']))
-                formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
-
+            formInputs['x_booking_Created_With'] = 'Manual';
             formInputs['b_status'] = 'Entered';
 
             const res = isFormValid('booking', formInputs);
@@ -1903,67 +1875,53 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        const {clientname, isBookedBooking, booking} = this.state;
+        const {isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput, booking} = this.state;
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
             clientname.toLowerCase() !== 'biopak')
         {
             this.notify('Booking is already Booked!');
-        } else if (clientname.toLowerCase() === 'biopak' &&
+        } else if (
+            clientname.toLowerCase() === 'biopak' &&
             !_.isNull(booking.manifest_timestamp) &&
             !_.isUndefined(booking.manifest_timestamp) &&
-            !_.isEmpty(booking.manifest_timestamp))
-        {
+            !_.isEmpty(booking.manifest_timestamp)
+        ) {
             this.notify('Booking is already Manifested!');
-        }
-        else {
-            const {isShowStatusDetailInput, isShowStatusActionInput} = this.state;
+        } else {
             let bookingToUpdate = this.state.booking;
 
             if (isShowStatusDetailInput && 
-                (_.isNull(bookingToUpdate.new_dme_status_detail) || _.isEmpty(bookingToUpdate.new_dme_status_detail))) {
-                alert('Please select or input Status Detail');
+                (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail'])))
+            {
+                this.notify('Please select or input Status Detail');
             } else if (isShowStatusActionInput && 
-                (_.isNull(bookingToUpdate.new_dme_status_action) || _.isEmpty(bookingToUpdate.new_dme_status_action))) {
-                alert('Please select or input Status Action');
+                (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action'])))
+            {
+                this.notify('Please select or input Status Action');
             } else if (parseInt(this.state.curViewMode) === 2) {
                 if (isShowStatusDetailInput) {
-                    bookingToUpdate.dme_status_detail = bookingToUpdate.new_dme_status_detail;
-                    this.props.createStatusDetail(bookingToUpdate.new_dme_status_detail);
+                    formInputs['dme_status_detail'] = formInputs['new_dme_status_detail'];
+                    this.props.createStatusDetail(formInputs['new_dme_status_detail']);
                 }
 
                 if (isShowStatusActionInput) {
-                    bookingToUpdate.dme_status_action = bookingToUpdate.new_dme_status_action;
-                    this.props.createStatusAction(bookingToUpdate.new_dme_status_action);
+                    formInputs['dme_status_action'] = formInputs['new_dme_status_action'];
+                    this.props.createStatusAction(formInputs['new_dme_status_action']);
                 }
 
-                bookingToUpdate.pu_PickUp_Avail_Time_Hours = bookingToUpdate.pu_PickUp_Avail_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Hours;
-                bookingToUpdate.pu_PickUp_By_Time_Hours = bookingToUpdate.pu_PickUp_By_Time_Hours === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Hours;
-                bookingToUpdate.de_Deliver_From_Hours = bookingToUpdate.de_Deliver_From_Hours === '' ? null : bookingToUpdate.de_Deliver_From_Hours;
-                bookingToUpdate.de_Deliver_By_Hours = bookingToUpdate.de_Deliver_By_Hours === '' ? null : bookingToUpdate.de_Deliver_By_Hours;
+                formInputs['pu_Address_State'] = puState ? puState.label : null;
+                formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : null;
+                formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : null;
+                formInputs['de_To_Address_State'] = deToState ? deToState.label : null;
+                formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : null;
+                formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label :null;
+                formInputs['b_booking_Category'] = formInputs['b_booking_Category']['value'];
+                formInputs['b_booking_Priority'] = formInputs['b_booking_Priority']['value'];
+                formInputs['booking_Created_For'] = formInputs['booking_Created_For']['label'];
 
-                bookingToUpdate.pu_PickUp_Avail_Time_Minutes = bookingToUpdate.pu_PickUp_Avail_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_Avail_Time_Minutes;
-                bookingToUpdate.pu_PickUp_By_Time_Minutes = bookingToUpdate.pu_PickUp_By_Time_Minutes === '' ? null : bookingToUpdate.pu_PickUp_By_Time_Minutes;
-                bookingToUpdate.de_Deliver_From_Minutes = bookingToUpdate.de_Deliver_From_Minutes === '' ? null : bookingToUpdate.de_Deliver_From_Minutes;
-                bookingToUpdate.de_Deliver_By_Minutes = bookingToUpdate.de_Deliver_By_Minutes === '' ? null : bookingToUpdate.de_Deliver_By_Minutes;
-
-                bookingToUpdate.pu_Address_State = this.state.puState.label;
-                bookingToUpdate.pu_Address_PostalCode = this.state.puPostalCode.label;
-                bookingToUpdate.pu_Address_Suburb = this.state.puSuburb.label;
-                bookingToUpdate.de_To_Address_State = this.state.deToState.label;
-                bookingToUpdate.de_To_Address_PostalCode = this.state.deToPostalCode.label;
-                bookingToUpdate.de_To_Address_Suburb = this.state.deToSuburb.label;
-
-                if (_.isUndefined(bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet']))
-                    bookingToUpdate['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
-                if (_.isUndefined(bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet']))
-                    bookingToUpdate['s_06_Latest_Delivery_Date_TimeSet'] = null;
-                if (_.isUndefined(bookingToUpdate['s_20_Actual_Pickup_TimeStamp']))
-                    bookingToUpdate['s_20_Actual_Pickup_TimeStamp'] = null;
-                if (_.isUndefined(bookingToUpdate['s_21_Actual_Delivery_TimeStamp']))
-                    bookingToUpdate['s_21_Actual_Delivery_TimeStamp'] = null;
-
+                Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
                     this.props.updateBooking(booking.id, bookingToUpdate);
@@ -2289,9 +2247,9 @@ class BookingPage extends Component {
         this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
     }
 
-    toggleSwitchClientModal() {
-        this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
-    }
+    // toggleSwitchClientModal() {
+    //     this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
+    // }
 
     toggleLineSlider() {
         const { isBookingSelected } = this.state;
@@ -2355,16 +2313,16 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowEmailLogSlider: !prevState.isShowEmailLogSlider}));
     }
 
-    onClickSwitchClientNavIcon(e) {
-        e.preventDefault();
-        this.props.getDMEClients();
-        this.toggleSwitchClientModal();
-    }
+    // onClickSwitchClientNavIcon(e) {
+    //     e.preventDefault();
+    //     this.props.getDMEClients();
+    //     this.toggleSwitchClientModal();
+    // }
 
-    onSwitchClient(clientPK) {
-        this.props.setClientPK(clientPK);
-        this.toggleSwitchClientModal();
-    }
+    // onSwitchClient(clientPK) {
+    //     this.props.setClientPK(clientPK);
+    //     this.toggleSwitchClientModal();
+    // }
 
     onClickCancelBook() {
         const {booking} = this.state;
@@ -2473,11 +2431,19 @@ class BookingPage extends Component {
     }
 
     showCreateView() {
-        const {isBookingSelected} = this.state;
-        const {clientPK} = this.props;
+        const {isBookingSelected, clientname, booking} = this.state;
 
         if (isBookingSelected) {
-            console.log('@1 - ', this.props.dmeClients, this.props.clientPK);
+            let formInputs = {};
+            Object.keys(booking).forEach((key) => {formInputs[key] = null;});
+            formInputs['pu_Address_Country'] = 'AU';
+            formInputs['de_To_Address_Country'] = 'AU';
+            formInputs['b_client_name'] = clientname;
+            formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+            formInputs['fk_client_warehouse'] = 100;
+            formInputs['dme_status_detail'] = null;
+            formInputs['dme_status_action'] = null;
+
             this.setState({
                 isBookingSelected: false, 
                 products: [], 
@@ -2489,11 +2455,7 @@ class BookingPage extends Component {
                 deToState: null,
                 deToSuburb: null,
                 deToPostalCode: null,
-                formInputs: {
-                    pu_Address_Country: 'AU',
-                    de_To_Address_Country: 'AU',
-                    b_client_name: this.props.dmeClients[parseInt(clientPK)].company_name,
-                },
+                formInputs,
             });
         }
     }
@@ -2650,10 +2612,10 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowSwitchClientModal, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
         } = this.state;
         const {
-            warehouses, emailLogs, availableCreators, clientPK
+            warehouses, emailLogs, availableCreators
         } = this.props;
 
         const bookingLineColumns = [
@@ -3079,7 +3041,7 @@ class BookingPage extends Component {
                         {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
                         
                         <a className="none">?</a>
-                        {
+                        {/*
                             clientname === 'dme' &&
                                 <a 
                                     className='cur-pointer'
@@ -3087,7 +3049,7 @@ class BookingPage extends Component {
                                 >
                                     <i className="fa fa-users" aria-hidden="true"></i>
                                 </a>
-                        }
+                        */}
                     </div>
                 </div>
 
@@ -3269,33 +3231,32 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-3 form-group">
                                             <span>Status Detail</span><br />
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p 
+                                                    className="show-mode"
+                                                    id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                                                >
+                                                    {formInputs['dme_status_detail']}
+                                                </p>
+                                                :
+                                                clientname === 'dme' ?
+                                                    <select
+                                                        id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
+                                                        name="dme_status_detail"
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        value = {formInputs['dme_status_detail'] ? formInputs['dme_status_detail'] : ''}
+                                                    >
+                                                        <option value="" selected disabled hidden>Select a status detail</option>
+                                                        {statusDetailOptions}
+                                                        <option value={'other'}>Other</option>
+                                                    </select>
+                                                    :
                                                     <p 
                                                         className="show-mode"
                                                         id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
                                                     >
                                                         {formInputs['dme_status_detail']}
                                                     </p>
-                                                    :
-                                                    clientname === 'dme' ?
-                                                        <select
-                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
-                                                            name="dme_status_detail"
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            value = {formInputs['dme_status_detail']}
-                                                        >
-                                                            <option value="" selected disabled hidden>Select a status detail</option>
-                                                            {statusDetailOptions}
-                                                            <option value={'other'}>Other</option>
-                                                        </select>
-                                                        :
-                                                        <p 
-                                                            className="show-mode"
-                                                            id={'booking-' + 'dme_status_detail' + '-tooltip-' + booking.id}
-                                                        >
-                                                            {formInputs['dme_status_detail']}
-                                                        </p>
                                             }
                                             {!_.isEmpty(formInputs['dme_status_detail']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_detail']} />
@@ -3330,7 +3291,7 @@ class BookingPage extends Component {
                                                             id={'booking-' + 'dme_status_action' + '-tooltip-' + booking.id}
                                                             name="dme_status_action"
                                                             onChange={(e) => this.onHandleInput(e)}
-                                                            value = {formInputs['dme_status_action']}
+                                                            value = {formInputs['dme_status_action'] ? formInputs['dme_status_action'] : ''}
                                                         >
                                                             <option value="" selected disabled hidden>Select a status action</option>
                                                             {statusActionOptions}
@@ -3348,19 +3309,18 @@ class BookingPage extends Component {
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_action']} />
                                             }
                                         </div>
-                                        {
-                                            (isShowStatusActionInput && parseInt(curViewMode) !== 0) &&
-                                                <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
-                                                    <span>New Status Detail</span><br />
-                                                    <input 
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="New Status Action"
-                                                        name="new_dme_status_action"
-                                                        value = {formInputs['new_dme_status_action'] ? formInputs['new_dme_status_action'] : ''}
-                                                        onChange={(e) => this.onHandleInput(e)}
-                                                    />
-                                                </div>
+                                        {(isShowStatusActionInput && parseInt(curViewMode) !== 0) &&
+                                            <div className={clientname === 'dme' ? 'col-sm-3 form-group' : 'none'}>
+                                                <span>New Status Action</span><br />
+                                                <input 
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="New Status Action"
+                                                    name="new_dme_status_action"
+                                                    value = {formInputs['new_dme_status_action'] ? formInputs['new_dme_status_action'] : ''}
+                                                    onChange={(e) => this.onHandleInput(e)}
+                                                />
+                                            </div>
                                         }
                                     </div>
                                     <div className="row col-sm-12 booking-form-01">
@@ -4715,14 +4675,14 @@ class BookingPage extends Component {
                                                                         <input
                                                                             className="hour"
                                                                             name='pu_PickUp_Avail_Time_Hours'
-                                                                            value={formInputs['pu_PickUp_Avail_Time_Hours']}
+                                                                            value={formInputs['pu_PickUp_Avail_Time_Hours'] ? formInputs['pu_PickUp_Avail_Time_Hours'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                         {':'}
                                                                         <input
                                                                             className="time"
                                                                             name='pu_PickUp_Avail_Time_Minutes'
-                                                                            value={formInputs['pu_PickUp_Avail_Time_Minutes']}
+                                                                            value={formInputs['pu_PickUp_Avail_Time_Minutes'] ? formInputs['pu_PickUp_Avail_Time_Minutes'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
@@ -4760,14 +4720,14 @@ class BookingPage extends Component {
                                                                         <input
                                                                             className="hour"
                                                                             name='pu_PickUp_By_Time_Hours'
-                                                                            value={formInputs['pu_PickUp_By_Time_Hours']}
+                                                                            value={formInputs['pu_PickUp_By_Time_Hours'] ? formInputs['pu_PickUp_By_Time_Hours'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                         {':'}
                                                                         <input
                                                                             className="time"
                                                                             name='pu_PickUp_By_Time_Minutes'
-                                                                            value={formInputs['pu_PickUp_By_Time_Minutes']}
+                                                                            value={formInputs['pu_PickUp_By_Time_Minutes'] ? formInputs['pu_PickUp_By_Time_Minutes'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
@@ -4805,14 +4765,14 @@ class BookingPage extends Component {
                                                                         <input
                                                                             className="hour"
                                                                             name='de_Deliver_From_Hours'
-                                                                            value={formInputs['de_Deliver_From_Hours']}
+                                                                            value={formInputs['de_Deliver_From_Hours'] ? formInputs['de_Deliver_From_Hours'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                         {':'}
                                                                         <input
                                                                             className="time"
                                                                             name='de_Deliver_From_Minutes'
-                                                                            value={formInputs['de_Deliver_From_Minutes']}
+                                                                            value={formInputs['de_Deliver_From_Minutes'] ? formInputs['de_Deliver_From_Minutes'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
@@ -4850,14 +4810,14 @@ class BookingPage extends Component {
                                                                         <input
                                                                             className="hour"
                                                                             name='de_Deliver_By_Hours'
-                                                                            value={formInputs['de_Deliver_By_Hours']}
+                                                                            value={formInputs['de_Deliver_By_Hours'] ? formInputs['de_Deliver_By_Hours'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                         {':'}
                                                                         <input
                                                                             className="time"
                                                                             name='de_Deliver_By_Minutes'
-                                                                            value={formInputs['de_Deliver_By_Minutes']}
+                                                                            value={formInputs['de_Deliver_By_Minutes'] ? formInputs['de_Deliver_By_Minutes'] : ''}
                                                                             onChange={(e) => this.onHandleInput(e)}
                                                                         />
                                                                     </div>
@@ -4935,7 +4895,7 @@ class BookingPage extends Component {
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
                                                             && (booking && !isBookedBooking)
-                                                            && !_.isUndefined(this.state.booking.vx_freight_provider)
+                                                            && this.state.booking.vx_freight_provider
                                                             && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
@@ -5463,13 +5423,13 @@ class BookingPage extends Component {
                     </ModalFooter>
                 </ReactstrapModal>
 
-                <SwitchClientModal
+                {/*<SwitchClientModal
                     isShowSwitchClientModal={isShowSwitchClientModal}
                     toggleSwitchClientModal={this.toggleSwitchClientModal}
                     onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
                     clients={this.props.dmeClients}
                     selectedClientPK={clientPK}
-                />
+                />*/}
 
                 <NoteSlider
                     isOpen={isNotePaneOpen}
@@ -5635,7 +5595,6 @@ const mapStateToProps = (state) => {
         clientId: state.auth.clientId,
         warehouses: state.warehouse.warehouses,
         dmeClients: state.auth.dmeClients,
-        clientPK: state.auth.clientPK,
         noBooking: state.booking.noBooking,
         packageTypes: state.extra.packageTypes,
         allBookingStatus: state.extra.allBookingStatus,
@@ -5707,7 +5666,6 @@ const mapDispatchToProps = (dispatch) => {
         deleteNote: (id) => dispatch(deleteNote(id)),
         getWarehouses: () => dispatch(getWarehouses()),
         getDMEClients: () => dispatch(getDMEClients()),
-        setClientPK: (clientId) => dispatch(setClientPK(clientId)),
         getBookingStatusHistory: (bookingId) => dispatch(getBookingStatusHistory(bookingId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
         getAllBookingStatus: () => dispatch(getAllBookingStatus()),
