@@ -1,5 +1,4 @@
 import {
-    RESET_TICK_MANUAL_BOOK,
     RESET_ATTACHMENTS,
     RESET_BOOKING,
     SET_ATTACHMENTS,
@@ -679,15 +678,10 @@ export function successTickManualBook(data) {
     };
 }
 
-export function failedTickManualBook() {
+export function failedTickManualBook(error) {
     return {
         type: FAILED_TICK_MANUAL_BOOK,
-    };
-}
-
-export function resetTickManualBook() {
-    return {
-        type: RESET_TICK_MANUAL_BOOK,
+        errorMessage: error.response.data.message,
     };
 }
 
