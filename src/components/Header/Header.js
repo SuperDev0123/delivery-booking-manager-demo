@@ -53,7 +53,7 @@ class Header extends Component {
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-        if (currentRoute.indexOf('admin') > -1) 
+        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1) 
             return null;
         
         return (
@@ -106,7 +106,8 @@ class Header extends Component {
                                             <i>Logged in as {username}</i>
                                         </a>
                                         {clientname === 'dme' && <div className='dropdown-divider'></div>}
-                                        {clientname === 'dme' && <a className='dropdown-item' href="/admin">Go to Admin</a>}
+                                        {clientname === 'dme' && <a className='dropdown-item' href="/admin">DME Admin</a>}
+                                        {clientname != 'dme' && <a className='dropdown-item' href="/customerdashboard">Admin</a>}
                                         {clientname === 'dme' && <div className="dropdown-divider"></div>}
                                         {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
                                         {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}

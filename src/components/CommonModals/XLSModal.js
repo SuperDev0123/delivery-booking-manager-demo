@@ -190,6 +190,7 @@ class XLSModal extends Component {
                             <option value="booking_with_gaps">Booking w/gaps</option>
                             {clientname === 'dme' && <option value="dme_booking_with_gaps">DME Booking with GAPS report</option>}
                             <option value="whse">FP/Whse Report</option>
+                            {clientname === 'dme' && <option value="pending_bookings">Pending Bookings report</option>}
                             {clientname === 'dme' && <option value="booked_bookings">Booked Bookings report</option>}
                             {clientname === 'dme' && <option value="picked_up_bookings">Picked up Bookings report</option>}
                             {clientname === 'dme' && <option value="box">Box Bookings report</option>}

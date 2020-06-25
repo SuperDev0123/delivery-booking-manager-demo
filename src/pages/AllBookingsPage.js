@@ -45,7 +45,6 @@ class AllBookingsPage extends React.Component {
         super(props);
 
         this.state = {
-            bookings: [],
             bookingLines: [],
             bookingLineDetails: [],
             warehouses: [],
@@ -170,9 +169,11 @@ class AllBookingsPage extends React.Component {
         createBookingSet: PropTypes.func.isRequired,
         updateBookingSet: PropTypes.func.isRequired,
         bookingsets: PropTypes.array,
+        bookings: PropTypes.array,
     };
 
     componentDidMount() {
+        const { bookings } = this.props;
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
@@ -183,18 +184,24 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        // Set initial date range filter values
-        const startDate = moment().toDate();
-        const dateParam = moment().format('YYYY-MM-DD');
-        this.setState({startDate: startDate, endDate: startDate});
-        this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
+        if (!bookings || (bookings && (_.isEmpty(bookings) || _.isUndefined(bookings)))) {
+            // Set initial date range filter values
+            const startDate = moment().toDate();
+            const dateParam = moment().format('YYYY-MM-DD');
+            const that = this;
 
-        this.props.getDMEClients();
-        this.props.getWarehouses();
-        this.props.getUserDateFilterField();
-        this.props.getAllBookingStatus();
-        this.props.getAllFPs();
-        this.props.getAllProjectNames();
+            this.setState({startDate: startDate, endDate: startDate});
+            this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
+
+            setTimeout(() => {
+                that.props.getDMEClients();
+                that.props.getWarehouses();
+                that.props.getUserDateFilterField();
+                that.props.getAllBookingStatus();
+                that.props.getAllFPs();
+                that.props.getAllProjectNames();
+            }, 1000);
+        }
     }
 
     UNSAFE_componentWillMount() {
@@ -229,7 +236,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (!_.isNull(bookingsCnt)) {
-            this.setState({ bookings, filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, activeTabInd, loading: false });
+            this.setState({ filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, activeTabInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -621,7 +628,7 @@ class AllBookingsPage extends React.Component {
     }
 
     getPKBookingIdFromId(id) {
-        const {bookings} = this.state;
+        const {bookings} = this.props;
         let pkBookingId = 0;
 
         for (let i = 0; i < bookings.length; i++) {
@@ -711,7 +718,8 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickGetLabel() {
-        const { selectedBookingIds, bookings } = this.state;
+        const { selectedBookingIds } = this.state;
+        const { bookings } = this.props;
         const st_name = 'startrack';
         const allied_name = 'allied';
         const dhl_name = 'dhl';
@@ -748,7 +756,8 @@ class AllBookingsPage extends React.Component {
 
     onDownload() {
         const token = localStorage.getItem('token');
-        const { selectedBookingIds, downloadOption, bookings, startDate, endDate, selectedWarehouseName } = this.state;
+        const { selectedBookingIds, downloadOption, startDate, endDate, selectedWarehouseName } = this.state;
+        const { bookings } = this.props;
 
         if (selectedBookingIds.length > 0 && selectedBookingIds.length < 501) {
             this.setState({loadingDownload: true});
@@ -1138,7 +1147,8 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickBOOK() {
-        const { bookings, selectedBookingIds, dmeClients } = this.state;
+        const { selectedBookingIds, dmeClients } = this.state;
+        const { bookings } = this.props;
 
         if (selectedBookingIds && selectedBookingIds.length === 0) {
             alert('Please select bookings to *Book*.');
@@ -1622,7 +1632,8 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
+        const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
+        const { bookings, bookingsets } = this.props;
 
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -3018,7 +3029,7 @@ class AllBookingsPage extends React.Component {
                     toggle={this.toggleOrderModal}
                     selectedBookingIds={this.state.selectedBookingIds}
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
-                    bookings={this.state.bookings}
+                    bookings={bookings}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
                 />
 
@@ -3041,7 +3052,7 @@ class AllBookingsPage extends React.Component {
                     toggle={this.toggleBookingSetModal}
                     notify={this.notify}
                     bookingIds={this.state.selectedBookingIds}
-                    bookingsets={this.props.bookingsets}
+                    bookingsets={bookingsets}
                     createBookingSet={this.props.createBookingSet}
                     updateBookingSet={this.props.updateBookingSet}
                 />

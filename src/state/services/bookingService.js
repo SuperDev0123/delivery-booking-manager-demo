@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 import {
-    resetTickManualBook,
     resetAttachments,
     resetBooking,
     successGetAttachments,
@@ -238,7 +237,6 @@ export const tickManualBook = (id) => {
     };
 
     return dispatch => {
-        dispatch(resetTickManualBook());
         axios(options)
             .then(({ data }) => dispatch(successTickManualBook(data)))
             .catch((error) => dispatch(failedTickManualBook(error)));

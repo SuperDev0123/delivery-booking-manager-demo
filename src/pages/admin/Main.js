@@ -27,31 +27,44 @@ class Main extends Component {
     componentDidMount() {
         const token = localStorage.getItem('token');
 
-        if (token && token.length > 0) {
-            this.props.verifyToken();
-        } else {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.history.push('/admin');
+        if (this.props.history.location.pathname.indexOf('admin') > -1) {
+            
+            if (token && token.length > 0) {
+                this.props.verifyToken();
+            } else {
+                localStorage.setItem('isLoggedIn', 'false');
+                this.props.history.push('/admin');
+            }
+        }
+        else if (this.props.history.location.pathname.indexOf('customerdashboard') > -1) {
+            if (token && token.length > 0) {
+                this.props.verifyToken();
+            } else {
+                localStorage.setItem('isLoggedIn', 'false');
+                this.props.history.push('/customerdashboard');
+            }
         }
     }
 
     render() {
         const token = localStorage.getItem('token');
-        return (
-            <React.Fragment>
-                {token ? (
-                    <React.Fragment>
-                        <MainWrapper>
+
+        if (this.props.history.location.pathname.indexOf('admin') > -1 || this.props.history.location.pathname.indexOf('customerdashboard') > -1)
+            return (
+                <React.Fragment>
+                    {token ? (
+                        <React.Fragment>
+                            <MainWrapper>
+                                {this.props.children}
+                            </MainWrapper>
+                        </React.Fragment>
+                    ) : (
+                        <LoginWrapper>
                             {this.props.children}
-                        </MainWrapper>
-                    </React.Fragment>
-                ) : (
-                    <LoginWrapper>
-                        {this.props.children}
-                    </LoginWrapper>
-                )}
-            </React.Fragment>
-        );
+                        </LoginWrapper>
+                    )}
+                </React.Fragment>
+            );
     }
 }
 
