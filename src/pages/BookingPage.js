@@ -4916,7 +4916,7 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
-                                                                disabled={(booking && !isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                             >
                                                                 Book
                                                             </button>
