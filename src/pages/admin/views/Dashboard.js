@@ -162,7 +162,7 @@ class Dashboard extends Component {
 
                     <div className="chart-card">
                         <p className="chart-card-title" >
-                            On time comparison
+                            Late Deliveries
                         </p>
                         
                         <div className="row">
@@ -192,8 +192,18 @@ class Dashboard extends Component {
                                         })
                                     }
                                 </Bar>
-                                <Bar dataKey="late_deliveries" stackId="a" fill="#92C6EF" barSize={20} name="Late" type="monotone" >
+                                <Bar dataKey="late_deliveries" stackId="a" fill="#82C0E0" barSize={20} name="Late" type="monotone" >
                                     <LabelList dataKey="late_deliveries" />
+                                    {
+                                        data.map((entry, index) => {
+                                            return (
+                                                <Cell key={`cell-${index}`} />
+                                            );
+                                        })
+                                    }
+                                </Bar>
+                                <Bar dataKey="ontime_deliveries" stackId="a" fill="#92C6EF" barSize={20} name="On Time" type="monotone" >
+                                    <LabelList dataKey="ontime_deliveries" />
                                     {
                                         data.map((entry, index) => {
                                             return (
@@ -209,7 +219,10 @@ class Dashboard extends Component {
                                     <thead>
                                         <th>FP</th>
                                         <th>Total Deliveries</th>
-                                        <th>On time %</th>
+                                        <th>Total Late</th>
+                                        <th>% Late</th>
+                                        <th>Total on time</th>
+                                        <th>% On time</th>
                                     </thead>
                                     <tbody>
                                         {
@@ -218,7 +231,10 @@ class Dashboard extends Component {
                                                     <tr key={index}>
                                                         <td>{item.freight_provider}</td>
                                                         <td>{item.deliveries}</td>
-                                                        <td>{item.ontime_deliveries_percentage}%</td>
+                                                        <td>{item.late_deliveries}</td>
+                                                        <td>{item.late_deliveries_percentage?item.late_deliveries_percentage:0}%</td>
+                                                        <td>{item.ontime_deliveries}</td>
+                                                        <td>{item.ontime_deliveries_percentage?item.ontime_deliveries_percentage:0}%</td>
                                                     </tr>
                                                 );
                                             })
