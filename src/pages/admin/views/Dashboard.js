@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LabelList, Label
-} from 'recharts';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import DatePicker from 'react-datepicker';
 import _ from 'lodash';
 import { getNumBookingsPerFp } from '../../../state/services/chartService';
 
@@ -103,146 +99,37 @@ class Dashboard extends Component {
     }
 
     render() {
-        const  {num_bookings_fp, startDate, endDate} = this.state;
-
-        const data = num_bookings_fp;
         return (
             <div id="main-wrapper" className="theme-default admin-theme">
                 <div className="pageheader">
                     <h1>Dashboard</h1>
 
-                    <div className="row filter-controls">
-                        <DatePicker
-                            selected={startDate ? new Date(startDate) : ''}
-                            onChange={(e) => this.onDateChange(e, 'startDate')}
-                            dateFormat="dd MMM yyyy"
-                        />
-                        <DatePicker
-                            selected={endDate ? new Date(endDate) : ''}
-                            onChange={(e) => this.onDateChange(e, 'endDate')}
-                            dateFormat="dd MMM yyyy"
-                        />
-                    </div>
                     <div className="chart-card">
-                        <p className="chart-card-title" >
-                            Total Deliveries for Freight providers
-                        </p>
+                        <ul className="animated" role="menu" style={{
+                            listStyle: 'none',
+                            padding: '15px'
+                        }}>
+                            <li style={{padding:'5px'}}>
+                                <a href='/admin/chart/totaldeliveries'>
+                                    <span className="icon">
+                                        <i className="fa fa-cog"></i>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Deliveries by transport company</a>
+                            </li>
 
-                        <BarChart 
-                            width={1000}
-                            height={500}
-                            data={data}
-                            layout="vertical"
-                            label="heaf"
-                            margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                            padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                        >
-                            <XAxis type="number" textAnchor="end">
-                                <Label value="Deliveries" position="bottom" style={{textAnchor: 'middle'}}/>
-                            </XAxis>
-                            <YAxis type="category" dataKey="freight_provider" angle={-30} textAnchor="end">
-                                <Label value="Freight providers" offset={20} position="left" angle={-90} style={{textAnchor: 'middle'}}/>
-                            </YAxis>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <Tooltip />
-                            <Legend verticalAlign="top"  height={36}/>
-                            <Bar dataKey="deliveries" fill="#0050A0" barSize={20} name="Deliveries">
-                                <LabelList dataKey="deliveries" position="right" />
-                                {
-                                    data.map((entry, index) => {
-                                        const color = this.getColor();
-                                        return (
-                                            <Cell key={`cell-${index}`} fill={color} stroke={color}/>
-                                        );
-                                    })
-                                }
-                            </Bar>
-                        </BarChart>
-                    </div>
+                            <li style={{padding:'5px'}}>
+                                <a href='/admin/chart/ontimedeliveries'>
+                                    <span className="icon">
+                                        <i className="fa fa-cog"></i>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Ontime Deliveries</a>
+                            </li>
 
-                    <div className="chart-card">
-                        <p className="chart-card-title" >
-                            Late Deliveries
-                        </p>
-                        
-                        <div className="row">
-                            <BarChart
-                                data={data}
-                                width={1000}
-                                height={500}
-                                margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                                padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="freight_provider" angle={-30} textAnchor="end" >
-                                    <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} />
-                                </XAxis>
-                                <YAxis>
-                                    <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
-                                </YAxis>
-                                <Tooltip />
-                                <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
-                                <Bar dataKey="deliveries" stackId="a" fill="#0050A0" barSize={20} name="Total Deliveries">
-                                    <LabelList dataKey="deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                                <Bar dataKey="late_deliveries" stackId="a" fill="#82C0E0" barSize={20} name="Late" type="monotone" >
-                                    <LabelList dataKey="late_deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                                <Bar dataKey="ontime_deliveries" stackId="a" fill="#92C6EF" barSize={20} name="On Time" type="monotone" >
-                                    <LabelList dataKey="ontime_deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                            </BarChart>
-
-                            <div>
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <thead>
-                                        <th>FP</th>
-                                        <th>Total Deliveries</th>
-                                        <th>Total Late</th>
-                                        <th>% Late</th>
-                                        <th>Total on time</th>
-                                        <th>% On time</th>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            data.map((item, index) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>{item.freight_provider}</td>
-                                                        <td>{item.deliveries}</td>
-                                                        <td>{item.late_deliveries}</td>
-                                                        <td>{item.late_deliveries_percentage?item.late_deliveries_percentage:0}%</td>
-                                                        <td>{item.ontime_deliveries}</td>
-                                                        <td>{item.ontime_deliveries_percentage?item.ontime_deliveries_percentage:0}%</td>
-                                                    </tr>
-                                                );
-                                            })
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                            <li style={{padding:'5px'}}>
+                                <a href='/admin/chart/latedeliveries'>
+                                    <span className="icon">
+                                        <i className="fa fa-cog"></i>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Late Deliveries</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

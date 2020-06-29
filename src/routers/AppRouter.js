@@ -31,6 +31,10 @@ import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 import Main from '../pages/admin/Main';
 import Login from '../pages/admin/views/Login';
 import Dashboard from '../pages/admin/views/Dashboard';
+import TotalDeliveries from '../pages/admin/views/Chart/TotalDeliveries';
+import LateDeliveries from '../pages/admin/views/Chart/LateDeliveries';
+import OnTimeDeliveries from '../pages/admin/views/Chart/OnTimeDeliveries';
+
 import EmailTemplates from '../pages/admin/views/EmailTemplates/EmailTemplates';
 import AddEmailTemplates from '../pages/admin/views/EmailTemplates/AddEmailTemplates';
 import EditEmailTemplates from '../pages/admin/views/EmailTemplates/EditEmailTemplates';
@@ -109,6 +113,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
+                    <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
+                    <AdminPrivateRoute exact path='/admin/chart/latedeliveries' component={LateDeliveries} />
+                    <AdminPrivateRoute exact path='/admin/chart/ontimedeliveries' component={OnTimeDeliveries} />
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
