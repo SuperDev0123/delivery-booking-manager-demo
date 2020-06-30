@@ -550,26 +550,28 @@ class BookingSetList extends React.Component {
                     <LoadingOverlay spinner active={loadingBookings || loadingBookingSets} text='Loading...'>
                         {this.state.viewMode === 0 ?
                             <React.Fragment>
-                                <td>
+                                <div>
                                     <Button color="success" onClick={() => this.onClickRefreshBookingSets()}>Refresh</Button>
-                                </td>
-                                <table className="table table-hover table-bordered sortable bookingsets-table">
-                                    <thead>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Note</th>
-                                        <th>Status</th>
-                                        <th>Created By</th>
-                                        <th>Created At</th>
-                                        <th>Show Bookings</th>
-                                        <th>Pricing</th>
-                                        <th>BOOK</th>
-                                        <th>Delete</th>
-                                    </thead>
-                                    <tbody>
-                                        { bookingSetsList }
-                                    </tbody>
-                                </table>
+                                </div>
+                                <div className="bookingsets-table">
+                                    <table className="table table-hover table-bordered sortable">
+                                        <thead>
+                                            <th>No</th>
+                                            <th>Name</th>
+                                            <th>Note</th>
+                                            <th>Status</th>
+                                            <th>Created By</th>
+                                            <th>Created At</th>
+                                            <th>Show Bookings</th>
+                                            <th>Pricing</th>
+                                            <th>BOOK</th>
+                                            <th>Delete</th>
+                                        </thead>
+                                        <tbody>
+                                            { bookingSetsList }
+                                        </tbody>
+                                    </table>
+                                </div>
                             </React.Fragment>
                             :
                             <React.Fragment>
