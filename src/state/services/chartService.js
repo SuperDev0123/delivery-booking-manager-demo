@@ -20,3 +20,19 @@ export const getNumBookingsPerFp = ({startDate, endDate}) => {
             .then(({ data }) => dispatch(successGetNumBookingsPerFp(data)))
             .catch((error) => dispatch(failedGetNumBookingsPerFp(error)));
 };
+
+
+export const getNumBookingsPerClient = ({startDate, endDate}) => {
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/charts/get_num_bookings_per_client/?startDate=${startDate}&endDate=${endDate}`  ,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetNumBookingsPerFp(data)))
+            .catch((error) => dispatch(failedGetNumBookingsPerFp(error)));
+};
