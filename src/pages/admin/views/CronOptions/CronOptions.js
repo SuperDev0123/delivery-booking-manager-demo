@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import Moment from 'react-moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import moment from 'moment';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getallCronOptions, updateCronOptionDetails } from '../../../../state/services/cronOptionService';
@@ -53,31 +54,6 @@ class CronOptions extends Component {
         this.intervalId = setInterval(() => { this.props.getallCronOptions(); }, 1000 * 5 * 60);
     }
 
-    componentWillUnmount() {
-        clearInterval(this.intervalId);
-    }
-
-    notify = (text) => {
-        toast(text);
-    };
-
-    handleChange({ target }) {
-        this.props.updateCronOptionDetails({ id: target.name, option_value: target.value == 0 ? 1 : 0 });
-        if (target.checked) {
-            target.setAttribute('checked', true);
-            target.parentNode.style.textDecoration = 'line-through';
-            target.value = 1;
-
-        } else {
-            target.removeAttribute('checked');
-            target.parentNode.style.textDecoration = '';
-            target.value = 0;
-        }
-    }
-    onInputChange(event) {
-        this.setState({ [event.target.name]: event.target.value });
-    }
-
     UNSAFE_componentWillReceiveProps(newProps) {
         const { redirect, allCronOptions, needUpdateCronOptions, } = newProps;
         const currentRoute = this.props.location.pathname;
@@ -96,31 +72,67 @@ class CronOptions extends Component {
         }
     }
 
+    componentWillUnmount() {
+        clearInterval(this.intervalId);
+    }
+
+    notify = (text) => {
+        toast(text);
+    };
+
+    handleChange({ target }) {
+        this.props.updateCronOptionDetails({ id: target.name, option_value: target.value == 0 ? 1 : 0 });
+
+        if (target.checked) {
+            target.setAttribute('checked', true);
+            target.parentNode.style.textDecoration = 'line-through';
+            target.value = 1;
+
+        } else {
+            target.removeAttribute('checked');
+            target.parentNode.style.textDecoration = '';
+            target.value = 0;
+        }
+    }
+    onInputChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+
+    onClickEdit(option, type) {
+        if (type === 'arg2') {
+            
+        }
+    }
+
     render() {
         const { allCronOptions } = this.state;
-        const tableData = allCronOptions.map((item, index) => {
-            if (item.show_in_admin)
-                return (
-                    <tr key={index}>
-                        <td>{item.option_name}</td>
-                        <td><input name={item.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={item.option_value} checked={(item.option_value == 1) ? true : false} /></td>
-                        <td width="50">{item.option_description}</td>
-                        <td>{item.option_schedule}</td>
-                        <td>{item.start_time}</td>
-                        <td>{item.end_time}</td>
-                        <td>{item.start_count}</td>
-                        <td>{item.end_count}</td>
-                        <td>{item.elapsed_seconds}</td>
-                        <td>
-                            {item.is_running == 1 ? ( <button className="btn btn-success btn-sm">Running</button> ) : ( <button className="btn btn-warn btn-sm">Not Running</button> )}
-                        </td>
-                        <td>{item.z_createdByAccount}</td>
-                        <td><Moment format="MM/DD/YYYY HH:mm" date={item.z_createdTimeStamp} /></td>
-                        {/*<td>{item.z_downloadedByAccount}</td>
-                        <td><Moment date={item.z_downloadedTimeStamp} /></td>
-                        <td><a className="btn btn-info btn-sm" href={"/providers/edit/"+item.id}>Edit</a>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, item)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>*/}
-                    </tr>
-                );
+        const tableData = allCronOptions.map((option, index) => {
+            return (
+                <tr key={index}>
+                    <td>{option.option_name}</td>
+                    <td><input name={option.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={option.option_value} checked={(option.option_value == 1) ? true : false} /></td>
+                    <td style={{width: '40%'}}>{option.option_description}</td>
+                    <td>{option.option_schedule}</td>
+                    <td>{option.start_time}</td>
+                    <td>{option.end_time}</td>
+                    <td>{option.start_count}</td>
+                    <td>{option.end_count}</td>
+                    <td>{option.elapsed_seconds}</td>
+                    <td>
+                        {option.is_running == 1 ?
+                            ( <button className="btn btn-success btn-sm">Y</button> )
+                            :
+                            ( <button className="btn btn-warn btn-sm">N</button> )}
+                    </td>
+                    <td>{option.arg1}</td>
+                    <td>
+                        {option.arg2 && moment(option.arg2).format('DD/MM/YYYY HH:mm')}
+                        <i className="icon icon-pencil" onClick={() => this.onClickPencil(option, 'arg2')}></i>
+                    </td>
+                    <td>{option.z_createdByAccount}</td>
+                    <td>{option.z_createdTimeStamp && moment(option.z_createdTimeStamp).format('DD/MM/YYYY HH:mm')}</td>
+                </tr>
+            );
         });
 
         return (
@@ -154,24 +166,22 @@ class CronOptions extends Component {
                                         <table id="example" className="table table-striped table-bordered" cellSpacing="0" width="100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Option Name</th>
-                                                    <th>Option Value</th>
-                                                    <th width="50">Option Description</th>
-                                                    <th>Option Schedule</th>
-                                                    <th>Start Time</th>
-                                                    <th>End Time</th>
+                                                    <th>Name</th>
+                                                    <th>Active?</th>
+                                                    <th width="50">Description</th>
+                                                    <th>Schedule</th>
+                                                    <th>Started At</th>
+                                                    <th>Finished At</th>
                                                     <th>Start Count</th>
                                                     <th>End Count</th>
                                                     <th>Elapsed Second</th>
-                                                    <th>Is Running</th>
+                                                    <th>Running?</th>
+                                                    <th>Arg 1</th>
+                                                    <th>Arg 2</th>
                                                     <th>Created By</th>
                                                     <th>Created At</th>
-                                                    {/*<th>Modified BY</th>
-                                            <th>Modified At</th>
-                                            <th>Actions</th>*/}
                                                 </tr>
                                             </thead>
-
                                             <tbody>
                                                 {tableData}
                                             </tbody>
@@ -182,7 +192,6 @@ class CronOptions extends Component {
                         </div>
                     </div>
                 </section>
-
             </div>
         );
     }
