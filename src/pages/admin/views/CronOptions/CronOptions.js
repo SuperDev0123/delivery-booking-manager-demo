@@ -133,6 +133,7 @@ class CronOptions extends Component {
     onClickSave(option, type) {
         if (type === 'arg2') {
             this.props.updateCronOptionDetails({ id: option.id, arg2: option.arg2 });
+            this.setState({isShowDateTimePicker: false});
         }
     }
 
