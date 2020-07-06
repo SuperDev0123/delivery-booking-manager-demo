@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
+import DateTimePicker from 'react-datetime-picker';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -21,7 +23,12 @@ class CronOptions extends Component {
             allCronOptions: [],
             username: null,
             loading: false,
+            isShowDateTimePicker: false,
+            tempArg2: false
         };
+
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
         this.handleChange = this.handleChange.bind(this);
     }
 
@@ -55,20 +62,22 @@ class CronOptions extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, allCronOptions, needUpdateCronOptions, } = newProps;
+        const { redirect, allCronOptions, needUpdateCronOptions } = newProps;
         const currentRoute = this.props.location.pathname;
+
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
         }
+
         if (allCronOptions && allCronOptions !== this.state.allCronOptions) {
             this.setState({ allCronOptions });
-
         }
+
         if (needUpdateCronOptions) {
-            this.notify('Data updated!');
             this.props.getallCronOptions();
+            this.notify('List is refreshed!');
         }
     }
 
@@ -87,25 +96,48 @@ class CronOptions extends Component {
             target.setAttribute('checked', true);
             target.parentNode.style.textDecoration = 'line-through';
             target.value = 1;
-
         } else {
             target.removeAttribute('checked');
             target.parentNode.style.textDecoration = '';
             target.value = 0;
         }
     }
+
+    onChangeDateTime(date, option, fieldName) {
+        const allCronOptions = this.state.allCronOptions;
+        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+
+        if (fieldName === 'arg2' && conveted_date) {
+            allCronOptions.map(cronOption => {
+                if (cronOption.id === option.id) {
+                    cronOption.arg2 = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                }
+            });
+            this.setState({allCronOptions});
+        }
+
+        this.setState({isBookingModified: true});
+    }
+
     onInputChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
 
-    onClickEdit(option, type) {
+    onClickPencil(option, type) {
         if (type === 'arg2') {
-            
+            this.setState({isShowDateTimePicker: true});
+        }
+    }
+
+    onClickSave(option, type) {
+        if (type === 'arg2') {
+            this.props.updateCronOptionDetails({ id: option.id, arg2: option.arg2 });
         }
     }
 
     render() {
-        const { allCronOptions } = this.state;
+        const { allCronOptions, isShowDateTimePicker } = this.state;
         const tableData = allCronOptions.map((option, index) => {
             return (
                 <tr key={index}>
@@ -120,14 +152,28 @@ class CronOptions extends Component {
                     <td>{option.elapsed_seconds}</td>
                     <td>
                         {option.is_running == 1 ?
-                            ( <button className="btn btn-success btn-sm">Y</button> )
+                            <button className="btn btn-success btn-sm">Y</button>
                             :
-                            ( <button className="btn btn-warn btn-sm">N</button> )}
+                            <button className="btn btn-warn btn-sm">N</button>
+                        }
                     </td>
                     <td>{option.arg1}</td>
                     <td>
-                        {option.arg2 && moment(option.arg2).format('DD/MM/YYYY HH:mm')}
+                        {!isShowDateTimePicker ?
+                            option.arg2 && moment(option.arg2).format('DD/MM/YYYY HH:mm')
+                            :
+                            <DateTimePicker
+                                onChange={(date) => this.onChangeDateTime(date, option, 'arg2')}
+                                value={(!_.isNull(option) &&
+                                    !_.isNull(option.arg2) &&
+                                    !_.isUndefined(option.arg2)) &&
+                                    new Date(moment(option.arg2).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                }
+                                format={'dd/MM/yyyy HH:mm'}
+                            />
+                        }
                         <i className="icon icon-pencil" onClick={() => this.onClickPencil(option, 'arg2')}></i>
+                        <i className="fa fa-save" onClick={() => this.onClickSave(option, 'arg2')}></i>
                     </td>
                     <td>{option.z_createdByAccount}</td>
                     <td>{option.z_createdTimeStamp && moment(option.z_createdTimeStamp).format('DD/MM/YYYY HH:mm')}</td>

@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-import { successGetAllCronOptions, failedGetAllCronOptions, successUpdateCronOption, failedUpdateCronOption } from '../actions/cronOptionActions';
+import {
+    successGetAllCronOptions,
+    failedGetAllCronOptions,
+    successUpdateCronOption,
+    failedUpdateCronOption
+} from '../actions/cronOptionActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getallCronOptions = () => {
@@ -8,26 +13,24 @@ export const getallCronOptions = () => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/options/get_all/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/options/`,
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => {dispatch(successGetAllCronOptions(data));})
+            .then(({ data }) => dispatch(successGetAllCronOptions(data)))
             .catch((error) => dispatch(failedGetAllCronOptions(error)));
 };
 
 export const updateCronOptionDetails = (data) => {
     const token = localStorage.getItem('token');
     const options = {
-        method: 'put',
+        method: 'patch',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/options/`+data.id+'/edit/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/options/${data.id}/`,
         data: data
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => {dispatch(successUpdateCronOption(data));})
+            .then(({ data }) => dispatch(successUpdateCronOption(data)))
             .catch((error) => dispatch(failedUpdateCronOption(error)));
 };
-
-
