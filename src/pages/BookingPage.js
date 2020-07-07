@@ -507,7 +507,9 @@ class BookingPage extends Component {
 
         if (needUpdateBookingLines && booking) {
             this.setState({loadingBookingLine: true});
+            this.setState({loadingBookingLineDetail: true});
             this.props.getBookingLines(booking.pk_booking_id);
+            this.props.getBookingLineDetails(booking.pk_booking_id);
         }
 
         if (needUpdateBookingLineDetails && booking) {
@@ -2041,7 +2043,7 @@ class BookingPage extends Component {
         if (typeNum === 0) { // Duplicate line
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.deleteBookingLine(deletedBookingLine);
-            this.setState({loadingBookingLine: true});
+            this.setState({loadingBookingLine: true, loadingBookingLineDetail: true});
         } else if (typeNum === 1) { // Duplicate line detail
             let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
