@@ -1681,6 +1681,7 @@ class BookingPage extends Component {
         if (fieldName === 'warehouse') {
             formInputs['b_client_warehouse_code'] = selectedOption.value;
             formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'id');
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
         } else if (fieldName === 'vx_freight_provider') {
@@ -1934,14 +1935,12 @@ class BookingPage extends Component {
     }
 
     getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
-        const {warehouses} = this.props;
-
-        for (let i = 0; i < warehouses.length; i++) {
-            if (warehouses[i].client_warehouse_code === warehouseCode) {
+        for (let i = 0; i < this.props.warehouses.length; i++) {
+            if (this.props.warehouses[i].client_warehouse_code === warehouseCode) {
                 if (infoField === 'name') {
-                    return warehouses[i].warehousename;
+                    return this.props.warehouses[i].warehousename;
                 } else if (infoField === 'id') {
-                    return warehouses[i].pk_id_client_warehouses;
+                    return this.props.warehouses[i].pk_id_client_warehouses;
                 }
             }
         }
