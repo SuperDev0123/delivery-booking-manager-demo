@@ -12,6 +12,8 @@ class FPPricingSlider extends React.Component {
         super(props);
 
         this.state = {
+            currentTab: 0,
+            onLoadedError: false
         };
     }
 
@@ -24,6 +26,8 @@ class FPPricingSlider extends React.Component {
         clientname: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isBooked: PropTypes.bool.isRequired,
+        onLoadPricingErrors: PropTypes.func.isRequired,
+        errors: PropTypes.array.isRequired,
     };
 
     calcTotalValue(pricingInfo) {
@@ -42,10 +46,19 @@ class FPPricingSlider extends React.Component {
         this.props.onSelectPricing(sortedPricingInfos[0]);
     }
 
+    onSelectTab(value) {
+        this.setState({currentTab:value});
+
+        if (value == 1 && !this.state.onLoadedError) {
+            this.props.onLoadPricingErrors();
+            this.setState({onLoadedError: true});
+        }
+    }
+    
     render() {
         const {isOpen, booking, clientname, isBooked} = this.props;
-        const {pricingInfos} = this.props;
-
+        const {pricingInfos, errors} = this.props;
+        const { currentTab} = this.state;
         pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
@@ -77,15 +90,35 @@ class FPPricingSlider extends React.Component {
             );
         });
 
+        const errorsList = errors.map((error, index) => {
+            return (
+                <tr key={index}>
+                    <td>{index + 1}</td>
+                    <td>{error.freight_provider}</td>
+                    <td>{error.accountCode}</td>
+                    <td>{error.error_code}</td>
+                    <td>{error.error_description}</td>
+                </tr>
+            );
+        });
+
         return(
             <SlidingPane
-                className='fp-pricing-pan'
+                className='fp-pricing-pan '
                 isOpen={isOpen}
                 title='Freight Provider Pricing Panel'
                 subtitle='List View'
                 onRequestClose={this.props.toggleSlider}
             >
                 <div className="slider-content">
+                    <div id="headr" className="col-md-12 mb-5 qbootstrap-nav">
+                        <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
+                            <ul className="nav nav-tabs">
+                                <li className={currentTab==0?'active':''}><a onClick={(e) => this.onSelectTab(0, e)}>All Pricings</a></li>
+                                <li className={currentTab==1?'active':''}><a onClick={(e) => this.onSelectTab(1, e)}>Errors</a></li>
+                            </ul>
+                        </div>
+                    </div>
                     <div className="table-view">
                         <LoadingOverlay
                             active={this.props.isLoading}
@@ -100,23 +133,23 @@ class FPPricingSlider extends React.Component {
                                 })
                             }}
                         >
-                            <Button
+                            {currentTab==0?<Button
                                 className="lowest"
                                 color="primary"
                                 disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
                                 onClick={() => this.onSelectLowest('lowest')}
                             >
                                 Select lowest price
-                            </Button>
-                            <Button
+                            </Button>:null}
+                            {currentTab==0?<Button
                                 className="fastest"
                                 color="primary"
                                 disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
                                 onClick={() => this.onSelectFastest('fastest')}
                             >
                                 Select fastest price
-                            </Button>
-                            <table className="table table-hover table-bordered sortable fixed_headers">
+                            </Button>:null}
+                            {currentTab==0?<table className="table table-hover table-bordered sortable fixed_headers">
                                 <tr>
                                     <th className="" scope="col" nowrap><p>No</p></th>
                                     <th className="" scope="col" nowrap><p>Transporter</p></th>
@@ -132,7 +165,18 @@ class FPPricingSlider extends React.Component {
                                     <th className="" scope="col" nowrap><p>Action</p></th>
                                 </tr>
                                 { pricingList }
-                            </table>
+                            </table>:null}
+
+                            {currentTab==1?<table className="table table-hover table-bordered sortable fixed_headers">
+                                <tr>
+                                    <th className="" scope="col" nowrap><p>No</p></th>
+                                    <th className="" scope="col" nowrap><p>Freight Provider</p></th>
+                                    <th className="" scope="col" nowrap><p>Account Code</p></th>
+                                    <th className="" scope="col" nowrap><p>Error Code</p></th>
+                                    <th className="" scope="col" nowrap><p>Error Description</p></th>
+                                </tr>
+                                { errorsList }
+                            </table>:null}
                         </LoadingOverlay>
                     </div>
                 </div>

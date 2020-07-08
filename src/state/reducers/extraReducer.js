@@ -54,6 +54,8 @@ import {
     FAILED_DELETE_CLIENT_PRODUCTS,
     SUCCESS_CREATE_CLIENT_PRODUCTS,
     FAILED_CREATE_CLIENT_PRODUCTS,
+    SUCCESS_GET_ALL_ERRORS,
+    FAILED_GET_ALL_ERRORS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -75,6 +77,7 @@ const defaultState = {
     loadingZohoTickets: false,
     clientProducts: [],
     allFPs: [],
+    errors: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -270,6 +273,16 @@ export const ExtraReducer = (state = defaultState, {
             return {
                 ...state,
                 clientProducts: clientProducts
+            };
+        case SUCCESS_GET_ALL_ERRORS:
+            return {
+                ...state,
+                errors: payload
+            };
+        case FAILED_GET_ALL_ERRORS:
+            return {
+                ...state,
+                errors: []
             };
         case FAILED_GET_CLIENT_PRODUCTS:
             return {

@@ -54,7 +54,9 @@ import {
     successDeleteClientProduct,
     failedDeleteClientProduct,
     successCreateClientProduct,
-    failedCreateClientProduct
+    failedCreateClientProduct,
+    successGetAllErrors,
+    failedGetAllErrors,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -412,4 +414,18 @@ export const createClientProduct = (clientProduct) => {
         axios(options)
             .then(({ data }) => dispatch(successCreateClientProduct(data)))
             .catch((error) => dispatch(failedCreateClientProduct(error)));
+};
+
+export const getAllErrors = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/errors/`,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAllErrors(data)))
+            .catch((error) => dispatch(failedGetAllErrors(error)));
 };

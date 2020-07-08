@@ -49,7 +49,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label } from '../commons/validations';
 
@@ -182,7 +182,8 @@ class BookingPage extends Component {
             selectedFileOption: null,
             uploadOption: null,
             xReadyStatus: null,
-            zoho_tickets: []
+            zoho_tickets: [],
+            errors: [],
         };
 
         this.djsConfig = {
@@ -230,6 +231,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
+        this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
     }
 
     static propTypes = {
@@ -303,6 +305,7 @@ class BookingPage extends Component {
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
+        getAllErrors: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -356,7 +359,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -1017,6 +1020,10 @@ class BookingPage extends Component {
                 this.setState({loading: true, curViewMode: 0});
             }
             this.setState({pricingInfos, loadingPricingInfos: false});
+        }
+
+        if (errors) {
+            this.setState({errors, loadingPricingInfos: false});
         }
 
         if (attachments) {
@@ -2608,6 +2615,11 @@ class BookingPage extends Component {
                 this.props.sendEmail(booking.id, templateName);
             }
         }
+    }
+
+    onLoadPricingErrors() {
+        this.setState({loadingPricingInfos: true});
+        this.props.getAllErrors();
     }
 
     render() {
@@ -5561,6 +5573,8 @@ class BookingPage extends Component {
                     booking={booking}
                     isBooked={isBookedBooking}
                     clientname={clientname}
+                    onLoadPricingErrors={this.onLoadPricingErrors}
+                    errors={this.state.errors}
                 />
 
                 <EmailLogSlider
@@ -5629,6 +5643,7 @@ const mapStateToProps = (state) => {
         bookingErrorMessage: state.booking.errorMessage,
         zoho_tickets: state.extra.zoho_tickets,
         loadingZohoTickets: state.extra.loadingZohoTickets,
+        errors: state.extra.errors,
     };
 };
 
@@ -5700,6 +5715,7 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
+        getAllErrors: () => dispatch(getAllErrors()),
     };
 };
 
