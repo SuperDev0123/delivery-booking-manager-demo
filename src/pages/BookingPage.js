@@ -1025,7 +1025,7 @@ class BookingPage extends Component {
             const tempAttachments = attachments;
             const attachmentsHistory = tempAttachments.map((attach, index) => {
                 let result = [];
-                result.no = index;
+                result.no = index + 1;
                 result.description = attach.fk_id_dme_booking;
                 result.filename = attach.fileName;
                 result.uploadfile = attach.linkurl;
