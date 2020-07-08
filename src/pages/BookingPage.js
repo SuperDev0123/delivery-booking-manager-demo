@@ -1023,9 +1023,9 @@ class BookingPage extends Component {
 
         if (attachments) {
             const tempAttachments = attachments;
-            const bookingLineDetailsProduct = tempAttachments.map((attach) => {
+            const attachmentsHistory = tempAttachments.map((attach, index) => {
                 let result = [];
-                result.no = attach.pk_id_attachment;
+                result.no = index;
                 result.description = attach.fk_id_dme_booking;
                 result.filename = attach.fileName;
                 result.uploadfile = attach.linkurl;
@@ -1033,7 +1033,7 @@ class BookingPage extends Component {
                 return result;
             });
 
-            this.setState({attachmentsHistory: bookingLineDetailsProduct});
+            this.setState({attachmentsHistory});
         }
 
         if (isAutoAugmented != this.props.isAutoAugmented) {
