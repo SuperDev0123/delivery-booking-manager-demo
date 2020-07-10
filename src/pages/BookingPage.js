@@ -1840,7 +1840,6 @@ class BookingPage extends Component {
 
             if (clientname !== 'dme') {
                 formInputs['z_CreatedByAccount'] = clientname;
-                // formInputs['b_client_name'] = clientname;
                 formInputs['kf_client_id'] = clientId;
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             } else {
@@ -1848,7 +1847,7 @@ class BookingPage extends Component {
 
                 let ind = 0;
                 for (let i = 0; i < this.props.dmeClients.length; i++) {
-                    if (parseInt(this.props.dmeClients[i].company_name) === clientname) {
+                    if (this.props.dmeClients[i].company_name.toLowerCase() === formInputs['b_client_name'].toLowerCase()) {
                         ind = i;
                         break;
                     }
@@ -1879,6 +1878,7 @@ class BookingPage extends Component {
 
     onClickUpdateBooking() {
         const {isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput, booking} = this.state;
+        const {clientId} = this.props;
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
@@ -1923,6 +1923,23 @@ class BookingPage extends Component {
                 formInputs['b_booking_Category'] = formInputs['b_booking_Category']['value'];
                 formInputs['b_booking_Priority'] = formInputs['b_booking_Priority']['value'];
                 formInputs['booking_Created_For'] = formInputs['booking_Created_For']['label'];
+
+                if (clientname !== 'dme') {
+                    formInputs['kf_client_id'] = clientId;
+                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+                } else {
+                    let ind = 0;
+                    for (let i = 0; i < this.props.dmeClients.length; i++) {
+                        if (this.props.dmeClients[i].company_name.toLowerCase() === formInputs['b_client_name'].toLowerCase()) {
+                            ind = i;
+                            break;
+                        }
+                    }
+
+                    console.log('@1- ', this.props.dmeClients[ind], formInputs['b_client_name']);
+                    formInputs['kf_client_id'] = this.props.dmeClients[ind].dme_account_num;
+                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+                }
 
                 Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
