@@ -21,12 +21,12 @@ export const CronOptionReducer = (state = defaultState, {
                 allCronOptions: allCronOptions,
                 needUpdateCronOptions: false
             };
-        case FAILED_GET_ALL_CRON_OPTIONS:
         case SUCCESS_UPDATE_CRON_OPTION:
             return {
                 ...state,
                 needUpdateCronOptions: true
             };
+        case FAILED_GET_ALL_CRON_OPTIONS:
         case FAILED_UPDATE_CRON_OPTION:
         default:
             return state;
