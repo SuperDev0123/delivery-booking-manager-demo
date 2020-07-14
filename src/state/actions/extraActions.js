@@ -53,7 +53,9 @@ import {
     SUCCESS_DELETE_CLIENT_PRODUCTS,
     FAILED_DELETE_CLIENT_PRODUCTS,
     SUCCESS_CREATE_CLIENT_PRODUCTS,
-    FAILED_CREATE_CLIENT_PRODUCTS
+    FAILED_CREATE_CLIENT_PRODUCTS,
+    SUCCESS_GET_ALL_ERRORS,
+    FAILED_GET_ALL_ERRORS,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -437,3 +439,19 @@ export function failedCreateClientProduct() {
         errorMessage: 'Failed to create client product',
     };
 }
+
+
+export function successGetAllErrors(data) {
+    return {
+        type: SUCCESS_GET_ALL_ERRORS,
+        payload: data,
+    };
+}
+
+export function failedGetAllErrors() {
+    return {
+        type: FAILED_GET_ALL_ERRORS,
+        errorMessage: 'Failed to fetch all errors',
+    };
+}
+

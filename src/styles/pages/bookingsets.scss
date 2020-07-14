@@ -20,8 +20,10 @@
             margin-top: 0px;
         }
 
-        .bookingsets-table {
+        div.bookingsets-table {
             margin-top: 20px;
+            height: calc(100% - 50px);
+            overflow-y: auto;
         }
     }
 

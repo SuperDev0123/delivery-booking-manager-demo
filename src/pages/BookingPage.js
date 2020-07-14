@@ -49,7 +49,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label } from '../commons/validations';
 
@@ -182,7 +182,8 @@ class BookingPage extends Component {
             selectedFileOption: null,
             uploadOption: null,
             xReadyStatus: null,
-            zoho_tickets: []
+            zoho_tickets: [],
+            errors: [],
         };
 
         this.djsConfig = {
@@ -230,6 +231,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
+        this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
     }
 
     static propTypes = {
@@ -303,6 +305,7 @@ class BookingPage extends Component {
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
+        getAllErrors: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -356,7 +359,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -464,7 +467,7 @@ class BookingPage extends Component {
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
                 result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : 0;
-                result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc ? bookingLine.total_2_cubic_mass_factor_calc.toFixed(2) : 0;
+                result['total_2_cubic_mass_factor_calc'] = bookingLine.e_1_Total_dimCubicMeter ? (Number.parseFloat(bookingLine.e_1_Total_dimCubicMeter).toFixed(4) * 250).toFixed(2) : 0;
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
                 result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;
@@ -507,7 +510,9 @@ class BookingPage extends Component {
 
         if (needUpdateBookingLines && booking) {
             this.setState({loadingBookingLine: true});
+            this.setState({loadingBookingLineDetail: true});
             this.props.getBookingLines(booking.pk_booking_id);
+            this.props.getBookingLineDetails(booking.pk_booking_id);
         }
 
         if (needUpdateBookingLineDetails && booking) {
@@ -1019,11 +1024,15 @@ class BookingPage extends Component {
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
+        if (errors) {
+            this.setState({errors, loadingPricingInfos: false});
+        }
+
         if (attachments) {
             const tempAttachments = attachments;
-            const bookingLineDetailsProduct = tempAttachments.map((attach) => {
+            const attachmentsHistory = tempAttachments.map((attach, index) => {
                 let result = [];
-                result.no = attach.pk_id_attachment;
+                result.no = index + 1;
                 result.description = attach.fk_id_dme_booking;
                 result.filename = attach.fileName;
                 result.uploadfile = attach.linkurl;
@@ -1031,7 +1040,7 @@ class BookingPage extends Component {
                 return result;
             });
 
-            this.setState({attachmentsHistory: bookingLineDetailsProduct});
+            this.setState({attachmentsHistory});
         }
 
         if (isAutoAugmented != this.props.isAutoAugmented) {
@@ -1681,6 +1690,7 @@ class BookingPage extends Component {
         if (fieldName === 'warehouse') {
             formInputs['b_client_warehouse_code'] = selectedOption.value;
             formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
+            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'id');
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
         } else if (fieldName === 'vx_freight_provider') {
@@ -1837,7 +1847,6 @@ class BookingPage extends Component {
 
             if (clientname !== 'dme') {
                 formInputs['z_CreatedByAccount'] = clientname;
-                // formInputs['b_client_name'] = clientname;
                 formInputs['kf_client_id'] = clientId;
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             } else {
@@ -1845,7 +1854,7 @@ class BookingPage extends Component {
 
                 let ind = 0;
                 for (let i = 0; i < this.props.dmeClients.length; i++) {
-                    if (parseInt(this.props.dmeClients[i].company_name) === clientname) {
+                    if (this.props.dmeClients[i].company_name.toLowerCase() === formInputs['b_client_name'].toLowerCase()) {
                         ind = i;
                         break;
                     }
@@ -1876,6 +1885,7 @@ class BookingPage extends Component {
 
     onClickUpdateBooking() {
         const {isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput, booking} = this.state;
+        const {clientId} = this.props;
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
@@ -1921,6 +1931,23 @@ class BookingPage extends Component {
                 formInputs['b_booking_Priority'] = formInputs['b_booking_Priority']['value'];
                 formInputs['booking_Created_For'] = formInputs['booking_Created_For']['label'];
 
+                if (clientname !== 'dme') {
+                    formInputs['kf_client_id'] = clientId;
+                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+                } else {
+                    let ind = 0;
+                    for (let i = 0; i < this.props.dmeClients.length; i++) {
+                        if (this.props.dmeClients[i].company_name.toLowerCase() === formInputs['b_client_name'].toLowerCase()) {
+                            ind = i;
+                            break;
+                        }
+                    }
+
+                    console.log('@1- ', this.props.dmeClients[ind], formInputs['b_client_name']);
+                    formInputs['kf_client_id'] = this.props.dmeClients[ind].dme_account_num;
+                    formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
+                }
+
                 Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
@@ -1934,14 +1961,12 @@ class BookingPage extends Component {
     }
 
     getSelectedWarehouseInfoFromCode = (warehouseCode, infoField) => {
-        const {warehouses} = this.props;
-
-        for (let i = 0; i < warehouses.length; i++) {
-            if (warehouses[i].client_warehouse_code === warehouseCode) {
+        for (let i = 0; i < this.props.warehouses.length; i++) {
+            if (this.props.warehouses[i].client_warehouse_code === warehouseCode) {
                 if (infoField === 'name') {
-                    return warehouses[i].warehousename;
+                    return this.props.warehouses[i].warehousename;
                 } else if (infoField === 'id') {
-                    return warehouses[i].pk_id_client_warehouses;
+                    return this.props.warehouses[i].pk_id_client_warehouses;
                 }
             }
         }
@@ -2042,7 +2067,7 @@ class BookingPage extends Component {
         if (typeNum === 0) { // Duplicate line
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.deleteBookingLine(deletedBookingLine);
-            this.setState({loadingBookingLine: true});
+            this.setState({loadingBookingLine: true, loadingBookingLineDetail: true});
         } else if (typeNum === 1) { // Duplicate line detail
             let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
@@ -2608,6 +2633,11 @@ class BookingPage extends Component {
                 this.props.sendEmail(booking.id, templateName);
             }
         }
+    }
+
+    onLoadPricingErrors() {
+        this.setState({loadingPricingInfos: true});
+        this.props.getAllErrors();
     }
 
     render() {
@@ -4647,180 +4677,192 @@ class BookingPage extends Component {
                                                             <label className="" htmlFor="">PU From</label>
                                                         </div>
                                                         <div className="col-sm-9">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <label className="show-mode">
-                                                                        <p className="date disp-inline-block">
-                                                                            {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('DD/MM/YYYY') : ''}
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <label className="show-mode">
+                                                                    <p className="date disp-inline-block">
+                                                                        {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('DD/MM/YYYY') : ''}
+                                                                    </p>
+                                                                    {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) < 10 ?
+                                                                                `0${formInputs['pu_PickUp_Avail_Time_Hours']}:` : `${formInputs['pu_PickUp_Avail_Time_Hours']}:`
+                                                                            }
                                                                         </p>
-                                                                        {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours'] && !_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes'])) ?
-                                                                            <p className="time disp-inline-block">
-                                                                                {parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) < 10 ?
-                                                                                    `0${formInputs['pu_PickUp_Avail_Time_Hours']}:` : `${formInputs['pu_PickUp_Avail_Time_Hours']}:`
-                                                                                }
-                                                                                {parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) < 10 ?
-                                                                                    `0${formInputs['pu_PickUp_Avail_Time_Minutes']}:` : `${formInputs['pu_PickUp_Avail_Time_Minutes']}`
-                                                                                }
-                                                                            </p> : null
-                                                                        }
-                                                                    </label>
-                                                                    :
-                                                                    <div>
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(formInputs['puPickUpAvailFrom_Date']) : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
-                                                                            dateFormat="dd MMM yyyy"
-                                                                        />
-                                                                        <input
-                                                                            className="hour"
-                                                                            name='pu_PickUp_Avail_Time_Hours'
-                                                                            value={formInputs['pu_PickUp_Avail_Time_Hours'] ? formInputs['pu_PickUp_Avail_Time_Hours'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                        {':'}
-                                                                        <input
-                                                                            className="time"
-                                                                            name='pu_PickUp_Avail_Time_Minutes'
-                                                                            value={formInputs['pu_PickUp_Avail_Time_Minutes'] ? formInputs['pu_PickUp_Avail_Time_Minutes'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                    </div>
+                                                                    }
+                                                                    {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) && !_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) < 10 ?
+                                                                                `0${formInputs['pu_PickUp_Avail_Time_Minutes']}` : `${formInputs['pu_PickUp_Avail_Time_Minutes']}`
+                                                                            }
+                                                                        </p>
+                                                                    }
+                                                                </label>
+                                                                :
+                                                                <div>
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['puPickUpAvailFrom_Date'] ? new Date(formInputs['puPickUpAvailFrom_Date']) : null}
+                                                                        onChange={(e) => this.onDateChange(e, 'puPickUpAvailFrom_Date')}
+                                                                        dateFormat="dd MMM yyyy"
+                                                                    />
+                                                                    <input
+                                                                        className="hour"
+                                                                        name='pu_PickUp_Avail_Time_Hours'
+                                                                        value={!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) ? formInputs['pu_PickUp_Avail_Time_Hours'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                    {':'}
+                                                                    <input
+                                                                        className="time"
+                                                                        name='pu_PickUp_Avail_Time_Minutes'
+                                                                        value={!_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) ? formInputs['pu_PickUp_Avail_Time_Minutes'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                </div>
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
                                                             <label className="" htmlFor="">PU By</label>
                                                         </div>
                                                         <div className="col-sm-9">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <label className="show-mode">
-                                                                        <p className="date disp-inline-block">
-                                                                            {formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).format('DD/MM/YYYY') : ''}
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <label className="show-mode">
+                                                                    <p className="date disp-inline-block">
+                                                                        {formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).format('DD/MM/YYYY') : ''}
+                                                                    </p>
+                                                                    {!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['pu_PickUp_By_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Hours']) < 10 ?
+                                                                                `0${formInputs['pu_PickUp_By_Time_Hours']}:` : `${formInputs['pu_PickUp_By_Time_Hours']}:`
+                                                                            }
                                                                         </p>
-                                                                        {!_.isNull(formInputs['pu_PickUp_By_Time_Hours'] && !_.isNull(formInputs['pu_PickUp_By_Time_Minutes'])) ?
-                                                                            <p className="time disp-inline-block">
-                                                                                {parseInt(formInputs['pu_PickUp_By_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Hours']) < 10 ?
-                                                                                    `0${formInputs['pu_PickUp_By_Time_Hours']}:` : `${formInputs['pu_PickUp_By_Time_Hours']}:`
-                                                                                }
-                                                                                {parseInt(formInputs['pu_PickUp_By_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Minutes']) < 10 ?
-                                                                                    `0${formInputs['pu_PickUp_By_Time_Minutes']}:` : `${formInputs['pu_PickUp_By_Time_Minutes']}`
-                                                                                }
-                                                                            </p> : null
-                                                                        }
-                                                                    </label>
-                                                                    :
-                                                                    <div>
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['pu_PickUp_By_Date'] ? new Date(formInputs['pu_PickUp_By_Date']) : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
-                                                                            dateFormat="dd MMM yyyy"
-                                                                        />
-                                                                        <input
-                                                                            className="hour"
-                                                                            name='pu_PickUp_By_Time_Hours'
-                                                                            value={formInputs['pu_PickUp_By_Time_Hours'] ? formInputs['pu_PickUp_By_Time_Hours'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                        {':'}
-                                                                        <input
-                                                                            className="time"
-                                                                            name='pu_PickUp_By_Time_Minutes'
-                                                                            value={formInputs['pu_PickUp_By_Time_Minutes'] ? formInputs['pu_PickUp_By_Time_Minutes'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                    </div>
+                                                                    }
+                                                                    {!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) && !_.isNull(formInputs['pu_PickUp_By_Time_Minutes']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['pu_PickUp_By_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Minutes']) < 10 ?
+                                                                                `0${formInputs['pu_PickUp_By_Time_Minutes']}` : `${formInputs['pu_PickUp_By_Time_Minutes']}`
+                                                                            }
+                                                                        </p>
+                                                                    }
+                                                                </label>
+                                                                :
+                                                                <div>
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['pu_PickUp_By_Date'] ? new Date(formInputs['pu_PickUp_By_Date']) : null}
+                                                                        onChange={(e) => this.onDateChange(e, 'pu_PickUp_By_Date')}
+                                                                        dateFormat="dd MMM yyyy"
+                                                                    />
+                                                                    <input
+                                                                        className="hour"
+                                                                        name='pu_PickUp_By_Time_Hours'
+                                                                        value={!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) ? formInputs['pu_PickUp_By_Time_Hours'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                    {':'}
+                                                                    <input
+                                                                        className="time"
+                                                                        name='pu_PickUp_By_Time_Minutes'
+                                                                        value={!_.isNull(formInputs['pu_PickUp_By_Time_Minutes']) ? formInputs['pu_PickUp_By_Time_Minutes'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                </div>
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
-                                                            <label className="" htmlFor="">DE From</label>
+                                                            <label className="" htmlFor="">DE from</label>
                                                         </div>
                                                         <div className="col-sm-9">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <label className="show-mode">
-                                                                        <p className="date disp-inline-block">
-                                                                            {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('DD/MM/YYYY') : ''}
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <label className="show-mode">
+                                                                    <p className="date disp-inline-block">
+                                                                        {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('DD/MM/YYYY') : ''}
+                                                                    </p>
+                                                                    {!_.isNull(formInputs['de_Deliver_From_Hours']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['de_Deliver_From_Hours']) > -1 && parseInt(formInputs['de_Deliver_From_Hours']) < 10 ?
+                                                                                `0${formInputs['de_Deliver_From_Hours']}:` : `${formInputs['de_Deliver_From_Hours']}:`
+                                                                            }
                                                                         </p>
-                                                                        {!_.isNull(formInputs['de_Deliver_From_Hours'] && !_.isNull(formInputs['de_Deliver_From_Minutes'])) ?
-                                                                            <p className="time disp-inline-block">
-                                                                                {parseInt(formInputs['de_Deliver_From_Hours']) > -1 && parseInt(formInputs['de_Deliver_From_Hours']) < 10 ?
-                                                                                    `0${formInputs['de_Deliver_From_Hours']}:` : `${formInputs['de_Deliver_From_Hours']}:`
-                                                                                }
-                                                                                {parseInt(formInputs['de_Deliver_From_Minutes']) > -1 && parseInt(formInputs['de_Deliver_From_Minutes']) < 10 ?
-                                                                                    `0${formInputs['de_Deliver_From_Minutes']}:` : `${formInputs['de_Deliver_From_Minutes']}`
-                                                                                }
-                                                                            </p> : null
-                                                                        }
-                                                                    </label>
-                                                                    :
-                                                                    <div>
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['de_Deliver_From_Date'] ? new Date(formInputs['de_Deliver_From_Date']) : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
-                                                                            dateFormat="dd MMM yyyy"
-                                                                        />
-                                                                        <input
-                                                                            className="hour"
-                                                                            name='de_Deliver_From_Hours'
-                                                                            value={formInputs['de_Deliver_From_Hours'] ? formInputs['de_Deliver_From_Hours'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                        {':'}
-                                                                        <input
-                                                                            className="time"
-                                                                            name='de_Deliver_From_Minutes'
-                                                                            value={formInputs['de_Deliver_From_Minutes'] ? formInputs['de_Deliver_From_Minutes'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                    </div>
+                                                                    }
+                                                                    {!_.isNull(formInputs['de_Deliver_From_Hours']) && !_.isNull(formInputs['de_Deliver_From_Minutes']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['de_Deliver_From_Minutes']) > -1 && parseInt(formInputs['de_Deliver_From_Minutes']) < 10 ?
+                                                                                `0${formInputs['de_Deliver_From_Minutes']}` : `${formInputs['de_Deliver_From_Minutes']}`
+                                                                            }
+                                                                        </p>
+                                                                    }
+                                                                </label>
+                                                                :
+                                                                <div>
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['de_Deliver_From_Date'] ? new Date(formInputs['de_Deliver_From_Date']) : null}
+                                                                        onChange={(e) => this.onDateChange(e, 'de_Deliver_From_Date')}
+                                                                        dateFormat="dd MMM yyyy"
+                                                                    />
+                                                                    <input
+                                                                        className="hour"
+                                                                        name='de_Deliver_From_Hours'
+                                                                        value={!_.isNull(formInputs['de_Deliver_From_Hours']) ? formInputs['de_Deliver_From_Hours'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                    {':'}
+                                                                    <input
+                                                                        className="time"
+                                                                        name='de_Deliver_From_Minutes'
+                                                                        value={!_.isNull(formInputs['de_Deliver_From_Minutes']) ? formInputs['de_Deliver_From_Minutes'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                </div>
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
                                                             <label className="" htmlFor="">DE By</label>
                                                         </div>
                                                         <div className="col-sm-9">
-                                                            {
-                                                                (parseInt(curViewMode) === 0) ?
-                                                                    <label className="show-mode">
-                                                                        <p className="date disp-inline-block">
-                                                                            {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <label className="show-mode">
+                                                                    <p className="date disp-inline-block">
+                                                                        {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}
+                                                                    </p>
+                                                                    {!_.isNull(formInputs['de_Deliver_By_Hours']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['de_Deliver_By_Hours']) > -1 && parseInt(formInputs['de_Deliver_By_Hours']) < 10 ?
+                                                                                `0${formInputs['de_Deliver_By_Hours']}:` : `${formInputs['de_Deliver_By_Hours']}:`
+                                                                            }
                                                                         </p>
-                                                                        {!_.isNull(formInputs['de_Deliver_By_Hours'] && !_.isNull(formInputs['de_Deliver_By_Minutes'])) ?
-                                                                            <p className="time disp-inline-block">
-                                                                                {parseInt(formInputs['de_Deliver_By_Hours']) > -1 && parseInt(formInputs['de_Deliver_By_Hours']) < 10 ?
-                                                                                    `0${formInputs['de_Deliver_By_Hours']}:` : `${formInputs['de_Deliver_By_Hours']}:`
-                                                                                }
-                                                                                {parseInt(formInputs['de_Deliver_By_Minutes']) > -1 && parseInt(formInputs['de_Deliver_By_Minutes']) < 10 ?
-                                                                                    `0${formInputs['de_Deliver_By_Minutes']}:` : `${formInputs['de_Deliver_By_Minutes']}`
-                                                                                }
-                                                                            </p> : null
-                                                                        }
-                                                                    </label>
-                                                                    :
-                                                                    <div>
-                                                                        <DatePicker
-                                                                            className="date"
-                                                                            selected={formInputs['de_Deliver_By_Date'] ? new Date(formInputs['de_Deliver_By_Date']) : null}
-                                                                            onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
-                                                                            dateFormat="dd MMM yyyy"
-                                                                        />
-                                                                        <input
-                                                                            className="hour"
-                                                                            name='de_Deliver_By_Hours'
-                                                                            value={formInputs['de_Deliver_By_Hours'] ? formInputs['de_Deliver_By_Hours'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                        {':'}
-                                                                        <input
-                                                                            className="time"
-                                                                            name='de_Deliver_By_Minutes'
-                                                                            value={formInputs['de_Deliver_By_Minutes'] ? formInputs['de_Deliver_By_Minutes'] : ''}
-                                                                            onChange={(e) => this.onHandleInput(e)}
-                                                                        />
-                                                                    </div>
+                                                                    }
+                                                                    {!_.isNull(formInputs['de_Deliver_By_Hours']) && !_.isNull(formInputs['de_Deliver_By_Minutes']) &&
+                                                                        <p className="time disp-inline-block">
+                                                                            {parseInt(formInputs['de_Deliver_By_Minutes']) > -1 && parseInt(formInputs['de_Deliver_By_Minutes']) < 10 ?
+                                                                                `0${formInputs['de_Deliver_By_Minutes']}` : `${formInputs['de_Deliver_By_Minutes']}`
+                                                                            }
+                                                                        </p>
+                                                                    }
+                                                                </label>
+                                                                :
+                                                                <div>
+                                                                    <DatePicker
+                                                                        className="date"
+                                                                        selected={formInputs['de_Deliver_By_Date'] ? new Date(formInputs['de_Deliver_By_Date']) : null}
+                                                                        onChange={(e) => this.onDateChange(e, 'de_Deliver_By_Date')}
+                                                                        dateFormat="dd MMM yyyy"
+                                                                    />
+                                                                    <input
+                                                                        className="hour"
+                                                                        name='de_Deliver_By_Hours'
+                                                                        value={!_.isNull(formInputs['de_Deliver_By_Hours']) ? formInputs['de_Deliver_By_Hours'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                    {':'}
+                                                                    <input
+                                                                        className="time"
+                                                                        name='de_Deliver_By_Minutes'
+                                                                        value={!_.isNull(formInputs['de_Deliver_By_Minutes']) ? formInputs['de_Deliver_By_Minutes'] : ''}
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
+                                                                </div>
                                                             }
                                                         </div>
                                                         <div className="col-sm-3">
@@ -5549,6 +5591,8 @@ class BookingPage extends Component {
                     booking={booking}
                     isBooked={isBookedBooking}
                     clientname={clientname}
+                    onLoadPricingErrors={this.onLoadPricingErrors}
+                    errors={this.state.errors}
                 />
 
                 <EmailLogSlider
@@ -5617,6 +5661,7 @@ const mapStateToProps = (state) => {
         bookingErrorMessage: state.booking.errorMessage,
         zoho_tickets: state.extra.zoho_tickets,
         loadingZohoTickets: state.extra.loadingZohoTickets,
+        errors: state.extra.errors,
     };
 };
 
@@ -5688,6 +5733,7 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
+        getAllErrors: () => dispatch(getAllErrors()),
     };
 };
 
