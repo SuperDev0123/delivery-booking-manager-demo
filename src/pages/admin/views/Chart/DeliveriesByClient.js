@@ -148,15 +148,15 @@ class ByClient extends Component {
                         <div className="row">
                             <BarChart
                                 width={1000}
-                                height={500}
+                                height={600}
                                 data={data}
                                 layout="vertical"
                                 label="heaf"
                                 margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                 padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                             >
-                                <XAxis type="number" textAnchor="end">
-                                    <Label value=" Total Deliveries" position="bottom" style={{ textAnchor: 'middle' }} />
+                                <XAxis type="number" textAnchor="end" height={70}>
+                                    <Label value=" Total Deliveries" position="bottom" style={{ textAnchor: 'middle' }}  offset={-10}/>
                                 </XAxis>
                                 <YAxis type="category" dataKey="client_name" angle={-30} textAnchor="end">
                                     <Label value="Client/Sub Client" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
@@ -175,7 +175,7 @@ class ByClient extends Component {
                                         })
                                     }
                                 </Bar>
-                                <Bar dataKey="total_cost" stackId="a" fill="#82C0E0" barSize={20} name="Actual $" type="monotone" >
+                                <Bar dataKey="total_cost" stackId="a" fill="#82C0E0" barSize={350} name="Actual $" type="monotone" >
                                     <LabelList dataKey="total_cost" />
                                     {
                                         data.map((entry, index) => {
@@ -185,55 +185,7 @@ class ByClient extends Component {
                                         })
                                     }
                                 </Bar>
-                                {/* <Bar dataKey="deliveries" fill="#0050A0" barSize={20} name="Deliveries">
-                                    <LabelList dataKey="deliveries" position="right" />
-                                    {
-                                        data.map((entry, index) => {
-                                            const color = this.getColor();
-                                            return (
-                                                <Cell key={`cell-${index}`} fill={color} stroke={color} />
-                                            );
-                                        })
-                                    }
-                                </Bar> */}
                             </BarChart>
-                            {/* <BarChart
-                                data={data}
-                                width={1000}
-                                height={500}
-                                margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                                padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="client_name" textAnchor="end" >
-                                    <Label value="Client/Sub Client" position="bottom" style={{ textAnchor: 'middle' }} />
-                                </XAxis>
-                                <YAxis>
-                                    <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
-                                </YAxis>
-                                <Tooltip />
-                                <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
-                                <Bar dataKey="deliveries" stackId="a" fill="#0050A0" barSize={20} name="Total Deliveries">
-                                    <LabelList dataKey="deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                                <Bar dataKey="total_cost" stackId="a" fill="#82C0E0" barSize={20} name="Actual $" type="monotone" >
-                                    <LabelList dataKey="total_cost" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                            </BarChart> */}
                             
                             <div className="panel-body">
                                 <div className="table-responsive">

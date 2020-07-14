@@ -117,17 +117,10 @@ class Dashboard extends Component {
                             </li>
 
                             <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/ontimedeliveries'>
+                                <a href='/admin/chart/ontimelatedeliveries'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Ontime Deliveries</a>
-                            </li>
-
-                            <li style={{padding:'5px'}}>
-                                <a href='/admin/chart/latedeliveries'>
-                                    <span className="icon">
-                                        <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Late Deliveries</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Ontime/Late Deliveries</a>
                             </li>
 
                             <li style={{padding:'5px'}}>

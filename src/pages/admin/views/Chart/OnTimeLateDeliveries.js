@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { getNumBookingsPerFp } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
   
-class LateDeliveries extends Component {
+class OnTimeLateDeliveries extends Component {
     constructor(props) {
         super(props);
 
@@ -107,6 +107,13 @@ class LateDeliveries extends Component {
 
         const data = num_bookings_fp;
 
+        const dataFormatter = (cell) => {
+            if (cell)
+                return cell;
+            else
+                return 0;
+        };
+
         const columns = [
             {
                 text: 'FP',
@@ -117,8 +124,18 @@ class LateDeliveries extends Component {
                 dataField: 'deliveries',
                 sort: true
             }, {
+                text: 'Total on time',
+                dataField: 'ontime_deliveries',
+                formatter: dataFormatter,
+                sort: true
+            }, {
                 text: 'Total Late',
                 dataField: 'late_deliveries',
+                formatter: dataFormatter,
+                sort: true
+            },  {
+                text: '% On time',
+                dataField: 'ontime_deliveries_percentage',
                 sort: true
             }, {
                 text: '% Late',
@@ -146,27 +163,27 @@ class LateDeliveries extends Component {
 
                     <div className="chart-card">
                         <p className="chart-card-title" >
-                            Late Deliveries
+                            OnTime Deliveries
                         </p>
                         
                         <div className="row">
                             <BarChart
                                 data={data}
-                                width={1000}
-                                height={500}
+                                width={1000} 
+                                height={600}
                                 margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                 padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="freight_provider" angle={-30} textAnchor="end" >
-                                    <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} />
+                                <XAxis dataKey="freight_provider" angle={-30} textAnchor="end"  height={70} interval={0}>
+                                    <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} offset={-10}/>
                                 </XAxis>
                                 <YAxis>
                                     <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
                                 </YAxis>
                                 <Tooltip />
                                 <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
-                                <Bar dataKey="deliveries" stackId="a" fill="#0050A0" barSize={20} name="Total Deliveries">
+                                <Bar dataKey="deliveries" stackId="a" fill="#7D79D3" barSize={350} name="Total Deliveries">
                                     <LabelList dataKey="deliveries" />
                                     {
                                         data.map((entry, index) => {
@@ -176,7 +193,19 @@ class LateDeliveries extends Component {
                                         })
                                     }
                                 </Bar>
-                                <Bar dataKey="late_deliveries" stackId="a" fill="#82C0E0" barSize={20} name="Late" type="monotone" >
+                            
+                                <Bar dataKey="ontime_deliveries" stackId="a" fill="#77C392" barSize={350} name="On Time" type="monotone" >
+                                    <LabelList dataKey="ontime_deliveries" />
+                                    {
+                                        data.map((entry, index) => {
+                                            return (
+                                                <Cell key={`cell-${index}`} />
+                                            );
+                                        })
+                                    }
+                                </Bar>
+
+                                <Bar dataKey="late_deliveries" stackId="a" fill="#A20000" barSize={350} name="Late" type="monotone" >
                                     <LabelList dataKey="late_deliveries" />
                                     {
                                         data.map((entry, index) => {
@@ -187,7 +216,6 @@ class LateDeliveries extends Component {
                                     }
                                 </Bar>
                             </BarChart>
-                            
                             <div className="panel-body">
                                 <div className="table-responsive">
                                     <BootstrapTable
@@ -220,4 +248,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(LateDeliveries);
+export default connect(mapStateToProps, mapDispatchToProps)(OnTimeLateDeliveries);

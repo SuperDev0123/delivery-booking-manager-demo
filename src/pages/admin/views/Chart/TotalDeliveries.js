@@ -144,23 +144,23 @@ class TotalDeliveries extends Component {
                         <div className="row">
                             <BarChart 
                                 width={1000}
-                                height={500}
+                                height={600}
                                 data={data}
                                 layout="vertical"
                                 label="heaf"
                                 margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                 padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                             >
-                                <XAxis type="number" textAnchor="end">
-                                    <Label value="Deliveries" position="bottom" style={{textAnchor: 'middle'}}/>
+                                <XAxis type="number" textAnchor="end" height={70}>
+                                    <Label value="Deliveries" position="bottom" style={{textAnchor: 'middle'}}  offset={-10}/>
                                 </XAxis>
-                                <YAxis type="category" dataKey="freight_provider" angle={-30} textAnchor="end">
+                                <YAxis type="category" dataKey="freight_provider" angle={-30} textAnchor="end" interval={0}>
                                     <Label value="Transport companies" offset={20} position="left" angle={-90} style={{textAnchor: 'middle'}}/>
                                 </YAxis>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <Tooltip />
                                 <Legend verticalAlign="top"  height={36}/>
-                                <Bar dataKey="deliveries" fill="#0050A0" barSize={20} name="Deliveries">
+                                <Bar dataKey="deliveries" fill="#0050A0" barSize={350} name="Deliveries">
                                     <LabelList dataKey="deliveries" position="right" />
                                     {
                                         data.map((entry, index) => {

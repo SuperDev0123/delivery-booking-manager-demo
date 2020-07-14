@@ -32,8 +32,7 @@ import Main from '../pages/admin/Main';
 import Login from '../pages/admin/views/Login';
 import Dashboard from '../pages/admin/views/Dashboard';
 import TotalDeliveries from '../pages/admin/views/Chart/TotalDeliveries';
-import LateDeliveries from '../pages/admin/views/Chart/LateDeliveries';
-import OnTimeDeliveries from '../pages/admin/views/Chart/OnTimeDeliveries';
+import OnTimeLateDeliveries from '../pages/admin/views/Chart/OnTimeLateDeliveries';
 import DeliveriesByClient from '../pages/admin/views/Chart/DeliveriesByClient';
 
 import EmailTemplates from '../pages/admin/views/EmailTemplates/EmailTemplates';
@@ -115,8 +114,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
                     <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
-                    <AdminPrivateRoute exact path='/admin/chart/latedeliveries' component={LateDeliveries} />
-                    <AdminPrivateRoute exact path='/admin/chart/ontimedeliveries' component={OnTimeDeliveries} />
+                    <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
