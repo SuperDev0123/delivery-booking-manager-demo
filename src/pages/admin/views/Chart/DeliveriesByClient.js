@@ -106,6 +106,13 @@ class ByClient extends Component {
         const  {num_bookings_fp, startDate, endDate} = this.state;
 
         const data = num_bookings_fp;
+        
+        const dataFormatter = (cell) => {
+            if (cell)
+                return cell;
+            else
+                return 0;
+        };
 
         const columns = [
             {
@@ -115,6 +122,16 @@ class ByClient extends Component {
             }, {
                 text: 'Total Deliveries',
                 dataField: 'deliveries',
+                sort: true
+            }, {
+                text: 'Total on time',
+                dataField: 'ontime_deliveries',
+                formatter: dataFormatter,
+                sort: true
+            }, {
+                text: 'Total Late',
+                dataField: 'late_deliveries',
+                formatter: dataFormatter,
                 sort: true
             }, {
                 text: 'Actual $',
@@ -175,8 +192,9 @@ class ByClient extends Component {
                                         })
                                     }
                                 </Bar>
-                                <Bar dataKey="total_cost" stackId="a" fill="#82C0E0" barSize={350} name="Actual $" type="monotone" >
-                                    <LabelList dataKey="total_cost" />
+
+                                <Bar dataKey="ontime_deliveries" stackId="a" fill="#82C0E0" barSize={350} name="On Time" type="monotone" >
+                                    <LabelList dataKey="ontime_deliveries" />
                                     {
                                         data.map((entry, index) => {
                                             return (
@@ -185,6 +203,18 @@ class ByClient extends Component {
                                         })
                                     }
                                 </Bar>
+
+                                <Bar dataKey="late_deliveries" stackId="a" fill="#A20000" barSize={350} name="Late" type="monotone" >
+                                    <LabelList dataKey="late_deliveries" />
+                                    {
+                                        data.map((entry, index) => {
+                                            return (
+                                                <Cell key={`cell-${index}`} />
+                                            );
+                                        })
+                                    }
+                                </Bar>
+
                             </BarChart>
                             
                             <div className="panel-body">
