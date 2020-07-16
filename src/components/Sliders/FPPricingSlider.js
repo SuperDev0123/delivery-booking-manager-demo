@@ -94,7 +94,7 @@ class FPPricingSlider extends React.Component {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{error.freight_provider}</td>
+                    <td>{error.fp_name}</td>
                     <td>{error.accountCode}</td>
                     <td>{error.error_code}</td>
                     <td>{error.error_description}</td>
@@ -112,7 +112,7 @@ class FPPricingSlider extends React.Component {
             >
                 <div className="slider-content">
                     <div id="headr" className="col-md-12 mb-5 qbootstrap-nav">
-                        <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
+                        <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12">
                             <ul className="nav nav-tabs">
                                 <li className={currentTab==0?'active':''}><a onClick={(e) => this.onSelectTab(0, e)}>All Pricings</a></li>
                                 <li className={currentTab==1?'active':''}><a onClick={(e) => this.onSelectTab(1, e)}>Errors</a></li>

@@ -1870,6 +1870,9 @@ class BookingPage extends Component {
             formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
             formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
             formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+            formInputs['b_booking_Category'] = formInputs['b_booking_Category'] ? formInputs['b_booking_Category']['value'] : '';
+            formInputs['b_booking_Priority'] = formInputs['b_booking_Priority'] ? formInputs['b_booking_Priority']['value'] : '';
+            formInputs['booking_Created_For'] = formInputs['booking_Created_For'] ? formInputs['booking_Created_For']['label'] : '';
             formInputs['x_booking_Created_With'] = 'Manual';
             formInputs['b_status'] = 'Entered';
 
