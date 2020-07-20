@@ -90,11 +90,11 @@ class FPPricingSlider extends React.Component {
             );
         });
 
-        const errorsList = errors.map((error, index) => {
+        const errorsList = (errors || []).map((error, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{error.freight_provider}</td>
+                    <td>{error.fp_name}</td>
                     <td>{error.accountCode}</td>
                     <td>{error.error_code}</td>
                     <td>{error.error_description}</td>
