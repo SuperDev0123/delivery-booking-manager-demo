@@ -34,6 +34,15 @@ class FPPricingSlider extends React.Component {
         return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
     }
 
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const {isOpen} = newProps;
+
+        if ( !isOpen) {
+            console.log('onLoadedError');
+            this.setState({onLoadedError: false});
+        }
+    }
+
     onSelectLowest() {
         const {pricingInfos} = this.props;
         const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
@@ -54,7 +63,7 @@ class FPPricingSlider extends React.Component {
             this.setState({onLoadedError: true});
         }
     }
-    
+
     render() {
         const {isOpen, booking, clientname, isBooked} = this.props;
         const {pricingInfos, errors} = this.props;
@@ -89,7 +98,13 @@ class FPPricingSlider extends React.Component {
                 </tr>
             );
         });
-
+        errors.sort((a, b) =>  {
+            if (a.fp_name > b.fp_name)
+                return 1;
+            else if (a.fp_name < b.fp_name)
+                return -1;
+            else return 0;
+        });
         const errorsList = (errors || []).map((error, index) => {
             return (
                 <tr key={index}>
