@@ -2641,7 +2641,7 @@ class BookingPage extends Component {
 
     onLoadPricingErrors() {
         this.setState({loadingPricingInfos: true});
-        this.props.getAllErrors();
+        this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
     render() {
@@ -5737,7 +5737,7 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
-        getAllErrors: () => dispatch(getAllErrors()),
+        getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
     };
 };
 
