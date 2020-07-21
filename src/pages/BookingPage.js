@@ -1282,7 +1282,7 @@ class BookingPage extends Component {
 
     onClickConfirmBtn(type) {
         const token = localStorage.getItem('token');
-        const {booking, selectedFileOption} = this.state;
+        const {booking, selectedFileOption, formInputs} = this.state;
 
         if (type === 'delete-file') {
             const options = {
@@ -1316,18 +1316,18 @@ class BookingPage extends Component {
                 const name_last = item.name_last ? item.name_last : '';
                 const name_first = item.name_first ? item.name_first : '';
 
-                if (`${name_first} ${name_last}` === this.state.booking.booking_Created_For) {
+                if (`${name_first} ${name_last}` === formInputs['booking_Created_For'].label) {
                     return true;
                 }
             });
 
-            if (selectedCreatedFor.length > 0 && this.state.booking.booking_Created_For_Email) {
+            if (selectedCreatedFor.length > 0 && formInputs['booking_Created_For_Email']) {
                 const newEmployeeObj = {
                     'pk_id_client_emp': selectedCreatedFor[0]['id'],
-                    'email': this.state.booking.booking_Created_For_Email
+                    'email': formInputs['booking_Created_For_Email']
                 };
-                this.props.updateClientEmployee(newEmployeeObj);
 
+                this.props.updateClientEmployee(newEmployeeObj);
                 setTimeout(() => {
                     this.props.getCreatedForInfos();
                 }, 2000);
@@ -2468,6 +2468,7 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Country'] = 'AU';
             formInputs['b_client_name'] = clientname;
             formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+            formInputs['booking_Created_For_Email'] = '';
             formInputs['fk_client_warehouse'] = 100;
             formInputs['dme_status_detail'] = null;
             formInputs['dme_status_action'] = null;
@@ -3390,7 +3391,7 @@ class BookingPage extends Component {
                                             <Button
                                                 className="edit-lld-btn btn-primary"
                                                 onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
-                                                disabled={parseInt(curViewMode) === 0 || !this.state.booking.booking_Created_For_Email ? 'disabled' : ''}
+                                                disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? 'disabled' : ''}
                                             >
                                                 <i className="fa fa-save" aria-hidden="true"></i>
                                             </Button>
@@ -4931,7 +4932,7 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickOpenPricingSlider()}
-                                                                disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
+                                                                disabled={curViewMode !== 1 ? '' : 'disabled'}
                                                             >
                                                                 <i className="fa fa-caret-square-left"></i>
                                                             </button>
@@ -5567,13 +5568,13 @@ class BookingPage extends Component {
                     okBtnName={'Delete'}
                 />
 
-                {booking && booking.booking_Created_For &&
+                {formInputs && formInputs['booking_Created_For'] && formInputs['booking_Created_For'].label &&
                     <ConfirmModal
                         isOpen={this.state.isShowUpdateCreatedForEmailConfirmModal}
                         onOk={() => this.onClickConfirmBtn('booking_Created_For')}
                         onCancel={this.toggleUpdateCreatedForEmailConfirmModal}
                         title={'Update Client Employee`s email'}
-                        text={`Are you sure you want to update email for ${booking.booking_Created_For.toUpperCase()}?`}
+                        text={`Are you sure you want to update email for ${formInputs['booking_Created_For'].label.toUpperCase()}?`}
                         okBtnName={'Update'}
                     />
                 }
