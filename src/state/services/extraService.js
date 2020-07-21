@@ -421,7 +421,7 @@ export const getAllErrors = (pk_booking_id) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/errors/?pk_booking_id` + pk_booking_id,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/errors/?pk_booking_id=${pk_booking_id}`,
     };
 
     return dispatch =>
