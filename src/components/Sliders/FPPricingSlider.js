@@ -77,9 +77,10 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.fk_freight_provider_id}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td>}
-                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3)}</td>}
+                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(3)}%</td>}
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3) * (1 + pricingInfo.mu_percentage_fuel_levy.toFixed(3))}%</td>}
+                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
                     <td className="text-right none">${this.calcTotalValue(pricingInfo)}</td>
@@ -185,8 +186,9 @@ class FPPricingSlider extends React.Component {
                                         <th className="" scope="col" nowrap><p>Transporter</p></th>
                                         <th className="" scope="col" nowrap><p>Service</p></th>
                                         <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Quoted Cost</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost</p></th>}
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Quoted Cost</p></th>}
                                         <th className="" scope="col" nowrap><p>Quoted $</p></th>
                                         <th className="" scope="col" nowrap><p>Tax ID</p></th>
                                         <th className="" scope="col" nowrap><p>Tax Value</p></th>

@@ -2613,10 +2613,10 @@ class BookingPage extends Component {
         formInputs['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
         formInputs['v_service_Type'] = pricingInfo['service_code'];
-        booking['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
-        formInputs['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
-        booking['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
-        formInputs['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        booking['inv_cost_quoted'] = (parseFloat(pricingInfo['fee']) * (1 + parseFloat(pricingInfo['mu_percentage_fuel_levy']))).toFixed(3);
+        formInputs['inv_cost_quoted'] = booking['inv_cost_quoted'];
+        booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
+        formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
         const selectedFP = this.props.allFPs.find(
@@ -3730,7 +3730,7 @@ class BookingPage extends Component {
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
-                                                    <span className="c-red">Quoted $(Override)</span>
+                                                    <span className="c-red">Quoted $*</span>
                                                     {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)}`}</p>
                                                         :
