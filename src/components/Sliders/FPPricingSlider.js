@@ -79,7 +79,11 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.etd}</td>
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3)}</td>}
                     {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(3)}%</td>}
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3) * (1 + pricingInfo.mu_percentage_fuel_levy.toFixed(3))}%</td>}
+                    {clientname === 'dme' &&
+                        <td className="text-right">
+                            ${(parseFloat(pricingInfo.fee) * (1 + parseFloat(pricingInfo.mu_percentage_fuel_levy))).toFixed(3)}
+                        </td>
+                    }
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
