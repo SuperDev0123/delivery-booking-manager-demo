@@ -82,7 +82,7 @@ class FPPricingSlider extends React.Component {
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
-                    <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
+                    <td className="text-right none">${this.calcTotalValue(pricingInfo)}</td>
                     <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                         {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                     </td>
@@ -189,8 +189,8 @@ class FPPricingSlider extends React.Component {
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
                                         <th className="" scope="col" nowrap><p>Quoted $</p></th>
                                         <th className="" scope="col" nowrap><p>Tax ID</p></th>
-                                        <th className="none" scope="col" nowrap><p>Tax Value</p></th>
-                                        <th className="" scope="col" nowrap><p>Total</p></th>
+                                        <th className="" scope="col" nowrap><p>Tax Value</p></th>
+                                        <th className="none" scope="col" nowrap><p>Total</p></th>
                                         <th className="" scope="col" nowrap><p>ETA DE</p></th>
                                         <th className="" scope="col" nowrap><p>Action</p></th>
                                     </tr>

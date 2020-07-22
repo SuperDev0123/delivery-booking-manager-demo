@@ -969,6 +969,8 @@ class BookingPage extends Component {
                 else formInputs['inv_cost_actual'] = null;
                 if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
                 else formInputs['inv_sell_quoted'] = null;
+                if (booking.inv_sell_quoted_override && !_.isNaN(parseFloat(booking.inv_sell_quoted_override))) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
+                else formInputs['inv_sell_quoted_override'] = null;
                 if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
@@ -1641,6 +1643,7 @@ class BookingPage extends Component {
 
             if (canUpdateField) {
                 if (e.target.name === 'inv_sell_quoted' ||
+                    e.target.name === 'inv_sell_quoted_override' ||
                     e.target.name === 'inv_cost_quoted' ||
                     e.target.name === 'inv_sell_actual' ||
                     e.target.name === 'inv_cost_actual'
@@ -1666,6 +1669,7 @@ class BookingPage extends Component {
         let {formInputs} = this.state;
 
         if (e.target.name === 'inv_sell_quoted' ||
+            e.target.name === 'inv_sell_quoted_override' ||
             e.target.name === 'inv_cost_quoted' ||
             e.target.name === 'inv_sell_actual' ||
             e.target.name === 'inv_cost_actual'
@@ -3716,6 +3720,25 @@ class BookingPage extends Component {
                                                             type="text"
                                                             name="inv_sell_quoted"
                                                             value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span className="c-red">Quoted $(Override)</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)}`}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_sell_quoted_override"
+                                                            value = {formInputs['inv_sell_quoted_override'] && `$${formInputs['inv_sell_quoted_override']}`}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
