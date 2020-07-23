@@ -1438,7 +1438,8 @@ class BookingPage extends Component {
                             this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
                         } else if (
                             booking.vx_freight_provider.toLowerCase() === 'allied' ||
-                            booking.vx_freight_provider.toLowerCase() === 'act'
+                            booking.vx_freight_provider.toLowerCase() === 'act' ||
+                            booking.vx_freight_provider.toLowerCase() === 'state transport'
                         ) {
                             this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
                         } else {
