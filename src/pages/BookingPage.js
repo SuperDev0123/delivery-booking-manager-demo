@@ -127,25 +127,25 @@ class BookingPage extends Component {
             isShowAdditionalActionTaskInput: false,
             isShowAssignedToInput: false,
             actionTaskOptions: [
-                'No follow up required, noted for info purposes', 
-                'Follow up with FP when to be collected',
-                'Follow up with Booking Contact as per log',
-                'Follow up with Cust if they still need collected',
-                'Follow up Cust to confirm pickup date / time',
-                'Follow up Cust to confirm packaging & pickup date / time',
-                'Follow up with FP Booked in & on Schedule',
-                'Follow up with FP Futile re-booked or collected',
+                'Awaiting Invoice to Process to FP File',
+                'Close futile booking 5 days after 2nd email',
+                'Confirm FP has not invoiced this booking',
                 'Follow up FP Collection will be on Time',
                 'Follow up FP / Cust Booking was Collected',
                 'Follow up FP Delivery will be on Time',
                 'Follow up FP / Cust Delivery Occurred',
-                'Follow up Futile Email to Customer',
-                'Close futile booking 5 days after 2nd email',
-                'Follow up query to Freight Provider',
-                'Follow up FP for Quote',
                 'Follow up FP for Credit',
-                'Awaiting Invoice to Process to FP File',
-                'Confirm FP has not invoiced this booking',
+                'Follow up FP for Quote',
+                'Follow up Futile Email to Customer',
+                'Follow up query to Freight Provider',
+                'Follow up Cust to confirm pickup date / time',
+                'Follow up Cust to confirm packaging & pickup date / time',
+                'Follow up with Booking Contact as per log',
+                'Follow up with Cust if they still need collected',
+                'Follow up with FP when to be collected',
+                'Follow up with FP Booked in & on Schedule',
+                'Follow up with FP Futile re-booked or collected',
+                'No follow up required, noted for info purposes', 
                 'Other',
             ],
             clientname: null,
@@ -1010,11 +1010,15 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
+                // Dropzone files reset
+                if (this.attachmentsDz) this.attachmentsDz.destroy();
+                if (this.labelDz) this.labelDz.destroy();
+                if (this.podDz) this.podDz.destroy();
+
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
-                if (!_.isNull(this.state.typed))
-                    alert('There is no such booking with that DME/CON number.');
+                if (!_.isNull(this.state.typed)) this.notify('There is no such booking with that DME/CON number.');
             }
         }
 
@@ -1023,6 +1027,7 @@ class BookingPage extends Component {
                 this.props.getBooking(this.state.booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
+
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
@@ -1698,6 +1703,12 @@ class BookingPage extends Component {
             formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'id');
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
+
+            // Init 'Created For' and 'Warehouse Code', 'Warehouse Name'
+            formInputs['booking_Created_For'] = '';
+            formInputs['booking_Created_For_Email'] = '';
+            formInputs['b_clientPU_Warehouse'] = '';
+            formInputs['b_client_warehouse_code'] = '';
         } else if (fieldName === 'vx_freight_provider') {
             formInputs['vx_freight_provider'] = selectedOption.value;
         } else if (fieldName === 'inv_billing_status') {
@@ -1951,7 +1962,6 @@ class BookingPage extends Component {
                         }
                     }
 
-                    console.log('@1- ', this.props.dmeClients[ind], formInputs['b_client_name']);
                     formInputs['kf_client_id'] = this.props.dmeClients[ind].dme_account_num;
                     formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
                 }
@@ -2597,14 +2607,13 @@ class BookingPage extends Component {
     }
 
     onClickOpenPricingSlider() {
-        this.setState({loadingPricingInfos: true});
-        this.toggleFPPricingSlider();
         this.props.getPricingInfos(this.state.booking.pk_booking_id);
+        this.setState({loadingPricingInfos: true, pricingInfos: []});
+        this.toggleFPPricingSlider();
     }
 
     onSelectPricing(pricingInfo) {
-        const formInputs = this.state.formInputs;
-        const booking = this.state.booking;
+        const {formInputs, booking} = this.state;
 
         formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
         booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
@@ -2620,8 +2629,8 @@ class BookingPage extends Component {
         formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        const selectedFP = this.props.allFPs.find(
-            fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
+        const selectedFP = this.props.allFPs
+            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
@@ -2867,7 +2876,7 @@ class BookingPage extends Component {
                 text: 'View',
                 formatter:  (cell, row) => {
                     console.log(cell, row);
-                    return (<Link to={'/zohodetails?id='+row.id}><i className="fa fa-eye"></i> </Link>);
+                    return (<Link to={'/zohodetails?id=' + row.id}><i className="fa fa-eye"></i></Link>);
                 }
             }
         ];
@@ -2971,13 +2980,12 @@ class BookingPage extends Component {
             success: this.handleUploadSuccess.bind(this),
         };
 
-        const actionTaskOptionsList = actionTaskOptions.map((actionTaskOption, key) => {
-            return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
-        });
+        const actionTaskOptionsList = actionTaskOptions
+            .map((actionTaskOption, key) => (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>));
 
-        let warehouseCodeOptions = warehouses.map((warehouse) => {
-            return {value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code};
-        });
+        let warehouseCodeOptions = warehouses
+            .filter(warehouse => warehouse.client_company_name === formInputs['b_client_name'])
+            .map(warehouse => ({value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code}));
 
         const bookingCategroies = [
             'Repairs & Spare Parts Expense',
@@ -2989,9 +2997,7 @@ class BookingPage extends Component {
             'Admin / Other',
         ];
 
-        let bookingCategoryOptions = bookingCategroies.map((category) => {
-            return {value: category, label: category};
-        });
+        let bookingCategoryOptions = bookingCategroies.map(category => ({value: category, label: category}));
 
         const bookingPriorities = ['Low', 'Standard', 'High', 'Critical'];
 
@@ -3000,18 +3006,16 @@ class BookingPage extends Component {
         });
 
         const currentWarehouseCodeOption = {
-            value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
-            label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
+            value: formInputs['b_client_warehouse_code'] ? formInputs['b_client_warehouse_code'] : null,
+            label: formInputs['b_client_warehouse_code'] ? formInputs['b_client_warehouse_code'] : null,
         };
 
-        const clientnameOptions = this.props.dmeClients.map((client) => {
-            return {value: client.company_name, label: client.company_name};
-        });
+        const clientnameOptions = this.props.dmeClients
+            .map(client => ({value: client.company_name, label: client.company_name}));
         const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
 
-        const fpOptions = this.props.allFPs.map((fp) => {
-            return {value: fp.fp_company_name, label: fp.fp_company_name};
-        });
+        const fpOptions = this.props.allFPs
+            .map(fp => ({value: fp.fp_company_name, label: fp.fp_company_name}));
         const currentFPOption = {value: formInputs['vx_freight_provider'], label: formInputs['vx_freight_provider']};
 
         const InvBillingOptions = [
@@ -3021,25 +3025,34 @@ class BookingPage extends Component {
         ];
         const currentInvBillingOption = {value: formInputs['inv_billing_status'], label: formInputs['inv_billing_status']};
 
-        const availableCreatorsList = availableCreators.map((availableCreator, index) => {
-            return (
-                <option key={index} value={availableCreator.username}>{availableCreator.first_name} {availableCreator.last_name}</option>
-            );
-        });
+        const availableCreatorsList = availableCreators
+            .map((availableCreator, index) => (
+                <option key={index} value={availableCreator.username}>
+                    {availableCreator.first_name} {availableCreator.last_name}
+                </option>
+            ));
 
-        const createdForInfosList = this.state.createdForInfos.map((createdForInfo) => {
-            const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
-            const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
-            return {value: createdForInfo.id, label: name_first + ' ' + name_last};
-        });
+        const createdForInfosList = this.state.createdForInfos
+            .filter(createdForInfo => createdForInfo.company_name === formInputs['b_client_name'])
+            .map(createdForInfo => {
+                const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
+                const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
+                return {value: createdForInfo.id, label: name_first + ' ' + name_last};
+            });
 
-        const statusActionOptions = statusActions.map((statusAction, key) => {
-            return (<option key={key} value={statusAction.dme_status_action}>{statusAction.dme_status_action}</option>);
-        });
+        const statusActionOptions = statusActions
+            .map((statusAction, key) => (
+                <option key={key} value={statusAction.dme_status_action}>
+                    {statusAction.dme_status_action}
+                </option>
+            ));
 
-        const statusDetailOptions = statusDetails.map((statusDetail, key) => {
-            return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
-        });
+        const statusDetailOptions = statusDetails
+            .map((statusDetail, key) => (
+                <option key={key} value={statusDetail.dme_status_detail}>
+                    {statusDetail.dme_status_detail}
+                </option>
+            ));
 
         const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
         const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
@@ -3434,17 +3447,16 @@ class BookingPage extends Component {
                                     <div className="row col-sm-12 booking-form-01">
                                         <div className="col-sm-2 form-group">
                                             <span>Warehouse Code</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                    :
-                                                    <Select
-                                                        value={currentWarehouseCodeOption}
-                                                        onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
-                                                        options={warehouseCodeOptions}
-                                                        placeholder='Select a warehouse'
-                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                :
+                                                <Select
+                                                    value={currentWarehouseCodeOption}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
+                                                    options={warehouseCodeOptions}
+                                                    placeholder='Select a warehouse'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                         <div className='col-sm-2 form-group'>
@@ -3458,23 +3470,22 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-2 form-group">
                                             <span>Linked Reference</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p 
-                                                        className="show-mode"
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                    >
-                                                        {formInputs['dme_status_linked_reference_from_fp']}
-                                                    </p>
-                                                    :
-                                                    <input 
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="Linked Reference"
-                                                        name="dme_status_linked_reference_from_fp"
-                                                        value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p 
+                                                    className="show-mode"
+                                                    id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                >
+                                                    {formInputs['dme_status_linked_reference_from_fp']}
+                                                </p>
+                                                :
+                                                <input 
+                                                    id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="Linked Reference"
+                                                    name="dme_status_linked_reference_from_fp"
+                                                    value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
+                                                    onChange={(e) => this.onHandleInput(e)}/>
                                             }
                                             {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
@@ -5222,7 +5233,7 @@ class BookingPage extends Component {
                                                         eventHandlers={attachmentsEventHandlers}
                                                         djsConfig={djsConfig}
                                                     />
-                                                    <button className="btn btn-primary" type="submit">upload</button>
+                                                    <button className="btn btn-primary" type="submit">Upload</button>
                                                 </form>
                                             </div>
                                             <div className="tab-inner">
@@ -5246,10 +5257,9 @@ class BookingPage extends Component {
                                                                 eventHandlers={labelEventHandlers}
                                                                 djsConfig={djsConfig}
                                                             />
-                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                            <button className="btn btn-primary" type="submit">Upload</button>
                                                         </form>
-                                                        {
-                                                            booking.z_label_url &&
+                                                        {booking.z_label_url &&
                                                             <div>
                                                                 <p>Label: {booking.z_label_url}</p>
                                                                 <button
@@ -5282,10 +5292,9 @@ class BookingPage extends Component {
                                                                 eventHandlers={podEventHandlers}
                                                                 djsConfig={djsConfig}
                                                             />
-                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                            <button className="btn btn-primary" type="submit">Upload</button>
                                                         </form>
-                                                        {
-                                                            (booking.z_pod_url || booking.z_pod_signed_url) &&
+                                                        {(booking.z_pod_url || booking.z_pod_signed_url) &&
                                                             <div>
                                                                 <p>POD: {booking.z_pod_url}</p>
                                                                 <button
