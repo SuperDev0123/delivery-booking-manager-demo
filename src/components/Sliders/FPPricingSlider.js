@@ -37,8 +37,7 @@ class FPPricingSlider extends React.Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const {isOpen} = newProps;
 
-        if ( !isOpen) {
-            console.log('onLoadedError');
+        if (!isOpen) {
             this.setState({onLoadedError: false});
         }
     }
