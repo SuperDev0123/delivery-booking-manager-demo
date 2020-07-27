@@ -2600,10 +2600,15 @@ class BookingPage extends Component {
     }
 
     onClickFC() { // On click Freight Calculation button
-        const {booking} = this.state;
-        this.props.fpPricing(booking.id);
-        this.setState({loading: true});
-        this.toggleFPPricingSlider();
+        const {booking, formInputs} = this.state;
+
+        if (!formInputs['puPickUpAvailFrom_Date']) {
+            this.notify('PU Available From Date is required!');
+        } else {
+            this.props.fpPricing(booking.id);
+            this.setState({loading: true});
+            this.toggleFPPricingSlider();
+        }
     }
 
     onClickOpenPricingSlider() {
