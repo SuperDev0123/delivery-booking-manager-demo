@@ -2990,7 +2990,7 @@ class BookingPage extends Component {
             .map((actionTaskOption, key) => (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>));
 
         let warehouseCodeOptions = warehouses
-            .filter(warehouse => formInputs['b_client_name'] === 'dme' || warehouse.client_company_name === formInputs['b_client_name'])
+            .filter(warehouse => formInputs['b_client_name'].lower() === 'dme' || warehouse.client_company_name === formInputs['b_client_name'])
             .map(warehouse => ({value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code}));
 
         const bookingCategroies = [
@@ -3039,7 +3039,7 @@ class BookingPage extends Component {
             ));
 
         const createdForInfosList = this.state.createdForInfos
-            .filter(createdForInfo => formInputs['booking_Created_For'] === 'dme' || createdForInfo.company_name === formInputs['b_client_name'])
+            .filter(createdForInfo => formInputs['b_client_name'].lower() === 'dme' || createdForInfo.company_name === formInputs['b_client_name'])
             .map(createdForInfo => {
                 const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
                 const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
