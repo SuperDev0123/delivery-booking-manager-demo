@@ -23,6 +23,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import user from '../public/images/user.png';
+import imgGeneral from  '../public/images/general_email_white.png';
+import imgPod from  '../public/images/pod_email_white.png';
+import imgReturn from  '../public/images/returns_email_white.png';
+import imgUnpacked from  '../public/images/returns_unpacked_email.png';
+import imgFutile from '../public/images/futile_email.png';
+import imgLogsSlider from '../public/images/email_logs_slider.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 // Custom Modals
@@ -3061,11 +3067,6 @@ class BookingPage extends Component {
                 </option>
             ));
 
-        const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
-        const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
-        const returnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
-        const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
-
         return (
             <div className="qbootstrap-nav header">
                 <div id="headr" className="col-md-12">
@@ -3092,12 +3093,13 @@ class BookingPage extends Component {
                         </div>
                         <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
-
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD{podEmailCnt > 0 && ` (${podEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return{returnEmailCnt > 0 && ` (${returnEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile{futileEmailCnt > 0 && ` (${futileEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
+                       
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}> <img src={imgGeneral} alt=""/></a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}><img src={imgPod} alt=""/> </a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}><img src={imgReturn} alt=""/></a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Unpacked Return Booking')}> <img src={imgUnpacked} alt="" /> </a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}> <img src={imgFutile} alt="" /> </a>}
+                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><img src={imgLogsSlider} /> </a>}
                         
                         <a className="none">?</a>
                         {/*

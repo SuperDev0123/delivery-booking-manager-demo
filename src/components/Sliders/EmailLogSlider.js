@@ -35,6 +35,7 @@ class EmailLogSlider extends React.Component {
         const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
         const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
         const returnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
+        const unpackedReturnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Unpacked Return Booking').length;
         const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
 
         const filteredEmailLogs = selctedEmailName ? emailLogs.filter(emailLog => selctedEmailName === emailLog['emailName']) : emailLogs;
@@ -60,7 +61,7 @@ class EmailLogSlider extends React.Component {
                 <div className="slider-content">
                     <div className="table-view">
                         <div className="row">
-                            <div className="col-md-3 tile cur-pointer">
+                            <div className="col-md-2 tile cur-pointer">
                                 <div
                                     className={selctedEmailName === 'General Booking' && 'active'}
                                     onClick={() => this.onClickTile('General Booking')}
@@ -68,7 +69,7 @@ class EmailLogSlider extends React.Component {
                                     General Booking{generalEmailCnt > 0 && ` (${generalEmailCnt})`}
                                 </div>
                             </div>
-                            <div className="col-md-3 tile cur-pointer">
+                            <div className="col-md-2 tile cur-pointer">
                                 <div
                                     className={selctedEmailName === 'POD' && 'active'}
                                     onClick={() => this.onClickTile('POD')}
@@ -76,7 +77,7 @@ class EmailLogSlider extends React.Component {
                                     POD Booking{podEmailCnt > 0 && ` (${podEmailCnt})`}
                                 </div>
                             </div>
-                            <div className="col-md-3 tile cur-pointer">
+                            <div className="col-md-2 tile cur-pointer">
                                 <div
                                     className={selctedEmailName === 'Return Booking' && 'active'}
                                     onClick={() => this.onClickTile('Return Booking')}
@@ -84,7 +85,15 @@ class EmailLogSlider extends React.Component {
                                     Return Booking{returnEmailCnt > 0 && ` (${returnEmailCnt})`}
                                 </div>
                             </div>
-                            <div className="col-md-3 tile cur-pointer">
+                            <div className="col-md-2 tile cur-pointer">
+                                <div
+                                    className={selctedEmailName === 'Unpacked Return Booking' && 'active'}
+                                    onClick={() => this.onClickTile('Unpacked Return Booking')}
+                                >
+                                    Unpacked Return {unpackedReturnEmailCnt > 0 && ` (${unpackedReturnEmailCnt})`}
+                                </div>
+                            </div>
+                            <div className="col-md-2 tile cur-pointer">
                                 <div
                                     className={selctedEmailName === 'Futile Pickup' && 'active'}
                                     onClick={() => this.onClickTile('Futile Pickup')}
