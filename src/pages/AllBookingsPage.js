@@ -200,7 +200,7 @@ class AllBookingsPage extends React.Component {
                 that.props.getAllBookingStatus();
                 that.props.getAllFPs();
                 that.props.getAllProjectNames();
-            }, 1000);
+            }, 2000);
         }
     }
 
@@ -394,19 +394,15 @@ class AllBookingsPage extends React.Component {
                 this.setState({downloadOption});
             }
 
-            // Client Select Option
-            if (clientPK !== 0 || _.isUndefined(clientPK)) {
-                this.setState({clientPK});
-            }
-
             this.setState({
                 selectedWarehouseId: warehouseId, 
                 filterInputs: columnFilters, 
                 simpleSearchKeyword,
                 dmeStatus,
-                projectName: projectName,
-                pageItemCnt: pageItemCnt,
-                pageInd: pageInd,
+                projectName,
+                pageItemCnt,
+                pageInd,
+                clientPK,
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
@@ -1629,20 +1625,25 @@ class AllBookingsPage extends React.Component {
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
-        const warehousesList = warehouses.map((warehouse, index) => {
-            return (<option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>);
-        });
+        const selectedClient = dmeClients.find(client => client.pk_id_dme_client === parseInt(clientPK));
+        const warehousesList = warehouses
+            .filter(warehouse =>
+                !selectedClient
+                || selectedClient.company_name === 'dme'
+                || (selectedClient && warehouse.client_company_name === selectedClient.company_name)
+            )
+            .map((warehouse, index) =>
+                (<option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>)
+            );
 
-        const clientOptionsList = dmeClients.map((client, index) => {
-            return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
-        });
+        const clientOptionsList = dmeClients
+            .map((client, index) => (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>));
 
-        const projectNameOptions = projectNames.map((name, index) => {
-            return (<option key={index} value={name}>{name}</option>);
-        });
+        const projectNameOptions = projectNames
+            .map((name, index) => (<option key={index} value={name}>{name}</option>));
 
-        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) => {
-            return (
+        const bookingLineDetailsList = bookingLineDetails.map((bookingLineDetail, index) =>
+            (
                 <tr key={index}>
                     <td>{bookingLineDetail.modelNumber}</td>
                     <td>{bookingLineDetail.itemDescription}</td>
@@ -1652,11 +1653,10 @@ class AllBookingsPage extends React.Component {
                     <td>{bookingLineDetail.gap_ra}</td>
                     <td>{bookingLineDetail.clientRefNumber}</td>
                 </tr>
-            );
-        });
+            ));
 
-        const bookingLinesList = bookingLines.map((bookingLine, index) => {
-            return (
+        const bookingLinesList = bookingLines.map((bookingLine, index) =>
+            (
                 <tr key={index}>
                     <td>{bookingLine.pk_auto_id_lines}</td>
                     <td>{bookingLine.e_type_of_packaging}</td>
@@ -1671,8 +1671,7 @@ class AllBookingsPage extends React.Component {
                     <td>{bookingLine.e_dimHeight}</td>
                     <td>{bookingLine.cubic_meter.toFixed(2)}</td>
                 </tr>
-            );
-        });
+            ));
 
         const bookingsList = bookings.map((booking, index) => {
             return (
@@ -2097,8 +2096,7 @@ class AllBookingsPage extends React.Component {
                             <a className="none" href=""><i className="icon-plus" aria-hidden="true"></i></a>
                             <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
-                                {
-                                    showSimpleSearchBox &&
+                                {showSimpleSearchBox &&
                                     <div ref={this.setWrapperRef}>
                                         <form onSubmit={(e) => this.onSimpleSearch(e)}>
                                             <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
@@ -2115,8 +2113,7 @@ class AllBookingsPage extends React.Component {
 
                             <div className="popup" onClick={() => this.onClickSimpleSearch(1)}>
                                 <i className="icon-cog2" aria-hidden="true"></i>
-                                {
-                                    this.state.showGearMenu &&
+                                {this.state.showGearMenu &&
                                     <div ref={this.setWrapperRef}>
                                         <div className="popuptext1">
                                             <button 
@@ -2213,25 +2210,24 @@ class AllBookingsPage extends React.Component {
                                                 <option value="all">All</option>
                                                 { warehousesList }
                                             </select>
-                                            {
-                                                clientname === 'dme' || clientname === 'biopak' ?
+                                            {clientname === 'dme' || clientname === 'biopak' ?
+                                                <div className="disp-inline-block">
+                                                    <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                    <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                     <div className="disp-inline-block">
-                                                        <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
-                                                        <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
-                                                        <div className="disp-inline-block">
-                                                            <LoadingOverlay
-                                                                active={false}
-                                                                spinner={<BarLoader color={'#FFF'} />}
-                                                                text=''
-                                                            >
-                                                                <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
-                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                                <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
-                                                                <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
-                                                            </LoadingOverlay>
-                                                        </div>
+                                                        <LoadingOverlay
+                                                            active={false}
+                                                            spinner={<BarLoader color={'#FFF'} />}
+                                                            text=''
+                                                        >
+                                                            <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
+                                                            <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
+                                                            <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
+                                                            <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                                        </LoadingOverlay>
                                                     </div>
-                                                    : null
+                                                </div>
+                                                : null
                                             }
                                         </div>
                                         <div className="row">
