@@ -9,6 +9,8 @@ import DatePicker from 'react-datepicker';
 import _ from 'lodash';
 import { getNumBookingsPerFp } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import paginationFactory from 'react-bootstrap-table2-paginator';
 
 class TotalDeliveries extends Component {
     constructor(props) {
@@ -109,7 +111,7 @@ class TotalDeliveries extends Component {
 
         const columns = [
             {
-                text: 'FP',
+                text: 'Transporters',
                 dataField: 'freight_provider',
                 sort: true
             }, {
@@ -180,6 +182,8 @@ class TotalDeliveries extends Component {
                                         data={data}
                                         columns={columns}
                                         bootstrap4={true}
+                                        pagination={ paginationFactory()}
+                                        defaultSorted = {[{ dataField: 'freight_provider', order: 'asc' }]}
                                     />
                                 </div>
                             </div>

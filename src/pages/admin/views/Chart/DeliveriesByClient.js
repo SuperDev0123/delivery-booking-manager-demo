@@ -224,6 +224,7 @@ class ByClient extends Component {
                                         data={data}
                                         columns={columns}
                                         bootstrap4={true}
+                                        defaultSorted = {[{ dataField: 'client_name', order: 'asc' }]}
                                     />
                                 </div>
                             </div>

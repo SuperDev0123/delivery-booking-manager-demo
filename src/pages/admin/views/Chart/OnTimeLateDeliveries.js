@@ -116,7 +116,7 @@ class OnTimeLateDeliveries extends Component {
 
         const columns = [
             {
-                text: 'FP',
+                text: 'Transporters',
                 dataField: 'freight_provider',
                 sort: true
             }, {
@@ -223,6 +223,7 @@ class OnTimeLateDeliveries extends Component {
                                         data={data}
                                         columns={columns}
                                         bootstrap4={true}
+                                        defaultSorted = {[{ dataField: 'freight_provider', order: 'asc' }]}
                                     />
                                 </div>
                             </div>
