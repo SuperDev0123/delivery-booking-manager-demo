@@ -103,6 +103,7 @@
     "react-time-picker": "^3.3.0",
     "react-toastify": "^5.3.1",
     "reactstrap": "^6.5.0",
+    "recharts": "^1.8.5",
     "redux": "^3.7.2",
     "redux-promise-middleware": "^5.0.0",
     "redux-thunk": "^2.2.0"
