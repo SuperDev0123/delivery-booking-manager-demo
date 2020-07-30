@@ -31,7 +31,7 @@ class FPPricingSlider extends React.Component {
     };
 
     calcTotalValue(pricingInfo) {
-        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
+        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(3);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {

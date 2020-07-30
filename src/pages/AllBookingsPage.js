@@ -1083,15 +1083,6 @@ class AllBookingsPage extends React.Component {
         this.setState({activeTabInd, selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
-    onDatePlusOrMinus(number) {
-        console.log('number - ', number);
-        // const startDate = moment(this.state.startDate).add(number, 'd').format('YYYY-MM-DD');
-        // const endDate = moment(this.state.endDate).add(number, 'd').format('YYYY-MM-DD');
-        // this.props.setGetBookingsFilter('date', {startDate, endDate});
-        // localStorage.setItem('today', startDate);
-        // this.setState({startDate, selectedBookingIds: [], allCheckStatus: false});
-    }
-
     onCheck(e, id) {
         const { filteredBookingIds } = this.state;
         let selectedBookingIds = this.state.selectedBookingIds;
@@ -2183,19 +2174,20 @@ class AllBookingsPage extends React.Component {
                                             <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                         </div>
                                         <div className="row filter-controls">
-                                            <div className="date-adjust none" onClick={() => this.onDatePlusOrMinus(-1)}><i className="fa fa-minus"></i></div>
                                             <DatePicker
+                                                id="startDate"
                                                 selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
+                                            <span className='flow-sign'>~</span>
                                             <DatePicker
+                                                id="endDate"
                                                 selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
                                             <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
-                                            <div className="date-adjust none"  onClick={() => this.onDatePlusOrMinus(1)}><i className="fa fa-plus"></i></div>
                                             {
                                                 (clientname === 'dme') ?
                                                     <label className="left-30px right-10px">

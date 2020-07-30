@@ -578,31 +578,28 @@ ul.nav-tabs {
 .filter-controls {
   padding-left: 51px;
 
-  .date-adjust {
-    width: 30px;
-    height: 35px;
-    margin-left: 5px;
-    margin-right: 5px;
-    display: inline-block;
-    vertical-align: top;
-    padding-left: 7px;
-    padding-top: 10px;
-
-    i {
-      font-size: 18px;
-    }
-  }
-
   .btn {
     padding-right: 10px;
     padding-left: 10px;
     padding-top: 2px;
     padding-bottom: 2px;
   }
-}
 
-.filter-controls > .date-adjust:hover {
-  background: gray;
+  #startDate {
+    width: 120px;
+    margin-right: 10px;
+    font-size: large;
+  }
+
+  .flow-sign {
+    font-size: 20px;
+  }
+
+  #endDate {
+    width: 120px;
+    margin-left: 10px;
+    font-size: large;
+  }
 }
 
 .filter-conditions2 {
