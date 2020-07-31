@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LabelList, Label
+    ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell, LabelList, Label
 } from 'recharts';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -9,7 +9,11 @@ import DatePicker from 'react-datepicker';
 import _ from 'lodash';
 import { getNumBookingsPerFp } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
-  
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+
+const TABLE_PAGINATION_SIZE = 15;
+
 class OnTimeLateDeliveries extends Component {
     constructor(props) {
         super(props);
@@ -18,11 +22,12 @@ class OnTimeLateDeliveries extends Component {
             username: '',
             password: '',
             num_bookings_fp: [],
-            startDate:'',
-            endDate:''
+            chart_data: [],
+            startDate: '',
+            endDate: ''
         };
     }
-    
+
     static propTypes = {
         getNumBookingsPerFp: PropTypes.func.isRequired,
     };
@@ -35,24 +40,27 @@ class OnTimeLateDeliveries extends Component {
         return color;
     }
 
-    componentDidMount(){
+    componentDidMount() {
         const startDate = moment(new Date().getFullYear() + '-01-01').format('YYYY-MM-DD');
         const endDate = moment().format('YYYY-MM-DD');
-        this.setState({startDate: startDate, endDate: endDate});
-        this.props.getNumBookingsPerFp({startDate, endDate});
+        this.setState({ startDate: startDate, endDate: endDate });
+        this.props.getNumBookingsPerFp({ startDate, endDate });
     }
 
-    UNSAFE_componentWillReceiveProps(newProps){
-        const { num_bookings_fp } = newProps;
+    UNSAFE_componentWillReceiveProps(newProps) {
+        let { num_bookings_fp } = newProps;
 
         if (num_bookings_fp) {
-            this.setState({num_bookings_fp});
+            num_bookings_fp = _.orderBy(num_bookings_fp, 'deliveries', 'desc');
+            this.setState({ num_bookings_fp });
+            const chart_data = num_bookings_fp.slice(0, TABLE_PAGINATION_SIZE);
+            this.setState({ chart_data });
         }
     }
 
     renderColorfulLegendText(value, entry) {
         const { color } = entry;
-      
+
         return <span style={{ color }}>{value}</span>;
     }
 
@@ -73,12 +81,12 @@ class OnTimeLateDeliveries extends Component {
                     endDate: moment(startDate).format('YYYY-MM-DD')
                 }, () => {
 
-                    this.props.getNumBookingsPerFp({startDate: this.state.startDate, endDate: this.state.endDate});
-                });    
+                    this.props.getNumBookingsPerFp({ startDate: this.state.startDate, endDate: this.state.endDate });
+                });
             } else {
-                this.setState({startDate: moment(startDate).format('YYYY-MM-DD')},()=> {
-                    this.props.getNumBookingsPerFp({startDate: this.state.startDate, endDate: this.state.endDate});
-                } );
+                this.setState({ startDate: moment(startDate).format('YYYY-MM-DD') }, () => {
+                    this.props.getNumBookingsPerFp({ startDate: this.state.startDate, endDate: this.state.endDate });
+                });
             }
         } else if (dateType === 'endDate') {
             if (_.isNull(date)) {
@@ -92,20 +100,26 @@ class OnTimeLateDeliveries extends Component {
                     startDate: moment(endDate).format('YYYY-MM-DD'),
                     endDate: moment(endDate).format('YYYY-MM-DD')
                 }, () => {
-                    this.props.getNumBookingsPerFp({startDate: this.state.startDate, endDate: this.state.endDate});
+                    this.props.getNumBookingsPerFp({ startDate: this.state.startDate, endDate: this.state.endDate });
                 });
             } else {
-                this.setState({endDate: moment(endDate).format('YYYY-MM-DD')}, () => {
-                    this.props.getNumBookingsPerFp({startDate: this.state.startDate, endDate: this.state.endDate});
+                this.setState({ endDate: moment(endDate).format('YYYY-MM-DD') }, () => {
+                    this.props.getNumBookingsPerFp({ startDate: this.state.startDate, endDate: this.state.endDate });
                 });
             }
         }
     }
 
-    render() {
-        const  {num_bookings_fp, startDate, endDate} = this.state;
+    onPageChange(page, sizePerPage) {
+        const { num_bookings_fp } = this.state;
+        const chart_data = num_bookings_fp.slice((page - 1) * sizePerPage, page * sizePerPage);
+        this.setState({ chart_data });
+    }
 
-        const data = num_bookings_fp;
+    render() {
+        const { num_bookings_fp, startDate, endDate, chart_data } = this.state;
+
+        const data = chart_data;
 
         const dataFormatter = (cell) => {
             if (cell)
@@ -133,7 +147,7 @@ class OnTimeLateDeliveries extends Component {
                 dataField: 'late_deliveries',
                 formatter: dataFormatter,
                 sort: true
-            },  {
+            }, {
                 text: '% On time',
                 dataField: 'ontime_deliveries_percentage',
                 sort: true
@@ -165,65 +179,68 @@ class OnTimeLateDeliveries extends Component {
                         <p className="chart-card-title" >
                             OnTime Deliveries
                         </p>
-                        
-                        <div className="row">
-                            <BarChart
-                                data={data}
-                                width={1000} 
-                                height={600}
-                                margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                                padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="freight_provider" angle={-30} textAnchor="end"  height={70} interval={0}>
-                                    <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} offset={-10}/>
-                                </XAxis>
-                                <YAxis>
-                                    <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
-                                </YAxis>
-                                <Tooltip />
-                                <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
-                                <Bar dataKey="deliveries" stackId="a" fill="#7D79D3" barSize={350} name="Total Deliveries">
-                                    <LabelList dataKey="deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                            
-                                <Bar dataKey="ontime_deliveries" stackId="a" fill="#77C392" barSize={350} name="On Time" type="monotone" >
-                                    <LabelList dataKey="ontime_deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
 
-                                <Bar dataKey="late_deliveries" stackId="a" fill="#A20000" barSize={350} name="Late" type="monotone" >
-                                    <LabelList dataKey="late_deliveries" />
-                                    {
-                                        data.map((entry, index) => {
-                                            return (
-                                                <Cell key={`cell-${index}`} />
-                                            );
-                                        })
-                                    }
-                                </Bar>
-                            </BarChart>
-                            <div className="panel-body">
+                        <div className="row">
+                            <div className="col-md-7 col">
+                                <ResponsiveContainer width={'100%'} height={700}>
+                                    <BarChart
+                                        data={data}
+                                        margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
+                                        padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
+                                    >
+                                        <CartesianGrid strokeDasharray="3 3" />
+                                        <XAxis dataKey="freight_provider" angle={-30} textAnchor="end" height={100} interval={0}>
+                                            <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
+                                        </XAxis>
+                                        <YAxis>
+                                            <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
+                                        </YAxis>
+                                        <Tooltip />
+                                        <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
+                                        <Bar dataKey="deliveries" stackId="a" fill="#7D79D3" barSize={350} name="Total Deliveries">
+                                            <LabelList dataKey="deliveries" />
+                                            {
+                                                data.map((entry, index) => {
+                                                    return (
+                                                        <Cell key={`cell-${index}`} />
+                                                    );
+                                                })
+                                            }
+                                        </Bar>
+
+                                        <Bar dataKey="ontime_deliveries" stackId="a" fill="#77C392" barSize={350} name="On Time" type="monotone" >
+                                            <LabelList dataKey="ontime_deliveries" />
+                                            {
+                                                data.map((entry, index) => {
+                                                    return (
+                                                        <Cell key={`cell-${index}`} />
+                                                    );
+                                                })
+                                            }
+                                        </Bar>
+
+                                        <Bar dataKey="late_deliveries" stackId="a" fill="#A20000" barSize={350} name="Late" type="monotone" >
+                                            <LabelList dataKey="late_deliveries" />
+                                            {
+                                                data.map((entry, index) => {
+                                                    return (
+                                                        <Cell key={`cell-${index}`} />
+                                                    );
+                                                })
+                                            }
+                                        </Bar>
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className="col-md-5 col">
                                 <div className="table-responsive">
                                     <BootstrapTable
                                         keyField="id"
-                                        data={data}
+                                        data={num_bookings_fp}
                                         columns={columns}
                                         bootstrap4={true}
-                                        defaultSorted = {[{ dataField: 'freight_provider', order: 'asc' }]}
+                                        pagination={paginationFactory({ sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }], hideSizePerPage: true, hidePageListOnlyOnePage: true, withFirstAndLast: false, alwaysShowAllBtns: false, onPageChange: (page, sizePerPage) => { this.onPageChange(page, sizePerPage); } })}
+                                        defaultSorted={[{ dataField: 'deliveries', order: 'desc' }]}
                                     />
                                 </div>
                             </div>
