@@ -115,6 +115,7 @@ class BookingPage extends Component {
             deToSuburb: {value: ''},
             deToPostalCode: {value: ''},
             isBookedBooking: false,
+            isLockedBooking: false,
             puTimeZone: null,
             deTimeZone: null,
             attachmentsHistory: [],
@@ -763,6 +764,7 @@ class BookingPage extends Component {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
 
+                // Is Booked Booking?
                 if (!_.isNull(booking.b_dateBookedDate) &&
                     !_.isUndefined(booking.b_dateBookedDate) &&
                     !_.isEmpty(booking.b_dateBookedDate)) 
@@ -770,6 +772,13 @@ class BookingPage extends Component {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
+                }
+
+                // Is Locked Booking?
+                if (booking.z_lock_status) {
+                    this.setState({isLockedBooking: true});
+                } else {
+                    this.setState({isLockedBooking: false});
                 }
 
                 if (
@@ -2575,6 +2584,7 @@ class BookingPage extends Component {
         }
 
         this.props.updateBooking(booking.id, booking);
+        this.setState({curViewMode: 2, loadingBookingUpdate: true});
     }
 
     onClickBottomTap(e, activeTabInd) {
@@ -2671,7 +2681,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
         } = this.state;
         const {
             warehouses, emailLogs, availableCreators
@@ -4984,20 +4994,27 @@ class BookingPage extends Component {
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
-                                                            && (booking && isBookedBooking)
-                                                            && this.state.booking.vx_freight_provider
+                                                            && booking && isBookedBooking
                                                             && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onSavePuInfo()}
+                                                                    disabled={
+                                                                        (booking && isLockedBooking)
+                                                                        || (curViewMode === 1) ? 'disabled' : ''
+                                                                    }
                                                                 >
                                                                     SH-PU
                                                                 </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickRebook()}
+                                                                    disabled={
+                                                                        (booking && isLockedBooking)
+                                                                        || (curViewMode === 1) ? 'disabled' : ''
+                                                                    }
                                                                 >
                                                                     Rebook Pu
                                                                 </button>
@@ -5006,7 +5023,10 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
-                                                                disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                disabled={
+                                                                    (booking && (isBookedBooking || isLockedBooking))
+                                                                    || (curViewMode === 1) ? 'disabled' : ''
+                                                                }
                                                             >
                                                                 Book
                                                             </button>
@@ -5021,7 +5041,7 @@ class BookingPage extends Component {
                                                                     type="checkbox"
                                                                     checked={formInputs['x_manual_booked_flag']}
                                                                     onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                    disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
                                                                 <p>Manual Book</p>
                                                             </div>
@@ -5032,7 +5052,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickEditBook()}
-                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                            disabled={((isBookedBooking || !isLockedBooking) && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
                                                         >
                                                             Amend Booking
                                                         </button>
@@ -5041,7 +5061,13 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickCancelBook()}
-                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
+                                                            disabled={
+                                                                booking
+                                                                && (isBookedBooking || !isLockedBooking)
+                                                                && booking.vx_freight_provider
+                                                                && booking.vx_freight_provider.toLowerCase() === 'startrack'
+                                                                    ? '' : 'disabled'
+                                                            }
                                                         >
                                                             Cancel Request
                                                         </button>
@@ -5077,7 +5103,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickTrackingStatus()}
-                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                            disabled={(curViewMode === 1 || isLockedBooking) ? 'disabled' : ''}
                                                         >
                                                             Status
                                                         </button>
