@@ -5052,7 +5052,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickEditBook()}
-                                                            disabled={((isBookedBooking || !isLockedBooking) && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                            disabled={(isBookedBooking && !isLockedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
                                                         >
                                                             Amend Booking
                                                         </button>
