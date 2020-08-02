@@ -875,8 +875,8 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
                 if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
                 else formInputs['b_status_API'] = '';
-                if (booking.dme_status_history_notes != null) formInputs['dme_status_history_notes'] = booking.dme_status_history_notes;
-                else formInputs['dme_status_history_notes'] = '';
+                if (booking.b_booking_Notes != null) formInputs['b_booking_Notes'] = booking.b_booking_Notes;
+                else formInputs['b_booking_Notes'] = '';
                 if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
                 else formInputs['dme_status_detail'] = '';
                 if (booking.dme_status_action != null) formInputs['dme_status_action'] = booking.dme_status_action;
@@ -2327,7 +2327,7 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
-    toggleStatusNoteModal(type='dme_status_history_notes') {
+    toggleStatusNoteModal(type='b_booking_Notes') {
         this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal, currentNoteModalField: type}));
     }
 
@@ -3838,9 +3838,9 @@ class BookingPage extends Component {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <textarea 
                                                         className="show-mode"
-                                                        onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                        id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                        value={formInputs['dme_status_history_notes']}
+                                                        onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
+                                                        id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
+                                                        value={formInputs['b_booking_Notes']}
                                                         disabled='disabled'
                                                         rows="6"
                                                         cols="83"
@@ -3849,26 +3849,26 @@ class BookingPage extends Component {
                                                     clientname === 'dme' ?
                                                         <textarea 
                                                             className="show-mode"
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                            id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                             name="dme_status_linked_reference_from_fp"
-                                                            value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
+                                                            value={formInputs['b_booking_Notes'] ? formInputs['b_booking_Notes'] : ''} 
+                                                            onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
                                                             rows="6"
                                                             cols="83"
                                                         />
                                                         :
                                                         <textarea 
                                                             className="show-mode"
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            value={formInputs['dme_status_history_notes']}
+                                                            onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
+                                                            id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
+                                                            value={formInputs['b_booking_Notes']}
                                                             disabled='disabled'
                                                             rows="6"
                                                             cols="83"
                                                         />
                                             }
-                                            {!_.isEmpty(formInputs['dme_status_history_notes']) &&
-                                                <TooltipItem object={booking} placement='top' fields={['dme_status_history_notes']} />
+                                            {!_.isEmpty(formInputs['b_booking_Notes']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                             }
                                         </div>
                                     </div>
