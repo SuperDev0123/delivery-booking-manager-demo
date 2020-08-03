@@ -103,7 +103,7 @@ class FPPricingSlider extends React.Component {
             );
         });
 
-        errors.sort((a, b) =>  {
+        (errors || []).sort((a, b) =>  {
             if (a.fp_name > b.fp_name)
                 return 1;
             else if (a.fp_name < b.fp_name)
