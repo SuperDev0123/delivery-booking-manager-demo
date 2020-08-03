@@ -57,7 +57,7 @@ import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, upd
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
-import { isFormValid, isValid4Label } from '../commons/validations';
+import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -1463,7 +1463,13 @@ class BookingPage extends Component {
                         ) {
                             this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
                         } else {
-                            this.props.fpBook(booking.id, booking.vx_freight_provider);
+                            const res = isValid4Book(booking);
+
+                            if (res !== 'valid') {
+                                this.notify(res);
+                            } else {
+                                this.props.fpBook(booking.id, booking.vx_freight_provider);
+                            }
                         }
                     } else {
                         this.notify('Can not *Book* since booking has no Freight Provider');

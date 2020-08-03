@@ -114,6 +114,26 @@ const isFormValid = (formName, formFields) => {
     return 'valid';
 };
 
+const isValid4Book = (formFields) => {
+    // TNT Book
+    if (!_.isEmpty(formFields['vx_freight_provider']) &&
+        formFields['vx_freight_provider'] === 'TNT') {
+        if (_.isEmpty(formFields['puCompany']) ||
+            (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 19)
+        ) {
+            return 'Address.CompanyName must be between 0 and 20 characters.';
+        }
+
+        if (_.isEmpty(formFields['deToCompanyName']) ||
+            (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 19)
+        ) {
+            return 'Address.CompanyName must be between 0 and 20 characters.';
+        }
+    }
+
+    return 'valid';
+};
+
 const isValid4Label = (formFields) => {
     // TNT Label
     if (!_.isEmpty(formFields['vx_freight_provider']) &&
