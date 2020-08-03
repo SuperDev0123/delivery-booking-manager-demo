@@ -200,4 +200,5 @@ module.exports = {
     isFormValid,
     validateEmail,
     isValid4Label,
+    isValid4Book,
 };
