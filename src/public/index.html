@@ -17,8 +17,29 @@
 				$zoho.salesiq = $zoho.salesiq || {
 					widgetcode: "f922c3ea25c7ce660fe029c4d83da17c3d2b74b8e16eea2312eed88efc6ac8bc",
 					values:{},
-					ready: function(){}
+					ready: function(){
+						$zoho.salesiq.customfield.add(
+						{
+							"name" :"DME Number",
+							"hint" :"DME Number",
+							"required" :"false",
+							"maxlength" :"1000",
+							"minlength" :"5",
+							"visibility" :"both",
+						});
+
+						$zoho.salesiq.customfield.add( 
+						{
+							"name" :"Consignment Number",
+							"hint" :"Consignment Number",
+							"required" :"false",
+							"maxlength" :"1000",
+							"minlength" :"5",
+							"visibility" :"both",
+						});
+					}
 				};
+
 			var d=document;
 			s=d.createElement("script");
 			s.type="text/javascript";
