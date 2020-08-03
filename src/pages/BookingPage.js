@@ -3061,6 +3061,12 @@ class BookingPage extends Component {
                     {availableCreator.first_name} {availableCreator.last_name}
                 </option>
             ));
+        
+        const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
+        const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
+        const returnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
+        const unpackedReturnCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Unpacked Return Booking').length;
+        const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
 
         const createdForInfosList = this.state.createdForInfos
             .filter(createdForInfo => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
@@ -3112,12 +3118,12 @@ class BookingPage extends Component {
                         <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
                        
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}> <img src={imgGeneral} alt=""/></a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}><img src={imgPod} alt=""/> </a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}><img src={imgReturn} alt=""/></a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Unpacked Return Booking')}> <img src={imgUnpacked} alt="" /> </a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}> <img src={imgFutile} alt="" /> </a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><img src={imgLogsSlider} /> </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('General Booking')}> <img src={imgGeneral} alt=""/>{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('POD')}><img src={imgPod} alt=""/> {podEmailCnt > 0 && ` (${podEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Return Booking')}><img src={imgReturn} alt=""/>{returnEmailCnt > 0 && ` (${returnEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Unpacked Return Booking')}> <img src={imgUnpacked} alt="" /> {unpackedReturnCnt > 0 && ` (${unpackedReturnCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Futile Pickup')}> <img src={imgFutile} alt="" />{futileEmailCnt > 0 && ` (${futileEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Email Log')}><img src={imgLogsSlider} /> </a>}
                         
                         <a className="none">?</a>
                         {/*
