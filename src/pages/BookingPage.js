@@ -1452,16 +1452,17 @@ class BookingPage extends Component {
 
             if (!booking.x_manual_booked_flag) {  // Not manual booking
                 if (booking.id && (booking.id !== undefined)) {
-                    this.setState({ loading: true, curViewMode: 0});
                     if (booking.vx_freight_provider) {
                         if (booking.vx_freight_provider.toLowerCase() === 'cope') {
                             this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
+                            this.setState({ loading: true, curViewMode: 0});
                         } else if (
                             booking.vx_freight_provider.toLowerCase() === 'allied' ||
                             booking.vx_freight_provider.toLowerCase() === 'act' ||
                             booking.vx_freight_provider.toLowerCase() === 'state transport'
                         ) {
                             this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
+                            this.setState({ loading: true, curViewMode: 0});
                         } else {
                             const res = isValid4Book(booking);
 
@@ -1469,13 +1470,14 @@ class BookingPage extends Component {
                                 this.notify(res);
                             } else {
                                 this.props.fpBook(booking.id, booking.vx_freight_provider);
+                                this.setState({ loading: true, curViewMode: 0});
                             }
                         }
                     } else {
                         this.notify('Can not *Book* since booking has no Freight Provider');
                     }
                 } else {
-                    this.notify('Please Find any booking and then click this!');
+                    this.notify('Please Find any booking and then try book again!');
                 }
             } else { // Manual booking
                 this.props.manualBook(booking.id);
