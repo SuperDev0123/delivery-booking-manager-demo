@@ -118,16 +118,16 @@ const isValid4Book = (formFields) => {
     // TNT Book
     if (!_.isEmpty(formFields['vx_freight_provider']) &&
         formFields['vx_freight_provider'] === 'TNT') {
-        if (_.isEmpty(formFields['puCompany']) ||
-            (!_.isEmpty(formFields['puCompany']) && formFields['puCompany'].length > 19)
+        if (_.isEmpty(formFields['pu_Contact_F_L_Name']) ||
+            (!_.isEmpty(formFields['pu_Contact_F_L_Name']) && formFields['pu_Contact_F_L_Name'].length > 19)
         ) {
-            return 'Address.CompanyName must be between 0 and 20 characters.';
+            return 'PU ContactName must be between 0 and 20 characters.';
         }
 
-        if (_.isEmpty(formFields['deToCompanyName']) ||
-            (!_.isEmpty(formFields['deToCompanyName']) && formFields['deToCompanyName'].length > 19)
+        if (_.isEmpty(formFields['de_to_Contact_F_LName']) ||
+            (!_.isEmpty(formFields['de_to_Contact_F_LName']) && formFields['de_to_Contact_F_LName'].length > 19)
         ) {
-            return 'Address.CompanyName must be between 0 and 20 characters.';
+            return 'DE ContactName must be between 0 and 20 characters.';
         }
     }
 
