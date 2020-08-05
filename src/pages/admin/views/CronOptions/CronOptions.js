@@ -145,11 +145,6 @@ class CronOptions extends Component {
                     <td>{option.option_name}</td>
                     <td><input name={option.id} onClick={this.handleChange} onChange={(e) => this.onInputChange(e)} type="checkbox" value={option.option_value} checked={(option.option_value == 1) ? true : false} /></td>
                     <td style={{width: '40%'}}>{option.option_description}</td>
-                    <td>{option.option_schedule}</td>
-                    <td>{option.start_time}</td>
-                    <td>{option.end_time}</td>
-                    <td>{option.start_count}</td>
-                    <td>{option.end_count}</td>
                     <td>{option.elapsed_seconds}</td>
                     <td>
                         {option.is_running == 1 ?
@@ -176,8 +171,6 @@ class CronOptions extends Component {
                         <i className="icon icon-pencil" onClick={() => this.onClickPencil(option, 'arg2')}></i>
                         <i className="fa fa-save" onClick={() => this.onClickSave(option, 'arg2')}></i>
                     </td>
-                    <td>{option.z_createdByAccount}</td>
-                    <td>{option.z_createdTimeStamp && moment(option.z_createdTimeStamp).format('DD/MM/YYYY HH:mm')}</td>
                 </tr>
             );
         });
@@ -216,17 +209,10 @@ class CronOptions extends Component {
                                                     <th>Name</th>
                                                     <th>Active?</th>
                                                     <th width="50">Description</th>
-                                                    <th>Schedule</th>
-                                                    <th>Started At</th>
-                                                    <th>Finished At</th>
-                                                    <th>Start Count</th>
-                                                    <th>End Count</th>
                                                     <th>Elapsed Second</th>
                                                     <th>Running?</th>
                                                     <th>Arg 1</th>
                                                     <th>Arg 2</th>
-                                                    <th>Created By</th>
-                                                    <th>Created At</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
