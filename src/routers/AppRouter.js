@@ -13,6 +13,7 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
+import BokPricePage from '../pages/customer/BokPricePage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
@@ -58,6 +59,7 @@ import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
 
+// Customer Dashboard pages
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
 import ClientRas from '../pages/admin/customerdashboard/ClientRas';
@@ -70,6 +72,7 @@ export const AppRouter = () => (
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
                 <Route exact path='/bok' component={BokPage} />
+                <Route exact path='/price/bok/:id' component={BokPricePage} />
                 <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />

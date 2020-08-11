@@ -5,6 +5,8 @@ import {
     FAILED_GET_BOK_2_LINES,
     SUCCESS_GET_BOK_3_LINES_DATA,
     FAILED_GET_BOK_3_LINES_DATA,
+    SUCCESS_GET_BOK_WITH_PRICINGS,
+    FAILED_GET_BOK_WITH_PRICINGS,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -46,5 +48,19 @@ export function failedGetBok3LinesData(error) {
     return {
         type: FAILED_GET_BOK_3_LINES_DATA,
         payload: 'Unable to get BOk_3 records. Error:' + error,
+    };
+}
+
+export function successGetBokWithPricings(data) {
+    return {
+        type: SUCCESS_GET_BOK_WITH_PRICINGS,
+        payload: data.data,
+    };
+}
+
+export function failedGetBokWithPricings(error) {
+    return {
+        type: FAILED_GET_BOK_WITH_PRICINGS,
+        payload: 'Unable to get information. Error: ' + error.response.data.message,
     };
 }

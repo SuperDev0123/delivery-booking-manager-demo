@@ -6,7 +6,9 @@ import {
     successGetBok2Lines,
     failedGetBok2Lines,
     successGetBok3LinesData,
-    failedGetBok3LinesData
+    failedGetBok3LinesData,
+    successGetBokWithPricings,
+    failedGetBokWithPricings,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -41,4 +43,15 @@ export const getBookingLinesData = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetBok3LinesData(data)))
             .catch((error) => dispatch(failedGetBok3LinesData(error)));
+};
+
+export const getBokWithPricings = (identifier) => {
+    const options = {
+        method: 'get',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/get_boks_with_pricings/?identifier=${identifier}`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetBokWithPricings(data)))
+            .catch((error) => dispatch(failedGetBokWithPricings(error)));
 };
