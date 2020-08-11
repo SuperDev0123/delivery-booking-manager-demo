@@ -564,7 +564,7 @@ class BookingPage extends Component {
                 ) {
                     this.notify('Now trying to get Label!');
                     const currentBooking = this.state.booking;
-                    const res = isValid4Label(currentBooking);
+                    const res = isValid4Label(currentBooking, this.state.bookingLineDetailsProduct);
 
                     if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid') {
                         this.notify(res);
@@ -1317,7 +1317,6 @@ class BookingPage extends Component {
             axios(options)
                 .then((response) => {
                     console.log('#301 - ', response.data);
-
                     if (selectedFileOption === 'label') {
                         booking.z_label_url = null;
                     } else if (selectedFileOption === 'pod') {
@@ -1372,10 +1371,10 @@ class BookingPage extends Component {
     }
 
     onClickGetLabel() {
-        const {booking, isBookedBooking, formInputs} = this.state;
+        const {booking, isBookedBooking, formInputs, bookingLineDetailsProduct} = this.state;
 
         if (isBookedBooking) {
-            const result = isValid4Label(formInputs);
+            const result = isValid4Label(formInputs, bookingLineDetailsProduct);
 
             if (result === 'valid') {
                 this.props.fpLabel(booking.id, booking.vx_freight_provider);

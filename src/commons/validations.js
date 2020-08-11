@@ -134,7 +134,7 @@ const isValid4Book = (formFields) => {
     return 'valid';
 };
 
-const isValid4Label = (formFields) => {
+const isValid4Label = (formFields, lineDatas) => {
     // TNT Label
     if (!_.isEmpty(formFields['vx_freight_provider']) &&
         formFields['vx_freight_provider'] === 'TNT') {
@@ -182,6 +182,21 @@ const isValid4Label = (formFields) => {
             (!_.isEmpty(formFields['pu_pickup_instructions_address']) && formFields['pu_pickup_instructions_address'].length > 80)
         ) {
             return 'SpecialInstruction must be between 0 and 80 characters.';
+        }
+
+        for (let i = 0; i < lineDatas.length; i++) {
+            const lineData = lineDatas[i];
+            if (
+                _.isNull(lineData['itemDescription']) ||
+                _.isEmpty(lineData['itemDescription']) ||
+                _.isUndefined(lineData['itemDescription']) ||
+                (lineData['itemDescription'] && (
+                    lineData['itemDescription'].length === 0 ||
+                    lineData['itemDescription'].length > 19
+                ))
+            ){
+                return 'Line Data itemDescription should be 1 ~ 19 characters';
+            }
         }
     }
 
