@@ -57,6 +57,7 @@ class BokPricePage extends Component {
             ));
             pricings = bok_1['pricings'].map((price, index) => (
                 <tr key={index}>
+                    <td>{price['service_name']}</td>
                     <td>${price['cost']}</td>
                     <td>{price['fee'] ? `$${price['fee']}` : ''}</td>
                     <td>{price['eta']}</td>
@@ -65,72 +66,39 @@ class BokPricePage extends Component {
         }
 
         return (
-            <section>
+            <section className="bok-price">
                 {this.state.errorMessage || !bok_1 ?
                     <h1>{this.state.errorMessage}</h1>
                     :
                     <div>
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>Pickup From</th>
-                                    <th>Deliver To</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Company</td>
-                                    <td>{bok_1['b_028_b_pu_company']}</td>
-                                    <td>{bok_1['b_054_b_del_company']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Street 1</td>
-                                    <td>{bok_1['b_029_b_pu_address_street_1']}</td>
-                                    <td>{bok_1['b_055_b_del_address_street_1']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Street 2</td>
-                                    <td>{bok_1['b_030_b_pu_address_street_2']}</td>
-                                    <td>{bok_1['b_056_b_del_address_street_2']}</td>
-                                </tr>
-                                <tr>
-                                    <td>State</td>
-                                    <td>{bok_1['b_031_b_pu_address_state']}</td>
-                                    <td>{bok_1['b_057_b_del_address_state']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Postal Code</td>
-                                    <td>{bok_1['b_033_b_pu_address_postalcode']}</td>
-                                    <td>{bok_1['b_059_b_del_address_postalcode']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Suburb</td>
-                                    <td>{bok_1['b_032_b_pu_address_suburb']}</td>
-                                    <td>{bok_1['b_058_b_del_address_suburb']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Country</td>
-                                    <td>{bok_1['b_034_b_pu_address_country']}</td>
-                                    <td>{bok_1['b_060_b_del_address_country']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Contact</td>
-                                    <td>{bok_1['b_035_b_pu_contact_full_name']}</td>
-                                    <td>{bok_1['b_061_b_del_contact_full_name']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Email</td>
-                                    <td>{bok_1['b_037_b_pu_email']}</td>
-                                    <td>{bok_1['b_063_b_del_email']}</td>
-                                </tr>
-                                <tr>
-                                    <td>Phone</td>
-                                    <td>{bok_1['b_038_b_pu_phone_main']}</td>
-                                    <td>{bok_1['b_064_b_del_phone_main']}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div className="main-info">
+                            <div className="pu-info disp-inline-block">
+                                <label>Pickup From</label><br />
+                                <span>{bok_1['b_028_b_pu_company']}</span><br />
+                                <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
+                                <span>{bok_1['b_030_b_pu_address_street_2']}</span><br />
+                                <span>{bok_1['b_031_b_pu_address_state'].toUpperCase()}</span><br />
+                                <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
+                                <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
+                                <span>{bok_1['b_034_b_pu_address_country']}</span><br />
+                                <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
+                                <span>{bok_1['b_037_b_pu_email']}</span><br />
+                                <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                            </div>
+                            <div className="de-info disp-inline-block">
+                                <label>Deliver To</label><br />
+                                <span>{bok_1['b_054_b_del_company']}</span><br />
+                                <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
+                                <span>{bok_1['b_056_b_del_address_street_2']}</span><br />
+                                <span>{bok_1['b_057_b_del_address_state'].toUpperCase()}</span><br />
+                                <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
+                                <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
+                                <span>{bok_1['b_060_b_del_address_country']}</span><br />
+                                <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
+                                <span>{bok_1['b_063_b_del_email']}</span><br />
+                                <span>{bok_1['b_064_b_del_phone_main']}</span><br />  
+                            </div>
+                        </div>
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
@@ -152,6 +120,7 @@ class BokPricePage extends Component {
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
+                                    <th>Service Name</th>
                                     <th>Cost</th>
                                     <th>Fee</th>
                                     <th>ETA</th>
