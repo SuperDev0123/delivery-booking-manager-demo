@@ -1838,12 +1838,6 @@ class AllBookingsPage extends React.Component {
                         >
                             {booking.b_bookingID_Visual}
                         </span>
-                        { 
-                            (booking.has_comms) ?
-                                <i className="fa fa-comments" aria-hidden="true"></i>
-                                :
-                                null
-                        }
                     </td>
                     <td className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
                     <td className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
@@ -1855,7 +1849,6 @@ class AllBookingsPage extends React.Component {
                         <PopoverBody>
                             <div className="links-div">
                                 <Button color="primary" onClick={() => this.onClickLink(0, booking.id)}>Go to Detail</Button>
-                                <Button className="none" color="primary" onClick={() => this.onClickLink(1, booking.id)}>Go to Comms</Button>
                             </div>
                         </PopoverBody>
                     </Popover>
@@ -2085,7 +2078,6 @@ class AllBookingsPage extends React.Component {
                                 <li className="active"><Link to="/allbookings">All Bookings</Link></li>
                                 <li className=""><a href="/bookingsets">Booking Sets</a></li>
                                 <li className=""><Link to="/pods">PODs</Link></li>
-                                {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                                 {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>

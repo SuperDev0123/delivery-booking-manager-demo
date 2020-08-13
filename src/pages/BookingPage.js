@@ -14,7 +14,6 @@ import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Modal from 'react-modal';
-import CKEditor from 'ckeditor4-react';
 import DateTimePicker from 'react-datetime-picker';
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-datepicker';
@@ -40,7 +39,6 @@ import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlid
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import ProjectDataSlider from '../components/Sliders/ProjectDataSlider';
-import NoteSlider from '../components/Sliders/NoteSlider';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
@@ -53,7 +51,6 @@ import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbSt
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
@@ -65,16 +62,6 @@ class BookingPage extends Component {
 
         this.state = {
             formInputs: {},
-            commFormInputs: {
-                assigned_to: '', 
-                priority_of_log: 'Standard',
-                dme_notes_type: 'Delivery',
-                dme_action: 'No follow up required, noted for info purposes',
-                additional_action_task: '',
-                notes_type: 'Call',
-                dme_notes: '',
-                closed: false,
-            },
             selected: 'dme',
             booking: {},
             bookingLines: [],
@@ -123,38 +110,8 @@ class BookingPage extends Component {
             AdditionalServices: [],
             bookingTotals: [],
             isShowDuplicateBookingOptionsModal: false,
-            isShowCommModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
-            comms: [],
-            notes: [],
-            isNotePaneOpen: false,
-            selectedCommId: null,
-            commFormMode: 'create',
-            isShowAdditionalActionTaskInput: false,
-            isShowAssignedToInput: false,
-            actionTaskOptions: [
-                'Awaiting Invoice to Process to FP File',
-                'Close futile booking 5 days after 2nd email',
-                'Confirm FP has not invoiced this booking',
-                'Follow up FP Collection will be on Time',
-                'Follow up FP / Cust Booking was Collected',
-                'Follow up FP Delivery will be on Time',
-                'Follow up FP / Cust Delivery Occurred',
-                'Follow up FP for Credit',
-                'Follow up FP for Quote',
-                'Follow up Futile Email to Customer',
-                'Follow up query to Freight Provider',
-                'Follow up Cust to confirm pickup date / time',
-                'Follow up Cust to confirm packaging & pickup date / time',
-                'Follow up with Booking Contact as per log',
-                'Follow up with Cust if they still need collected',
-                'Follow up with FP when to be collected',
-                'Follow up with FP Booked in & on Schedule',
-                'Follow up with FP Futile re-booked or collected',
-                'No follow up required, noted for info purposes', 
-                'Other',
-            ],
             clientname: null,
             isBookingSelected: false,
             isShowSwitchClientModal: false,
@@ -176,7 +133,6 @@ class BookingPage extends Component {
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
-            isShowDeleteCommConfirmModal: false,
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
             bookingId: null,
@@ -223,17 +179,12 @@ class BookingPage extends Component {
         this.labelDz = null;
         this.podDz = null;
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
-        this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
-        this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
-        // this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleLineSlider = this.toggleLineSlider.bind(this);
         this.toggleLineTrackingSlider = this.toggleLineTrackingSlider.bind(this);
         this.toggleStatusHistorySlider = this.toggleStatusHistorySlider.bind(this);
         this.toggleDateSlider = this.toggleDateSlider.bind(this);
         this.toggleStatusLockModal = this.toggleStatusLockModal.bind(this);
         this.toggleStatusNoteModal = this.toggleStatusNoteModal.bind(this);
-        this.toggleDeleteCommConfirmModal = this.toggleDeleteCommConfirmModal.bind(this);
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
@@ -279,14 +230,6 @@ class BookingPage extends Component {
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
-        createComm: PropTypes.func.isRequired,
-        getComms: PropTypes.func.isRequired,
-        updateComm: PropTypes.func.isRequired,
-        deleteComm: PropTypes.func.isRequired,
-        getNotes: PropTypes.func.isRequired,
-        createNote: PropTypes.func.isRequired,
-        updateNote: PropTypes.func.isRequired,
-        deleteNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         fpCancelBook: PropTypes.func.isRequired,
@@ -299,7 +242,6 @@ class BookingPage extends Component {
         getStatusDetails: PropTypes.func.isRequired,
         createStatusAction: PropTypes.func.isRequired,
         createStatusDetail: PropTypes.func.isRequired,
-        getAvailableCreators: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
@@ -318,7 +260,6 @@ class BookingPage extends Component {
         dmeClients: PropTypes.array.isRequired,
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
-        availableCreators: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
     };
 
@@ -359,14 +300,13 @@ class BookingPage extends Component {
             that.props.getPackageTypes();
             that.props.getStatusDetails();
             that.props.getStatusActions();
-            that.props.getAvailableCreators();
         }, 3000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -381,18 +321,7 @@ class BookingPage extends Component {
         }
 
         if (username) {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs['assigned_to'] = username;
-            this.setState({username, commFormInputs});
-        }
-
-        if (comms) {
-            let newComms = _.clone(comms);
-            newComms = _.map(newComms, (comm, index) => {
-                comm['index'] = index + 1;
-                return comm;
-            });
-            this.setState({comms: newComms, cntComms, loadingComm: false});
+            this.setState({username});
         }
 
         if ( zoho_tickets ) {
@@ -401,19 +330,6 @@ class BookingPage extends Component {
 
         if (this.state.loadingZohoTickets != loadingZohoTickets) {
             this.setState({loadingZohoTickets});
-        }
-        
-        if (notes) {
-            this.setState({notes});
-        }
-
-        if (needUpdateComms && booking) {
-            this.setState({loadingComm: true});
-            this.props.getComms(booking.id);
-        }
-
-        if (needUpdateNotes) {
-            this.props.getNotes(this.state.selectedCommId);
         }
 
         if (createdForInfos) {
@@ -1079,7 +995,6 @@ class BookingPage extends Component {
             this.props.checkAugmentedBooking(data.id);
             this.props.getBookingLines(data.pk_booking_id);
             this.props.getBookingLineDetails(data.pk_booking_id);
-            this.props.getComms(data.id);
             this.props.getBookingStatusHistory(data.pk_booking_id);
             this.props.getApiBCLs(data.id);
             this.props.setFetchGeoInfoFlag(true);
@@ -1329,9 +1244,6 @@ class BookingPage extends Component {
                     this.notify('Failed to delete a file: ' + error);
                     this.toggleDeleteFileConfirmModal();
                 });    
-        } else if (type === 'delete-comm') {
-            this.props.deleteComm(this.state.selectedCommId);
-            this.toggleDeleteCommConfirmModal();
         } else if (type === 'booking_Created_For') {
             const selectedCreatedFor = this.state.createdForInfos.filter(item => {
                 const name_last = item.name_last ? item.name_last : '';
@@ -1769,19 +1681,13 @@ class BookingPage extends Component {
     }
 
     onChangeDateTime(date, fieldName) {
-        const commFormInputs = this.state.commFormInputs;
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
 
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
         conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
 
-        if (fieldName === 'due_date_time') {
-            commFormInputs['due_date_time'] = conveted_date;
-            commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
-            this.setState({commFormInputs});
-        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
+        if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
@@ -2142,179 +2048,17 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowDuplicateBookingOptionsModal: !prevState.isShowDuplicateBookingOptionsModal}));
     }
 
-    handleCommModalInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        if (target.name === 'dme_action' && target.value === 'Other') {
-            this.setState({isShowAdditionalActionTaskInput: true});
-        } else if (target.name === 'assigned_to' && target.value === 'edit…') {
-            this.setState({isShowAssignedToInput: true});
-        }
-
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs[name] = value;
-        this.setState({commFormInputs});
-    }
-
-    onClickGoToCommPage() {
-        this.props.history.push('/comm?bookingid=' + this.state.booking.id);
-    }
-
-    onClickCreateComm() {
-        this.toggleCreateCommModal();
-        this.resetCommForm();
-    }
-
-    resetCommForm() {
-        this.setState({commFormInputs: {
-            assigned_to: this.state.username, 
-            priority_of_log: 'Standard',
-            dme_notes_type: 'Delivery',
-            dme_action: 'No follow up required, noted for info purposes',
-            additional_action_task: '',
-            notes_type: 'Call',
-            dme_notes: '',
-            closed: false,
-        }});
-    }
-
-    toggleCreateCommModal() {
-        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'create'}));
-    }
-
-    onSubmitComm() {
-        const {commFormMode, commFormInputs} = this.state;
-
-        if (commFormInputs['dme_action'] === 'Other')
-            commFormInputs['dme_action'] = commFormInputs['additional_action_task'];
-
-        if (commFormInputs['assigned_to'] === 'edit…')
-            commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
-
-        if (_.isUndefined(commFormInputs['due_date_time']) || _.isNull(commFormInputs['due_date_time'])) {
-            commFormInputs['due_by_date'] = null;
-            commFormInputs['due_by_time'] = null;
-        } else {
-            commFormInputs['due_by_date'] = moment(commFormInputs['due_date_time']).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(commFormInputs['due_date_time']).format('HH:mm:ss');
-        }
-
-        if (commFormMode === 'create') {
-            const {booking} = this.state;            
-            let newComm = commFormInputs;
-
-            this.resetCommForm();
-            newComm['fk_booking_id'] = booking.pk_booking_id;
-            this.props.createComm(newComm);
-            this.toggleCreateCommModal();
-        } else if (commFormMode === 'update') {
-            const {selectedCommId} = this.state;
-            this.resetCommForm();
-            this.props.updateComm(selectedCommId, commFormInputs);
-            this.toggleUpdateCommModal();
-        }
-    }
-
     handleModalInputChange(type, event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        if (type === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs[name] = value;
-            this.setState({commFormInputs});
-        } else if (type === 'note') {
+        if (type === 'note') {
             let noteFormInputs = this.state.noteFormInputs;
             noteFormInputs[name] = value;
             this.setState({noteFormInputs});
         }
     }
-
-    toggleUpdateCommModal() {
-        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'update'}));
-    }
-
-    onUpdateBtnClick(type, data) {
-        console.log('Click update comm button: ', type);
-        
-        const {comms, actionTaskOptions} = this.state;
-        let comm = {};
-
-        for (let i = 0; i < comms.length; i++) {
-            if (comms[i].id === data.id) {
-                comm = comms[i];
-            }
-        }
-
-        const commFormInputs = comm;
-        commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD HH:mm:ss').toDate() : null;
-        if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
-            commFormInputs['new_assigned_to'] = comm.assigned_to;
-            commFormInputs['assigned_to'] = 'edit…';
-            this.setState({isShowAssignedToInput: true});
-        }
-
-        if (_.intersection([comm.dme_action], actionTaskOptions).length === 0) {
-            commFormInputs['additional_action_task'] = comm.dme_action;
-            commFormInputs['dme_action'] = 'Other';
-            this.setState({isShowAdditionalActionTaskInput: true});
-        }
-
-        this.setState({selectedCommId: comm.id, commFormInputs});
-        this.toggleUpdateCommModal();
-    }
-
-    onCheck(e, id, index) {
-        if (e.target.name === 'closed') {
-            let updatedComm = {};
-
-            if (e.target.checked)
-                updatedComm = {
-                    closed: e.target.checked,
-                    status_log_closed_time: moment(),
-                };
-            else
-                updatedComm = {
-                    closed: e.target.checked,
-                    status_log_closed_time: null,
-                };
-
-            let updatedComms = this.state.comms;
-            updatedComms[index].closed = e.target.checked;
-            this.props.updateComm(id, updatedComm);
-            this.setState({comms: updatedComms});
-        }
-    }
-
-    onClickCommIdCell(id) {
-        console.log('Comm ID: ', id);
-
-        this.setState({ isNotePaneOpen: true, selectedCommId: id });
-        this.props.getNotes(id);
-    }
-
-    onEditorChange(type, from, event) {
-        if (type === 'note' && from === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs['dme_notes'] = event.editor.getData();
-            this.setState({commFormInputs});
-        } else if (type === 'note' && from === 'note') {
-            let noteFormInputs = this.state.noteFormInputs;
-            noteFormInputs['dme_notes'] = event.editor.getData();
-            this.setState({noteFormInputs});
-        }
-    }
-
-    toggleNoteSlider() {
-        this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
-    }
-
-    // toggleSwitchClientModal() {
-    //     this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
-    // }
 
     toggleLineSlider() {
         const { isBookingSelected } = this.state;
@@ -2336,10 +2080,6 @@ class BookingPage extends Component {
 
     toggleStatusNoteModal(type='b_booking_Notes') {
         this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal, currentNoteModalField: type}));
-    }
-
-    toggleDeleteCommConfirmModal() {
-        this.setState(prevState => ({isShowDeleteCommConfirmModal: !prevState.isShowDeleteCommConfirmModal}));
     }
 
     toggleDeleteFileConfirmModal() {
@@ -2549,16 +2289,6 @@ class BookingPage extends Component {
         this.props.updateStatusHistory(statusHistory);
     }
 
-    onClickComms(e) {
-        e.preventDefault();
-
-        if (this.state.isBookingSelected) {
-            window.location.assign('/comm?bookingid=' + this.state.booking.id);
-        } else {
-            window.location.assign('/comm');
-        }
-    }
-
     onUpdateProjectData(newBooking) {
         this.setState({curViewMode: 2, loadingBookingUpdate: true});
         this.props.updateBooking(this.state.booking.id, newBooking);
@@ -2615,11 +2345,6 @@ class BookingPage extends Component {
         formInputs[currentNoteModalField] = '';
         this.setState({formInputs, isBookingModified: true});
         this.toggleStatusNoteModal();
-    }
-
-    onDeleteBtnClick(commId) {
-        this.setState({selectedCommId: commId});
-        this.toggleDeleteCommConfirmModal();
     }
 
     onClickFC() { // On click Freight Calculation button
@@ -2688,10 +2413,10 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
         } = this.state;
         const {
-            warehouses, emailLogs, availableCreators
+            warehouses, emailLogs
         } = this.props;
 
         const bookingLineColumns = [
@@ -3008,9 +2733,6 @@ class BookingPage extends Component {
             success: this.handleUploadSuccess.bind(this),
         };
 
-        const actionTaskOptionsList = actionTaskOptions
-            .map((actionTaskOption, key) => (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>));
-
         let warehouseCodeOptions = warehouses
             .filter(warehouse => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
             || warehouse.client_company_name === formInputs['b_client_name'])
@@ -3053,13 +2775,6 @@ class BookingPage extends Component {
             {value: 'Not to Charge', label: 'Not to Charge'},
         ];
         const currentInvBillingOption = {value: formInputs['inv_billing_status'], label: formInputs['inv_billing_status']};
-
-        const availableCreatorsList = availableCreators
-            .map((availableCreator, index) => (
-                <option key={index} value={availableCreator.username}>
-                    {availableCreator.first_name} {availableCreator.last_name}
-                </option>
-            ));
         
         const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
         const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
@@ -3099,7 +2814,6 @@ class BookingPage extends Component {
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><a href="/bookingsets">Booking Sets</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className=""><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
@@ -5148,11 +4862,6 @@ class BookingPage extends Component {
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
                                                 {
                                                     clientname === 'dme' ?
-                                                        <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
-                                                        : null
-                                                }
-                                                {
-                                                    clientname === 'dme' ?
                                                         <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
                                                         : null
                                                 }
@@ -5164,7 +4873,7 @@ class BookingPage extends Component {
                                             <select id="tab-select">
                                                 <option value="#tab01">Shipment Packages / Goods</option>
                                                 <option value="#tab02">Additional Services & Options</option>
-                                                <option value="#tab03">Communication Log</option>
+                                                <option value="#tab03">ZOHO</option>
                                                 <option value="#tab04">Attachments</option>
                                                 <option value="#tab05">Label & Pod</option>
                                             </select>
@@ -5234,29 +4943,7 @@ class BookingPage extends Component {
                                                 <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
-                                        <div id="tab03" className={activeTabInd === 2 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
-                                                <i className="icon icon-th-list"></i>
-                                            </button>
-                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Create a comm">
-                                                <i className="icon icon-plus"></i>
-                                            </button>
-                                            <LoadingOverlay
-                                                active={this.state.loadingComm}
-                                                spinner
-                                                text='Loading Communications...'
-                                            >
-                                                <div className="tab-inner">
-                                                    {/*<BootstrapTable
-                                                        keyField="id0"
-                                                        data={ comms }
-                                                        columns={ columnCommunication }
-                                                        bootstrap4={ true }
-                                                    />*/}
-                                                </div>
-                                            </LoadingOverlay>
-                                        </div>
-                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab03" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <LoadingOverlay
                                                 active={this.state.loadingZohoTickets}
                                                 spinner
@@ -5272,7 +4959,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
-                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab04" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handleUpload(e, 'attachment')}>
                                                     <DropzoneComponent
@@ -5293,7 +4980,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab05" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {isBookingSelected ?
                                                 <div className="row">
                                                     <div className="col-6">
@@ -5405,170 +5092,6 @@ class BookingPage extends Component {
                     </ModalFooter>
                 </ReactstrapModal>
 
-                <ReactstrapModal 
-                    isOpen={isShowCommModal} 
-                    toggle={this.toggleCreateCommModal} 
-                    className="create-comm-modal">
-                    <ModalHeader toggle={this.toggleCreateCommModal}>{(commFormMode === 'create') ? 'Create' : 'Update'} Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
-                    <ModalBody>
-                        <label>
-                            <p>Assigned To</p>
-                            <select
-                                required 
-                                name="assigned_to"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['assigned_to']} >
-                                {availableCreatorsList}
-                            </select>
-                        </label>
-                        {
-                            (isShowAssignedToInput) ?
-                                <label>
-                                    <p>Assigned To(New)</p>
-                                    <input 
-                                        className="form-control"
-                                        type="text"
-                                        placeholder=""
-                                        name="new_assigned_to"
-                                        value = {commFormInputs['new_assigned_to']}
-                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
-                                </label>
-                                :
-                                null
-                        }
-                        <label>
-                            <p>Priority</p>
-                            <select
-                                required 
-                                name="priority_of_log"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['priority_of_log']} >
-                                <option value="Standard">Standard</option>
-                                <option value="Low">Low</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </label>
-                        <label>
-                            <p>DME Comm Title</p>
-                            <input 
-                                className="form-control"
-                                type="text"
-                                placeholder=""
-                                name="dme_com_title"
-                                value = {commFormInputs['dme_com_title']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                        <label>
-                            <p>Type</p>
-                            <select
-                                required 
-                                name="dme_notes_type"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_notes_type']} >
-                                <option value="Delivery">Delivery</option>
-                                <option value="Financial">Financial</option>
-                                <option value="FP Query">FP Query</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </label>
-                        <label>
-                            <p>Action Task</p>
-                            <select
-                                required 
-                                name="dme_action"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_action']} >
-                                {actionTaskOptionsList}
-                            </select>
-                        </label>
-                        {
-                            (isShowAdditionalActionTaskInput) ?
-                                <label>
-                                    <p>Action Task(Other)</p>
-                                    <input 
-                                        className="form-control"
-                                        type="text"
-                                        placeholder=""
-                                        name="additional_action_task"
-                                        value = {commFormInputs['additional_action_task']}
-                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
-                                </label>
-                                :
-                                null
-                        }
-                        {
-                            (commFormMode === 'create') ?
-                                <div>
-                                    <label>
-                                        <p>Note Type</p>
-                                        <select
-                                            required 
-                                            name="notes_type"
-                                            onChange={(e) => this.handleCommModalInputChange(e)}
-                                            value = {commFormInputs['notes_type']} >
-                                            <option value="Call">Call</option>
-                                            <option value="Email">Email</option>
-                                            <option value="SMS">SMS</option>
-                                            <option value="Letter">Letter</option>
-                                            <option value="Note">Note</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </label>
-                                    <div className="editor">
-                                        <p>First Note</p>
-                                        <CKEditor
-                                            data={commFormInputs['dme_notes']}
-                                            onChange={(e) => this.onEditorChange('note', 'comm', e)} />
-                                    </div>
-                                </div>
-                                :
-                                null
-                        }
-                        <label>
-                            <p>Due Date Time</p>
-                            <DateTimePicker
-                                onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
-                                value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) &&
-                                new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
-                                format={'dd/MM/yyyy HH:mm'}
-                            />
-                        </label>
-                        <label>
-                            <p>Closed?</p>
-                            <input
-                                className="form-control"
-                                type="checkbox"
-                                name="closed"
-                                checked = {commFormInputs['closed']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.onSubmitComm()}>{(commFormMode === 'create') ? 'Create' : 'Update'}</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleCreateCommModal}>Cancel</Button>
-                    </ModalFooter>
-                </ReactstrapModal>
-
-                {/*<SwitchClientModal
-                    isShowSwitchClientModal={isShowSwitchClientModal}
-                    toggleSwitchClientModal={this.toggleSwitchClientModal}
-                    onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
-                    clients={this.props.dmeClients}
-                    selectedClientPK={clientPK}
-                />*/}
-
-                <NoteSlider
-                    isOpen={isNotePaneOpen}
-                    toggleNoteSlider={this.toggleNoteSlider}
-                    notes={notes}
-                    createNote={(newNote) => this.props.createNote(newNote)} 
-                    updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
-                    deleteNote={(id) => this.props.deleteNote(id)}
-                    clientname={clientname}
-                    selectedCommId={selectedCommId}
-                />
-
                 <LineAndLineDetailSlider
                     isOpen={isShowLineSlider}
                     toggleLineSlider={this.toggleLineSlider}
@@ -5632,15 +5155,6 @@ class BookingPage extends Component {
                 />
 
                 <ConfirmModal
-                    isOpen={this.state.isShowDeleteCommConfirmModal}
-                    onOk={() => this.onClickConfirmBtn('delete-comm')}
-                    onCancel={this.toggleDeleteCommConfirmModal}
-                    title={'Delete Comm Log'}
-                    text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
-                    okBtnName={'Delete'}
-                />
-
-                <ConfirmModal
                     isOpen={this.state.isShowDeleteFileConfirmModal}
                     onOk={() => this.onClickConfirmBtn('delete-file')}
                     onCancel={this.toggleDeleteFileConfirmModal}
@@ -5698,7 +5212,6 @@ const mapStateToProps = (state) => {
         nextBookingId: state.booking.nextBookingId,
         prevBookingId: state.booking.prevBookingId,
         qtyTotal: state.booking.qtyTotal,
-        cntComms: state.booking.cntComms,
         cntAttachments: state.booking.cntAttachments,
         isAutoAugmented: state.booking.isAutoAugmented,
         redirect: state.auth.redirect,
@@ -5712,10 +5225,6 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
-        comms: state.comm.comms,
-        needUpdateComms: state.comm.needUpdateComms,
-        notes: state.comm.notes,
-        needUpdateNotes: state.comm.needUpdateNotes,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
@@ -5731,7 +5240,6 @@ const mapStateToProps = (state) => {
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
-        availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
         allFPs: state.extra.allFPs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
@@ -5786,14 +5294,6 @@ const mapDispatchToProps = (dispatch) => {
         fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        createComm: (comm) => dispatch(createComm(comm)),
-        getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),        
-        updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
-        deleteComm: (id) => dispatch(deleteComm(id)),
-        getNotes: (commId) => dispatch(getNotes(commId)),
-        createNote: (note) => dispatch(createNote(note)),
-        updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
-        deleteNote: (id) => dispatch(deleteNote(id)),
         getWarehouses: () => dispatch(getWarehouses()),
         getDMEClients: () => dispatch(getDMEClients()),
         getBookingStatusHistory: (bookingId) => dispatch(getBookingStatusHistory(bookingId)),
@@ -5806,7 +5306,6 @@ const mapDispatchToProps = (dispatch) => {
         getStatusActions: () => dispatch(getStatusActions()),
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
-        getAvailableCreators: () => dispatch(getAvailableCreators()),
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
