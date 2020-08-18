@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import moment from 'moment';
+import {sortBy} from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingOverlay from 'react-loading-overlay';
-import {sortBy} from 'lodash';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -30,6 +32,10 @@ class FPPricingSlider extends React.Component {
         errors: PropTypes.array.isRequired,
     };
 
+    notify = (text) => {
+        toast(text);
+    };
+
     calcTotalValue(pricingInfo) {
         return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(3);
     }
@@ -43,15 +49,25 @@ class FPPricingSlider extends React.Component {
     }
 
     onSelectLowest() {
-        const {pricingInfos} = this.props;
-        const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
-        this.props.onSelectPricing(sortedPricingInfos[0]);
+        const {pricingInfos, booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Bad operation! This is `manual booked` Booking.');
+        } else {
+            const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
+            this.props.onSelectPricing(sortedPricingInfos[0]);
+        }
     }
 
     onSelectFastest() {
-        const {pricingInfos} = this.props;
-        const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
-        this.props.onSelectPricing(sortedPricingInfos[0]);
+        const {pricingInfos, booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Bad operation! This is `manual booked` Booking.');
+        } else {
+            const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
+            this.props.onSelectPricing(sortedPricingInfos[0]);
+        }
     }
 
     onSelectTab(value) {
@@ -221,6 +237,7 @@ class FPPricingSlider extends React.Component {
                         </LoadingOverlay>
                     </div>
                 </div>
+                <ToastContainer />
             </SlidingPane>
         );
     }
