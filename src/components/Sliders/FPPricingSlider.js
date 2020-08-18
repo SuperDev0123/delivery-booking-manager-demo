@@ -52,7 +52,7 @@ class FPPricingSlider extends React.Component {
         const {pricingInfos, booking} = this.props;
 
         if (booking.x_manual_booked_flag) {
-            this.notify('Bad operation! This is `manual booked` Booking.');
+            this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
             this.props.onSelectPricing(sortedPricingInfos[0]);
@@ -63,10 +63,20 @@ class FPPricingSlider extends React.Component {
         const {pricingInfos, booking} = this.props;
 
         if (booking.x_manual_booked_flag) {
-            this.notify('Bad operation! This is `manual booked` Booking.');
+            this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
             this.props.onSelectPricing(sortedPricingInfos[0]);
+        }
+    }
+
+    onClickSelect(pricingInfo) {
+        const {booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Cannot select a FC, this booking is manually booked');
+        } else {
+            this.props.onSelectPricing(pricingInfo);
         }
     }
 
@@ -110,7 +120,7 @@ class FPPricingSlider extends React.Component {
                         <Button
                             color="primary"
                             disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
-                            onClick={() => this.props.onSelectPricing(pricingInfo)}
+                            onClick={(pricingInfo) => this.onClickSelect(pricingInfo)}
                         >
                             Select
                         </Button>
