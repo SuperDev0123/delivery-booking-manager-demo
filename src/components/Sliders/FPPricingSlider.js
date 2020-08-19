@@ -120,7 +120,7 @@ class FPPricingSlider extends React.Component {
                         <Button
                             color="primary"
                             disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
-                            onClick={(pricingInfo) => this.onClickSelect(pricingInfo)}
+                            onClick={() => this.onClickSelect(pricingInfo)}
                         >
                             Select
                         </Button>
