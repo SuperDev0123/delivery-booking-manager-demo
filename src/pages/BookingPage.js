@@ -942,9 +942,9 @@ class BookingPage extends Component {
                 });
 
                 // Dropzone files reset
-                if (this.attachmentsDz) this.attachmentsDz.destroy();
-                if (this.labelDz) this.labelDz.destroy();
-                if (this.podDz) this.podDz.destroy();
+                if (this.attachmentsDz) this.attachmentsDz.removeAllFiles();
+                if (this.labelDz) this.labelDz.removeAllFiles();
+                if (this.podDz) this.podDz.removeAllFiles();
 
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
