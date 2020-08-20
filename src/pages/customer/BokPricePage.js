@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { getBokWithPricings } from '../../state/services/bokService';
+import { Button } from 'reactstrap';
+import { getBokWithPricings, onSelectPricing } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -15,6 +16,7 @@ class BokPricePage extends Component {
 
     static propTypes = {
         getBokWithPricings: PropTypes.func.isRequired,
+        onSelectPricing: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
     };
@@ -30,10 +32,15 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage} = newProps;
+        const {errorMessage, needToUpdatePricings} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
+        }
+
+        if (needToUpdatePricings) {
+            const identifier = this.props.match.params.id;
+            this.props.getBokWithPricings(identifier);
         }
     }
 
@@ -56,11 +63,18 @@ class BokPricePage extends Component {
                 </tr>
             ));
             pricings = bok_1['pricings'].map((price, index) => (
-                <tr key={index}>
+                <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
                     <td>{price['service_name']}</td>
-                    <td>${price['cost']}</td>
-                    <td>{price['fee'] ? `$${price['fee']}` : ''}</td>
                     <td>{price['eta']}</td>
+                    <td>${price['cost'].toFixed(2)}</td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.props.onSelectPricing(price.cost_id, this.props.match.params.id)}
+                        >
+                            Select
+                        </Button>
+                    </td>
                 </tr>
             ));
         }
@@ -121,9 +135,9 @@ class BokPricePage extends Component {
                             <thead>
                                 <tr>
                                     <th>Service Name</th>
-                                    <th>Cost</th>
-                                    <th>Fee</th>
+                                    <th>Quoted $</th>
                                     <th>ETA</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -141,12 +155,14 @@ const mapStateToProps = (state) => {
     return {
         errorMessage: state.bok.errorMessage,
         bokWithPricings: state.bok.BOK_with_pricings,
+        needToUpdatePricings: state.bok.needToUpdatePricings,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getBokWithPricings: (identifier) => dispatch(getBokWithPricings(identifier)),
+        onSelectPricing: (costId, identifier) => dispatch(onSelectPricing(costId, identifier)),
     };
 };
 

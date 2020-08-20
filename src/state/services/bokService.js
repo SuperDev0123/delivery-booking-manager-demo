@@ -9,6 +9,9 @@ import {
     failedGetBok3LinesData,
     successGetBokWithPricings,
     failedGetBokWithPricings,
+    successSelectPricing,
+    failedSelectPricing,
+    resetNeedToUpdatePricings,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -50,8 +53,22 @@ export const getBokWithPricings = (identifier) => {
         method: 'get',
         url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/get_boks_with_pricings/?identifier=${identifier}`,
     };
-    return dispatch =>
+    return dispatch => {
+        dispatch(resetNeedToUpdatePricings());
         axios(options)
             .then(({ data }) => dispatch(successGetBokWithPricings(data)))
             .catch((error) => dispatch(failedGetBokWithPricings(error)));
+    };
+};
+
+export const onSelectPricing = (costId, identifier) => {
+    const options = {
+        method: 'post',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/select_pricing/`,
+        data: {'costId': costId, 'identifier': identifier},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSelectPricing(data)))
+            .catch((error) => dispatch(failedSelectPricing(error)));
 };
