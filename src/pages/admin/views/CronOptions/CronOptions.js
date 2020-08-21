@@ -209,7 +209,7 @@ class CronOptions extends Component {
                                                     <th>Name</th>
                                                     <th>Active?</th>
                                                     <th width="50">Description</th>
-                                                    <th>Elapsed Second</th>
+                                                    <th>Spent Time(Seconds)</th>
                                                     <th>Running?</th>
                                                     <th>Arg 1</th>
                                                     <th>Arg 2</th>

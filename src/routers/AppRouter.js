@@ -20,7 +20,6 @@ import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
 import AllBookingsPage from '../pages/AllBookingsPage';
 import BookingSetsPage from '../pages/BookingSets/BookingSetsList';
 import UploadPage from '../pages/UploadPage';
-import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
 import BokPage from '../pages/BokPage';
@@ -83,7 +82,6 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/allbookings' component={AllBookingsPage} />
                 <PrivateRoute exact path='/bookingsets' component={BookingSetsPage} />
                 <PrivateRoute exact path='/upload' component={UploadPage} />
-                <PrivateRoute exact path='/comm' component={CommPage} />
                 <PrivateRoute exact path='/pods' component={PodsPage} />
                 <PrivateRoute exact path='/zoho' component={ZohoPage} />
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />

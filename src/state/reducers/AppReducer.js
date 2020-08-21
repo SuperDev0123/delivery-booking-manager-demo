@@ -5,7 +5,6 @@ import { BookingReducer } from './bookingReducer';
 import { BookingLineReducer } from './bookingLineReducer';
 import { BookingLineDetailReducer } from './bookingLineDetailReducer';
 import { WarehouseReducer } from './warehouseReducer';
-import { CommReducer } from './commReducer';
 import { ReportReducer } from './reportReducer';
 import { ExtraReducer } from './extraReducer';
 import { BokReducer } from './bokReducer';
@@ -30,7 +29,6 @@ export const AppReducer = combineReducers({
     bookingLine: BookingLineReducer,
     bookingLineDetail: BookingLineDetailReducer,
     warehouse: WarehouseReducer,
-    comm: CommReducer,
     report: ReportReducer,
     extra: ExtraReducer,
     bok: BokReducer,

@@ -63,7 +63,6 @@ class Header extends Component {
                 currentRoute === '/bookingsets' ||
                 currentRoute === '/bookinglines' ||
                 currentRoute === '/bookinglinedetails' ||
-                currentRoute === '/comm' ||
                 currentRoute === '/pods' ||
                 currentRoute === '/zoho' ||
                 currentRoute === '/reports' ?

@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import BootstrapTable from 'react-bootstrap-table-next';
-import '../styles/pages/dmeapiinv.scss';
-import { getFiles } from '../state/services/fileService';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import { API_HOST, HTTP_PROTOCOL } from '../config';
+
+import moment from 'moment';
 import axios from 'axios';
 import LoadingOverlay from 'react-loading-overlay';
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+
+import '../styles/pages/dmeapiinv.scss';
+import { getFiles } from '../state/services/fileService';
+import { API_HOST, HTTP_PROTOCOL } from '../config';
+
 
 class FilesPage extends Component {
     constructor(props) {
@@ -55,19 +59,26 @@ class FilesPage extends Component {
         this.setState({simpleSearchKeyword: e.target.value});
     }
 
-    noteFormatter(cell, row) {
-        if (row.b_bookingID_Visual) {
-            const url = `/booking?bookingId=${row.booking_id}`;
-            return (
-                <span>
-                    <a href={url}> { cell }</a>
-                </span>
-            );
-        }
+    // noteFormatter(cell, row) {
+    //     if (row.b_bookingID_Visual) {
+    //         const url = `/booking?bookingId=${row.booking_id}`;
+    //         return (
+    //             <span>
+    //                 <a href={url}>{ cell }</a>
+    //             </span>
+    //         );
+    //     }
       
-        return (
-            <span></span>
-        );
+    //     return (
+    //         <span></span>
+    //     );
+    // }
+
+    datetimeFormatter(cell, row) {
+        if (row.z_createdTimeStamp)
+            return (<span>{moment(row.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss')}</span>);
+
+        return (<span></span>);
     }
 
     buttonFormatter(cell, row) {
@@ -104,7 +115,12 @@ class FilesPage extends Component {
         e.preventDefault();
         const {simpleSearchKeyword, files} = this.state;
 
-        const filteredFiles = files.filter((file) => file.file_name.indexOf(simpleSearchKeyword)>-1 || (file.b_bookingID_Visual && String(file.b_bookingID_Visual).indexOf(simpleSearchKeyword)> -1));
+        const filteredFiles = files.filter((file) =>
+            file.file_name.indexOf(simpleSearchKeyword)>-1 || (
+                file.b_bookingID_Visual &&
+                String(file.b_bookingID_Visual).indexOf(simpleSearchKeyword)> -1
+            )
+        );
         this.setState({filteredFiles});
     }
 
@@ -117,7 +133,8 @@ class FilesPage extends Component {
                 text: 'file_name'
             }, {
                 dataField: 'z_createdTimeStamp',
-                text: 'z_createdTimeStamp'
+                text: 'z_createdTimeStamp',
+                formatter: this.datetimeFormatter,
             }, {
                 dataField: 'z_createdByAccount',
                 text: 'z_createdByAccount'
@@ -133,7 +150,6 @@ class FilesPage extends Component {
             }, {
                 dataField: 'b_bookingID_Visual',
                 text:'Booking Visual ID',
-                formatter: this.noteFormatter
             }, {
                 dataField: 'Actions',
                 text: 'Actions',
