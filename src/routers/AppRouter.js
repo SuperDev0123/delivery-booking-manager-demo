@@ -71,7 +71,7 @@ export const AppRouter = () => (
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
                 <Route exact path='/bok' component={BokPage} />
-                <Route exact path='/price/bok/:id' component={BokPricePage} />
+                <Route exact path='/price/partial/:id' component={BokPricePage} />
                 <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
