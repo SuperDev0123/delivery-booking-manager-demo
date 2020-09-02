@@ -24,7 +24,7 @@ class BokPricePage extends Component {
     componentDidMount() {
         const identifier = this.props.match.params.id;
 
-        if (identifier && identifier.length === 64) {
+        if (identifier && identifier.length > 32) {
             this.props.getBokWithPricings(identifier);
         } else {
             this.setState({errorMessage: 'Wrong id.'});
@@ -65,8 +65,8 @@ class BokPricePage extends Component {
             pricings = bok_1['pricings'].map((price, index) => (
                 <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
                     <td>{price['service_name']}</td>
-                    <td>{price['eta']}</td>
                     <td>${price['cost'].toFixed(2)}</td>
+                    <td>{price['eta']}</td>
                     <td>
                         <Button
                             color="primary"
