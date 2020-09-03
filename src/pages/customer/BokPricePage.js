@@ -46,6 +46,11 @@ class BokPricePage extends Component {
 
     render() {
         let bok_1, bok_2s, pricings;
+        let isPricingPage = false;
+
+        if (window.location.href.indexOf('/price/partial/') !== -1) {
+            isPricingPage = true;
+        }
 
         if (this.props.bokWithPricings) {
             bok_1 = this.props.bokWithPricings;
@@ -67,14 +72,16 @@ class BokPricePage extends Component {
                     <td>{price['service_name']}</td>
                     <td>${price['cost'].toFixed(2)}</td>
                     <td>{price['eta']}</td>
-                    <td>
-                        <Button
-                            color="primary"
-                            onClick={() => this.props.onSelectPricing(price.cost_id, this.props.match.params.id)}
-                        >
-                            Select
-                        </Button>
-                    </td>
+                    {!isPricingPage &&
+                        <td>
+                            <Button
+                                color="primary"
+                                onClick={() => this.props.onSelectPricing(price.cost_id, this.props.match.params.id)}
+                            >
+                                Select
+                            </Button>
+                        </td>
+                    }
                 </tr>
             ));
         }
@@ -137,7 +144,7 @@ class BokPricePage extends Component {
                                     <th>Service Name</th>
                                     <th>Quoted $</th>
                                     <th>ETA</th>
-                                    <th>Action</th>
+                                    {!isPricingPage && <th>Action</th>}
                                 </tr>
                             </thead>
                             <tbody>
