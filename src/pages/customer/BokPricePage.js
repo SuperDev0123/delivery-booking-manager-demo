@@ -48,7 +48,7 @@ class BokPricePage extends Component {
         let bok_1, bok_2s, pricings;
         let isPricingPage = false;
 
-        if (window.location.href.indexOf('/price/partial/') !== -1) {
+        if (window.location.href.indexOf('/price/') !== -1) {
             isPricingPage = true;
         }
 
