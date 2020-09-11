@@ -14,6 +14,7 @@ import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import BokPricePage from '../pages/customer/BokPricePage';
+import BokStatusPage from '../pages/customer/BokStatusPage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
@@ -70,13 +71,16 @@ export const AppRouter = () => (
             <Switch>
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
-                <Route exact path='/bok' component={BokPage} />
-                <Route exact path='/price/partial/:id' component={BokPricePage} />
-                <Route exact path='/order/partial/:id' component={BokPricePage} />
                 <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
                 <Route path='/reset-password' component={ResetPasswordPage} />
+
+                <Route exact path='/bok' component={BokPage} />
+                <Route exact path='/price/:id' component={BokPricePage} />
+                <Route exact path='/order/:id' component={BokPricePage} />
+                <Route exact path='/status/:id' component={BokStatusPage} />
+                
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
                 <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
