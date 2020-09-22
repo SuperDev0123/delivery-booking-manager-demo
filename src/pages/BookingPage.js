@@ -147,6 +147,8 @@ class BookingPage extends Component {
             xReadyStatus: null,
             zoho_tickets: [],
             errors: [],
+            puCommunicates: [],
+            deCommunicates: []
         };
 
         this.djsConfig = {
@@ -844,6 +846,14 @@ class BookingPage extends Component {
                 }
                 if (booking.de_To_Address_Country != undefined && booking.de_To_Address_State != undefined) {
                     this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
+                }
+
+                if (booking.pu_Comm_Booking_Communicate_Via != undefined) {
+                    this.setState({ puCommunicates:booking.pu_Comm_Booking_Communicate_Via.split(',')});
+                }
+
+                if (booking.de_To_Comm_Delivery_Communicate_Via != undefined) {
+                    this.setState({ deCommunicates:booking.de_To_Comm_Delivery_Communicate_Via.split(',')});
                 }
 
                 //For Additional Services
@@ -1730,7 +1740,7 @@ class BookingPage extends Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-
+        
         if (name === 'tickManualBook') {
             const {booking, clientname} = this.state;
 
@@ -1745,7 +1755,26 @@ class BookingPage extends Component {
             newBooking.b_send_POD_eMail = !newBooking.b_send_POD_eMail;
             this.props.updateBooking(newBooking.id, newBooking);
             this.setState({loadingBookingUpdate: true});
-        } else {
+        } else if (name == 'b_pu_communicate') {
+            const {puCommunicates, booking} = this.state;
+            if(puCommunicates.indexOf(target.dataset.method) > -1)
+                puCommunicates.splice(puCommunicates.indexOf(target.dataset.method), 1);
+            else 
+                puCommunicates.push(target.dataset.method);
+
+            booking.pu_Comm_Booking_Communicate_Via = puCommunicates.join(',');
+            this.setState({booking, puCommunicates});
+        } else if (name == 'b_de_To_communicate') {
+            const {booking, deCommunicates} = this.state;
+            if(deCommunicates.indexOf(target.dataset.method) > -1) 
+                deCommunicates.splice(deCommunicates.indexOf(target.dataset.method), 1);
+            else 
+                deCommunicates.push(target.dataset.method);
+
+            booking.de_To_Comm_Delivery_Communicate_Via = deCommunicates.join(',');
+            this.setState({booking, deCommunicates});
+        }
+        else {
             this.setState({[name]: value});
         }
     }
@@ -2413,7 +2442,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets, puCommunicates, deCommunicates
         } = this.state;
         const {
             warehouses, emailLogs
@@ -3850,7 +3879,52 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white booking-panel-title">
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">PU Communicate Via</label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{booking.pu_Comm_Booking_Communicate_Via ? booking.pu_Comm_Booking_Communicate_Via : ''}</p>
+                                                                    :
+                                                                    <div className="mt-2">
+                                                                        <span>
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Email"
+                                                                                checked={puCommunicates.indexOf('Email') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Email
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="SMS"
+                                                                                checked={puCommunicates.indexOf('SMS') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;SMS
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Call"
+                                                                                checked={puCommunicates.indexOf('Call') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Call
+                                                                        </span>
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="head text-white booking-panel-title mt-1">
                                                         PickUp Dates
                                                     </div>
                                                     <div className="row mt-1">
@@ -4267,7 +4341,53 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white panel-title">
+
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">DE Communicate Via</label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{booking.de_To_Comm_Delivery_Communicate_Via ? booking.de_To_Comm_Delivery_Communicate_Via : ''}</p>
+                                                                    :
+                                                                    <div className="mt-2">
+                                                                        <span>
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Email"
+                                                                                checked={deCommunicates.indexOf('Email') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Email
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="SMS"
+                                                                                checked={deCommunicates.indexOf('SMS') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;SMS
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Call"
+                                                                                checked={deCommunicates.indexOf('Call') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Call
+                                                                        </span>
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="head text-white panel-title mt-1">
                                                         Delivery Dates
                                                     </div>
                                                     <div className="row mt-1">
