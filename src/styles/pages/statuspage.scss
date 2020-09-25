@@ -1,0 +1,59 @@
+section.status {
+    p.error {
+        color: red;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .status-chart {
+        width: 90%;
+        margin: 0 auto;
+
+        .status-chart-item {
+            width: 20%;
+            position: relative;
+
+            .status-chart-item-wrapper {
+                &:first-child {
+                    padding: 25px;
+                    width: 150px;
+                    border-radius: 50%;
+                    margin-left: calc(50% - 75px);
+                    background: lightgray;
+
+                    img {
+                        width: 100%;
+                    }
+                }
+
+                &:nth-child(2) {
+                    position: absolute;
+                    width: 50px;
+                    top: 50px;
+                    right: -25px;
+                }
+
+                &.done img {
+                    filter: invert(100%);
+                }
+            }
+
+            p {
+                text-align: center;
+                margin-top: 10px;
+                font-weight: bold;
+                font-size: 16px;
+            }
+        }
+
+        .status-chart-button {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .status-chart-detail p {
+            font-size: 18px;
+        }
+    }
+}

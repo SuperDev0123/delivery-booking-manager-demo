@@ -10,6 +10,8 @@ import {
     SUCCESS_SELECT_PRICING,
     FAILED_SELECT_PRICING,
     RESET_NEED_TO_UPDATE_PRICINGS,
+    SUCCESS_GET_DE_STATUS,
+    FAILED_GET_DE_STATUS,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -84,5 +86,19 @@ export function failedSelectPricing(error) {
 export function resetNeedToUpdatePricings() {
     return {
         type: RESET_NEED_TO_UPDATE_PRICINGS,
+    };
+}
+
+export function successGetDeliveryStatus(data) {
+    return {
+        type: SUCCESS_GET_DE_STATUS,
+        payload: data,
+    };
+}
+
+export function failedGetDeliveryStatus(error) {
+    return {
+        type: FAILED_GET_DE_STATUS,
+        payload: 'Unable to get delivery status. ' + error.response.data.message,
     };
 }

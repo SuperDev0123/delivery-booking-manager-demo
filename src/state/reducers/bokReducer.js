@@ -10,6 +10,8 @@ import {
     SUCCESS_SELECT_PRICING,
     FAILED_SELECT_PRICING,
     RESET_NEED_TO_UPDATE_PRICINGS,
+    SUCCESS_GET_DE_STATUS,
+    FAILED_GET_DE_STATUS,
 } from '../constants/bokConstants';
 
 const defaultState = {
@@ -19,6 +21,8 @@ const defaultState = {
     BOK_with_pricings: null,
     needToUpdatePricings: null,
     errorMessage: '',
+    deliveryStep: null,
+    deliveryStatus: null,
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -53,11 +57,18 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 ...state,
                 needToUpdatePricings: true,
             };
+        case SUCCESS_GET_DE_STATUS:
+            return {
+                ...state,
+                deliveryStatus: payload.status,
+                deliveryStep: payload.step,
+            };
         case FAILED_SELECT_PRICING:
         case FAILED_GET_BOK_1_HEADERS:
         case FAILED_GET_BOK_2_LINES:
         case FAILED_GET_BOK_3_LINES_DATA:
         case FAILED_GET_BOK_WITH_PRICINGS:
+        case FAILED_GET_DE_STATUS:
             return {
                 ...state,
                 errorMessage: payload,

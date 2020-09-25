@@ -12,6 +12,8 @@ import {
     successSelectPricing,
     failedSelectPricing,
     resetNeedToUpdatePricings,
+    successGetDeliveryStatus,
+    failedGetDeliveryStatus,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -71,4 +73,17 @@ export const onSelectPricing = (costId, identifier) => {
         axios(options)
             .then(({ data }) => dispatch(successSelectPricing(data)))
             .catch((error) => dispatch(failedSelectPricing(error)));
+};
+
+export const getDeliveryStatus = (identifier) => {
+    const options = {
+        method: 'get',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_delivery_status/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successGetDeliveryStatus(data)))
+            .catch((error) => dispatch(failedGetDeliveryStatus(error)));
+    };
 };
