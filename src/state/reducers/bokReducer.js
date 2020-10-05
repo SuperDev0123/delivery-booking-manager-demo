@@ -12,6 +12,10 @@ import {
     RESET_NEED_TO_UPDATE_PRICINGS,
     SUCCESS_GET_DE_STATUS,
     FAILED_GET_DE_STATUS,
+    SUCCESS_BOOK_FREIGHT,
+    FAILED_BOOK_FREIGHT,
+    SUCCESS_CANCEL_FREIGHT,
+    FAILED_CANCEL_FREIGHT,
 } from '../constants/bokConstants';
 
 const defaultState = {
@@ -23,6 +27,8 @@ const defaultState = {
     errorMessage: '',
     deliveryStep: null,
     deliveryStatus: null,
+    bookedSuccess: null,
+    canceledSuccess: null,
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -31,6 +37,8 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
             return {
                 ...state,
                 needToUpdatePricings: false,
+                bookedSuccess: null,
+                canceledSuccess: null
             };
         case SUCCESS_GET_BOK_1_HEADERS:
             return {
@@ -63,12 +71,24 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 deliveryStatus: payload.status,
                 deliveryStep: payload.step,
             };
+        case SUCCESS_BOOK_FREIGHT:
+            return {
+                ...state,
+                bookedSuccess: true,
+            };
+        case SUCCESS_CANCEL_FREIGHT:
+            return {
+                ...state,
+                canceledSuccess: true,
+            };
         case FAILED_SELECT_PRICING:
         case FAILED_GET_BOK_1_HEADERS:
         case FAILED_GET_BOK_2_LINES:
         case FAILED_GET_BOK_3_LINES_DATA:
         case FAILED_GET_BOK_WITH_PRICINGS:
         case FAILED_GET_DE_STATUS:
+        case FAILED_BOOK_FREIGHT:
+        case FAILED_CANCEL_FREIGHT:
             return {
                 ...state,
                 errorMessage: payload,

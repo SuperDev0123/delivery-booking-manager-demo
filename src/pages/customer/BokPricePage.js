@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
-import { getBokWithPricings, onSelectPricing } from '../../state/services/bokService';
+
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -11,14 +14,20 @@ class BokPricePage extends Component {
 
         this.state = {
             errorMessage: null,
+            isCanceled: null,
+            isBooked: null
         };
     }
 
     static propTypes = {
         getBokWithPricings: PropTypes.func.isRequired,
         onSelectPricing: PropTypes.func.isRequired,
+        onBookFreight: PropTypes.func.isRequired,
+        onCancelFreight: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
+        canceledSuccess: PropTypes.bool,
+        bookedSuccess: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -32,7 +41,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -42,15 +51,43 @@ class BokPricePage extends Component {
             const identifier = this.props.match.params.id;
             this.props.getBokWithPricings(identifier);
         }
+
+        if (bookedSuccess) {
+            this.notify('Freight is booked successfully');
+            this.setState({isBooked: true});
+        }
+
+        if (canceledSuccess) {
+            this.notify('Freight is canceled successfully');
+            this.setState({isCanceled: true});
+        }
     }
+
+    notify = (text) => {
+        toast(text);
+    };
+
+    copyToClipBoard = async text => {
+        try {
+            await navigator.clipboard.writeText(text);
+            this.notify('Copied!');
+        } catch (err) {
+            this.notify('Failed to copy!');
+        }
+    };
 
     render() {
         let bok_1, bok_2s, pricings;
-        let isPricingPage = false;
+        let isPricingPage = true;
+        let canBeChanged = true;
 
-        if (window.location.href.indexOf('/price/') !== -1) {
-            isPricingPage = true;
+        if (this.state.isBooked || this.state.isCanceled) {
+            canBeChanged = false;
         }
+
+        // if (window.location.href.indexOf('/price/') === -1) {
+        //     isPricingPage = false;
+        // }
 
         if (this.props.bokWithPricings) {
             bok_1 = this.props.bokWithPricings;
@@ -70,11 +107,27 @@ class BokPricePage extends Component {
             pricings = bok_1['pricings'].map((price, index) => (
                 <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
                     <td>{price['service_name']}</td>
-                    <td>${price['cost'].toFixed(2)}</td>
+                    <td>
+                        ${price['cost'].toFixed(2)}
+                        &nbsp;&nbsp;&nbsp;
+                        <i
+                            className="fa fa-copy"
+                            onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}
+                        ></i>
+                    </td>
+                    <td>
+                        ${(price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2)}
+                        &nbsp;&nbsp;&nbsp;
+                        <i
+                            className="fa fa-copy"
+                            onClick={() => this.copyToClipBoard((price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2))}
+                        ></i>
+                    </td>
                     <td>{price['eta']}</td>
-                    {!isPricingPage &&
+                    {isPricingPage &&
                         <td>
                             <Button
+                                disabled={canBeChanged ? null : 'disabled'}
                                 color="primary"
                                 onClick={() => this.props.onSelectPricing(price.cost_id, this.props.match.params.id)}
                             >
@@ -92,6 +145,7 @@ class BokPricePage extends Component {
                     <h1>{this.state.errorMessage}</h1>
                     :
                     <div>
+                        <p>Main Info:</p>
                         <div className="main-info">
                             <div className="pu-info disp-inline-block">
                                 <label>Pickup From</label><br />
@@ -120,6 +174,7 @@ class BokPricePage extends Component {
                                 <span>{bok_1['b_064_b_del_phone_main']}</span><br />  
                             </div>
                         </div>
+                        <p>Lines:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
@@ -138,21 +193,40 @@ class BokPricePage extends Component {
                                 {bok_2s}
                             </tbody>
                         </table>
+                        <p>Freight Rates:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
                                     <th>Service Name</th>
                                     <th>Quoted $</th>
+                                    <th>$ W/Plum`s Markup %</th>
                                     <th>ETA</th>
-                                    {!isPricingPage && <th>Action</th>}
+                                    {isPricingPage && <th>Action</th>}
                                 </tr>
                             </thead>
                             <tbody>
                                 {pricings}
                             </tbody>
                         </table>
+                        <div className="decision">
+                            <Button
+                                disabled={canBeChanged ? null : 'disabled'}
+                                color="primary"
+                                onClick={() => this.props.onBookFreight(this.props.match.params.id)}
+                            >
+                                {this.props.bookedSuccess ? 'Booked' : 'Book'}
+                            </Button>
+                            <Button
+                                disabled={canBeChanged ? null : 'disabled'}
+                                color="danger"
+                                onClick={() => this.props.onCancelFreight(this.props.match.params.id)}
+                            >
+                                {this.props.canceledSuccess ? 'Canceled' : 'Cancel'}
+                            </Button>
+                        </div>
                     </div>
                 }
+                <ToastContainer />
             </section>
         );
     }
@@ -163,6 +237,8 @@ const mapStateToProps = (state) => {
         errorMessage: state.bok.errorMessage,
         bokWithPricings: state.bok.BOK_with_pricings,
         needToUpdatePricings: state.bok.needToUpdatePricings,
+        bookedSuccess: state.bok.bookedSuccess,
+        canceledSuccess: state.bok.canceledSuccess,
     };
 };
 
@@ -170,6 +246,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getBokWithPricings: (identifier) => dispatch(getBokWithPricings(identifier)),
         onSelectPricing: (costId, identifier) => dispatch(onSelectPricing(costId, identifier)),
+        onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
+        onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
     };
 };
 

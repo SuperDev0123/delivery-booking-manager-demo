@@ -14,6 +14,10 @@ import {
     resetNeedToUpdatePricings,
     successGetDeliveryStatus,
     failedGetDeliveryStatus,
+    successBookFreight,
+    failedBookFreight,
+    successCancelFreight,
+    failedCancelFreight,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -85,5 +89,31 @@ export const getDeliveryStatus = (identifier) => {
         axios(options)
             .then(({ data }) => dispatch(successGetDeliveryStatus(data)))
             .catch((error) => dispatch(failedGetDeliveryStatus(error)));
+    };
+};
+
+export const bookFreight = (identifier) => {
+    const options = {
+        method: 'patch',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/book/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successBookFreight(data)))
+            .catch((error) => dispatch(failedBookFreight(error)));
+    };
+};
+
+export const cancelFreight = (identifier) => {
+    const options = {
+        method: 'delete',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/cancel/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successCancelFreight(data)))
+            .catch((error) => dispatch(failedCancelFreight(error)));
     };
 };

@@ -12,6 +12,10 @@ import {
     RESET_NEED_TO_UPDATE_PRICINGS,
     SUCCESS_GET_DE_STATUS,
     FAILED_GET_DE_STATUS,
+    SUCCESS_BOOK_FREIGHT,
+    FAILED_BOOK_FREIGHT,
+    SUCCESS_CANCEL_FREIGHT,
+    FAILED_CANCEL_FREIGHT,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -100,5 +104,31 @@ export function failedGetDeliveryStatus(error) {
     return {
         type: FAILED_GET_DE_STATUS,
         payload: 'Unable to get delivery status. ' + error.response.data.message,
+    };
+}
+
+export function successBookFreight() {
+    return {
+        type: SUCCESS_BOOK_FREIGHT,
+    };
+}
+
+export function failedBookFreight(error) {
+    return {
+        type: FAILED_BOOK_FREIGHT,
+        payload: 'Unable to BOOK freight. ' + error.response.data.message,
+    };
+}
+
+export function successCancelFreight() {
+    return {
+        type: SUCCESS_CANCEL_FREIGHT,
+    };
+}
+
+export function failedCancelFreight(error) {
+    return {
+        type: FAILED_CANCEL_FREIGHT,
+        payload: 'Unable to CANCEL freight. ' + error.response.data.message,
     };
 }

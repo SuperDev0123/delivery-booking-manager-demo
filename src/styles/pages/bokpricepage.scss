@@ -1,10 +1,12 @@
 section.bok-price {
 	width: 90%;
 	margin: 0 auto;
+	height: calc(100% - 114px);
 
 	.main-info {
-		width: 40%;
-		margin-left: 10%;
+		width: 60%;
+		margin-left: 20%;
+		margin-right: 20%;
 		margin-bottom: 50px;
 
 		>div {
@@ -14,10 +16,33 @@ section.bok-price {
 				color: deepskyblue;
 				font-size: 18px;
 			}
+
+			&.de-info {
+				text-align: end;
+			}
 		}
 	}
 
 	tr.selected {
 		background-color: lightskyblue;
+	}
+
+	p {
+		font-weight: bolder;
+		font-size: 18px;
+	}
+
+	i {
+		font-size: 16px;
+		color: gray;
+		cursor: pointer;
+	}
+
+	div.decision {
+		text-align: center;
+
+		button {
+			margin: 0 2.5%;
+		}
 	}
 }
