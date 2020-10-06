@@ -1686,7 +1686,7 @@ class BookingPage extends Component {
         const booking = this.state.booking;
 
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
 
         if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
