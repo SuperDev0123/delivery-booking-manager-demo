@@ -469,6 +469,7 @@ class BookingPage extends Component {
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
             if (this.state.booking
+                && !this.state.isBookedBooking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
