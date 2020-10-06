@@ -71,8 +71,9 @@ class ProjectDataSlider extends React.Component {
     }
 
     onChangeDate(date, fieldName) {
-        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+        // let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
+        // conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+        let conveted_date = moment(date);
 
         if (fieldName === 'b_project_opened') {
             this.setState({b_project_opened: conveted_date});
