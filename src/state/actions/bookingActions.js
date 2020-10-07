@@ -90,6 +90,7 @@ import {
     FAILED_PRICING_ANALYSIS,
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
+    RESET_NO_BOOKING,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -829,5 +830,11 @@ export function failedAugmentPuDate(error) {
     return {
         type: FAILED_AUGMENT_PU_DATE,
         errorMessage: error.response.data.message
+    };
+}
+
+export function resetNoBookingAction() {
+    return {
+        type: RESET_NO_BOOKING,
     };
 }

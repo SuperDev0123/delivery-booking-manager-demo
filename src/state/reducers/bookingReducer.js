@@ -88,6 +88,7 @@ import {
     FAILED_PRICING_ANALYSIS,
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
+    RESET_NO_BOOKING,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -185,6 +186,11 @@ export const BookingReducer = (state = defaultState, {
     isAutoAugmented,
 }) => {
     switch (type) {
+        case RESET_NO_BOOKING:
+            return {
+                ...state,
+                noBooking: null,
+            };
         case RESET_REFRESH_BOOKINGS_FLAG:
             return {
                 ...state,
