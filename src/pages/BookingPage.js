@@ -404,6 +404,7 @@ class BookingPage extends Component {
                 result['e_qty_scanned_fp'] = bookingLine.e_qty_scanned_fp ? bookingLine.e_qty_scanned_fp : 0;
                 result['is_scanned'] = bookingLine.is_scanned;
                 result['pk_booking_lines_id'] = bookingLine.pk_booking_lines_id;
+                result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
@@ -2495,6 +2496,33 @@ class BookingPage extends Component {
             }
         ];
 
+        let pickedUpProducts = [];
+        if (booking && booking.b_status === 'Enter' && booking.clientname === 'Plum Products Australia Ltd') {
+            pickedUpProducts = products
+                .filter(product => !_.isNull(product['picked_up_timestamp']))
+                .map(product => product['pk_lines_id']);
+        }
+
+        const bookingLineColumnsSelectRow = {
+            mode: 'checkbox',
+            hideSelectAll: true,
+            hideSelectColumn: booking && (booking.b_status !== 'Enter' || booking.clientname !== 'Plum Products Australia Ltd'),
+            selected: pickedUpProducts,
+            onSelect: (row, isSelect, rowIndex, e) => {
+                console.log('Booking Line checkbox event - ', rowIndex, e);
+
+                if (isSelect) {
+                    let conveted_date = moment().add(this.tzOffset, 'h');       // Current -> UTC
+                    conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+                    row['picked_up_timestamp'] = conveted_date;
+                } else {
+                    row['picked_up_timestamp'] = null;
+                }
+
+                this.props.updateBookingLine(row);
+            },
+        };
+
         const bookingLineDetailsColumns = [
             {
                 dataField: 'pk_id_lines_data',
@@ -2529,116 +2557,6 @@ class BookingPage extends Component {
         //         moment(cell).format('DD/MM/YYYY HH:mm:ss')
         //     );
         // };
-
-        // const commIdCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <div className="comm-id-cell, cur-pointer" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
-        //     );
-        // };
-
-        // const commUpdateCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <Button className="comm-update-cell" color="primary" onClick={() => that.onUpdateBtnClick('comm', row)}>
-        //             <i className="icon icon-edit"></i>
-        //         </Button>
-        //     );
-        // };
-
-        // const commDeleteCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <Button className="comm-delete-cell" color="danger" onClick={() => that.onDeleteBtnClick(row.id)}>
-        //             <i className="icon icon-trash"></i>
-        //         </Button>
-        //     );
-        // };
-
-        // const limitedHeightTitle = (cell, row) => {
-        //     return (
-        //         <div>
-        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_com_title' + '-tooltip-' + row.id}>
-        //                 {cell}
-        //             </div>
-        //             <CommTooltipItem comm={row} field={'dme_com_title'} />
-        //         </div>
-        //     );
-        // };
-
-        // const limitedHeightAction = (cell, row) => {
-        //     return (
-        //         <div>
-        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_action' + '-tooltip-' + row.id}>
-        //                 {cell}
-        //             </div>
-        //             <CommTooltipItem comm={row} field={'dme_action'} />
-        //         </div>
-        //     );
-        // };
-
-        // const columnCommunication = [
-        //     {
-        //         dataField: 'id',
-        //         text: 'Id',
-        //         hidden: true,
-        //     }, {
-        //         dataField: 'index',
-        //         text: 'No',
-        //         style: {
-        //             width: '30px',
-        //         },
-        //         formatter: commIdCell,
-        //     }, {
-        //         dataField: 'dme_notes_type',
-        //         text: 'Type',
-        //         style: {
-        //             width: '40px',
-        //         },
-        //     }, {
-        //         dataField: 'assigned_to',
-        //         text: 'Assigned',
-        //         style: {
-        //             width: '40px',
-        //         },
-        //     }, {
-        //         dataField: 'dme_com_title',
-        //         text: 'Title',
-        //         style: {
-        //             width: '300px',
-        //         },
-        //         // formatter: limitedHeightTitle,
-        //     }, {
-        //         dataField: 'z_createdTimeStamp',
-        //         text: 'Date/Time Created',
-        //         formatter: datetimeFormatter,
-        //     }, {
-        //         dataField: 'due_by_datetime',
-        //         text: 'Date/Time Due',
-        //         formatter: datetimeFormatter,
-        //     }, {
-        //         dataField: 'dme_action',
-        //         text: 'Action Task',
-        //         style: {
-        //             width: '300px',
-        //         },
-        //         // formatter: limitedHeightAction,
-        //     }, {
-        //         dataField: 'id',
-        //         text: 'Update',
-        //         style: {
-        //             width: '20px',
-        //         },
-        //         formatter: commUpdateCell,
-        //     }, {
-        //         dataField: 'id',
-        //         text: 'Delete',
-        //         style: {
-        //             width: '20px',
-        //         },
-        //         formatter: commDeleteCell,
-        //     },
-        // ];
 
         const columnZohoTickets = [
             {
@@ -5029,9 +4947,10 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField='id'
+                                                            keyField='pk_lines_id'
                                                             data={ products }
                                                             columns={ bookingLineColumns }
+                                                            selectRow={ bookingLineColumnsSelectRow }
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
@@ -5042,7 +4961,7 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField="id"
+                                                            keyField="pk_id_lines_data"
                                                             data={ bookingLineDetailsProduct }
                                                             columns={ bookingLineDetailsColumns }
                                                             bootstrap4={ true }
