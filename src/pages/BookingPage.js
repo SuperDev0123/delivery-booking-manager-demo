@@ -2497,7 +2497,7 @@ class BookingPage extends Component {
         ];
 
         let pickedUpProducts = [];
-        if (booking && booking.b_status === 'Enter' && booking.clientname === 'Plum Products Australia Ltd') {
+        if (booking && booking.b_status === 'Entered' && clientname === 'Plum Products Australia Ltd') {
             pickedUpProducts = products
                 .filter(product => !_.isNull(product['picked_up_timestamp']))
                 .map(product => product['pk_lines_id']);
@@ -2506,7 +2506,7 @@ class BookingPage extends Component {
         const bookingLineColumnsSelectRow = {
             mode: 'checkbox',
             hideSelectAll: true,
-            hideSelectColumn: booking && (booking.b_status !== 'Enter' || booking.clientname !== 'Plum Products Australia Ltd'),
+            hideSelectColumn: booking && (booking.b_status !== 'Entered' && clientname !== 'Plum Products Australia Ltd'),
             selected: pickedUpProducts,
             onSelect: (row, isSelect, rowIndex, e) => {
                 console.log('Booking Line checkbox event - ', rowIndex, e);
