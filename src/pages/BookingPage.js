@@ -2506,7 +2506,7 @@ class BookingPage extends Component {
         const bookingLineColumnsSelectRow = {
             mode: 'checkbox',
             hideSelectAll: true,
-            hideSelectColumn: booking && (booking.b_status !== 'Entered' && booking.b_client_name !== 'Plum Products Australia Ltd'),
+            hideSelectColumn: booking && (booking.b_status !== 'Entered' || booking.b_client_name !== 'Plum Products Australia Ltd'),
             selected: pickedUpProducts,
             onSelect: (row, isSelect, rowIndex, e) => {
                 console.log('Booking Line checkbox event - ', rowIndex, e);
