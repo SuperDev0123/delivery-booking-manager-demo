@@ -15,7 +15,8 @@ class BokPricePage extends Component {
         this.state = {
             errorMessage: null,
             isCanceled: null,
-            isBooked: null
+            isBooked: null,
+            sortedBy: 'lowest',
         };
     }
 
@@ -76,6 +77,10 @@ class BokPricePage extends Component {
         }
     };
 
+    onClickColumn = (arg) => {
+        this.setState({sortedBy: arg});
+    }
+
     render() {
         let bok_1, bok_2s, pricings;
         let isPricingPage = true;
@@ -123,7 +128,7 @@ class BokPricePage extends Component {
                             onClick={() => this.copyToClipBoard((price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2))}
                         ></i>
                     </td>
-                    <td>{price['eta']}</td>
+                    <td>{price['readable_eta']}</td>
                     {isPricingPage &&
                         <td>
                             <Button
@@ -197,10 +202,10 @@ class BokPricePage extends Component {
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
-                                    <th>Service Name</th>
-                                    <th>Quoted $</th>
-                                    <th>$ W/Plum`s Markup %</th>
-                                    <th>ETA</th>
+                                    <th style={{width: '20%'}}>Service Name</th>
+                                    <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $</th>
+                                    <th style={{width: '10%'}}>Customer Sell</th>
+                                    <th style={{width: '30%'}} onClick={() => this.onClickColumn('fastest')}>ETA</th>
                                     {isPricingPage && <th>Action</th>}
                                 </tr>
                             </thead>
