@@ -215,9 +215,9 @@ class BokPricePage extends Component {
                             <thead>
                                 <tr>
                                     <th style={{width: '20%'}}>Service Name</th>
-                                    <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $</th>
+                                    <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
                                     <th style={{width: '10%'}}>Customer Sell</th>
-                                    <th style={{width: '30%'}} onClick={() => this.onClickColumn('fastest')}>ETA</th>
+                                    <th style={{width: '30%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                     {isPricingPage && <th>Action</th>}
                                 </tr>
                             </thead>
