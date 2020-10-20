@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -82,20 +83,31 @@ class BokPricePage extends Component {
     }
 
     render() {
+        const {sortedBy, isBooked, isCanceled} = this.state;
+        const {bokWithPricings} = this.props;
+
         let bok_1, bok_2s, pricings;
         let isPricingPage = true;
         let canBeChanged = true;
+        let sortedPricings = [];
 
-        if (this.state.isBooked || this.state.isCanceled) {
+        if (isBooked || isCanceled) {
             canBeChanged = false;
+        }
+
+
+        if (bokWithPricings && sortedBy === 'lowest') {
+            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['cost']);
+        } else if (bokWithPricings && sortedBy === 'fastest') {
+            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta']);
         }
 
         // if (window.location.href.indexOf('/price/') === -1) {
         //     isPricingPage = false;
         // }
 
-        if (this.props.bokWithPricings) {
-            bok_1 = this.props.bokWithPricings;
+        if (bokWithPricings) {
+            bok_1 = bokWithPricings;
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => (
                 <tr key={index}>
                     <td>{bok_2['l_001_type_of_packaging']}</td>
@@ -109,7 +121,7 @@ class BokPricePage extends Component {
                     <td>{bok_2['l_009_weight_per_each']}</td>
                 </tr>
             ));
-            pricings = bok_1['pricings'].map((price, index) => (
+            pricings = sortedPricings.map((price, index) => (
                 <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
                     <td>{price['service_name']}</td>
                     <td>
