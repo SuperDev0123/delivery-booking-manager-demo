@@ -99,7 +99,7 @@ class BokPricePage extends Component {
         if (bokWithPricings && sortedBy === 'lowest') {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['cost']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
-            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta']);
+            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
         }
 
         // if (window.location.href.indexOf('/price/') === -1) {
@@ -140,7 +140,7 @@ class BokPricePage extends Component {
                             onClick={() => this.copyToClipBoard((price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2))}
                         ></i>
                     </td>
-                    <td>{price['readable_eta']}</td>
+                    <td>{price['eta_in_hour']}</td>
                     {isPricingPage &&
                         <td>
                             <Button
