@@ -47,11 +47,11 @@ class FindModal extends Component {
             const missedValueSet = _.difference(valueSet, foundValueSet);
             
             if (missedValueSet.length > 0) {
-                const valueSet = _.concat(missedValueSet, ['***'], foundValueSet);
+                const valueSet = _.concat(missedValueSet, [''], foundValueSet);
                 this.setState({
                     valueSet: valueSet.join('\n'),
                     missedValueSet,
-                    errorMessage: 'If something is not found from your list it will be shown above the *** line.'
+                    errorMessage: 'If something is not found from your list it will be shown above the blank line.'
                 });
             }
         }
