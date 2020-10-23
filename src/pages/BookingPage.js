@@ -12,7 +12,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 // import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
-import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import Modal from 'react-modal';
 import DateTimePicker from 'react-datetime-picker';
 import TimePicker from 'react-time-picker';
@@ -46,7 +46,7 @@ import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate, resetNoBooking } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -147,6 +147,8 @@ class BookingPage extends Component {
             xReadyStatus: null,
             zoho_tickets: [],
             errors: [],
+            augmentInfoOpen: false,
+            clientprocess: {}
         };
 
         this.djsConfig = {
@@ -256,6 +258,7 @@ class BookingPage extends Component {
         getZohoTickets: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
+        getClientProcessMgr: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -307,7 +310,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -682,7 +685,7 @@ class BookingPage extends Component {
                 } else if (this.state.loadingBookingUpdate && _.isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
-
+                
                 // Is Booked Booking?
                 if (!_.isNull(booking.b_dateBookedDate) &&
                     !_.isUndefined(booking.b_dateBookedDate) &&
@@ -705,6 +708,7 @@ class BookingPage extends Component {
                     && booking.pk_booking_id
                 ) {
                     this.props.getZohoTickets(booking.b_bookingID_Visual);
+                    this.props.getClientProcessMgr(booking.id);
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -986,6 +990,10 @@ class BookingPage extends Component {
 
         if (isAutoAugmented != this.props.isAutoAugmented) {
             this.setState({isAutoAugmented});
+        }
+
+        if(clientprocess != this.state.clientprocess)  {
+            this.setState({clientprocess});
         }
     }
 
@@ -2089,6 +2097,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowDeleteFileConfirmModal: !prevState.isShowDeleteFileConfirmModal}));
     }
 
+    onToggleAugmentInfoPopup = () => {
+        this.setState(prevState => ({augmentInfoOpen: !prevState.augmentInfoOpen}));
+    }
+
     toggleUpdateCreatedForEmailConfirmModal() {
         this.setState(prevState => ({isShowUpdateCreatedForEmailConfirmModal: !prevState.isShowUpdateCreatedForEmailConfirmModal}));
     }
@@ -2416,7 +2428,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets, clientprocess
         } = this.state;
         const {
             warehouses, emailLogs
@@ -4408,6 +4420,43 @@ class BookingPage extends Component {
                                                 </form>
                                             </div>
                                         </div>
+
+                                        <Popover
+                                            isOpen={this.state.augmentInfoOpen}
+                                            target={'augment-info-popup'}
+                                            placement="left"
+                                            hideArrow={true}
+                                        >
+                                            <PopoverHeader><h4>Auto Augment Info</h4><a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a></PopoverHeader>
+                                            <PopoverBody>
+                                                <div>
+                                                    <div className="location-info disp-inline-block">
+                                                        <h5>Pick up entity</h5>
+                                                        <h5 className="mt-2">address1<br/></h5>
+                                                        <h5 className="mt-2">address2<br/></h5>
+                                                    </div>
+                                                    <div className="location-info disp-inline-block">
+                                                        <h5>{clientprocess['origin_puCompany']}</h5>
+                                                        <h5 className="mt-2">{clientprocess['origin_pu_Address_Street_1']}<br/></h5>
+                                                        <h5 className="mt-2">{clientprocess['origin_pu_Address_Street_2']}<br/></h5>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2 ml-2 mr-2" style={{ height: 1, width: undefined, backgroundColor: 'gray' }} />
+                                                <div>
+                                                    <div className="location-info disp-inline-block">
+                                                        <h5 className="mt-2">delivery instruction<br/></h5>
+                                                        <h5 className="mt-2">group email<br /></h5>
+                                                        <h5 className="mt-2">etc<br/></h5>
+                                                    </div>
+                                                    <div className="location-info disp-inline-block">
+                                                        <h5 className="mt-2">{clientprocess['origin_pu_pickup_instructions_address']}<br/></h5>
+                                                        <h5 className="mt-2">{clientprocess['origin_de_Email_Group_Emails']}<br/></h5>
+                                                        <h5 className="mt-2">{clientprocess['origin_deToCompanyName']}<br/></h5>
+                                                    </div>
+                                                </div>
+                                            </PopoverBody>
+                                        </Popover>
+
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
@@ -4424,11 +4473,12 @@ class BookingPage extends Component {
                                                                 </button>
                                                                 :
                                                                 <button
-                                                                    className='btn btn-theme btn-autoaugment'
+                                                                    id="augment-info-popup"
+                                                                    className='btn btn-theme btn-autoaugment-view'
                                                                     disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
-                                                                    onClick={() => this.onClickRevertAugment()}
+                                                                    onClick={() => this.onToggleAugmentInfoPopup()}
                                                                 >
-                                                                    AA-R
+                                                                    AA
                                                                 </button>
                                                             }
                                                             <a onClick={(e) => this.onClickAugmentPuDate(e)} ><i className="fa fa-calendar" aria-hidden="true"></i></a>
@@ -5231,6 +5281,7 @@ const mapStateToProps = (state) => {
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
+        clientprocess: state.booking.clientprocess,
         clientname: state.auth.clientname,
         username: state.auth.username,
         clientId: state.auth.clientId,
@@ -5322,6 +5373,7 @@ const mapDispatchToProps = (dispatch) => {
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
         resetNoBooking: () => dispatch(resetNoBooking()),
+        getClientProcessMgr: (pk_booking_id) => dispatch(getClientProcessMgr(pk_booking_id)),
     };
 };
 

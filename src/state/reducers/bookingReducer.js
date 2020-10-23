@@ -89,6 +89,8 @@ import {
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
     RESET_NO_BOOKING,
+    SUCCESS_GET_CLIENT_PROCESS,
+    FAILED_GET_CLIENT_PROCESS
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -133,6 +135,7 @@ const defaultState = {
     isAutoAugmented: false,
     bookingIds: [],
     clientPK: 0,
+    clientprocess: {}
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -579,6 +582,16 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 isAutoAugmented: false,
                 booking: payload
+            };
+        case SUCCESS_GET_CLIENT_PROCESS:
+            return {
+                ...state,
+                isAutoAugmented: false,
+                clientprocess: payload.length>0?payload[0]: {}
+            };
+        case FAILED_GET_CLIENT_PROCESS:
+            return {
+                ...state,
             };
         case FAILED_REVERT_AUGMENT:
             return {

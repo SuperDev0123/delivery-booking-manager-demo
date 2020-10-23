@@ -71,6 +71,25 @@ ul.grid-head li:last-child {
 	transition: background-color 0.5s ease-out;
 }
 
+.btn-autoaugment-view {
+	font-size: 14px !important;
+	border-radius: 6px !important;
+	border: 1px solid !important;
+	padding: 3px 15px !important;
+	-webkit-transition: background-color 0.5s ease-out;
+	-moz-transition: background-color 0.5s ease-out;
+	-o-transition: background-color 0.5s ease-out;
+	transition: background-color 0.5s ease-out;
+	background-color: #A3D979;
+
+}
+
+.btn-autoaugment-view:hover{
+	background-color: #A3D979 !important;
+	color: #fff !important;
+	border-color: #005B7B !important;
+}
+
 .btn-autoaugment:hover{
 	background-color: #0189b9 !important;
 	color: #fff !important;

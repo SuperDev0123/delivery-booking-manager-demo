@@ -79,6 +79,8 @@ import {
     successAugmentPuDate,
     failedAugmentPuDate,
     resetNoBookingAction,
+    successGetClientProcessMgr,
+    failedGetClientProcessMgr
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -359,6 +361,19 @@ export const revertAugmentBooking = (bookingId) => {
     };
 };
 
+export const getClientProcessMgr = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientprocess/?bookingId=`+ bookingId
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetClientProcessMgr(data)))
+            .catch((error) => dispatch(failedGetClientProcessMgr(error)));
+    };
+};
 
 export const getPricingAnalysis = (bookingIds) => {
     const token = localStorage.getItem('token');

@@ -91,6 +91,8 @@ import {
     SUCCESS_AUGMENT_PU_DATE,
     FAILED_AUGMENT_PU_DATE,
     RESET_NO_BOOKING,
+    SUCCESS_GET_CLIENT_PROCESS,
+    FAILED_GET_CLIENT_PROCESS
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -785,6 +787,20 @@ export function successAutoAugment(data) {
 export function failedAutoAugment(error) {
     return {
         type: FAILED_AUTO_AUGMENT,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successGetClientProcessMgr(data) {
+    return {
+        type: SUCCESS_GET_CLIENT_PROCESS,
+        payload: data,
+    };
+}
+
+export function failedGetClientProcessMgr(error) {
+    return {
+        type: FAILED_GET_CLIENT_PROCESS,
         errorMessage: error.response.data.message
     };
 }
