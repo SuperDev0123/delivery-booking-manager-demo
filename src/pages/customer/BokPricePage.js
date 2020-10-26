@@ -123,6 +123,7 @@ class BokPricePage extends Component {
             ));
             pricings = sortedPricings.map((price, index) => (
                 <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
+                    <td>{price['fp_name']}</td>
                     <td>{price['service_name']}</td>
                     <td>
                         ${price['cost'].toFixed(2)}
@@ -214,10 +215,11 @@ class BokPricePage extends Component {
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
-                                    <th style={{width: '20%'}}>Service Name</th>
+                                    <th style={{width: '15%'}}>Freight Provider</th>
+                                    <th style={{width: '15%'}}>Service Name</th>
                                     <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
                                     <th style={{width: '10%'}}>Customer Sell</th>
-                                    <th style={{width: '30%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                    <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                     {isPricingPage && <th>Action</th>}
                                 </tr>
                             </thead>
