@@ -52,6 +52,7 @@ class Header extends Component {
         const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
+        console.log('@1 - ', currentRoute);
 
         if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1) 
             return null;
@@ -123,12 +124,16 @@ class Header extends Component {
                                 </li>
                                 :
                                 <li className="nav-item">
-                                    <a
-                                        href="/login"
-                                        className="btn btn-outline-light my-2 my-lg-0 login"
-                                    >
-                                        Login
-                                    </a>
+                                    {currentRoute.indexOf('/price/') === 0 || currentRoute.indexOf('/status/') === 0 ?
+                                        null
+                                        :
+                                        <a
+                                            href="/login"
+                                            className="btn btn-outline-light my-2 my-lg-0 login"
+                                        >
+                                            Login
+                                        </a>
+                                    }
                                 </li>
                             }
                         </ul>

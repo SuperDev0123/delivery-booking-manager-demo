@@ -62,6 +62,11 @@ class BokPricePage extends Component {
         if (canceledSuccess) {
             this.notify('Freight is canceled successfully');
             this.setState({isCanceled: true});
+            this.notify('Broser tab will be closed in 3 seconds');
+
+            setTimeout(() => {
+                open(location, '_self').close();
+            }, 3000);
         }
     }
 
@@ -240,7 +245,7 @@ class BokPricePage extends Component {
                                 color="danger"
                                 onClick={() => this.props.onCancelFreight(this.props.match.params.id)}
                             >
-                                {this.props.canceledSuccess ? 'Canceled' : 'Cancel'}
+                                {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
                             </Button>
                         </div>
                     </div>
