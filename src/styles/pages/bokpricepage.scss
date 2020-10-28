@@ -2,6 +2,7 @@ section.bok-price {
 	width: 90%;
 	margin: 0 auto;
 	height: calc(100% - 114px);
+	overflow: scroll;
 
 	.main-info {
 		width: 60%;
@@ -40,9 +41,11 @@ section.bok-price {
 
 	div.decision {
 		text-align: center;
+		margin-bottom: 20px;
 
 		button {
 			margin: 0 2.5%;
+			width: 100px;
 		}
 	}
 }

@@ -141,7 +141,7 @@ class BokPricePage extends Component {
                             onClick={() => this.copyToClipBoard((price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2))}
                         ></i>
                     </td>
-                    <td>{price['eta_in_hour']}</td>
+                    <td>{price['eta']}</td>
                     {isPricingPage &&
                         <td>
                             <Button
