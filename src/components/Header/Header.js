@@ -52,7 +52,6 @@ class Header extends Component {
         const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        console.log('@1 - ', currentRoute);
 
         if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1) 
             return null;

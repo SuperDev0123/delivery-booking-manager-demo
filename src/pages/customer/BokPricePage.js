@@ -95,11 +95,15 @@ class BokPricePage extends Component {
         let isPricingPage = true;
         let canBeChanged = true;
         let sortedPricings = [];
+        let isSalesQuote = false;
 
         if (isBooked || isCanceled) {
             canBeChanged = false;
         }
 
+        if (bokWithPricings && bokWithPricings['b_client_order_num'][0] === 'Q' && bokWithPricings['b_client_order_num'][1] === '_') {
+            isSalesQuote = true;
+        }
 
         if (bokWithPricings && sortedBy === 'lowest') {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['cost']);
@@ -147,7 +151,7 @@ class BokPricePage extends Component {
                         ></i>
                     </td>
                     <td>{price['eta']}</td>
-                    {isPricingPage &&
+                    {isPricingPage && !isSalesQuote &&
                         <td>
                             <Button
                                 disabled={canBeChanged ? null : 'disabled'}
@@ -225,7 +229,7 @@ class BokPricePage extends Component {
                                     <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
                                     <th style={{width: '10%'}}>Customer Sell</th>
                                     <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                    {isPricingPage && <th>Action</th>}
+                                    {isPricingPage && !isSalesQuote && <th>Action</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -233,13 +237,15 @@ class BokPricePage extends Component {
                             </tbody>
                         </table>
                         <div className="decision">
-                            <Button
-                                disabled={canBeChanged ? null : 'disabled'}
-                                color="primary"
-                                onClick={() => this.props.onBookFreight(this.props.match.params.id)}
-                            >
-                                {this.props.bookedSuccess ? 'Booked' : 'Book'}
-                            </Button>
+                            {!isSalesQuote &&
+                                <Button
+                                    disabled={canBeChanged ? null : 'disabled'}
+                                    color="primary"
+                                    onClick={() => this.props.onBookFreight(this.props.match.params.id)}
+                                >
+                                    {this.props.bookedSuccess ? 'Booked' : 'Book'}
+                                </Button>
+                            }
                             <Button
                                 disabled={canBeChanged ? null : 'disabled'}
                                 color="danger"
