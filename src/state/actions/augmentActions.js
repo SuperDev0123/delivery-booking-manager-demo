@@ -28,7 +28,7 @@ export function failedGetAllAugmentAddress(error) {
 export function successGetAugmentAddress(data) {
     return {
         type: SUCCESS_GET_AUGMENT_ADDRESS,
-        augmentAddress: data.results[0],
+        augmentAddress: data.result,
     };
 }
 

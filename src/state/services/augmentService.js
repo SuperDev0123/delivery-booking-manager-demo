@@ -21,7 +21,7 @@ export const getAugmentAddress = (id) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/augmentaddress/?id=` + id,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/augmentaddress/` + id + '/get/',
     };
     return dispatch =>
         axios(options)
