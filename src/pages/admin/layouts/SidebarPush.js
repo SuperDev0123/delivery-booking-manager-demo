@@ -354,6 +354,26 @@ class SidebarPush extends React.Component {
                                     </li>
                                 </ul>
                             </li>
+
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('augmentaddress') || this.activeRoute('augmentaddress/add') ? 'active' : ''}>
+                                <a onClick={() => this.setState({ providersCollapsed: !providersCollapsed })}>
+                                    <i className="fa fa-bars fa-fw"></i>
+                                    <span className="menu-title">Augment Address Rules</span>
+                                </a>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !providersCollapsed })}>
+                                    <li>
+                                        <Link title="View All Augment Address Rules" to="/admin/augmentaddress" className={this.activeRoute(['augmentaddress']) ? 'active' : ''}>
+                                            <span className="submenu-title">All</span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link title="Add New Augment Address Rule" to="/admin/augmentaddress/add" className={this.activeRoute(['augmentaddress/add']) ? 'active' : ''}>
+                                            <span className="submenu-title">Add New</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+
                         </ul>
                     </nav>: <nav className="sidebarNav">
                         <h5 className="sidebar-header">Navigation</h5>

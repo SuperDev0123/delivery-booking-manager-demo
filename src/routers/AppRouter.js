@@ -56,6 +56,9 @@ import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
+import AugmentAddress from '../pages/admin/views/AugmentAddress/AugmentAddress';
+import AddAugmentAddress from '../pages/admin/views/AugmentAddress/AddAugmentAddress';
+import EditAugmentAddress from '../pages/admin/views/AugmentAddress/EditAugmentAddress';
 
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
@@ -114,6 +117,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
+                    <AdminPrivateRoute exact path='/admin/augmentaddress' component={AugmentAddress} />
+                    <AdminPrivateRoute exact path='/admin/augmentaddress/add' component={AddAugmentAddress} />
+                    <AdminPrivateRoute exact path='/admin/augmentaddress/edit/:id' component={EditAugmentAddress} />
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
