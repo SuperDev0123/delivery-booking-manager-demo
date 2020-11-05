@@ -46,7 +46,7 @@ import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate, resetNoBooking } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -257,6 +257,7 @@ class BookingPage extends Component {
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
+        resetNoBooking: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -463,6 +464,7 @@ class BookingPage extends Component {
         if (noBooking) {
             this.setState({loading: false, curViewMode: 1});
             this.showCreateView();
+            this.props.resetNoBooking();
         }
 
 
@@ -472,6 +474,7 @@ class BookingPage extends Component {
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
             if (this.state.booking
+                && !this.state.isBookedBooking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
@@ -1696,7 +1699,7 @@ class BookingPage extends Component {
         const booking = this.state.booking;
 
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
 
         if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
@@ -5357,6 +5360,7 @@ const mapDispatchToProps = (dispatch) => {
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
+        resetNoBooking: () => dispatch(resetNoBooking()),
     };
 };
 
