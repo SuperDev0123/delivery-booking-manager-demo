@@ -127,7 +127,7 @@ class Dashboard extends Component {
                                 <a href='/admin/chart/deliveriesbyclient'>
                                     <span className="icon">
                                         <i className="fa fa-cog"></i>
-                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Deliveries By Client</a>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Client Bookings</a>
                             </li>
                         </ul>
                     </div>
