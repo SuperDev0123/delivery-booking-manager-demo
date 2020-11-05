@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { intersect, map, filter, difference, concat, uniq } from 'lodash';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class FindModal extends Component {
@@ -25,16 +25,16 @@ class FindModal extends Component {
 
             if (selectedFieldName === 'clientRefNumber') {
                 bookings.map(booking => {
-                    foundValueSet = _.concat(foundValueSet, booking['clientRefNumbers'].split(', '));
+                    foundValueSet = concat(foundValueSet, booking['clientRefNumbers'].split(', '));
                     return true;
                 });
-                foundValueSet = _.intersect(valueSet, foundValueSet);
+                foundValueSet = intersect(valueSet, foundValueSet);
             } else if (selectedFieldName === 'gap_ra') {
                 bookings.map(booking => {
-                    foundValueSet = _.concat(foundValueSet, booking['gap_ras'].split(', '));
+                    foundValueSet = concat(foundValueSet, booking['gap_ras'].split(', '));
                     return true;
                 });
-                foundValueSet = _.intersection(valueSet, foundValueSet);
+                foundValueSet = intersect(valueSet, foundValueSet);
             } else if (selectedFieldName) {
                 foundValueSet = bookings.map(booking => {
                     if (booking[selectedFieldName]) {
@@ -43,11 +43,11 @@ class FindModal extends Component {
                 });
             }
 
-            valueSet = _.filter(valueSet, (value) => {return value.length > 0;});
-            const missedValueSet = _.difference(valueSet, foundValueSet);
+            valueSet = filter(valueSet, (value) => {return value.length > 0;});
+            const missedValueSet = difference(valueSet, foundValueSet);
             
             if (missedValueSet.length > 0) {
-                const valueSet = _.concat(missedValueSet, [''], foundValueSet);
+                const valueSet = concat(missedValueSet, [''], foundValueSet);
                 this.setState({
                     valueSet: valueSet.join('\n'),
                     missedValueSet,
@@ -88,15 +88,15 @@ class FindModal extends Component {
             valueSet = valueSet.split('\n');
 
             // Trim spaces
-            valueSet = _.map(valueSet, value => {return value.trim();});
+            valueSet = map(valueSet, value => {return value.trim();});
 
             // Eliminate duplicated lines
-            valueSet = _.uniq(_.filter(valueSet, value => {return value.length > 0;}));
+            valueSet = uniq(filter(valueSet, value => {return value.length > 0;}));
             this.setState({valueSet: valueSet.join('\n'), errorMessage: ''});
 
             if (selectedFieldName === 'b_bookingID_Visual') {
                 let nonIntegers = [];
-                nonIntegers = _.filter(valueSet, value => isNaN(value));
+                nonIntegers = filter(valueSet, value => isNaN(value));
 
                 if (nonIntegers.length > 0) {
                     this.setState({errorMessage: 'DME Booking numbers should be integers.'});
