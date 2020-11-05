@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import { intersect, map, filter, difference, concat, uniq } from 'lodash';
+import { intersection, map, filter, difference, concat, uniq } from 'lodash';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class FindModal extends Component {
@@ -28,13 +28,13 @@ class FindModal extends Component {
                     foundValueSet = concat(foundValueSet, booking['clientRefNumbers'].split(', '));
                     return true;
                 });
-                foundValueSet = intersect(valueSet, foundValueSet);
+                foundValueSet = intersection(valueSet, foundValueSet);
             } else if (selectedFieldName === 'gap_ra') {
                 bookings.map(booking => {
                     foundValueSet = concat(foundValueSet, booking['gap_ras'].split(', '));
                     return true;
                 });
-                foundValueSet = intersect(valueSet, foundValueSet);
+                foundValueSet = intersection(valueSet, foundValueSet);
             } else if (selectedFieldName) {
                 foundValueSet = bookings.map(booking => {
                     if (booking[selectedFieldName]) {
