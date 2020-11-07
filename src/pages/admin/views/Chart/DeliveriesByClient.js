@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import _ from 'lodash';
-import { getNumBookingsPerClient } from '../../../../state/services/chartService';
+import { getNumBookingsPerClient, getNumBookingsPerStatus } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -22,6 +22,7 @@ class ByClient extends Component {
             username: '',
             password: '',
             num_bookings_fp: [],
+            num_bookings_status: [],
             chart_data: [],
             startDate: '',
             endDate: ''
@@ -30,6 +31,7 @@ class ByClient extends Component {
 
     static propTypes = {
         getNumBookingsPerClient: PropTypes.func.isRequired,
+        getNumBookingsPerStatus: PropTypes.func.isRequired,
     };
 
     getColor = () => {
@@ -45,16 +47,22 @@ class ByClient extends Component {
         const endDate = moment().format('YYYY-MM-DD');
         this.setState({ startDate: startDate, endDate: endDate });
         this.props.getNumBookingsPerClient({ startDate, endDate });
+        this.props.getNumBookingsPerStatus({ startDate, endDate });
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        let { num_bookings_fp } = newProps;
+        let { num_bookings_fp, num_bookings_status } = newProps;
 
         if (num_bookings_fp) {
             num_bookings_fp = _.orderBy(num_bookings_fp, 'client_name', 'asc');
             this.setState({ num_bookings_fp });
             const chart_data = num_bookings_fp.slice(0, TABLE_PAGINATION_SIZE);
             this.setState({ chart_data });
+        }
+
+        if (num_bookings_status) {
+            num_bookings_status = _.orderBy(num_bookings_status, 'status', 'asc');
+            this.setState({ num_bookings_status });
         }
     }
 
@@ -117,7 +125,7 @@ class ByClient extends Component {
     }
 
     render() {
-        const { num_bookings_fp, startDate, endDate, chart_data } = this.state;
+        const { num_bookings_fp, num_bookings_status, startDate, endDate, chart_data } = this.state;
 
         const data = chart_data;
 
@@ -148,8 +156,28 @@ class ByClient extends Component {
                 formatter: dataFormatter,
                 sort: true
             }, {
-                text: 'Actual $',
-                dataField: 'total_cost',
+                text: 'Quoted Cost',
+                dataField: 'inv_cost_quoted',
+                sort: true
+            }, {
+                text: 'Quoted $',
+                dataField: 'inv_sell_quoted',
+                sort: true
+            }, {
+                text: 'Quoted $*',
+                dataField: 'inv_sell_quoted_override',
+                sort: true
+            }
+        ];
+
+        const columns_status = [
+            {
+                text: 'Status',
+                dataField: 'status',
+                sort: true
+            }, {
+                text: 'Count',
+                dataField: 'value',
                 sort: true
             }
         ];
@@ -173,7 +201,7 @@ class ByClient extends Component {
 
                     <div className="chart-card">
                         <p className="chart-card-title" >
-                            Total completed bookings by Client / Sub client
+                            Total Client Bookings
                         </p>
 
                         <div className="row">
@@ -243,6 +271,17 @@ class ByClient extends Component {
                                         defaultSorted={[{ dataField: 'client_name', order: 'asc' }]}
                                     />
                                 </div>
+
+                                <div className="table-responsive">
+                                    <BootstrapTable
+                                        keyField="id"
+                                        data={num_bookings_status}
+                                        columns={columns_status}
+                                        bootstrap4={true}
+                                        pagination={paginationFactory({ sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }], hideSizePerPage: true, hidePageListOnlyOnePage: true, withFirstAndLast: false, alwaysShowAllBtns: false })}
+                                        defaultSorted={[{ dataField: 'status', order: 'asc' }]}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -257,12 +296,14 @@ class ByClient extends Component {
 const mapStateToProps = (state) => {
     return {
         num_bookings_fp: state.chart.num_bookings_fp,
+        num_bookings_status: state.chart.num_bookings_status,
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         getNumBookingsPerClient: (data) => dispatch(getNumBookingsPerClient(data)),
+        getNumBookingsPerStatus: (data) => dispatch(getNumBookingsPerStatus(data)),
     };
 };
 
