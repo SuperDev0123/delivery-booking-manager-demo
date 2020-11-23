@@ -2040,6 +2040,63 @@ class BookingPage extends Component {
         }
     }
 
+    onClickSwitchAddress() {
+        const {booking} = this.state;
+        const temp = {
+            'puCompany': booking.deToCompanyName,
+            'pu_Address_Street_1': booking.de_To_Address_Street_1,
+            'pu_Address_street_2':booking.de_To_Address_Street_2,
+            'pu_Address_PostalCode': booking.de_To_Address_PostalCode,
+            'pu_Address_Suburb': booking.de_To_Address_Suburb,
+            'pu_Address_Country': booking.de_To_Address_Country,
+            'pu_Contact_F_L_Name': booking.de_to_Contact_F_LName,
+            'pu_Phone_Main': booking.de_to_Phone_Main,
+            'pu_Email': booking.de_Email,
+            'pu_Address_State': booking.de_To_Address_State,
+            'deToCompanyName': booking.puCompany,
+            'de_To_Address_Street_1': booking.pu_Address_Street_1,
+            'de_To_Address_Street_2': booking.pu_Address_street_2,
+            'de_To_Address_PostalCode': booking.pu_Address_PostalCode,
+            'de_To_Address_Suburb': booking.pu_Address_Suburb,
+            'de_To_Address_Country': booking.pu_Address_Country,
+            'de_to_Contact_F_LName': booking.pu_Contact_F_L_Name,
+            'de_to_Phone_Main': booking.pu_Phone_Main,
+            'de_Email': booking.pu_Email,
+            'de_To_Address_State': booking.pu_Address_State,
+            'pu_email_Group_Name': booking.de_Email_Group_Name,
+            'pu_email_Group': booking.de_Email_Group_Emails,
+            'de_Email_Group_Name': booking.pu_email_Group_Name,
+            'de_Email_Group_Emails': booking.pu_email_Group,
+        };
+
+        booking.puCompany = temp['puCompany'];
+        booking.pu_Address_Street_1 = temp['pu_Address_Street_1'];
+        booking.pu_Address_street_2 = temp['pu_Address_street_2'];
+        booking.pu_Address_PostalCode = temp['pu_Address_PostalCode'];
+        booking.pu_Address_Suburb = temp['pu_Address_Suburb'];
+        booking.pu_Address_Country = temp['pu_Address_Country'];
+        booking.pu_Contact_F_L_Name = temp['pu_Contact_F_L_Name'];
+        booking.pu_Phone_Main = temp['pu_Phone_Main'];
+        booking.pu_Email = temp['pu_Email'];
+        booking.deToCompanyName = temp['deToCompanyName'];
+        booking.de_To_Address_Street_1 = temp['de_To_Address_Street_1'];
+        booking.de_To_Address_Street_2 = temp['de_To_Address_Street_2'];
+        booking.de_To_Address_PostalCode = temp['de_To_Address_PostalCode'];
+        booking.de_To_Address_Suburb = temp['de_To_Address_Suburb'];
+        booking.de_To_Address_Country = temp['de_To_Address_Country'];
+        booking.de_to_Contact_F_LName = temp['de_to_Contact_F_LName'];
+        booking.de_to_Phone_Main = temp['de_to_Phone_Main'];
+        booking.de_Email = temp['de_Email'];
+        booking.de_To_Address_State = temp['de_To_Address_State'];
+        booking.pu_email_Group_Name = temp['pu_email_Group_Name'];
+        booking.pu_email_Group = temp['pu_email_Group'];
+        booking.de_Email_Group_Name = temp['de_Email_Group_Name'];
+        booking.de_Email_Group_Emails = temp['de_Email_Group_Emails'];
+
+        this.props.updateBooking(booking.id, booking);
+        this.setState({loadingBookingUpdate: true, isBookingModified: false});
+    }
+
     onClickDeleteLineOrLineData(typeNum, row) {
         console.log('#204 onDelete: ', typeNum, row);
 
@@ -4847,6 +4904,15 @@ class BookingPage extends Component {
                                                             disabled={(curViewMode === 1) ? 'disabled' : ''}
                                                         >
                                                             Duplicate Booking
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickSwitchAddress()}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Switch PU & DE info
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
