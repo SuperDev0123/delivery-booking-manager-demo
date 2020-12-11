@@ -30,6 +30,7 @@ class BokStatusPage extends Component {
         bokWithPricings: PropTypes.object,
         step: PropTypes.number,
         status: PropTypes.string,
+        quote: PropTypes.object,
         match: PropTypes.object,
     };
 
@@ -53,7 +54,7 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {status, step} = this.props;
+        const {status, step, quote} = this.props;
 
         return (
             <section className="status">
@@ -107,7 +108,11 @@ class BokStatusPage extends Component {
                             <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
                         </div>
                         <div className="status-chart-detail">
-                            {status && <p>Detail: {status}</p>}
+                            {status &&<p><strong>Status</strong>: {status}</p>}
+                            {quote && quote.hasOwnProperty('cost') &&<p><strong>Cost</strong>: ${quote.cost}</p>}
+                            {quote && quote.hasOwnProperty('eta_readable') &&<p><strong>ETA</strong>: {quote.eta_readable} days</p>}
+                            {quote && quote.hasOwnProperty('fp_name') &&<p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
+                            {quote && quote.hasOwnProperty('service_name') &&<p><strong>Service Name</strong>: {quote.service_name}</p>}
                         </div>
                     </div>
                 }
@@ -121,6 +126,7 @@ const mapStateToProps = (state) => {
         errorMessage: state.bok.errorMessage,
         status: state.bok.deliveryStatus,
         step: state.bok.deliveryStep,
+        quote: state.bok.quote,
     };
 };
 
