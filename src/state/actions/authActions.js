@@ -16,7 +16,7 @@ import {
 } from '../constants/authConstants';
 
 export function setToken(token) {
-    console.log('Token set: ', token);
+    console.log('Token set: ', token.substring(0, 10), '...');
     localStorage.setItem('token', token);
 
     return {
@@ -35,7 +35,6 @@ export function failedGetToken(error) {
 
 export function detectTokenExpiration(data) {
     if (data.hasOwnProperty('token')) {
-        console.log('verifyToken response: ', data);
         return {
             type: SET_TOKEN,
             errorMessage: ''

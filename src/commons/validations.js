@@ -114,7 +114,27 @@ const isFormValid = (formName, formFields) => {
     return 'valid';
 };
 
-const isValid4Label = (formFields) => {
+const isValid4Book = (formFields) => {
+    // TNT Book
+    if (!_.isEmpty(formFields['vx_freight_provider']) &&
+        formFields['vx_freight_provider'] === 'TNT') {
+        if (_.isEmpty(formFields['pu_Contact_F_L_Name']) ||
+            (!_.isEmpty(formFields['pu_Contact_F_L_Name']) && formFields['pu_Contact_F_L_Name'].length > 19)
+        ) {
+            return 'PU ContactName must be between 0 and 20 characters.';
+        }
+
+        if (_.isEmpty(formFields['de_to_Contact_F_LName']) ||
+            (!_.isEmpty(formFields['de_to_Contact_F_LName']) && formFields['de_to_Contact_F_LName'].length > 19)
+        ) {
+            return 'DE ContactName must be between 0 and 20 characters.';
+        }
+    }
+
+    return 'valid';
+};
+
+const isValid4Label = (formFields, lineDatas) => {
     // TNT Label
     if (!_.isEmpty(formFields['vx_freight_provider']) &&
         formFields['vx_freight_provider'] === 'TNT') {
@@ -163,6 +183,21 @@ const isValid4Label = (formFields) => {
         ) {
             return 'SpecialInstruction must be between 0 and 80 characters.';
         }
+
+        for (let i = 0; i < lineDatas.length; i++) {
+            const lineData = lineDatas[i];
+            if (
+                _.isNull(lineData['itemDescription']) ||
+                _.isEmpty(lineData['itemDescription']) ||
+                _.isUndefined(lineData['itemDescription']) ||
+                (lineData['itemDescription'] && (
+                    lineData['itemDescription'].length === 0 ||
+                    lineData['itemDescription'].length > 19
+                ))
+            ){
+                return 'Line Data itemDescription should be 1 ~ 19 characters';
+            }
+        }
     }
 
     // Sendle Label
@@ -180,4 +215,5 @@ module.exports = {
     isFormValid,
     validateEmail,
     isValid4Label,
+    isValid4Book,
 };

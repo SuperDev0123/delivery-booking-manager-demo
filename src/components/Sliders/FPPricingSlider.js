@@ -2,10 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'reactstrap';
 import moment from 'moment';
+import {sortBy} from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import LoadingOverlay from 'react-loading-overlay';
-import {sortBy} from 'lodash';
 
 class FPPricingSlider extends React.Component {
     constructor(props) {
@@ -30,31 +32,63 @@ class FPPricingSlider extends React.Component {
         errors: PropTypes.array.isRequired,
     };
 
+    notify = (text) => {
+        toast(text);
+    };
+
     calcTotalValue(pricingInfo) {
-        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(2);
+        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(3);
+    }
+
+    UNSAFE_componentWillReceiveProps(newProps) {
+        const {isOpen} = newProps;
+
+        if (!isOpen) {
+            this.setState({onLoadedError: false});
+        }
     }
 
     onSelectLowest() {
-        const {pricingInfos} = this.props;
-        const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
-        this.props.onSelectPricing(sortedPricingInfos[0]);
+        const {pricingInfos, booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Cannot select a FC, this booking is manually booked');
+        } else {
+            const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
+            this.props.onSelectPricing(sortedPricingInfos[0]);
+        }
     }
 
     onSelectFastest() {
-        const {pricingInfos} = this.props;
-        const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
-        this.props.onSelectPricing(sortedPricingInfos[0]);
+        const {pricingInfos, booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Cannot select a FC, this booking is manually booked');
+        } else {
+            const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
+            this.props.onSelectPricing(sortedPricingInfos[0]);
+        }
+    }
+
+    onClickSelect(pricingInfo) {
+        const {booking} = this.props;
+
+        if (booking.x_manual_booked_flag) {
+            this.notify('Cannot select a FC, this booking is manually booked');
+        } else {
+            this.props.onSelectPricing(pricingInfo);
+        }
     }
 
     onSelectTab(value) {
         this.setState({currentTab:value});
 
-        if (value == 1 && !this.state.onLoadedError) {
+        if (value === 1 && !this.state.onLoadedError) {
             this.props.onLoadPricingErrors();
             this.setState({onLoadedError: true});
         }
     }
-    
+
     render() {
         const {isOpen, booking, clientname, isBooked} = this.props;
         const {pricingInfos, errors} = this.props;
@@ -68,12 +102,17 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.fk_freight_provider_id}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td>}
-                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3)}</td>}
+                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(3)}%</td>}
+                    {clientname === 'dme' &&
+                        <td className="text-right">
+                            ${(parseFloat(pricingInfo.fee) * (1 + parseFloat(pricingInfo.mu_percentage_fuel_levy))).toFixed(3)}
+                        </td>
+                    }
+                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
                     <td>{pricingInfo.tax_id_1}</td>
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null}</td>
-                    <td className="text-right">${this.calcTotalValue(pricingInfo)}</td>
+                    <td className="text-right none">${this.calcTotalValue(pricingInfo)}</td>
                     <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                         {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                     </td>
@@ -81,7 +120,7 @@ class FPPricingSlider extends React.Component {
                         <Button
                             color="primary"
                             disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
-                            onClick={() => this.props.onSelectPricing(pricingInfo)}
+                            onClick={() => this.onClickSelect(pricingInfo)}
                         >
                             Select
                         </Button>
@@ -90,7 +129,15 @@ class FPPricingSlider extends React.Component {
             );
         });
 
-        const errorsList = errors.map((error, index) => {
+        (errors || []).sort((a, b) =>  {
+            if (a.fp_name > b.fp_name)
+                return 1;
+            else if (a.fp_name < b.fp_name)
+                return -1;
+            else return 0;
+        });
+
+        const errorsList = (errors || []).map((error, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
@@ -104,7 +151,7 @@ class FPPricingSlider extends React.Component {
 
         return(
             <SlidingPane
-                className='fp-pricing-pan '
+                className='fp-pricing-pan'
                 isOpen={isOpen}
                 title='Freight Provider Pricing Panel'
                 subtitle='List View'
@@ -114,8 +161,12 @@ class FPPricingSlider extends React.Component {
                     <div id="headr" className="col-md-12 mb-5 qbootstrap-nav">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12">
                             <ul className="nav nav-tabs">
-                                <li className={currentTab==0?'active':''}><a onClick={(e) => this.onSelectTab(0, e)}>All Pricings</a></li>
-                                <li className={currentTab==1?'active':''}><a onClick={(e) => this.onSelectTab(1, e)}>Errors</a></li>
+                                <li className={currentTab == 0 ? 'active' : ''}>
+                                    <a onClick={(e) => this.onSelectTab(0, e)}>All Pricings</a>
+                                </li>
+                                <li className={currentTab == 1 ? 'active' : ''}>
+                                    <a onClick={(e) => this.onSelectTab(1, e)}>Errors</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -133,53 +184,70 @@ class FPPricingSlider extends React.Component {
                                 })
                             }}
                         >
-                            {currentTab==0?<Button
-                                className="lowest"
-                                color="primary"
-                                disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
-                                onClick={() => this.onSelectLowest('lowest')}
-                            >
-                                Select lowest price
-                            </Button>:null}
-                            {currentTab==0?<Button
-                                className="fastest"
-                                color="primary"
-                                disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
-                                onClick={() => this.onSelectFastest('fastest')}
-                            >
-                                Select fastest price
-                            </Button>:null}
-                            {currentTab==0?<table className="table table-hover table-bordered sortable fixed_headers">
-                                <tr>
-                                    <th className="" scope="col" nowrap><p>No</p></th>
-                                    <th className="" scope="col" nowrap><p>Transporter</p></th>
-                                    <th className="" scope="col" nowrap><p>Service</p></th>
-                                    <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
-                                    {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost</p></th>}
-                                    {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
-                                    <th className="" scope="col" nowrap><p>Cost</p></th>
-                                    <th className="" scope="col" nowrap><p>Tax ID</p></th>
-                                    <th className="" scope="col" nowrap><p>Tax Value</p></th>
-                                    <th className="" scope="col" nowrap><p>Total</p></th>
-                                    <th className="" scope="col" nowrap><p>ETA DE</p></th>
-                                    <th className="" scope="col" nowrap><p>Action</p></th>
-                                </tr>
-                                { pricingList }
-                            </table>:null}
-
-                            {currentTab==1?<table className="table table-hover table-bordered sortable fixed_headers">
-                                <tr>
-                                    <th className="" scope="col" nowrap><p>No</p></th>
-                                    <th className="" scope="col" nowrap><p>Freight Provider</p></th>
-                                    <th className="" scope="col" nowrap><p>Account Code</p></th>
-                                    <th className="" scope="col" nowrap><p>Error Code</p></th>
-                                    <th className="" scope="col" nowrap><p>Error Description</p></th>
-                                </tr>
-                                { errorsList }
-                            </table>:null}
+                            {currentTab === 0 ?
+                                <Button
+                                    className="lowest"
+                                    color="primary"
+                                    disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
+                                    onClick={() => this.onSelectLowest('lowest')}
+                                >
+                                    Select lowest price
+                                </Button>
+                                :
+                                null
+                            }
+                            {currentTab === 0 ?
+                                <Button
+                                    className="fastest"
+                                    color="primary"
+                                    disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
+                                    onClick={() => this.onSelectFastest('fastest')}
+                                >
+                                    Select fastest price
+                                </Button>
+                                :
+                                null
+                            }
+                            {currentTab === 0 ?
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <tr>
+                                        <th className="" scope="col" nowrap><p>No</p></th>
+                                        <th className="" scope="col" nowrap><p>Transporter</p></th>
+                                        <th className="" scope="col" nowrap><p>Service</p></th>
+                                        <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Quoted Cost</p></th>}
+                                        <th className="" scope="col" nowrap><p>Quoted $</p></th>
+                                        <th className="" scope="col" nowrap><p>Tax ID</p></th>
+                                        <th className="" scope="col" nowrap><p>Tax Value</p></th>
+                                        <th className="none" scope="col" nowrap><p>Total</p></th>
+                                        <th className="" scope="col" nowrap><p>ETA DE</p></th>
+                                        <th className="" scope="col" nowrap><p>Action</p></th>
+                                    </tr>
+                                    { pricingList }
+                                </table>
+                                :
+                                null
+                            }
+                            {currentTab === 1 ?
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <tr>
+                                        <th className="" scope="col" nowrap><p>No</p></th>
+                                        <th className="" scope="col" nowrap><p>Freight Provider</p></th>
+                                        <th className="" scope="col" nowrap><p>Account Code</p></th>
+                                        <th className="" scope="col" nowrap><p>Error Code</p></th>
+                                        <th className="" scope="col" nowrap><p>Error Description</p></th>
+                                    </tr>
+                                    { errorsList }
+                                </table>
+                                :
+                                null
+                            }
                         </LoadingOverlay>
                     </div>
                 </div>
+                <ToastContainer />
             </SlidingPane>
         );
     }

@@ -75,7 +75,7 @@ class BulkUpdateSlider extends React.Component {
 
     onChangeDateTime(dateTime, valueType=null) {
         let conveted_date = moment(dateTime).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-10, 'h');                    // UTC -> Sydney
+        conveted_date = conveted_date.add(-11, 'h');                    // UTC -> Sydney
 
         if (dateTime) {
             if (valueType === 'optionalValue') {

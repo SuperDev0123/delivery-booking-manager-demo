@@ -5,7 +5,6 @@ import { BookingReducer } from './bookingReducer';
 import { BookingLineReducer } from './bookingLineReducer';
 import { BookingLineDetailReducer } from './bookingLineDetailReducer';
 import { WarehouseReducer } from './warehouseReducer';
-import { CommReducer } from './commReducer';
 import { ReportReducer } from './reportReducer';
 import { ExtraReducer } from './extraReducer';
 import { BokReducer } from './bokReducer';
@@ -21,6 +20,7 @@ import { AvailabilityReducer } from './availabilityReducer';
 import { CostReducer } from './costReducer';
 import { PricingRuleReducer } from './pricingRuleReducer';
 import { UrlAdminReducer } from './urlAdminReducer';
+import { ChartReducer } from './chartReducer';
 import { ClientRasReducer } from './clientRasReducer';
 import { ClientReducer } from './clientReducer';
 import { RoleReducer } from './roleReducer';
@@ -31,7 +31,6 @@ export const AppReducer = combineReducers({
     bookingLine: BookingLineReducer,
     bookingLineDetail: BookingLineDetailReducer,
     warehouse: WarehouseReducer,
-    comm: CommReducer,
     report: ReportReducer,
     extra: ExtraReducer,
     bok: BokReducer,
@@ -47,6 +46,7 @@ export const AppReducer = combineReducers({
     cost: CostReducer,
     pricingRule: PricingRuleReducer,
     url: UrlAdminReducer,
+    chart: ChartReducer,
     clientRas: ClientRasReducer,
     client: ClientReducer,
     role: RoleReducer,

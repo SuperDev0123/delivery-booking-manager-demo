@@ -19,7 +19,7 @@ const defaultState = {
     token: '',
     successMessage: null,
     errorMessage: null,
-    username: null,
+    username: '',
     clientname: null,
     clientId: null,
     isLoggedIn: false,

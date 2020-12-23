@@ -63,7 +63,6 @@ class Header extends Component {
                 currentRoute === '/bookingsets' ||
                 currentRoute === '/bookinglines' ||
                 currentRoute === '/bookinglinedetails' ||
-                currentRoute === '/comm' ||
                 currentRoute === '/pods' ||
                 currentRoute === '/zoho' ||
                 currentRoute === '/reports' ?
@@ -96,7 +95,7 @@ class Header extends Component {
                         </a>
 
                         <ul className="navbar-nav flex-row ml-auto d-md-flex">
-                            {isLoggedIn === 'true' ?
+                            {clientname && isLoggedIn === 'true' ?
                                 <li className="nav-item dropdown show">
                                     <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                         <i className="fa fa-user" aria-hidden="true"></i>
@@ -124,7 +123,12 @@ class Header extends Component {
                                 </li>
                                 :
                                 <li className="nav-item">
-                                    <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
+                                    <a
+                                        href="/login"
+                                        className="btn btn-outline-light my-2 my-lg-0 login"
+                                    >
+                                        Login
+                                    </a>
                                 </li>
                             }
                         </ul>

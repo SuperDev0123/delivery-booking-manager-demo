@@ -19,7 +19,6 @@ import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
 import AllBookingsPage from '../pages/AllBookingsPage';
 import BookingSetsPage from '../pages/BookingSets/BookingSetsList';
 import UploadPage from '../pages/UploadPage';
-import CommPage from '../pages/CommPage';
 import PodsPage from '../pages/PodsPage';
 import ReportPage from '../pages/report/ReportPage';
 import BokPage from '../pages/BokPage';
@@ -31,6 +30,10 @@ import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 import Main from '../pages/admin/Main';
 import Login from '../pages/admin/views/Login';
 import Dashboard from '../pages/admin/views/Dashboard';
+import TotalDeliveries from '../pages/admin/views/Chart/TotalDeliveries';
+import OnTimeLateDeliveries from '../pages/admin/views/Chart/OnTimeLateDeliveries';
+import DeliveriesByClient from '../pages/admin/views/Chart/DeliveriesByClient';
+
 import EmailTemplates from '../pages/admin/views/EmailTemplates/EmailTemplates';
 import AddEmailTemplates from '../pages/admin/views/EmailTemplates/AddEmailTemplates';
 import EditEmailTemplates from '../pages/admin/views/EmailTemplates/EditEmailTemplates';
@@ -79,7 +82,6 @@ export const AppRouter = () => (
                 <PrivateRoute exact path='/allbookings' component={AllBookingsPage} />
                 <PrivateRoute exact path='/bookingsets' component={BookingSetsPage} />
                 <PrivateRoute exact path='/upload' component={UploadPage} />
-                <PrivateRoute exact path='/comm' component={CommPage} />
                 <PrivateRoute exact path='/pods' component={PodsPage} />
                 <PrivateRoute exact path='/zoho' component={ZohoPage} />
                 <PrivateRoute exact path='/zohodetails' component={ZohoDetailsPage} />
@@ -112,10 +114,15 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
+
                     <AdminPrivateRoute exact path='/admin/clientemployees' component={ClientEmployees} />
                     <AdminPrivateRoute exact path='/admin/clientemployees/add' component={AddClientEmployee} />
                     <AdminPrivateRoute exact path='/admin/clientemployees/edit/:id' component={EditClientEmployee} />
                     
+                    <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
+                    <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
+                    <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
+
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
                     <AdminPrivateRoute exact path='/customerdashboard/dashboard' component={CustomerDashboard} />

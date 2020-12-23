@@ -14,7 +14,6 @@ import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Modal from 'react-modal';
-import CKEditor from 'ckeditor4-react';
 import DateTimePicker from 'react-datetime-picker';
 import TimePicker from 'react-time-picker';
 import DatePicker from 'react-datepicker';
@@ -23,6 +22,12 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import user from '../public/images/user.png';
+import imgGeneral from  '../public/images/general_email_white.png';
+import imgPod from  '../public/images/pod_email_white.png';
+import imgReturn from  '../public/images/returns_email_white.png';
+import imgUnpacked from  '../public/images/returns_unpacked_email.png';
+import imgFutile from '../public/images/futile_email.png';
+import imgLogsSlider from '../public/images/email_logs_slider.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 // Custom Modals
@@ -34,7 +39,6 @@ import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlid
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
 import ProjectDataSlider from '../components/Sliders/ProjectDataSlider';
-import NoteSlider from '../components/Sliders/NoteSlider';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
@@ -42,16 +46,15 @@ import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate, resetNoBooking } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
-import { createComm, getComms, updateComm, deleteComm, getNotes, createNote, updateNote, deleteNote, getAvailableCreators } from '../state/services/commService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
-import { isFormValid, isValid4Label } from '../commons/validations';
+import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -59,16 +62,6 @@ class BookingPage extends Component {
 
         this.state = {
             formInputs: {},
-            commFormInputs: {
-                assigned_to: '', 
-                priority_of_log: 'Standard',
-                dme_notes_type: 'Delivery',
-                dme_action: 'No follow up required, noted for info purposes',
-                additional_action_task: '',
-                notes_type: 'Call',
-                dme_notes: '',
-                closed: false,
-            },
             selected: 'dme',
             booking: {},
             bookingLines: [],
@@ -109,6 +102,7 @@ class BookingPage extends Component {
             deToSuburb: {value: ''},
             deToPostalCode: {value: ''},
             isBookedBooking: false,
+            isLockedBooking: false,
             puTimeZone: null,
             deTimeZone: null,
             attachmentsHistory: [],
@@ -116,38 +110,8 @@ class BookingPage extends Component {
             AdditionalServices: [],
             bookingTotals: [],
             isShowDuplicateBookingOptionsModal: false,
-            isShowCommModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
-            comms: [],
-            notes: [],
-            isNotePaneOpen: false,
-            selectedCommId: null,
-            commFormMode: 'create',
-            isShowAdditionalActionTaskInput: false,
-            isShowAssignedToInput: false,
-            actionTaskOptions: [
-                'No follow up required, noted for info purposes', 
-                'Follow up with FP when to be collected',
-                'Follow up with Booking Contact as per log',
-                'Follow up with Cust if they still need collected',
-                'Follow up Cust to confirm pickup date / time',
-                'Follow up Cust to confirm packaging & pickup date / time',
-                'Follow up with FP Booked in & on Schedule',
-                'Follow up with FP Futile re-booked or collected',
-                'Follow up FP Collection will be on Time',
-                'Follow up FP / Cust Booking was Collected',
-                'Follow up FP Delivery will be on Time',
-                'Follow up FP / Cust Delivery Occurred',
-                'Follow up Futile Email to Customer',
-                'Close futile booking 5 days after 2nd email',
-                'Follow up query to Freight Provider',
-                'Follow up FP for Quote',
-                'Follow up FP for Credit',
-                'Awaiting Invoice to Process to FP File',
-                'Confirm FP has not invoiced this booking',
-                'Other',
-            ],
             clientname: null,
             isBookingSelected: false,
             isShowSwitchClientModal: false,
@@ -169,7 +133,6 @@ class BookingPage extends Component {
             isShowStatusDetailInput: false,
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
-            isShowDeleteCommConfirmModal: false,
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
             bookingId: null,
@@ -216,17 +179,12 @@ class BookingPage extends Component {
         this.labelDz = null;
         this.podDz = null;
         this.toggleDuplicateBookingOptionsModal = this.toggleDuplicateBookingOptionsModal.bind(this);
-        this.toggleCreateCommModal = this.toggleCreateCommModal.bind(this);
-        this.toggleUpdateCommModal = this.toggleUpdateCommModal.bind(this);
-        this.toggleNoteSlider = this.toggleNoteSlider.bind(this);
-        // this.toggleSwitchClientModal = this.toggleSwitchClientModal.bind(this);
         this.toggleLineSlider = this.toggleLineSlider.bind(this);
         this.toggleLineTrackingSlider = this.toggleLineTrackingSlider.bind(this);
         this.toggleStatusHistorySlider = this.toggleStatusHistorySlider.bind(this);
         this.toggleDateSlider = this.toggleDateSlider.bind(this);
         this.toggleStatusLockModal = this.toggleStatusLockModal.bind(this);
         this.toggleStatusNoteModal = this.toggleStatusNoteModal.bind(this);
-        this.toggleDeleteCommConfirmModal = this.toggleDeleteCommConfirmModal.bind(this);
         this.toggleDeleteFileConfirmModal = this.toggleDeleteFileConfirmModal.bind(this);
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
@@ -272,14 +230,6 @@ class BookingPage extends Component {
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getAttachmentHistory: PropTypes.func.isRequired,
-        createComm: PropTypes.func.isRequired,
-        getComms: PropTypes.func.isRequired,
-        updateComm: PropTypes.func.isRequired,
-        deleteComm: PropTypes.func.isRequired,
-        getNotes: PropTypes.func.isRequired,
-        createNote: PropTypes.func.isRequired,
-        updateNote: PropTypes.func.isRequired,
-        deleteNote: PropTypes.func.isRequired,
         getWarehouses: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         fpCancelBook: PropTypes.func.isRequired,
@@ -292,7 +242,6 @@ class BookingPage extends Component {
         getStatusDetails: PropTypes.func.isRequired,
         createStatusAction: PropTypes.func.isRequired,
         createStatusDetail: PropTypes.func.isRequired,
-        getAvailableCreators: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
@@ -306,12 +255,12 @@ class BookingPage extends Component {
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
+        resetNoBooking: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
-        availableCreators: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
     };
 
@@ -352,14 +301,13 @@ class BookingPage extends Component {
             that.props.getPackageTypes();
             that.props.getStatusDetails();
             that.props.getStatusActions();
-            that.props.getAvailableCreators();
         }, 3000);
 
         Modal.setAppElement(this.el);
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, comms, needUpdateComms, notes, needUpdateNotes, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntComms, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -374,18 +322,7 @@ class BookingPage extends Component {
         }
 
         if (username) {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs['assigned_to'] = username;
-            this.setState({username, commFormInputs});
-        }
-
-        if (comms) {
-            let newComms = _.clone(comms);
-            newComms = _.map(newComms, (comm, index) => {
-                comm['index'] = index + 1;
-                return comm;
-            });
-            this.setState({comms: newComms, cntComms, loadingComm: false});
+            this.setState({username});
         }
 
         if ( zoho_tickets ) {
@@ -394,19 +331,6 @@ class BookingPage extends Component {
 
         if (this.state.loadingZohoTickets != loadingZohoTickets) {
             this.setState({loadingZohoTickets});
-        }
-        
-        if (notes) {
-            this.setState({notes});
-        }
-
-        if (needUpdateComms && booking) {
-            this.setState({loadingComm: true});
-            this.props.getComms(booking.id);
-        }
-
-        if (needUpdateNotes) {
-            this.props.getNotes(this.state.selectedCommId);
         }
 
         if (createdForInfos) {
@@ -537,6 +461,7 @@ class BookingPage extends Component {
         if (noBooking) {
             this.setState({loading: false, curViewMode: 1});
             this.showCreateView();
+            this.props.resetNoBooking();
         }
 
 
@@ -546,6 +471,7 @@ class BookingPage extends Component {
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
             if (this.state.booking
+                && !this.state.isBookedBooking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
@@ -557,7 +483,7 @@ class BookingPage extends Component {
                 ) {
                     this.notify('Now trying to get Label!');
                     const currentBooking = this.state.booking;
-                    const res = isValid4Label(currentBooking);
+                    const res = isValid4Label(currentBooking, this.state.bookingLineDetailsProduct);
 
                     if (currentBooking.vx_freight_provider === 'TNT' && res !== 'valid') {
                         this.notify(res);
@@ -757,6 +683,7 @@ class BookingPage extends Component {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
 
+                // Is Booked Booking?
                 if (!_.isNull(booking.b_dateBookedDate) &&
                     !_.isUndefined(booking.b_dateBookedDate) &&
                     !_.isEmpty(booking.b_dateBookedDate)) 
@@ -764,6 +691,13 @@ class BookingPage extends Component {
                     this.setState({isBookedBooking: true});
                 } else {
                     this.setState({isBookedBooking: false});
+                }
+
+                // Is Locked Booking?
+                if (booking.z_lock_status) {
+                    this.setState({isLockedBooking: true});
+                } else {
+                    this.setState({isLockedBooking: false});
                 }
 
                 if (
@@ -860,8 +794,8 @@ class BookingPage extends Component {
                 else formInputs['pu_PickUp_Instructions_Contact'] = '';
                 if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
                 else formInputs['b_status_API'] = '';
-                if (booking.dme_status_history_notes != null) formInputs['dme_status_history_notes'] = booking.dme_status_history_notes;
-                else formInputs['dme_status_history_notes'] = '';
+                if (booking.b_booking_Notes != null) formInputs['b_booking_Notes'] = booking.b_booking_Notes;
+                else formInputs['b_booking_Notes'] = '';
                 if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
                 else formInputs['dme_status_detail'] = '';
                 if (booking.dme_status_action != null) formInputs['dme_status_action'] = booking.dme_status_action;
@@ -969,6 +903,8 @@ class BookingPage extends Component {
                 else formInputs['inv_cost_actual'] = null;
                 if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
                 else formInputs['inv_sell_quoted'] = null;
+                if (booking.inv_sell_quoted_override && !_.isNaN(parseFloat(booking.inv_sell_quoted_override))) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
+                else formInputs['inv_sell_quoted_override'] = null;
                 if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
@@ -1008,11 +944,15 @@ class BookingPage extends Component {
                     curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
+                // Dropzone files reset
+                if (this.attachmentsDz) this.attachmentsDz.removeAllFiles();
+                if (this.labelDz) this.labelDz.removeAllFiles();
+                if (this.podDz) this.podDz.removeAllFiles();
+
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
-                if (!_.isNull(this.state.typed))
-                    alert('There is no such booking with that DME/CON number.');
+                if (!_.isNull(this.state.typed)) this.notify('There is no such booking with that DME/CON number.');
             }
         }
 
@@ -1021,6 +961,7 @@ class BookingPage extends Component {
                 this.props.getBooking(this.state.booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
+
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
@@ -1057,7 +998,6 @@ class BookingPage extends Component {
             this.props.checkAugmentedBooking(data.id);
             this.props.getBookingLines(data.pk_booking_id);
             this.props.getBookingLineDetails(data.pk_booking_id);
-            this.props.getComms(data.id);
             this.props.getBookingStatusHistory(data.pk_booking_id);
             this.props.getApiBCLs(data.id);
             this.props.setFetchGeoInfoFlag(true);
@@ -1282,7 +1222,7 @@ class BookingPage extends Component {
 
     onClickConfirmBtn(type) {
         const token = localStorage.getItem('token');
-        const {booking, selectedFileOption} = this.state;
+        const {booking, selectedFileOption, formInputs} = this.state;
 
         if (type === 'delete-file') {
             const options = {
@@ -1295,7 +1235,6 @@ class BookingPage extends Component {
             axios(options)
                 .then((response) => {
                     console.log('#301 - ', response.data);
-
                     if (selectedFileOption === 'label') {
                         booking.z_label_url = null;
                     } else if (selectedFileOption === 'pod') {
@@ -1308,26 +1247,23 @@ class BookingPage extends Component {
                     this.notify('Failed to delete a file: ' + error);
                     this.toggleDeleteFileConfirmModal();
                 });    
-        } else if (type === 'delete-comm') {
-            this.props.deleteComm(this.state.selectedCommId);
-            this.toggleDeleteCommConfirmModal();
         } else if (type === 'booking_Created_For') {
             const selectedCreatedFor = this.state.createdForInfos.filter(item => {
                 const name_last = item.name_last ? item.name_last : '';
                 const name_first = item.name_first ? item.name_first : '';
 
-                if (`${name_first} ${name_last}` === this.state.booking.booking_Created_For) {
+                if (`${name_first} ${name_last}` === formInputs['booking_Created_For'].label) {
                     return true;
                 }
             });
 
-            if (selectedCreatedFor.length > 0 && this.state.booking.booking_Created_For_Email) {
+            if (selectedCreatedFor.length > 0 && formInputs['booking_Created_For_Email']) {
                 const newEmployeeObj = {
                     'pk_id_client_emp': selectedCreatedFor[0]['id'],
-                    'email': this.state.booking.booking_Created_For_Email
+                    'email': formInputs['booking_Created_For_Email']
                 };
-                this.props.updateClientEmployee(newEmployeeObj);
 
+                this.props.updateClientEmployee(newEmployeeObj);
                 setTimeout(() => {
                     this.props.getCreatedForInfos();
                 }, 2000);
@@ -1350,10 +1286,10 @@ class BookingPage extends Component {
     }
 
     onClickGetLabel() {
-        const {booking, isBookedBooking, formInputs} = this.state;
+        const {booking, isBookedBooking, formInputs, bookingLineDetailsProduct} = this.state;
 
         if (isBookedBooking) {
-            const result = isValid4Label(formInputs);
+            const result = isValid4Label(formInputs, bookingLineDetailsProduct);
 
             if (result === 'valid') {
                 this.props.fpLabel(booking.id, booking.vx_freight_provider);
@@ -1430,23 +1366,32 @@ class BookingPage extends Component {
 
             if (!booking.x_manual_booked_flag) {  // Not manual booking
                 if (booking.id && (booking.id !== undefined)) {
-                    this.setState({ loading: true, curViewMode: 0});
                     if (booking.vx_freight_provider) {
                         if (booking.vx_freight_provider.toLowerCase() === 'cope') {
                             this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
+                            this.setState({ loading: true, curViewMode: 0});
                         } else if (
                             booking.vx_freight_provider.toLowerCase() === 'allied' ||
-                            booking.vx_freight_provider.toLowerCase() === 'act'
+                            booking.vx_freight_provider.toLowerCase() === 'act' ||
+                            booking.vx_freight_provider.toLowerCase() === 'state transport'
                         ) {
                             this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
+                            this.setState({ loading: true, curViewMode: 0});
                         } else {
-                            this.props.fpBook(booking.id, booking.vx_freight_provider);
+                            const res = isValid4Book(booking);
+
+                            if (res !== 'valid') {
+                                this.notify(res);
+                            } else {
+                                this.props.fpBook(booking.id, booking.vx_freight_provider);
+                                this.setState({ loading: true, curViewMode: 0});
+                            }
                         }
                     } else {
                         this.notify('Can not *Book* since booking has no Freight Provider');
                     }
                 } else {
-                    this.notify('Please Find any booking and then click this!');
+                    this.notify('Please Find any booking and then try book again!');
                 }
             } else { // Manual booking
                 this.props.manualBook(booking.id);
@@ -1641,6 +1586,7 @@ class BookingPage extends Component {
 
             if (canUpdateField) {
                 if (e.target.name === 'inv_sell_quoted' ||
+                    e.target.name === 'inv_sell_quoted_override' ||
                     e.target.name === 'inv_cost_quoted' ||
                     e.target.name === 'inv_sell_actual' ||
                     e.target.name === 'inv_cost_actual'
@@ -1666,6 +1612,7 @@ class BookingPage extends Component {
         let {formInputs} = this.state;
 
         if (e.target.name === 'inv_sell_quoted' ||
+            e.target.name === 'inv_sell_quoted_override' ||
             e.target.name === 'inv_cost_quoted' ||
             e.target.name === 'inv_sell_actual' ||
             e.target.name === 'inv_cost_actual'
@@ -1693,6 +1640,12 @@ class BookingPage extends Component {
             formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'id');
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
+
+            // Init 'Created For' and 'Warehouse Code', 'Warehouse Name'
+            formInputs['booking_Created_For'] = '';
+            formInputs['booking_Created_For_Email'] = '';
+            formInputs['b_clientPU_Warehouse'] = '';
+            formInputs['b_client_warehouse_code'] = '';
         } else if (fieldName === 'vx_freight_provider') {
             formInputs['vx_freight_provider'] = selectedOption.value;
         } else if (fieldName === 'inv_billing_status') {
@@ -1731,19 +1684,13 @@ class BookingPage extends Component {
     }
 
     onChangeDateTime(date, fieldName) {
-        const commFormInputs = this.state.commFormInputs;
         const formInputs = this.state.formInputs;
         const booking = this.state.booking;
 
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-10, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
 
-        if (fieldName === 'due_date_time') {
-            commFormInputs['due_date_time'] = conveted_date;
-            commFormInputs['due_by_date'] = moment(conveted_date).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(conveted_date).format('HH:mm:ssZ');
-            this.setState({commFormInputs});
-        } else if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
+        if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
             fieldName === 's_06_Latest_Delivery_Date_TimeSet' ||
             fieldName === 's_21_Actual_Delivery_TimeStamp') {
@@ -1946,7 +1893,6 @@ class BookingPage extends Component {
                         }
                     }
 
-                    console.log('@1- ', this.props.dmeClients[ind], formInputs['b_client_name']);
                     formInputs['kf_client_id'] = this.props.dmeClients[ind].dme_account_num;
                     formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
                 }
@@ -2064,6 +2010,63 @@ class BookingPage extends Component {
         }
     }
 
+    onClickSwitchAddress() {
+        const {booking} = this.state;
+        const temp = {
+            'puCompany': booking.deToCompanyName,
+            'pu_Address_Street_1': booking.de_To_Address_Street_1,
+            'pu_Address_street_2':booking.de_To_Address_Street_2,
+            'pu_Address_PostalCode': booking.de_To_Address_PostalCode,
+            'pu_Address_Suburb': booking.de_To_Address_Suburb,
+            'pu_Address_Country': booking.de_To_Address_Country,
+            'pu_Contact_F_L_Name': booking.de_to_Contact_F_LName,
+            'pu_Phone_Main': booking.de_to_Phone_Main,
+            'pu_Email': booking.de_Email,
+            'pu_Address_State': booking.de_To_Address_State,
+            'deToCompanyName': booking.puCompany,
+            'de_To_Address_Street_1': booking.pu_Address_Street_1,
+            'de_To_Address_Street_2': booking.pu_Address_street_2,
+            'de_To_Address_PostalCode': booking.pu_Address_PostalCode,
+            'de_To_Address_Suburb': booking.pu_Address_Suburb,
+            'de_To_Address_Country': booking.pu_Address_Country,
+            'de_to_Contact_F_LName': booking.pu_Contact_F_L_Name,
+            'de_to_Phone_Main': booking.pu_Phone_Main,
+            'de_Email': booking.pu_Email,
+            'de_To_Address_State': booking.pu_Address_State,
+            'pu_email_Group_Name': booking.de_Email_Group_Name,
+            'pu_email_Group': booking.de_Email_Group_Emails,
+            'de_Email_Group_Name': booking.pu_email_Group_Name,
+            'de_Email_Group_Emails': booking.pu_email_Group,
+        };
+
+        booking.puCompany = temp['puCompany'];
+        booking.pu_Address_Street_1 = temp['pu_Address_Street_1'];
+        booking.pu_Address_street_2 = temp['pu_Address_street_2'];
+        booking.pu_Address_PostalCode = temp['pu_Address_PostalCode'];
+        booking.pu_Address_Suburb = temp['pu_Address_Suburb'];
+        booking.pu_Address_Country = temp['pu_Address_Country'];
+        booking.pu_Contact_F_L_Name = temp['pu_Contact_F_L_Name'];
+        booking.pu_Phone_Main = temp['pu_Phone_Main'];
+        booking.pu_Email = temp['pu_Email'];
+        booking.deToCompanyName = temp['deToCompanyName'];
+        booking.de_To_Address_Street_1 = temp['de_To_Address_Street_1'];
+        booking.de_To_Address_Street_2 = temp['de_To_Address_Street_2'];
+        booking.de_To_Address_PostalCode = temp['de_To_Address_PostalCode'];
+        booking.de_To_Address_Suburb = temp['de_To_Address_Suburb'];
+        booking.de_To_Address_Country = temp['de_To_Address_Country'];
+        booking.de_to_Contact_F_LName = temp['de_to_Contact_F_LName'];
+        booking.de_to_Phone_Main = temp['de_to_Phone_Main'];
+        booking.de_Email = temp['de_Email'];
+        booking.de_To_Address_State = temp['de_To_Address_State'];
+        booking.pu_email_Group_Name = temp['pu_email_Group_Name'];
+        booking.pu_email_Group = temp['pu_email_Group'];
+        booking.de_Email_Group_Name = temp['de_Email_Group_Name'];
+        booking.de_Email_Group_Emails = temp['de_Email_Group_Emails'];
+
+        this.props.updateBooking(booking.id, booking);
+        this.setState({loadingBookingUpdate: true, isBookingModified: false});
+    }
+
     onClickDeleteLineOrLineData(typeNum, row) {
         console.log('#204 onDelete: ', typeNum, row);
 
@@ -2105,179 +2108,17 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowDuplicateBookingOptionsModal: !prevState.isShowDuplicateBookingOptionsModal}));
     }
 
-    handleCommModalInputChange(event) {
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const name = target.name;
-
-        if (target.name === 'dme_action' && target.value === 'Other') {
-            this.setState({isShowAdditionalActionTaskInput: true});
-        } else if (target.name === 'assigned_to' && target.value === 'edit…') {
-            this.setState({isShowAssignedToInput: true});
-        }
-
-        let commFormInputs = this.state.commFormInputs;
-        commFormInputs[name] = value;
-        this.setState({commFormInputs});
-    }
-
-    onClickGoToCommPage() {
-        this.props.history.push('/comm?bookingid=' + this.state.booking.id);
-    }
-
-    onClickCreateComm() {
-        this.toggleCreateCommModal();
-        this.resetCommForm();
-    }
-
-    resetCommForm() {
-        this.setState({commFormInputs: {
-            assigned_to: this.state.username, 
-            priority_of_log: 'Standard',
-            dme_notes_type: 'Delivery',
-            dme_action: 'No follow up required, noted for info purposes',
-            additional_action_task: '',
-            notes_type: 'Call',
-            dme_notes: '',
-            closed: false,
-        }});
-    }
-
-    toggleCreateCommModal() {
-        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'create'}));
-    }
-
-    onSubmitComm() {
-        const {commFormMode, commFormInputs} = this.state;
-
-        if (commFormInputs['dme_action'] === 'Other')
-            commFormInputs['dme_action'] = commFormInputs['additional_action_task'];
-
-        if (commFormInputs['assigned_to'] === 'edit…')
-            commFormInputs['assigned_to'] = commFormInputs['new_assigned_to'];
-
-        if (_.isUndefined(commFormInputs['due_date_time']) || _.isNull(commFormInputs['due_date_time'])) {
-            commFormInputs['due_by_date'] = null;
-            commFormInputs['due_by_time'] = null;
-        } else {
-            commFormInputs['due_by_date'] = moment(commFormInputs['due_date_time']).format('YYYY-MM-DD');
-            commFormInputs['due_by_time'] = moment(commFormInputs['due_date_time']).format('HH:mm:ss');
-        }
-
-        if (commFormMode === 'create') {
-            const {booking} = this.state;            
-            let newComm = commFormInputs;
-
-            this.resetCommForm();
-            newComm['fk_booking_id'] = booking.pk_booking_id;
-            this.props.createComm(newComm);
-            this.toggleCreateCommModal();
-        } else if (commFormMode === 'update') {
-            const {selectedCommId} = this.state;
-            this.resetCommForm();
-            this.props.updateComm(selectedCommId, commFormInputs);
-            this.toggleUpdateCommModal();
-        }
-    }
-
     handleModalInputChange(type, event) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
 
-        if (type === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs[name] = value;
-            this.setState({commFormInputs});
-        } else if (type === 'note') {
+        if (type === 'note') {
             let noteFormInputs = this.state.noteFormInputs;
             noteFormInputs[name] = value;
             this.setState({noteFormInputs});
         }
     }
-
-    toggleUpdateCommModal() {
-        this.setState(prevState => ({isShowCommModal: !prevState.isShowCommModal, commFormMode: 'update'}));
-    }
-
-    onUpdateBtnClick(type, data) {
-        console.log('Click update comm button: ', type);
-        
-        const {comms, actionTaskOptions} = this.state;
-        let comm = {};
-
-        for (let i = 0; i < comms.length; i++) {
-            if (comms[i].id === data.id) {
-                comm = comms[i];
-            }
-        }
-
-        const commFormInputs = comm;
-        commFormInputs['due_date_time'] = comm.due_by_date ? moment(comm.due_by_date + ' ' + comm.due_by_time, 'YYYY-MM-DD HH:mm:ss').toDate() : null;
-        if (_.intersection([comm.assigned_to], ['edit…', 'emadeisky', 'status query', 'nlimbauan']).length === 0) {
-            commFormInputs['new_assigned_to'] = comm.assigned_to;
-            commFormInputs['assigned_to'] = 'edit…';
-            this.setState({isShowAssignedToInput: true});
-        }
-
-        if (_.intersection([comm.dme_action], actionTaskOptions).length === 0) {
-            commFormInputs['additional_action_task'] = comm.dme_action;
-            commFormInputs['dme_action'] = 'Other';
-            this.setState({isShowAdditionalActionTaskInput: true});
-        }
-
-        this.setState({selectedCommId: comm.id, commFormInputs});
-        this.toggleUpdateCommModal();
-    }
-
-    onCheck(e, id, index) {
-        if (e.target.name === 'closed') {
-            let updatedComm = {};
-
-            if (e.target.checked)
-                updatedComm = {
-                    closed: e.target.checked,
-                    status_log_closed_time: moment(),
-                };
-            else
-                updatedComm = {
-                    closed: e.target.checked,
-                    status_log_closed_time: null,
-                };
-
-            let updatedComms = this.state.comms;
-            updatedComms[index].closed = e.target.checked;
-            this.props.updateComm(id, updatedComm);
-            this.setState({comms: updatedComms});
-        }
-    }
-
-    onClickCommIdCell(id) {
-        console.log('Comm ID: ', id);
-
-        this.setState({ isNotePaneOpen: true, selectedCommId: id });
-        this.props.getNotes(id);
-    }
-
-    onEditorChange(type, from, event) {
-        if (type === 'note' && from === 'comm') {
-            let commFormInputs = this.state.commFormInputs;
-            commFormInputs['dme_notes'] = event.editor.getData();
-            this.setState({commFormInputs});
-        } else if (type === 'note' && from === 'note') {
-            let noteFormInputs = this.state.noteFormInputs;
-            noteFormInputs['dme_notes'] = event.editor.getData();
-            this.setState({noteFormInputs});
-        }
-    }
-
-    toggleNoteSlider() {
-        this.setState(prevState => ({isNotePaneOpen: !prevState.isNotePaneOpen}));
-    }
-
-    // toggleSwitchClientModal() {
-    //     this.setState(prevState => ({isShowSwitchClientModal: !prevState.isShowSwitchClientModal}));
-    // }
 
     toggleLineSlider() {
         const { isBookingSelected } = this.state;
@@ -2297,12 +2138,8 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowStatusLockModal: !prevState.isShowStatusLockModal}));
     }
 
-    toggleStatusNoteModal(type='dme_status_history_notes') {
+    toggleStatusNoteModal(type='b_booking_Notes') {
         this.setState(prevState => ({isShowStatusNoteModal: !prevState.isShowStatusNoteModal, currentNoteModalField: type}));
-    }
-
-    toggleDeleteCommConfirmModal() {
-        this.setState(prevState => ({isShowDeleteCommConfirmModal: !prevState.isShowDeleteCommConfirmModal}));
     }
 
     toggleDeleteFileConfirmModal() {
@@ -2468,6 +2305,7 @@ class BookingPage extends Component {
             formInputs['de_To_Address_Country'] = 'AU';
             formInputs['b_client_name'] = clientname;
             formInputs['b_client_warehouse_code'] = 'No - Warehouse';
+            formInputs['booking_Created_For_Email'] = '';
             formInputs['fk_client_warehouse'] = 100;
             formInputs['dme_status_detail'] = null;
             formInputs['dme_status_action'] = null;
@@ -2511,16 +2349,6 @@ class BookingPage extends Component {
         this.props.updateStatusHistory(statusHistory);
     }
 
-    onClickComms(e) {
-        e.preventDefault();
-
-        if (this.state.isBookingSelected) {
-            window.location.assign('/comm?bookingid=' + this.state.booking.id);
-        } else {
-            window.location.assign('/comm');
-        }
-    }
-
     onUpdateProjectData(newBooking) {
         this.setState({curViewMode: 2, loadingBookingUpdate: true});
         this.props.updateBooking(this.state.booking.id, newBooking);
@@ -2553,6 +2381,7 @@ class BookingPage extends Component {
         }
 
         this.props.updateBooking(booking.id, booking);
+        this.setState({curViewMode: 2, loadingBookingUpdate: true});
     }
 
     onClickBottomTap(e, activeTabInd) {
@@ -2578,27 +2407,26 @@ class BookingPage extends Component {
         this.toggleStatusNoteModal();
     }
 
-    onDeleteBtnClick(commId) {
-        this.setState({selectedCommId: commId});
-        this.toggleDeleteCommConfirmModal();
-    }
-
     onClickFC() { // On click Freight Calculation button
-        const {booking} = this.state;
-        this.props.fpPricing(booking.id);
-        this.setState({loading: true});
-        this.toggleFPPricingSlider();
+        const {booking, formInputs} = this.state;
+
+        if (!formInputs['puPickUpAvailFrom_Date']) {
+            this.notify('PU Available From Date is required!');
+        } else {
+            this.props.fpPricing(booking.id);
+            this.setState({loading: true});
+            this.toggleFPPricingSlider();
+        }
     }
 
     onClickOpenPricingSlider() {
-        this.setState({loadingPricingInfos: true});
-        this.toggleFPPricingSlider();
         this.props.getPricingInfos(this.state.booking.pk_booking_id);
+        this.setState({loadingPricingInfos: true, pricingInfos: []});
+        this.toggleFPPricingSlider();
     }
 
     onSelectPricing(pricingInfo) {
-        const formInputs = this.state.formInputs;
-        const booking = this.state.booking;
+        const {formInputs, booking} = this.state;
 
         formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
         booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
@@ -2608,14 +2436,14 @@ class BookingPage extends Component {
         formInputs['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
         formInputs['v_service_Type'] = pricingInfo['service_code'];
-        booking['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
-        formInputs['inv_cost_quoted'] = parseFloat(pricingInfo['fee']).toFixed(2);
-        booking['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
-        formInputs['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+        booking['inv_cost_quoted'] = (parseFloat(pricingInfo['fee']) * (1 + parseFloat(pricingInfo['mu_percentage_fuel_levy']))).toFixed(3);
+        formInputs['inv_cost_quoted'] = booking['inv_cost_quoted'];
+        booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
+        formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        const selectedFP = this.props.allFPs.find(
-            fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
+        const selectedFP = this.props.allFPs
+            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
@@ -2640,15 +2468,15 @@ class BookingPage extends Component {
 
     onLoadPricingErrors() {
         this.setState({loadingPricingInfos: true});
-        this.props.getAllErrors();
+        this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
     render() {
         const {
-            isBookedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, commFormInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, comms, isShowAdditionalActionTaskInput, isShowAssignedToInput, notes, isShowCommModal, isNotePaneOpen, commFormMode, actionTaskOptions, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, selectedCommId, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets
         } = this.state;
         const {
-            warehouses, emailLogs, availableCreators
+            warehouses, emailLogs
         } = this.props;
 
         const bookingLineColumns = [
@@ -2861,7 +2689,7 @@ class BookingPage extends Component {
                 text: 'View',
                 formatter:  (cell, row) => {
                     console.log(cell, row);
-                    return (<Link to={'/zohodetails?id='+row.id}><i className="fa fa-eye"></i> </Link>);
+                    return (<Link to={'/zohodetails?id=' + row.id}><i className="fa fa-eye"></i></Link>);
                 }
             }
         ];
@@ -2965,13 +2793,10 @@ class BookingPage extends Component {
             success: this.handleUploadSuccess.bind(this),
         };
 
-        const actionTaskOptionsList = actionTaskOptions.map((actionTaskOption, key) => {
-            return (<option key={key} value={actionTaskOption}>{actionTaskOption}</option>);
-        });
-
-        let warehouseCodeOptions = warehouses.map((warehouse) => {
-            return {value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code};
-        });
+        let warehouseCodeOptions = warehouses
+            .filter(warehouse => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
+            || warehouse.client_company_name === formInputs['b_client_name'])
+            .map(warehouse => ({value: warehouse.client_warehouse_code, label: warehouse.client_warehouse_code}));
 
         const bookingCategroies = [
             'Repairs & Spare Parts Expense',
@@ -2983,9 +2808,7 @@ class BookingPage extends Component {
             'Admin / Other',
         ];
 
-        let bookingCategoryOptions = bookingCategroies.map((category) => {
-            return {value: category, label: category};
-        });
+        let bookingCategoryOptions = bookingCategroies.map(category => ({value: category, label: category}));
 
         const bookingPriorities = ['Low', 'Standard', 'High', 'Critical'];
 
@@ -2994,18 +2817,16 @@ class BookingPage extends Component {
         });
 
         const currentWarehouseCodeOption = {
-            value: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
-            label: formInputs.b_client_warehouse_code ? formInputs.b_client_warehouse_code : null,
+            value: formInputs['b_client_warehouse_code'] ? formInputs['b_client_warehouse_code'] : null,
+            label: formInputs['b_client_warehouse_code'] ? formInputs['b_client_warehouse_code'] : null,
         };
 
-        const clientnameOptions = this.props.dmeClients.map((client) => {
-            return {value: client.company_name, label: client.company_name};
-        });
+        const clientnameOptions = this.props.dmeClients
+            .map(client => ({value: client.company_name, label: client.company_name}));
         const currentClientnameOption = {value: formInputs['b_client_name'], label: formInputs['b_client_name']};
 
-        const fpOptions = this.props.allFPs.map((fp) => {
-            return {value: fp.fp_company_name, label: fp.fp_company_name};
-        });
+        const fpOptions = this.props.allFPs
+            .map(fp => ({value: fp.fp_company_name, label: fp.fp_company_name}));
         const currentFPOption = {value: formInputs['vx_freight_provider'], label: formInputs['vx_freight_provider']};
 
         const InvBillingOptions = [
@@ -3014,31 +2835,35 @@ class BookingPage extends Component {
             {value: 'Not to Charge', label: 'Not to Charge'},
         ];
         const currentInvBillingOption = {value: formInputs['inv_billing_status'], label: formInputs['inv_billing_status']};
-
-        const availableCreatorsList = availableCreators.map((availableCreator, index) => {
-            return (
-                <option key={index} value={availableCreator.username}>{availableCreator.first_name} {availableCreator.last_name}</option>
-            );
-        });
-
-        const createdForInfosList = this.state.createdForInfos.map((createdForInfo) => {
-            const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
-            const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
-            return {value: createdForInfo.id, label: name_first + ' ' + name_last};
-        });
-
-        const statusActionOptions = statusActions.map((statusAction, key) => {
-            return (<option key={key} value={statusAction.dme_status_action}>{statusAction.dme_status_action}</option>);
-        });
-
-        const statusDetailOptions = statusDetails.map((statusDetail, key) => {
-            return (<option key={key} value={statusDetail.dme_status_detail}>{statusDetail.dme_status_detail}</option>);
-        });
-
+        
         const generalEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'General Booking').length;
         const podEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'POD').length;
         const returnEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Return Booking').length;
+        const unpackedReturnCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Unpacked Return Booking').length;
         const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
+
+        const createdForInfosList = this.state.createdForInfos
+            .filter(createdForInfo => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
+            || createdForInfo.company_name === formInputs['b_client_name'])
+            .map(createdForInfo => {
+                const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
+                const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
+                return {value: createdForInfo.id, label: name_first + ' ' + name_last};
+            });
+
+        const statusActionOptions = statusActions
+            .map((statusAction, key) => (
+                <option key={key} value={statusAction.dme_status_action}>
+                    {statusAction.dme_status_action}
+                </option>
+            ));
+
+        const statusDetailOptions = statusDetails
+            .map((statusDetail, key) => (
+                <option key={key} value={statusDetail.dme_status_detail}>
+                    {statusDetail.dme_status_detail}
+                </option>
+            ));
 
         return (
             <div className="qbootstrap-nav header">
@@ -3049,7 +2874,6 @@ class BookingPage extends Component {
                             <li><a onClick={(e) => this.onClickGoToAllBookings(e)}>All Bookings</a></li>
                             <li className=""><a href="/bookingsets">Booking Sets</a></li>
                             <li className=""><Link to="/pods">PODs</Link></li>
-                            {clientname === 'dme' && <li className=""><Link to="/comm">Comm</Link></li>}
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className=""><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
@@ -3066,12 +2890,13 @@ class BookingPage extends Component {
                         </div>
                         <a className="none"><i className="icon-cog2" aria-hidden="true"></i></a>
                         <a className="none"><i className="icon-calendar3" aria-hidden="true"></i></a>
-
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('General Booking')}>General{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('POD')}>POD{podEmailCnt > 0 && ` (${podEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Return Booking')}>Return{returnEmailCnt > 0 && ` (${returnEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Futile Pickup')}>Futile{futileEmailCnt > 0 && ` (${futileEmailCnt})`}</a>}
-                        {clientname === 'dme' && <a className='cur-pointer' onClick={() => this.onClickEnvelop('Email Log')}><i className="fa fa-envelope" aria-hidden="true"></i></a>}
+                       
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('General Booking')}> <img src={imgGeneral} alt=""/>{generalEmailCnt > 0 && ` (${generalEmailCnt})`}</a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('POD')}><img src={imgPod} alt=""/> {podEmailCnt > 0 && ` (${podEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Return Booking')}><img src={imgReturn} alt=""/>{returnEmailCnt > 0 && ` (${returnEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Unpacked Return Booking')}> <img src={imgUnpacked} alt="" /> {unpackedReturnCnt > 0 && ` (${unpackedReturnCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Futile Pickup')}> <img src={imgFutile} alt="" />{futileEmailCnt > 0 && ` (${futileEmailCnt})`} </a>}
+                        {clientname === 'dme' && <a className='cur-pointer header-title-count' onClick={() => this.onClickEnvelop('Email Log')}><img src={imgLogsSlider} /> </a>}
                         
                         <a className="none">?</a>
                         {/*
@@ -3390,7 +3215,7 @@ class BookingPage extends Component {
                                             <Button
                                                 className="edit-lld-btn btn-primary"
                                                 onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
-                                                disabled={parseInt(curViewMode) === 0 || !this.state.booking.booking_Created_For_Email ? 'disabled' : ''}
+                                                disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? 'disabled' : ''}
                                             >
                                                 <i className="fa fa-save" aria-hidden="true"></i>
                                             </Button>
@@ -3428,17 +3253,16 @@ class BookingPage extends Component {
                                     <div className="row col-sm-12 booking-form-01">
                                         <div className="col-sm-2 form-group">
                                             <span>Warehouse Code</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p className="show-mode">{currentWarehouseCodeOption.value}</p>
-                                                    :
-                                                    <Select
-                                                        value={currentWarehouseCodeOption}
-                                                        onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
-                                                        options={warehouseCodeOptions}
-                                                        placeholder='Select a warehouse'
-                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                    />
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p className="show-mode">{currentWarehouseCodeOption.value}</p>
+                                                :
+                                                <Select
+                                                    value={currentWarehouseCodeOption}
+                                                    onChange={(e) => this.handleChangeSelect(e, 'warehouse')}
+                                                    options={warehouseCodeOptions}
+                                                    placeholder='Select a warehouse'
+                                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                />
                                             }
                                         </div>
                                         <div className='col-sm-2 form-group'>
@@ -3452,23 +3276,22 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-2 form-group">
                                             <span>Linked Reference</span>
-                                            {
-                                                (parseInt(curViewMode) === 0) ?
-                                                    <p 
-                                                        className="show-mode"
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                    >
-                                                        {formInputs['dme_status_linked_reference_from_fp']}
-                                                    </p>
-                                                    :
-                                                    <input 
-                                                        id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
-                                                        className="form-control"
-                                                        type="text"
-                                                        placeholder="Linked Reference"
-                                                        name="dme_status_linked_reference_from_fp"
-                                                        value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
-                                                        onChange={(e) => this.onHandleInput(e)}/>
+                                            {(parseInt(curViewMode) === 0) ?
+                                                <p 
+                                                    className="show-mode"
+                                                    id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                >
+                                                    {formInputs['dme_status_linked_reference_from_fp']}
+                                                </p>
+                                                :
+                                                <input 
+                                                    id={'booking-' + 'dme_status_linked_reference_from_fp' + '-tooltip-' + booking.id}
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="Linked Reference"
+                                                    name="dme_status_linked_reference_from_fp"
+                                                    value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
+                                                    onChange={(e) => this.onHandleInput(e)}/>
                                             }
                                             {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
@@ -3725,6 +3548,25 @@ class BookingPage extends Component {
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
+                                                    <span className="c-red">Quoted $*</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)}`}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_sell_quoted_override"
+                                                            value = {formInputs['inv_sell_quoted_override'] && `$${formInputs['inv_sell_quoted_override']}`}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        {clientname === 'dme' &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
                                                     <span className="c-red">Actual $</span>
                                                     {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
@@ -3783,9 +3625,9 @@ class BookingPage extends Component {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <textarea 
                                                         className="show-mode"
-                                                        onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                        id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                        value={formInputs['dme_status_history_notes']}
+                                                        onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
+                                                        id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
+                                                        value={formInputs['b_booking_Notes']}
                                                         disabled='disabled'
                                                         rows="6"
                                                         cols="83"
@@ -3794,26 +3636,26 @@ class BookingPage extends Component {
                                                     clientname === 'dme' ?
                                                         <textarea 
                                                             className="show-mode"
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
+                                                            id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                             name="dme_status_linked_reference_from_fp"
-                                                            value={formInputs['dme_status_history_notes'] ? formInputs['dme_status_history_notes'] : ''} 
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
+                                                            value={formInputs['b_booking_Notes'] ? formInputs['b_booking_Notes'] : ''} 
+                                                            onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
                                                             rows="6"
                                                             cols="83"
                                                         />
                                                         :
                                                         <textarea 
                                                             className="show-mode"
-                                                            onClick={() => this.toggleStatusNoteModal('dme_status_history_notes')}
-                                                            id={'booking-' + 'dme_status_history_notes' + '-tooltip-' + booking.id}
-                                                            value={formInputs['dme_status_history_notes']}
+                                                            onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
+                                                            id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
+                                                            value={formInputs['b_booking_Notes']}
                                                             disabled='disabled'
                                                             rows="6"
                                                             cols="83"
                                                         />
                                             }
-                                            {!_.isEmpty(formInputs['dme_status_history_notes']) &&
-                                                <TooltipItem object={booking} placement='top' fields={['dme_status_history_notes']} />
+                                            {!_.isEmpty(formInputs['b_booking_Notes']) &&
+                                                <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                             }
                                         </div>
                                     </div>
@@ -4931,7 +4773,7 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickOpenPricingSlider()}
-                                                                disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
+                                                                disabled={curViewMode !== 1 ? '' : 'disabled'}
                                                             >
                                                                 <i className="fa fa-caret-square-left"></i>
                                                             </button>
@@ -4939,20 +4781,27 @@ class BookingPage extends Component {
                                                     }
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
-                                                            && (booking && isBookedBooking)
-                                                            && this.state.booking.vx_freight_provider
+                                                            && booking && isBookedBooking
                                                             && this.state.booking.vx_freight_provider.toLowerCase() == 'tnt'
                                                         ) ?
                                                             <div className="text-center mt-2 fixed-height half-size">
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onSavePuInfo()}
+                                                                    disabled={
+                                                                        (booking && isLockedBooking)
+                                                                        || (curViewMode === 1) ? 'disabled' : ''
+                                                                    }
                                                                 >
                                                                     SH-PU
                                                                 </button>
                                                                 <button
                                                                     className="btn btn-theme custom-theme"
                                                                     onClick={() => this.onClickRebook()}
+                                                                    disabled={
+                                                                        (booking && isLockedBooking)
+                                                                        || (curViewMode === 1) ? 'disabled' : ''
+                                                                    }
                                                                 >
                                                                     Rebook Pu
                                                                 </button>
@@ -4961,7 +4810,10 @@ class BookingPage extends Component {
                                                             <button
                                                                 className="btn btn-theme custom-theme"
                                                                 onClick={() => this.onClickBook()}
-                                                                disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                disabled={
+                                                                    (booking && (isBookedBooking || isLockedBooking))
+                                                                    || (curViewMode === 1) ? 'disabled' : ''
+                                                                }
                                                             >
                                                                 Book
                                                             </button>
@@ -4976,7 +4828,7 @@ class BookingPage extends Component {
                                                                     type="checkbox"
                                                                     checked={formInputs['x_manual_booked_flag']}
                                                                     onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={(booking && isBookedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                                    disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
                                                                 <p>Manual Book</p>
                                                             </div>
@@ -4987,7 +4839,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickEditBook()}
-                                                            disabled={(isBookedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
+                                                            disabled={(isBookedBooking && !isLockedBooking && booking && booking.b_status !== 'Closed') ? '' : 'disabled'}
                                                         >
                                                             Amend Booking
                                                         </button>
@@ -4996,7 +4848,13 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickCancelBook()}
-                                                            disabled={isBookedBooking && booking ? '' : 'disabled'}
+                                                            disabled={
+                                                                booking
+                                                                && (isBookedBooking || !isLockedBooking)
+                                                                && booking.vx_freight_provider
+                                                                && booking.vx_freight_provider.toLowerCase() === 'startrack'
+                                                                    ? '' : 'disabled'
+                                                            }
                                                         >
                                                             Cancel Request
                                                         </button>
@@ -5008,6 +4866,15 @@ class BookingPage extends Component {
                                                             disabled={(curViewMode === 1) ? 'disabled' : ''}
                                                         >
                                                             Duplicate Booking
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickSwitchAddress()}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Switch PU & DE info
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
@@ -5032,7 +4899,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickTrackingStatus()}
-                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                            disabled={(curViewMode === 1 || isLockedBooking) ? 'disabled' : ''}
                                                         >
                                                             Status
                                                         </button>
@@ -5064,11 +4931,6 @@ class BookingPage extends Component {
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
                                                 {
                                                     clientname === 'dme' ?
-                                                        <li className={activeTabInd === 2 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 2)}>Communication Log({comms.length})</a></li>
-                                                        : null
-                                                }
-                                                {
-                                                    clientname === 'dme' ?
                                                         <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
                                                         : null
                                                 }
@@ -5080,7 +4942,7 @@ class BookingPage extends Component {
                                             <select id="tab-select">
                                                 <option value="#tab01">Shipment Packages / Goods</option>
                                                 <option value="#tab02">Additional Services & Options</option>
-                                                <option value="#tab03">Communication Log</option>
+                                                <option value="#tab03">ZOHO</option>
                                                 <option value="#tab04">Attachments</option>
                                                 <option value="#tab05">Label & Pod</option>
                                             </select>
@@ -5150,29 +5012,7 @@ class BookingPage extends Component {
                                                 <p className="font-24px float-left none">Booking Counts & Totals</p>
                                             </div>
                                         </div>
-                                        <div id="tab03" className={activeTabInd === 2 ? 'tab-contents selected' : 'tab-contents none'}>
-                                            <button onClick={() => this.onClickGoToCommPage()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard none" title="Go to all comms">
-                                                <i className="icon icon-th-list"></i>
-                                            </button>
-                                            <button onClick={() => this.onClickCreateComm()} disabled={!booking.hasOwnProperty('id')} className="btn btn-theme btn-standard" title="Create a comm">
-                                                <i className="icon icon-plus"></i>
-                                            </button>
-                                            <LoadingOverlay
-                                                active={this.state.loadingComm}
-                                                spinner
-                                                text='Loading Communications...'
-                                            >
-                                                <div className="tab-inner">
-                                                    {/*<BootstrapTable
-                                                        keyField="id0"
-                                                        data={ comms }
-                                                        columns={ columnCommunication }
-                                                        bootstrap4={ true }
-                                                    />*/}
-                                                </div>
-                                            </LoadingOverlay>
-                                        </div>
-                                        <div id="tab04" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab03" className={activeTabInd === 3 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <LoadingOverlay
                                                 active={this.state.loadingZohoTickets}
                                                 spinner
@@ -5188,7 +5028,7 @@ class BookingPage extends Component {
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
-                                        <div id="tab05" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab04" className={activeTabInd === 4 ? 'tab-contents selected' : 'tab-contents none'}>
                                             <div className="col-12">
                                                 <form onSubmit={(e) => this.handleUpload(e, 'attachment')}>
                                                     <DropzoneComponent
@@ -5197,7 +5037,7 @@ class BookingPage extends Component {
                                                         eventHandlers={attachmentsEventHandlers}
                                                         djsConfig={djsConfig}
                                                     />
-                                                    <button className="btn btn-primary" type="submit">upload</button>
+                                                    <button className="btn btn-primary" type="submit">Upload</button>
                                                 </form>
                                             </div>
                                             <div className="tab-inner">
@@ -5209,7 +5049,7 @@ class BookingPage extends Component {
                                                 />
                                             </div>
                                         </div>
-                                        <div id="tab06" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
+                                        <div id="tab05" className={activeTabInd === 5 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {isBookingSelected ?
                                                 <div className="row">
                                                     <div className="col-6">
@@ -5221,10 +5061,9 @@ class BookingPage extends Component {
                                                                 eventHandlers={labelEventHandlers}
                                                                 djsConfig={djsConfig}
                                                             />
-                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                            <button className="btn btn-primary" type="submit">Upload</button>
                                                         </form>
-                                                        {
-                                                            booking.z_label_url &&
+                                                        {booking.z_label_url &&
                                                             <div>
                                                                 <p>Label: {booking.z_label_url}</p>
                                                                 <button
@@ -5257,10 +5096,9 @@ class BookingPage extends Component {
                                                                 eventHandlers={podEventHandlers}
                                                                 djsConfig={djsConfig}
                                                             />
-                                                            <button className="btn btn-primary" type="submit">upload</button>
+                                                            <button className="btn btn-primary" type="submit">Upload</button>
                                                         </form>
-                                                        {
-                                                            (booking.z_pod_url || booking.z_pod_signed_url) &&
+                                                        {(booking.z_pod_url || booking.z_pod_signed_url) &&
                                                             <div>
                                                                 <p>POD: {booking.z_pod_url}</p>
                                                                 <button
@@ -5322,170 +5160,6 @@ class BookingPage extends Component {
                         <Button color="secondary" onClick={this.toggleDuplicateBookingOptionsModal}>Cancel</Button>
                     </ModalFooter>
                 </ReactstrapModal>
-
-                <ReactstrapModal 
-                    isOpen={isShowCommModal} 
-                    toggle={this.toggleCreateCommModal} 
-                    className="create-comm-modal">
-                    <ModalHeader toggle={this.toggleCreateCommModal}>{(commFormMode === 'create') ? 'Create' : 'Update'} Communication Log: {booking.b_bookingID_Visual}</ModalHeader>
-                    <ModalBody>
-                        <label>
-                            <p>Assigned To</p>
-                            <select
-                                required 
-                                name="assigned_to"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['assigned_to']} >
-                                {availableCreatorsList}
-                            </select>
-                        </label>
-                        {
-                            (isShowAssignedToInput) ?
-                                <label>
-                                    <p>Assigned To(New)</p>
-                                    <input 
-                                        className="form-control"
-                                        type="text"
-                                        placeholder=""
-                                        name="new_assigned_to"
-                                        value = {commFormInputs['new_assigned_to']}
-                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
-                                </label>
-                                :
-                                null
-                        }
-                        <label>
-                            <p>Priority</p>
-                            <select
-                                required 
-                                name="priority_of_log"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['priority_of_log']} >
-                                <option value="Standard">Standard</option>
-                                <option value="Low">Low</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </label>
-                        <label>
-                            <p>DME Comm Title</p>
-                            <input 
-                                className="form-control"
-                                type="text"
-                                placeholder=""
-                                name="dme_com_title"
-                                value = {commFormInputs['dme_com_title']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                        <label>
-                            <p>Type</p>
-                            <select
-                                required 
-                                name="dme_notes_type"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_notes_type']} >
-                                <option value="Delivery">Delivery</option>
-                                <option value="Financial">Financial</option>
-                                <option value="FP Query">FP Query</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </label>
-                        <label>
-                            <p>Action Task</p>
-                            <select
-                                required 
-                                name="dme_action"
-                                onChange={(e) => this.handleCommModalInputChange(e)}
-                                value = {commFormInputs['dme_action']} >
-                                {actionTaskOptionsList}
-                            </select>
-                        </label>
-                        {
-                            (isShowAdditionalActionTaskInput) ?
-                                <label>
-                                    <p>Action Task(Other)</p>
-                                    <input 
-                                        className="form-control"
-                                        type="text"
-                                        placeholder=""
-                                        name="additional_action_task"
-                                        value = {commFormInputs['additional_action_task']}
-                                        onChange={(e) => this.handleCommModalInputChange(e)} />    
-                                </label>
-                                :
-                                null
-                        }
-                        {
-                            (commFormMode === 'create') ?
-                                <div>
-                                    <label>
-                                        <p>Note Type</p>
-                                        <select
-                                            required 
-                                            name="notes_type"
-                                            onChange={(e) => this.handleCommModalInputChange(e)}
-                                            value = {commFormInputs['notes_type']} >
-                                            <option value="Call">Call</option>
-                                            <option value="Email">Email</option>
-                                            <option value="SMS">SMS</option>
-                                            <option value="Letter">Letter</option>
-                                            <option value="Note">Note</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </label>
-                                    <div className="editor">
-                                        <p>First Note</p>
-                                        <CKEditor
-                                            data={commFormInputs['dme_notes']}
-                                            onChange={(e) => this.onEditorChange('note', 'comm', e)} />
-                                    </div>
-                                </div>
-                                :
-                                null
-                        }
-                        <label>
-                            <p>Due Date Time</p>
-                            <DateTimePicker
-                                onChange={(date) => this.onChangeDateTime(date, 'due_date_time')}
-                                value={(!_.isNull(commFormInputs['due_date_time']) && !_.isUndefined(commFormInputs['due_date_time'])) &&
-                                new Date(moment(commFormInputs['due_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
-                                format={'dd/MM/yyyy HH:mm'}
-                            />
-                        </label>
-                        <label>
-                            <p>Closed?</p>
-                            <input
-                                className="form-control"
-                                type="checkbox"
-                                name="closed"
-                                checked = {commFormInputs['closed']}
-                                onChange={(e) => this.handleCommModalInputChange(e)} />
-                        </label>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.onSubmitComm()}>{(commFormMode === 'create') ? 'Create' : 'Update'}</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleCreateCommModal}>Cancel</Button>
-                    </ModalFooter>
-                </ReactstrapModal>
-
-                {/*<SwitchClientModal
-                    isShowSwitchClientModal={isShowSwitchClientModal}
-                    toggleSwitchClientModal={this.toggleSwitchClientModal}
-                    onSwitchClient={(selectedClientId) => this.onSwitchClient(selectedClientId)}
-                    clients={this.props.dmeClients}
-                    selectedClientPK={clientPK}
-                />*/}
-
-                <NoteSlider
-                    isOpen={isNotePaneOpen}
-                    toggleNoteSlider={this.toggleNoteSlider}
-                    notes={notes}
-                    createNote={(newNote) => this.props.createNote(newNote)} 
-                    updateNote={(noteId, newNote) => this.props.updateNote(noteId, newNote)} 
-                    deleteNote={(id) => this.props.deleteNote(id)}
-                    clientname={clientname}
-                    selectedCommId={selectedCommId}
-                />
 
                 <LineAndLineDetailSlider
                     isOpen={isShowLineSlider}
@@ -5550,15 +5224,6 @@ class BookingPage extends Component {
                 />
 
                 <ConfirmModal
-                    isOpen={this.state.isShowDeleteCommConfirmModal}
-                    onOk={() => this.onClickConfirmBtn('delete-comm')}
-                    onCancel={this.toggleDeleteCommConfirmModal}
-                    title={'Delete Comm Log'}
-                    text={'Are you sure you want to delete this comm, all related notes will also be deleted?'}
-                    okBtnName={'Delete'}
-                />
-
-                <ConfirmModal
                     isOpen={this.state.isShowDeleteFileConfirmModal}
                     onOk={() => this.onClickConfirmBtn('delete-file')}
                     onCancel={this.toggleDeleteFileConfirmModal}
@@ -5567,13 +5232,13 @@ class BookingPage extends Component {
                     okBtnName={'Delete'}
                 />
 
-                {booking && booking.booking_Created_For &&
+                {formInputs && formInputs['booking_Created_For'] && formInputs['booking_Created_For'].label &&
                     <ConfirmModal
                         isOpen={this.state.isShowUpdateCreatedForEmailConfirmModal}
                         onOk={() => this.onClickConfirmBtn('booking_Created_For')}
                         onCancel={this.toggleUpdateCreatedForEmailConfirmModal}
                         title={'Update Client Employee`s email'}
-                        text={`Are you sure you want to update email for ${booking.booking_Created_For.toUpperCase()}?`}
+                        text={`Are you sure you want to update email for ${formInputs['booking_Created_For'].label.toUpperCase()}?`}
                         okBtnName={'Update'}
                     />
                 }
@@ -5616,7 +5281,6 @@ const mapStateToProps = (state) => {
         nextBookingId: state.booking.nextBookingId,
         prevBookingId: state.booking.prevBookingId,
         qtyTotal: state.booking.qtyTotal,
-        cntComms: state.booking.cntComms,
         cntAttachments: state.booking.cntAttachments,
         isAutoAugmented: state.booking.isAutoAugmented,
         redirect: state.auth.redirect,
@@ -5630,10 +5294,6 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
-        comms: state.comm.comms,
-        needUpdateComms: state.comm.needUpdateComms,
-        notes: state.comm.notes,
-        needUpdateNotes: state.comm.needUpdateNotes,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
@@ -5649,7 +5309,6 @@ const mapStateToProps = (state) => {
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
-        availableCreators: state.comm.availableCreators,
         apiBCLs: state.extra.apiBCLs,
         allFPs: state.extra.allFPs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
@@ -5704,14 +5363,6 @@ const mapDispatchToProps = (dispatch) => {
         fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        createComm: (comm) => dispatch(createComm(comm)),
-        getComms: (id, sortField, columnFilters) => dispatch(getComms(id, sortField, columnFilters)),        
-        updateComm: (id, updatedComm) => dispatch(updateComm(id, updatedComm)),
-        deleteComm: (id) => dispatch(deleteComm(id)),
-        getNotes: (commId) => dispatch(getNotes(commId)),
-        createNote: (note) => dispatch(createNote(note)),
-        updateNote: (id, updatedNote) => dispatch(updateNote(id, updatedNote)),
-        deleteNote: (id) => dispatch(deleteNote(id)),
         getWarehouses: () => dispatch(getWarehouses()),
         getDMEClients: () => dispatch(getDMEClients()),
         getBookingStatusHistory: (bookingId) => dispatch(getBookingStatusHistory(bookingId)),
@@ -5724,7 +5375,6 @@ const mapDispatchToProps = (dispatch) => {
         getStatusActions: () => dispatch(getStatusActions()),
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
-        getAvailableCreators: () => dispatch(getAvailableCreators()),
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
         setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
@@ -5736,7 +5386,8 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
-        getAllErrors: () => dispatch(getAllErrors()),
+        getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
+        resetNoBooking: () => dispatch(resetNoBooking()),
     };
 };
 

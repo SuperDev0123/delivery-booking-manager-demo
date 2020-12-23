@@ -78,6 +78,7 @@ import {
     failedPricingAnalysis,
     successAugmentPuDate,
     failedAugmentPuDate,
+    resetNoBookingAction,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -749,4 +750,8 @@ export const sendEmail = (bookingId, templateName) => {
             .then(({ data }) => dispatch(successSendEmail(data)))
             .catch((error) => dispatch(failedSendEmail(error)));
     };
+};
+
+export const resetNoBooking = () => {
+    return dispatch => dispatch(resetNoBookingAction());
 };
