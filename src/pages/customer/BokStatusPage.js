@@ -89,26 +89,29 @@ class BokStatusPage extends Component {
                             </div>
                             <p>In Transit</p>
                         </div>
-                        <div className="status-chart-item disp-inline-block">
-                            <div className={step > 3 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                <img className="" src={deliveredImg} />
+                        {step !== 5 &&
+                            <div className="status-chart-item disp-inline-block">
+                                <div className={step > 3 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
+                                    <img className="" src={deliveredImg} />
+                                </div>
+                                <p>Delivered</p>
                             </div>
-                            <div className="status-chart-item-wrapper disp-inline-block">
-                                <img className="" src={step > 3 ? dashDoneImg: dashImg } />
+                        }
+                        {step === 5 &&
+                            <div className="status-chart-item disp-inline-block">
+                                <div className={step > 4 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
+                                    <img className="" src={futileImg} />
+                                </div>
+                                <p>Futile</p>
                             </div>
-                            <p>Delivered</p>
-                        </div>
-                        <div className="status-chart-item disp-inline-block">
-                            <div className={step > 4 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                <img className="" src={futileImg} />
-                            </div>
-                            <p>Futile</p>
-                        </div>
+                        }
                         <div className="status-chart-button disp-inline-block">
                             <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
                         </div>
                         <div className="status-chart-detail">
-                            {status &&<p><strong>Status</strong>: {status}</p>}
+                            {!status && <p><strong>Status</strong>: Not available</p>}
+                            {status && <p><strong>Status</strong>: {status}</p>}
+                            {!quote && <p><strong>Quote</strong>: Not selected</p>}
                             {quote && quote.hasOwnProperty('cost') &&<p><strong>Cost</strong>: ${quote.cost}</p>}
                             {quote && quote.hasOwnProperty('eta_readable') &&<p><strong>ETA</strong>: {quote.eta_readable} days</p>}
                             {quote && quote.hasOwnProperty('fp_name') &&<p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
