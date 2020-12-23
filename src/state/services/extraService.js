@@ -57,6 +57,12 @@ import {
     failedCreateClientProduct,
     successGetAllErrors,
     failedGetAllErrors,
+    successGetAllClientEmployees,
+    failedGetAllClientEmployees,
+    successCreateClientEmployee,
+    failedCreateClientEmployee,
+    successGetClientEmployee,
+    failedGetClientEmployee,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -354,6 +360,46 @@ export const updateClientEmployee = (clientEmployee) => {
             .catch((error) => dispatch(failedUpdateClientEmployee(error)));
 };
 
+export const getAllClientEmployees = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAllClientEmployees(data)))
+            .catch((error) => dispatch(failedGetAllClientEmployees(error)));
+};
+
+export const createClientEmployee = (clientEmployee) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/add/`,
+        data: clientEmployee
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateClientEmployee(data)))
+            .catch((error) => dispatch(failedCreateClientEmployee(error)));
+};
+
+
+export const getClientEmployee = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/` + id + '/get/',
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetClientEmployee(data)))
+            .catch((error) => dispatch(failedGetClientEmployee(error)));
+};
 
 export const getZohoTickets = (dmeid) => {
     const token = localStorage.getItem('token');
