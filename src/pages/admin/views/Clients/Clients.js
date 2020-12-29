@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getDMEClientProducts, deleteClientProduct, createClientProduct } from '../../../../state/services/extraService';
 import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
+import imgClients from  '../../../../public/images/clients.png';
 
 class Clients extends Component {
     constructor(props) {
@@ -110,7 +111,7 @@ class Clients extends Component {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{client.company_name}</td>
+                    <td><span className="d-flex align-items-center"><img src={imgClients} width="25px"/>{client.company_name} </span></td>
                     <td>{client.dme_account_num}</td>
                     <td>{client.phone}</td>
                     <td>{client.client_filter_date_field}</td>
@@ -118,9 +119,7 @@ class Clients extends Component {
                     <td>{client.client_mark_up_percent}</td>
                     <td>{client.client_min_markup_startingcostvalue}</td>
                     <td>{client.client_min_markup_value}</td>
-                    <td>{client.augment_pu_by_time}</td>
-                    <td>{client.augment_pu_available_time}</td>
-                    <td><a className="btn btn-info btn-sm" href={'/admin/providers/edit/' + client.id}>Edit</a></td>
+                    <td><a className="btn btn-info btn-sm" href={'/admin/clients/edit/' + client.pk_id_dme_client}>Edit</a></td>
                     <td>
                         {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>:null}
                     </td>
@@ -151,37 +150,36 @@ class Clients extends Component {
                     )
                         :
                         (
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <h3 className="panel-title"></h3>
-                                </div>
-                                <div className="panel-body">
-                                    <button
-                                        className="btn btn-success btn-refresh"
-                                        onClick={() => this.onClickRefresh()}
-                                    >
-                                        Refresh
-                                    </button> 
-                                    <table className="table table-hover table-bordered sortable fixed_headers">
-                                        <thead>
-                                            <th>No</th>
-                                            <th>Company Name</th>
-                                            <th>DME Account Number</th>
-                                            <th>Phone</th>
-                                            <th>Client Filter Date Field</th>
-                                            <th>Freight Provider</th>
-                                            <th>Client Mark_up percent</th>
-                                            <th>Client Min Markup Startingcostvalue</th>
-                                            <th>Client Min Markup value</th>
-                                            <th>Augment By Time</th>
-                                            <th>Augment Available Time</th>
-                                            <th>Actions</th>
-                                            <th>Products</th>
-                                        </thead>
-                                        <tbody>
-                                            {clientsList}
-                                        </tbody>
-                                    </table>
+                            <div className="row">
+                                <div className="col-md-12">
+                                    <div className="panel panel-default">
+                                        <div className="panel-heading">
+                                            <h3 className="panel-title">Clients</h3>
+                                            <div className="actions pull-right">
+                                                <a className="btn btn-success" href="/admin/clients/add">Add New</a>
+                                            </div>
+                                        </div>
+                                        <div className="panel-body">
+                                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                                <thead>
+                                                    <th>No</th>
+                                                    <th>Company Name</th>
+                                                    <th>DME Account Number</th>
+                                                    <th>Phone</th>
+                                                    <th>Client Filter Date Field</th>
+                                                    <th>FP</th>
+                                                    <th>MU %</th>
+                                                    <th>MU Starting Cost</th>
+                                                    <th>MU Minimum</th>
+                                                    <th>Actions</th>
+                                                    <th>Products</th>
+                                                </thead>
+                                                <tbody>
+                                                    {clientsList}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         )}
