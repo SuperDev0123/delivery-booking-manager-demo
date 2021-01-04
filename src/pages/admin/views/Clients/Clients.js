@@ -6,9 +6,14 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getDMEClientProducts, deleteClientProduct, createClientProduct } from '../../../../state/services/extraService';
+import { getDMEClientProducts, deleteClientProduct, createClientProduct, getEmployeesByClient } from '../../../../state/services/extraService';
 import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
+import ClientEmployeeSlider from '../../../../components/Sliders/ClientEmployeeSlider';
 import imgClients from  '../../../../public/images/clients.png';
+import { getAllRoles } from '../../../../state/services/roleService';
+import { getAllClients } from '../../../../state/services/clientService';
+import { getWarehouses } from '../../../../state/services/warehouseService';
+import { createClientEmployee, updateClientEmployee } from '../../../../state/services/extraService';
 
 class Clients extends Component {
     constructor(props) {
@@ -17,13 +22,20 @@ class Clients extends Component {
         this.state = {
             loading: false,
             dmeClients: [],
+            allClientEmployees: [],
             isShowClientProductSlider: false,
+            isShowClientEmployeeSlider: false,
             loadingClientProducts: false,
             clientProducts: [],
-            dmeClient: {}
+            dmeClient: {},
+            roles: [],
+            clients: [],
+            warehouses: [],
+            pk_id_dme_client: -1,
         };
 
         this.toggleClientProductSlider = this.toggleClientProductSlider.bind(this);
+        this.toggleClientEmployeeSlider = this.toggleClientEmployeeSlider.bind(this);
         this.onClickDelete = this.onClickDelete.bind(this);
         this.onClickSubmit = this.onClickSubmit.bind(this);
     }
@@ -36,10 +48,16 @@ class Clients extends Component {
         cleanRedirectState: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
         getDMEClients: PropTypes.func.isRequired,
+        getEmployeesByClient: PropTypes.func.isRequired,
+        getAllClients: PropTypes.func.isRequired,
+        getAllRoles: PropTypes.func.isRequired,
+        getWarehouses: PropTypes.func.isRequired,
         clientProducts: PropTypes.array.isRequired,
         getDMEClientProducts: PropTypes.func.isRequired,
         deleteClientProduct: PropTypes.func.isRequired,
         createClientProduct: PropTypes.func.isRequired,
+        createClientEmployee: PropTypes.func.isRequired,
+        updateClientEmployee: PropTypes.func.isRequired,
     }
 
     componentDidMount() {
@@ -54,10 +72,13 @@ class Clients extends Component {
         }
 
         this.onClickRefresh();
+        this.props.getAllRoles();
+        this.props.getWarehouses();
+        this.props.getAllClients();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, dmeClients, clientProducts } = newProps;
+        const { redirect, dmeClients, clientProducts,allClientEmployees, roles, clients, warehouses } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -71,10 +92,26 @@ class Clients extends Component {
             this.notify('Refreshed!');
         }
 
+        if (allClientEmployees) {
+            this.setState({ allClientEmployees });
+        }
+
         if (clientProducts) {
             this.setState({ clientProducts, loadingClientProducts: false});
         }
-    
+
+        if (roles) {
+            this.setState({ roles });
+            console.log('roles', roles);
+        }
+        if (clients) {
+            this.setState({ clients });
+            console.log('clients', clients);
+        }
+        if (warehouses) {
+            this.setState({warehouses});
+            console.log('warehouses', warehouses);
+        }
     }
 
     notify = (text) => {
@@ -88,6 +125,16 @@ class Clients extends Component {
 
     toggleClientProductSlider() {
         this.setState(prevState => ({isShowClientProductSlider: !prevState.isShowClientProductSlider}));
+    }
+
+    toggleClientEmployeeSlider() {
+        this.setState(prevState => ({isShowClientEmployeeSlider: !prevState.isShowClientEmployeeSlider, pk_id_dme_client:  -1}));
+    }
+
+    onClickOpenClientEmployeeSlider(client) {
+        this.props.getEmployeesByClient(client.pk_id_dme_client);
+        this.toggleClientEmployeeSlider();
+        this.setState({pk_id_dme_client: client.pk_id_dme_client, dmeClient:client});
     }
 
     onClickOpenPricingSlider(client) {
@@ -106,12 +153,12 @@ class Clients extends Component {
     }
 
     render() {
-        const { loading, dmeClients, dmeClient, loadingClientProducts, clientProducts, isShowClientProductSlider} = this.state;
+        const { loading, dmeClients, dmeClient, loadingClientProducts, clientProducts, allClientEmployees, isShowClientProductSlider, isShowClientEmployeeSlider, roles, clients, warehouses,pk_id_dme_client} = this.state;
         const clientsList = dmeClients.map((client, index) => {
             return (
-                <tr key={index}>
+                <tr key={index} className={client.pk_id_dme_client===pk_id_dme_client?'bg-success':''}>
                     <td>{index + 1}</td>
-                    <td><span className="d-flex align-items-center"><img src={imgClients} width="25px"/>{client.company_name} </span></td>
+                    <td><span className="d-flex align-items-center" onClick={() => this.onClickOpenClientEmployeeSlider(client)}><img src={imgClients} width="25px"/>{client.company_name} </span></td>
                     <td>{client.dme_account_num}</td>
                     <td>{client.phone}</td>
                     <td>{client.client_filter_date_field}</td>
@@ -195,7 +242,17 @@ class Clients extends Component {
                     onClickSubmit={this.onClickSubmit}
                 />
 
-
+                <ClientEmployeeSlider
+                    isOpen={isShowClientEmployeeSlider}
+                    allClientEmployees = {allClientEmployees}
+                    toggleClientEmployeeSlider={this.toggleClientEmployeeSlider}
+                    roles={roles}
+                    clients={clients}
+                    warehouses={warehouses}
+                    clientname={dmeClient.company_name}
+                    createClientEmployee={this.props.createClientEmployee}
+                    updateClientEmployee={this.props.updateClientEmployee}
+                />
                 <ToastContainer />
             </div>
         );
@@ -209,6 +266,10 @@ const mapStateToProps = (state) => {
         urlAdminHome: state.url.urlAdminHome,
         dmeClients: state.auth.dmeClients,
         clientProducts: state.extra.clientProducts,
+        allClientEmployees: state.extra.allClientEmployees,
+        roles: state.role.roles,
+        clients: state.client.clients,
+        warehouses: state.warehouse.warehouses,
     };
 };
 
@@ -218,8 +279,14 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getDMEClients: () => dispatch(getDMEClients()),
         getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id)),
+        getEmployeesByClient: (client_id) => dispatch(getEmployeesByClient(client_id)),
         deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
         createClientProduct: (clientProduct) => dispatch(createClientProduct(clientProduct)),
+        getAllClients: () => dispatch(getAllClients()),
+        getAllRoles: () => dispatch(getAllRoles()),
+        getWarehouses: () => dispatch(getWarehouses()),
+        updateClientEmployee: (data) => dispatch(updateClientEmployee(data)),
+        createClientEmployee: (data) => dispatch(createClientEmployee(data)),
     };
 };
 

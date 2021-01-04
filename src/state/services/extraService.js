@@ -373,6 +373,21 @@ export const getAllClientEmployees = () => {
             .catch((error) => dispatch(failedGetAllClientEmployees(error)));
 };
 
+export const getEmployeesByClient = (client_id) => {
+    console.log('getEmployeesByClient', client_id);
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/get_client_employees?client_id=${client_id}`,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetAllClientEmployees(data)))
+            .catch((error) => dispatch(failedGetAllClientEmployees(error)));
+};
+
+
 export const createClientEmployee = (clientEmployee) => {
     const token = localStorage.getItem('token');
     const options = {
