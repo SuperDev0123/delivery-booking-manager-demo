@@ -31,6 +31,7 @@ class BokStatusPage extends Component {
         step: PropTypes.number,
         status: PropTypes.string,
         quote: PropTypes.object,
+        booking: PropTypes.object,
         match: PropTypes.object,
     };
 
@@ -54,7 +55,7 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {status, step, quote} = this.props;
+        const {status, step, quote, booking} = this.props;
 
         return (
             <section className="status">
@@ -109,13 +110,16 @@ class BokStatusPage extends Component {
                             <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
                         </div>
                         <div className="status-chart-detail">
+                            {booking && booking.hasOwnProperty('b_bookingID_Visual') && <p><strong>DME Booking Number: </strong>{booking.b_bookingID_Visual}</p>}
+                            {booking && booking.hasOwnProperty('b_client_order_num') && <p><strong>Client Order Number: </strong>{booking.b_client_order_num}</p>}
+                            {booking && booking.hasOwnProperty('b_client_sales_inv_num') && <p><strong>Client Sales Invoice Number: </strong>{booking.b_client_sales_inv_num}</p>}
                             {!status && <p><strong>Status</strong>: Not available</p>}
                             {status && <p><strong>Status</strong>: {status}</p>}
                             {!quote && <p><strong>Quote</strong>: Not selected</p>}
-                            {quote && quote.hasOwnProperty('cost') &&<p><strong>Cost</strong>: ${quote.cost}</p>}
-                            {quote && quote.hasOwnProperty('eta_readable') &&<p><strong>ETA</strong>: {quote.eta_readable} days</p>}
-                            {quote && quote.hasOwnProperty('fp_name') &&<p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
-                            {quote && quote.hasOwnProperty('service_name') &&<p><strong>Service Name</strong>: {quote.service_name}</p>}
+                            {quote && quote.hasOwnProperty('cost') && <p><strong>Cost</strong>: ${quote.cost}</p>}
+                            {quote && quote.hasOwnProperty('eta_readable') && <p><strong>ETA</strong>: {quote.eta_readable} days</p>}
+                            {quote && quote.hasOwnProperty('fp_name') && <p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
+                            {quote && quote.hasOwnProperty('service_name') && <p><strong>Service Name</strong>: {quote.service_name}</p>}
                         </div>
                     </div>
                 }
@@ -130,6 +134,7 @@ const mapStateToProps = (state) => {
         status: state.bok.deliveryStatus,
         step: state.bok.deliveryStep,
         quote: state.bok.quote,
+        booking: state.bok.booking,
     };
 };
 

@@ -28,6 +28,7 @@ const defaultState = {
     deliveryStep: null,
     deliveryStatus: null,
     quote: null,
+    booking: null,
     bookedSuccess: null,
     canceledSuccess: null,
 };
@@ -72,6 +73,7 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 deliveryStatus: payload.status,
                 deliveryStep: payload.step,
                 quote: payload.quote,
+                booking: payload.booking,
             };
         case SUCCESS_BOOK_FREIGHT:
             return {

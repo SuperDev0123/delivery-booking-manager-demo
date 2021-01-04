@@ -174,6 +174,10 @@ class BokPricePage extends Component {
                     <div>
                         <p>Main Info:</p>
                         <div className="main-info">
+                            <div className="">
+                                <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
+                                <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span>
+                            </div>
                             <div className="pu-info disp-inline-block">
                                 <label>Pickup From</label><br />
                                 <span>{bok_1['b_028_b_pu_company']}</span><br />

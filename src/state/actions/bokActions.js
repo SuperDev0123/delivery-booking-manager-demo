@@ -100,10 +100,11 @@ export function successGetDeliveryStatus(data) {
     };
 }
 
-export function failedGetDeliveryStatus(error) {
+export function failedGetDeliveryStatus() {
     return {
         type: FAILED_GET_DE_STATUS,
-        payload: 'Unable to get delivery status. ' + error.response.data.message,
+        // payload: 'Unable to get delivery status. ' + error.response.data.message,
+        payload: 'Currently not available.',
     };
 }
 
