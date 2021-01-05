@@ -62,6 +62,10 @@ import ClientEmployees from '../pages/admin/views/ClientEmployees/ClientEmployee
 import AddClientEmployee from '../pages/admin/views/ClientEmployees/AddClientEmployee';
 import EditClientEmployee from '../pages/admin/views/ClientEmployees/EditClientEmployee';
 
+import CustomerClientEmployees from '../pages/admin/customerdashboard/ClientEmployees/ClientEmployees';
+import CustomerAddClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/AddClientEmployee';
+import CustomerEditClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/EditClientEmployee';
+
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
 import ClientRas from '../pages/admin/customerdashboard/ClientRas';
@@ -134,6 +138,10 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/add' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/edit/:id' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/duplicate/:id' component={ClientRasAction} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees' component={CustomerClientEmployees} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/add' component={CustomerAddClientEmployee} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/edit/:id' component={CustomerEditClientEmployee} />
+                    
                 </Main>
 
                 <Redirect to='/' />
