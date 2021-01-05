@@ -2458,8 +2458,8 @@ class BookingPage extends Component {
     onSelectPricing(pricingInfo) {
         const {formInputs, booking} = this.state;
 
-        formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
-        booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        formInputs['vx_freight_provider'] = pricingInfo['freight_provider'];
+        booking['vx_freight_provider'] = pricingInfo['freight_provider'];
         booking['vx_account_code'] = pricingInfo['account_code'];
         formInputs['vx_account_code'] = pricingInfo['account_code'];
         booking['vx_serviceName'] = pricingInfo['service_name'];
@@ -2473,7 +2473,7 @@ class BookingPage extends Component {
         booking['api_booking_quote'] = pricingInfo['id'];
 
         const selectedFP = this.props.allFPs
-            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
+            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 

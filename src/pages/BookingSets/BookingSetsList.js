@@ -345,7 +345,7 @@ class BookingSetList extends React.Component {
 
     onSelectPricing(pricingInfo) {
         const booking = this.state.selectedBooking;
-        booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        booking['vx_freight_provider'] = pricingInfo['freight_provider'];
         booking['vx_account_code'] = pricingInfo['account_code'];
         booking['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
@@ -353,7 +353,7 @@ class BookingSetList extends React.Component {
         booking['inv_cost_quoted'] = pricingInfo['client_mu_1_minimum_values'];
         booking['api_booking_quote'] = pricingInfo['id'];
 
-        const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['fk_freight_provider_id']);
+        const selectedFP = this.state.allFPs.find(fp => fp.fp_company_name === pricingInfo['freight_provider']);
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
 
         this.setState({selectedBooking: booking, isBookingModified: true, loadingBookings: true, curViewMode: 0});
