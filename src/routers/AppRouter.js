@@ -58,6 +58,15 @@ import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
 import Costs from '../pages/admin/views/Costs/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
+import AddClient from '../pages/admin/views/Clients/AddClient';
+import EditClient from '../pages/admin/views/Clients/EditClient';
+import ClientEmployees from '../pages/admin/views/ClientEmployees/ClientEmployees';
+import AddClientEmployee from '../pages/admin/views/ClientEmployees/AddClientEmployee';
+import EditClientEmployee from '../pages/admin/views/ClientEmployees/EditClientEmployee';
+
+import CustomerClientEmployees from '../pages/admin/customerdashboard/ClientEmployees/ClientEmployees';
+import CustomerAddClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/AddClientEmployee';
+import CustomerEditClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/EditClientEmployee';
 
 // Customer Dashboard pages
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
@@ -119,6 +128,13 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
+                    <AdminPrivateRoute exact path='/admin/clients/add' component={AddClient} />
+                    <AdminPrivateRoute exact path='/admin/clients/edit/:id' component={EditClient} />
+
+                    <AdminPrivateRoute exact path='/admin/clientemployees' component={ClientEmployees} />
+                    <AdminPrivateRoute exact path='/admin/clientemployees/add' component={AddClientEmployee} />
+                    <AdminPrivateRoute exact path='/admin/clientemployees/edit/:id' component={EditClientEmployee} />
+                    
                     <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
@@ -130,6 +146,10 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/add' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/edit/:id' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/duplicate/:id' component={ClientRasAction} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees' component={CustomerClientEmployees} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/add' component={CustomerAddClientEmployee} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/edit/:id' component={CustomerEditClientEmployee} />
+                    
                 </Main>
 
                 <Redirect to='/' />

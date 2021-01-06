@@ -56,11 +56,16 @@ import {
     FAILED_CREATE_CLIENT_PRODUCTS,
     SUCCESS_GET_ALL_ERRORS,
     FAILED_GET_ALL_ERRORS,
+    SUCCESS_GET_CLIENT_EMPLOYEES,
+    FAILED_GET_CLIENT_EMPLOYEES,
+    SUCCESS_GET_CLIENT_EMPLOYEE,
+    FAILED_GET_CLIENT_EMPLOYEE,
 } from '../constants/extraConstants';
 
 const defaultState = {
     packageTypes: [],
     allBookingStatus: [],
+    allClientEmployees: [],
     statusHistories: null,
     statusInfo: [],
     needUpdateStatusHistories: false,
@@ -78,6 +83,7 @@ const defaultState = {
     clientProducts: [],
     allFPs: [],
     errors: [],
+    clientEmployee: {}
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -263,6 +269,7 @@ export const ExtraReducer = (state = defaultState, {
             return {
                 ...state,
             };
+        
         case SUCCESS_DELETE_CLIENT_PRODUCTS: 
             var clientProducts = [];
             for (const clientProduct of state.clientProducts) {
@@ -278,6 +285,16 @@ export const ExtraReducer = (state = defaultState, {
             return {
                 ...state,
                 errors: payload
+            };
+        case SUCCESS_GET_CLIENT_EMPLOYEES:
+            return {
+                ...state,
+                allClientEmployees: payload
+            };
+        case SUCCESS_GET_CLIENT_EMPLOYEE:
+            return {
+                ...state,
+                clientEmployee: payload
             };
         case FAILED_GET_ALL_ERRORS:
             return {
@@ -316,6 +333,8 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_DELETE_CLIENT_PRODUCTS:
         case FAILED_CREATE_CLIENT_PRODUCTS:
+        case FAILED_GET_CLIENT_EMPLOYEES:
+        case FAILED_GET_CLIENT_EMPLOYEE:
             return {
                 ...state,
                 errorMessage: errorMessage,

@@ -56,6 +56,12 @@ import {
     FAILED_CREATE_CLIENT_PRODUCTS,
     SUCCESS_GET_ALL_ERRORS,
     FAILED_GET_ALL_ERRORS,
+    SUCCESS_GET_CLIENT_EMPLOYEES,
+    FAILED_GET_CLIENT_EMPLOYEES,
+    SUCCESS_CREATE_CLIENT_EMPLOYEE,
+    FAILED_CREATE_CLIENT_EMPLOYEE,
+    SUCCESS_GET_CLIENT_EMPLOYEE,
+    FAILED_GET_CLIENT_EMPLOYEE,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -376,6 +382,20 @@ export function failedUpdateClientEmployee(error) {
     };
 }
 
+export function successGetAllClientEmployees(data) {
+    return {
+        type: SUCCESS_GET_CLIENT_EMPLOYEES,
+        payload: data,
+    };
+}
+
+export function failedGetAllClientEmployees(error) {
+    return {
+        type: FAILED_GET_CLIENT_EMPLOYEES,
+        errorMessage: 'Unable to get all ClientEmployees. Error:' + error,
+    };
+}
+
 export function successGetZohoTickets(data) {
     return {
         type: SUCCESS_GET_ZOHO_TICKETS,
@@ -440,7 +460,6 @@ export function failedCreateClientProduct() {
     };
 }
 
-
 export function successGetAllErrors(data) {
     return {
         type: SUCCESS_GET_ALL_ERRORS,
@@ -455,3 +474,29 @@ export function failedGetAllErrors() {
     };
 }
 
+export function successCreateClientEmployee() {
+    return {
+        type: SUCCESS_CREATE_CLIENT_EMPLOYEE
+    };
+}
+
+export function failedCreateClientEmployee() {
+    return {
+        type: FAILED_CREATE_CLIENT_EMPLOYEE,
+        errorMessage: 'Failed to create client employee',
+    };
+}
+
+export function successGetClientEmployee(data) {
+    return {
+        type: SUCCESS_GET_CLIENT_EMPLOYEE,
+        payload: data
+    };
+}
+
+export function failedGetClientEmployee() {
+    return {
+        type: FAILED_GET_CLIENT_EMPLOYEE,
+        errorMessage: 'Failed to get client employee',
+    };
+}
