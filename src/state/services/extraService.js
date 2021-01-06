@@ -393,7 +393,7 @@ export const createClientEmployee = (clientEmployee) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/add/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/`,
         data: clientEmployee
     };
     return dispatch =>
@@ -408,7 +408,7 @@ export const getClientEmployee = (id) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/` + id + '/get/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientemployee/${id}/`,
     };
     return dispatch =>
         axios(options)
