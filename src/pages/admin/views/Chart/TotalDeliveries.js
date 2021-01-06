@@ -12,7 +12,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
-const TABLE_PAGINATION_SIZE = 15;
+const TABLE_PAGINATION_SIZE = 10;
 
 class TotalDeliveries extends Component {
     constructor(props) {
