@@ -383,7 +383,6 @@ export function failedUpdateClientEmployee(error) {
 }
 
 export function successGetAllClientEmployees(data) {
-    console.log('SUCCESS_GET_CLIENT_EMPLOYEES', data);
     return {
         type: SUCCESS_GET_CLIENT_EMPLOYEES,
         payload: data,
@@ -460,7 +459,6 @@ export function failedCreateClientProduct() {
         errorMessage: 'Failed to create client product',
     };
 }
-
 
 export function successGetAllErrors(data) {
     return {

@@ -89,9 +89,6 @@ class ClientEmployees extends Component {
                 dataField: 'pk_id_client_emp',
                 text: 'ID',
                 editable: false,
-                style: {
-                    cursor: 'not-allowed',
-                },
             }, {
                 dataField: 'name_first',
                 text: 'First Name',
@@ -122,17 +119,17 @@ class ClientEmployees extends Component {
                 text: 'Client Name',
                 editable: false,
                 style: editableStyle,
-            },{
+            }, {
                 dataField: 'warehouse_name',
                 text: 'Warehouse Name',
                 editable: false,
                 style: editableStyle,
-            },{
+            }, {
                 dataField: 'clien_emp_job_title',
                 text: 'Job Title',
                 editable: false,
                 style: editableStyle,
-            },{
+            }, {
                 dataField: 'button',
                 text: 'Actions',
                 formatter: onClickEditBtn
@@ -163,9 +160,7 @@ class ClientEmployees extends Component {
                                         <div>
                                             <SearchBar {...props.searchProps} />
                                             <hr />
-                                            <BootstrapTable id="client_employees"
-                                                {...props.baseProps}
-                                            />
+                                            <BootstrapTable id="client_employees" {...props.baseProps} />
                                         </div>
                                     )
                                 }
