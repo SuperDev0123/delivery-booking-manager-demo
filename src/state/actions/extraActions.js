@@ -492,7 +492,7 @@ export function failedCreateClientEmployee() {
 export function successGetClientEmployee(data) {
     return {
         type: SUCCESS_GET_CLIENT_EMPLOYEE,
-        payload: data.result
+        payload: data
     };
 }
 
