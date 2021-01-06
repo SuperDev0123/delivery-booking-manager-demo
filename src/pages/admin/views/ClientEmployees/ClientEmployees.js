@@ -76,7 +76,7 @@ class ClientEmployees extends Component {
             };
         };
 
-        const actionButton = (cell, row) => {
+        const onClickEditBtn = (cell, row) => {
             return (
                 <div>
                     <a className="btn btn-info btn-sm" href={'/admin/clientemployees/edit/' + row.pk_id_client_emp}>Edit</a>
@@ -135,7 +135,7 @@ class ClientEmployees extends Component {
             },{
                 dataField: 'button',
                 text: 'Actions',
-                formatter: actionButton
+                formatter: onClickEditBtn
             }
         ];
 
