@@ -4929,10 +4929,12 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({curViewMode === 1 ? 0 : qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                {
-                                                    clientname === 'dme' ?
-                                                        <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
-                                                        : null
+                                                {clientname === 'dme' &&
+                                                    <li className={activeTabInd === 3 ? 'selected' : ''}>
+                                                        <a onClick={(e) => this.onClickBottomTap(e, 3)}>
+                                                            Zoho Tickets Log({zoho_tickets.length})
+                                                        </a>
+                                                    </li>
                                                 }
                                                 <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({curViewMode === 1 ? 0 : cntAttachments})</a></li>
                                                 <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
