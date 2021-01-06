@@ -14,7 +14,7 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Select from 'react-select';
 
-const TABLE_PAGINATION_SIZE = 15;
+const TABLE_PAGINATION_SIZE = 10;
 
 class ByClient extends Component {
     constructor(props) {
