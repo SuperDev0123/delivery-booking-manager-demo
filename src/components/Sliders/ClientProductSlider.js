@@ -18,7 +18,9 @@ class ClientProductSlider extends React.Component {
             pageCnt: 0,
             editMode: 0,
             clientProductsFormInputs: {
-                modelNumber: '',
+                parent_model_number: '',
+                client_model_number: '',
+                description: '',
                 e_dimUOM: 'cm',
                 e_dimLength: 0,
                 e_dimWidth: 0,
@@ -62,7 +64,6 @@ class ClientProductSlider extends React.Component {
         const { dmeClient } = this.props;
     
         clientProductsFormInputs['fk_id_dme_client_id'] = dmeClient.pk_id_dme_client;
-
         this.props.onClickSubmit(clientProductsFormInputs);
         this.setState({editMode: 0});
     }
@@ -108,8 +109,14 @@ class ClientProductSlider extends React.Component {
                     cursor: 'not-allowed',
                 },
             }, {
-                dataField: 'modelNumber',
-                text: 'Model Number',
+                dataField: 'parent_model_number',
+                text: 'Parent Model Number',
+            }, {
+                dataField: 'client_model_number',
+                text: 'Client Model Number',
+            }, {
+                dataField: 'description',
+                text: 'Description',
             }, {
                 dataField: 'e_dimUOM',
                 text: 'Dim UOM',
@@ -190,12 +197,32 @@ class ClientProductSlider extends React.Component {
                         </LoadingOverlay>
                     </div>) : (<div className="line-form form-view">
                         <label>
-                            <p>Model Number</p>
+                            <p>Parent Model Number</p>
                             <input
                                 className="form-control"
                                 type="text"
-                                name="modelNumber"
-                                value={clientProductsFormInputs['modelNumber']}
+                                name="parent_model_number"
+                                value={clientProductsFormInputs['parent_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label>
+                        <label>
+                            <p>Child Model Number</p>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="child_model_number"
+                                value={clientProductsFormInputs['child_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label>
+                        <label>
+                            <p>Description</p>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="description"
+                                value={clientProductsFormInputs['description']}
                                 onChange={(e) => this.onInputChange(e)}
                             />
                         </label>

@@ -454,7 +454,7 @@ export const deleteClientProduct = (id) => {
     const options = {
         method: 'delete',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/${id}/delete`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/${id}/`,
     };
     return dispatch => {
         axios(options)
@@ -468,7 +468,7 @@ export const createClientProduct = (clientProduct) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/add/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/`,
         data: clientProduct,
     };
     return dispatch =>

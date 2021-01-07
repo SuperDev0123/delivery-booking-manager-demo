@@ -53,7 +53,7 @@ export function failedCreateClient() {
 export function successGetClient(data) {
     return {
         type: SUCCESS_GET_CLIENT,
-        payload: data.result
+        payload: data
     };
 }
 

@@ -12,10 +12,10 @@ import {
 } from '../constants/clientRasConstants';
 
 export function successGetClientRas(data) {
-    console.log('successGetClientRas', data.result);
+    console.log('successGetClientRas', data);
     return {
         type: SUCCESS_GET_CLIENTRAS,
-        payload: data.result,
+        payload: data,
     };
 }
 

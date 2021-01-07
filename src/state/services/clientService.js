@@ -46,7 +46,7 @@ export const createClient = (client) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clients/add/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clients/`,
         data: client
     };
     return dispatch =>
@@ -61,7 +61,7 @@ export const getClient = (id) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clients/` + id + '/get/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clients/${id}/`,
     };
     return dispatch =>
         axios(options)

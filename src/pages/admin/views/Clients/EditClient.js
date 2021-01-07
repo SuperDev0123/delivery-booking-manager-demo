@@ -78,7 +78,7 @@ class EditClient extends Component {
 
         this.props.updateClient(client);
         this.setState({ loading: false });
-        // this.props.history.push('/admin/clients');
+        this.props.history.push('/admin/clients');
         event.preventDefault();
     }
 

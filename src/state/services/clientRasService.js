@@ -33,7 +33,7 @@ export const getClientRas = (id) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/` + id + '/get/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/${id}/`,
     };
     return dispatch =>
         axios(options)
@@ -46,7 +46,7 @@ export const createClientRas = (data) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/add/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/`,
         data: data
     };
     return dispatch =>
@@ -60,7 +60,7 @@ export const updateClientRas = (data) => {
     const options = {
         method: 'put',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/` + data.id + '/edit/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/${data.id}/`,
         data: data
     };
     return dispatch =>
@@ -75,7 +75,7 @@ export const deleteClientRas = (data) => {
     const options = {
         method: 'delete',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/`+id+'/delete/',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientras/${id}/`,
         data: data
     };
     return dispatch =>
