@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
-
+import { Nav, NavItem, NavLink} from 'reactstrap';
 import axios from 'axios';
 
 import LoadingOverlay from 'react-loading-overlay';
@@ -20,10 +20,17 @@ class ZohoPage extends React.Component {
         super(props);
 
         this.state = {
-            zohotickets: [],
+            alltickets: [],
+            filteredTickets: [], 
+            activeTabInd: 0,
             merge: 'disabled',
             loadingStatus: false,
+            showSimpleSearchBox: false,
+            simpleSearchKeyword: '',
         };
+
+        this.setWrapperRef = this.setWrapperRef.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
     }
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
@@ -75,7 +82,7 @@ class ZohoPage extends React.Component {
             axios(options)
                 .then(({ data }) => {
                     console.log(data);
-                    this.setState({ zohotickets: data.data });
+                    this.setState({ alltickets: data.data, filteredTickets: data.data });
                     this.setState({ loadingStatus: false });
                 })
                 .catch((error) => console.log(error));
@@ -105,9 +112,21 @@ class ZohoPage extends React.Component {
 
     }
 
+    UNSAFE_componentWillMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
+        // document.addEventListener('scroll', this.handleScroll);
+    }
+
     componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
         clearInterval(this.intervalID);
     }
+
+    handleClickOutside(event) {
+        if (this.wrapperRef && !this.wrapperRef.contains(event.target))
+            this.setState({showSimpleSearchBox: false});
+    }
+
 
     clickMerge(e){
 
@@ -273,7 +292,7 @@ class ZohoPage extends React.Component {
             axios(options)
                 .then(({ data }) => {
                     console.log(data);
-                    this.setState({ zohotickets: data.data });
+                    this.setState({ alltickets: data.data, filteredTickets:data.data });
                 })
                 .catch((error) => console.log(error));
 
@@ -308,10 +327,124 @@ class ZohoPage extends React.Component {
             this.props.history.push('/');
         }
     }
+
+    onClickTab(activeTabInd) {
+        this.setState({activeTabInd});
+        this.getFilteredTickets();
+    }
+
+    getFilteredTickets() {
+        let filteredTickets = [];
+        let {activeTabInd, alltickets} = this.state;
+        for(let ticket of alltickets) {
+            switch(activeTabInd) {
+                case 0:
+                    filteredTickets.push(ticket);
+                    break;
+                case 1:
+                    if(ticket.assigneeId) 
+                        filteredTickets.push(ticket);
+                    break;
+                case 2:
+                    if(ticket.status === 'Open')
+                        filteredTickets.push(ticket);
+                    break;
+                case 3: 
+                    if (ticket.dueDate) {
+                        let dueDate = new Date(ticket.dueDate);
+                        if (this.isToday(dueDate)) 
+                            filteredTickets.push(ticket);
+                    }
+                    break;
+                case 4:
+                    if (ticket.dueDate) {
+                        let dueDate = new Date(ticket.dueDate);
+                        if (this.isTomorrow(dueDate)) 
+                            filteredTickets.push(ticket);
+                    }
+                    break;
+            }
+        }
+
+        this.setState({filteredTickets});
+    }
+
+
+    isToday(someDate) {
+        const today = new Date();
+        return someDate.getDate() == today.getDate() &&
+            someDate.getMonth() == today.getMonth() &&
+            someDate.getFullYear() == today.getFullYear();
+    }
+
+    isTomorrow(someDate) {
+        const today = new Date();
+        const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+        return someDate.getDate() == tomorrow.getDate() &&
+            someDate.getMonth() == tomorrow.getMonth() &&
+            someDate.getFullYear() == tomorrow.getFullYear();
+    }
+
+    onInputChange(e) {
+        this.setState({simpleSearchKeyword: e.target.value});
+    }
+
+    onClickSimpleSearch(num) {
+        if (num === 0) {
+            this.setState({showSimpleSearchBox: true});
+        }
+    }
+    
+    setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+
+    onSimpleSearch(e) {
+        e.preventDefault();
+        const {simpleSearchKeyword, alltickets, activeTabInd} = this.state;
+       
+        let filteredTickets = [];
+        if (simpleSearchKeyword.length === 0) {
+            alert('Please input search keyword!');
+        } else {
+            for (let ticket of alltickets) {
+                if(JSON.stringify(ticket).indexOf(simpleSearchKeyword) > 1)
+                    switch(activeTabInd) {
+                        case 0:
+                            filteredTickets.push(ticket);
+                            break;
+                        case 1:
+                            if(ticket.assigneeId) 
+                                filteredTickets.push(ticket);
+                            break;
+                        case 2:
+                            if(ticket.status === 'Open')
+                                filteredTickets.push(ticket);
+                            break;
+                        case 3: 
+                            if (ticket.dueDate) {
+                                let dueDate = new Date(ticket.dueDate);
+                                if (this.isToday(dueDate)) 
+                                    filteredTickets.push(ticket);
+                            }
+                            break;
+                        case 4:
+                            if (ticket.dueDate) {
+                                let dueDate = new Date(ticket.dueDate);
+                                if (this.isTomorrow(dueDate)) 
+                                    filteredTickets.push(ticket);
+                            }
+                            break;
+                    }
+            }
+            this.setState({filteredTickets: filteredTickets});
+        }
+    }
+
     render() {
-        console.log(this.state);
-        const { zohotickets } = this.state;
-        let items = zohotickets.map((item, key) => {
+        const { activeTabInd, showSimpleSearchBox, simpleSearchKeyword, filteredTickets } = this.state;
+        let items = filteredTickets.map((item, key) => {
             return(
                 <tr key={key}>
                     <td><input id="merge" name={ item.id } type="checkbox" onChange={this.updateCheck} disabled/></td>
@@ -332,7 +465,7 @@ class ZohoPage extends React.Component {
         return (
             <LoadingOverlay active={this.state.loadingStatus} spinner text='Please Wait...' >
 
-                <div className="qbootstrap-nav pods" >
+                <div className="qbootstrap-nav pods zoho" >
                     <div id="headr" className="col-md-12">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
                             <ul className="nav nav-tabs">
@@ -348,9 +481,18 @@ class ZohoPage extends React.Component {
                         </div>
                         <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right">
                             <a href=""><i className="icon-plus" aria-hidden="true"></i></a>
-                            <div className="popup">
+                            <div className="popup" onClick={() => this.onClickSimpleSearch(0)}>
                                 <i className="icon-search3" aria-hidden="true"></i>
+                                {
+                                    showSimpleSearchBox &&
+                                    <div ref={this.setWrapperRef}>
+                                        <form onSubmit={(e) => this.onSimpleSearch(e)}>
+                                            <input className="popuptext" type="text" placeholder="Search.." name="search" value={simpleSearchKeyword} onChange={(e) => this.onInputChange(e)} />
+                                        </form>
+                                    </div>
+                                }
                             </div>
+
                             <div className="popup">
                                 <i className="icon icon-th-list" aria-hidden="true"></i>
                             </div>
@@ -361,6 +503,53 @@ class ZohoPage extends React.Component {
 
                     </div>
                     <div className="clearfix"></div>
+                    <div className="tabs">
+                        <Nav tabs>
+                            <NavItem>
+                                <NavLink
+                                    className={activeTabInd === 0 ? 'active' : ''}
+                                    onClick={() => this.onClickTab(0)}
+                                >
+                                    All
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={activeTabInd === 1 ? 'active' : ''}
+                                    onClick={() => this.onClickTab(1)}
+                                >
+                                    Not Assigned
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={activeTabInd === 2 ? 'active' : ''}
+                                    onClick={() => this.onClickTab(2)}
+                                >
+                                    Open
+                                </NavLink>
+                            </NavItem>
+
+                            <NavItem>
+                                <NavLink
+                                    className={activeTabInd === 3 ? 'active' : ''}
+                                    onClick={() => this.onClickTab(3)}
+                                >
+                                    Due Today
+                                </NavLink>
+                            </NavItem>
+
+                            <NavItem>
+                                <NavLink
+                                    className={activeTabInd === 4 ? 'active' : ''}
+                                    onClick={() => this.onClickTab(4)}
+                                >
+                                    Due Tomorrow
+                                </NavLink>
+                            </NavItem>
+                        </Nav>
+                    </div>
+
                     <table className="table table-striped table-bordered table-hover custom-table p-2">
                         <thead>
                             <tr>

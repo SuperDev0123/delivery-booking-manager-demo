@@ -12,7 +12,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 
-const TABLE_PAGINATION_SIZE = 15;
+const TABLE_PAGINATION_SIZE = 10;
 
 class OnTimeLateDeliveries extends Component {
     constructor(props) {
@@ -185,16 +185,21 @@ class OnTimeLateDeliveries extends Component {
                                 <ResponsiveContainer width={'100%'} height={700}>
                                     <BarChart
                                         data={data}
+                                        layout="vertical"
+                                        label="heaf"
                                         margin={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                         padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                     >
                                         <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="freight_provider" angle={-30} textAnchor="end" height={100} interval={0}>
-                                            <Label value="Freight providers" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
+
+                                        <XAxis type="number" textAnchor="end" height={70}>
+                                            <Label value="Total Deliveries" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
                                         </XAxis>
-                                        <YAxis>
-                                            <Label value="Total Deliveries" offset={20} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
+                                        <YAxis type="category" dataKey="freight_provider" angle={-30} textAnchor="end" width={100} interval={0}>
+                                            <Label value="Transport companies" offset={10} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
                                         </YAxis>
+
+
                                         <Tooltip />
                                         <Legend formatter={this.renderColorfulLegendText} verticalAlign="top" height={36} />
                                         <Bar dataKey="deliveries" stackId="a" fill="#7D79D3" barSize={350} name="Total Deliveries">
