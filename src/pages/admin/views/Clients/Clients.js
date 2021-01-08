@@ -6,7 +6,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getDMEClientProducts, deleteClientProduct, createClientProduct, getEmployeesByClient } from '../../../../state/services/extraService';
+import { getDMEClientProducts, deleteClientProduct, createClientProduct,updateClientProduct, getEmployeesByClient } from '../../../../state/services/extraService';
 import ClientProductSlider from '../../../../components/Sliders/ClientProductSlider';
 import ClientEmployeeSlider from '../../../../components/Sliders/ClientEmployeeSlider';
 import imgClients from  '../../../../public/images/clients.png';
@@ -38,6 +38,7 @@ class Clients extends Component {
         this.toggleClientEmployeeSlider = this.toggleClientEmployeeSlider.bind(this);
         this.onClickDelete = this.onClickDelete.bind(this);
         this.onClickSubmit = this.onClickSubmit.bind(this);
+        this.onClickEdit = this.onClickEdit.bind(this);
     }
 
     static propTypes = {
@@ -56,6 +57,7 @@ class Clients extends Component {
         getDMEClientProducts: PropTypes.func.isRequired,
         deleteClientProduct: PropTypes.func.isRequired,
         createClientProduct: PropTypes.func.isRequired,
+        updateClientProduct: PropTypes.func.isRequired,
         createClientEmployee: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
     }
@@ -152,6 +154,10 @@ class Clients extends Component {
         this.toggleClientProductSlider();
     }
 
+    onClickEdit(clientProductsFormInputs) {
+        this.props.updateClientProduct(clientProductsFormInputs);
+    }
+
     render() {
         const { loading, dmeClients, dmeClient, loadingClientProducts, clientProducts, allClientEmployees, isShowClientProductSlider, isShowClientEmployeeSlider, roles, clients, warehouses,pk_id_dme_client} = this.state;
         const clientsList = dmeClients.map((client, index) => {
@@ -168,7 +174,7 @@ class Clients extends Component {
                     <td>{client.client_min_markup_value}</td>
                     <td><a className="btn btn-info btn-sm" href={'/admin/clients/edit/' + client.pk_id_dme_client}>Edit</a></td>
                     <td>
-                        {client.num_client_products>0?<button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>:null}
+                        <button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>
                     </td>
                 </tr>
             );
@@ -240,6 +246,7 @@ class Clients extends Component {
                     dmeClient={dmeClient}
                     onClickDelete={this.onClickDelete}
                     onClickSubmit={this.onClickSubmit}
+                    onClickEdit={this.onClickEdit}
                 />
 
                 <ClientEmployeeSlider
@@ -282,6 +289,7 @@ const mapDispatchToProps = (dispatch) => {
         getEmployeesByClient: (client_id) => dispatch(getEmployeesByClient(client_id)),
         deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
         createClientProduct: (clientProduct) => dispatch(createClientProduct(clientProduct)),
+        updateClientProduct: (clientProduct) => dispatch(updateClientProduct(clientProduct)),
         getAllClients: () => dispatch(getAllClients()),
         getAllRoles: () => dispatch(getAllRoles()),
         getWarehouses: () => dispatch(getWarehouses()),

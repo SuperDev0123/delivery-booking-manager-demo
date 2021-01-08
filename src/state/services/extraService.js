@@ -477,6 +477,21 @@ export const createClientProduct = (clientProduct) => {
             .catch((error) => dispatch(failedCreateClientProduct(error)));
 };
 
+export const updateClientProduct = (clientProduct) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/${clientProduct.id}/`,
+        data: clientProduct,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateClientProduct(data)))
+            .catch((error) => dispatch(failedCreateClientProduct(error)));
+};
+
+
 export const getAllErrors = (pk_booking_id) => {
     const token = localStorage.getItem('token');
     const options = {
