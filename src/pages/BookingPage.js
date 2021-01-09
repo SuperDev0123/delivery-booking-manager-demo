@@ -1315,16 +1315,16 @@ class BookingPage extends Component {
     buildPDF(bookingIds, vx_freight_provider) {
         const options = {
             method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-pdf/',
             data: {bookingIds, vx_freight_provider},
         };
 
         axios(options)
             .then((response) => {
                 if (response.data.success && response.data.success === 'success') {
-                    this.notify('PDF(Label)’s have been generated successfully.');
+                    this.notify('Label(.pdf) have been generated successfully.');
                 } else {
-                    this.notify('PDF(Label)’s have *not been generated.');
+                    this.notify('Label(.pdf) have *NOT* been generated.');
                 }
             })
             .catch((err) => {
@@ -1446,14 +1446,14 @@ class BookingPage extends Component {
         return new Promise((resolve, reject) => {
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
                 data: {bookingIds, vx_freight_provider},
                 responseType: 'blob', // important
             };
 
             axios(options)
                 .then((response) => {
-                    console.log('generate-csv response: ', response);
+                    console.log('get-csv response: ', response);
                     resolve();
                 })
                 .catch((err) => {
@@ -1466,7 +1466,7 @@ class BookingPage extends Component {
         return new Promise((resolve, reject) => {
             let options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
                 data: {bookingIds, vx_freight_provider},
             };
 
