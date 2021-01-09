@@ -12,7 +12,6 @@ import '../styles/pages/dmeapiinv.scss';
 import { getFiles } from '../state/services/fileService';
 import { API_HOST, HTTP_PROTOCOL } from '../config';
 
-
 class FilesPage extends Component {
     constructor(props) {
         super(props);
@@ -115,12 +114,13 @@ class FilesPage extends Component {
         e.preventDefault();
         const {simpleSearchKeyword, files} = this.state;
 
-        const filteredFiles = files.filter((file) =>
-            file.file_name.indexOf(simpleSearchKeyword)>-1 || (
+        const filteredFiles = files.filter(file =>
+            file.file_name.indexOf(simpleSearchKeyword) >- 1 || (
                 file.b_bookingID_Visual &&
                 String(file.b_bookingID_Visual).indexOf(simpleSearchKeyword)> -1
             )
         );
+
         this.setState({filteredFiles});
     }
 

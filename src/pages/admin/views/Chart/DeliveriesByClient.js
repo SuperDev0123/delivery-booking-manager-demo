@@ -7,12 +7,14 @@ import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import _ from 'lodash';
+import { getDMEClients } from '../../../../state/services/authService';
 import { getNumBookingsPerClient, getNumBookingsPerStatus } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import Select from 'react-select';
 
-const TABLE_PAGINATION_SIZE = 15;
+const TABLE_PAGINATION_SIZE = 10;
 
 class ByClient extends Component {
     constructor(props) {
@@ -25,13 +27,16 @@ class ByClient extends Component {
             num_bookings_status: [],
             chart_data: [],
             startDate: '',
-            endDate: ''
+            endDate: '',
+            client_name: '',
         };
     }
 
     static propTypes = {
         getNumBookingsPerClient: PropTypes.func.isRequired,
         getNumBookingsPerStatus: PropTypes.func.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
+        dmeClients: PropTypes.array.isRequired,
     };
 
     getColor = () => {
@@ -47,7 +52,8 @@ class ByClient extends Component {
         const endDate = moment().format('YYYY-MM-DD');
         this.setState({ startDate: startDate, endDate: endDate });
         this.props.getNumBookingsPerClient({ startDate, endDate });
-        this.props.getNumBookingsPerStatus({ startDate, endDate });
+        
+        this.props.getDMEClients();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -70,6 +76,10 @@ class ByClient extends Component {
         const { color } = entry;
 
         return <span style={{ color }}>{value}</span>;
+    }
+
+    displayNoOptionsMessage() {
+        return 'No Editable';
     }
 
     onDateChange(date, dateType) {
@@ -124,6 +134,12 @@ class ByClient extends Component {
         this.setState({ chart_data });
     }
 
+    onChangeClientName ( client_name ) {
+        const {startDate, endDate} = this.state;
+        this.setState({client_name : client_name});
+        this.props.getNumBookingsPerStatus({ startDate, endDate, client_name });
+    }
+
     render() {
         const { num_bookings_fp, num_bookings_status, startDate, endDate, chart_data } = this.state;
 
@@ -136,6 +152,13 @@ class ByClient extends Component {
                 return 0;
         };
 
+        const decimalFormatter = (cell) => {
+            if (cell) {
+                return Number(cell).toFixed(2);
+            }
+            else
+                return 0;
+        };
         const columns = [
             {
                 text: 'Client Name',
@@ -158,14 +181,20 @@ class ByClient extends Component {
             }, {
                 text: 'Quoted Cost',
                 dataField: 'inv_cost_quoted',
+                align: 'right',
+                formatter: decimalFormatter,
                 sort: true
             }, {
                 text: 'Quoted $',
                 dataField: 'inv_sell_quoted',
+                align: 'right',
+                formatter: decimalFormatter,
                 sort: true
             }, {
                 text: 'Quoted $*',
                 dataField: 'inv_sell_quoted_override',
+                align: 'right',
+                formatter: decimalFormatter,
                 sort: true
             }
         ];
@@ -181,6 +210,14 @@ class ByClient extends Component {
                 sort: true
             }
         ];
+
+        const clientnameOptions = this.props.dmeClients
+            .map(client => ({value: client.company_name, label: client.company_name}));
+
+        const currentClientnameOption = {
+            value: this.state.client_name,
+            label: this.state.client_name 
+        };
 
         return (
             <div id="main-wrapper" className="theme-default admin-theme">
@@ -271,6 +308,14 @@ class ByClient extends Component {
                                         defaultSorted={[{ dataField: 'client_name', order: 'asc' }]}
                                     />
                                 </div>
+                                
+                                <Select
+                                    value={currentClientnameOption}
+                                    onChange={(e) => this.onChangeClientName(e.value)}
+                                    options={clientnameOptions}
+                                    placeholder='Select a client'
+                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                />
 
                                 <div className="table-responsive">
                                     <BootstrapTable
@@ -297,6 +342,7 @@ const mapStateToProps = (state) => {
     return {
         num_bookings_fp: state.chart.num_bookings_fp,
         num_bookings_status: state.chart.num_bookings_status,
+        dmeClients: state.auth.dmeClients,
     };
 };
 
@@ -304,6 +350,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getNumBookingsPerClient: (data) => dispatch(getNumBookingsPerClient(data)),
         getNumBookingsPerStatus: (data) => dispatch(getNumBookingsPerStatus(data)),
+        getDMEClients: () => dispatch(getDMEClients()),
     };
 };
 
