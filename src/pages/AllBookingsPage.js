@@ -260,7 +260,7 @@ class AllBookingsPage extends React.Component {
                     hasSuccessSearchAndFilterOptions: true,
                 });
             } else if (bookings.length === 0 && !needUpdateBookings && hasSuccessSearchAndFilterOptions) {
-                alert('Your search/filter has returned 0 records - Returning to your last found set.');
+                this.notify('Your search/filter has returned 0 records - Returning to your last found set.');
 
                 this.props.setAllGetBookingsFilter(
                     successSearchFilterOptions.startDate,
@@ -720,10 +720,8 @@ class AllBookingsPage extends React.Component {
         const allied_name = 'allied';
         const dhl_name = 'dhl';
 
-        if (selectedBookingIds.length == 0) {
-            alert('Please check only one booking!');
-        } else if (selectedBookingIds.length > 1) {
-            alert('Please check only one booking!');
+        if (selectedBookingIds.length == 0 || selectedBookingIds.length > 1) {
+            this.notify('Please check only one booking!');
         } else {
             let ind = -1;
 
@@ -814,7 +812,7 @@ class AllBookingsPage extends React.Component {
                         this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
-                    alert('No new POD info');
+                    this.notify('No new POD info');
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'pod_sog' || downloadOption === 'new_pod_sog') {
@@ -854,7 +852,7 @@ class AllBookingsPage extends React.Component {
                         this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
-                    alert('No new POD SOG info');
+                    this.notify('No new POD SOG info');
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'connote' || downloadOption === 'new_connote') {
@@ -894,7 +892,7 @@ class AllBookingsPage extends React.Component {
                         this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                     });
                 } else {
-                    alert('No new Connote info');
+                    this.notify('No new Connote info');
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             } else if (downloadOption === 'label_and_connote') {
@@ -966,14 +964,14 @@ class AllBookingsPage extends React.Component {
                 }
 
                 if (bookingIdsWithConnote.length === 0 && bookingIdsWithLabel.length === 0) {
-                    alert('No Booking which has Label or Connote info');
+                    this.notify('No Booking which has Label or Connote info');
                     this.setState({selectedBookingIds: [], allCheckStatus: 'None', loadingDownload: false});
                 }
             }
         } else if (selectedBookingIds.length > 100) {
-            alert('Please selected less than 500 bookings to download.');
+            this.notify('Please selected less than 500 bookings to download.');
         } else {
-            alert('No matching booking id');
+            this.notify('No matching booking id');
         }
     }
 
@@ -991,7 +989,7 @@ class AllBookingsPage extends React.Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no label');
+                this.notify('This booking has no label');
             }
         } else if (type === 'pod') {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
@@ -1017,7 +1015,7 @@ class AllBookingsPage extends React.Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no POD or POD_SOG');
+                this.notify('This booking has no POD or POD_SOG');
             }
         }
     }
@@ -1046,7 +1044,7 @@ class AllBookingsPage extends React.Component {
         const {simpleSearchKeyword, downloadOption, pageItemCnt} = this.state;
 
         if (simpleSearchKeyword.length === 0) {
-            alert('Please input search keyword!');
+            this.notify('Please input search keyword!');
         } else {
             const today = moment().format('YYYY-MM-DD');
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, simpleSearchKeyword, downloadOption);
@@ -1106,8 +1104,10 @@ class AllBookingsPage extends React.Component {
         let selectedBookingIds = this.state.selectedBookingIds;
         let allCheckStatus = this.state.allCheckStatus;
 
-        if ((selectedBookingIds.length > 0 && selectedBookingIds.length < filteredBookingIds.length)
-            || selectedBookingIds.length === filteredBookingIds.length) { // // If selected `All` or `Some`
+        if (
+            (selectedBookingIds.length > 0 && selectedBookingIds.length < filteredBookingIds.length) ||
+            selectedBookingIds.length === filteredBookingIds.length
+        ) { // If selected `All` or `Some`
             selectedBookingIds = [];
             allCheckStatus = 'None';
         } else if (selectedBookingIds.length === 0) { // If selected `None`
@@ -1138,84 +1138,77 @@ class AllBookingsPage extends React.Component {
         const { bookings } = this.props;
 
         if (selectedBookingIds && selectedBookingIds.length === 0) {
-            alert('Please select bookings to *Book*.');
+            this.notify('Please select bookings to BOOK.');
         } else if (selectedBookingIds.length > 500) {
-            alert('You can generate XML or CSV with 500 bookings at most.');
+            this.notify('You can generate XML or CSV with 500 bookings at most.');
         } else {
-            const bookedIds = [];
+            const bookedBookings = [];
             const ids4csv = [];
             const ids4xml = [];
-            const nonBookedBookings = [];
             const ids4notMatchFP = [];
+            const noFPBookings = [];
             const fps = [];
+            const selectedBookings = [];
 
             for (let i = 0; i < bookings.length; i++) {
                 for (let j = 0; j < selectedBookingIds.length; j++) {
                     if (bookings[i].id === selectedBookingIds[j]) {
-                        if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                        if (!bookings[i].vx_freight_provider) {
+                            noFPBookings.push(bookings[i].b_bookingID_Visual);
+                        } else if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
                         if (!_.isNull(bookings[i].b_dateBookedDate)) {
-                            bookedIds.push(bookings[i].id);
-                        } else {
-                            nonBookedBookings.push(bookings[i]);
+                            bookedBookings.push(bookings[i].b_bookingID_Visual);
                         }
+
+                        selectedBookings.push(bookings[i]);
                     }
                 }
             }
 
-            if (fps.length !== 1) {
-                alert('Please select only one kind `Freight Provider` bookings.');
+            if (noFPBookings.length > 0) {
+                this.notify('There are bookings without Freight Provider: ' + noFPBookings);
+            } else if (fps.length !== 1) {
+                this.notify('Please select only one kind `Freight Provider` bookings.');
+            } else if (bookedBookings.length) {
+                this.notify('There are already BOOK(ed) bookings: ' + bookedBookings);
             } else {
-                for (let i = 0; i < nonBookedBookings.length; i++) {
+                for (let i = 0; i < selectedBookings.length; i++) {
                     for (let j = 0; j < dmeClients.length; j++) {
-                        if (nonBookedBookings[i].b_client_name &&
-                            dmeClients[j].company_name &&
-                            nonBookedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
+                        if (
+                            selectedBookings[i].b_client_name && dmeClients[j].company_name &&
+                            selectedBookings[i].b_client_name.toLowerCase() === dmeClients[j].company_name.toLowerCase()
                         ) {
-                            if (!_.isNull(dmeClients[j].current_freight_provider)
-                                && dmeClients[j].current_freight_provider.toLowerCase() === nonBookedBookings[i].vx_freight_provider.toLowerCase()) {
-                                if (dmeClients[j].current_freight_provider.toLowerCase() === 'cope'
-                                    || dmeClients[j].current_freight_provider.toLowerCase() === 'dhl') {
-                                    ids4csv.push(nonBookedBookings[i].id);
-                                } else if (dmeClients[j].current_freight_provider.toLowerCase() === 'allied') {
-                                    ids4xml.push(nonBookedBookings[i].id);
+                            const freight_provider = selectedBookings[i].vx_freight_provider.toLowerCase();
+
+                            if (
+                                !_.isNull(dmeClients[j].current_freight_provider) &&
+                                dmeClients[j].current_freight_provider.toLowerCase() === freight_provider
+                            ) {
+                                if (freight_provider === 'cope' || freight_provider === 'dhl') {
+                                    ids4csv.push(selectedBookings[i].id);
+                                } else if (freight_provider === 'allied') {
+                                    ids4xml.push(selectedBookings[i].id);
                                 } else {
-                                    ids4notMatchFP.push(nonBookedBookings[i].id);
+                                    ids4notMatchFP.push(selectedBookings[i].id);
                                 }
                             } else {
-                                ids4notMatchFP.push(nonBookedBookings[i].id);
+                                if (freight_provider === 'state transport') {
+                                    ids4csv.push(selectedBookings[i].id);
+                                } else {
+                                    ids4notMatchFP.push(selectedBookings[i].id);
+                                }
                             }
                         }
                     }
                 }
 
-                this.setState({loadingDownload: true});
-                if (bookedIds.length || ids4notMatchFP.length) {
-                    this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
-                        .then(() => {
-                            Promise.all([
-                                this.bulkBookingUpdate(bookedIds, 'b_error_Capture', 'This booking is already booked!'),
-                                this.bulkBookingUpdate(ids4notMatchFP, 'b_error_Capture', 'Freight provider issue, freight provider in booking does not match clients freight provider info.'),
-                            ])
-                                .then(() => {
-                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                    this.props.setNeedUpdateBookingsState(true);
-                                    this.notify('There was error, please check each booking error');
-                                })
-                                .catch((err) => {
-                                    this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                                    this.props.setNeedUpdateBookingsState(true);
-                                    console.log('#100 - ', err);
-                                });
-                        })
-                        .catch((err) => {
-                            this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                            this.props.setNeedUpdateBookingsState(true);
-                            console.log('#101 - ', err);
-                        });
+                if (ids4notMatchFP.length) {
+                    this.notify('There are bookings not to be handled: ' + ids4notMatchFP);
                 } else {
+                    this.setState({loadingDownload: true});
                     this.bulkBookingUpdate(selectedBookingIds, 'b_error_Capture', '')
                         .then(() => {
                             Promise.all([
@@ -1277,9 +1270,11 @@ class AllBookingsPage extends React.Component {
 
     buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
                 data: {bookingIds, vx_freight_provider},
                 responseType: 'blob', // important
             };
@@ -1297,9 +1292,11 @@ class AllBookingsPage extends React.Component {
 
     buildXML(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             let options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
                 data: {bookingIds, vx_freight_provider},
             };
 
@@ -1314,9 +1311,11 @@ class AllBookingsPage extends React.Component {
     }
 
     buildPDF(bookingIds, vx_freight_provider) {
+        const token = localStorage.getItem('token');
         const options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/get-pdf/',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
             data: {bookingIds, vx_freight_provider},
         };
 
@@ -1338,9 +1337,11 @@ class AllBookingsPage extends React.Component {
 
     buildMANIFEST(bookingIds, vx_freight_provider, username) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-manifest/',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
                 data: {bookingIds, vx_freight_provider, username},
                 responseType: 'blob', // important
             };
@@ -1373,9 +1374,9 @@ class AllBookingsPage extends React.Component {
         }
 
         // if (selectedBookingIds && selectedBookingIds.length === 0) {
-        //     alert('Please select bookings to *Book*.');
+        //     this.notify('Please select bookings to *Book*.');
         // } else if (selectedBookingIds.length > 500) {
-        //     alert('You can generate Manifest with 500 bookings at most.');
+        //     this.notify('You can generate Manifest with 500 bookings at most.');
         // } else {
         //     const bookingIds = [];
         //     const fps = [];
@@ -1401,11 +1402,11 @@ class AllBookingsPage extends React.Component {
         //     }
 
         //     if (fps.length !== 1) {
-        //         alert('Please select only one kind `Freight Provider` bookings.');
+        //         this.notify('Please select only one kind `Freight Provider` bookings.');
         //     } else if (!_.isNull(manifestedBookingVisualIds)) {
-        //         alert('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
+        //         this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
         //     } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
-        //         alert('There are bookings which have not been `Booked`:' + notBookedVisualIds);
+        //         this.notify('There are bookings which have not been `Booked`:' + notBookedVisualIds);
         //     } else {
         //         this.setState({loadingDownload: true});
                 
@@ -1415,14 +1416,14 @@ class AllBookingsPage extends React.Component {
         //                     this.buildXML(bookingIds, 'TASFR')
         //                         .then((response) => {
         //                             if (response.data.error && response.data.error === 'Found set has booked bookings') {
-        //                                 alert('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+        //                                 this.notify('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
         //                                 this.setState({loadingDownload: false});
         //                             } else if (response.data.success && response.data.success === 'success') {
-        //                                 alert('XML’s have been generated successfully.');
+        //                                 this.notify('XML’s have been generated successfully.');
         //                                 this.setState({loading: true, loadingDownload: false});
         //                                 this.props.setNeedUpdateBookingsState(true);
         //                             } else {
-        //                                 alert('XML’s have been generated successfully. Labels will be generated');
+        //                                 this.notify('XML’s have been generated successfully. Labels will be generated');
         //                                 this.buildPDF(bookingIds, 'TASFR');
         //                             }
         //                         });
@@ -1464,7 +1465,7 @@ class AllBookingsPage extends React.Component {
                 this.onChangeStatusLock(booking);
             }
         } else {
-            alert('Locked status only allowed by dme user');
+            this.notify('Locked status only allowed by dme user');
         }
     }
 
@@ -1500,11 +1501,11 @@ class AllBookingsPage extends React.Component {
         const {selectedStatusValue, selectedBookingIds} = this.state;
 
         if (!selectedStatusValue) {
-            alert('Please select a status.');
+            this.notify('Please select a status.');
         } else if (selectedBookingIds.length === 0) {
-            alert('Please select at least one booking.');
+            this.notify('Please select at least one booking.');
         } else if (selectedBookingIds.length > 25) {
-            alert('You can change 25 bookings status at a time.');
+            this.notify('You can change 25 bookings status at a time.');
         } else {
             this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
             this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
@@ -1515,7 +1516,7 @@ class AllBookingsPage extends React.Component {
         const {selectedBookingIds} = this.state;
 
         if (selectedBookingIds.length === 0) {
-            alert('Please select at least one booking!');
+            this.notify('Please select at least one booking!');
         } else {
             if (type === 'Calc') {
                 this.props.calcCollected(selectedBookingIds, 'Calc');
@@ -1536,17 +1537,6 @@ class AllBookingsPage extends React.Component {
         }
 
         this.setState({activeBookingId: booking.id});
-    }
-
-    onClickGetCSV() {
-        const {selectedBookingIds} = this.state;
-        this.buildCSV(selectedBookingIds)
-            .then(() => {
-                this.setState({loading: true, loadingDownload: false, selectedBookingIds: []});
-                this.props.setNeedUpdateBookingsState(true);
-
-                this.notify('Successfully created CSV.');
-            });
     }
 
     onClickShowStatusInfo(startDate, endDate, clientPK, dme_delivery_status) {
@@ -2214,7 +2204,6 @@ class AllBookingsPage extends React.Component {
                                                         >
                                                             <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
-                                                            <button className="btn btn-primary get-label" onClick={() => this.onClickGetCSV()}>Get CSV</button>
                                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
                                                         </LoadingOverlay>
                                                     </div>

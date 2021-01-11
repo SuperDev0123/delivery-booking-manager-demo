@@ -455,8 +455,7 @@ class BookingPage extends Component {
 
         if (bBooking) {
             if (bBooking === false) {
-                alert('There is no such booking with that DME`/CON` number.');
-                // console.log('@booking Data' + bBooking);
+                this.notify('There is no such booking with that DME`/CON` number.');
                 this.setState({bBooking: null});
             }
         }
@@ -481,7 +480,8 @@ class BookingPage extends Component {
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
-                if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
+                if (
+                    bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
                     this.notify('Now trying to get Label!');
@@ -497,11 +497,7 @@ class BookingPage extends Component {
             }
 
             if (needUpdateBooking && booking) {
-                this.props.getBooking(booking.id, 'id');
-                var that = this;
-                setTimeout(() => {
-                    that.setState({loading: true, curViewMode: 0});
-                }, 50);
+                this.refreshBooking(booking);
             }
 
             if (bookingErrorMessage === 'Sent Email Successfully') {
@@ -1019,6 +1015,14 @@ class BookingPage extends Component {
         }
     }
 
+    refreshBooking(booking) {
+        let that = this;
+        this.props.getBooking(booking.id, 'id');
+        setTimeout(() => {
+            that.setState({loading: true, curViewMode: 0});
+        }, 50);
+    }
+
     calcBookingLine(booking, bookingLines) {
         let qty = 0;
         let total_qty_collected = 0;
@@ -1029,16 +1033,16 @@ class BookingPage extends Component {
 
         let newBookingLines = bookingLines.map((bookingLine) => {
             if (bookingLine.e_weightUOM) {
-                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
+                const e_weightUOM = bookingLine.e_weightUOM.toUpperCase();
+
+                if (e_weightUOM === 'GRAM' || e_weightUOM === 'GRAMS')
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
+                else if (
+                    e_weightUOM === 'KILOGRAM' || e_weightUOM === 'KG' ||
+                    e_weightUOM === 'KGS' || e_weightUOM === 'KILOGRAMS'
+                )
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
+                else if (e_weightUOM === 'TON' || e_weightUOM === 'TONS')
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach * 1000;
                 else
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
@@ -1047,14 +1051,13 @@ class BookingPage extends Component {
             }
 
             if (bookingLine.e_dimUOM) {
-                if (bookingLine.e_dimUOM.toUpperCase() === 'CM' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'CENTIMETER')
+                const e_dimUOM = bookingLine.e_dimUOM.toUpperCase();
+
+                if (e_dimUOM === 'CM' || e_dimUOM === 'CENTIMETER')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'M')
+                else if (e_dimUOM === 'METER' || e_dimUOM === 'M')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'MILIMETER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'MM')
+                else if (e_dimUOM === 'MILIMETER' || e_dimUOM === 'MM')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
                 else
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
@@ -1136,7 +1139,7 @@ class BookingPage extends Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no label');
+                this.notify('This booking has no label');
             }
         } else if (fileOption === 'pod') {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
@@ -1162,7 +1165,7 @@ class BookingPage extends Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no POD or POD_SOG');
+                this.notify('This booking has no POD or POD_SOG');
             }
         }
     }
@@ -1194,7 +1197,7 @@ class BookingPage extends Component {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                 headers: {'Authorization': 'JWT ' + token},
-                data: { ids: selectedBookingIds, downloadOption: fileOption},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1211,7 +1214,7 @@ class BookingPage extends Component {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                 headers: {'Authorization': 'JWT ' + token},
-                data: { ids: selectedBookingIds, downloadOption: fileOption},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1312,26 +1315,6 @@ class BookingPage extends Component {
         }
     }
 
-    buildPDF(bookingIds, vx_freight_provider) {
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-pdf/',
-            data: {bookingIds, vx_freight_provider},
-        };
-
-        axios(options)
-            .then((response) => {
-                if (response.data.success && response.data.success === 'success') {
-                    this.notify('Label(.pdf) have been generated successfully.');
-                } else {
-                    this.notify('Label(.pdf) have *NOT* been generated.');
-                }
-            })
-            .catch((err) => {
-                this.notify('Error: ' + err);
-            });
-    }
-
     onClickReprintLabel() {
         const {booking, isBookedBooking} = this.state;
 
@@ -1375,19 +1358,23 @@ class BookingPage extends Component {
         } else {
             this.bulkBookingUpdate([booking.id], 'b_error_Capture', '');
 
-            if (!booking.x_manual_booked_flag) {  // Not manual booking
-                if (booking.id && (booking.id !== undefined)) {
+            if (!booking.x_manual_booked_flag) {  // NOT manual booking
+                if (booking.id) {
                     if (booking.vx_freight_provider) {
-                        if (booking.vx_freight_provider.toLowerCase() === 'cope') {
-                            this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
-                            this.setState({ loading: true, curViewMode: 0});
-                        } else if (
-                            booking.vx_freight_provider.toLowerCase() === 'allied' ||
-                            booking.vx_freight_provider.toLowerCase() === 'act' ||
-                            booking.vx_freight_provider.toLowerCase() === 'state transport'
+                        const freight_provider = booking.vx_freight_provider.toLowerCase();
+
+                        if (
+                            freight_provider === 'cope' ||
+                            freight_provider === 'state transport'
                         ) {
-                            this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
-                            this.setState({ loading: true, curViewMode: 0});
+                            this.buildCSV([booking.id], freight_provider);
+                            this.setState({loading: true, curViewMode: 0});
+                        } else if (
+                            freight_provider === 'allied' ||
+                            freight_provider === 'act'
+                        ) {
+                            this.buildXML([booking.id], freight_provider);
+                            this.setState({loading: true, curViewMode: 0});
                         } else {
                             const res = isValid4Book(booking);
 
@@ -1395,14 +1382,14 @@ class BookingPage extends Component {
                                 this.notify(res);
                             } else {
                                 this.props.fpBook(booking.id, booking.vx_freight_provider);
-                                this.setState({ loading: true, curViewMode: 0});
+                                this.setState({loading: true, curViewMode: 0});
                             }
                         }
                     } else {
-                        this.notify('Can not *Book* since booking has no Freight Provider');
+                        this.notify('Can not *BOOK* since booking has no Freight Provider');
                     }
                 } else {
-                    this.notify('Please Find any booking and then try book again!');
+                    this.notify('Please select a booking and then try BOOK again!');
                 }
             } else { // Manual booking
                 this.props.manualBook(booking.id);
@@ -1444,16 +1431,19 @@ class BookingPage extends Component {
 
     buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
                 data: {bookingIds, vx_freight_provider},
-                responseType: 'blob', // important
+                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
             };
 
             axios(options)
                 .then((response) => {
                     console.log('get-csv response: ', response);
+                    this.notify('Successfully booked via CSV');
+                    this.refreshBooking(this.state.booking);
                     resolve();
                 })
                 .catch((err) => {
@@ -1464,9 +1454,11 @@ class BookingPage extends Component {
 
     buildXML(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             let options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
                 data: {bookingIds, vx_freight_provider},
             };
 
@@ -1572,10 +1564,10 @@ class BookingPage extends Component {
                     event.target.name === 'de_Deliver_From_Hours' ||
                     event.target.name === 'de_Deliver_By_Hours') {
                     if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct hour!');
+                        this.notify('Please input correct hour!');
                         canUpdateField = false;
                     } else if (parseInt(event.target.value) > 23) {
-                        alert('Please input correct hour!');
+                        this.notify('Please input correct hour!');
                         canUpdateField = false;
                     }
                 }
@@ -1586,10 +1578,10 @@ class BookingPage extends Component {
                     event.target.name === 'de_Deliver_By_Minutes'
                 ) {
                     if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct minutes!');
+                        this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     } else if (parseInt(event.target.value) > 59) {
-                        alert('Please input correct minutes!');
+                        this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     }
                 }
@@ -2156,7 +2148,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2186,7 +2178,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowStatusHistorySlider: !prevState.isShowStatusHistorySlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2196,7 +2188,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowProjectDataSlider: !prevState.isShowProjectDataSlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2223,7 +2215,7 @@ class BookingPage extends Component {
         const {booking} = this.state;
 
         if (!booking) {
-            alert('Please select booking to cancel');
+            this.notify('Please select booking to cancel');
         } else {
             this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
         }
@@ -2276,8 +2268,7 @@ class BookingPage extends Component {
         if (isBookingModified) {
             this.notify('You can lose modified booking info. Please update it');
         } else {
-            this.props.getBooking(booking.id, 'id');
-            this.setState({loading: true, curViewMode: 0});
+            this.refreshBooking(booking);
         }
     }
 
