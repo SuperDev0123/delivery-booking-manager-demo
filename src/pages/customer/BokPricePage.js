@@ -101,7 +101,11 @@ class BokPricePage extends Component {
             canBeChanged = false;
         }
 
-        if (bokWithPricings && bokWithPricings['b_client_order_num'][0] === 'Q' && bokWithPricings['b_client_order_num'][1] === '_') {
+        if (
+            bokWithPricings &&
+            bokWithPricings['b_client_order_num'][0] === 'Q' &&
+            bokWithPricings['b_client_order_num'][1] === '_'
+        ) {
             isSalesQuote = true;
         }
 
