@@ -148,7 +148,7 @@ class BookingPage extends Component {
             zoho_tickets: [],
             errors: [],
             augmentInfoOpen: false,
-            clientprocess: {}
+            clientprocess: {},
             puCommunicates: [],
             deCommunicates: []
         };
