@@ -5,6 +5,17 @@ import {
     FAILED_GET_BOK_2_LINES,
     SUCCESS_GET_BOK_3_LINES_DATA,
     FAILED_GET_BOK_3_LINES_DATA,
+    SUCCESS_GET_BOK_WITH_PRICINGS,
+    FAILED_GET_BOK_WITH_PRICINGS,
+    SUCCESS_SELECT_PRICING,
+    FAILED_SELECT_PRICING,
+    RESET_NEED_TO_UPDATE_PRICINGS,
+    SUCCESS_GET_DE_STATUS,
+    FAILED_GET_DE_STATUS,
+    SUCCESS_BOOK_FREIGHT,
+    FAILED_BOOK_FREIGHT,
+    SUCCESS_CANCEL_FREIGHT,
+    FAILED_CANCEL_FREIGHT,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -46,5 +57,79 @@ export function failedGetBok3LinesData(error) {
     return {
         type: FAILED_GET_BOK_3_LINES_DATA,
         payload: 'Unable to get BOk_3 records. Error:' + error,
+    };
+}
+
+export function successGetBokWithPricings(data) {
+    return {
+        type: SUCCESS_GET_BOK_WITH_PRICINGS,
+        payload: data.data,
+    };
+}
+
+export function failedGetBokWithPricings(error) {
+    return {
+        type: FAILED_GET_BOK_WITH_PRICINGS,
+        payload: 'Unable to get information. Error: ' + error.response.data.message,
+    };
+}
+
+export function successSelectPricing() {
+    return {
+        type: SUCCESS_SELECT_PRICING,
+    };
+}
+
+export function failedSelectPricing(error) {
+    return {
+        type: FAILED_SELECT_PRICING,
+        payload: 'Unable to select pricing. Error: ' + error.response.data.message,
+    };
+}
+
+export function resetNeedToUpdatePricings() {
+    return {
+        type: RESET_NEED_TO_UPDATE_PRICINGS,
+    };
+}
+
+export function successGetDeliveryStatus(data) {
+    return {
+        type: SUCCESS_GET_DE_STATUS,
+        payload: data,
+    };
+}
+
+export function failedGetDeliveryStatus() {
+    return {
+        type: FAILED_GET_DE_STATUS,
+        // payload: 'Unable to get delivery status. ' + error.response.data.message,
+        payload: 'Currently not available.',
+    };
+}
+
+export function successBookFreight() {
+    return {
+        type: SUCCESS_BOOK_FREIGHT,
+    };
+}
+
+export function failedBookFreight(error) {
+    return {
+        type: FAILED_BOOK_FREIGHT,
+        payload: 'Unable to BOOK freight. ' + error.response.data.message,
+    };
+}
+
+export function successCancelFreight() {
+    return {
+        type: SUCCESS_CANCEL_FREIGHT,
+    };
+}
+
+export function failedCancelFreight(error) {
+    return {
+        type: FAILED_CANCEL_FREIGHT,
+        payload: 'Unable to CANCEL freight. ' + error.response.data.message,
     };
 }

@@ -16,6 +16,7 @@ class BokPage extends Component {
             BOK_3_lines_data: [],
         };
     }
+
     static propTypes = {
         getBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,

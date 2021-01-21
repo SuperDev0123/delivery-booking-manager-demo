@@ -263,25 +263,6 @@ class SidebarPush extends React.Component {
                                 </ul>
                             </li>
 
-                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('providers') || this.activeRoute('providers/add') ? 'active' : ''}>
-                                <a onClick={() => this.setState({ providersCollapsed: !providersCollapsed })}>
-                                    <i className="fa fa-bars fa-fw"></i>
-                                    <span className="menu-title">Freight Providers</span>
-                                </a>
-                                <ul className={classNames({ 'nav-sub': true, 'collapse': !providersCollapsed })}>
-                                    <li>
-                                        <Link title="View All Freight Providers" to="/admin/providers" className={this.activeRoute(['providers']) ? 'active' : ''}>
-                                            <span className="submenu-title">All</span>
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link title="Add New Freight Providers" to="/admin/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
-                                            <span className="submenu-title">Add New</span>
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </li>
-                            
                             <li className={this.activeRoute('vehicles') ? 'active' : ''}>
                                 <Link to="/admin/vehicles" title="Vehicles">
                                     <i className="fa fa-fw fa-truck"></i>
@@ -374,6 +355,12 @@ class SidebarPush extends React.Component {
                                 </ul>
                             </li>
 
+                            <li className={this.activeRoute('clientemployees') ? 'active' : ''}>
+                                <Link to="/admin/clientemployees" title="Client Employees">
+                                    <i className="fa fa-fw fa-users"></i>
+                                    <span className="menu-title">Client Employees</span>
+                                </Link>
+                            </li>
                         </ul>
                     </nav>: <nav className="sidebarNav">
                         <h5 className="sidebar-header">Navigation</h5>
@@ -382,6 +369,13 @@ class SidebarPush extends React.Component {
                                 <Link to={`${baseUrl}/dashboard`} title="dashboard">
                                     <i className="fa fa-fw fa-tachometer"></i>
                                     <span className="menu-title">Dashboard</span>
+                                </Link>
+                            </li>
+
+                            <li className={this.activeRoute('clientemployees') ? 'active' : ''}>
+                                <Link to={`${baseUrl}/clientemployees`} title="Client Employees">
+                                    <i className="fa fa-fw fa-users"></i>
+                                    <span className="menu-title">Client Employees</span>
                                 </Link>
                             </li>
 

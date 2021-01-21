@@ -13,6 +13,8 @@ import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
 import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
+import BokPricePage from '../pages/customer/BokPricePage';
+import BokStatusPage from '../pages/customer/BokStatusPage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
@@ -59,7 +61,17 @@ import Clients from '../pages/admin/views/Clients/Clients';
 import AugmentAddress from '../pages/admin/views/AugmentAddress/AugmentAddress';
 import AddAugmentAddress from '../pages/admin/views/AugmentAddress/AddAugmentAddress';
 import EditAugmentAddress from '../pages/admin/views/AugmentAddress/EditAugmentAddress';
+import AddClient from '../pages/admin/views/Clients/AddClient';
+import EditClient from '../pages/admin/views/Clients/EditClient';
+import ClientEmployees from '../pages/admin/views/ClientEmployees/ClientEmployees';
+import AddClientEmployee from '../pages/admin/views/ClientEmployees/AddClientEmployee';
+import EditClientEmployee from '../pages/admin/views/ClientEmployees/EditClientEmployee';
 
+import CustomerClientEmployees from '../pages/admin/customerdashboard/ClientEmployees/ClientEmployees';
+import CustomerAddClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/AddClientEmployee';
+import CustomerEditClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/EditClientEmployee';
+
+// Customer Dashboard pages
 import CustomerLogin from '../pages/admin/customerdashboard/Login';
 import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
 import ClientRas from '../pages/admin/customerdashboard/ClientRas';
@@ -71,11 +83,16 @@ export const AppRouter = () => (
             <Switch>
                 <Route exact path='/' component={HomePage} />
                 <Route exact path='/home' component={HomePage} />
-                <Route exact path='/bok' component={BokPage} />
                 <Route exact path='/files' component={FilesPage} />
                 <Route exact path='/login' component={LoginPage} />
                 <Route exact path='/forgot-password' component={ForgotPasswordPage} />
                 <Route path='/reset-password' component={ResetPasswordPage} />
+
+                <Route exact path='/bok' component={BokPage} />
+                <Route exact path='/price/:id' component={BokPricePage} />
+                <Route exact path='/order/:id' component={BokPricePage} />
+                <Route exact path='/status/:id' component={BokStatusPage} />
+                
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
                 <PrivateRoute exact path='/bookinglinedetails' component={BookingLineDetailsPage} />
@@ -114,6 +131,13 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
                     <AdminPrivateRoute exact path='/admin/clients' component={Clients} />
+                    <AdminPrivateRoute exact path='/admin/clients/add' component={AddClient} />
+                    <AdminPrivateRoute exact path='/admin/clients/edit/:id' component={EditClient} />
+
+                    <AdminPrivateRoute exact path='/admin/clientemployees' component={ClientEmployees} />
+                    <AdminPrivateRoute exact path='/admin/clientemployees/add' component={AddClientEmployee} />
+                    <AdminPrivateRoute exact path='/admin/clientemployees/edit/:id' component={EditClientEmployee} />
+                    
                     <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
@@ -128,6 +152,10 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/add' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/edit/:id' component={ClientRasAction} />
                     <AdminPrivateRoute exact path='/customerdashboard/client-ras/duplicate/:id' component={ClientRasAction} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees' component={CustomerClientEmployees} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/add' component={CustomerAddClientEmployee} />
+                    <AdminPrivateRoute exact path='/customerdashboard/clientemployees/edit/:id' component={CustomerEditClientEmployee} />
+                    
                 </Main>
 
                 <Redirect to='/' />

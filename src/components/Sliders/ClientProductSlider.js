@@ -7,6 +7,7 @@ import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import BootstrapTable from 'react-bootstrap-table-next';
 import CustomPagination from '../Pagination/CustomPagination';
 import { Button } from 'reactstrap';
+import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
 
 class ClientProductSlider extends React.Component {
     constructor(props) {
@@ -18,7 +19,9 @@ class ClientProductSlider extends React.Component {
             pageCnt: 0,
             editMode: 0,
             clientProductsFormInputs: {
-                modelNumber: '',
+                parent_model_number: '',
+                child_model_number: '',
+                description: '',
                 e_dimUOM: 'cm',
                 e_dimLength: 0,
                 e_dimWidth: 0,
@@ -34,6 +37,7 @@ class ClientProductSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         onClickDelete: PropTypes.func.isRequired,
         onClickSubmit: PropTypes.func.isRequired,
+        onClickEdit: PropTypes.func.isRequired,
         clientProducts: PropTypes.array.isRequired,
         isLoading: PropTypes.bool.isRequired,
         dmeClient: PropTypes.object.isRequired,
@@ -57,12 +61,31 @@ class ClientProductSlider extends React.Component {
         this.setState({editMode: editMode});
     }
 
+    onAfterSaveCell = (oldValue, newValue,row, column) => {
+        console.log('onAfterSaveCell', oldValue, newValue,row, column);
+
+        row['e_dimLength'] = Number(Number(row['e_dimLength']).toFixed(2));
+        row['e_dimWidth'] = Number(Number(row['e_dimWidth']).toFixed(2));
+        row['e_dimHeight'] = Number(Number(row['e_dimHeight']).toFixed(2));
+        row['e_weightPerEach'] = Number(Number(row['e_weightPerEach']).toFixed(2));
+        
+
+        this.setState({clientProductsFormInputs: row});
+        this.props.onClickEdit(row);
+    }
+
     onSubmit() {
         const { clientProductsFormInputs } = this.state;
         const { dmeClient } = this.props;
     
-        clientProductsFormInputs['fk_id_dme_client_id'] = dmeClient.pk_id_dme_client;
-
+        clientProductsFormInputs['fk_id_dme_client'] = dmeClient.pk_id_dme_client;
+        
+        clientProductsFormInputs['e_dimLength'] = Number(Number(clientProductsFormInputs['e_dimLength']).toFixed(2));
+        clientProductsFormInputs['e_dimWidth'] = Number(Number(clientProductsFormInputs['e_dimWidth']).toFixed(2));
+        clientProductsFormInputs['e_dimHeight'] = Number(Number(clientProductsFormInputs['e_dimHeight']).toFixed(2));
+        clientProductsFormInputs['e_weightPerEach'] = Number(Number(clientProductsFormInputs['e_weightPerEach']).toFixed(2));
+        
+        console.log('clientProductsFormInput', clientProductsFormInputs);
         this.props.onClickSubmit(clientProductsFormInputs);
         this.setState({editMode: 0});
     }
@@ -98,7 +121,7 @@ class ClientProductSlider extends React.Component {
                 </div>
             );
         };
-
+        
         const zonesColumns = [
             {
                 dataField: 'id',
@@ -108,14 +131,29 @@ class ClientProductSlider extends React.Component {
                     cursor: 'not-allowed',
                 },
             }, {
-                dataField: 'modelNumber',
-                text: 'Model Number',
+                dataField: 'parent_model_number',
+                text: 'Parent Model Number',
+            }, {
+                dataField: 'child_model_number',
+                text: 'Child Model Number',
+            }, {
+                dataField: 'description',
+                text: 'Description',
             }, {
                 dataField: 'e_dimUOM',
                 text: 'Dim UOM',
+                editor: {
+                    type: Type.SELECT,
+                    options: [{
+                        value: 'cm', label: 'cm'
+                    }]
+                }
             }, {
                 dataField: 'e_dimLength',
                 text: 'L',
+                headerStyle: {
+                    'white-space': 'nowrap'
+                },
             }, {
                 dataField: 'e_dimWidth',
                 text: 'W',
@@ -125,21 +163,28 @@ class ClientProductSlider extends React.Component {
             }, {
                 dataField: 'e_weightUOM',
                 text: 'Wgt UOM',
+                editor: {
+                    type: Type.SELECT,
+                    options: [{
+                        value: 'kg', label: 'kg'
+                    }]
+                }
             }, {
                 dataField: 'e_weightPerEach',
                 text: 'Wgt Each',
             }, {
                 dataField: 'button',
                 text: 'Actions',
+                editable:false,
                 formatter: carrierActionButton
             }
         ];
 
         return (
             <SlidingPane
-                className='fp-pricing-pan'
+                className='client-product-pan'
                 isOpen={isOpen}
-                title='Freight Provider Pricing Panel'
+                title='Client Product Panel'
                 subtitle='List View'
                 onRequestClose={this.props.toggleSlider}
             >
@@ -166,6 +211,7 @@ class ClientProductSlider extends React.Component {
                                             <hr />
                                             <BootstrapTable id="zones_table"
                                                 {...props.baseProps}
+                                                cellEdit={ cellEditFactory({ mode: 'click', blurToSave:true, afterSaveCell:this.onAfterSaveCell }) }
                                             />
                                         </div>
                                     )
@@ -190,24 +236,40 @@ class ClientProductSlider extends React.Component {
                         </LoadingOverlay>
                     </div>) : (<div className="line-form form-view">
                         <label>
-                            <p>Model Number</p>
+                            <p>Parent Model Number</p>
                             <input
                                 className="form-control"
                                 type="text"
-                                name="modelNumber"
-                                value={clientProductsFormInputs['modelNumber']}
+                                name="parent_model_number"
+                                value={clientProductsFormInputs['parent_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label>
+                        <label>
+                            <p>Child Model Number</p>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="child_model_number"
+                                value={clientProductsFormInputs['child_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label>
+                        <label>
+                            <p>Description</p>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="description"
+                                value={clientProductsFormInputs['description']}
                                 onChange={(e) => this.onInputChange(e)}
                             />
                         </label>
                         <label>
                             <p>Dim UOM</p>
-                            <input
-                                className="form-control"
-                                type="text"
-                                name="e_dimUOM"
-                                value={clientProductsFormInputs['e_dimUOM']}
-                                onChange={(e) => this.onInputChange(e)}
-                            />
+                            <select name="e_dimUOM" className="form-control" id="e_dimUOM" onChange={(e) => this.onInputChange(e)}>
+                                <option value='cm'>cm</option>
+                            </select>
                         </label>
                         <label>
                             <p>Dim Length</p>
@@ -241,14 +303,13 @@ class ClientProductSlider extends React.Component {
                         </label>
                         <label>
                             <p>Weight UOM</p>
-                            <input
-                                className="form-control"
-                                type="text"
-                                name="e_weightUOM"
-                                value={clientProductsFormInputs['e_weightUOM']}
-                                onChange={(e) => this.onInputChange(e)}
-                            />
+                            <select name="e_weightUOM" className="form-control" id="e_weightUOM" onChange={(e) => this.onInputChange(e)}>
+                                <option value='kg'>kg</option>
+                            </select>
                         </label>
+
+                        
+
                         <label>
                             <p>Weight Per Each</p>
                             <input

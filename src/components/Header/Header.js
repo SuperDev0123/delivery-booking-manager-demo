@@ -123,12 +123,16 @@ class Header extends Component {
                                 </li>
                                 :
                                 <li className="nav-item">
-                                    <a
-                                        href="/login"
-                                        className="btn btn-outline-light my-2 my-lg-0 login"
-                                    >
-                                        Login
-                                    </a>
+                                    {currentRoute.indexOf('/price/') === 0 || currentRoute.indexOf('/status/') === 0 ?
+                                        null
+                                        :
+                                        <a
+                                            href="/login"
+                                            className="btn btn-outline-light my-2 my-lg-0 login"
+                                        >
+                                            Login
+                                        </a>
+                                    }
                                 </li>
                             }
                         </ul>

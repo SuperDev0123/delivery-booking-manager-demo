@@ -23,6 +23,8 @@ import { UrlAdminReducer } from './urlAdminReducer';
 import { ChartReducer } from './chartReducer';
 import { ClientRasReducer } from './clientRasReducer';
 import { AugmentAddressReducer } from './augmentAddressReducer';
+import { ClientReducer } from './clientReducer';
+import { RoleReducer } from './roleReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -47,5 +49,10 @@ export const AppReducer = combineReducers({
     url: UrlAdminReducer,
     chart: ChartReducer,
     clientRas: ClientRasReducer,
+<<<<<<< HEAD
     augment: AugmentAddressReducer,
+=======
+    client: ClientReducer,
+    role: RoleReducer,
+>>>>>>> develop
 });

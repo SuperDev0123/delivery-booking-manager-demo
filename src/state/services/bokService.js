@@ -6,7 +6,18 @@ import {
     successGetBok2Lines,
     failedGetBok2Lines,
     successGetBok3LinesData,
-    failedGetBok3LinesData
+    failedGetBok3LinesData,
+    successGetBokWithPricings,
+    failedGetBokWithPricings,
+    successSelectPricing,
+    failedSelectPricing,
+    resetNeedToUpdatePricings,
+    successGetDeliveryStatus,
+    failedGetDeliveryStatus,
+    successBookFreight,
+    failedBookFreight,
+    successCancelFreight,
+    failedCancelFreight,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -41,4 +52,68 @@ export const getBookingLinesData = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetBok3LinesData(data)))
             .catch((error) => dispatch(failedGetBok3LinesData(error)));
+};
+
+export const getBokWithPricings = (identifier) => {
+    const options = {
+        method: 'get',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/get_boks_with_pricings/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successGetBokWithPricings(data)))
+            .catch((error) => dispatch(failedGetBokWithPricings(error)));
+    };
+};
+
+export const onSelectPricing = (costId, identifier) => {
+    const options = {
+        method: 'post',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/select_pricing/`,
+        data: {'costId': costId, 'identifier': identifier},
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successSelectPricing(data)))
+            .catch((error) => dispatch(failedSelectPricing(error)));
+};
+
+export const getDeliveryStatus = (identifier) => {
+    const options = {
+        method: 'get',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_delivery_status/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successGetDeliveryStatus(data)))
+            .catch((error) => dispatch(failedGetDeliveryStatus(error)));
+    };
+};
+
+export const bookFreight = (identifier) => {
+    const options = {
+        method: 'patch',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/book/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successBookFreight(data)))
+            .catch((error) => dispatch(failedBookFreight(error)));
+    };
+};
+
+export const cancelFreight = (identifier) => {
+    const options = {
+        method: 'delete',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/cancel/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        // dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(({ data }) => dispatch(successCancelFreight(data)))
+            .catch((error) => dispatch(failedCancelFreight(error)));
+    };
 };

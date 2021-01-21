@@ -149,6 +149,8 @@ class BookingPage extends Component {
             errors: [],
             augmentInfoOpen: false,
             clientprocess: {}
+            puCommunicates: [],
+            deCommunicates: []
         };
 
         this.djsConfig = {
@@ -406,6 +408,7 @@ class BookingPage extends Component {
                 result['e_qty_scanned_fp'] = bookingLine.e_qty_scanned_fp ? bookingLine.e_qty_scanned_fp : 0;
                 result['is_scanned'] = bookingLine.is_scanned;
                 result['pk_booking_lines_id'] = bookingLine.pk_booking_lines_id;
+                result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
@@ -455,8 +458,7 @@ class BookingPage extends Component {
 
         if (bBooking) {
             if (bBooking === false) {
-                alert('There is no such booking with that DME`/CON` number.');
-                // console.log('@booking Data' + bBooking);
+                this.notify('There is no such booking with that DME`/CON` number.');
                 this.setState({bBooking: null});
             }
         }
@@ -481,7 +483,8 @@ class BookingPage extends Component {
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
-                if (bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
+                if (
+                    bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
                     bookingErrorMessage.indexOf('Successfully edit book') !== -1
                 ) {
                     this.notify('Now trying to get Label!');
@@ -497,11 +500,7 @@ class BookingPage extends Component {
             }
 
             if (needUpdateBooking && booking) {
-                this.props.getBooking(booking.id, 'id');
-                var that = this;
-                setTimeout(() => {
-                    that.setState({loading: true, curViewMode: 0});
-                }, 50);
+                this.refreshBooking(booking);
             }
 
             if (bookingErrorMessage === 'Sent Email Successfully') {
@@ -853,6 +852,14 @@ class BookingPage extends Component {
                     this.setState({deTimeZone: this.getTime(booking.de_To_Address_Country, booking.de_To_Address_State)});
                 }
 
+                if (booking.pu_Comm_Booking_Communicate_Via != undefined) {
+                    this.setState({ puCommunicates:booking.pu_Comm_Booking_Communicate_Via.split(',')});
+                }
+
+                if (booking.de_To_Comm_Delivery_Communicate_Via != undefined) {
+                    this.setState({ deCommunicates:booking.de_To_Comm_Delivery_Communicate_Via.split(',')});
+                }
+
                 //For Additional Services
                 let tempAdditionalServices = this.state.AdditionalServices;
                 if (booking.vx_freight_provider != null) tempAdditionalServices.vx_freight_provider = booking.vx_freight_provider;
@@ -1016,6 +1023,14 @@ class BookingPage extends Component {
         }
     }
 
+    refreshBooking(booking) {
+        let that = this;
+        this.props.getBooking(booking.id, 'id');
+        setTimeout(() => {
+            that.setState({loading: true, curViewMode: 0});
+        }, 50);
+    }
+
     calcBookingLine(booking, bookingLines) {
         let qty = 0;
         let total_qty_collected = 0;
@@ -1026,16 +1041,16 @@ class BookingPage extends Component {
 
         let newBookingLines = bookingLines.map((bookingLine) => {
             if (bookingLine.e_weightUOM) {
-                if (bookingLine.e_weightUOM.toUpperCase() === 'GRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'GRAMS')
+                const e_weightUOM = bookingLine.e_weightUOM.toUpperCase();
+
+                if (e_weightUOM === 'GRAM' || e_weightUOM === 'GRAMS')
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach / 1000;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAM' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KG' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KGS' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'KILOGRAMS')
+                else if (
+                    e_weightUOM === 'KILOGRAM' || e_weightUOM === 'KG' ||
+                    e_weightUOM === 'KGS' || e_weightUOM === 'KILOGRAMS'
+                )
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
-                else if (bookingLine.e_weightUOM.toUpperCase() === 'TON' ||
-                    bookingLine.e_weightUOM.toUpperCase() === 'TONS')
+                else if (e_weightUOM === 'TON' || e_weightUOM === 'TONS')
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach * 1000;
                 else
                     bookingLine['total_kgs'] = bookingLine.e_qty * bookingLine.e_weightPerEach;
@@ -1044,14 +1059,13 @@ class BookingPage extends Component {
             }
 
             if (bookingLine.e_dimUOM) {
-                if (bookingLine.e_dimUOM.toUpperCase() === 'CM' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'CENTIMETER')
+                const e_dimUOM = bookingLine.e_dimUOM.toUpperCase();
+
+                if (e_dimUOM === 'CM' || e_dimUOM === 'CENTIMETER')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'METER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'M')
+                else if (e_dimUOM === 'METER' || e_dimUOM === 'M')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
-                else if (bookingLine.e_dimUOM.toUpperCase() === 'MILIMETER' ||
-                    bookingLine.e_dimUOM.toUpperCase() === 'MM')
+                else if (e_dimUOM === 'MILIMETER' || e_dimUOM === 'MM')
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight / 1000000000;
                 else
                     bookingLine['cubic_meter'] = bookingLine.e_qty * bookingLine.e_dimLength * bookingLine.e_dimWidth * bookingLine.e_dimHeight;
@@ -1133,7 +1147,7 @@ class BookingPage extends Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no label');
+                this.notify('This booking has no label');
             }
         } else if (fileOption === 'pod') {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
@@ -1159,7 +1173,7 @@ class BookingPage extends Component {
                 const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + booking.z_pod_signed_url, '_blank');
                 win.focus();
             } else {
-                alert('This booking has no POD or POD_SOG');
+                this.notify('This booking has no POD or POD_SOG');
             }
         }
     }
@@ -1191,7 +1205,7 @@ class BookingPage extends Component {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                 headers: {'Authorization': 'JWT ' + token},
-                data: { ids: selectedBookingIds, downloadOption: fileOption},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1208,7 +1222,7 @@ class BookingPage extends Component {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
                 headers: {'Authorization': 'JWT ' + token},
-                data: { ids: selectedBookingIds, downloadOption: fileOption},
+                data: {ids: selectedBookingIds, downloadOption: fileOption},
                 responseType: 'blob', // important
             };
 
@@ -1309,26 +1323,6 @@ class BookingPage extends Component {
         }
     }
 
-    buildPDF(bookingIds, vx_freight_provider) {
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-pdf/',
-            data: {bookingIds, vx_freight_provider},
-        };
-
-        axios(options)
-            .then((response) => {
-                if (response.data.success && response.data.success === 'success') {
-                    this.notify('PDF(Label)’s have been generated successfully.');
-                } else {
-                    this.notify('PDF(Label)’s have *not been generated.');
-                }
-            })
-            .catch((err) => {
-                this.notify('Error: ' + err);
-            });
-    }
-
     onClickReprintLabel() {
         const {booking, isBookedBooking} = this.state;
 
@@ -1372,19 +1366,23 @@ class BookingPage extends Component {
         } else {
             this.bulkBookingUpdate([booking.id], 'b_error_Capture', '');
 
-            if (!booking.x_manual_booked_flag) {  // Not manual booking
-                if (booking.id && (booking.id !== undefined)) {
+            if (!booking.x_manual_booked_flag) {  // NOT manual booking
+                if (booking.id) {
                     if (booking.vx_freight_provider) {
-                        if (booking.vx_freight_provider.toLowerCase() === 'cope') {
-                            this.buildCSV([booking.id], booking.vx_freight_provider.toLowerCase());
-                            this.setState({ loading: true, curViewMode: 0});
-                        } else if (
-                            booking.vx_freight_provider.toLowerCase() === 'allied' ||
-                            booking.vx_freight_provider.toLowerCase() === 'act' ||
-                            booking.vx_freight_provider.toLowerCase() === 'state transport'
+                        const freight_provider = booking.vx_freight_provider.toLowerCase();
+
+                        if (
+                            freight_provider === 'cope' ||
+                            freight_provider === 'state transport'
                         ) {
-                            this.buildXML([booking.id], booking.vx_freight_provider.toLowerCase());
-                            this.setState({ loading: true, curViewMode: 0});
+                            this.buildCSV([booking.id], freight_provider);
+                            this.setState({loading: true, curViewMode: 0});
+                        } else if (
+                            freight_provider === 'allied' ||
+                            freight_provider === 'act'
+                        ) {
+                            this.buildXML([booking.id], freight_provider);
+                            this.setState({loading: true, curViewMode: 0});
                         } else {
                             const res = isValid4Book(booking);
 
@@ -1392,14 +1390,14 @@ class BookingPage extends Component {
                                 this.notify(res);
                             } else {
                                 this.props.fpBook(booking.id, booking.vx_freight_provider);
-                                this.setState({ loading: true, curViewMode: 0});
+                                this.setState({loading: true, curViewMode: 0});
                             }
                         }
                     } else {
-                        this.notify('Can not *Book* since booking has no Freight Provider');
+                        this.notify('Can not *BOOK* since booking has no Freight Provider');
                     }
                 } else {
-                    this.notify('Please Find any booking and then try book again!');
+                    this.notify('Please select a booking and then try BOOK again!');
                 }
             } else { // Manual booking
                 this.props.manualBook(booking.id);
@@ -1441,16 +1439,19 @@ class BookingPage extends Component {
 
     buildCSV(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-csv/',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
                 data: {bookingIds, vx_freight_provider},
-                responseType: 'blob', // important
+                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
             };
 
             axios(options)
                 .then((response) => {
-                    console.log('generate-csv response: ', response);
+                    console.log('get-csv response: ', response);
+                    this.notify('Successfully booked via CSV');
+                    this.refreshBooking(this.state.booking);
                     resolve();
                 })
                 .catch((err) => {
@@ -1461,9 +1462,11 @@ class BookingPage extends Component {
 
     buildXML(bookingIds, vx_freight_provider) {
         return new Promise((resolve, reject) => {
+            const token = localStorage.getItem('token');
             let options = {
                 method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/generate-xml/',
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
                 data: {bookingIds, vx_freight_provider},
             };
 
@@ -1569,10 +1572,10 @@ class BookingPage extends Component {
                     event.target.name === 'de_Deliver_From_Hours' ||
                     event.target.name === 'de_Deliver_By_Hours') {
                     if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct hour!');
+                        this.notify('Please input correct hour!');
                         canUpdateField = false;
                     } else if (parseInt(event.target.value) > 23) {
-                        alert('Please input correct hour!');
+                        this.notify('Please input correct hour!');
                         canUpdateField = false;
                     }
                 }
@@ -1583,10 +1586,10 @@ class BookingPage extends Component {
                     event.target.name === 'de_Deliver_By_Minutes'
                 ) {
                     if (_.isNaN(parseInt(event.target.value))) {
-                        alert('Please input correct minutes!');
+                        this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     } else if (parseInt(event.target.value) > 59) {
-                        alert('Please input correct minutes!');
+                        this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     }
                 }
@@ -1741,7 +1744,7 @@ class BookingPage extends Component {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
-
+        
         if (name === 'tickManualBook') {
             const {booking, clientname} = this.state;
 
@@ -1756,7 +1759,26 @@ class BookingPage extends Component {
             newBooking.b_send_POD_eMail = !newBooking.b_send_POD_eMail;
             this.props.updateBooking(newBooking.id, newBooking);
             this.setState({loadingBookingUpdate: true});
-        } else {
+        } else if (name == 'b_pu_communicate') {
+            const {puCommunicates, booking} = this.state;
+            if(puCommunicates.indexOf(target.dataset.method) > -1)
+                puCommunicates.splice(puCommunicates.indexOf(target.dataset.method), 1);
+            else 
+                puCommunicates.push(target.dataset.method);
+
+            booking.pu_Comm_Booking_Communicate_Via = puCommunicates.join(',');
+            this.setState({booking, puCommunicates});
+        } else if (name == 'b_de_To_communicate') {
+            const {booking, deCommunicates} = this.state;
+            if(deCommunicates.indexOf(target.dataset.method) > -1) 
+                deCommunicates.splice(deCommunicates.indexOf(target.dataset.method), 1);
+            else 
+                deCommunicates.push(target.dataset.method);
+
+            booking.de_To_Comm_Delivery_Communicate_Via = deCommunicates.join(',');
+            this.setState({booking, deCommunicates});
+        }
+        else {
             this.setState({[name]: value});
         }
     }
@@ -2018,6 +2040,63 @@ class BookingPage extends Component {
         }
     }
 
+    onClickSwitchAddress() {
+        const {booking} = this.state;
+        const temp = {
+            'puCompany': booking.deToCompanyName,
+            'pu_Address_Street_1': booking.de_To_Address_Street_1,
+            'pu_Address_street_2':booking.de_To_Address_Street_2,
+            'pu_Address_PostalCode': booking.de_To_Address_PostalCode,
+            'pu_Address_Suburb': booking.de_To_Address_Suburb,
+            'pu_Address_Country': booking.de_To_Address_Country,
+            'pu_Contact_F_L_Name': booking.de_to_Contact_F_LName,
+            'pu_Phone_Main': booking.de_to_Phone_Main,
+            'pu_Email': booking.de_Email,
+            'pu_Address_State': booking.de_To_Address_State,
+            'deToCompanyName': booking.puCompany,
+            'de_To_Address_Street_1': booking.pu_Address_Street_1,
+            'de_To_Address_Street_2': booking.pu_Address_street_2,
+            'de_To_Address_PostalCode': booking.pu_Address_PostalCode,
+            'de_To_Address_Suburb': booking.pu_Address_Suburb,
+            'de_To_Address_Country': booking.pu_Address_Country,
+            'de_to_Contact_F_LName': booking.pu_Contact_F_L_Name,
+            'de_to_Phone_Main': booking.pu_Phone_Main,
+            'de_Email': booking.pu_Email,
+            'de_To_Address_State': booking.pu_Address_State,
+            'pu_email_Group_Name': booking.de_Email_Group_Name,
+            'pu_email_Group': booking.de_Email_Group_Emails,
+            'de_Email_Group_Name': booking.pu_email_Group_Name,
+            'de_Email_Group_Emails': booking.pu_email_Group,
+        };
+
+        booking.puCompany = temp['puCompany'];
+        booking.pu_Address_Street_1 = temp['pu_Address_Street_1'];
+        booking.pu_Address_street_2 = temp['pu_Address_street_2'];
+        booking.pu_Address_PostalCode = temp['pu_Address_PostalCode'];
+        booking.pu_Address_Suburb = temp['pu_Address_Suburb'];
+        booking.pu_Address_Country = temp['pu_Address_Country'];
+        booking.pu_Contact_F_L_Name = temp['pu_Contact_F_L_Name'];
+        booking.pu_Phone_Main = temp['pu_Phone_Main'];
+        booking.pu_Email = temp['pu_Email'];
+        booking.deToCompanyName = temp['deToCompanyName'];
+        booking.de_To_Address_Street_1 = temp['de_To_Address_Street_1'];
+        booking.de_To_Address_Street_2 = temp['de_To_Address_Street_2'];
+        booking.de_To_Address_PostalCode = temp['de_To_Address_PostalCode'];
+        booking.de_To_Address_Suburb = temp['de_To_Address_Suburb'];
+        booking.de_To_Address_Country = temp['de_To_Address_Country'];
+        booking.de_to_Contact_F_LName = temp['de_to_Contact_F_LName'];
+        booking.de_to_Phone_Main = temp['de_to_Phone_Main'];
+        booking.de_Email = temp['de_Email'];
+        booking.de_To_Address_State = temp['de_To_Address_State'];
+        booking.pu_email_Group_Name = temp['pu_email_Group_Name'];
+        booking.pu_email_Group = temp['pu_email_Group'];
+        booking.de_Email_Group_Name = temp['de_Email_Group_Name'];
+        booking.de_Email_Group_Emails = temp['de_Email_Group_Emails'];
+
+        this.props.updateBooking(booking.id, booking);
+        this.setState({loadingBookingUpdate: true, isBookingModified: false});
+    }
+
     onClickDeleteLineOrLineData(typeNum, row) {
         console.log('#204 onDelete: ', typeNum, row);
 
@@ -2077,7 +2156,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowLineSlider: !prevState.isShowLineSlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2111,7 +2190,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowStatusHistorySlider: !prevState.isShowStatusHistorySlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2121,7 +2200,7 @@ class BookingPage extends Component {
         if (isBookingSelected) {
             this.setState(prevState => ({isShowProjectDataSlider: !prevState.isShowProjectDataSlider}));
         } else {
-            alert('Please select a booking.');
+            this.notify('Please select a booking.');
         }
     }
 
@@ -2148,7 +2227,7 @@ class BookingPage extends Component {
         const {booking} = this.state;
 
         if (!booking) {
-            alert('Please select booking to cancel');
+            this.notify('Please select booking to cancel');
         } else {
             this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
         }
@@ -2201,8 +2280,7 @@ class BookingPage extends Component {
         if (isBookingModified) {
             this.notify('You can lose modified booking info. Please update it');
         } else {
-            this.props.getBooking(booking.id, 'id');
-            this.setState({loading: true, curViewMode: 0});
+            this.refreshBooking(booking);
         }
     }
 
@@ -2383,8 +2461,8 @@ class BookingPage extends Component {
     onSelectPricing(pricingInfo) {
         const {formInputs, booking} = this.state;
 
-        formInputs['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
-        booking['vx_freight_provider'] = pricingInfo['fk_freight_provider_id'];
+        formInputs['vx_freight_provider'] = pricingInfo['freight_provider'];
+        booking['vx_freight_provider'] = pricingInfo['freight_provider'];
         booking['vx_account_code'] = pricingInfo['account_code'];
         formInputs['vx_account_code'] = pricingInfo['account_code'];
         booking['vx_serviceName'] = pricingInfo['service_name'];
@@ -2398,7 +2476,7 @@ class BookingPage extends Component {
         booking['api_booking_quote'] = pricingInfo['id'];
 
         const selectedFP = this.props.allFPs
-            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['fk_freight_provider_id'].toLowerCase());
+            .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
@@ -2428,7 +2506,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets, clientprocess
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets, clientprocess, puCommunicates, deCommunicates
         } = this.state;
         const {
             warehouses, emailLogs
@@ -2481,6 +2559,33 @@ class BookingPage extends Component {
             }
         ];
 
+        let pickedUpProducts = [];
+        if (booking && booking.b_status === 'Entered' && booking.b_client_name === 'Plum Products Australia Ltd') {
+            pickedUpProducts = products
+                .filter(product => !_.isNull(product['picked_up_timestamp']))
+                .map(product => product['pk_lines_id']);
+        }
+
+        const bookingLineColumnsSelectRow = {
+            mode: 'checkbox',
+            hideSelectAll: true,
+            hideSelectColumn: !(booking && booking.b_status === 'Entered' && booking.b_client_name === 'Plum Products Australia Ltd'),
+            selected: pickedUpProducts,
+            onSelect: (row, isSelect, rowIndex, e) => {
+                console.log('Booking Line checkbox event - ', rowIndex, e);
+
+                if (isSelect) {
+                    let conveted_date = moment().add(this.tzOffset, 'h');       // Current -> UTC
+                    conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+                    row['picked_up_timestamp'] = conveted_date;
+                } else {
+                    row['picked_up_timestamp'] = null;
+                }
+
+                this.props.updateBookingLine(row);
+            },
+        };
+
         const bookingLineDetailsColumns = [
             {
                 dataField: 'pk_id_lines_data',
@@ -2515,116 +2620,6 @@ class BookingPage extends Component {
         //         moment(cell).format('DD/MM/YYYY HH:mm:ss')
         //     );
         // };
-
-        // const commIdCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <div className="comm-id-cell, cur-pointer" onClick={() => that.onClickCommIdCell(row.id)}>{cell}</div>
-        //     );
-        // };
-
-        // const commUpdateCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <Button className="comm-update-cell" color="primary" onClick={() => that.onUpdateBtnClick('comm', row)}>
-        //             <i className="icon icon-edit"></i>
-        //         </Button>
-        //     );
-        // };
-
-        // const commDeleteCell = (cell, row) => {
-        //     let that = this;
-        //     return (
-        //         <Button className="comm-delete-cell" color="danger" onClick={() => that.onDeleteBtnClick(row.id)}>
-        //             <i className="icon icon-trash"></i>
-        //         </Button>
-        //     );
-        // };
-
-        // const limitedHeightTitle = (cell, row) => {
-        //     return (
-        //         <div>
-        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_com_title' + '-tooltip-' + row.id}>
-        //                 {cell}
-        //             </div>
-        //             <CommTooltipItem comm={row} field={'dme_com_title'} />
-        //         </div>
-        //     );
-        // };
-
-        // const limitedHeightAction = (cell, row) => {
-        //     return (
-        //         <div>
-        //             <div className="max-height-45 overflow-hidden" id={'comm-' + 'dme_action' + '-tooltip-' + row.id}>
-        //                 {cell}
-        //             </div>
-        //             <CommTooltipItem comm={row} field={'dme_action'} />
-        //         </div>
-        //     );
-        // };
-
-        // const columnCommunication = [
-        //     {
-        //         dataField: 'id',
-        //         text: 'Id',
-        //         hidden: true,
-        //     }, {
-        //         dataField: 'index',
-        //         text: 'No',
-        //         style: {
-        //             width: '30px',
-        //         },
-        //         formatter: commIdCell,
-        //     }, {
-        //         dataField: 'dme_notes_type',
-        //         text: 'Type',
-        //         style: {
-        //             width: '40px',
-        //         },
-        //     }, {
-        //         dataField: 'assigned_to',
-        //         text: 'Assigned',
-        //         style: {
-        //             width: '40px',
-        //         },
-        //     }, {
-        //         dataField: 'dme_com_title',
-        //         text: 'Title',
-        //         style: {
-        //             width: '300px',
-        //         },
-        //         // formatter: limitedHeightTitle,
-        //     }, {
-        //         dataField: 'z_createdTimeStamp',
-        //         text: 'Date/Time Created',
-        //         formatter: datetimeFormatter,
-        //     }, {
-        //         dataField: 'due_by_datetime',
-        //         text: 'Date/Time Due',
-        //         formatter: datetimeFormatter,
-        //     }, {
-        //         dataField: 'dme_action',
-        //         text: 'Action Task',
-        //         style: {
-        //             width: '300px',
-        //         },
-        //         // formatter: limitedHeightAction,
-        //     }, {
-        //         dataField: 'id',
-        //         text: 'Update',
-        //         style: {
-        //             width: '20px',
-        //         },
-        //         formatter: commUpdateCell,
-        //     }, {
-        //         dataField: 'id',
-        //         text: 'Delete',
-        //         style: {
-        //             width: '20px',
-        //         },
-        //         formatter: commDeleteCell,
-        //     },
-        // ];
 
         const columnZohoTickets = [
             {
@@ -3865,7 +3860,52 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white booking-panel-title">
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">PU Communicate Via</label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{booking.pu_Comm_Booking_Communicate_Via ? booking.pu_Comm_Booking_Communicate_Via : ''}</p>
+                                                                    :
+                                                                    <div className="mt-2">
+                                                                        <span>
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Email"
+                                                                                checked={puCommunicates.indexOf('Email') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Email
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="SMS"
+                                                                                checked={puCommunicates.indexOf('SMS') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;SMS
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_pu_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Call"
+                                                                                checked={puCommunicates.indexOf('Call') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Call
+                                                                        </span>
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="head text-white booking-panel-title mt-1">
                                                         PickUp Dates
                                                     </div>
                                                     <div className="row mt-1">
@@ -4282,7 +4322,53 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div className="head text-white panel-title">
+
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">DE Communicate Via</label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{booking.de_To_Comm_Delivery_Communicate_Via ? booking.de_To_Comm_Delivery_Communicate_Via : ''}</p>
+                                                                    :
+                                                                    <div className="mt-2">
+                                                                        <span>
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Email"
+                                                                                checked={deCommunicates.indexOf('Email') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Email
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="SMS"
+                                                                                checked={deCommunicates.indexOf('SMS') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;SMS
+                                                                        </span>
+                                                                        <span className="ml-3">
+                                                                            <input
+                                                                                name="b_de_To_communicate"
+                                                                                type="checkbox"
+                                                                                data-method="Call"
+                                                                                checked={deCommunicates.indexOf('Call') > -1}
+                                                                                onChange={(e) => this.handleInputChange(e)}
+                                                                            />
+                                                                            &nbsp;Call
+                                                                        </span>
+                                                                    </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="head text-white panel-title mt-1">
                                                         Delivery Dates
                                                     </div>
                                                     <div className="row mt-1">
@@ -4861,6 +4947,15 @@ class BookingPage extends Component {
                                                             Duplicate Booking
                                                         </button>
                                                     </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickSwitchAddress()}
+                                                            disabled={(curViewMode === 1) ? 'disabled' : ''}
+                                                        >
+                                                            Switch PU & DE info
+                                                        </button>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
                                                         <button
                                                             className="btn btn-theme custom-theme"
@@ -4913,10 +5008,12 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({curViewMode === 1 ? 0 : qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                {
-                                                    clientname === 'dme' ?
-                                                        <li className={activeTabInd === 3 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 3)}>Zoho Tickets Log</a></li>
-                                                        : null
+                                                {clientname === 'dme' &&
+                                                    <li className={activeTabInd === 3 ? 'selected' : ''}>
+                                                        <a onClick={(e) => this.onClickBottomTap(e, 3)}>
+                                                            Zoho Tickets Log({zoho_tickets.length})
+                                                        </a>
+                                                    </li>
                                                 }
                                                 <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({curViewMode === 1 ? 0 : cntAttachments})</a></li>
                                                 <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
@@ -4962,9 +5059,10 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField='id'
+                                                            keyField='pk_lines_id'
                                                             data={ products }
                                                             columns={ bookingLineColumns }
+                                                            selectRow={ bookingLineColumnsSelectRow }
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
@@ -4975,7 +5073,7 @@ class BookingPage extends Component {
                                                         text='Loading...'
                                                     >
                                                         <BootstrapTable
-                                                            keyField="id"
+                                                            keyField="pk_id_lines_data"
                                                             data={ bookingLineDetailsProduct }
                                                             columns={ bookingLineDetailsColumns }
                                                             bootstrap4={ true }
