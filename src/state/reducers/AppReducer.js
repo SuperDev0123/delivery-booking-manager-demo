@@ -49,10 +49,7 @@ export const AppReducer = combineReducers({
     url: UrlAdminReducer,
     chart: ChartReducer,
     clientRas: ClientRasReducer,
-<<<<<<< HEAD
     augment: AugmentAddressReducer,
-=======
     client: ClientReducer,
     role: RoleReducer,
->>>>>>> develop
 });
