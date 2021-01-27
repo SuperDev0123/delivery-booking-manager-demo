@@ -240,139 +240,139 @@ class ClientProduct extends React.Component {
 
         return (
             <div className="slider-content">
-                {(editMode === 0) ? (<div className="table-view">
-                    <div className="row">
-                        <div className="col-md-12">
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <h3 className="panel-title">Client Products</h3>
-                                    <div className="actions pull-right">
-                                        <button onClick={() => this.onClickNew(1)} className="btn btn-success">Add New</button>
+                {(editMode === 0) ?
+                    <div className="table-view">
+                        <div className="row">
+                            <div className="col-md-12">
+                                <div className="panel panel-default">
+                                    <div className="panel-heading">
+                                        <h3 className="panel-title">Client Products</h3>
+                                        <div className="actions pull-right">
+                                            <button onClick={() => this.onClickNew(1)} className="btn btn-success">Add New</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="panel-body">
-                                    <ToolkitProvider
-                                        id="client_products"
-                                        keyField="id"
-                                        data={clientProducts}
-                                        columns={productsColumns}
-                                        bootstrap4={true}
-                                        search
-                                    >
-                                        {
-                                            props => (
-                                                <div>
-                                                    <SearchBar {...props.searchProps} />
-                                                    <hr />
-                                                    <BootstrapTable id="client_employees"
-                                                        {...props.baseProps}
-                                                        cellEdit={cellEditFactory({ mode: 'click', blurToSave: true, afterSaveCell: this.onAfterSaveCell })}
-                                                    />
-                                                </div>
-                                            )
-                                        }
-                                    </ToolkitProvider>
+                                    <div className="panel-body">
+                                        <ToolkitProvider
+                                            id="client_products"
+                                            keyField="id"
+                                            data={clientProducts}
+                                            columns={productsColumns}
+                                            bootstrap4={true}
+                                            search
+                                        >
+                                            {
+                                                props => (
+                                                    <div>
+                                                        <SearchBar {...props.searchProps} />
+                                                        <hr />
+                                                        <BootstrapTable id="client_employees"
+                                                            {...props.baseProps}
+                                                            cellEdit={cellEditFactory({ mode: 'click', blurToSave: true, afterSaveCell: this.onAfterSaveCell })}
+                                                        />
+                                                    </div>
+                                                )
+                                            }
+                                        </ToolkitProvider>
 
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>) : (<div className="line-form form-view">
-                    <label>
-                        <p className="text-center">Parent Model Number</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="parent_model_number"
-                            value={clientProductsFormInputs['parent_model_number']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Child Model Number</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="child_model_number"
-                            value={clientProductsFormInputs['child_model_number']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Description</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="description"
-                            value={clientProductsFormInputs['description']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Dim UOM</p>
-                        <select name="e_dimUOM" className="form-control" id="e_dimUOM" onChange={(e) => this.onInputChange(e)}>
-                            <option value="MM">MM</option>
-                            <option value="CM">CM</option>
-                            <option value="METER">METER</option>
-                        </select>
-                    </label>
-                    <label>
-                        <p className="text-center">Dim Length</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="e_dimLength"
-                            value={clientProductsFormInputs['e_dimLength']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Dim Width</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="e_dimWidth"
-                            value={clientProductsFormInputs['e_dimWidth']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Dim Height</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="e_dimHeight"
-                            value={clientProductsFormInputs['e_dimHeight']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-                    <label>
-                        <p className="text-center">Weight UOM</p>
-                        <select name="e_weightUOM" className="form-control" id="e_weightUOM" onChange={(e) => this.onInputChange(e)}>
-                            <option value="Gram">Gram</option>
-                            <option value="Kilogram">Kilogram</option>
-                            <option value="Ton">Ton</option>
-                        </select>
-                    </label>
-
-                    <label>
-                        <p className="text-center">Weight Per Each</p>
-                        <input
-                            className="form-control"
-                            type="text"
-                            name="e_weightPerEach"
-                            value={clientProductsFormInputs['e_weightPerEach']}
-                            onChange={(e) => this.onInputChange(e)}
-                        />
-                    </label>
-
-                    <label>
-                        <Button color="primary" onClick={() => this.onSubmit()}>
-                            Submit
-                        </Button>{' '}
-                        <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                    </label>
-                </div>)}
+                    :
+                    <div className="line-form form-view">
+                        <label>
+                            <span className="text-left">Parent Model Number</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="parent_model_number"
+                                value={clientProductsFormInputs['parent_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Child Model Number</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="child_model_number"
+                                value={clientProductsFormInputs['child_model_number']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Description</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="description"
+                                value={clientProductsFormInputs['description']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Dim UOM</span>
+                            <select name="e_dimUOM" className="form-control" id="e_dimUOM" onChange={(e) => this.onInputChange(e)}>
+                                <option value="MM">MM</option>
+                                <option value="CM">CM</option>
+                                <option value="METER">METER</option>
+                            </select>
+                        </label><br />
+                        <label>
+                            <span className="text-left">Dim Length</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="e_dimLength"
+                                value={clientProductsFormInputs['e_dimLength']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Dim Width</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="e_dimWidth"
+                                value={clientProductsFormInputs['e_dimWidth']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Dim Height</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="e_dimHeight"
+                                value={clientProductsFormInputs['e_dimHeight']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Weight UOM</span>
+                            <select name="e_weightUOM" className="form-control" id="e_weightUOM" onChange={(e) => this.onInputChange(e)}>
+                                <option value="Gram">Gram</option>
+                                <option value="Kilogram">Kilogram</option>
+                                <option value="Ton">Ton</option>
+                            </select>
+                        </label><br />
+                        <label>
+                            <span className="text-left">Weight Per Each</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="e_weightPerEach"
+                                value={clientProductsFormInputs['e_weightPerEach']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <Button color="primary" onClick={() => this.onSubmit()}>Save</Button>{' '}
+                            <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                        </label>
+                    </div>
+                }
             </div>
         );
     }
@@ -387,14 +387,17 @@ class ClientProduct extends React.Component {
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
-                            </li>
+                            <li><a href={this.props.urlAdminHome}>Home</a></li>
                             <li className="active">Client Products</li>
                         </ol>
                     </div>
                 </div>
                 <section id="main-content" className="container animated fadeInUp">
-                    { isLoading ? ( <LoadingOverlay active={isLoading} spinner text='Loading...' />): this.renderClientProducts()}
+                    {isLoading ?
+                        (<LoadingOverlay active={isLoading} spinner text='Loading...' />)
+                        :
+                        this.renderClientProducts()
+                    }
                 </section>
             </div>
         );
@@ -424,4 +427,3 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ClientProduct));
-
