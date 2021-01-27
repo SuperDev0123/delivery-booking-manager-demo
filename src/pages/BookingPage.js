@@ -43,6 +43,7 @@ import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
+import CostSlider from '../components/Sliders/CostSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
@@ -53,6 +54,7 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
+import { getCostOptionMaps, getBookingCostOptions } from '../state/services/costService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 
@@ -135,6 +137,7 @@ class BookingPage extends Component {
             isShowStatusNoteModal: false,
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
+            isShowCostSlider: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -191,6 +194,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
+        this.toggleCostSlider = this.toggleCostSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
     }
 
@@ -258,12 +262,17 @@ class BookingPage extends Component {
         getZohoTickets: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
+        // Cost
+        getCostOptionMaps: PropTypes.func.isRequired,
+        getBookingCostOptions: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
+        costOptionMaps: PropTypes.array.isRequired,
+        bookingCostOptions: PropTypes.array.isRequired,
     };
 
     componentDidMount() {
@@ -2200,6 +2209,20 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowEmailLogSlider: !prevState.isShowEmailLogSlider}));
     }
 
+    toggleCostSlider() {
+        if (!this.state.booking.vx_freight_provider) {
+            this.notify('Freight Provider is required to open this slider.');
+            return;
+        }
+
+        if (!this.state.isShowCostSlider) {
+            this.props.getCostOptionMaps(this.state.booking.vx_freight_provider);
+            this.props.getBookingCostOptions(this.state.booking.id);
+        }
+
+        this.setState(prevState => ({isShowCostSlider: !prevState.isShowCostSlider}));   
+    }
+
     // onClickSwitchClientNavIcon(e) {
     //     e.preventDefault();
     //     this.props.getDMEClients();
@@ -3151,7 +3174,7 @@ class BookingPage extends Component {
                                         <div className={(parseInt(curViewMode) === 0) ? 'none' : 'col-sm-1 form-group created-for-btn'}>
                                             <span>Update email</span>
                                             <Button
-                                                className="edit-lld-btn btn-primary"
+                                                className="custom-button edit-lld-btn btn-primary"
                                                 onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
                                                 disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? 'disabled' : ''}
                                             >
@@ -3505,7 +3528,7 @@ class BookingPage extends Component {
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
-                                                    <span className="c-red">Actual $</span>
+                                                    <span>Actual $</span>
                                                     {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                         :
@@ -3524,6 +3547,14 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span>Misc. Costs</span><br />
+                                                <Button className="custom-button btn-primary" onClick={() => this.toggleCostSlider()} disabled={!isBookingSelected}>
+                                                    <i className="fa fa-columns"></i>
+                                                </Button>
+                                            </div>
+                                        </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
@@ -5301,6 +5332,13 @@ class BookingPage extends Component {
                     emailLogs={emailLogs}
                 />
 
+                <CostSlider
+                    isOpen={this.state.isShowCostSlider}
+                    toggleSlider={this.toggleCostSlider}
+                    costOptionMaps={this.props.costOptionMaps}
+                    bookingCostOptions={this.props.bookingCostOptions}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -5355,6 +5393,8 @@ const mapStateToProps = (state) => {
         bookingErrorMessage: state.booking.errorMessage,
         zoho_tickets: state.extra.zoho_tickets,
         loadingZohoTickets: state.extra.loadingZohoTickets,
+        costOptionMaps: state.cost.costOptionMaps,
+        bookingCostOptions: state.cost.bookingCostOptions,
         errors: state.extra.errors,
     };
 };
@@ -5419,6 +5459,8 @@ const mapDispatchToProps = (dispatch) => {
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
+        getCostOptionMaps: (fpName) => dispatch(getCostOptionMaps(fpName)),
+        getBookingCostOptions: (bookingId) => dispatch(getBookingCostOptions(bookingId)),
         resetNoBooking: () => dispatch(resetNoBooking()),
     };
 };

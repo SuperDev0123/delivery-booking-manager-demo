@@ -10,11 +10,11 @@ import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 // Services
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
-import { getCosts } from '../../../../state/services/costService';
+import { getFPCosts } from '../../../../state/services/costService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../../../config';
 
-class Costs extends Component {
+class FPCosts extends Component {
     constructor(props) {
         super(props);
 
@@ -35,7 +35,7 @@ class Costs extends Component {
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        getCosts: PropTypes.func.isRequired,
+        getFPCosts: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
     }
 
@@ -79,7 +79,7 @@ class Costs extends Component {
 
     onClickRefresh() {
         this.setState({loading: true});
-        this.props.getCosts();
+        this.props.getFPCosts();
     }
 
     onClickDeleteFile(file, fileOption) {
@@ -102,7 +102,7 @@ class Costs extends Component {
             .then((response) => {
                 console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
-                this.props.getCosts();
+                this.props.getFPCosts();
                 this.toggleDeleteFileConfirmModal();
             })
             .catch(error => {
@@ -236,7 +236,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allCosts: state.cost.allCosts,
+        allCosts: state.cost.allFPCosts,
         urlAdminHome: state.url.urlAdminHome,
     };
 };
@@ -245,8 +245,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getCosts: () => dispatch(getCosts()),
+        getFPCosts: () => dispatch(getFPCosts()),
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Costs));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FPCosts));

@@ -281,10 +281,10 @@ class SidebarPush extends React.Component {
                                     <span className="menu-title">Availabilities</span>
                                 </Link>
                             </li>
-                            <li className={this.activeRoute('costs') ? 'active' : ''}>
-                                <Link to="/admin/costs" title="Costs">
+                            <li className={this.activeRoute('fp-costs') ? 'active' : ''}>
+                                <Link to="/admin/fp-costs" title="FP Costs">
                                     <i className="fa fa-fw fa-coins"></i>
-                                    <span className="menu-title">Costs</span>
+                                    <span className="menu-title">FP Costs</span>
                                 </Link>
                             </li>
                             <li className={this.activeRoute('clients') ? 'active' : ''}>

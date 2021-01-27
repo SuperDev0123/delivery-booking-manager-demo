@@ -43,9 +43,9 @@ import Users from '../pages/admin/views/Users/Users';
 import AddUser from '../pages/admin/views/Users/AddUser';
 import EditUser from '../pages/admin/views/Users/EditUser';
 import CronOptions from '../pages/admin/views/CronOptions/CronOptions';
-import FreightProviders from '../pages/admin/views/FreightProviders/FreightProviders';
-import AddFreightProviders from '../pages/admin/views/FreightProviders/AddFreightProviders';
-import EditFreightProviders from '../pages/admin/views/FreightProviders/EditFreightProviders';
+import FreightProviders from '../pages/admin/views/FP/FreightProviders';
+import AddFreightProviders from '../pages/admin/views/FP/AddFreightProviders';
+import EditFreightProviders from '../pages/admin/views/FP/EditFreightProviders';
 import SqlQueries from '../pages/admin/views/SqlQueries';
 import SqlQueriesAction from '../pages/admin/views/SqlQueries/SqlQueriesAction';
 import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
@@ -56,7 +56,7 @@ import PricingRuleStatus from '../pages/admin/views/PricingRule/Status';
 import Vehicles from '../pages/admin/views/Vehicles/Vehicles';
 import Timings from '../pages/admin/views/Timings/Timings';
 import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
-import Costs from '../pages/admin/views/Costs/Costs';
+import FPCosts from '../pages/admin/views/FP/Costs';
 import Clients from '../pages/admin/views/Clients/Clients';
 import AddClient from '../pages/admin/views/Clients/AddClient';
 import EditClient from '../pages/admin/views/Clients/EditClient';
@@ -123,7 +123,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/vehicles' component={Vehicles} />
                     <AdminPrivateRoute exact path='/admin/timings' component={Timings} />
                     <AdminPrivateRoute exact path='/admin/availabilities' component={Availabilities} />
-                    <AdminPrivateRoute exact path='/admin/costs' component={Costs} />
+                    <AdminPrivateRoute exact path='/admin/fp-costs' component={FPCosts} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule' component={PricingRuleList} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />

@@ -1,0 +1,29 @@
+.cost-slider {
+    .slider-content {
+        height: 100%;
+        overflow-y: auto;
+
+        .selected {
+            background: lightblue;
+        }
+    }
+
+    button {
+        font-size: 30px;
+        padding: 0px 10px;
+        margin-bottom: 20px;
+
+        i { font-size: 20px }
+    }
+
+    table {
+        button {
+             margin-bottom: 0px;
+             font-size: 20px;
+        }
+    }
+
+    .text-right {
+        text-align: right;
+    }
+}
