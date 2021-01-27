@@ -63,7 +63,7 @@ class ClientProduct extends React.Component {
             this.props.history.push('/customerdashboard');
         }
 
-        this.props.getDMEClientProducts(7);
+        this.props.getDMEClientProducts();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -416,7 +416,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
-        getDMEClientProducts: (client_id) => dispatch(getDMEClientProducts(client_id)),
+        getDMEClientProducts: () => dispatch(getDMEClientProducts()),
         deleteClientProduct: (id) => dispatch(deleteClientProduct(id)),
         createClientProduct: (clientProduct) => dispatch(createClientProduct(clientProduct)),
         updateClientProduct: (clientProduct) => dispatch(updateClientProduct(clientProduct)),
