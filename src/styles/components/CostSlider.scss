@@ -8,12 +8,22 @@
         }
     }
 
-    button {
-        font-size: 30px;
-        padding: 0px 10px;
-        margin-bottom: 20px;
+    .form-view {
+        button {
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+    }
 
-        i { font-size: 20px }
+    .list-view {
+        button {
+            font-size: 30px;
+            padding: 0px 10px;
+
+            i { font-size: 20px }
+
+            &.new { margin-bottom: 20px }
+        }
     }
 
     table {
@@ -21,9 +31,5 @@
              margin-bottom: 0px;
              font-size: 20px;
         }
-    }
-
-    .text-right {
-        text-align: right;
     }
 }

@@ -54,7 +54,6 @@ import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLin
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
-import { getCostOptionMaps, getBookingCostOptions } from '../state/services/costService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 
@@ -262,17 +261,12 @@ class BookingPage extends Component {
         getZohoTickets: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
-        // Cost
-        getCostOptionMaps: PropTypes.func.isRequired,
-        getBookingCostOptions: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
-        costOptionMaps: PropTypes.array.isRequired,
-        bookingCostOptions: PropTypes.array.isRequired,
     };
 
     componentDidMount() {
@@ -2213,11 +2207,6 @@ class BookingPage extends Component {
         if (!this.state.booking.vx_freight_provider) {
             this.notify('Freight Provider is required to open this slider.');
             return;
-        }
-
-        if (!this.state.isShowCostSlider) {
-            this.props.getCostOptionMaps(this.state.booking.vx_freight_provider);
-            this.props.getBookingCostOptions(this.state.booking.id);
         }
 
         this.setState(prevState => ({isShowCostSlider: !prevState.isShowCostSlider}));   
@@ -5335,8 +5324,7 @@ class BookingPage extends Component {
                 <CostSlider
                     isOpen={this.state.isShowCostSlider}
                     toggleSlider={this.toggleCostSlider}
-                    costOptionMaps={this.props.costOptionMaps}
-                    bookingCostOptions={this.props.bookingCostOptions}
+                    booking={booking}
                 />
 
                 <ToastContainer />
@@ -5393,8 +5381,6 @@ const mapStateToProps = (state) => {
         bookingErrorMessage: state.booking.errorMessage,
         zoho_tickets: state.extra.zoho_tickets,
         loadingZohoTickets: state.extra.loadingZohoTickets,
-        costOptionMaps: state.cost.costOptionMaps,
-        bookingCostOptions: state.cost.bookingCostOptions,
         errors: state.extra.errors,
     };
 };
@@ -5459,8 +5445,6 @@ const mapDispatchToProps = (dispatch) => {
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
-        getCostOptionMaps: (fpName) => dispatch(getCostOptionMaps(fpName)),
-        getBookingCostOptions: (bookingId) => dispatch(getBookingCostOptions(bookingId)),
         resetNoBooking: () => dispatch(resetNoBooking()),
     };
 };

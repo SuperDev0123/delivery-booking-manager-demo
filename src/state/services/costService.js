@@ -9,6 +9,12 @@ import {
     failedGetCostOptionMaps,
     successGetBookingCostOptions,
     failedGetBookingCostOptions,
+    successCreateBookingCostOption,
+    failedCreateBookingCostOption,
+    successUpdateBookingCostOption,
+    failedUpdateBookingCostOption,
+    successDeleteBookingCostOption,
+    failedDeleteBookingCostOption,
 } from '../actions/costActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -66,4 +72,49 @@ export const getBookingCostOptions = (bookingId='') => {
         axios(options)
             .then(({ data }) => dispatch(successGetBookingCostOptions(data)))
             .catch((error) => dispatch(failedGetBookingCostOptions(error)));
+};
+
+export const createBookingCostOption = (bookingCostOption) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/`,
+        data: bookingCostOption,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateBookingCostOption(data)))
+            .catch((error) => dispatch(failedCreateBookingCostOption(error)));
+};
+
+export const updateBookingCostOption = (bookingCostOption) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/${bookingCostOption.id}/?bookingId=${bookingCostOption.booking}`,
+        data: bookingCostOption,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateBookingCostOption(data)))
+            .catch((error) => dispatch(failedUpdateBookingCostOption(error)));
+};
+
+export const deleteBookingCostOption = (bookingCostOption) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/${bookingCostOption.id}/?bookingId=${bookingCostOption.booking}`,
+        data: bookingCostOption,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(() => dispatch(successDeleteBookingCostOption(bookingCostOption)))
+            .catch((error) => dispatch(failedDeleteBookingCostOption(error)));
 };

@@ -100,7 +100,6 @@ class FPCosts extends Component {
 
         axios(options)
             .then((response) => {
-                console.log('#301 - ', response.data);
                 this.notify('Deleted successfully!');
                 this.props.getFPCosts();
                 this.toggleDeleteFileConfirmModal();

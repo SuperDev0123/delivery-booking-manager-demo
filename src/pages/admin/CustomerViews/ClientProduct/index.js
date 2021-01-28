@@ -101,12 +101,13 @@ class ClientProduct extends React.Component {
         this.setState({editMode: editMode, saveMode: 0});
     }
 
-    onAfterSaveCell = (oldValue, newValue,row, column) => {
+    onAfterSaveCell = (oldValue, newValue, row, column) => {
         console.log('onAfterSaveCell', oldValue, newValue,row, column);
 
-        if ( ['e_dimLength', 'e_dimWidth', 'e_dimHeight', 'e_weightPerEach'].indexOf(column.dataField) > -1){
+        if (['e_dimLength', 'e_dimWidth', 'e_dimHeight', 'e_weightPerEach'].indexOf(column.dataField) > -1){
             row[column.dataField] = newValue===''?null:Number(Number(newValue).toFixed(2));
         }
+
         this.setState({clientProductsFormInputs: row});
         this.props.updateClientProduct(row);
     }
@@ -114,9 +115,7 @@ class ClientProduct extends React.Component {
     onSubmit() {
         const { saveMode, clientProductsFormInputs } = this.state;
 
-
         clientProductsFormInputs['fk_id_dme_client'] = 1;
-        
         clientProductsFormInputs['e_dimLength'] = Number(Number(clientProductsFormInputs['e_dimLength']).toFixed(2));
         clientProductsFormInputs['e_dimWidth'] = Number(Number(clientProductsFormInputs['e_dimWidth']).toFixed(2));
         clientProductsFormInputs['e_dimHeight'] = Number(Number(clientProductsFormInputs['e_dimHeight']).toFixed(2));
@@ -164,13 +163,10 @@ class ClientProduct extends React.Component {
         const { clientProducts } = this.state;
         const { SearchBar } = Search;
 
-        const carrierActionButton = (cell, row, enumObject, rowIndex) => {
-            console.log(row, rowIndex);
+        const carrierActionButton = (cell, row) => {
             return (
                 <div>
-                    <a onClick={() => this.onClickDelete(row.id)} className="btn btn-danger btn-sm" href="javascript:void(0)">
-                        Delete
-                    </a>
+                    <a onClick={() => this.onClickDelete(row.id)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a>
                     <a className="btn btn-info btn-sm" onClick={()=>this.onClickEditButton(row)}>Edit</a>
                 </div>
             );
