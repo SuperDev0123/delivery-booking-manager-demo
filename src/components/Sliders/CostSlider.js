@@ -272,7 +272,7 @@ class CostSlider extends React.Component {
                     }
                     {viewMode === 0 &&
                         <div className="list-view">
-                            <Button className="new" color="primary" onClick={() => this.onClickNewBtn()}>+</Button>
+                            {clientname === 'dme' && <Button className="new" color="primary" onClick={() => this.onClickNewBtn()}>+</Button>}
                             {(bookingCostOptions || []).length === 0 ?
                                 <p>No results found</p>
                                 :
