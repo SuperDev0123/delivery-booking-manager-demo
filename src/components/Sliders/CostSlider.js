@@ -28,6 +28,7 @@ class CostSlider extends React.Component {
         };
 
         moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
         this.submitHandler = this.submitHandler.bind(this);
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
     }
@@ -36,6 +37,7 @@ class CostSlider extends React.Component {
         isOpen: PropTypes.bool.isRequired,
         toggleSlider: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
+        clientname: PropTypes.string,
         costOptionMaps: PropTypes.array.isRequired,
         bookingCostOptions: PropTypes.array.isRequired,
         getCostOptionMaps: PropTypes.func.isRequired,
@@ -71,6 +73,7 @@ class CostSlider extends React.Component {
         formInputs['cost_option'] = bookingCostOption.cost_option;
         formInputs['amount'] = bookingCostOption.amount;
         formInputs['qty'] = bookingCostOption.qty;
+        formInputs['markup_percentage'] = bookingCostOption.markup_percentage;
         this.setState({viewMode: 1, saveMode: 1, formInputs});
     }
 
@@ -105,21 +108,31 @@ class CostSlider extends React.Component {
     }
 
     onInputChange(event) {
-        const {formInputs} = this.state;
+        const { costOptionMaps } = this.props;
+        const { formInputs } = this.state;
         const target = event.target;
         const value = target.value;
         const name = target.name;
+
+        if (name === 'cost_option') {
+            formInputs['markup_percentage'] = costOptionMaps.find(costOptionMap => 
+                costOptionMap.cost_option.id == value
+            ).cost_option.initial_markup_percentage;
+        }
 
         formInputs[name] = value;
         this.setState({formInputs});
     }
 
     render() {
-        const { isOpen, costOptionMaps, bookingCostOptions } = this.props;
+        const { isOpen, costOptionMaps, bookingCostOptions, clientname } = this.props;
         const { viewMode, formInputs, saveMode } = this.state;
+        let total = 0;
 
         const bookingCostOptionList = (bookingCostOptions || []).map((bookingCostOption, index) => {
             let cost_option_desc;
+            total += parseFloat(bookingCostOption.amount) * (1 + parseFloat(bookingCostOption.markup_percentage));
+
             if (costOptionMaps.length > 0) {
                 cost_option_desc = costOptionMaps.find(costOptionMap => 
                     costOptionMap.cost_option.id === bookingCostOption.cost_option
@@ -130,28 +143,58 @@ class CostSlider extends React.Component {
                 <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{cost_option_desc}</td>
-                    <td>${parseFloat(bookingCostOption.amount).toFixed(2)}</td>
+                    {clientname === 'dme' && <td>${parseFloat(bookingCostOption.amount).toFixed(2)}</td>}
+                    {clientname === 'dme' && <td>{parseFloat(bookingCostOption.markup_percentage).toFixed(2)}</td>}
+                    <td>${(parseFloat(bookingCostOption.amount) * (1 + parseFloat(bookingCostOption.markup_percentage))).toFixed(2)}</td>
                     <td>{parseFloat(bookingCostOption.qty).toFixed(2)}</td>
-                    <td>{moment(bookingCostOption.z_createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
-                    <td>
+                    <td>${(parseFloat(bookingCostOption.qty) * parseFloat(bookingCostOption.amount) * (1 + parseFloat(bookingCostOption.markup_percentage))).toFixed(2)}</td>
+                    {clientname === 'dme' && <td>
                         <Button
                             color="primary"
                             onClick={() => this.onClickEditBtn(bookingCostOption)}
                         >
                             <i className="icon icon-pencil"></i>
                         </Button>
-                    </td>
-                    <td>
+                    </td>}
+                    {clientname === 'dme' && <td>
                         <Button
                             color="danger"
                             onClick={() => this.onClickDeleteBtn(bookingCostOption)}
                         >
                             <i className="icon icon-trash"></i>
                         </Button>
-                    </td>
+                    </td>}
                 </tr>
             );
         });
+
+        bookingCostOptionList.push(
+            <tr key={bookingCostOptions.length}>
+                <td className="border-none"></td>
+                <td className="border-none"></td>
+                <td className="border-none"></td>
+                {clientname === 'dme' && <td className="border-none"></td>}
+                {clientname === 'dme' && <td className="border-none"></td>}
+                <td><strong>Total</strong></td>
+                <td>${total.toFixed(2)}</td>
+                {clientname === 'dme' && <td className="border-none"></td>}
+                {clientname === 'dme' && <td className="border-none"></td>}
+            </tr>
+        );
+
+        bookingCostOptionList.push(
+            <tr key={bookingCostOptions.length}>
+                <td className="border-none"></td>
+                <td className="border-none"></td>
+                <td className="border-none"></td>
+                {clientname === 'dme' && <td className="border-none"></td>}
+                {clientname === 'dme' && <td className="border-none"></td>}
+                <td><strong>Total $</strong></td>
+                <td>${(total * (1 + 0.1)).toFixed(2)}</td>
+                {clientname === 'dme' && <td className="border-none"></td>}
+                {clientname === 'dme' && <td className="border-none"></td>}
+            </tr>
+        );
 
         return (
             <SlidingPane
@@ -174,11 +217,10 @@ class CostSlider extends React.Component {
                                             <option
                                                 key={index + 1}
                                                 value={costOptionMap.cost_option.id}
-                                                disabled={
-                                                    saveMode === 0 ?
-                                                        bookingCostOptions.find(bookingCostOption => bookingCostOption.cost_option === costOptionMap.cost_option.id) && 'disabled'
-                                                        :
-                                                        costOptionMap.cost_option.id != formInputs['cost_option'] && 'disabled'
+                                                disabled={saveMode === 0 ?
+                                                    bookingCostOptions.find(bookingCostOption => bookingCostOption.cost_option === costOptionMap.cost_option.id) && 'disabled'
+                                                    :
+                                                    costOptionMap.cost_option.id != formInputs['cost_option'] && 'disabled'
                                                 }
                                                 selected={saveMode === 1 && costOptionMap.cost_option == formInputs['cost_option'] && 'selected'}
                                             >
@@ -211,6 +253,18 @@ class CostSlider extends React.Component {
                                         onChange={(e) => this.onInputChange(e)}
                                     />
                                 </label><br />
+                                <label>
+                                    <span className="text-left">MarkUp Percent</span>
+                                    <input
+                                        className="form-control"
+                                        required
+                                        type="number"
+                                        step="0.01"
+                                        name="markup_percentage"
+                                        value={formInputs['markup_percentage']}
+                                        onChange={(e) => this.onInputChange(e)}
+                                    />
+                                </label><br />
                                 <Button type="submit" color="primary">Save</Button>
                                 <Button color="danger" onClick={() => this.onClickCancelBtn()}>Cancel</Button>
                             </form>
@@ -227,11 +281,13 @@ class CostSlider extends React.Component {
                                         <tr>
                                             <th className="" scope="col" nowrap><p>No</p></th>
                                             <th className="" scope="col" nowrap><p>Description</p></th>
-                                            <th className="" scope="col" nowrap><p>Amount</p></th>
+                                            {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP opt. quoted</p></th>}
+                                            {clientname === 'dme' && <th className="" scope="col" nowrap><p>MarkUp %</p></th>}
+                                            <th className="" scope="col" nowrap><p>FP opt. $</p></th>
                                             <th className="" scope="col" nowrap><p>Quantity</p></th>
-                                            <th className="" scope="col" nowrap><p>Created At</p></th>
-                                            <th className="" scope="col" nowrap><p>Edit</p></th>
-                                            <th className="" scope="col" nowrap><p>Delete</p></th>
+                                            <th className="" scope="col" nowrap><p>Amount</p></th>
+                                            {clientname === 'dme' && <th className="" scope="col" nowrap><p>Edit</p></th>}
+                                            {clientname === 'dme' && <th className="" scope="col" nowrap><p>Delete</p></th>}
                                         </tr>
                                         { bookingCostOptionList }
                                     </table>

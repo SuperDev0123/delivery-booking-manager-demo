@@ -5325,6 +5325,7 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowCostSlider}
                     toggleSlider={this.toggleCostSlider}
                     booking={booking}
+                    clientname={clientname}
                 />
 
                 <ToastContainer />
