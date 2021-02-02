@@ -51,7 +51,7 @@ class AddClientEmployee extends Component {
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/customerdashboard');
+            this.props.history.push('/admin');
         }
 
         this.props.getAllRoles();
@@ -65,7 +65,7 @@ class AddClientEmployee extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/customerdashboard');
+            this.props.history.push('/admin');
         }
         if (roles) {
             this.setState({ roles });
@@ -96,7 +96,7 @@ class AddClientEmployee extends Component {
         const { name_first, name_last, email, phone, job_title, role, fk_id_dme_client, warehouse_id } = this.state;        
         this.props.createClientEmployee({ name_first: name_first, name_last:name_last, email:email, phone:phone, clien_emp_job_title: job_title, role_id:role, fk_id_dme_client_id:fk_id_dme_client, warehouse_id:warehouse_id });
         this.setState({ loading: false });
-        this.props.history.push('/customerdashboard/clientemployees');
+        this.props.history.push('/admin/clientemployees');
         event.preventDefault();
     }
 
@@ -111,7 +111,7 @@ class AddClientEmployee extends Component {
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/customerdashboard/clientemployees">Client Employees</a></li>
+                            <li><a href="/admin/clientemployees">Client Employees</a></li>
                             <li className="active">Add New</li>
                         </ol>
                     </div>
@@ -186,7 +186,7 @@ class AddClientEmployee extends Component {
                                                 {
                                                     warehouses.map((warehouse, index) => {
                                                         return (
-                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
+                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.name}</option>
                                                         );
                                                     })
                                                 }

@@ -179,6 +179,7 @@ class BokPricePage extends Component {
                         <p>Main Info:</p>
                         <div className="main-info">
                             <div className="">
+                                <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
                                 <strong>Client Order Number: </strong><span>{bok_1['b_client_order_num']}</span><br />
                                 <strong>Client Sales Invoice Number: </strong><span>{bok_1['b_client_sales_inv_num']}</span>
                             </div>
@@ -186,11 +187,10 @@ class BokPricePage extends Component {
                                 <label>Pickup From</label><br />
                                 <span>{bok_1['b_028_b_pu_company']}</span><br />
                                 <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
-                                <span>{bok_1['b_030_b_pu_address_street_2']}</span><br />
-                                <span>{bok_1['b_031_b_pu_address_state'].toUpperCase()}</span><br />
-                                <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
+                                {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}<br /></span>)}
                                 <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
-                                <span>{bok_1['b_034_b_pu_address_country']}</span><br />
+                                <span>{bok_1['b_031_b_pu_address_state'].toUpperCase()} {bok_1['b_034_b_pu_address_country']}</span><br />
+                                <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br /><br />
                                 <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
                                 <span>{bok_1['b_037_b_pu_email']}</span><br />
                                 <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
@@ -199,11 +199,10 @@ class BokPricePage extends Component {
                                 <label>Deliver To</label><br />
                                 <span>{bok_1['b_054_b_del_company']}</span><br />
                                 <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
-                                <span>{bok_1['b_056_b_del_address_street_2']}</span><br />
-                                <span>{bok_1['b_057_b_del_address_state'].toUpperCase()}</span><br />
-                                <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
+                                {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}<br /></span>)}
                                 <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
-                                <span>{bok_1['b_060_b_del_address_country']}</span><br />
+                                <span>{bok_1['b_057_b_del_address_state'].toUpperCase()} {bok_1['b_060_b_del_address_country']}</span><br />
+                                <span>{bok_1['b_059_b_del_address_postalcode']}</span><br /><br />
                                 <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
                                 <span>{bok_1['b_063_b_del_email']}</span><br />
                                 <span>{bok_1['b_064_b_del_phone_main']}</span><br />  

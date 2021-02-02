@@ -56,7 +56,7 @@ class EditClientEmployee extends Component {
         } else {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/customerdashboard');
+            this.props.history.push('/admin');
         }
 
         this.props.getAllRoles();
@@ -71,7 +71,7 @@ class EditClientEmployee extends Component {
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
-            this.props.history.push('/customerdashboard');
+            this.props.history.push('/admin');
         }
         if (roles) {
             this.setState({ roles });
@@ -116,7 +116,7 @@ class EditClientEmployee extends Component {
         
         this.props.updateClientEmployee(clientEmployee);
         this.setState({ loading: false });
-        this.props.history.push('/customerdashboard/clientemployees');
+        this.props.history.push('/admin/clientemployees');
         event.preventDefault();
     }
 
@@ -131,7 +131,7 @@ class EditClientEmployee extends Component {
                         <ol className="breadcrumb">
                             <li><a href={this.props.urlAdminHome}>Home</a>
                             </li>
-                            <li><a href="/customerdashboard/clientemployees">Client Employees</a></li>
+                            <li><a href="/admin/clientemployees">Client Employees</a></li>
                             <li className="active">Edit</li>
                         </ol>
                     </div>
@@ -206,7 +206,7 @@ class EditClientEmployee extends Component {
                                                 {
                                                     warehouses.map((warehouse, index) => {
                                                         return (
-                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
+                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.name}</option>
                                                         );
                                                     })
                                                 }

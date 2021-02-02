@@ -30,52 +30,52 @@ import ZohoDetailsPage from '../pages/ZohoDetailsPage';
 
 // Admin pages
 import Main from '../pages/admin/Main';
-import Login from '../pages/admin/views/Login';
-import Dashboard from '../pages/admin/views/Dashboard';
-import TotalDeliveries from '../pages/admin/views/Chart/TotalDeliveries';
-import OnTimeLateDeliveries from '../pages/admin/views/Chart/OnTimeLateDeliveries';
-import DeliveriesByClient from '../pages/admin/views/Chart/DeliveriesByClient';
+import Login from '../pages/admin/AdminViews/Login';
+import Dashboard from '../pages/admin/AdminViews/Dashboard';
+import TotalDeliveries from '../pages/admin/AdminViews/Chart/TotalDeliveries';
+import OnTimeLateDeliveries from '../pages/admin/AdminViews/Chart/OnTimeLateDeliveries';
+import DeliveriesByClient from '../pages/admin/AdminViews/Chart/DeliveriesByClient';
 
-import EmailTemplates from '../pages/admin/views/EmailTemplates/EmailTemplates';
-import AddEmailTemplates from '../pages/admin/views/EmailTemplates/AddEmailTemplates';
-import EditEmailTemplates from '../pages/admin/views/EmailTemplates/EditEmailTemplates';
-import Users from '../pages/admin/views/Users/Users';
-import AddUser from '../pages/admin/views/Users/AddUser';
-import EditUser from '../pages/admin/views/Users/EditUser';
-import CronOptions from '../pages/admin/views/CronOptions/CronOptions';
-import FreightProviders from '../pages/admin/views/FreightProviders/FreightProviders';
-import AddFreightProviders from '../pages/admin/views/FreightProviders/AddFreightProviders';
-import EditFreightProviders from '../pages/admin/views/FreightProviders/EditFreightProviders';
-import SqlQueries from '../pages/admin/views/SqlQueries';
-import SqlQueriesAction from '../pages/admin/views/SqlQueries/SqlQueriesAction';
-import PricingOnlyList from '../pages/admin/views/PricingOnly/List';
-import PricingOnlyUpload from '../pages/admin/views/PricingOnly/Upload';
-import PricingRuleList from '../pages/admin/views/PricingRule/List';
-import PricingRuleUpload from '../pages/admin/views/PricingRule/Upload';
-import PricingRuleStatus from '../pages/admin/views/PricingRule/Status';
-import Vehicles from '../pages/admin/views/Vehicles/Vehicles';
-import Timings from '../pages/admin/views/Timings/Timings';
-import Availabilities from '../pages/admin/views/Availabilities/Availabilities';
-import Costs from '../pages/admin/views/Costs/Costs';
-import Clients from '../pages/admin/views/Clients/Clients';
-import AugmentAddress from '../pages/admin/views/AugmentAddress/AugmentAddress';
+import EmailTemplates from '../pages/admin/AdminViews/EmailTemplates/EmailTemplates';
+import AddEmailTemplates from '../pages/admin/AdminViews/EmailTemplates/AddEmailTemplates';
+import EditEmailTemplates from '../pages/admin/AdminViews/EmailTemplates/EditEmailTemplates';
+import Users from '../pages/admin/AdminViews/Users/Users';
+import AddUser from '../pages/admin/AdminViews/Users/AddUser';
+import EditUser from '../pages/admin/AdminViews/Users/EditUser';
+import CronOptions from '../pages/admin/AdminViews/CronOptions/CronOptions';
+import FreightProviders from '../pages/admin/AdminViews/FreightProviders/FreightProviders';
+import AddFreightProviders from '../pages/admin/AdminViews/FreightProviders/AddFreightProviders';
+import EditFreightProviders from '../pages/admin/AdminViews/FreightProviders/EditFreightProviders';
+import SqlQueries from '../pages/admin/AdminViews/SqlQueries';
+import SqlQueriesAction from '../pages/admin/AdminViews/SqlQueries/SqlQueriesAction';
+import PricingOnlyList from '../pages/admin/AdminViews/PricingOnly/List';
+import PricingOnlyUpload from '../pages/admin/AdminViews/PricingOnly/Upload';
+import PricingRuleList from '../pages/admin/AdminViews/PricingRule/List';
+import PricingRuleUpload from '../pages/admin/AdminViews/PricingRule/Upload';
+import PricingRuleStatus from '../pages/admin/AdminViews/PricingRule/Status';
+import Vehicles from '../pages/admin/AdminViews/Vehicles/Vehicles';
+import Timings from '../pages/admin/AdminViews/Timings/Timings';
+import Availabilities from '../pages/admin/AdminViews/Availabilities/Availabilities';
+import FPCosts from '../pages/admin/AdminViews/FP/Costs';
+import Clients from '../pages/admin/AdminViews/Clients/Clients';
 import AddAugmentAddress from '../pages/admin/views/AugmentAddress/AddAugmentAddress';
 import EditAugmentAddress from '../pages/admin/views/AugmentAddress/EditAugmentAddress';
-import AddClient from '../pages/admin/views/Clients/AddClient';
-import EditClient from '../pages/admin/views/Clients/EditClient';
-import ClientEmployees from '../pages/admin/views/ClientEmployees/ClientEmployees';
-import AddClientEmployee from '../pages/admin/views/ClientEmployees/AddClientEmployee';
-import EditClientEmployee from '../pages/admin/views/ClientEmployees/EditClientEmployee';
+import AddClient from '../pages/admin/AdminViews/Clients/AddClient';
+import EditClient from '../pages/admin/AdminViews/Clients/EditClient';
+import ClientEmployees from '../pages/admin/AdminViews/ClientEmployees/ClientEmployees';
+import AddClientEmployee from '../pages/admin/AdminViews/ClientEmployees/AddClientEmployee';
+import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditClientEmployee';
 
-import CustomerClientEmployees from '../pages/admin/customerdashboard/ClientEmployees/ClientEmployees';
-import CustomerAddClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/AddClientEmployee';
-import CustomerEditClientEmployee from '../pages/admin/customerdashboard/ClientEmployees/EditClientEmployee';
+import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
+import CustomerAddClientEmployee from '../pages/admin/CustomerViews/ClientEmployees/AddClientEmployee';
+import CustomerEditClientEmployee from '../pages/admin/CustomerViews/ClientEmployees/EditClientEmployee';
+import CustomerClientProduct from '../pages/admin/CustomerViews/ClientProduct';
 
 // Customer Dashboard pages
-import CustomerLogin from '../pages/admin/customerdashboard/Login';
-import CustomerDashboard from '../pages/admin/customerdashboard/Dashboard';
-import ClientRas from '../pages/admin/customerdashboard/ClientRas';
-import ClientRasAction from '../pages/admin/customerdashboard/ClientRas/ClientRasAction';
+import CustomerLogin from '../pages/admin/CustomerViews/Login';
+import CustomerDashboard from '../pages/admin/CustomerViews/Dashboard';
+import ClientRas from '../pages/admin/CustomerViews/ClientRas';
+import ClientRasAction from '../pages/admin/CustomerViews/ClientRas/ClientRasAction';
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
         <Fragment>
@@ -126,7 +126,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/vehicles' component={Vehicles} />
                     <AdminPrivateRoute exact path='/admin/timings' component={Timings} />
                     <AdminPrivateRoute exact path='/admin/availabilities' component={Availabilities} />
-                    <AdminPrivateRoute exact path='/admin/costs' component={Costs} />
+                    <AdminPrivateRoute exact path='/admin/fp-costs' component={FPCosts} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule' component={PricingRuleList} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/upload' component={PricingRuleUpload} />
                     <AdminPrivateRoute exact path='/admin/pricing-rule/status' component={PricingRuleStatus} />
@@ -155,7 +155,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/customerdashboard/clientemployees' component={CustomerClientEmployees} />
                     <AdminPrivateRoute exact path='/customerdashboard/clientemployees/add' component={CustomerAddClientEmployee} />
                     <AdminPrivateRoute exact path='/customerdashboard/clientemployees/edit/:id' component={CustomerEditClientEmployee} />
-                    
+                    <AdminPrivateRoute exact path='/customerdashboard/clientproducts' component={CustomerClientProduct} />
                 </Main>
 
                 <Redirect to='/' />

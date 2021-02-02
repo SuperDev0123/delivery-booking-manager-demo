@@ -431,7 +431,7 @@ export const getZohoTickets = (dmeid) => {
     };
 };
 
-export const getDMEClientProducts = (client_id) => {
+export const getDMEClientProducts = () => {
     const token = localStorage.getItem('token');
 
     const options = {
@@ -440,7 +440,7 @@ export const getDMEClientProducts = (client_id) => {
             'Content-Type': 'application/json',
             'Authorization': 'JWT ' + token
         },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/get/?client_id=${client_id}`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/`,
     };
     return dispatch =>
         axios(options)

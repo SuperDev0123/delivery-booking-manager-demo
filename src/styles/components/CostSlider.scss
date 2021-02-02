@@ -1,0 +1,35 @@
+.cost-slider {
+    .slider-content {
+        height: 100%;
+        overflow-y: auto;
+
+        .selected {
+            background: lightblue;
+        }
+    }
+
+    .form-view {
+        button {
+            margin-top: 20px;
+            margin-right: 20px;
+        }
+    }
+
+    .list-view {
+        button {
+            font-size: 30px;
+            padding: 0px 10px;
+
+            i { font-size: 20px }
+
+            &.new { margin-bottom: 20px }
+        }
+    }
+
+    table {
+        button {
+             margin-bottom: 0px;
+             font-size: 20px;
+        }
+    }
+}

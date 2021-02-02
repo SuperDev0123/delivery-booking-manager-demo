@@ -43,6 +43,7 @@ import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
+import CostSlider from '../components/Sliders/CostSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
@@ -135,6 +136,7 @@ class BookingPage extends Component {
             isShowStatusNoteModal: false,
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
+            isShowCostSlider: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -193,6 +195,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
+        this.toggleCostSlider = this.toggleCostSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
     }
 
@@ -1943,7 +1946,7 @@ class BookingPage extends Component {
         for (let i = 0; i < this.props.warehouses.length; i++) {
             if (this.props.warehouses[i].client_warehouse_code === warehouseCode) {
                 if (infoField === 'name') {
-                    return this.props.warehouses[i].warehousename;
+                    return this.props.warehouses[i].name;
                 } else if (infoField === 'id') {
                     return this.props.warehouses[i].pk_id_client_warehouses;
                 }
@@ -2210,6 +2213,15 @@ class BookingPage extends Component {
 
     toggleEmailLogSlider() {
         this.setState(prevState => ({isShowEmailLogSlider: !prevState.isShowEmailLogSlider}));
+    }
+
+    toggleCostSlider() {
+        if (!this.state.booking.vx_freight_provider) {
+            this.notify('Freight Provider is required to open this slider.');
+            return;
+        }
+
+        this.setState(prevState => ({isShowCostSlider: !prevState.isShowCostSlider}));   
     }
 
     // onClickSwitchClientNavIcon(e) {
@@ -3163,7 +3175,7 @@ class BookingPage extends Component {
                                         <div className={(parseInt(curViewMode) === 0) ? 'none' : 'col-sm-1 form-group created-for-btn'}>
                                             <span>Update email</span>
                                             <Button
-                                                className="edit-lld-btn btn-primary"
+                                                className="custom-button edit-lld-btn btn-primary"
                                                 onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
                                                 disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? 'disabled' : ''}
                                             >
@@ -3517,7 +3529,7 @@ class BookingPage extends Component {
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
-                                                    <span className="c-red">Actual $</span>
+                                                    <span>Actual $</span>
                                                     {(parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
                                                         :
@@ -3536,6 +3548,14 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span>Misc. Costs</span><br />
+                                                <Button className="custom-button btn-primary" onClick={() => this.toggleCostSlider()} disabled={!isBookingSelected}>
+                                                    <i className="fa fa-columns"></i>
+                                                </Button>
+                                            </div>
+                                        </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
@@ -5349,6 +5369,13 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowEmailLogSlider}
                     toggleSlider={this.toggleEmailLogSlider}
                     emailLogs={emailLogs}
+                />
+
+                <CostSlider
+                    isOpen={this.state.isShowCostSlider}
+                    toggleSlider={this.toggleCostSlider}
+                    booking={booking}
+                    clientname={clientname}
                 />
 
                 <ToastContainer />
