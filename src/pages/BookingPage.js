@@ -1938,7 +1938,7 @@ class BookingPage extends Component {
         for (let i = 0; i < this.props.warehouses.length; i++) {
             if (this.props.warehouses[i].client_warehouse_code === warehouseCode) {
                 if (infoField === 'name') {
-                    return this.props.warehouses[i].warehousename;
+                    return this.props.warehouses[i].name;
                 } else if (infoField === 'id') {
                     return this.props.warehouses[i].pk_id_client_warehouses;
                 }

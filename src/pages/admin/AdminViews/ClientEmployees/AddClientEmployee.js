@@ -186,7 +186,7 @@ class AddClientEmployee extends Component {
                                                 {
                                                     warehouses.map((warehouse, index) => {
                                                         return (
-                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.warehousename}</option>
+                                                            <option key={index} value={warehouse.pk_id_client_warehouses}>{warehouse.name}</option>
                                                         );
                                                     })
                                                 }
