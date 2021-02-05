@@ -566,7 +566,7 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 isAutoAugmented: true,
-                booking: payload
+                needUpdateBooking: true,
             };
         case SUCCESS_CHECK_AUGMENTED:
             return {

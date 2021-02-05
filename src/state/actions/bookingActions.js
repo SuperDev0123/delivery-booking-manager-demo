@@ -776,10 +776,9 @@ export function failedCheckAugmented() {
     };
 }
 
-export function successAutoAugment(data) {
+export function successAutoAugment() {
     return {
         type: SUCCESS_AUTO_AUGMENT,
-        payload: data,
         isAutoAugmented: true
     };
 }
