@@ -47,7 +47,7 @@ import CostSlider from '../components/Sliders/CostSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, checkAugmentedBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -117,7 +117,7 @@ class BookingPage extends Component {
             isBookingSelected: false,
             isShowSwitchClientModal: false,
             statusHistories: [],
-            typed: null,
+            findKeyword: null,
             isShowLineSlider: false,
             isShowStatusHistorySlider: false,
             selectedLineIndex: -1,
@@ -137,19 +137,18 @@ class BookingPage extends Component {
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
             isShowCostSlider: false,
+            isShowAugmentInfoPopup: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
             currentNoteModalField: null,
             pricingInfos: [],
             isShowFPPricingSlider: false,
-            isAutoAugmented: false,
             selectedFileOption: null,
             uploadOption: null,
             xReadyStatus: null,
             zoho_tickets: [],
             errors: [],
-            augmentInfoOpen: false,
             clientprocess: {},
             puCommunicates: [],
             deCommunicates: []
@@ -207,7 +206,6 @@ class BookingPage extends Component {
         duplicateBooking: PropTypes.func.isRequired,
         autoAugmentBooking: PropTypes.func.isRequired,
         revertAugmentBooking: PropTypes.func.isRequired,
-        checkAugmentedBooking: PropTypes.func.isRequired,
         augmentPuDate: PropTypes.func.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         duplicateBookingLine: PropTypes.func.isRequired,
@@ -253,7 +251,6 @@ class BookingPage extends Component {
         getApiBCLs: PropTypes.func.isRequired,
         setFetchGeoInfoFlag: PropTypes.bool.isRequired,
         clearErrorMessage: PropTypes.bool.isRequired,
-        isAutoAugmented: PropTypes.bool.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
         getEmailLogs: PropTypes.func.isRequired,
@@ -315,7 +312,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, needUpdateBooking, pricingInfos, isAutoAugmented, createdForInfos, zoho_tickets, loadingZohoTickets, errors, clientprocess} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zoho_tickets, loadingZohoTickets, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -446,17 +443,23 @@ class BookingPage extends Component {
             this.setState({loadingBookingLineDetail: true});
             this.props.getBookingLines(booking.pk_booking_id);
             this.props.getBookingLineDetails(booking.pk_booking_id);
+            this.props.getClientProcessMgr(booking.id);
         }
 
         if (needUpdateBookingLineDetails && booking) {
-            this.props.getBookingLineDetails(booking.pk_booking_id);
             this.setState({loadingBookingLineDetail: true});
+            this.props.getBookingLineDetails(booking.pk_booking_id);
+            this.props.getClientProcessMgr(booking.id);
         }
 
         if (needUpdateStatusHistories && booking && booking.pk_booking_id) {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
             this.props.getBooking(booking.id, 'id');
             this.setState({loading: true, curViewMode: 0});
+        }
+
+        if (needUpdateBooking && booking) {
+            this.refreshBooking(booking);
         }
 
         if (bBooking) {
@@ -500,10 +503,6 @@ class BookingPage extends Component {
                         this.props.fpLabel(currentBooking.id, currentBooking.vx_freight_provider);
                     }
                 }
-            }
-
-            if (needUpdateBooking && booking) {
-                this.refreshBooking(booking);
             }
 
             if (bookingErrorMessage === 'Sent Email Successfully') {
@@ -706,11 +705,11 @@ class BookingPage extends Component {
                 }
 
                 if (
-                    (this.state.loading || this.state.loadingBookingSave || this.state.loadingBookingUpdate) 
-                    && booking.pk_booking_id
+                    (this.state.loading ||
+                    this.state.loadingBookingSave ||
+                    this.state.loadingBookingUpdate) &&
+                    !needUpdateBooking
                 ) {
-                    this.props.getZohoTickets(booking.b_bookingID_Visual);
-                    this.props.getClientProcessMgr(booking.id);
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
@@ -786,7 +785,6 @@ class BookingPage extends Component {
                 else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
                 if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
                 else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
-
 
                 if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
                 else formInputs['b_clientReference_RA_Numbers'] = '';
@@ -966,7 +964,7 @@ class BookingPage extends Component {
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
-                if (!_.isNull(this.state.typed)) this.notify('There is no such booking with that DME/CON number.');
+                if (!_.isNull(this.state.findKeyword)) this.notify('There is no such booking with that DME/CON number.');
             }
         }
 
@@ -998,22 +996,15 @@ class BookingPage extends Component {
             this.setState({attachmentsHistory});
         }
 
-        if (isAutoAugmented != this.props.isAutoAugmented) {
-            this.setState({isAutoAugmented});
-        }
-
         if(clientprocess != this.state.clientprocess)  {
             this.setState({clientprocess});
         }
     }
 
-    notify = (text) => {
-        toast(text);
-    };
+    notify = (text) => toast(text);
 
     afterSetState(type, data) {
         if (type === 0) {
-            this.props.checkAugmentedBooking(data.id);
             this.props.getBookingLines(data.pk_booking_id);
             this.props.getBookingLineDetails(data.pk_booking_id);
             this.props.getBookingStatusHistory(data.pk_booking_id);
@@ -1021,6 +1012,8 @@ class BookingPage extends Component {
             this.props.setFetchGeoInfoFlag(true);
             this.props.getAttachmentHistory(data.pk_booking_id);
             this.props.getEmailLogs(data.id);
+            this.props.getClientProcessMgr(data.id);
+            this.props.getZohoTickets(data.b_bookingID_Visual);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
@@ -1335,22 +1328,23 @@ class BookingPage extends Component {
     }
 
     onClickAutoAugment() {
-        const {booking, isAutoAugmented} = this.state;
+        const {booking} = this.state;
 
-        if(!isAutoAugmented) {
+        if(!booking.is_auto_augmented) {
             this.setState({loadingBookingUpdate: true, curViewMode: 2});
             this.props.autoAugmentBooking(booking.id);
         }
     }
 
-    onClickRevertAugment() {
-        const {booking, isAutoAugmented} = this.state;
+    // Disabled 2021-02-07
+    // onClickRevertAugment() {
+    //     const {booking} = this.state;
 
-        if(isAutoAugmented) {
-            this.setState({loadingBookingUpdate: true, curViewMode: 2});
-            this.props.revertAugmentBooking(booking.id);
-        }
-    }
+    //     if(booking.is_auto_augmented) {
+    //         this.setState({loadingBookingUpdate: true, curViewMode: 2});
+    //         this.props.revertAugmentBooking(booking.id);
+    //     }
+    // }
 
     onClickAugmentPuDate() {
         const {booking} = this.state;
@@ -1485,7 +1479,7 @@ class BookingPage extends Component {
 
     onKeyPress(e) {
         const {selected} = this.state;
-        const typed = e.target.value;
+        const findKeyword = e.target.value;
 
         if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
@@ -1495,20 +1489,20 @@ class BookingPage extends Component {
                 return;
             }
 
-            if ((typed == undefined) || (typed == '')) {
+            if ((findKeyword == undefined) || (findKeyword == '')) {
                 this.notify('id value is empty');
                 return;
             }
 
-            this.props.getBooking(typed, selected);
+            this.props.getBooking(findKeyword, selected);
             this.setState({loading: true, curViewMode: 0});
         }
 
-        this.setState({typed});
+        this.setState({findKeyword});
     }
 
     onChangeText(e) {
-        this.setState({typed: e.target.value});
+        this.setState({findKeyword: e.target.value});
     }
 
     handleChangeState = (num, selectedOption) => {
@@ -2180,7 +2174,7 @@ class BookingPage extends Component {
     }
 
     onToggleAugmentInfoPopup = () => {
-        this.setState(prevState => ({augmentInfoOpen: !prevState.augmentInfoOpen}));
+        this.setState(prevState => ({isShowAugmentInfoPopup: !prevState.isShowAugmentInfoPopup}));
     }
 
     toggleUpdateCreatedForEmailConfirmModal() {
@@ -2518,7 +2512,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, isAutoAugmented, zoho_tickets, clientprocess, puCommunicates, deCommunicates
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates
         } = this.state;
         const {
             warehouses, emailLogs
@@ -4528,18 +4522,21 @@ class BookingPage extends Component {
                                         </div>
 
                                         <Popover
-                                            isOpen={this.state.augmentInfoOpen}
+                                            isOpen={this.state.isShowAugmentInfoPopup}
                                             target={'augment-info-popup'}
                                             placement="left"
                                             hideArrow={true}
                                         >
-                                            <PopoverHeader><h4>Auto Augment Info</h4><a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a></PopoverHeader>
+                                            <PopoverHeader>
+                                                Auto Augment Info
+                                                <a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a>
+                                            </PopoverHeader>
                                             <PopoverBody>
                                                 <div>
                                                     <div className="location-info disp-inline-block">
-                                                        <h5>Pick up entity</h5>
-                                                        <h5 className="mt-2">address1<br/></h5>
-                                                        <h5 className="mt-2">address2<br/></h5>
+                                                        <h5 className="bold">PU Entity:</h5>
+                                                        <h5 className="bold">PU Street 1:<br/></h5>
+                                                        <h5 className="bold">PU Street 2:<br/></h5>
                                                     </div>
                                                     <div className="location-info disp-inline-block">
                                                         <h5>{clientprocess['origin_puCompany']}</h5>
@@ -4550,14 +4547,14 @@ class BookingPage extends Component {
                                                 <div className="mt-2 ml-2 mr-2" style={{ height: 1, width: undefined, backgroundColor: 'gray' }} />
                                                 <div>
                                                     <div className="location-info disp-inline-block">
-                                                        <h5 className="mt-2">delivery instruction<br/></h5>
-                                                        <h5 className="mt-2">group email<br /></h5>
-                                                        <h5 className="mt-2">etc<br/></h5>
+                                                        <h5 className="bold">DE Entity:<br/></h5>
+                                                        <h5 className="bold">DE Instrunction:<br/></h5>
+                                                        <h5 className="bold">DE Group Emails:<br /></h5>
                                                     </div>
                                                     <div className="location-info disp-inline-block">
+                                                        <h5 className="mt-2">{clientprocess['origin_deToCompanyName']}<br/></h5>
                                                         <h5 className="mt-2">{clientprocess['origin_pu_pickup_instructions_address']}<br/></h5>
                                                         <h5 className="mt-2">{clientprocess['origin_de_Email_Group_Emails']}<br/></h5>
-                                                        <h5 className="mt-2">{clientprocess['origin_deToCompanyName']}<br/></h5>
                                                     </div>
                                                 </div>
                                             </PopoverBody>
@@ -4569,10 +4566,10 @@ class BookingPage extends Component {
                                                     <ul>
                                                         <li>Project: {booking.b_booking_project}</li>
                                                         <li>
-                                                            {(clientname === 'dme' && isAutoAugmented === false) ?
+                                                            {(clientname === 'dme' && booking && !booking.is_auto_augmented) ?
                                                                 <button
                                                                     className='btn btn-theme btn-autoaugment'
-                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    disabled={this.state.loading || this.state.loadingGeoPU || isBookedBooking}
                                                                     onClick={() => this.onClickAutoAugment()}
                                                                 >
                                                                     AA
@@ -4581,7 +4578,7 @@ class BookingPage extends Component {
                                                                 <button
                                                                     id="augment-info-popup"
                                                                     className='btn btn-theme btn-autoaugment-view'
-                                                                    disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    disabled={this.state.loading || this.state.loadingGeoPU || isBookedBooking}
                                                                     onClick={() => this.onToggleAugmentInfoPopup()}
                                                                 >
                                                                     AA
@@ -5391,7 +5388,6 @@ const mapStateToProps = (state) => {
         prevBookingId: state.booking.prevBookingId,
         qtyTotal: state.booking.qtyTotal,
         cntAttachments: state.booking.cntAttachments,
-        isAutoAugmented: state.booking.isAutoAugmented,
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -5403,6 +5399,7 @@ const mapStateToProps = (state) => {
         deToPostalCodes: state.booking.deToPostalCodes,
         deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
+        needUpdateBooking: state.booking.needUpdateBooking,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
         needUpdateBookingLineDetails: state.bookingLineDetail.needUpdateBookingLineDetails,
         needUpdateLineAndLineDetail: state.booking.needUpdateLineAndLineDetail,
@@ -5423,7 +5420,6 @@ const mapStateToProps = (state) => {
         allFPs: state.extra.allFPs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
-        needUpdateBooking: state.booking.needUpdateBooking,
         needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
@@ -5442,7 +5438,6 @@ const mapDispatchToProps = (dispatch) => {
         verifyToken: () => dispatch(verifyToken()),
         autoAugmentBooking: (bookingId) => dispatch(autoAugmentBooking(bookingId)),
         revertAugmentBooking: (bookingId) => dispatch(revertAugmentBooking(bookingId)),
-        checkAugmentedBooking: (bookingId) => dispatch(checkAugmentedBooking(bookingId)),
         augmentPuDate: (bookingId) => dispatch(augmentPuDate(bookingId)),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
         duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),

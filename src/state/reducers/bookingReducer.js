@@ -78,8 +78,6 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
-    SUCCESS_CHECK_AUGMENTED,
-    FAILED_CHECK_AUGMENTED,
     SUCCESS_AUTO_AUGMENT,
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
@@ -132,7 +130,6 @@ const defaultState = {
     pricingAnalyses: [],
     pricingInfosFlag: false,
     isAutoSelected: false,
-    isAutoAugmented: false,
     bookingIds: [],
     clientPK: 0,
     clientprocess: {}
@@ -186,7 +183,6 @@ export const BookingReducer = (state = defaultState, {
     pageCnt,
     filteredBookingIds,
     isAutoSelected,
-    isAutoAugmented,
 }) => {
     switch (type) {
         case RESET_NO_BOOKING:
@@ -390,15 +386,10 @@ export const BookingReducer = (state = defaultState, {
                 errorMessage: errorMessage,
                 pod: {},
             };
-            
         case BOOK_FAILED:
-            return {
-                ...state,
-                needUpdateBookings: true,
-                errorMessage: errorMessage,
-                bookings: [],
-            };
         case REBOOK_FAILED:
+        case FAILED_CREATE_ORDER:
+        case GET_LABEL_FAILED:
             return {
                 ...state,
                 needUpdateBookings: true,
@@ -411,14 +402,6 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 needUpdateBookings: true,
                 needUpdateBooking: true,
-                errorMessage: errorMessage,
-                bookings: [],
-            };
-        case FAILED_CREATE_ORDER:
-        case GET_LABEL_FAILED:
-            return {
-                ...state,
-                needUpdateBookings: true,
                 errorMessage: errorMessage,
                 bookings: [],
             };
@@ -565,29 +548,17 @@ export const BookingReducer = (state = defaultState, {
         case SUCCESS_AUTO_AUGMENT:
             return {
                 ...state,
-                isAutoAugmented: true,
                 needUpdateBooking: true,
-            };
-        case SUCCESS_CHECK_AUGMENTED:
-            return {
-                ...state,
-                isAutoAugmented: isAutoAugmented,
-            };
-        case FAILED_CHECK_AUGMENTED:
-            return {
-                ...state,
             };
         case SUCCESS_REVERT_AUGMENT:
             return {
                 ...state,
-                isAutoAugmented: false,
                 booking: payload
             };
         case SUCCESS_GET_CLIENT_PROCESS:
             return {
                 ...state,
-                isAutoAugmented: false,
-                clientprocess: payload.length>0?payload[0]: {}
+                clientprocess: payload.length > 0 ? payload[0] : {}
             };
         case FAILED_GET_CLIENT_PROCESS:
             return {

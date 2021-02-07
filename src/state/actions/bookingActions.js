@@ -80,8 +80,6 @@ import {
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     RESET_AUTO_SELECTED,
-    SUCCESS_CHECK_AUGMENTED,
-    FAILED_CHECK_AUGMENTED,
     SUCCESS_AUTO_AUGMENT,
     FAILED_AUTO_AUGMENT,
     SUCCESS_REVERT_AUGMENT,
@@ -759,20 +757,6 @@ export function failedSendEmail(error) {
 export function resetAutoSelectedAction() {
     return {
         type: RESET_AUTO_SELECTED,
-    };
-}
-
-export function successCheckAugmented(data) {
-    return {
-        type: SUCCESS_CHECK_AUGMENTED,
-        payload: data,
-        isAutoAugmented: data['isAutoAugmented'],
-    };
-}
-
-export function failedCheckAugmented() {
-    return {
-        type: FAILED_CHECK_AUGMENTED,
     };
 }
 

@@ -68,8 +68,6 @@ import {
     successSendEmail,
     failedSendEmail,
     resetAutoSelectedAction,
-    successCheckAugmented,
-    failedCheckAugmented,
     successAutoAugment,
     failedAutoAugment,
     successRevertAugment,
@@ -316,19 +314,6 @@ export const saveBooking = (booking) => {
             .then(({ data }) => dispatch(successCreateBooking(data)))
             .catch((error) => dispatch(failedCreateBooking(error)));
     };
-};
-
-export const checkAugmentedBooking = (bookingId) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/check_augmented/?bookingId=` + bookingId,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successCheckAugmented(data)))
-            .catch((error) => dispatch(failedCheckAugmented(error)));
 };
 
 export const autoAugmentBooking = (bookingId) => {
