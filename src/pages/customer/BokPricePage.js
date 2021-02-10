@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
+import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
@@ -18,6 +19,7 @@ class BokPricePage extends Component {
             isCanceled: null,
             isBooked: null,
             sortedBy: 'lowest',
+            isLoading: false,
         };
     }
 
@@ -37,6 +39,7 @@ class BokPricePage extends Component {
 
         if (identifier && identifier.length > 32) {
             this.props.getBokWithPricings(identifier);
+            this.setState({isLoading: true});
         } else {
             this.setState({errorMessage: 'Wrong id.'});
         }
@@ -52,21 +55,26 @@ class BokPricePage extends Component {
         if (needToUpdatePricings) {
             const identifier = this.props.match.params.id;
             this.props.getBokWithPricings(identifier);
+            this.setState({isLoading: true});
         }
 
         if (bookedSuccess) {
             this.notify('Freight is booked successfully');
-            this.setState({isBooked: true});
+            this.setState({isBooked: true, isLoading: false});
         }
 
         if (canceledSuccess) {
             this.notify('Freight is canceled successfully');
-            this.setState({isCanceled: true});
-            this.notify('Broser tab will be closed in 3 seconds');
+            this.setState({isCanceled: true, isLoading: false});
+            this.notify('Browser tab will be closed in 3 seconds');
 
             setTimeout(() => {
                 open(location, '_self').close();
             }, 3000);
+        }
+
+        if (!this.props.bokWithPricings && newProps.bokWithPricings) {
+            this.setState({isLoading: false});
         }
     }
 
@@ -87,6 +95,16 @@ class BokPricePage extends Component {
         this.setState({sortedBy: arg});
     }
 
+    onClickCancelBtn() {
+        this.setState({isLoading: true});
+        this.props.onCancelFreight(this.props.match.params.id);
+    }
+
+    onClickBookBtn() {
+        this.setState({isLoading: true});
+        this.props.onBookFreight(this.props.match.params.id);
+    }
+
     render() {
         const {sortedBy, isBooked, isCanceled} = this.state;
         const {bokWithPricings} = this.props;
@@ -97,7 +115,7 @@ class BokPricePage extends Component {
         let sortedPricings = [];
         let isSalesQuote = false;
 
-        if (isBooked || isCanceled) {
+        if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
         }
 
@@ -135,7 +153,7 @@ class BokPricePage extends Component {
                 </tr>
             ));
             pricings = sortedPricings.map((price, index) => (
-                <tr key={index} className={bok_1.quote_id ===  price.cost_id && 'selected'}>
+                <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                     <td>{price['fp_name']}</td>
                     <td>{price['service_name']}</td>
                     <td>
@@ -228,39 +246,45 @@ class BokPricePage extends Component {
                             </tbody>
                         </table>
                         <p>Freight Rates:</p>
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <thead>
-                                <tr>
-                                    <th style={{width: '15%'}}>Freight Provider</th>
-                                    <th style={{width: '15%'}}>Service Name</th>
-                                    <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
-                                    <th style={{width: '10%'}}>Customer Sell</th>
-                                    <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                    {isPricingPage && !isSalesQuote && <th>Action</th>}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pricings}
-                            </tbody>
-                        </table>
-                        <div className="decision">
-                            {!isSalesQuote &&
+                        <LoadingOverlay
+                            active={this.state.isLoading}
+                            spinner
+                            text='Loading...'
+                        >
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <thead>
+                                    <tr>
+                                        <th style={{width: '15%'}}>Freight Provider</th>
+                                        <th style={{width: '15%'}}>Service Name</th>
+                                        <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
+                                        <th style={{width: '10%'}}>Customer Sell</th>
+                                        <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                        {isPricingPage && !isSalesQuote && <th>Action</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {pricings}
+                                </tbody>
+                            </table>
+                            <div className="decision">
+                                {!isSalesQuote &&
+                                    <Button
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        color="primary"
+                                        onClick={() => this.onClickBookBtn()}
+                                    >
+                                        {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
+                                    </Button>
+                                }
                                 <Button
                                     disabled={canBeChanged ? null : 'disabled'}
-                                    color="primary"
-                                    onClick={() => this.props.onBookFreight(this.props.match.params.id)}
+                                    color="danger"
+                                    onClick={() => this.onClickCancelBtn()}
                                 >
-                                    {this.props.bookedSuccess ? 'Booked' : 'Book'}
+                                    {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
                                 </Button>
-                            }
-                            <Button
-                                disabled={canBeChanged ? null : 'disabled'}
-                                color="danger"
-                                onClick={() => this.props.onCancelFreight(this.props.match.params.id)}
-                            >
-                                {this.props.canceledSuccess ? 'Quote Canceled' : 'Cancel Quote'}
-                            </Button>
-                        </div>
+                            </div>
+                        </LoadingOverlay>
                     </div>
                 }
                 <ToastContainer />

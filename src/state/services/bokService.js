@@ -100,7 +100,7 @@ export const bookFreight = (identifier) => {
     return dispatch => {
         // dispatch(resetNeedToUpdatePricings());
         axios(options)
-            .then(({ data }) => dispatch(successBookFreight(data)))
+            .then(() => dispatch(successBookFreight()))
             .catch((error) => dispatch(failedBookFreight(error)));
     };
 };
@@ -113,7 +113,7 @@ export const cancelFreight = (identifier) => {
     return dispatch => {
         // dispatch(resetNeedToUpdatePricings());
         axios(options)
-            .then(({ data }) => dispatch(successCancelFreight(data)))
+            .then(() => dispatch(successCancelFreight()))
             .catch((error) => dispatch(failedCancelFreight(error)));
     };
 };

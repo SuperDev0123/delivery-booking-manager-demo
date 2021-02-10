@@ -40,7 +40,8 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 ...state,
                 needToUpdatePricings: false,
                 bookedSuccess: null,
-                canceledSuccess: null
+                canceledSuccess: null,
+                BOK_with_pricings: null
             };
         case SUCCESS_GET_BOK_1_HEADERS:
             return {
