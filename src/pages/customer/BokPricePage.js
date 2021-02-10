@@ -19,7 +19,9 @@ class BokPricePage extends Component {
             isCanceled: null,
             isBooked: null,
             sortedBy: 'lowest',
-            isLoading: false,
+            isLoadingBok: false,
+            isLoadingPricing: false,
+            isLoadingOper: false,
         };
     }
 
@@ -30,8 +32,10 @@ class BokPricePage extends Component {
         onCancelFreight: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
-        canceledSuccess: PropTypes.bool,
+        loadSuccess: PropTypes.bool,
         bookedSuccess: PropTypes.bool,
+        canceledSuccess: PropTypes.bool,
+        selectPricingSuccess: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -39,7 +43,7 @@ class BokPricePage extends Component {
 
         if (identifier && identifier.length > 32) {
             this.props.getBokWithPricings(identifier);
-            this.setState({isLoading: true});
+            this.setState({isLoadingBok: true});
         } else {
             this.setState({errorMessage: 'Wrong id.'});
         }
@@ -55,17 +59,17 @@ class BokPricePage extends Component {
         if (needToUpdatePricings) {
             const identifier = this.props.match.params.id;
             this.props.getBokWithPricings(identifier);
-            this.setState({isLoading: true});
+            this.setState({isLoadingBok: true});
         }
 
         if (bookedSuccess) {
             this.notify('Freight is booked successfully');
-            this.setState({isBooked: true, isLoading: false});
+            this.setState({isBooked: true});
         }
 
         if (canceledSuccess) {
             this.notify('Freight is canceled successfully');
-            this.setState({isCanceled: true, isLoading: false});
+            this.setState({isCanceled: true});
             this.notify('Browser tab will be closed in 3 seconds');
 
             setTimeout(() => {
@@ -73,8 +77,20 @@ class BokPricePage extends Component {
             }, 3000);
         }
 
-        if (!this.props.bokWithPricings && newProps.bokWithPricings) {
-            this.setState({isLoading: false});
+        if (this.state.isLoadingBok && !this.props.loadSuccess && newProps.loadSuccess) {
+            this.setState({isLoadingBok: false});
+        }
+
+        if (this.state.isLoadingPricing && !this.props.selectPricingSuccess && newProps.selectPricingSuccess) {
+            this.setState({isLoadingPricing: false});
+        }
+
+        if (this.state.isLoadingOper && (!this.props.bookedSuccess && newProps.bookedSuccess)) {
+            this.setState({isLoadingOper: false});
+        }
+
+        if (this.state.isLoadingOper && (!this.props.canceledSuccess && newProps.canceledSuccess)) {
+            this.setState({isLoadingOper: false});
         }
     }
 
@@ -96,13 +112,18 @@ class BokPricePage extends Component {
     }
 
     onClickCancelBtn() {
-        this.setState({isLoading: true});
+        this.setState({isLoadingOper: true});
         this.props.onCancelFreight(this.props.match.params.id);
     }
 
     onClickBookBtn() {
-        this.setState({isLoading: true});
+        this.setState({isLoadingOper: true});
         this.props.onBookFreight(this.props.match.params.id);
+    }
+
+    onSelectPricing(cost_id) {
+        this.setState({isLoadingPricing: true});
+        this.props.onSelectPricing(cost_id, this.props.match.params.id);
     }
 
     render() {
@@ -178,7 +199,7 @@ class BokPricePage extends Component {
                             <Button
                                 disabled={canBeChanged ? null : 'disabled'}
                                 color="primary"
-                                onClick={() => this.props.onSelectPricing(price.cost_id, this.props.match.params.id)}
+                                onClick={() => this.onSelectPricing(price.cost_id)}
                             >
                                 Select
                             </Button>
@@ -247,7 +268,7 @@ class BokPricePage extends Component {
                         </table>
                         <p>Freight Rates:</p>
                         <LoadingOverlay
-                            active={this.state.isLoading}
+                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper}
                             spinner
                             text='Loading...'
                         >
@@ -298,8 +319,10 @@ const mapStateToProps = (state) => {
         errorMessage: state.bok.errorMessage,
         bokWithPricings: state.bok.BOK_with_pricings,
         needToUpdatePricings: state.bok.needToUpdatePricings,
+        loadSuccess: state.bok.loadSuccess,
         bookedSuccess: state.bok.bookedSuccess,
         canceledSuccess: state.bok.canceledSuccess,
+        selectPricingSuccess: state.bok.selectPricingSuccess,
     };
 };
 

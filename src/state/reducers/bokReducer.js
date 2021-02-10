@@ -29,8 +29,10 @@ const defaultState = {
     deliveryStatus: null,
     quote: null,
     booking: null,
+    loadSuccess: null,
     bookedSuccess: null,
     canceledSuccess: null,
+    selectPricingSuccess: null,
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -39,9 +41,10 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
             return {
                 ...state,
                 needToUpdatePricings: false,
+                loadSuccess: null,
                 bookedSuccess: null,
                 canceledSuccess: null,
-                BOK_with_pricings: null
+                selectPricingSuccess: null,
             };
         case SUCCESS_GET_BOK_1_HEADERS:
             return {
@@ -61,12 +64,14 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
         case SUCCESS_GET_BOK_WITH_PRICINGS:
             return {
                 ...state,
+                loadSuccess: true,
                 BOK_with_pricings: payload,
             };
         case SUCCESS_SELECT_PRICING:
             return {
                 ...state,
                 needToUpdatePricings: true,
+                selectPricingSuccess: true,
             };
         case SUCCESS_GET_DE_STATUS:
             return {
