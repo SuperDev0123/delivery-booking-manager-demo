@@ -4578,7 +4578,7 @@ class BookingPage extends Component {
                                                                 <button
                                                                     id="augment-info-popup"
                                                                     className='btn btn-theme btn-autoaugment-view'
-                                                                    disabled={this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    disabled={this.state.loading}
                                                                     onClick={() => this.onToggleAugmentInfoPopup()}
                                                                 >
                                                                     AA
