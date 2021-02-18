@@ -185,14 +185,6 @@ class BokPricePage extends Component {
                             onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}
                         ></i>
                     </td>
-                    <td>
-                        ${price['cost'].toFixed(2)}
-                        &nbsp;&nbsp;&nbsp;
-                        <i
-                            className="fa fa-copy"
-                            onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}
-                        ></i>
-                    </td>
                     <td>{price['eta']}</td>
                     {isPricingPage && !isSalesQuote &&
                         <td>
@@ -277,8 +269,7 @@ class BokPricePage extends Component {
                                     <tr>
                                         <th style={{width: '15%'}}>Freight Provider</th>
                                         <th style={{width: '15%'}}>Service Name</th>
-                                        <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Quoted $ (click & sort)</th>
-                                        <th style={{width: '10%'}}>Customer Sell</th>
+                                        <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Customer Sell (click & sort)</th>
                                         <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}
                                     </tr>
