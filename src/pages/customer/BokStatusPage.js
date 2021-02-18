@@ -117,7 +117,7 @@ class BokStatusPage extends Component {
                             {status && <p><strong>Status</strong>: {status}</p>}
                             {!quote && <p><strong>Quote</strong>: Not selected</p>}
                             {quote && quote.hasOwnProperty('cost') && <p><strong>Shipping Cost</strong>: ${quote.cost}</p>}
-                            {quote && quote.hasOwnProperty('eta_readable') && <p><strong>ETA</strong>: {quote.eta_readable} days</p>}
+                            {quote && quote.hasOwnProperty('eta') && <p><strong>ETA</strong>: {quote.eta}</p>}
                             {quote && quote.hasOwnProperty('fp_name') && <p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
                             {quote && quote.hasOwnProperty('service_name') && <p><strong>Service Name</strong>: {quote.service_name}</p>}
                         </div>
