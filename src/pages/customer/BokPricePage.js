@@ -186,11 +186,11 @@ class BokPricePage extends Component {
                         ></i>
                     </td>
                     <td>
-                        ${(price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2)}
+                        ${price['cost'].toFixed(2)}
                         &nbsp;&nbsp;&nbsp;
                         <i
                             className="fa fa-copy"
-                            onClick={() => this.copyToClipBoard((price['cost'].toFixed(2) * (1 + bok_1['client_customer_mark_up'])).toFixed(2))}
+                            onClick={() => this.copyToClipBoard(price['cost'].toFixed(2)}
                         ></i>
                     </td>
                     <td>{price['eta']}</td>
