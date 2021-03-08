@@ -143,7 +143,7 @@ class Users extends Component {
 
         const editButton = (cell, row) => {
             return (
-                <div style={{textAlign: 'center'}}>
+                <div style={{textAlign: 'center', cursor: 'pointer'}}>
                     <i
                         onClick={() => this.onClickEdit(2, 1, row.id)}
                         className="fa fa-edit"
@@ -156,7 +156,7 @@ class Users extends Component {
 
         const deleteButton = (cell, row) => {
             return (
-                <div style={{textAlign: 'center'}}>
+                <div style={{textAlign: 'center', cursor: 'pointer'}}>
                     <i
                         onClick={() => this.onClickDelete(0, { id: row.id })}
                         className="fa fa-trash"
