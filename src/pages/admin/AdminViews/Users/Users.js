@@ -239,11 +239,6 @@ class Users extends Component {
                             <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Users List</h3>
-                                    <div className="actions pull-right">
-                                        <a className="btn btn-success" href="/admin/users/add">
-                                            Add New
-                                        </a>
-                                    </div>
                                 </div>
                                 <div className="panel-body">
                                     {loading ? (
