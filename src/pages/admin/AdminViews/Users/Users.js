@@ -179,14 +179,6 @@ class Users extends Component {
 
         const tableColumns = [
             {
-                dataField: 'id',
-                text: 'ID',
-                editable: false,
-                style: {
-                    backgroundColor: 'lightgray',
-                    cursor: 'not-allowed',
-                },
-            }, {
                 dataField: 'first_name',
                 text: 'First Name',
                 editable: true,
