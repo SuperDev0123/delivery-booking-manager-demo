@@ -141,15 +141,22 @@ class Users extends Component {
             };
         };
 
-        const actionButtons = (cell, row) => {
+        const editButton = (cell, row) => {
             return (
-                <div>
+                <div style={{textAlign: 'center'}}>
                     <i
                         onClick={() => this.onClickEdit(2, 1, row.id)}
                         className="fa fa-edit"
                         style={{ fontSize: '24px', color: 'green' }}
                     >
-                    </i>&nbsp;&nbsp;&nbsp;
+                    </i>
+                </div>
+            );
+        };
+
+        const deleteButton = (cell, row) => {
+            return (
+                <div style={{textAlign: 'center'}}>
                     <i
                         onClick={() => this.onClickDelete(0, { id: row.id })}
                         className="fa fa-trash"
@@ -211,9 +218,13 @@ class Users extends Component {
                 style: editableStyle,
                 formatter: statusUpdate
             }, {
-                dataField: 'button',
-                text: 'Actions',
-                formatter: actionButtons
+                dataField: 'edit_button',
+                text: 'Edit',
+                formatter: editButton
+            }, {
+                dataField: 'delete_button',
+                text: 'Delete',
+                formatter: deleteButton
             }
         ];
 
