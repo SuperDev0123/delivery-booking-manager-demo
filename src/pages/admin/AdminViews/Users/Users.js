@@ -141,15 +141,6 @@ class Users extends Component {
             };
         };
 
-        const selectRow = {
-            mode: 'checkbox',
-            clickToSelect: true,
-            clickToEdit: true,
-            selected: this.state.selected,
-            onSelect: this.handleOnSelect,
-            onSelectAll: this.handleOnSelectAll,
-        };
-
         const actionButtons = (cell, row) => {
             return (
                 <div>
@@ -304,7 +295,7 @@ class Users extends Component {
                                                             <SearchBar { ...props.searchProps } />
                                                         </div>
                                                     </div>
-                                                    <BootstrapTable selectRow={ selectRow }
+                                                    <BootstrapTable 
                                                         { ...props.baseProps }
                                                     />
                                                 </div>
