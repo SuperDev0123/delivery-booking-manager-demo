@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import LoadingOverlay from 'react-loading-overlay';
-import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
-import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
+import { getAllUsers, setGetUsersFilter, updateUserDetails } from '../../../../state/services/userService';  
 import { validateEmail } from '../../../../commons/validations';  
 
 const SHOW = 0;
@@ -36,7 +35,6 @@ class Users extends Component {
     static propTypes = {
         verifyToken: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        deleteUserDetails: PropTypes.func.isRequired,
         updateUserDetails: PropTypes.func.isRequired,
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
@@ -44,7 +42,6 @@ class Users extends Component {
         getAllUsers: PropTypes.func.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         setGetUsersFilter: PropTypes.func.isRequired,
-        setNeedUpdateUsersState: PropTypes.func.isRequired,
         urlAdminHome: PropTypes.string.isRequired,
     }
 
@@ -90,30 +87,6 @@ class Users extends Component {
         }
     }
 
-    removeUserDetail(event, user){
-        this.setState({ loading: true });
-        confirmAlert({
-            title: 'Confirm to delete User Details',
-            message: 'Are you sure to do this?',
-            buttons: [
-                {
-                    label: 'Yes',
-                    onClick: () => { 
-                        this.props.deleteUserDetails(user); 
-                        this.props.setNeedUpdateUsersState(true); 
-                    }
-                },
-                {
-                    label: 'No',
-                    onClick: () => console.log('Click No')
-                }
-            ]
-        });
-
-        this.setState({ loading: false });
-        event.preventDefault();
-    }
-
     onSelected(e, src) {
         if (src === 'client') {
             this.props.setGetUsersFilter('clientPK', e.target.value);
@@ -122,10 +95,6 @@ class Users extends Component {
 
     onClickEdit(row){
         this.setState({currentRow: row, status: EDIT});
-    }
-
-    onClickDelete(e, row){
-        this.removeUserDetail(e, row);
     }
 
     onInputChange(e, fieldName){
@@ -169,19 +138,6 @@ class Users extends Component {
                         onClick={() => this.onClickEdit(row)}
                         className="fa fa-edit"
                         style={{ fontSize: '24px', color: 'green' }}
-                    >
-                    </i>
-                </div>
-            );
-        };
-
-        const deleteButton = (cell, row) => {
-            return (
-                <div style={{textAlign: 'center', cursor: 'pointer'}}>
-                    <i
-                        onClick={(e) => this.onClickDelete(e, row)}
-                        className="fa fa-trash"
-                        style={{ fontSize: '24px', color: 'red' }}
                     >
                     </i>
                 </div>
@@ -242,10 +198,6 @@ class Users extends Component {
                 dataField: 'edit_button',
                 text: 'Edit',
                 formatter: editButton
-            }, {
-                dataField: 'delete_button',
-                text: 'Delete',
-                formatter: deleteButton
             }
         ];
 
@@ -371,9 +323,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllUsers: (clientPK) => dispatch(getAllUsers(clientPK)),
         getDMEClients: () => dispatch(getDMEClients()),
         updateUserDetails: (user, status) => dispatch(updateUserDetails(user, status)),
-        deleteUserDetails: (user) => dispatch(deleteUserDetails(user)),
         setGetUsersFilter: (key, value) => dispatch(setGetUsersFilter(key, value)),
-        setNeedUpdateUsersState: (boolFlag) => dispatch(setNeedUpdateUsersState(boolFlag)),
     };
 };
 
