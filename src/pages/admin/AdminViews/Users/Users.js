@@ -12,6 +12,7 @@ import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.c
 import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
+import { validateEmail } from '../../../../commons/validations';  
 
 const SHOW = 0;
 const EDIT = 1;
@@ -27,7 +28,8 @@ class Users extends Component {
             loading: true,
             clientPK: 0,
             status: SHOW,
-            currentRow: {}
+            currentRow: {},
+            errMsg: ''
         };
     }
     
@@ -140,12 +142,13 @@ class Users extends Component {
 
     updateUser(e){
         e.preventDefault();
-        this.setState({loading: true});
-        console.log(this.state.currentRow);
-        this.props.updateUserDetails(this.state.currentRow);
-        this.props.setNeedUpdateUsersState(true); 
-        this.setState({loading: false});
-        this.setState({status: SHOW});
+        if (validateEmail(this.state.currentRow.email)) {
+            this.props.updateUserDetails(this.state.currentRow);
+            this.setState({errMsg: ''});
+            this.setState({status: SHOW});
+        } else {
+            this.setState({errMsg: 'Invalid Email'});
+        }
     }
 
     render() {
@@ -314,6 +317,7 @@ class Users extends Component {
                                 </div>
                             </div>}
                             {this.state.status === EDIT && <div>
+                                {this.state.errMsg && <p style={{color: 'red'}}>{this.state.errMsg}</p>}
                                 <form role="form">
                                     <div className="form-group">
                                         <label htmlFor="fp_first_name">First Name</label>
