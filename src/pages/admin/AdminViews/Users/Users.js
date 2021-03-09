@@ -272,24 +272,24 @@ class Users extends Component {
                                 {this.state.errMsg && <p style={{color: 'red'}}>{this.state.errMsg}</p>}
                                 <form role="form">
                                     <div className="form-group">
-                                        <label htmlFor="fp_first_name">First Name</label>
-                                        <input name="fp_first_name" type="text" className="form-control" id="fp_first_name" placeholder="Enter First Name" value={this.state.currentRow.first_name} onChange={(e) => this.onInputChange(e, 'first_name')} />
+                                        <label htmlFor="user_first_name">First Name</label>
+                                        <input name="user_first_name" type="text" className="form-control" id="user_first_name" placeholder="Enter First Name" value={this.state.currentRow.first_name} onChange={(e) => this.onInputChange(e, 'first_name')} />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="fp_last_name">Last Name</label>
-                                        <input name="fp_last_name" type="text" className="form-control" id="fp_last_name" placeholder="Enter Last Name" value={this.state.currentRow.last_name} onChange={(e) => this.onInputChange(e, 'last_name')} />
+                                        <label htmlFor="user_last_name">Last Name</label>
+                                        <input name="user_last_name" type="text" className="form-control" id="user_last_name" placeholder="Enter Last Name" value={this.state.currentRow.last_name} onChange={(e) => this.onInputChange(e, 'last_name')} />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="fp_email">Email</label>
-                                        <input name="fp_email" type="text" className="form-control" id="fp_email" placeholder="Enter Email" value={this.state.currentRow.email} onChange={(e) => this.onInputChange(e, 'email')} />
+                                        <label htmlFor="user_email">Email</label>
+                                        <input name="user_email" type="text" className="form-control" id="user_email" placeholder="Enter Email" value={this.state.currentRow.email} onChange={(e) => this.onInputChange(e, 'email')} />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="fp_username">Username</label>
-                                        <input name="fp_username" type="text" className="form-control" id="fp_username" placeholder="Enter Username" value={this.state.currentRow.username} onChange={(e) => this.onInputChange(e, 'username')} />
+                                        <label htmlFor="user_username">Username</label>
+                                        <input name="user_username" type="text" className="form-control" id="user_username" placeholder="Enter Username" value={this.state.currentRow.username} onChange={(e) => this.onInputChange(e, 'username')} />
                                     </div>
                                     <div className="form-group">
-                                        <label htmlFor="fp_is_active">Is Active</label><br />
-                                        <input type="checkbox" name="fp_is_active" className="checkbox" checked={this.state.currentRow.is_active} onChange={(e) => this.onInputChange(e, 'is_active')} />
+                                        <label htmlFor="user_is_active">Is Active</label><br />
+                                        <input type="checkbox" name="user_is_active" className="checkbox" checked={this.state.currentRow.is_active} onChange={(e) => this.onInputChange(e, 'is_active')} />
                                     </div>
                                     <button type="submit" className="btn btn-primary mt-5 mb-5" onClick={(e) => this.updateUser(e)}>Update</button>
                                     <button type="submit" className="btn btn-danger mt-5 mb-5" onClick={() => this.setState({status: SHOW})}>Cancel</button>
