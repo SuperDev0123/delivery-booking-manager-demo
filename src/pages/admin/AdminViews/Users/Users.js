@@ -13,6 +13,9 @@ import moment from 'moment';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, deleteUserDetails, setGetUsersFilter, setNeedUpdateUsersState, updateUserDetails } from '../../../../state/services/userService';  
 
+const SHOW = 0;
+const EDIT = 1;
+
 class Users extends Component {    
     constructor(props) {
         super(props);
@@ -22,7 +25,9 @@ class Users extends Component {
             dmeClients: [],
             username: null,
             loading: true,
-            clientPK: 0
+            clientPK: 0,
+            status: SHOW,
+            currentRow: {}
         };
     }
     
@@ -91,7 +96,10 @@ class Users extends Component {
             buttons: [
                 {
                     label: 'Yes',
-                    onClick: () => { this.props.deleteUserDetails(user); this.props.setNeedUpdateUsersState(true); }
+                    onClick: () => { 
+                        this.props.deleteUserDetails(user); 
+                        this.props.setNeedUpdateUsersState(true); 
+                    }
                 },
                 {
                     label: 'No',
@@ -110,24 +118,34 @@ class Users extends Component {
         }
     }
 
-    updateUserStatus(event, user, status){
-        this.setState({ loading: true });
-        confirmAlert({
-            title: 'Confirmation Alert',
-            message: 'Click Ok to change current User Status',
-            buttons: [
-                {
-                    label: 'Ok',
-                    onClick: () => { this.props.updateUserDetails({ id: user.id, is_active: status }); }
-                },
-                {
-                    label: 'Cancel',
-                    onClick: () => console.log('Click No')
-                }
-            ]
-        });
-        this.setState({ loading: true });
-        event.preventDefault();
+    onClickEdit(row){
+        this.setState({currentRow: row, status: EDIT});
+    }
+
+    onClickDelete(e, row){
+        this.removeUserDetail(e, row);
+    }
+
+    onInputChange(e, fieldName){
+        if(fieldName === 'is_active') {
+            this.setState({
+                currentRow: {...this.state.currentRow, is_active: e.target.checked}
+            });
+        } else {
+            this.setState({
+                currentRow: {...this.state.currentRow, [fieldName]: e.target.value}
+            });
+        }
+    }
+
+    updateUser(e){
+        e.preventDefault();
+        this.setState({loading: true});
+        console.log(this.state.currentRow);
+        this.props.updateUserDetails(this.state.currentRow);
+        this.props.setNeedUpdateUsersState(true); 
+        this.setState({loading: false});
+        this.setState({status: SHOW});
     }
 
     render() {
@@ -145,7 +163,7 @@ class Users extends Component {
             return (
                 <div style={{textAlign: 'center', cursor: 'pointer'}}>
                     <i
-                        onClick={() => this.onClickEdit(2, 1, row.id)}
+                        onClick={() => this.onClickEdit(row)}
                         className="fa fa-edit"
                         style={{ fontSize: '24px', color: 'green' }}
                     >
@@ -158,7 +176,7 @@ class Users extends Component {
             return (
                 <div style={{textAlign: 'center', cursor: 'pointer'}}>
                     <i
-                        onClick={() => this.onClickDelete(0, { id: row.id })}
+                        onClick={(e) => this.onClickDelete(e, row)}
                         className="fa fa-trash"
                         style={{ fontSize: '24px', color: 'red' }}
                     >
@@ -247,7 +265,7 @@ class Users extends Component {
                 <section id="main-content" className="container animated fadeInUp">
                     <div className="row">
                         <div className="col-md-12">
-                            <div className="panel panel-default">
+                            {this.state.status === SHOW && <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Users List</h3>
                                 </div>
@@ -294,7 +312,33 @@ class Users extends Component {
                                         </ToolkitProvider>
                                     )}
                                 </div>
-                            </div>
+                            </div>}
+                            {this.state.status === EDIT && <div>
+                                <form role="form">
+                                    <div className="form-group">
+                                        <label htmlFor="fp_first_name">First Name</label>
+                                        <input name="fp_first_name" type="text" className="form-control" id="fp_first_name" placeholder="Enter First Name" value={this.state.currentRow.first_name} onChange={(e) => this.onInputChange(e, 'first_name')} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="fp_last_name">Last Name</label>
+                                        <input name="fp_last_name" type="text" className="form-control" id="fp_last_name" placeholder="Enter Last Name" value={this.state.currentRow.last_name} onChange={(e) => this.onInputChange(e, 'last_name')} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="fp_email">Email</label>
+                                        <input name="fp_email" type="text" className="form-control" id="fp_email" placeholder="Enter Email" value={this.state.currentRow.email} onChange={(e) => this.onInputChange(e, 'email')} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="fp_username">Username</label>
+                                        <input name="fp_username" type="text" className="form-control" id="fp_username" placeholder="Enter Username" value={this.state.currentRow.username} onChange={(e) => this.onInputChange(e, 'username')} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label htmlFor="fp_is_active">Is Active</label><br />
+                                        <input type="checkbox" name="fp_is_active" className="checkbox" checked={this.state.currentRow.is_active} onChange={(e) => this.onInputChange(e, 'is_active')} />
+                                    </div>
+                                    <button type="submit" className="btn btn-primary mt-5 mb-5" onClick={(e) => this.updateUser(e)}>Update</button>
+                                    <button type="submit" className="btn btn-danger mt-5 mb-5" onClick={() => this.setState({status: SHOW})}>Cancel</button>
+                                </form>
+                            </div>}
                         </div>
                     </div>
                 </section>
