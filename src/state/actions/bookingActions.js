@@ -90,7 +90,9 @@ import {
     FAILED_AUGMENT_PU_DATE,
     RESET_NO_BOOKING,
     SUCCESS_GET_CLIENT_PROCESS,
-    FAILED_GET_CLIENT_PROCESS
+    FAILED_GET_CLIENT_PROCESS,
+    SUCCESS_UPDATE_AUGMENT,
+    FAILED_UPDATE_AUGMENT,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -657,6 +659,23 @@ export function failedCalcCollected(error) {
         errorMessage: 'Failed calc collected',
     };
 }
+
+export function successUpdateAugment(data) {
+    console.log('@501 - Success calc collected: ', data);
+    return {
+        type: SUCCESS_UPDATE_AUGMENT,
+        errorMessage: 'Success calc collected',
+    };
+}
+
+export function failedUpdateAugment(error) {
+    console.log('@501 - Failed calc collected: ', error);
+    return {
+        type: FAILED_UPDATE_AUGMENT,
+        errorMessage: 'Failed calc collected',
+    };
+}
+
 
 export function setFetchGeoInfoFlagAction(boolFlag) {
     return {
