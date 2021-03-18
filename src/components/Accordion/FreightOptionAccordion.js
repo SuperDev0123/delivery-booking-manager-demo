@@ -1,0 +1,347 @@
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
+
+import { Button } from 'reactstrap';
+
+import { updateBok_1 } from '../../state/services/bokService';
+
+class FreightOptionAccordion extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            isOpen: true,
+            needToUpdate: false,
+        };
+    }
+
+    static propTypes = {
+        bok_1: PropTypes.array.isRequired,
+        updateBok_1: PropTypes.func.isRequired,
+    }
+
+    onClickHeader = (e) => {
+        e.preventDefault();
+        if (e.target.type !== 'button') {
+            this.setState({isOpen: !this.state.isOpen});
+        }
+    }
+
+    onInputChange(e) {
+        const {bok_1} = this.props;
+
+        if (
+            e.target.name === 'b_072_b_pu_no_of_assists' ||
+            e.target.name === 'b_079_b_pu_floor_number' ||
+            e.target.name === 'b_073_b_del_no_of_assists' ||
+            e.target.name === 'b_069_b_del_floor_number'
+        ) {
+            bok_1[e.target.name] = parseInt(e.target.value);
+        } else {
+            bok_1[e.target.name] = e.target.value;
+        }
+
+        this.setState({needToUpdate: true});
+    }
+
+    onClickSave(e) {
+        e.preventDefault();
+        const bok_1 = {...this.props.bok_1};
+
+        delete bok_1.bok_2s;
+        delete bok_1.pricings;
+
+        this.props.updateBok_1(bok_1);
+        this.setState({needToUpdate: false});
+    }
+
+    render() {
+        const {isOpen, needToUpdate} = this.state;
+        const {bok_1} = this.props;
+
+        return (
+            <section className="accordion freight-option-accordion">
+                <div className="header" onClick={(e) => this.onClickHeader(e)}>
+                    <p className="disp-inline-block">
+                        {isOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>} Freight Options:
+                    </p>
+                    <Button
+                        disabled={needToUpdate ? null : 'disabled'}
+                        color="primary"
+                        onClick={(e) => this.onClickSave(e)}
+                    >
+                        Save
+                    </Button>
+                </div>
+                {isOpen &&
+                    <div className="body">
+                        <div className="at-pu disp-inline-block">
+                            <h4>At Pickup:</h4>
+                            <label>
+                                <p>Address Type:</p>
+                                <select
+                                    name="b_027_b_pu_address_type"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_027_b_pu_address_type']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select address type ---</option>
+                                    <option value='Commercial'>Commercial</option>
+                                    <option value='Residential'>Residential</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Tail Lift Required?:</p>
+                                <input
+                                    name="b_019_b_pu_tail_lift"
+                                    type="checkbox"
+                                    checked={bok_1['b_019_b_pu_tail_lift']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                            <label>
+                                <p>No of men to assist:</p>
+                                <select
+                                    name="b_072_b_pu_no_of_assists"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_072_b_pu_no_of_assists']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
+                                    <option value='0'>0</option>
+                                    <option value='1'>1</option>
+                                    <option value='2'>2</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Location:</p>
+                                <select
+                                    name="b_078_b_pu_location"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_078_b_pu_location']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery location ---</option>
+                                    <option value='0'>Drop at Door / Warehouse Dock</option>
+                                    <option value='1'>Drop in Door / Warehouse</option>
+                                    <option value='2'>Room of Choice</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Access:</p>
+                                <select
+                                    name="b_074_b_pu_delivery_access"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_074_b_pu_delivery_access']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery access ---</option>
+                                    <option value='option_01'>option_01</option>
+                                    <option value='option_02'>option_02</option>
+                                    <option value='option_03'>option_03</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Level:</p>
+                                <select
+                                    name="b_079_b_pu_floor_number"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_079_b_pu_floor_number']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery level ---</option>
+                                    <option value='-5'>-5</option>
+                                    <option value='-4'>-4</option>
+                                    <option value='-3'>-3</option>
+                                    <option value='-2'>-2</option>
+                                    <option value='-1'>-1</option>
+                                    <option value='0'>Ground</option>
+                                    <option value='1'>1</option>
+                                    <option value='2'>2</option>
+                                    <option value='3'>3</option>
+                                    <option value='4'>4</option>
+                                    <option value='5'>5</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Level Access:</p>
+                                <select
+                                    name="b_080_b_pu_floor_access_by"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_080_b_pu_floor_access_by']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select level access ---</option>
+                                    <option value='Elevator'>Elevator</option>
+                                    <option value='Escalator'>Escalator</option>
+                                    <option value='Stairs'>Stairs</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Service:</p>
+                                <select
+                                    name="b_076_b_pu_service"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_076_b_pu_service']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select service ---</option>
+                                    <option value='option_01'>option_01</option>
+                                    <option value='option_02'>option_02</option>
+                                    <option value='option_03'>option_03</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Handling Instruction:</p>
+                                <textarea
+                                    width="100%"
+                                    name="b_014_b_pu_handling_instructions"
+                                    rows="1"
+                                    cols="9"
+                                    value={bok_1['b_014_b_pu_handling_instructions']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                            <label>
+                                <p>Pickup Instruction:</p>
+                                <textarea
+                                    width="100%"
+                                    name="b_016_b_pu_instructions_address"
+                                    rows="1"
+                                    cols="9"
+                                    value={bok_1['b_016_b_pu_instructions_address']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                        </div>
+                        <div className="at-de disp-inline-block">
+                            <h4>At Delivery:</h4>
+                            <label>
+                                <p>Address Type:</p>
+                                <select
+                                    name="b_053_b_del_address_type"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_053_b_del_address_type']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select address type ---</option>
+                                    <option value='Commercial'>Commercial</option>
+                                    <option value='Residential'>Residential</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Tail Lift Required?:</p>
+                                <input
+                                    name="b_041_b_del_tail_lift"
+                                    type="checkbox"
+                                    checked={bok_1['b_041_b_del_tail_lift']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                            <label>
+                                <p>No of men to assist:</p>
+                                <select
+                                    name="b_073_b_del_no_of_assists"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_073_b_del_no_of_assists']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
+                                    <option value='0'>0</option>
+                                    <option value='1'>1</option>
+                                    <option value='2'>2</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Location:</p>
+                                <select
+                                    name="b_068_b_del_location"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_068_b_del_location']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery location ---</option>
+                                    <option value='0'>Drop at Door / Warehouse Dock</option>
+                                    <option value='1'>Drop in Door / Warehouse</option>
+                                    <option value='2'>Room of Choice</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Access:</p>
+                                <select
+                                    name="b_075_b_del_delivery_access"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_075_b_del_delivery_access']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery access ---</option>
+                                    <option value='option_01'>option_01</option>
+                                    <option value='option_02'>option_02</option>
+                                    <option value='option_03'>option_03</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Level:</p>
+                                <select
+                                    name="b_069_b_del_floor_number"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_069_b_del_floor_number']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select delivery level ---</option>
+                                    <option value='-5'>-5</option>
+                                    <option value='-4'>-4</option>
+                                    <option value='-3'>-3</option>
+                                    <option value='-2'>-2</option>
+                                    <option value='-1'>-1</option>
+                                    <option value='0'>Ground</option>
+                                    <option value='1'>1</option>
+                                    <option value='2'>2</option>
+                                    <option value='3'>3</option>
+                                    <option value='4'>4</option>
+                                    <option value='5'>5</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Level Access:</p>
+                                <select
+                                    name="b_070_b_del_floor_access_by"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_070_b_del_floor_access_by']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select level access ---</option>
+                                    <option value='Elevator'>Elevator</option>
+                                    <option value='Escalator'>Escalator</option>
+                                    <option value='Stairs'>Stairs</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Service:</p>
+                                <select
+                                    name="b_077_b_del_service"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value={bok_1['b_077_b_del_service']}
+                                >
+                                    <option value="" selected disabled hidden>--- Select service ---</option>
+                                    <option value='option_01'>option_01</option>
+                                    <option value='option_02'>option_02</option>
+                                    <option value='option_03'>option_03</option>
+                                </select>
+                            </label>
+                            <label>
+                                <p>Delivery Instruction:</p>
+                                <textarea
+                                    width="100%"
+                                    name="b_044_b_del_instructions_address"
+                                    rows="1"
+                                    cols="9"
+                                    value={bok_1['b_044_b_del_instructions_address']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                        </div>
+                    </div>
+                }
+            </section>
+        );
+    }
+}
+
+const mapStateToProps = () => {};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateBok_1: (bok_1) => dispatch(updateBok_1(bok_1)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FreightOptionAccordion);

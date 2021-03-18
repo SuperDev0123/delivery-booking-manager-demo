@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
 
+import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
@@ -207,7 +208,7 @@ class BokPricePage extends Component {
                     <h1>{this.state.errorMessage}</h1>
                     :
                     <div>
-                        <p>Main Info:</p>
+                        <p><i className="fa fa-circle"></i> Main Info:</p>
                         <div className="main-info">
                             <div className="">
                                 <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />
@@ -239,7 +240,7 @@ class BokPricePage extends Component {
                                 <span>{bok_1['b_064_b_del_phone_main']}</span><br />  
                             </div>
                         </div>
-                        <p>Lines:</p>
+                        <p><i className="fa fa-circle"></i> Lines:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
@@ -258,7 +259,10 @@ class BokPricePage extends Component {
                                 {bok_2s}
                             </tbody>
                         </table>
-                        <p>Freight Rates:</p>
+                        <FreightOptionAccordion
+                            bok_1={bok_1}
+                        />
+                        <p><i className="fa fa-circle"></i> Freight Rates:</p>
                         <LoadingOverlay
                             active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper}
                             spinner

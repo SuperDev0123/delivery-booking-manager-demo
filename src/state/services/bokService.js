@@ -18,6 +18,8 @@ import {
     failedBookFreight,
     successCancelFreight,
     failedCancelFreight,
+    successUpdateBok_1,
+    failedUpdateBok_1,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -115,5 +117,20 @@ export const cancelFreight = (identifier) => {
         axios(options)
             .then(() => dispatch(successCancelFreight()))
             .catch((error) => dispatch(failedCancelFreight(error)));
+    };
+};
+
+export const updateBok_1 = (bok_1) => {
+    // const token = localStorage.getItem('token');
+    // headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+    const options = {
+        method: 'put', 
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/update_freight_options/`,
+        data: bok_1
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successUpdateBok_1()))
+            .catch((error) => dispatch(failedUpdateBok_1(error)));
     };
 };

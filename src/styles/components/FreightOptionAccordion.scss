@@ -1,0 +1,53 @@
+.freight-option-accordion {
+	margin-bottom: 20px;
+
+	.header {
+		background: lightgray;
+		border-radius: 5px;
+		height: 45px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+
+		p {
+			margin: 0;
+			width: 50%;
+		}
+
+		button {
+			float: right;
+			padding-top: 2px;
+			padding-bottom: 2px;
+			margin-right: 10px;
+			padding-left: 30px;
+			padding-right: 30px;
+		}
+	}
+	.body {
+		padding: 20px;
+
+		>div {
+			width: 50%;
+
+			h4 { color: deepskyblue }
+
+			label {
+				width: 100%;
+				margin-bottom: 2px;
+				margin-top: 2px;
+
+				p {
+					font-size: 14px;
+					font-weight: lighter;
+					width: 150px;
+					margin-bottom: 0;
+					margin-right: 5%;
+					display: inline-block;
+				}
+				select, textarea, input[type='text'] {
+					width: 50%;
+					font-weight: lighter;
+				}
+			}
+		}
+	}
+}

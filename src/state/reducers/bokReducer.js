@@ -16,6 +16,8 @@ import {
     FAILED_BOOK_FREIGHT,
     SUCCESS_CANCEL_FREIGHT,
     FAILED_CANCEL_FREIGHT,
+    SUCCESS_UPDATE_BOK_1,
+    FAILED_UPDATE_BOK_1,
 } from '../constants/bokConstants';
 
 const defaultState = {
@@ -67,6 +69,7 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 loadSuccess: true,
                 BOK_with_pricings: payload,
             };
+        case SUCCESS_UPDATE_BOK_1:
         case SUCCESS_SELECT_PRICING:
             return {
                 ...state,
@@ -99,6 +102,7 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
         case FAILED_GET_DE_STATUS:
         case FAILED_BOOK_FREIGHT:
         case FAILED_CANCEL_FREIGHT:
+        case FAILED_UPDATE_BOK_1:
             return {
                 ...state,
                 errorMessage: payload,
