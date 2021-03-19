@@ -38,6 +38,11 @@ class FreightOptionAccordion extends Component {
             e.target.name === 'b_069_b_del_floor_number'
         ) {
             bok_1[e.target.name] = parseInt(e.target.value);
+        } else if (
+            e.target.name === 'b_019_b_pu_tail_lift' ||
+            e.target.name === 'b_041_b_del_tail_lift'
+        ) {
+            bok_1[e.target.name] = e.target.checked;
         } else {
             bok_1[e.target.name] = e.target.value;
         }
@@ -67,9 +72,9 @@ class FreightOptionAccordion extends Component {
                         {isOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>} Freight Options:
                     </p>
                     <Button
-                        disabled={needToUpdate ? null : 'disabled'}
                         color="primary"
                         onClick={(e) => this.onClickSave(e)}
+                        disabled={needToUpdate ? null : 'disabled'}
                     >
                         Save
                     </Button>
