@@ -113,8 +113,11 @@ class FreightOptionAccordion extends Component {
                                 >
                                     <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
                                     <option value='0'>0</option>
-                                    <option value='1'>1</option>
+                                    <option value='1000'>1 & Customer will assist load</option>
                                     <option value='2'>2</option>
+                                    <option value='3'>3</option>
+                                    <option value='4'>4</option>
+                                    <option value='5'>5</option>
                                 </select>
                             </label>
                             <label>
@@ -138,9 +141,11 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_074_b_pu_delivery_access']}
                                 >
                                     <option value="" selected disabled hidden>--- Select delivery access ---</option>
-                                    <option value='option_01'>option_01</option>
-                                    <option value='option_02'>option_02</option>
-                                    <option value='option_03'>option_03</option>
+                                    <option value='Level Driveway'>Level Driveway</option>
+                                    <option value='Steep Driveway'>Steep Driveway</option>
+                                    <option value='Street'>Street</option>
+                                    <option value='Street with Curb'>Street with Curb</option>
+                                    <option value='Tree lined Street'>Tree lined Street</option>
                                 </select>
                             </label>
                             <label>
@@ -157,6 +162,7 @@ class FreightOptionAccordion extends Component {
                                     <option value='-2'>-2</option>
                                     <option value='-1'>-1</option>
                                     <option value='0'>Ground</option>
+                                    <option value='1000'>Curb</option>
                                     <option value='1'>1</option>
                                     <option value='2'>2</option>
                                     <option value='3'>3</option>
@@ -175,6 +181,8 @@ class FreightOptionAccordion extends Component {
                                     <option value='Elevator'>Elevator</option>
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
+                                    <option value='Ramp'>Ramp</option>
+                                    <option value='None - lifting is required'>None - lifting is required</option>
                                 </select>
                             </label>
                             <label>
@@ -185,9 +193,8 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_076_b_pu_service']}
                                 >
                                     <option value="" selected disabled hidden>--- Select service ---</option>
-                                    <option value='option_01'>option_01</option>
-                                    <option value='option_02'>option_02</option>
-                                    <option value='option_03'>option_03</option>
+                                    <option value='Unpack'>Unpack</option>
+                                    <option value='Install'>Install</option>
                                 </select>
                             </label>
                             <label>
@@ -245,8 +252,11 @@ class FreightOptionAccordion extends Component {
                                 >
                                     <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
                                     <option value='0'>0</option>
-                                    <option value='1'>1</option>
+                                    <option value='1000'>1 & Customer will assist load</option>
                                     <option value='2'>2</option>
+                                    <option value='3'>3</option>
+                                    <option value='4'>4</option>
+                                    <option value='5'>5</option>
                                 </select>
                             </label>
                             <label>
@@ -270,9 +280,11 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_075_b_del_delivery_access']}
                                 >
                                     <option value="" selected disabled hidden>--- Select delivery access ---</option>
-                                    <option value='option_01'>option_01</option>
-                                    <option value='option_02'>option_02</option>
-                                    <option value='option_03'>option_03</option>
+                                    <option value='Level Driveway'>Level Driveway</option>
+                                    <option value='Steep Driveway'>Steep Driveway</option>
+                                    <option value='Street'>Street</option>
+                                    <option value='Street with Curb'>Street with Curb</option>
+                                    <option value='Tree lined Street'>Tree lined Street</option>
                                 </select>
                             </label>
                             <label>
@@ -289,6 +301,7 @@ class FreightOptionAccordion extends Component {
                                     <option value='-2'>-2</option>
                                     <option value='-1'>-1</option>
                                     <option value='0'>Ground</option>
+                                    <option value='1000'>Curb</option>
                                     <option value='1'>1</option>
                                     <option value='2'>2</option>
                                     <option value='3'>3</option>
@@ -307,6 +320,8 @@ class FreightOptionAccordion extends Component {
                                     <option value='Elevator'>Elevator</option>
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
+                                    <option value='Ramp'>Ramp</option>
+                                    <option value='None - lifting is required'>None - lifting is required</option>
                                 </select>
                             </label>
                             <label>
@@ -317,9 +332,8 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_077_b_del_service']}
                                 >
                                     <option value="" selected disabled hidden>--- Select service ---</option>
-                                    <option value='option_01'>option_01</option>
-                                    <option value='option_02'>option_02</option>
-                                    <option value='option_03'>option_03</option>
+                                    <option value='Unpack'>Unpack</option>
+                                    <option value='Install'>Install</option>
                                 </select>
                             </label>
                             <label>
