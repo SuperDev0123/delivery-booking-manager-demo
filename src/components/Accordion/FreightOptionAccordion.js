@@ -121,26 +121,26 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Location:</p>
+                                <p>Pickup Location:</p>
                                 <select
                                     name="b_078_b_pu_location"
                                     onChange={(e) => this.onInputChange(e)}
                                     value={bok_1['b_078_b_pu_location']}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery location ---</option>
+                                    <option value="" selected disabled hidden>--- Select pickup location ---</option>
                                     <option value='0'>Drop at Door / Warehouse Dock</option>
                                     <option value='1'>Drop in Door / Warehouse</option>
                                     <option value='2'>Room of Choice</option>
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Access:</p>
+                                <p>Pickup Access:</p>
                                 <select
-                                    name="b_074_b_pu_delivery_access"
+                                    name="b_074_b_pu_access"
                                     onChange={(e) => this.onInputChange(e)}
-                                    value={bok_1['b_074_b_pu_delivery_access']}
+                                    value={bok_1['b_074_b_pu_access']}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery access ---</option>
+                                    <option value="" selected disabled hidden>--- Select pickup access ---</option>
                                     <option value='Level Driveway'>Level Driveway</option>
                                     <option value='Steep Driveway'>Steep Driveway</option>
                                     <option value='Street'>Street</option>
@@ -275,9 +275,9 @@ class FreightOptionAccordion extends Component {
                             <label>
                                 <p>Delivery Access:</p>
                                 <select
-                                    name="b_075_b_del_delivery_access"
+                                    name="b_075_b_del_access"
                                     onChange={(e) => this.onInputChange(e)}
-                                    value={bok_1['b_075_b_del_delivery_access']}
+                                    value={bok_1['b_075_b_del_access']}
                                 >
                                     <option value="" selected disabled hidden>--- Select delivery access ---</option>
                                     <option value='Level Driveway'>Level Driveway</option>
