@@ -67,8 +67,8 @@ class LabelPage extends Component {
                     const tr = (
                         <tr key={index}>
                             {sscc_info_index === 0 && <td rowSpan={bookingLabels.sscc_obj[value[0]].length.toString()}>{value[0]}</td>}
+                            <td>{sscc_info['e_item_type']}</td>
                             <td>{sscc_info['e_item']}</td>
-                            <td>N/A (coming soon)</td>
                             <td>{sscc_info['e_qty']}</td>
                             <td>{sscc_info['e_type_of_packaging']}</td>
                             {bookingLabels.vx_freight_provider !== 'Hunter' &&
