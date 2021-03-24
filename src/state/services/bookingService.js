@@ -78,7 +78,9 @@ import {
     failedAugmentPuDate,
     resetNoBookingAction,
     successGetClientProcessMgr,
-    failedGetClientProcessMgr
+    failedGetClientProcessMgr,
+    successGetLabelsInfo, // Customer Label Page
+    failedGetLabelsInfo, // Customer Label Page
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -754,4 +756,17 @@ export const sendEmail = (bookingId, templateName) => {
 
 export const resetNoBooking = () => {
     return dispatch => dispatch(resetNoBookingAction());
+};
+
+export const getLabels4Booking = (identifer) => {
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_labels/?b_client_booking_ref_num=${identifer}`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetLabelsInfo(data)))
+            .catch((error) => dispatch(failedGetLabelsInfo(error)));
+    };
 };

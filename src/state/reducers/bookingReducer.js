@@ -88,7 +88,9 @@ import {
     FAILED_AUGMENT_PU_DATE,
     RESET_NO_BOOKING,
     SUCCESS_GET_CLIENT_PROCESS,
-    FAILED_GET_CLIENT_PROCESS
+    FAILED_GET_CLIENT_PROCESS,
+    SUCCESS_GET_LABELS_INFO,
+    FAILED_GET_LABELS_INFO,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -132,7 +134,8 @@ const defaultState = {
     isAutoSelected: false,
     bookingIds: [],
     clientPK: 0,
-    clientprocess: {}
+    clientprocess: {},
+    bookingLabels: null
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -588,6 +591,11 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 pricingAnalyses: payload,
             };
+        case SUCCESS_GET_LABELS_INFO:
+            return {
+                ...state,
+                bookingLabels: payload
+            };
         case FAILED_AUTO_AUGMENT:
         case FAILED_AUGMENT_PU_DATE:
         case FAILED_TICK_MANUAL_BOOK:
@@ -604,6 +612,7 @@ export const BookingReducer = (state = defaultState, {
         case SUCCESS_SEND_EMAIL:
         case FAILED_SEND_EMAIL:
         case FAILED_PRICING_ANALYSIS:
+        case FAILED_GET_LABELS_INFO:
             return {
                 ...state,
                 errorMessage: errorMessage,

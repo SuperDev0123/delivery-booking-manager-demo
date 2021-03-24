@@ -208,7 +208,7 @@ class BokPricePage extends Component {
                     <h1>{this.state.errorMessage}</h1>
                     :
                     <div>
-                        <p><i className="fa fa-circle"></i> Main Info:</p>
+                        <h3><i className="fa fa-circle"></i> Main Info:</h3>
                         <div className="main-info">
                             <div className="">
                                 <strong>Client Name: </strong><span>{bok_1['b_client_name']}</span><br />

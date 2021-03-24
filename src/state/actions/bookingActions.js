@@ -90,7 +90,9 @@ import {
     FAILED_AUGMENT_PU_DATE,
     RESET_NO_BOOKING,
     SUCCESS_GET_CLIENT_PROCESS,
-    FAILED_GET_CLIENT_PROCESS
+    FAILED_GET_CLIENT_PROCESS,
+    SUCCESS_GET_LABELS_INFO,
+    FAILED_GET_LABELS_INFO,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -835,5 +837,19 @@ export function failedAugmentPuDate(error) {
 export function resetNoBookingAction() {
     return {
         type: RESET_NO_BOOKING,
+    };
+}
+
+export function successGetLabelsInfo(data) {
+    return {
+        type: SUCCESS_GET_LABELS_INFO,
+        payload: data.result,
+    };
+}
+
+export function failedGetLabelsInfo(error) {
+    return {
+        type: FAILED_GET_LABELS_INFO,
+        errorMessage: error.response.data.message
     };
 }

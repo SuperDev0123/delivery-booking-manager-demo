@@ -15,6 +15,7 @@ import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import ResetPasswordPage from '../pages/ResetPasswordPage';
 import BokPricePage from '../pages/customer/BokPricePage';
 import BokStatusPage from '../pages/customer/BokStatusPage';
+import LabelPage from '../pages/customer/LabelPage';
 import BookingPage from '../pages/BookingPage';
 import BookingLinesPage from '../pages/BookingLinesPage';
 import BookingLineDetailsPage from '../pages/BookingLineDetailsPage';
@@ -93,6 +94,7 @@ export const AppRouter = () => (
                 <Route exact path='/price/:id' component={BokPricePage} />
                 <Route exact path='/order/:id' component={BokPricePage} />
                 <Route exact path='/status/:id' component={BokStatusPage} />
+                <Route exact path='/label/:id' component={LabelPage} />
                 
                 <PrivateRoute exact path='/booking' component={BookingPage} />
                 <PrivateRoute exact path='/bookinglines' component={BookingLinesPage} />
