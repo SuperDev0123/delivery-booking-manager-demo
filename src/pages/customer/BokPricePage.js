@@ -10,6 +10,7 @@ import { Button } from 'reactstrap';
 
 import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight } from '../../state/services/bokService';
+import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -23,7 +24,10 @@ class BokPricePage extends Component {
             isLoadingBok: false,
             isLoadingPricing: false,
             isLoadingOper: false,
+            isShowExtraCostSummarySlider: false,
         };
+
+        this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
     }
 
     static propTypes = {
@@ -127,6 +131,10 @@ class BokPricePage extends Component {
         this.props.onSelectPricing(cost_id, this.props.match.params.id);
     }
 
+    toggleExtraCostSummarySlider() {
+        this.setState(prevState => ({isShowExtraCostSummarySlider: !prevState.isShowExtraCostSummarySlider}));
+    }
+
     render() {
         const {sortedBy, isBooked, isCanceled} = this.state;
         const {bokWithPricings} = this.props;
@@ -181,10 +189,9 @@ class BokPricePage extends Component {
                     <td>
                         ${price['cost'].toFixed(2)}
                         &nbsp;&nbsp;&nbsp;
-                        <i
-                            className="fa fa-copy"
-                            onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}
-                        ></i>
+                        <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
+                        &nbsp;&nbsp;&nbsp;
+                        <i className="fa fa-dollar-sign" onClick={() => this.toggleExtraCostSummarySlider()}></i>
                     </td>
                     <td>{price['eta']}</td>
                     {isPricingPage && !isSalesQuote &&
@@ -303,6 +310,12 @@ class BokPricePage extends Component {
                         </LoadingOverlay>
                     </div>
                 }
+
+                <ExtraCostSummarySlider
+                    isOpen={this.state.isShowExtraCostSummarySlider}
+                    toggleSlider={this.toggleExtraCostSummarySlider}
+                />
+
                 <ToastContainer />
             </section>
         );
