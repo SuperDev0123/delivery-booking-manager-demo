@@ -71,8 +71,8 @@ class LabelPage extends Component {
                             <td>{sscc_info['e_item']}</td>
                             <td>{sscc_info['e_qty']}</td>
                             <td>{sscc_info['e_type_of_packaging']}</td>
-                            {bookingLabels.vx_freight_provider !== 'Hunter' &&
-                                <td>
+                            {bookingLabels.vx_freight_provider !== 'Hunter' && sscc_info_index === 0 &&
+                                <td rowSpan={bookingLabels.sscc_obj[value[0]].length.toString()}>
                                     <Button
                                         color="info"
                                         disabled={!sscc_info.is_available && 'disabled'}
