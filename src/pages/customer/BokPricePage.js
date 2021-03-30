@@ -247,6 +247,9 @@ class BokPricePage extends Component {
                                 <span>{bok_1['b_064_b_del_phone_main']}</span><br />  
                             </div>
                         </div>
+                        <FreightOptionAccordion
+                            bok_1={bok_1}
+                        />
                         <p><i className="fa fa-circle"></i> Lines:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
@@ -266,9 +269,6 @@ class BokPricePage extends Component {
                                 {bok_2s}
                             </tbody>
                         </table>
-                        <FreightOptionAccordion
-                            bok_1={bok_1}
-                        />
                         <p><i className="fa fa-circle"></i> Freight Rates:</p>
                         <LoadingOverlay
                             active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper}
