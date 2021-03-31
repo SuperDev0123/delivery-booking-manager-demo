@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash';
 import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { STATIC_HOST, HTTP_PROTOCOL } from '../../config';
+import { decodeBase64 } from '../../commons/helpers';
 import { getLabels4Booking } from '../../state/services/bookingService';
 
 class LabelPage extends Component {
@@ -16,6 +18,7 @@ class LabelPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
+            ticks: {}
         };
     }
 
@@ -55,6 +58,51 @@ class LabelPage extends Component {
         }
     }
 
+    handleInputChange(event, sscc) {
+        const { ticks } = this.state;
+        // const target = event.target;
+        // const value = target.type === 'checkbox' ? target.checked : target.value;
+        // const name = target.name;
+
+        if (ticks.hasOwnProperty(sscc)) {
+            ticks[sscc] = !ticks[sscc];
+        } else {
+            ticks[sscc] = true;
+        }
+
+        this.setState({ticks});
+    }
+
+    onClickPrint() {
+        const {ticks} = this.state;
+        const {bookingLabels} = this.props;
+        let selectedSSCCs = [];
+
+        for (const value of Object.entries(ticks)) {
+            if (ticks[value[0]]) {
+                selectedSSCCs.push(value[0]);
+            }
+        }
+
+        if (_.isEmpty(selectedSSCCs)) {
+            this.notify('Please tick SSCC and click Print button');
+        } else {
+            let zpls = '';
+
+            selectedSSCCs.map(sscc => {
+                zpls += decodeBase64(bookingLabels.sscc_obj[sscc][0].zpl);
+            });
+
+            let printWindow = window.open();
+            printWindow.document.open('text/plain');
+            printWindow.document.write(zpls[0]);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+    }
+
     render() {
         const {bookingLabels} = this.props;
         let sscc_trs = [];
@@ -62,17 +110,19 @@ class LabelPage extends Component {
 
         if (bookingLabels) {
             for (const value of Object.entries(bookingLabels.sscc_obj)) {
-                bookingLabels.sscc_obj[value[0]].map((sscc_info, sscc_info_index) => {
+                const sscc = value[0];
+
+                bookingLabels.sscc_obj[sscc].map((sscc_info, sscc_info_index) => {
                     index++;
                     const tr = (
                         <tr key={index}>
-                            {sscc_info_index === 0 && <td rowSpan={bookingLabels.sscc_obj[value[0]].length.toString()}>{value[0]}</td>}
+                            {sscc_info_index === 0 && <td rowSpan={bookingLabels.sscc_obj[sscc].length.toString()}>{sscc}</td>}
                             <td>{sscc_info['e_item_type']}</td>
                             <td>{sscc_info['e_item']}</td>
                             <td>{sscc_info['e_qty']}</td>
                             <td>{sscc_info['e_type_of_packaging']}</td>
                             {bookingLabels.vx_freight_provider !== 'Hunter' && sscc_info_index === 0 &&
-                                <td rowSpan={bookingLabels.sscc_obj[value[0]].length.toString()}>
+                                <td rowSpan={bookingLabels.sscc_obj[sscc].length.toString()}>
                                     <Button
                                         color="info"
                                         disabled={!sscc_info.is_available && 'disabled'}
@@ -83,12 +133,12 @@ class LabelPage extends Component {
                                 </td>
                             }
                             {bookingLabels.vx_freight_provider !== 'Hunter' && sscc_info_index === 0 &&
-                                <td rowSpan={bookingLabels.sscc_obj[value[0]].length.toString()}>
+                                <td rowSpan={bookingLabels.sscc_obj[sscc].length.toString()}>
                                     <input
                                         name="switchInfo"
                                         type="checkbox"
                                         disabled={!sscc_info.is_available && 'disabled'}
-                                        onChange={(e) => this.handleInputChange(e)} />
+                                        onChange={(e) => this.handleInputChange(e, sscc)} />
                                 </td>
                             }
                         </tr>
@@ -147,9 +197,7 @@ class LabelPage extends Component {
                                     Preview
                                 </Button>
                             }
-                            <Button color="primary">
-                                Print
-                            </Button>
+                            <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
                         </div>
                     </div>
                 }
