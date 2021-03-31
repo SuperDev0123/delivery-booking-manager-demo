@@ -60,16 +60,10 @@ class LabelPage extends Component {
 
     handleInputChange(event, sscc) {
         const { ticks } = this.state;
-        // const target = event.target;
-        // const value = target.type === 'checkbox' ? target.checked : target.value;
-        // const name = target.name;
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
 
-        if (ticks.hasOwnProperty(sscc)) {
-            ticks[sscc] = !ticks[sscc];
-        } else {
-            ticks[sscc] = true;
-        }
-
+        ticks[sscc] = value;
         this.setState({ticks});
     }
 
@@ -95,7 +89,7 @@ class LabelPage extends Component {
 
             let printWindow = window.open();
             printWindow.document.open('text/plain');
-            printWindow.document.write(zpls[0]);
+            printWindow.document.write(zpls);
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
