@@ -40,8 +40,10 @@ class FreightOptionAccordion extends Component {
             bok_1[e.target.name] = parseInt(e.target.value);
         } else if (
             e.target.name === 'b_019_b_pu_tail_lift' ||
-            e.target.name === 'b_041_b_del_tail_lift'
+            e.target.name === 'b_041_b_del_tail_lift' ||
+            e.target.name === 'b_081_b_pu_auto_pack'
         ) {
+            console.log('@1 - ', e.target.checked);
             bok_1[e.target.name] = e.target.checked;
         } else {
             bok_1[e.target.name] = e.target.value;
@@ -64,6 +66,21 @@ class FreightOptionAccordion extends Component {
     render() {
         const {isOpen, needToUpdate} = this.state;
         const {bok_1} = this.props;
+        let carton_cnt = 0;
+        let is_auto_pack_checked = false;
+
+        bok_1.bok_2s.map(bok_2 => {
+            if (bok_2['l_001_type_of_packaging'] && bok_2['l_001_type_of_packaging'].toLowerCase() === 'ctn') {
+                carton_cnt += bok_2['l_002_qty'];
+            }
+        });
+
+        if (bok_1['b_081_b_pu_auto_pack'] === null) {
+            if (carton_cnt > 2)
+                is_auto_pack_checked = true;
+        } else {
+            is_auto_pack_checked = bok_1['b_081_b_pu_auto_pack'];
+        }
 
         return (
             <section className="accordion freight-option-accordion">
@@ -83,6 +100,15 @@ class FreightOptionAccordion extends Component {
                     <div className="body">
                         <div className="at-pu disp-inline-block">
                             <h4>At Pickup:</h4>
+                            <label>
+                                <p>Auto Pack:</p>
+                                <input
+                                    name="b_081_b_pu_auto_pack"
+                                    type="checkbox"
+                                    checked={is_auto_pack_checked}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
                             <label>
                                 <p>Address Type:</p>
                                 <select
