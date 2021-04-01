@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
 
 import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight } from '../../state/services/bokService';
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack } from '../../state/services/bokService';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 
 class BokPricePage extends Component {
@@ -24,7 +24,9 @@ class BokPricePage extends Component {
             isLoadingBok: false,
             isLoadingPricing: false,
             isLoadingOper: false,
+            isAutoRepacking: false,
             isShowExtraCostSummarySlider: false,
+            isShowLineData: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -35,12 +37,14 @@ class BokPricePage extends Component {
         onSelectPricing: PropTypes.func.isRequired,
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
+        onAutoRepack: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
         loadSuccess: PropTypes.bool,
         bookedSuccess: PropTypes.bool,
         canceledSuccess: PropTypes.bool,
         selectPricingSuccess: PropTypes.bool,
+        autoRepackSuccess: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -97,6 +101,11 @@ class BokPricePage extends Component {
         if (this.state.isLoadingOper && (!this.props.canceledSuccess && newProps.canceledSuccess)) {
             this.setState({isLoadingOper: false});
         }
+
+        if (this.state.isAutoRepacking && !this.props.autoRepackSuccess && newProps.autoRepackSuccess) {
+            this.setState({isAutoRepacking: false, isLoadingBok: true});
+            this.props.getBokWithPricings(this.props.match.params.id);
+        }
     }
 
     notify = (text) => {
@@ -135,11 +144,20 @@ class BokPricePage extends Component {
         this.setState(prevState => ({isShowExtraCostSummarySlider: !prevState.isShowExtraCostSummarySlider}));
     }
 
+    onClickShowLineData(bok_2) {
+        this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
+    }
+
+    onChangeAutoRepack(status) {
+        this.setState({isAutoRepacking: true, isShowLineData: false});
+        this.props.onAutoRepack(this.props.match.params.id, status);
+    }
+
     render() {
-        const {sortedBy, isBooked, isCanceled} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
         const {bokWithPricings} = this.props;
 
-        let bok_1, bok_2s, pricings;
+        let bok_1, bok_2s, bok_3s, pricings;
         let isPricingPage = true;
         let canBeChanged = true;
         let sortedPricings = [];
@@ -163,10 +181,6 @@ class BokPricePage extends Component {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
         }
 
-        // if (window.location.href.indexOf('/price/') === -1) {
-        //     isPricingPage = false;
-        // }
-
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => (
@@ -180,6 +194,7 @@ class BokPricePage extends Component {
                     <td>{bok_2['l_007_dim_height']}</td>
                     <td>{bok_2['l_008_weight_UOM']}</td>
                     <td>{bok_2['l_009_weight_per_each']}</td>
+                    <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td>
                 </tr>
             ));
             pricings = sortedPricings.map((price, index) => (
@@ -207,6 +222,25 @@ class BokPricePage extends Component {
                     }
                 </tr>
             ));
+
+            bok_3s = [];
+            if (isShowLineData) {
+                bok_3s = bok_1['bok_3s']
+                    .filter(bok_3 => bok_3.fk_booking_lines_id === selectedBok_2Id)
+                    .map((bok_3, index) => (
+                        <tr key={index}>
+                            <td>{bok_3['zbld_104_text_4']}</td>
+                            <td>{bok_3['zbld_122_integer_2']}</td>
+                            <td>{bok_3['zbld_103_text_3']}</td>
+                            <td>{bok_3['zbld_101_text_1']}</td>
+                            <td>{bok_3['zbld_131_decimal_1']}</td>
+                            <td>{bok_3['zbld_132_decimal_2']}</td>
+                            <td>{bok_3['zbld_133_decimal_3']}</td>
+                            <td>{bok_3['zbld_102_text_2']}</td>
+                            <td>{bok_3['zbld_134_decimal_4']}</td>
+                        </tr>
+                    ));
+            }
         }
 
         return (
@@ -249,6 +283,7 @@ class BokPricePage extends Component {
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
+                            onChangeAutoRepack={(status) => this.onChangeAutoRepack(status)}
                         />
                         <p><i className="fa fa-circle"></i> Lines:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
@@ -263,15 +298,37 @@ class BokPricePage extends Component {
                                     <th>Height</th>
                                     <th>Weight UOM</th>
                                     <th>Weight Per Each</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {bok_2s}
                             </tbody>
                         </table>
+                        {isShowLineData && <p><i className="fa fa-circle"></i> Line Datas:</p>}
+                        {isShowLineData &&
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <thead>
+                                    <tr>
+                                        <th>Type Of Packaging</th>
+                                        <th>Quantity</th>
+                                        <th>Item</th>
+                                        <th>Dim UOM</th>
+                                        <th>Lenght</th>
+                                        <th>Width</th>
+                                        <th>Height</th>
+                                        <th>Weight UOM</th>
+                                        <th>Weight Per Each</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bok_3s}
+                                </tbody>
+                            </table>
+                        }
                         <p><i className="fa fa-circle"></i> Freight Rates:</p>
                         <LoadingOverlay
-                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper}
+                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isAutoRepacking}
                             spinner
                             text='Loading...'
                         >
@@ -331,6 +388,7 @@ const mapStateToProps = (state) => {
         bookedSuccess: state.bok.bookedSuccess,
         canceledSuccess: state.bok.canceledSuccess,
         selectPricingSuccess: state.bok.selectPricingSuccess,
+        autoRepackSuccess: state.bok.autoRepackSuccess,
     };
 };
 
@@ -340,6 +398,7 @@ const mapDispatchToProps = (dispatch) => {
         onSelectPricing: (costId, identifier) => dispatch(onSelectPricing(costId, identifier)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
+        onAutoRepack: (identifier, repackStatus) => dispatch(autoRepack(identifier, repackStatus)),
     };
 };
 

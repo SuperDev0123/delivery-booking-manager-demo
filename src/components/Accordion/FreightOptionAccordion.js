@@ -19,6 +19,7 @@ class FreightOptionAccordion extends Component {
     static propTypes = {
         bok_1: PropTypes.array.isRequired,
         updateBok_1: PropTypes.func.isRequired,
+        onChangeAutoRepack: PropTypes.func.isRequired,
     }
 
     onClickHeader = (e) => {
@@ -43,13 +44,16 @@ class FreightOptionAccordion extends Component {
             e.target.name === 'b_041_b_del_tail_lift' ||
             e.target.name === 'b_081_b_pu_auto_pack'
         ) {
-            console.log('@1 - ', e.target.checked);
             bok_1[e.target.name] = e.target.checked;
         } else {
             bok_1[e.target.name] = e.target.value;
         }
 
         this.setState({needToUpdate: true});
+
+        if (e.target.name === 'b_081_b_pu_auto_pack') {
+            this.props.onChangeAutoRepack(e.target.checked);
+        }
     }
 
     onClickSave(e) {
@@ -101,7 +105,7 @@ class FreightOptionAccordion extends Component {
                         <div className="at-pu disp-inline-block">
                             <h4>At Pickup:</h4>
                             <label>
-                                <p>Auto Pack:</p>
+                                <p>Auto repack:</p>
                                 <input
                                     name="b_081_b_pu_auto_pack"
                                     type="checkbox"

@@ -20,6 +20,8 @@ import {
     failedCancelFreight,
     successUpdateBok_1,
     failedUpdateBok_1,
+    successAutoRepack,
+    failedAutoRepack,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -132,5 +134,18 @@ export const updateBok_1 = (bok_1) => {
         axios(options)
             .then(() => dispatch(successUpdateBok_1()))
             .catch((error) => dispatch(failedUpdateBok_1(error)));
+    };
+};
+
+export const autoRepack = (identifier, repackStatus) => {
+    const options = {
+        method: 'post',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/boks/auto_repack/`,
+        data: {'status': repackStatus, 'identifier': identifier},
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successAutoRepack()))
+            .catch((error) => dispatch(failedAutoRepack(error)));
     };
 };
