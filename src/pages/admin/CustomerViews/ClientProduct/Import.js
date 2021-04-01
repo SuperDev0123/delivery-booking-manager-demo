@@ -24,7 +24,7 @@ class Upload extends Component {
         this.componentConfig = {
             iconFiletypes: ['.xlsx'],
             showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/client-products/',
+            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/',
         };
 
         this.dropzone = null;
@@ -62,8 +62,7 @@ class Upload extends Component {
     }
 
     handleUploadSuccess(file) {
-        let uploadedFileName = file.xhr.responseText.substring(file.xhr.responseText.indexOf('"'));
-        uploadedFileName = uploadedFileName.replace(/"/g,'');
+        let uploadedFileName = JSON.parse(file.xhr.responseText).file_name;
 
         this.setState({
             uploadedFileName,

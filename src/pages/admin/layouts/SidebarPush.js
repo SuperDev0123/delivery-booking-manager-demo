@@ -387,7 +387,7 @@ class SidebarPush extends React.Component {
                                 </Link>
                             </li>
                             <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('clientproducts') || this.activeRoute('clientproducts/import') ? 'active' : ''}>
-                                <a onClick={() => this.setState({ clientProductsCollapsed: !clientProductsCollapsed })}>
+                                <a onClick={() => this.setState({ clientProductsCollapsed: !clientProductsCollapsed })} style={{ 'cursor': 'pointer' }}>
                                     <i className="fas fa-archive"></i>
                                     <span className="menu-title">Client Products</span>
                                 </a>
