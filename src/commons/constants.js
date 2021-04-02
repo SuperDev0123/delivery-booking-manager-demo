@@ -48,3 +48,6 @@ export const timeSelectOptions = [
     {value: '05:00', label: '05:00'},
     {value: '05:30', label: '05:30'},
 ];
+
+export const LIST = 1;
+export const EDIT = 2;

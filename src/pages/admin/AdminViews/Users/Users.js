@@ -9,24 +9,24 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import moment from 'moment';
+import ConfirmModal from '../../../../components/CommonModals/ConfirmModal';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
 import { getAllUsers, setGetUsersFilter, updateUserDetails } from '../../../../state/services/userService';  
 import { validateEmail } from '../../../../commons/validations';  
-
-const SHOW = 0;
-const EDIT = 1;
+import { LIST, EDIT } from '../../../../commons/constants';
 
 class Users extends Component {    
     constructor(props) {
         super(props);
 
         this.state = {
+            modalOpen: false,
             allUsers: [],
             dmeClients: [],
             username: null,
             loading: true,
             clientPK: 0,
-            status: SHOW,
+            status: LIST,
             currentRow: {},
             errMsg: ''
         };
@@ -114,10 +114,18 @@ class Users extends Component {
         if (validateEmail(this.state.currentRow.email)) {
             this.props.updateUserDetails(this.state.currentRow);
             this.setState({errMsg: ''});
-            this.setState({status: SHOW});
+            this.setState({status: LIST});
         } else {
             this.setState({errMsg: 'Invalid Email'});
         }
+    }
+
+    updateUserStatus(event, user, status){
+        event.preventDefault();
+        this.setState({
+            currentRow: { ...user, is_active: status },
+            modalOpen: true
+        });
     }
 
     render() {
@@ -220,7 +228,7 @@ class Users extends Component {
                 <section id="main-content" className="container animated fadeInUp">
                     <div className="row">
                         <div className="col-md-12">
-                            {this.state.status === SHOW && <div className="panel panel-default">
+                            {this.state.status === LIST && <div className="panel panel-default">
                                 <div className="panel-heading">
                                     <h3 className="panel-title">Users List</h3>
                                 </div>
@@ -292,12 +300,26 @@ class Users extends Component {
                                         <input type="checkbox" name="user_is_active" className="checkbox" checked={this.state.currentRow.is_active} onChange={(e) => this.onInputChange(e, 'is_active')} />
                                     </div>
                                     <button type="submit" className="btn btn-primary mt-5 mb-5" onClick={(e) => this.updateUser(e)}>Update</button>
-                                    <button type="submit" className="btn btn-danger mt-5 mb-5" onClick={() => this.setState({status: SHOW})}>Cancel</button>
+                                    <button type="submit" className="btn btn-danger mt-5 mb-5" onClick={() => this.setState({status: LIST})}>Cancel</button>
                                 </form>
                             </div>}
                         </div>
                     </div>
                 </section>
+                <ConfirmModal
+                    isOpen={this.state.modalOpen}
+                    title='Confirmation Alert'
+                    text='Click Ok to change current User Status'
+                    onOk={() => {
+                        this.props.updateUserDetails({ 
+                            id: this.state.currentRow.id, 
+                            is_active: this.state.currentRow.is_active 
+                        });
+                        this.setState({modalOpen: false});
+                    }}
+                    onCancel={() => this.setState({modalOpen: false})}
+                    okBtnName='Ok'
+                />
             </div>
         );
     }
