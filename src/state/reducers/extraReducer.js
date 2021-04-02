@@ -60,6 +60,7 @@ import {
     FAILED_GET_CLIENT_EMPLOYEES,
     SUCCESS_GET_CLIENT_EMPLOYEE,
     FAILED_GET_CLIENT_EMPLOYEE,
+    SUCCESS_CREATE_CLIENT_EMPLOYEE,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -83,7 +84,8 @@ const defaultState = {
     clientProducts: [],
     allFPs: [],
     errors: [],
-    clientEmployee: {}
+    clientEmployee: {},
+    updatedClientEmployee: {}
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -296,6 +298,16 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 clientEmployee: payload
             };
+        case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
+            return {
+                ...state,
+                updatedClientEmployee: payload
+            };
+        case SUCCESS_CREATE_CLIENT_EMPLOYEE:
+            return {
+                ...state,
+                updatedClientEmployee: payload
+            };
         case FAILED_GET_ALL_ERRORS:
             return {
                 ...state,
@@ -329,7 +341,6 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_UPDATE_BOOKING_SET:
         case FAILED_DELETE_BOOKING_SET:
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:
-        case SUCCESS_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_DELETE_CLIENT_PRODUCTS:
         case FAILED_CREATE_CLIENT_PRODUCTS:

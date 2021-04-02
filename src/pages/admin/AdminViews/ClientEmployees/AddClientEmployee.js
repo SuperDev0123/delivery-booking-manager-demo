@@ -69,21 +69,12 @@ class AddClientEmployee extends Component {
         }
         if (roles) {
             this.setState({ roles });
-            if(roles.length>0) {
-                this.setState({ role: roles[0].id});
-            }
         }
         if (clients) {
             this.setState({ clients });
-            if(clients.length>0) {
-                this.setState({ fk_id_dme_client: clients[0].pk_id_dme_client});
-            }
         }
         if (warehouses) {
             this.setState({warehouses});
-            if(warehouses.length>0) {
-                this.setState({ warehouse_id: warehouses[0].pk_id_client_warehouses});
-            }
         }
     }
 
@@ -93,7 +84,7 @@ class AddClientEmployee extends Component {
 
     onSubmit(event) {
         this.setState({ loading: true });
-        const { name_first, name_last, email, phone, job_title, role, fk_id_dme_client, warehouse_id } = this.state;        
+        const { name_first, name_last, email, phone, job_title, role, fk_id_dme_client, warehouse_id } = this.state;
         this.props.createClientEmployee({ name_first: name_first, name_last:name_last, email:email, phone:phone, clien_emp_job_title: job_title, role_id:role, fk_id_dme_client_id:fk_id_dme_client, warehouse_id:warehouse_id });
         this.setState({ loading: false });
         this.props.history.push('/admin/clientemployees');

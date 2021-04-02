@@ -631,3 +631,44 @@ div.manual-book {
 .header-title-count {
     font-size: 14px !important;
 }
+
+.aa-modal {
+    width: 20%;
+
+    label {
+        display: block;
+
+        h5 {
+            width: 120px;
+            display: inline-block;
+            margin: 0;
+        }
+
+        span, input {
+            float: right;
+            width: calc(100% - 130px);
+            text-align: left;
+        }
+    }
+
+    div.btns {
+        text-align: left;
+
+        button {
+            display: inline-block;
+            padding: 5px 10px;
+
+            &:first-child {
+                margin-top: 3px;
+                margin-bottom: 5px;
+                float: left;
+            }
+
+            &:last-child {
+                margin-top: 3px;
+                margin-bottom: 5px;
+                float: right;
+            }
+        }
+    }
+}
