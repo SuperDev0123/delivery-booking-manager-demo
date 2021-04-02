@@ -4553,6 +4553,7 @@ class BookingPage extends Component {
                                             target={'augment-info-popup'}
                                             placement="left"
                                             hideArrow={true}
+                                            className="aa-modal"
                                         >
                                             <PopoverHeader>
                                                 <a onClick={this.onShowEditAugment}><i className="icon icon-pencil float-left"></i></a>
@@ -4561,61 +4562,58 @@ class BookingPage extends Component {
                                             </PopoverHeader>
                                             <PopoverBody>
                                                 <div>
-                                                    <div className="location-info disp-inline-block">
-                                                        <h5 className="bold">PU Entity:</h5>
-                                                        <h5 className="bold">PU Street 1:<br/></h5>
-                                                        <h5 className="bold">PU Street 2:<br/></h5>
-                                                    </div>
-                                                    <div className="location-info disp-inline-block">
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_puCompany']}
-                                                        </h5>
-
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_pu_Address_Street_1']} 
-                                                        </h5>
-
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_pu_Address_Street_2']}
-                                                        </h5>
-
-                                                    </div>
+                                                    <label>
+                                                        <h5 className="bold">PU Entity: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_puCompany']}</span>
+                                                        }
+                                                    </label>
+                                                    <label>
+                                                        <h5 className="bold">PU Street 1: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_pu_Address_Street_1']}</span>
+                                                        }
+                                                    </label>
+                                                    <label>
+                                                        <h5 className="bold">PU Street 2: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_pu_Address_Street_2']}</span>
+                                                        }
+                                                    </label>
                                                 </div>
-                                                <div className="mt-2 ml-2 mr-2" style={{ height: 1, width: undefined, backgroundColor: 'gray' }} />
+                                                <hr />
                                                 <div>
-                                                    <div className="location-info disp-inline-block">
-                                                        <h5 className="bold">DE Entity:<br/></h5>
-                                                        <h5 className="bold">DE Instrunction:<br/></h5>
-                                                        <h5 className="bold">DE Group Emails:<br /></h5>
-                                                    </div>
-                                                    <div className="location-info disp-inline-block">
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_deToCompanyName']} 
-                                                        </h5><br/>
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_pu_pickup_instructions_address']} 
-                                                        </h5>
-                                                        <h5>
-                                                            {isAugmentEditable ?
-                                                                <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails']} onChange={(e) => this.onInputChange(e)} />
-                                                                : clientprocess['origin_de_Email_Group_Emails']} 
-                                                        </h5>
-                                                    </div>
+                                                    <label>
+                                                        <h5 className="bold">DE Entity: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_deToCompanyName']}</span>
+                                                        }
+                                                    </label>
+                                                    <label>
+                                                        <h5 className="bold">DE Instrunction: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_pu_pickup_instructions_address']}</span>
+                                                        }
+                                                    </label>
+                                                    <label>
+                                                        <h5 className="bold">DE Group Emails: </h5>
+                                                        {isAugmentEditable ?
+                                                            <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails']} onChange={(e) => this.onInputChange(e)} />
+                                                            : <span>{clientprocess['origin_de_Email_Group_Emails']}</span>
+                                                        }
+                                                    </label>
                                                 </div>
-                                                {isAugmentEditable ? <div className="d-flex justify-content-center">
-                                                    <button className="btn btn-danger" onClick={this.onHideEditAugment}>Cancel</button>
-                                                    <button className="btn btn-primary" onClick={this.onUpdateAugment}>Update</button>
-                                                </div> : null}
+                                                {isAugmentEditable &&
+                                                    <div className="btns">
+                                                        <button className="btn btn-danger" onClick={this.onHideEditAugment}>Cancel</button>
+                                                        <button className="btn btn-primary" onClick={this.onUpdateAugment}>Update</button>
+                                                    </div>
+                                                }
                                             </PopoverBody>
                                         </Popover>
 
