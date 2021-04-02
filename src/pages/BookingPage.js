@@ -47,7 +47,7 @@ import CostSlider from '../components/Sliders/CostSlider';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, updateAugment } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -138,6 +138,7 @@ class BookingPage extends Component {
             isShowEmailLogSlider: false,
             isShowCostSlider: false,
             isShowAugmentInfoPopup: false,
+            isAugmentEditable: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -261,6 +262,7 @@ class BookingPage extends Component {
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
         getClientProcessMgr: PropTypes.func.isRequired,
+        updateAugment: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -2175,6 +2177,31 @@ class BookingPage extends Component {
 
     onToggleAugmentInfoPopup = () => {
         this.setState(prevState => ({isShowAugmentInfoPopup: !prevState.isShowAugmentInfoPopup}));
+        this.setState({isAugmentEditable: false});
+    }
+
+    onShowEditAugment = () => {
+        this.setState({isAugmentEditable: true});
+    }
+
+    onHideEditAugment = () => {
+        this.setState({isAugmentEditable: false});
+    }
+
+    onUpdateAugment = () => {
+        const {clientprocess} = this.state;
+        this.props.updateAugment(clientprocess);
+        this.onHideEditAugment();
+    }
+
+    onInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const name = target.name;
+
+        const clientprocess = this.state.clientprocess;
+        clientprocess[name] = value;
+        this.setState({clientprocess, errorMessage: ''});
     }
 
     toggleUpdateCreatedForEmailConfirmModal() {
@@ -2512,7 +2539,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable
         } = this.state;
         const {
             warehouses, emailLogs
@@ -4528,6 +4555,7 @@ class BookingPage extends Component {
                                             hideArrow={true}
                                         >
                                             <PopoverHeader>
+                                                <a onClick={this.onShowEditAugment}><i className="icon icon-pencil float-left"></i></a>
                                                 Auto Augment Info
                                                 <a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a>
                                             </PopoverHeader>
@@ -4539,9 +4567,24 @@ class BookingPage extends Component {
                                                         <h5 className="bold">PU Street 2:<br/></h5>
                                                     </div>
                                                     <div className="location-info disp-inline-block">
-                                                        <h5>{clientprocess['origin_puCompany']}</h5>
-                                                        <h5 className="mt-2">{clientprocess['origin_pu_Address_Street_1']}<br/></h5>
-                                                        <h5 className="mt-2">{clientprocess['origin_pu_Address_Street_2']}<br/></h5>
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_puCompany']}
+                                                        </h5>
+
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_pu_Address_Street_1']} 
+                                                        </h5>
+
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_pu_Address_Street_2']}
+                                                        </h5>
+
                                                     </div>
                                                 </div>
                                                 <div className="mt-2 ml-2 mr-2" style={{ height: 1, width: undefined, backgroundColor: 'gray' }} />
@@ -4552,11 +4595,27 @@ class BookingPage extends Component {
                                                         <h5 className="bold">DE Group Emails:<br /></h5>
                                                     </div>
                                                     <div className="location-info disp-inline-block">
-                                                        <h5 className="mt-2">{clientprocess['origin_deToCompanyName']}<br/></h5>
-                                                        <h5 className="mt-2">{clientprocess['origin_pu_pickup_instructions_address']}<br/></h5>
-                                                        <h5 className="mt-2">{clientprocess['origin_de_Email_Group_Emails']}<br/></h5>
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_deToCompanyName']} 
+                                                        </h5><br/>
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_pu_pickup_instructions_address']} 
+                                                        </h5>
+                                                        <h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails']} onChange={(e) => this.onInputChange(e)} />
+                                                                : clientprocess['origin_de_Email_Group_Emails']} 
+                                                        </h5>
                                                     </div>
                                                 </div>
+                                                {isAugmentEditable ? <div className="d-flex justify-content-center">
+                                                    <button className="btn btn-danger" onClick={this.onHideEditAugment}>Cancel</button>
+                                                    <button className="btn btn-primary" onClick={this.onUpdateAugment}>Update</button>
+                                                </div> : null}
                                             </PopoverBody>
                                         </Popover>
 
@@ -5494,6 +5553,7 @@ const mapDispatchToProps = (dispatch) => {
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
         resetNoBooking: () => dispatch(resetNoBooking()),
         getClientProcessMgr: (pk_booking_id) => dispatch(getClientProcessMgr(pk_booking_id)),
+        updateAugment: (clientprocess) => dispatch(updateAugment(clientprocess)),
     };
 };
 

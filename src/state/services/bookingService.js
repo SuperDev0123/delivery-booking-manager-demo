@@ -81,6 +81,8 @@ import {
     failedGetClientProcessMgr,
     successGetLabelsInfo, // Customer Label Page
     failedGetLabelsInfo, // Customer Label Page
+    successUpdateAugment,
+    failedUpdateAugment,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -698,6 +700,22 @@ export const calcCollected = (bookingIds, type) => {
             .then(({ data }) => dispatch(successCalcCollected(data)))
             .catch((error) => dispatch(failedCalcCollected(error)));
 };
+
+
+export const updateAugment = (clientprocess) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/update_augment/`,
+        data: clientprocess,
+    };
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateAugment(data)))
+            .catch((error) => dispatch(failedUpdateAugment(error)));
+};
+
 
 export const setFetchGeoInfoFlag = (boolFlag) => {
     return dispatch => dispatch(setFetchGeoInfoFlagAction(boolFlag));
