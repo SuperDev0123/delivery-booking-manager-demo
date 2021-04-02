@@ -17,6 +17,7 @@ class ClientEmployees extends Component {
 
         this.state = {
             allClientEmployees: [],
+            updatedClientEmployee: [],
             username: null,
             loading: true,
         };
@@ -48,7 +49,7 @@ class ClientEmployees extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, needUpdateFpDetails, allClientEmployees } = newProps;
+        const { redirect, needUpdateFpDetails, allClientEmployees , updatedClientEmployee} = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -61,6 +62,11 @@ class ClientEmployees extends Component {
             this.setState({ loading: false });
         }
         if (needUpdateFpDetails) {
+            this.props.getAllClientEmployees();
+        }
+        if (JSON.stringify(updatedClientEmployee) != JSON.stringify(this.state.updatedClientEmployee)) {
+            this.setState({ updatedClientEmployee });
+            console.log('updatedClientEmployee', updatedClientEmployee);
             this.props.getAllClientEmployees();
         }
     }
@@ -204,6 +210,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
         urlAdminHome: state.url.urlAdminHome,
+        updatedClientEmployee: state.extra.updatedClientEmployee,
     };
 };
 

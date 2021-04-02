@@ -197,6 +197,7 @@ class UploadPage extends Component {
                                         value = {formInputs['uploader']}
                                     >
                                         <option value="" selected disabled hidden>Select Uploader</option>
+                                        <option value='Jason L'>Jason L</option>
                                         <option value='Seaway'>Seaway-Tempo</option>
                                         <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
                                         <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>

@@ -368,10 +368,11 @@ export function failedSaveStatusHistoryPuInfo() {
     };
 }
 
-export function successUpdateClientEmployee() {
+export function successUpdateClientEmployee(data) {
     return {
         type: SUCCESS_UPDATE_CLIENT_EMPLOYEE,
         errorMessage: 'Successfully updated ClientEmployee',
+        payload: data
     };
 }
 
@@ -474,9 +475,10 @@ export function failedGetAllErrors() {
     };
 }
 
-export function successCreateClientEmployee() {
+export function successCreateClientEmployee(data) {
     return {
-        type: SUCCESS_CREATE_CLIENT_EMPLOYEE
+        type: SUCCESS_CREATE_CLIENT_EMPLOYEE,
+        payload: data
     };
 }
 
