@@ -1,3 +1,5 @@
+export const timeDiff = -10; // Time difference between UTC and AU(Sydney)
+
 export const timeSelectOptions = [
     {value: '06:00', label: '06:00'},
     {value: '06:30', label: '06:30'},
