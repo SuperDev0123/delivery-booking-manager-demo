@@ -56,6 +56,8 @@ import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
+// Constants
+import { timeDiff } from '../commons/constants';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -1698,7 +1700,7 @@ class BookingPage extends Component {
         const booking = this.state.booking;
 
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
 
         if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || 
             fieldName === 's_20_Actual_Pickup_TimeStamp' ||
@@ -2609,7 +2611,7 @@ class BookingPage extends Component {
 
                 if (isSelect) {
                     let conveted_date = moment().add(this.tzOffset, 'h');       // Current -> UTC
-                    conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+                    conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
                     row['picked_up_timestamp'] = conveted_date;
                 } else {
                     row['picked_up_timestamp'] = null;

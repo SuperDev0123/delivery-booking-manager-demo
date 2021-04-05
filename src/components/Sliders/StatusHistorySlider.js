@@ -9,6 +9,8 @@ import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import DateTimePicker from 'react-datetime-picker';
 // import LoadingOverlay from 'react-loading-overlay';
+// Constants
+import { timeDiff } from '../../commons/constants';
 
 class StatusHistorySlider extends React.Component {
     constructor(props) {
@@ -110,7 +112,7 @@ class StatusHistorySlider extends React.Component {
 
     onChangeDateTime(date, fieldName) {
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
 
         if (fieldName === 'event_time_stamp') {
             this.setState({event_time_stamp: conveted_date});

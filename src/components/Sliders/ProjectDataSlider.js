@@ -10,6 +10,8 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import DateTimePicker from 'react-datetime-picker';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+// Constants
+import { timeDiff } from '../../commons/constants';
 
 class ProjectDataSlider extends React.Component {
     constructor(props) {
@@ -72,7 +74,7 @@ class ProjectDataSlider extends React.Component {
 
     onChangeDate(date, fieldName) {
         let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-11, 'h');                // UTC -> Sydney
+        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
 
         if (fieldName === 'b_project_opened') {
             this.setState({b_project_opened: conveted_date});

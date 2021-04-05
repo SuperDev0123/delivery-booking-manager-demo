@@ -8,6 +8,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
+// Constants
+import { timeDiff } from '../../commons/constants';
 
 class BulkUpdateSlider extends React.Component {
     constructor(props) {
@@ -75,7 +77,7 @@ class BulkUpdateSlider extends React.Component {
 
     onChangeDateTime(dateTime, valueType=null) {
         let conveted_date = moment(dateTime).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(-11, 'h');                    // UTC -> Sydney
+        conveted_date = conveted_date.add(timeDiff, 'h');                    // UTC -> Sydney
 
         if (dateTime) {
             if (valueType === 'optionalValue') {
