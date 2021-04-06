@@ -109,6 +109,34 @@ class BokStatusPage extends Component {
                         <div className="status-chart-button disp-inline-block">
                             <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
                         </div>
+                        {booking &&
+                            <div className="main-info">
+                                <div className="pu-info disp-inline-block">
+                                    <label>Pickup From</label><br />
+                                    <span>{booking['b_028_b_pu_company']}</span><br />
+                                    <span>{booking['b_029_b_pu_address_street_1']}</span><br />
+                                    {booking && booking['b_030_b_pu_address_street_2'] && (<span>{booking['b_030_b_pu_address_street_2']}<br /></span>)}
+                                    <span>{booking['b_032_b_pu_address_suburb']}</span><br />
+                                    <span>{booking['b_031_b_pu_address_state'].toUpperCase()} {booking['b_034_b_pu_address_country']}</span><br />
+                                    <span>{booking['b_033_b_pu_address_postalcode']}</span><br /><br />
+                                    <span>{booking['b_035_b_pu_contact_full_name']}</span><br />
+                                    <span>{booking['b_037_b_pu_email']}</span><br />
+                                    <span>{booking['b_038_b_pu_phone_main']}</span><br />
+                                </div>
+                                <div className="de-info disp-inline-block">
+                                    <label>Deliver To</label><br />
+                                    <span>{booking['b_054_b_del_company']}</span><br />
+                                    <span>{booking['b_055_b_del_address_street_1']}</span><br />
+                                    {booking && booking['b_056_b_del_address_street_2'] && (<span>{booking['b_056_b_del_address_street_2']}<br /></span>)}
+                                    <span>{booking['b_058_b_del_address_suburb']}</span><br />
+                                    <span>{booking['b_057_b_del_address_state'].toUpperCase()} {booking['b_060_b_del_address_country']}</span><br />
+                                    <span>{booking['b_059_b_del_address_postalcode']}</span><br /><br />
+                                    <span>{booking['b_061_b_del_contact_full_name']}</span><br />
+                                    <span>{booking['b_063_b_del_email']}</span><br />
+                                    <span>{booking['b_064_b_del_phone_main']}</span><br />  
+                                </div>
+                            </div>
+                        }
                         <div className="status-chart-detail">
                             {booking && booking.hasOwnProperty('b_bookingID_Visual') && <p><strong>DME Booking Number: </strong>{booking.b_bookingID_Visual}</p>}
                             {booking && booking.hasOwnProperty('b_client_order_num') && <p><strong>Client Order Number: </strong>{booking.b_client_order_num}</p>}

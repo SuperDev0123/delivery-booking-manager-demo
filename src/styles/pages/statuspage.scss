@@ -1,8 +1,30 @@
 section.status {
+    height: calc(100% - 114px);
+
     p.error {
         color: red;
         font-size: 20px;
         text-align: center;
+    }
+
+    .main-info {
+        width: 60%;
+        margin-left: 20%;
+        margin-right: 20%;
+        margin-bottom: 50px;
+
+        >div {
+            width: 50%;
+
+            label {
+                color: deepskyblue;
+                font-size: 18px;
+            }
+
+            &.de-info {
+                text-align: end;
+            }
+        }
     }
 
     .status-chart {
