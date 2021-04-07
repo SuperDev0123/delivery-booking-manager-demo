@@ -11,6 +11,7 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import CustomPagination from '../Pagination/CustomPagination';
 import { Button } from 'reactstrap';
 import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
+import Modal from '../CommonModals/ConfirmModal';
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import { successGetDMEClientProducts } from '../../state/actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
@@ -21,6 +22,8 @@ class ClientProductSlider extends React.Component {
         super(props);
 
         this.state = {
+            rowIdSelectd: '',
+            modalOpen: false,
             uploadResult: '',
             uploaded: false,
             pageItemCnt: 20,
@@ -160,8 +163,16 @@ class ClientProductSlider extends React.Component {
     }
 
     onClickDelete = (id) => {
-        this.props.onClickDelete(id);
+        this.setState({
+            rowIdSelectd: id,
+            modalOpen: true
+        });
     }
+
+    onDeleteOk = () => {
+        this.props.onClickDelete(this.state.rowIdSelectd);
+        this.setState({modalOpen: false});
+    };
 
     onCancel() {
         this.setState({mode: LIST});
@@ -502,6 +513,14 @@ class ClientProductSlider extends React.Component {
                             </div>
                         </section>
                     </div>)}
+                    <Modal 
+                        isOpen={this.state.modalOpen}
+                        onOk={() => this.onDeleteOk()}
+                        onCancel={() => this.setState({modalOpen: false})}
+                        title="Delete Confirmation"
+                        text="Are you sure about deleting this product?"
+                        okBtnName="Ok"
+                    />
                 </div>
             </SlidingPane>
         );

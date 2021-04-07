@@ -4,12 +4,12 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import LoadingOverlay from 'react-loading-overlay';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import BootstrapTable from 'react-bootstrap-table-next';
-// import CustomPagination from '../../../../components/Pagination/CustomPagination';
 import { Button } from 'reactstrap';
 import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
 import { connect } from 'react-redux';
-import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { withRouter } from 'react-router-dom';
+import Modal from '../../../../components/CommonModals/ConfirmModal';
+import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getDMEClientProducts, updateClientProduct, createClientProduct, deleteClientProduct } from '../../../../state/services/extraService';
 
 class ClientProduct extends React.Component {
@@ -17,6 +17,8 @@ class ClientProduct extends React.Component {
         super(props);
 
         this.state = {
+            modalOpen: false,
+            rowIdSelectd: '',
             editMode: 0,
             saveMode: 0, 
             clientProductsFormInputs: {
@@ -89,7 +91,10 @@ class ClientProduct extends React.Component {
     }
 
     onClickDelete = (id) => {
-        this.props.deleteClientProduct(id);
+        this.setState({
+            rowIdSelectd: id,
+            modalOpen: true
+        });
     }
 
     onCancel() {
@@ -157,6 +162,11 @@ class ClientProduct extends React.Component {
     onClickEditButton(clientProductsFormInputs) {
         this.setState({clientProductsFormInputs, editMode: 1, saveMode: 1});
     }
+
+    onDeleteOk = () => {
+        this.props.deleteClientProduct(this.state.rowIdSelectd);
+        this.setState({modalOpen: false});
+    };
 
     renderClientProducts() {
         const { editMode, clientProductsFormInputs } = this.state;
@@ -395,6 +405,14 @@ class ClientProduct extends React.Component {
                         this.renderClientProducts()
                     }
                 </section>
+                <Modal 
+                    isOpen={this.state.modalOpen}
+                    onOk={() => this.onDeleteOk()}
+                    onCancel={() => this.setState({modalOpen: false})}
+                    title="Delete Confirmation"
+                    text="Are you sure about deleting this product?"
+                    okBtnName="Ok"
+                />
             </div>
         );
     }
