@@ -923,6 +923,8 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_quoted_override'] = null;
                 if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
+                if (booking.customer_cost && !_.isNaN(parseFloat(booking.customer_cost))) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
+                else formInputs['customer_cost'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
                 if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
@@ -3567,6 +3569,23 @@ class BookingPage extends Component {
                                                             />
                                                             :
                                                             <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                        {formInputs && formInputs['customer_cost'] &&
+                                            <div className="col-sm-1 form-group">
+                                                <div>
+                                                    <span>Customer $</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['customer_cost'] && `$${parseFloat(formInputs['customer_cost']).toFixed(2)}`}</p>
+                                                        :
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            disabled="disabled"
+                                                            value = {formInputs['customer_cost'] && `$${formInputs['customer_cost']}`}
+                                                        />
                                                     }
                                                 </div>
                                             </div>
