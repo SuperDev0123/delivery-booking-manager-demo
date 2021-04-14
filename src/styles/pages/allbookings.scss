@@ -136,52 +136,57 @@ table.booking-lines {
 }
 
 $table_body_height: 100%;
-$column_1_width: 30px;
-$column_2_width: 20px;
-$column_3_width: 20px;
-$column_4_width: 90px;
-$column_5_width: 110px;
-$column_6_width: 110px;
-$column_7_width: 125px;
-$column_8_width: 110px;
-$column_9_width: 250px;
-$column_10_width: 250px;
+$checkbox_width: 30px;
+$lines_info_width: 20px;
+$additional_info_width: 20px;
+$b_bookingID_Visual_width: 90px;
+$b_booking_Priority_width: 90px;
+$b_client_name_width: 110px;
+$b_client_name_sub_width: 110px;
+$puPickUpAvailFrom_Date_width: 125px;
+$b_dateBookedDate_width: 110px;
 
-$column_11_width: 70px;
-$column_12_width: 70px;
-$column_13_width: 250px;
-$column_14_width: 250px;
-$column_15_width: 70px;
-$column_16_width: 70px;
-$column_17_width: 30px;
-$column_18_width: 30px;
-$column_19_width: 30px;
-$column_20_width: 30px;
+$puCompany_width: 250px;
+$pu_Address_Suburb_width: 250px;
+$pu_Address_State_width: 70px;
+$pu_Address_PostalCode_width: 70px;
+$deToCompanyName_width: 250px;
+$de_To_Address_Suburb_width: 250px;
+$de_To_Address_State_width: 70px;
+$de_To_Address_PostalCode_width: 70px;
 
-$column_21_width: 30px;
-$column_22_width: 30px;
-$column_23_width: 95px;
-$column_24_width: 95px;
-$column_25_width: 95px;
-$column_26_width: 70px;
-$column_27_width: 90px;
-$column_28_width: 30px;
-$column_29_width: 120px;
-$column_30_width: 120px;
+$b_error_Capture_width: 30px;
+$z_label_url_width: 30px;
+$z_pod_url_width: 30px;
+$z_connote_url_width: 30px;
+$manifest_timestamp_width: 30px;
+$b_is_flagged_add_on_services_width: 30px;
 
-$column_31_width: 130px;
-$column_32_width: 130px;
-$column_33_width: 130px;
-$column_34_width: 130px;
-$column_35_width: 130px;
-$column_36_width: 130px;
-$column_37_width: 100px;
-$column_38_width: 100px;
-$column_39_width: 130px;
-$column_40_width: 130px;
+$b_clientReference_RA_Numbers_width: 95px;
+$b_client_order_num_width: 95px;
+$b_client_sales_inv_num_width: 95px;
+$vx_freight_provider_width: 90px;
+$vx_serviceName_width: 90px;
+$v_FPBookingNumber_width: 90px;
+$z_lock_status_width: 30px;
+$dme_delivery_status_category_width: 120px;
+$b_status_width: 130px;
 
-$column_41_width: 130px;
-$column_42_width: 130px;
+$pu_PickUp_By_Date_width: 130px;
+$de_Deliver_By_Date_width: 130px;
+$de_Deliver_By_Time_width: 90px;
+$remaining_time_width: 90px;
+$de_Deliver_From_Date_width: 130px;
+$b_given_to_transport_date_time_width: 130px;
+$fp_received_date_time_width: 130px;
+$s_21_Actual_Delivery_TimeStamp_width: 100px;
+$dme_status_detail_width: 100px;
+$dme_status_action_width: 130px;
+$z_calculated_ETA_width: 130px;
+
+$de_to_PickUp_Instructions_Address_width: 130px;
+$b_booking_project_width: 130px;
+$b_project_due_date_width: 130px;
 
 #all_booking .fixed_headers{
   table-layout: fixed;
@@ -197,91 +202,100 @@ $column_42_width: 130px;
     }
   }
 
-  td:nth-child(1), th:nth-child(1) { width: $column_1_width; }
-  td:nth-child(2), th:nth-child(2) { width: $column_2_width; }
-  td:nth-child(3), th:nth-child(3) { width: $column_3_width; }
-  td:nth-child(4), th:nth-child(4) { width: $column_4_width; }
-  td:nth-child(4) p, th:nth-child(4) p { width: 70px; }
-  td:nth-child(5), th:nth-child(5) { width: $column_5_width; }
-  td:nth-child(5) p, th:nth-child(5) p { width: 90px }
-  td:nth-child(6), th:nth-child(6) { width: $column_6_width; }
-  td:nth-child(6) p, th:nth-child(6) p { width: 90px }
-  td:nth-child(7), th:nth-child(7) { width: $column_7_width; }
-  td:nth-child(7) p, th:nth-child(7) p { width: 90px }
-  td:nth-child(8), th:nth-child(8) { width: $column_8_width; }
-  td:nth-child(8) p, th:nth-child(8) p { width: 90px }
-  td:nth-child(9), th:nth-child(9) { width: $column_9_width; }
-  td:nth-child(9) p, th:nth-child(9) p { width: 120px }
-  td:nth-child(10), th:nth-child(10) { width: $column_10_width; }
-  td:nth-child(10) p, th:nth-child(10) p { width: 120px }
+  td[name=checkbox], th[name=checkbox] { width: $checkbox_width; }
+  td[name=lines_info], th[name=lines_info] { width: $lines_info_width; }
+  td[name=additional_info], th[name=additional_info] { width: $additional_info_width; }
+  td[name=b_bookingID_Visual], th[name=b_bookingID_Visual] { width: $b_bookingID_Visual_width; }
+  td[name=b_bookingID_Visual] p, th[name=b_bookingID_Visual] p { width: 70px; }
+  td[name=b_booking_Priority], th[name=b_booking_Priority] { width: $b_booking_Priority_width; }
+  td[name=b_booking_Priority] p, th[name=b_booking_Priority] p { width: 90px }
+  td[name=b_client_name], th[name=b_client_name] { width: $b_client_name_width; }
+  td[name=b_client_name] p, th[name=b_client_name] p { width: 90px }
+  td[name=b_client_name_sub], th[name=b_client_name_sub] { width: $b_client_name_sub_width; }
+  td[name=b_client_name_sub] p, th[name=b_client_name_sub] p { width: 90px }
+  td[name=puPickUpAvailFrom_Date], th[name=puPickUpAvailFrom_Date] { width: $puPickUpAvailFrom_Date_width; }
+  td[name=puPickUpAvailFrom_Date] p, th[name=puPickUpAvailFrom_Date] p { width: 90px }
+  td[name=b_dateBookedDate], th[name=b_dateBookedDate] { width: $b_dateBookedDate_width; }
+  td[name=b_dateBookedDate] p, th[name=b_dateBookedDate] p { width: 90px }
 
-  td:nth-child(11), th:nth-child(11) { width: $column_11_width; }
-  td:nth-child(11) p, th:nth-child(11) p { width: 50px }
-  td:nth-child(12), th:nth-child(12) { width: $column_12_width; }
-  td:nth-child(12) p, th:nth-child(12) p { width: 50px }
-  td:nth-child(13), th:nth-child(13) { width: $column_13_width; }
-  td:nth-child(13) p, th:nth-child(13) p { width: 120px }
-  td:nth-child(14), th:nth-child(14) { width: $column_14_width; }
-  td:nth-child(14) p, th:nth-child(14) p { width: 120px }
-  td:nth-child(15), th:nth-child(15) { width: $column_15_width; }
-  td:nth-child(15) p, th:nth-child(15) p { width: 50px }
-  td:nth-child(16), th:nth-child(16) { width: $column_16_width; }
-  td:nth-child(16) p, th:nth-child(16) p { width: 50px }
-  td:nth-child(17), th:nth-child(17) { width: $column_17_width; }
-  td:nth-child(17) p, th:nth-child(17) p { width: 30px }
-  td:nth-child(18), th:nth-child(18) { width: $column_18_width; }
-  td:nth-child(18) p, th:nth-child(18) p { width: 30px }
-  td:nth-child(19), th:nth-child(19) { width: $column_19_width; }
-  td:nth-child(19) p, th:nth-child(19) p { width: 30px }
-  td:nth-child(20), th:nth-child(20) { width: $column_20_width; }
-  td:nth-child(20) p, th:nth-child(20) p { width: 30px }
+  td[name=puCompany], th[name=puCompany] { width: $puCompany_width; }
+  td[name=puCompany] p, th[name=puCompany] p { width: 120px }
+  td[name=pu_Address_Suburb], th[name=pu_Address_Suburb] { width: $pu_Address_Suburb_width; }
+  td[name=pu_Address_Suburb] p, th[name=pu_Address_Suburb] p { width: 120px }
+  td[name=pu_Address_State], th[name=pu_Address_State] { width: $pu_Address_State_width; }
+  td[name=pu_Address_State] p, th[name=pu_Address_State] p { width: 50px }
+  td[name=pu_Address_PostalCode], th[name=pu_Address_PostalCode] { width: $pu_Address_PostalCode_width; }
+  td[name=pu_Address_PostalCode] p, th[name=pu_Address_PostalCode] p { width: 50px }
+  td[name=deToCompanyName], th[name=deToCompanyName] { width: $deToCompanyName_width; }
+  td[name=deToCompanyName] p, th[name=deToCompanyName] p { width: 120px }
+  td[name=de_To_Address_Suburb], th[name=de_To_Address_Suburb] { width: $de_To_Address_Suburb_width; }
+  td[name=de_To_Address_Suburb] p, th[name=de_To_Address_Suburb] p { width: 120px }
+  td[name=de_To_Address_State], th[name=de_To_Address_State] { width: $de_To_Address_State_width; }
+  td[name=de_To_Address_State] p, th[name=de_To_Address_State] p { width: 50px }
+  td[name=de_To_Address_PostalCode], th[name=de_To_Address_PostalCode] { width: $de_To_Address_PostalCode_width; }
+  td[name=de_To_Address_PostalCode] p, th[name=de_To_Address_PostalCode] p { width: 50px }
 
-  td:nth-child(21), th:nth-child(21) { width: $column_21_width; }
-  td:nth-child(21) p, th:nth-child(21) p { width: 30px }
-  td:nth-child(22), th:nth-child(22) { width: $column_22_width; }
-  td:nth-child(22) p, th:nth-child(22) p { width: 30px }
-  td:nth-child(23), th:nth-child(23) { width: $column_23_width; }
-  td:nth-child(23) p, th:nth-child(23) p { width: 70px }
-  td:nth-child(24), th:nth-child(24) { width: $column_24_width; }
-  td:nth-child(24) p, th:nth-child(24) p { width: 70px }
-  td:nth-child(25), th:nth-child(25) { width: $column_25_width; }
-  td:nth-child(25) p, th:nth-child(25) p { width: 70px }
-  td:nth-child(26), th:nth-child(26) { width: $column_26_width; }
-  td:nth-child(26) p, th:nth-child(26) p { width: 50px }
-  td:nth-child(27), th:nth-child(27) { width: $column_27_width; }
-  td:nth-child(27) p, th:nth-child(27) p { width: 70px }
-  td:nth-child(28), th:nth-child(28) { width: $column_28_width; }
-  td:nth-child(28) p, th:nth-child(28) p { width: 30px }
-  td:nth-child(29), th:nth-child(29) { width: $column_29_width; }
-  td:nth-child(29) p, th:nth-child(29) p { width: 100px }
-  td:nth-child(30), th:nth-child(30) { width: $column_30_width; }
-  td:nth-child(30) p, th:nth-child(30) p { width: 100px }
+  td[name=b_error_Capture], th[name=b_error_Capture] { width: $b_error_Capture_width; }
+  td[name=b_error_Capture] p, th[name=b_error_Capture] p { width: 30px }
+  td[name=z_label_url], th[name=z_label_url] { width: $z_label_url_width; }
+  td[name=z_label_url] p, th[name=z_label_url] p { width: 30px }
+  td[name=z_pod_url], th[name=z_pod_url] { width: $z_pod_url_width; }
+  td[name=z_pod_url] p, th[name=z_pod_url] p { width: 30px }
+  td[name=z_connote_url], th[name=z_connote_url] { width: $z_connote_url_width; }
+  td[name=z_connote_url] p, th[name=z_connote_url] p { width: 30px }
+  td[name=manifest_timestamp], th[name=manifest_timestamp] { width: $manifest_timestamp_width; }
+  td[name=manifest_timestamp] p, th[name=manifest_timestamp] p { width: 30px }
+  td[name=b_is_flagged_add_on_services], th[name=b_is_flagged_add_on_services] { width: $b_is_flagged_add_on_services_width; }
+  td[name=b_is_flagged_add_on_services] p, th[name=b_is_flagged_add_on_services] p { width: 30px }
 
-  td:nth-child(31), th:nth-child(31) { width: $column_31_width; }
-  td:nth-child(31) p, th:nth-child(31) p { width: 110px }
-  td:nth-child(32), th:nth-child(32) { width: $column_32_width; }
-  td:nth-child(32) p, th:nth-child(32) p { width: 110px }
-  td:nth-child(33), th:nth-child(33) { width: $column_33_width; }
-  td:nth-child(33) p, th:nth-child(33) p { width: 100px }
-  td:nth-child(34), th:nth-child(34) { width: $column_34_width; }
-  td:nth-child(34) p, th:nth-child(34) p { width: 100px }
-  td:nth-child(35), th:nth-child(35) { width: $column_35_width; }
-  td:nth-child(35) p, th:nth-child(35) p { width: 100px }
-  td:nth-child(36), th:nth-child(36) { width: $column_36_width; }
-  td:nth-child(36) p, th:nth-child(36) p { width: 80px }
-  td:nth-child(37), th:nth-child(37) { width: $column_37_width; }
-  td:nth-child(37) p, th:nth-child(37) p { width: 80px }
-  td:nth-child(38), th:nth-child(38) { width: $column_38_width; }
-  td:nth-child(38) p, th:nth-child(38) p { width: 80px }
-  td:nth-child(39), th:nth-child(39) { width: $column_39_width; }
-  td:nth-child(39) p, th:nth-child(39) p { width: 110px }
-  td:nth-child(40), th:nth-child(40) { width: $column_40_width; }
-  td:nth-child(40) p, th:nth-child(40) p { width: 110px }
+  td[name=b_clientReference_RA_Numbers], th[name=b_clientReference_RA_Numbers] { width: $b_clientReference_RA_Numbers_width; }
+  td[name=b_clientReference_RA_Numbers] p, th[name=b_clientReference_RA_Numbers] p { width: 70px }
+  td[name=b_client_order_num], th[name=b_client_order_num] { width: $b_client_order_num_width; }
+  td[name=b_client_order_num] p, th[name=b_client_order_num] p { width: 70px }
+  td[name=b_client_sales_inv_num], th[name=b_client_sales_inv_num] { width: $b_client_sales_inv_num_width; }
+  td[name=b_client_sales_inv_num] p, th[name=b_client_sales_inv_num] p { width: 70px }
+  td[name=vx_freight_provider], th[name=vx_freight_provider] { width: $vx_freight_provider_width; }
+  td[name=vx_freight_provider] p, th[name=vx_freight_provider] p { width: 70px }
+  td[name=vx_serviceName], th[name=vx_serviceName] { width: $vx_serviceName_width; }
+  td[name=vx_serviceName] p, th[name=vx_serviceName] p { width: 50px }
+  td[name=v_FPBookingNumber], th[name=v_FPBookingNumber] { width: $v_FPBookingNumber_width; }
+  td[name=v_FPBookingNumber] p, th[name=v_FPBookingNumber] p { width: 70px }
+  td[name=z_lock_status], th[name=z_lock_status] { width: $z_lock_status_width; }
+  td[name=z_lock_status] p, th[name=z_lock_status] p { width: 30px }
+  td[name=dme_delivery_status_category], th[name=dme_delivery_status_category] { width: $dme_delivery_status_category_width; }
+  td[name=dme_delivery_status_category] p, th[name=dme_delivery_status_category] p { width: 100px }
+  td[name=b_status], th[name=b_status] { width: $b_status_width; }
+  td[name=b_status] p, th[name=b_status] p { width: 100px }
 
-  td:nth-child(41), th:nth-child(41) { width: $column_41_width; }
-  td:nth-child(41) p, th:nth-child(41) p { width: 110px }
-  td:nth-child(42), th:nth-child(42) { width: $column_42_width; }
-  td:nth-child(42) p, th:nth-child(42) p { width: 110px }
+  td[name=pu_PickUp_By_Date], th[name=pu_PickUp_By_Date] { width: $pu_PickUp_By_Date_width; }
+  td[name=pu_PickUp_By_Date] p, th[name=pu_PickUp_By_Date] p { width: 110px }
+  td[name=de_Deliver_By_Date], th[name=de_Deliver_By_Date] { width: $de_Deliver_By_Date_width; }
+  td[name=de_Deliver_By_Date] p, th[name=de_Deliver_By_Date] p { width: 110px }
+  td[name=de_Deliver_By_Time], th[name=de_Deliver_By_Time] { width: $de_Deliver_By_Time_width; }
+  td[name=de_Deliver_By_Time] p, th[name=de_Deliver_By_Time] p { width: 70px }
+  td[name=remaining_time], th[name=remaining_time] { width: $remaining_time_width; }
+  td[name=remaining_time] p, th[name=remaining_time] p { width: 70px }
+  td[name=de_Deliver_From_Date], th[name=de_Deliver_From_Date] { width: $de_Deliver_From_Date_width; }
+  td[name=de_Deliver_From_Date] p, th[name=de_Deliver_From_Date] p { width: 100px }
+  td[name=b_given_to_transport_date_time], th[name=b_given_to_transport_date_time] { width: $b_given_to_transport_date_time_width; }
+  td[name=b_given_to_transport_date_time] p, th[name=b_given_to_transport_date_time] p { width: 100px }
+  td[name=fp_received_date_time], th[name=fp_received_date_time] { width: $fp_received_date_time_width; }
+  td[name=fp_received_date_time] p, th[name=fp_received_date_time] p { width: 100px }
+  td[name=s_21_Actual_Delivery_TimeStamp], th[name=s_21_Actual_Delivery_TimeStamp] { width: $s_21_Actual_Delivery_TimeStamp_width; }
+  td[name=s_21_Actual_Delivery_TimeStamp] p, th[name=s_21_Actual_Delivery_TimeStamp] p { width: 80px }
+  td[name=dme_status_detail], th[name=dme_status_detail] { width: $dme_status_detail_width; }
+  td[name=dme_status_detail] p, th[name=dme_status_detail] p { width: 80px }
+  td[name=dme_status_action], th[name=dme_status_action] { width: $dme_status_action_width; }
+  td[name=dme_status_action] p, th[name=dme_status_action] p { width: 80px }
+  td[name=z_calculated_ETA], th[name=z_calculated_ETA] { width: $z_calculated_ETA_width; }
+  td[name=z_calculated_ETA] p, th[name=z_calculated_ETA] p { width: 110px }
+
+  td[name=de_to_PickUp_Instructions_Address], th[name=de_to_PickUp_Instructions_Address] { width: $de_to_PickUp_Instructions_Address_width; }
+  td[name=de_to_PickUp_Instructions_Address] p, th[name=de_to_PickUp_Instructions_Address] p { width: 110px }
+  td[name=b_booking_project], th[name=b_booking_project] { width: $b_booking_project_width; }
+  td[name=b_booking_project] p, th[name=b_booking_project] p { width: 110px }
+  td[name=b_project_due_date], th[name=b_project_due_date] { width: $b_project_due_date_width; }
+  td[name=b_project_due_date] p, th[name=b_project_due_date] p { width: 110px }
 
   tr:nth-child(1), tr:nth-child(2) {
     color: #048abb;
