@@ -2309,7 +2309,7 @@ class AllBookingsPage extends React.Component {
                                                             className={activeTabInd === 6 ? 'active' : ''}
                                                             onClick={() => this.onClickTab(6)}
                                                         >
-                                                            Delivery Mangement
+                                                            Delivery Management
                                                         </NavLink>
                                                     </NavItem>
                                                 }
