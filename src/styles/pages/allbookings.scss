@@ -467,7 +467,7 @@ table {
 
 #warehouse {
   width: 250px;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 #status {
@@ -591,6 +591,7 @@ ul.nav-tabs {
 
 .filter-controls {
   padding-left: 51px;
+  margin-bottom: 10px;
 
   .btn {
     padding-right: 10px;
@@ -709,14 +710,9 @@ header > .qbootstrap-nav {
   }
 }
 
-.project-name-select {
-  padding-left: 22px;
-
-  #project-name-select {
-    margin-left: 10px;
-    width: 200px;
-    height: 30px;
-  }
+#project-name-select {
+  margin-left: 10px;
+  width: 200px;
 }
 
 #client-select {

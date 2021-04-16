@@ -98,6 +98,7 @@ class AllBookingsPage extends React.Component {
             selectedOneBooking: null,
             activeBookingId: null,
             dmeStatus: null,
+            selectedWarehouseId: 0,
             isShowXLSModal: false,
             isShowProjectNameModal: false,
             isShowCheckPodModal: false,
@@ -529,10 +530,11 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onClickDateFilter() {
-        const { startDate, endDate } = this.state;
-        this.props.setGetBookingsFilter('date', {startDate, endDate});
-        this.props.setGetBookingsFilter('columnFilters', {});
+    onClickFind() {
+        const { startDate, endDate, projectName, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, activeTabInd, dmeStatus } = this.state;
+        // this.props.setGetBookingsFilter('date', {startDate, endDate});
+        // this.props.setGetBookingsFilter('columnFilters', {});
+        this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, {}, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
@@ -544,18 +546,20 @@ class AllBookingsPage extends React.Component {
             if (selectedWarehouseId !== 'all')
                 warehouseId = selectedWarehouseId;
 
-            this.props.setGetBookingsFilter('warehouseId', warehouseId);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name});
+            // this.props.setGetBookingsFilter('warehouseId', warehouseId);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name, selectedWarehouseId: warehouseId});
         } else if (src === 'client') {
-            this.props.setGetBookingsFilter('clientPK', e.target.value);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+            // this.props.setGetBookingsFilter('clientPK', e.target.value);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', clientPK: e.targe.value});
         } else if (src === 'status') {
-            this.setState({selectedStatusValue: e.target.value});
+            // this.setState({selectedStatusValue: e.target.value});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', dmeStatus: e.targe.value});
         } else if (src === 'projectName') {
-            const today = moment().format('YYYY-MM-DD');
-            const projectName = e.target.value;
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
+            // const today = moment().format('YYYY-MM-DD');
+            // const projectName = e.target.value;
+            // this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
+            // this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0, projectName: e.target.value});
         }
     }
 
@@ -984,7 +988,7 @@ class AllBookingsPage extends React.Component {
             if (booking.z_label_url && booking.z_label_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -999,7 +1003,7 @@ class AllBookingsPage extends React.Component {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -1010,7 +1014,7 @@ class AllBookingsPage extends React.Component {
             } else if (booking.z_pod_signed_url && booking.z_pod_signed_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_sog_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -1588,7 +1592,7 @@ class AllBookingsPage extends React.Component {
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
-                    this.onClickDateFilter();
+                    this.onClickFind();
                 })
                 .catch((err) => {
                     this.notify(err.response.data.message);
@@ -2187,7 +2191,6 @@ class AllBookingsPage extends React.Component {
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
                                             />
-                                            <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                                             {(clientname === 'dme') &&
                                                 <label className="left-30px right-10px">
                                                     Client: 
@@ -2200,16 +2203,31 @@ class AllBookingsPage extends React.Component {
                                                     </select>
                                                 </label>
                                             }
-                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
-                                            <select 
-                                                id="warehouse" 
-                                                required 
-                                                onChange={(e) => this.onSelected(e, 'warehouse')} 
-                                                value={selectedWarehouseId}
-                                            >
-                                                <option value="all">All</option>
-                                                { warehousesList }
-                                            </select>
+                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>
+                                                Warehouse: 
+                                                <select 
+                                                    id="warehouse" 
+                                                    required 
+                                                    onChange={(e) => this.onSelected(e, 'warehouse')} 
+                                                    value={selectedWarehouseId}
+                                                >
+                                                    <option value="all">All</option>
+                                                    { warehousesList }
+                                                </select>
+                                            </label>
+                                            <label className="right-10px">
+                                                Project Name: 
+                                                <select 
+                                                    id="project-name-select" 
+                                                    required 
+                                                    onChange={(e) => this.onSelected(e, 'projectName')} 
+                                                    value={projectName}
+                                                >
+                                                    <option value="" selected disabled hidden>Select a project name</option>
+                                                    { projectNameOptions }
+                                                </select>
+                                            </label>
+                                            <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickFind()}><i className="fa fa-search"></i> Find</button>
                                             {clientname === 'dme' || clientname === 'biopak' ?
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
@@ -2228,22 +2246,6 @@ class AllBookingsPage extends React.Component {
                                                 </div>
                                                 : null
                                             }
-                                        </div>
-                                        <div className="row">
-                                            <div className="project-name-select">
-                                                <label className="left-30px right-10px">
-                                                    Project Name: 
-                                                    <select 
-                                                        id="project-name-select" 
-                                                        required 
-                                                        onChange={(e) => this.onSelected(e, 'projectName')} 
-                                                        value={projectName}
-                                                    >
-                                                        <option value="" selected disabled hidden>Select a project name</option>
-                                                        { projectNameOptions }
-                                                    </select>
-                                                </label>
-                                            </div>
                                         </div>
                                         <div className="tabs">
                                             <Nav tabs>
@@ -2309,7 +2311,7 @@ class AllBookingsPage extends React.Component {
                                                             className={activeTabInd === 6 ? 'active' : ''}
                                                             onClick={() => this.onClickTab(6)}
                                                         >
-                                                            Delivery Mangement
+                                                            Delivery Management
                                                         </NavLink>
                                                     </NavItem>
                                                 }
