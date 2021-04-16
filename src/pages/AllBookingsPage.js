@@ -550,10 +550,10 @@ class AllBookingsPage extends React.Component {
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name, selectedWarehouseId: warehouseId});
         } else if (src === 'client') {
             // this.props.setGetBookingsFilter('clientPK', e.target.value);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', clientPK: e.targe.value});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', clientPK: e.target.value});
         } else if (src === 'status') {
             // this.setState({selectedStatusValue: e.target.value});
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', dmeStatus: e.targe.value});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', dmeStatus: e.target.value});
         } else if (src === 'projectName') {
             // const today = moment().format('YYYY-MM-DD');
             // const projectName = e.target.value;
