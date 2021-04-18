@@ -1993,10 +1993,10 @@ class AllBookingsPage extends React.Component {
                     <td name='z_lock_status' className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                         <i className="fa fa-lock"></i>
                     </td>
-                    <td name='dme_delivery_status_category' className={(sortField === 'dme_delivery_status_category') ? 'current' : ''} id={'booking-' + 'dme_delivery_status_category' + '-tooltip-' + booking.id}>
-                        <p className="status">{booking.dme_delivery_status_category}</p>
-                        {!_.isEmpty(booking.dme_delivery_status_category) &&
-                            <TooltipItem object={booking} fields={['dme_delivery_status_category']} />
+                    <td name='b_booking_Category' className={(sortField === 'b_booking_Category') ? 'current' : ''} id={'booking-' + 'b_booking_Category' + '-tooltip-' + booking.id}>
+                        <p className="status">{booking.b_booking_Category}</p>
+                        {!_.isEmpty(booking.b_booking_Category) &&
+                            <TooltipItem object={booking} fields={['b_booking_Category']} />
                         }
                     </td>
                     <td name='b_status' className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
@@ -2724,7 +2724,7 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th 
+                                                            <th
                                                                 name="v_FPBookingNumber"
                                                                 className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('v_FPBookingNumber')} 
@@ -2740,12 +2740,20 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th name="z_lock_status" className=""><i className="fa fa-lock"></i></th>
-                                                            <th 
-                                                                name="dme_delivery_status_category"
+                                                            <th
+                                                                name="b_booking_Category"
+                                                                className={(sortField === 'b_booking_Category') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_booking_Category')} 
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Status Category</p>
+                                                                {(sortField === 'b_booking_Category') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                                }
                                                             </th>
                                                             <th 
                                                                 name="b_status"
@@ -2985,7 +2993,7 @@ class AllBookingsPage extends React.Component {
                                                             <th name="vx_serviceName" scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="z_lock_status" className="narrow-column"></th>
-                                                            <th name="dme_delivery_status_category" scope="col"><input type="text" name="dme_delivery_status_category" value={filterInputs['dme_delivery_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="b_booking_Category" scope="col"><input type="text" name="b_booking_Category" value={filterInputs['b_booking_Category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_status" scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_PickUp_By_Date" scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_Deliver_By_Date" scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
