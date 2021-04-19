@@ -2012,7 +2012,7 @@ class AllBookingsPage extends React.Component {
                         {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY') : ''}
                     </td>
                     <td name='de_Deliver_By_Time'>{booking.de_Deliver_By_Time}</td>
-                    <td name='remaining_time' className={remainingTimeBgColor}>{booking.remaining_time ? booking.remaining_time.toFixed(2) : ''}</td>
+                    <td name='remaining_time' className={remainingTimeBgColor}>{booking.remaining_time}</td>
                     <td
                         name='de_Deliver_From_Date'
                         id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}
@@ -2804,7 +2804,7 @@ class AllBookingsPage extends React.Component {
                                                                 <p>DE By Time</p>
                                                             </th>
                                                             <th name="remaining_time" scope="col" nowrap>
-                                                                <p>Remaining Time</p>
+                                                                <p>Delivery Due In</p>
                                                             </th>
                                                             <th 
                                                                 name="de_Deliver_From_Date"
@@ -2998,7 +2998,7 @@ class AllBookingsPage extends React.Component {
                                                             <th name="pu_PickUp_By_Date" scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_Deliver_By_Date" scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_Deliver_By_Time" scope="col"></th>
-                                                            <th name="remaining_time" scope="col">(Min)</th>
+                                                            <th name="remaining_time" scope="col">DD:HH:MM</th>
                                                             <th name="de_Deliver_From_Date" scope="col"><input type="text" name="delivery_booking" value={filterInputs['delivery_booking'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_given_to_transport_date_time" scope="col"><input type="text" name="b_given_to_transport_date_time" value={filterInputs['b_given_to_transport_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="fp_received_date_time" scope="col"><input type="text" name="fp_received_date_time" value={filterInputs['fp_received_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
