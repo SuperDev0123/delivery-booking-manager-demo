@@ -54,6 +54,8 @@ import {
     FAILED_DELETE_CLIENT_PRODUCTS,
     SUCCESS_CREATE_CLIENT_PRODUCTS,
     FAILED_CREATE_CLIENT_PRODUCTS,
+    SUCCESS_UPDATE_CLIENT_PRODUCT,
+    FAILED_UPDATE_CLIENT_PRODUCT,
     SUCCESS_GET_ALL_ERRORS,
     FAILED_GET_ALL_ERRORS,
     SUCCESS_GET_CLIENT_EMPLOYEES,
@@ -448,15 +450,30 @@ export function failedDeleteClientProduct() {
     };
 }
 
-export function successCreateClientProduct() {
+export function successCreateClientProduct(data) {
     return {
-        type: SUCCESS_CREATE_CLIENT_PRODUCTS
+        type: SUCCESS_CREATE_CLIENT_PRODUCTS,
+        payload: data
     };
 }
 
 export function failedCreateClientProduct() {
     return {
         type: FAILED_CREATE_CLIENT_PRODUCTS,
+        errorMessage: 'Failed to create client product',
+    };
+}
+
+export function successUpdateClientProduct(data) {
+    return {
+        type: SUCCESS_UPDATE_CLIENT_PRODUCT,
+        payload: data
+    };
+}
+
+export function failedUpdateClientProduct() {
+    return {
+        type: FAILED_UPDATE_CLIENT_PRODUCT,
         errorMessage: 'Failed to create client product',
     };
 }

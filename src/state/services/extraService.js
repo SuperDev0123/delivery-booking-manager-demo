@@ -55,6 +55,8 @@ import {
     failedDeleteClientProduct,
     successCreateClientProduct,
     failedCreateClientProduct,
+    successUpdateClientProduct,
+    failedUpdateClientProduct,
     successGetAllErrors,
     failedGetAllErrors,
     successGetAllClientEmployees,
@@ -490,8 +492,8 @@ export const updateClientProduct = (clientProduct) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successCreateClientProduct(data)))
-            .catch((error) => dispatch(failedCreateClientProduct(error)));
+            .then(({ data }) => dispatch(successUpdateClientProduct(data)))
+            .catch((error) => dispatch(failedUpdateClientProduct(error)));
 };
 
 

@@ -30,6 +30,7 @@ class ClientProductSlider extends React.Component {
             pageInd: 0,
             pageCnt: 0,
             mode: LIST,
+            updatedProductIds: [],
             clientProductsFormInputs: {
                 parent_model_number: '',
                 child_model_number: '',
@@ -90,12 +91,23 @@ class ClientProductSlider extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, clientProducts } = newProps;
         const currentRoute = this.props.location.pathname;
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/admin');
+        }
+
+        if (clientProducts) {
+            console.log('clientProducts', clientProducts);
+            this.setState({ clientProducts });
+            if (clientProducts.length > this.props.clientProducts.length) {
+                const { updatedProductIds } = this.state;
+                updatedProductIds.push(clientProducts[clientProducts.length - 1].id);
+                this.setState({updatedProductIds});
+            }
+            this.setState({ loading: false });
         }
     }
 
@@ -179,37 +191,41 @@ class ClientProductSlider extends React.Component {
     }
 
     onClickNew() {
-        this.setState({mode: EDIT});
+        this.setState({
+            mode: EDIT,
+            clientProductsFormInputs: {
+                parent_model_number: '',
+                child_model_number: '',
+                description: '',
+                e_dimUOM: 'cm',
+                e_dimLength: 0,
+                e_dimWidth: 0,
+                e_dimHeight: 0,
+                e_weightUOM: 'kg',
+                e_weightPerEach: 0,
+            },
+        });
     }
 
     onClickImport() {
         this.setState({mode: IMPORT});
     }
 
-    onAfterSaveCell = (oldValue, newValue,row, column) => {
-        console.log('onAfterSaveCell', oldValue, newValue,row, column);
+    onAfterSaveCell = async (oldValue, newValue, row, column) => {
+        console.log('onAfterSaveCell', oldValue, newValue, row, column);
 
-        row['e_dimLength'] = Number(Number(row['e_dimLength']).toFixed(2));
-        row['e_dimWidth'] = Number(Number(row['e_dimWidth']).toFixed(2));
-        row['e_dimHeight'] = Number(Number(row['e_dimHeight']).toFixed(2));
-        row['e_weightPerEach'] = Number(Number(row['e_weightPerEach']).toFixed(2));
+        if (['e_dimLength', 'e_dimWidth', 'e_dimHeight', 'e_weightPerEach'].indexOf(column.dataField) > -1){
+            row[column.dataField] = newValue===''?null:Number(Number(newValue).toFixed(2));
+        }
         
-
-        this.setState({clientProductsFormInputs: row});
-        this.props.onClickEdit(row);
-    }
-
-    onAfterSaveCell = (oldValue, newValue,row, column) => {
-        console.log('onAfterSaveCell', oldValue, newValue,row, column);
-
-        row['e_dimLength'] = Number(Number(row['e_dimLength']).toFixed(2));
-        row['e_dimWidth'] = Number(Number(row['e_dimWidth']).toFixed(2));
-        row['e_dimHeight'] = Number(Number(row['e_dimHeight']).toFixed(2));
-        row['e_weightPerEach'] = Number(Number(row['e_weightPerEach']).toFixed(2));
-        
-
-        this.setState({clientProductsFormInputs: row});
-        this.props.onClickEdit(row);
+        if (oldValue !== newValue) {
+            this.setState({clientProductsFormInputs: row});
+            await this.props.onClickEdit(row);
+    
+            const { updatedProductIds } = this.state;
+            updatedProductIds.push(row.id);
+            this.setState({updatedProductIds: [...new Set(updatedProductIds)]});
+        }
     }
 
     onSubmit() {
@@ -240,9 +256,11 @@ class ClientProductSlider extends React.Component {
 
 
     render() {
-        const { pageItemCnt, pageInd, mode, clientProductsFormInputs } = this.state;
+        const { pageItemCnt, pageInd, mode, clientProductsFormInputs, updatedProductIds } = this.state;
         const { isOpen, dmeClient, clientProducts } = this.props;
         const { SearchBar } = Search;
+
+        const rowStyle = (row) => (updatedProductIds.includes(row.id) ? {backgroundColor: 'lightgreen'} : {});
 
         const pageCnt = Math.ceil(clientProducts.length / pageItemCnt);
         const items = clientProducts.slice(pageInd * pageItemCnt, (pageInd + 1) * pageItemCnt);
@@ -282,9 +300,11 @@ class ClientProductSlider extends React.Component {
                 text: 'Dim UOM',
                 editor: {
                     type: Type.SELECT,
-                    options: [{
-                        value: 'cm', label: 'cm'
-                    }]
+                    options: [
+                        { value: 'mm', label: 'mm' },
+                        { value: 'cm', label: 'cm' },
+                        { value: 'm', label: 'm' }
+                    ]
                 }
             }, {
                 dataField: 'e_dimLength',
@@ -303,9 +323,11 @@ class ClientProductSlider extends React.Component {
                 text: 'Wgt UOM',
                 editor: {
                     type: Type.SELECT,
-                    options: [{
-                        value: 'kg', label: 'kg'
-                    }]
+                    options: [
+                        { value: 'g', label: 'g' },
+                        { value: 'kg', label: 'kg' },
+                        { value: 't', label: 't' }
+                    ]
                 }
             }, {
                 dataField: 'e_weightPerEach',
@@ -364,6 +386,7 @@ class ClientProductSlider extends React.Component {
                                             <hr />
                                             <BootstrapTable id="zones_table"
                                                 {...props.baseProps}
+                                                rowStyle={rowStyle}
                                                 cellEdit={ cellEditFactory({ mode: 'click', blurToSave:true, afterSaveCell:this.onAfterSaveCell }) }
                                             />
                                         </div>

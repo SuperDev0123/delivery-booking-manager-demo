@@ -151,7 +151,6 @@ class Clients extends Component {
 
     onClickSubmit(clientProductsFormInputs) {
         this.props.createClientProduct(clientProductsFormInputs);
-        this.toggleClientProductSlider();
     }
 
     onClickEdit(clientProductsFormInputs) {

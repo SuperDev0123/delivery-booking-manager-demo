@@ -21,6 +21,7 @@ class ClientProduct extends React.Component {
             rowIdSelectd: '',
             editMode: 0,
             saveMode: 0, 
+            updatedProductIds: [],
             clientProductsFormInputs: {
                 parent_model_number: '',
                 child_model_number: '',
@@ -33,7 +34,6 @@ class ClientProduct extends React.Component {
                 e_weightPerEach: 0,
             },
             clientProducts: [],
-            clientProduct: {},
             isLoading: false,
         };
     }
@@ -52,6 +52,7 @@ class ClientProduct extends React.Component {
         createClientProduct: PropTypes.func.isRequired,
         updateClientProduct: PropTypes.func.isRequired,
         deleteClientProduct: PropTypes.func.isRequired,
+        clientPK: PropTypes.string.isRequired
     };
 
     componentDidMount() {
@@ -80,6 +81,11 @@ class ClientProduct extends React.Component {
         if (clientProducts) {
             console.log('clientProducts', clientProducts);
             this.setState({ clientProducts });
+            if (clientProducts.length > this.props.clientProducts.length) {
+                const { updatedProductIds } = this.state;
+                updatedProductIds.push(clientProducts[clientProducts.length - 1].id);
+                this.setState({updatedProductIds});
+            }
             this.setState({ loading: false });
         }
     }
@@ -106,21 +112,28 @@ class ClientProduct extends React.Component {
         this.setState({editMode: editMode, saveMode: 0});
     }
 
-    onAfterSaveCell = (oldValue, newValue, row, column) => {
+    onAfterSaveCell = async (oldValue, newValue, row, column) => {
         console.log('onAfterSaveCell', oldValue, newValue,row, column);
 
         if (['e_dimLength', 'e_dimWidth', 'e_dimHeight', 'e_weightPerEach'].indexOf(column.dataField) > -1){
             row[column.dataField] = newValue===''?null:Number(Number(newValue).toFixed(2));
         }
 
-        this.setState({clientProductsFormInputs: row});
-        this.props.updateClientProduct(row);
+        if (oldValue !== newValue) {
+            this.setState({clientProductsFormInputs: row});
+            await this.props.updateClientProduct(row);
+    
+            const { updatedProductIds } = this.state;
+            updatedProductIds.push(row.id);
+            this.setState({updatedProductIds: [...new Set(updatedProductIds)]});
+        }
     }
 
-    onSubmit() {
+    onSubmit = async () => {
+        const { clientPK } = this.props;
         const { saveMode, clientProductsFormInputs } = this.state;
 
-        clientProductsFormInputs['fk_id_dme_client'] = 1;
+        clientProductsFormInputs['fk_id_dme_client'] = clientPK;
         clientProductsFormInputs['e_dimLength'] = Number(Number(clientProductsFormInputs['e_dimLength']).toFixed(2));
         clientProductsFormInputs['e_dimWidth'] = Number(Number(clientProductsFormInputs['e_dimWidth']).toFixed(2));
         clientProductsFormInputs['e_dimHeight'] = Number(Number(clientProductsFormInputs['e_dimHeight']).toFixed(2));
@@ -128,8 +141,13 @@ class ClientProduct extends React.Component {
         
         if (saveMode == 0)
             this.props.createClientProduct(clientProductsFormInputs);
-        else
-            this.props.updateClientProduct(clientProductsFormInputs);
+        else {
+            await this.props.updateClientProduct(clientProductsFormInputs);
+
+            const { updatedProductIds } = this.state;
+            updatedProductIds.push(clientProductsFormInputs.id);
+            this.setState({updatedProductIds: [...new Set(updatedProductIds)]});
+        }
 
         this.setState({editMode: 0});
     }
@@ -169,9 +187,10 @@ class ClientProduct extends React.Component {
     };
 
     renderClientProducts() {
-        const { editMode, clientProductsFormInputs } = this.state;
-        const { clientProducts } = this.state;
+        const { editMode, clientProductsFormInputs, updatedProductIds, clientProducts } = this.state;
         const { SearchBar } = Search;
+
+        const rowStyle = (row) => (updatedProductIds.includes(row.id) ? {backgroundColor: 'lightgreen'} : {});
 
         const carrierActionButton = (cell, row) => {
             return (
@@ -205,9 +224,9 @@ class ClientProduct extends React.Component {
                 editor: {
                     type: Type.SELECT,
                     options: [
-                        { value: 'MM', label: 'MM' },
-                        { value: 'CM', label: 'CM' },
-                        { value: 'METER', label: 'METER' }
+                        { value: 'mm', label: 'mm' },
+                        { value: 'cm', label: 'cm' },
+                        { value: 'm', label: 'm' }
                     ]
                 }
             }, {
@@ -228,9 +247,9 @@ class ClientProduct extends React.Component {
                 editor: {
                     type: Type.SELECT,
                     options: [
-                        { value: 'Gram', label: 'Gram' },
-                        { value: 'Kilogram', label: 'Kilogram' },
-                        { value: 'Ton', label: 'Ton' }
+                        { value: 'g', label: 'g' },
+                        { value: 'kg', label: 'kg' },
+                        { value: 't', label: 't' }
                     ]
                 }
             }, {
@@ -273,6 +292,7 @@ class ClientProduct extends React.Component {
                                                         <hr />
                                                         <BootstrapTable id="client_employees"
                                                             {...props.baseProps}
+                                                            rowStyle={rowStyle}
                                                             cellEdit={cellEditFactory({ mode: 'click', blurToSave: true, afterSaveCell: this.onAfterSaveCell })}
                                                         />
                                                     </div>
@@ -319,10 +339,10 @@ class ClientProduct extends React.Component {
                         </label><br />
                         <label>
                             <span className="text-left">Dim UOM</span>
-                            <select name="e_dimUOM" className="form-control" id="e_dimUOM" onChange={(e) => this.onInputChange(e)}>
-                                <option value="MM">MM</option>
-                                <option value="CM">CM</option>
-                                <option value="METER">METER</option>
+                            <select name="e_dimUOM" className="form-control" id="e_dimUOM" value={clientProductsFormInputs['e_dimUOM']} onChange={(e) => this.onInputChange(e)}>
+                                <option value="mm">MM</option>
+                                <option value="cm">CM</option>
+                                <option value="m">METER</option>
                             </select>
                         </label><br />
                         <label>
@@ -357,10 +377,10 @@ class ClientProduct extends React.Component {
                         </label><br />
                         <label>
                             <span className="text-left">Weight UOM</span>
-                            <select name="e_weightUOM" className="form-control" id="e_weightUOM" onChange={(e) => this.onInputChange(e)}>
-                                <option value="Gram">Gram</option>
-                                <option value="Kilogram">Kilogram</option>
-                                <option value="Ton">Ton</option>
+                            <select name="e_weightUOM" className="form-control" id="e_weightUOM" value={clientProductsFormInputs['e_weightUOM']} onChange={(e) => this.onInputChange(e)}>
+                                <option value="g">Gram</option>
+                                <option value="kg">Kilogram</option>
+                                <option value="t">Ton</option>
                             </select>
                         </label><br />
                         <label>
@@ -423,6 +443,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
+        clientPK: state.auth.clientPK,
         needUpdateFpDetails: state.fp.needUpdateFpDetails,
         urlAdminHome: state.url.urlAdminHome,
         clientProducts: state.extra.clientProducts,
