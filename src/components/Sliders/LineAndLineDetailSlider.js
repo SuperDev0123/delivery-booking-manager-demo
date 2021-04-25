@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
-import { Button } from 'reactstrap';
 import LoadingOverlay from 'react-loading-overlay';
+import { Button } from 'reactstrap';
 
 class LineAndLineDetailSlider extends React.Component {
     constructor(props) {

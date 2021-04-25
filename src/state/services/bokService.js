@@ -137,11 +137,11 @@ export const updateBok_1 = (bok_1) => {
     };
 };
 
-export const autoRepack = (identifier, repackStatus) => {
+export const autoRepack = (identifier, repackStatus, palletId) => {
     const options = {
         method: 'post',
         url: `${HTTP_PROTOCOL}://${API_HOST}/boks/auto_repack/`,
-        data: {'status': repackStatus, 'identifier': identifier},
+        data: {'status': repackStatus, 'identifier': identifier, 'palletId': palletId},
     };
     return dispatch => {
         axios(options)

@@ -61,6 +61,10 @@ import {
     SUCCESS_GET_CLIENT_EMPLOYEE,
     FAILED_GET_CLIENT_EMPLOYEE,
     SUCCESS_CREATE_CLIENT_EMPLOYEE,
+    SUCCESS_GET_PALLETS,
+    FAILED_GET_PALLETS,
+    SUCCESS_CREATE_PALLET,
+    FAILED_CREATE_PALLET,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -85,7 +89,8 @@ const defaultState = {
     allFPs: [],
     errors: [],
     clientEmployee: {},
-    updatedClientEmployee: {}
+    updatedClientEmployee: {},
+    pallets: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -308,6 +313,18 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 updatedClientEmployee: payload
             };
+        case SUCCESS_GET_PALLETS:
+            return {
+                ...state,
+                pallets: payload,
+            };
+        case SUCCESS_CREATE_PALLET:
+            var pallets = Array.from(state.pallets);
+            pallets.push(payload);
+            return {
+                ...state,
+                pallets: pallets,
+            };
         case FAILED_GET_ALL_ERRORS:
             return {
                 ...state,
@@ -346,6 +363,8 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_CREATE_CLIENT_PRODUCTS:
         case FAILED_GET_CLIENT_EMPLOYEES:
         case FAILED_GET_CLIENT_EMPLOYEE:
+        case FAILED_GET_PALLETS:
+        case FAILED_CREATE_PALLET:
             return {
                 ...state,
                 errorMessage: errorMessage,

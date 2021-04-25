@@ -11,6 +11,7 @@ import { Button } from 'reactstrap';
 import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack } from '../../state/services/bokService';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
+import PalletSlider from '../../components/Sliders/PalletSlider';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -26,10 +27,13 @@ class BokPricePage extends Component {
             isLoadingOper: false,
             isAutoRepacking: false,
             isShowExtraCostSummarySlider: false,
+            isShowPalletSlider: false,
             isShowLineData: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
+        this.togglePalletSlider = this.togglePalletSlider.bind(this);
+        this.onCancelAutoRepack = this.onCancelAutoRepack.bind(this);
     }
 
     static propTypes = {
@@ -144,13 +148,34 @@ class BokPricePage extends Component {
         this.setState(prevState => ({isShowExtraCostSummarySlider: !prevState.isShowExtraCostSummarySlider}));
     }
 
+    togglePalletSlider() {
+        this.setState(prevState => ({isShowPalletSlider: !prevState.isShowPalletSlider}));
+    }
+
     onClickShowLineData(bok_2) {
         this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
     }
 
-    onChangeAutoRepack(status) {
+    onClickAutoRepack(status) {
+        if (status) {
+            this.setState({isShowPalletSlider: true});
+        } else {
+            this.setState({isAutoRepacking: true, isShowLineData: false});
+            this.props.onAutoRepack(this.props.match.params.id, status, null);
+        }
+    }
+
+    onCancelAutoRepack() {
+        const {bokWithPricings} = this.props;
+
+        bokWithPricings.b_081_b_pu_auto_pack = false;
+        this.setState({bokWithPricings});
+    }
+
+    onSelectPallet(palletId) {
         this.setState({isAutoRepacking: true, isShowLineData: false});
-        this.props.onAutoRepack(this.props.match.params.id, status);
+        this.props.onAutoRepack(this.props.match.params.id, true, palletId);
+        this.togglePalletSlider();
     }
 
     render() {
@@ -283,7 +308,7 @@ class BokPricePage extends Component {
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
-                            onChangeAutoRepack={(status) => this.onChangeAutoRepack(status)}
+                            onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
                         <p><i className="fa fa-circle"></i> Lines:</p>
                         <table className="table table-hover table-bordered sortable fixed_headers">
@@ -373,6 +398,13 @@ class BokPricePage extends Component {
                     toggleSlider={this.toggleExtraCostSummarySlider}
                 />
 
+                <PalletSlider
+                    isOpen={this.state.isShowPalletSlider}
+                    toggleSlider={this.togglePalletSlider}
+                    onCancelAutoRepack={this.onCancelAutoRepack}
+                    onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
+                />
+
                 <ToastContainer />
             </section>
         );
@@ -398,7 +430,7 @@ const mapDispatchToProps = (dispatch) => {
         onSelectPricing: (costId, identifier) => dispatch(onSelectPricing(costId, identifier)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
-        onAutoRepack: (identifier, repackStatus) => dispatch(autoRepack(identifier, repackStatus)),
+        onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),
     };
 };
 

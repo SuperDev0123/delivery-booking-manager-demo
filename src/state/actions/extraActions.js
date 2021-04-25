@@ -32,15 +32,15 @@ import {
     SUCCESS_GET_EMAIL_LOGS,
     FAILED_GET_EMAIL_LOGS,
     RESET_EMAIL_LOGS,
-    SUCCESS_GET_BOOKING_SETS, // BookingSet
-    FAILED_GET_BOOKING_SETS, // *
+    SUCCESS_GET_BOOKING_SETS,   // BookingSet
+    FAILED_GET_BOOKING_SETS,    // *
     SUCCESS_CREATE_BOOKING_SET, // *
-    FAILED_CREATE_BOOKING_SET, // *
+    FAILED_CREATE_BOOKING_SET,  // *
     SUCCESS_UPDATE_BOOKING_SET, // *
-    FAILED_UPDATE_BOOKING_SET, // *
+    FAILED_UPDATE_BOOKING_SET,  // *
     SUCCESS_DELETE_BOOKING_SET, // *
-    FAILED_DELETE_BOOKING_SET, // *
-    RESET_BOOKING_SET_FLAGS, // BookingSet
+    FAILED_DELETE_BOOKING_SET,  // *
+    RESET_BOOKING_SET_FLAGS,    // BookingSet
     SUCCESS_STATUSHISTORY_SAVE_PU_INFO,
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
     SUCCESS_UPDATE_CLIENT_EMPLOYEE,
@@ -62,6 +62,10 @@ import {
     FAILED_CREATE_CLIENT_EMPLOYEE,
     SUCCESS_GET_CLIENT_EMPLOYEE,
     FAILED_GET_CLIENT_EMPLOYEE,
+    SUCCESS_GET_PALLETS,
+    FAILED_GET_PALLETS,
+    SUCCESS_CREATE_PALLET,
+    FAILED_CREATE_PALLET,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -500,5 +504,33 @@ export function failedGetClientEmployee() {
     return {
         type: FAILED_GET_CLIENT_EMPLOYEE,
         errorMessage: 'Failed to get client employee',
+    };
+}
+
+export function successGetPallets(data) {
+    return {
+        type: SUCCESS_GET_PALLETS,
+        payload: data
+    };
+}
+
+export function failedGetPallets() {
+    return {
+        type: FAILED_GET_PALLETS,
+        errorMessage: 'Failed to get pallets',
+    };
+}
+
+export function successCreatePallet(data) {
+    return {
+        type: SUCCESS_CREATE_PALLET,
+        payload: data
+    };
+}
+
+export function failedCreatePallet() {
+    return {
+        type: FAILED_CREATE_PALLET,
+        errorMessage: 'Failed to create a pallet',
     };
 }

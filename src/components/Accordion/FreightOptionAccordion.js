@@ -19,7 +19,7 @@ class FreightOptionAccordion extends Component {
     static propTypes = {
         bok_1: PropTypes.array.isRequired,
         updateBok_1: PropTypes.func.isRequired,
-        onChangeAutoRepack: PropTypes.func.isRequired,
+        onClickAutoRepack: PropTypes.func.isRequired,
     }
 
     onClickHeader = (e) => {
@@ -52,7 +52,7 @@ class FreightOptionAccordion extends Component {
         this.setState({needToUpdate: true});
 
         if (e.target.name === 'b_081_b_pu_auto_pack') {
-            this.props.onChangeAutoRepack(e.target.checked);
+            this.props.onClickAutoRepack(e.target.checked);
         }
     }
 

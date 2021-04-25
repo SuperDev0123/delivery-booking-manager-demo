@@ -63,6 +63,10 @@ import {
     failedCreateClientEmployee,
     successGetClientEmployee,
     failedGetClientEmployee,
+    successGetPallets,  // Pallet start
+    failedGetPallets,   // "
+    successCreatePallet,// "
+    failedCreatePallet, // Pallet end
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -504,4 +508,31 @@ export const getAllErrors = (pk_booking_id) => {
         axios(options)
             .then(({ data }) => dispatch(successGetAllErrors(data)))
             .catch((error) => dispatch(failedGetAllErrors(error)));
+};
+
+export const getPallets = () => {
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/pallet/`,
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetPallets(data)))
+            .catch((error) => dispatch(failedGetPallets(error)));
+};
+
+export const createPallet = (pallet) => {
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/pallet/`,
+        data: pallet
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreatePallet(data)))
+            .catch((error) => dispatch(failedCreatePallet(error)));
 };
