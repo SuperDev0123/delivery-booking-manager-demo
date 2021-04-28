@@ -1060,9 +1060,9 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onMultiFind(FieldName, valueSet) {
+    onMultiFind(fieldNameToFind, valueSet) {
         const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
         this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
@@ -1621,8 +1621,18 @@ class AllBookingsPage extends React.Component {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets } = this.props;
 
+        // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
+
+        const selectedBookings = [];
+
+        for (let i = 0; i < bookings.length; i++) {
+            for (let j = 0; j < selectedBookingIds.length; j++) {
+                if (bookings[i].id === selectedBookingIds[j])
+                    selectedBookings.push(bookings[i]);
+            }
+        }
 
         const selectedClient = dmeClients.find(client => client.pk_id_dme_client === parseInt(clientPK));
         const warehousesList = warehouses
@@ -3099,6 +3109,7 @@ class AllBookingsPage extends React.Component {
                     toggle={this.toggleBookingSetModal}
                     notify={this.notify}
                     bookingIds={this.state.selectedBookingIds}
+                    selectedBookings={selectedBookings}
                     bookingsets={bookingsets}
                     createBookingSet={this.props.createBookingSet}
                     updateBookingSet={this.props.updateBookingSet}
@@ -3186,7 +3197,7 @@ const mapDispatchToProps = (dispatch) => {
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
         getBookingSets: () => dispatch(getBookingSets()),
-        createBookingSet: (bookingIds, name, note, auto_select_type) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type)),
+        createBookingSet: (bookingIds, name, note, auto_select_type, lineHaulDate) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type, lineHaulDate)),
         updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
     };
 };

@@ -16,6 +16,7 @@ import TooltipItem from '../../components/Tooltip/TooltipComponent';
 import SimpleTooltipComponent from '../../components/Tooltip/SimpleTooltipComponent';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
+import VehicleSlider from '../../components/Sliders/VehicleSlider';
 // Services
 import { verifyToken, cleanRedirectState } from '../../state/services/authService';
 import { getBookingSets, deleteBookingSet, updateBookingSet, resetBookingSetFlags, getAllFPs } from '../../state/services/extraService';
@@ -55,6 +56,7 @@ class BookingSetList extends React.Component {
             pricingInfos: [],
             selectedBooking: null,
             allFPs: [],
+            isShowVehicleSlider: false,
         };
 
         this.myRef = React.createRef();
@@ -64,6 +66,7 @@ class BookingSetList extends React.Component {
         this.toggleBookConfirmModal = this.toggleBookConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleDropConfirmModal = this.toggleDropConfirmModal.bind(this);
+        this.toggleVehicleSlider = this.toggleVehicleSlider.bind(this);
     }
 
     static propTypes = {
@@ -203,6 +206,10 @@ class BookingSetList extends React.Component {
 
     toggleFPPricingSlider() {
         this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
+
+    toggleVehicleSlider() {
+        this.setState(prevState => ({isShowVehicleSlider: !prevState.isShowVehicleSlider}));
     }
 
     onClickDeleteBtn(selectedBookingSet) {
@@ -373,6 +380,11 @@ class BookingSetList extends React.Component {
         this.toggleDropConfirmModal();
     }
 
+    onClickLineHaul(bookingSet) {
+        this.setState({selectedBookingSet: bookingSet});
+        this.toggleVehicleSlider();
+    }
+
     render() {
         const { bookingSets, clientname, selectedBookingSet, bookings, scrollLeft, filterInputs, sortDirection, sortField, loadingBookings, loadingBookingSets, activeBookingId, allCheckStatus, selectedBookingIds } = this.state;
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -392,7 +404,16 @@ class BookingSetList extends React.Component {
                         {!_.isEmpty(bookingSet.status) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true} name={'booking-set'} fields={['status']} />}
                     </td>
                     <td>{bookingSet.z_createdByAccount}</td>
-                    <td>{bookingSet.z_createdTimestamp && moment(bookingSet.z_createdTimestamp).format('ddd DD MMM YYYY hh:mm a')}</td>
+                    <td>{moment(bookingSet.z_createdTimestamp).format('ddd DD MMM YYYY hh:mm a')}</td>
+                    <td>
+                        <Button
+                            color="primary"
+                            onClick={() => this.onClickLineHaul(bookingSet)}
+                            disabled={bookingSet.line_haul_date ? '' : 'disabled'}
+                        >
+                            Set LineHaul
+                        </Button>
+                    </td>
                     <td>
                         <Button
                             color="primary"
@@ -561,6 +582,7 @@ class BookingSetList extends React.Component {
                                             <th>Status</th>
                                             <th>Created By</th>
                                             <th>Created At</th>
+                                            <th>LineHaul</th>
                                             <th>Show Bookings</th>
                                             <th>Pricing</th>
                                             <th>BOOK</th>
@@ -997,6 +1019,13 @@ class BookingSetList extends React.Component {
                     isLoading={this.state.loadingPricingInfos}
                     booking={this.state.selectedBooking}
                     clientname={clientname}
+                />
+
+                <VehicleSlider
+                    isOpen={this.state.isShowVehicleSlider}
+                    toggleSlider={this.toggleVehicleSlider}
+                    selectedBookingSet={selectedBookingSet}
+                    updateBookingSet={this.props.updateBookingSet}
                 />
 
                 <ToastContainer />

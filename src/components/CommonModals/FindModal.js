@@ -9,7 +9,10 @@ class FindModal extends Component {
         super(props);
 
         this.state = {
-            selectedFieldName: 'b_client_sales_inv_num',
+            // selectedFieldName: 'b_client_sales_inv_num',
+            selectedFieldName: 'postal_code',
+            postalCodeMin: 0,
+            postalCodeMax: 0,
             valueSet: '',
             errorMessage: null,
         };
@@ -19,7 +22,7 @@ class FindModal extends Component {
         const { bookings } = newProps;
         const { selectedFieldName } = this.state;
 
-        if (bookings && bookings.length > 0 && this.state.valueSet.length > 0) {
+        if (bookings && bookings.length > 0 && this.state.valueSet.length > 0 && selectedFieldName !== 'postal_code') {
             let foundValueSet = [];
             let valueSet = this.state.valueSet.split('\n');
 
@@ -74,16 +77,20 @@ class FindModal extends Component {
             this.setState({selectedFieldName: e.target.value, errorMessage: ''});
         } else if (type === 'valueSet') {
             this.setState({valueSet: e.target.value, errorMessage: ''});
+        } else if (type === 'postalCodeMin') {
+            this.setState({postalCodeMin: e.target.value, errorMessage: ''});
+        } else if (type === 'postalCodeMax') {
+            this.setState({postalCodeMax: e.target.value, errorMessage: ''});
         }
     }
 
     onSubmit() {
-        const {selectedFieldName} = this.state;
+        const {selectedFieldName, postalCodeMin, postalCodeMax} = this.state;
         let valueSet = this.state.valueSet;
 
-        if (!this.state.valueSet) {
-            this.setState({errorMessage: 'Please input keys with newline!'});
-        } else {
+        if (!valueSet && !postalCodeMin && !postalCodeMax) {
+            this.setState({errorMessage: 'Please input search keywords!'});
+        } else if (selectedFieldName !== 'postal_code') {
             // Delete all empty lines and duplicated lines
             valueSet = valueSet.split('\n');
 
@@ -108,12 +115,18 @@ class FindModal extends Component {
                 valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
                 this.props.onFind(selectedFieldName, valueSet);
             }
+        } else if (selectedFieldName === 'postal_code') {
+            if (postalCodeMin > postalCodeMax) {
+                this.setState({errorMessage: 'Min postal code should be less than Max postal code.'});
+            } else {
+                this.props.onFind(selectedFieldName, postalCodeMin + ', ' + postalCodeMax);
+            }
         }
     }
 
     render() {
         const {isOpen} = this.props;
-        const {errorMessage} = this.state;
+        const {errorMessage, selectedFieldName, postalCodeMin, postalCodeMax} = this.state;
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
@@ -121,24 +134,33 @@ class FindModal extends Component {
                 <ModalBody>
                     <label>
                         <p>Select field to be searched: </p>
-                        <select value={this.state.selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
+                        <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
                             <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
                             <option value="clientRefNumber">Client Ref Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
                             <option value="b_bookingID_Visual">DME Booking Number</option>
                             <option value="fk_fp_pickup_id">FP Pickup ID</option>
                             <option value="gap_ra">GAP/RA</option>
+                            <option value="postal_code">Postal code range</option>
                         </select>
                     </label>
-                    <label>
-                        <p>Values list: </p>
-                        <textarea 
-                            value={this.state.valueSet} 
-                            onChange={(e) => this.onInputChange(e, 'valueSet')}
-                            rows="10" 
-                            cols="30"
-                        />
-                    </label>
+                    {selectedFieldName !== 'postal_code'?
+                        <label>
+                            <p>Values list: </p>
+                            <textarea 
+                                value={this.state.valueSet} 
+                                onChange={(e) => this.onInputChange(e, 'valueSet')}
+                                rows="10" 
+                                cols="30"
+                            />
+                        </label>
+                        :
+                        <label>
+                            <p>Postal code range: </p>
+                            <input type='number' value={postalCodeMin} onChange={(e) => this.onInputChange(e, 'postalCodeMin')} /> ~
+                            <input type='number' value={postalCodeMax} onChange={(e) => this.onInputChange(e, 'postalCodeMax')} />
+                        </label>
+                    }
                     <p className="red">{errorMessage}</p>
                 </ModalBody>
                 <ModalFooter>

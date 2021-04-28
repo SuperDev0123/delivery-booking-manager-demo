@@ -286,14 +286,14 @@ export const getBookingSets = () => {
     };
 };
 
-export const createBookingSet = (bookingIds, name, note, auto_select_type) => {
+export const createBookingSet = (bookingIds, name, note, auto_select_type, lineHaulDate) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         url: `${HTTP_PROTOCOL}://${API_HOST}/bookingsets/`,
         data: {
-            bookingIds, name, note, auto_select_type
+            bookingIds, name, note, auto_select_type, line_haul_date: lineHaulDate
         }
     };
     return dispatch => {
