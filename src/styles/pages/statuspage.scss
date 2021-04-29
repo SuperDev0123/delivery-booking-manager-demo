@@ -1,5 +1,6 @@
 section.status {
     height: calc(100% - 114px);
+    overflow-y: scroll;
 
     p.error {
         color: red;
