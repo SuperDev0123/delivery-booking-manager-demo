@@ -121,8 +121,8 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_027_b_pu_address_type']}
                                 >
                                     <option value="" selected disabled hidden>--- Select address type ---</option>
-                                    <option value='Commercial'>Commercial</option>
-                                    <option value='Residential'>Residential</option>
+                                    <option value='business'>Business</option>
+                                    <option value='residential'>Residential</option>
                                 </select>
                             </label>
                             <label>
@@ -260,8 +260,8 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_053_b_del_address_type']}
                                 >
                                     <option value="" selected disabled hidden>--- Select address type ---</option>
-                                    <option value='Commercial'>Commercial</option>
-                                    <option value='Residential'>Residential</option>
+                                    <option value='business'>Business</option>
+                                    <option value='residential'>Residential</option>
                                 </select>
                             </label>
                             <label>
