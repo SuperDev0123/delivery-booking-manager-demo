@@ -211,8 +211,10 @@ class BokPricePage extends Component {
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => (
                 <tr key={index}>
                     <td>{bok_2['l_001_type_of_packaging']}</td>
-                    <td>{bok_2['l_002_qty']}</td>
+                    <td>{bok_2['zbl_121_integer_1']}</td>
+                    <td>{bok_2['e_item_type']}</td>
                     <td>{bok_2['l_003_item']}</td>
+                    <td>{bok_2['l_002_qty']}</td>
                     <td>{bok_2['l_004_dim_UOM']}</td>
                     <td>{bok_2['l_005_dim_length']}</td>
                     <td>{bok_2['l_006_dim_width']}</td>
@@ -315,8 +317,10 @@ class BokPricePage extends Component {
                             <thead>
                                 <tr>
                                     <th>Type Of Packaging</th>
+                                    <th>Sequence No</th>
+                                    <th>Item No</th>
+                                    <th>Item Descripton</th>
                                     <th>Quantity</th>
-                                    <th>Item</th>
                                     <th>Dim UOM</th>
                                     <th>Lenght</th>
                                     <th>Width</th>
