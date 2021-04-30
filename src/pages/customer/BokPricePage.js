@@ -232,8 +232,14 @@ class BokPricePage extends Component {
                         ${price['cost'].toFixed(2)}
                         &nbsp;&nbsp;&nbsp;
                         <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
-                        &nbsp;&nbsp;&nbsp;
-                        <i className="fa fa-dollar-sign" onClick={() => this.toggleExtraCostSummarySlider()}></i>
+                    </td>
+                    <td>
+                        {price['fp_name'] === 'TNT' && bok_1['b_053_b_del_address_type'] === 'residential' ?
+                            <label>$32.00 <i className="fa fa-dollar-sign" onClick={() => this.toggleExtraCostSummarySlider()}></i></label> : ''
+                        }
+                    </td>
+                    <td>
+                        {price['fp_name'] === 'TNT' && bok_1['b_053_b_del_address_type'] === 'residential' ? `$${(price['cost'] + 32).toFixed(2)}` : `$${price['cost'].toFixed(2)}`}
                     </td>
                     <td>{price['eta']}</td>
                     {isPricingPage && !isSalesQuote &&
@@ -367,6 +373,8 @@ class BokPricePage extends Component {
                                         <th style={{width: '15%'}}>Freight Provider</th>
                                         <th style={{width: '15%'}}>Service Name</th>
                                         <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Customer Sell (click & sort)</th>
+                                        <th style={{width: '10%'}}>Extra $</th>
+                                        <th style={{width: '10%'}}>Total $</th>
                                         <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}
                                     </tr>

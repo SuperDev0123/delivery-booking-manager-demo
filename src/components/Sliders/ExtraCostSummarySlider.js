@@ -24,6 +24,9 @@ class ExtraCostSummarySlider extends React.Component {
                 title='Extra Cost Summary Slider'
                 subtitle=''
                 onRequestClose={toggleSlider}>
+                <div className="slider-content">
+                    <label>* Residential address: $32.00</label>
+                </div>
             </SlidingPane>
         );
     }
