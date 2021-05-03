@@ -35,9 +35,7 @@ class OrderModal extends Component {
             <ReactstrapModal isOpen={isOpen} className="find-modal">
                 <ModalHeader toggle={this.props.toggle}>FP Order Modal</ModalHeader>
                 <ModalBody>
-                    <h4>
-                        Please review info before creating the order.
-                    </h4>
+                    <h4>Please review info before creating the order.</h4>
                     <label>
                         <span>
                             # There are {this.props.selectedBookingIds.length} Bookings with {this.props.selectedBookingLinesCnt} number of packages added together for the selected Bookings.

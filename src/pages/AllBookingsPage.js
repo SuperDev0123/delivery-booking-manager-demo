@@ -1061,8 +1061,9 @@ class AllBookingsPage extends React.Component {
     }
 
     onMultiFind(fieldNameToFind, valueSet) {
+        const { clientPK, warehouseId, pageItemCnt } = this.state;
         const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
+        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
         this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
@@ -1128,13 +1129,83 @@ class AllBookingsPage extends React.Component {
     }
 
     onCreateOrder(bookingIds, vx_freight_provider) {
+        const _vx_freight_provider = vx_freight_provider.toLowerCase();
         this.toggleOrderModal();
-        this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
+
+        if (_vx_freight_provider === 'biopak') {
+            this.props.fpOrder(bookingIds, _vx_freight_provider);
+        } else {
+            if (bookingIds.length > 500) {
+                this.notify('You can generate Manifest with 500 bookings at most.');
+            } else {
+                console.log('Manifest!');
+                // const selectedBookings = this.getBookingsFromIds(bookingIds);
+                // const bookingIds = [];
+                // const fps = [];
+                // let manifestedBookingVisualIds = null;
+                // let notBookedVisualIds = null;
+
+                // for (let i = 0; i < bookings.length; i++) {
+                //     for (let j = 0; j < selectedBookingIds.length; j++) {
+                //         if (bookings[i].id === selectedBookingIds[j]) {
+                //             if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                //                 fps.push(bookings[i].vx_freight_provider);
+                //             }
+
+                //             if (!_.isNull(bookings[i].fk_manifest_id)) {
+                //                 manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                //             } else if (_.isNull(bookings[i].b_dateBookedDate)) {
+                //                 notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                //             } else {
+                //                 bookingIds.push(bookings[i].id);
+                //             }
+                //         }
+                //     }
+                // }
+
+                // if (fps.length !== 1) {
+                //     this.notify('Please select only one kind `Freight Provider` bookings.');
+                // } else if (!_.isNull(manifestedBookingVisualIds)) {
+                //     this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
+                // } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
+                //     this.notify('There are bookings which have not been `Booked`:' + notBookedVisualIds);
+                // } else {
+                //     this.setState({loadingDownload: true});
+                    
+                //     this.buildMANIFEST(bookingIds, fps[0], username)
+                //         .then(() => {
+                //             if (fps[0] === 'TASFR') {
+                //                 this.buildXML(bookingIds, 'TASFR')
+                //                     .then((response) => {
+                //                         if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                //                             this.notify('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                //                             this.setState({loadingDownload: false});
+                //                         } else if (response.data.success && response.data.success === 'success') {
+                //                             this.notify('XML’s have been generated successfully.');
+                //                             this.setState({loading: true, loadingDownload: false});
+                //                             this.props.setNeedUpdateBookingsState(true);
+                //                         } else {
+                //                             this.notify('XML’s have been generated successfully. Labels will be generated');
+                //                             this.buildPDF(bookingIds, 'TASFR');
+                //                         }
+                //                     });
+                //             } else {
+                //                 this.setState({selectedBookingIds: [], loading: true, loadingDownload: false});
+                //                 this.props.setNeedUpdateBookingsState(true);
+                //             }
+                //         })
+                //         .catch((err) => {
+                //             this.notify('Error: ' + err);
+                //         });
+                // }
+            }
+        }
+
         this.setState({
             selectedBookingIds: [],
             allCheckStatus: 'None',
             selectedBookingIds2Order: this.state.selectedBookingIds,
-            selectedFP2Order: vx_freight_provider.toLowerCase(),
+            selectedFP2Order: _vx_freight_provider,
         });
     }
 
@@ -1381,71 +1452,6 @@ class AllBookingsPage extends React.Component {
             this.props.getBookingLinesCnt(selectedBookingIds);
             this.toggleOrderModal();
         }
-
-        // if (selectedBookingIds && selectedBookingIds.length === 0) {
-        //     this.notify('Please select bookings to *Book*.');
-        // } else if (selectedBookingIds.length > 500) {
-        //     this.notify('You can generate Manifest with 500 bookings at most.');
-        // } else {
-        //     const bookingIds = [];
-        //     const fps = [];
-        //     let manifestedBookingVisualIds = null;
-        //     let notBookedVisualIds = null;
-
-        //     for (let i = 0; i < bookings.length; i++) {
-        //         for (let j = 0; j < selectedBookingIds.length; j++) {
-        //             if (bookings[i].id === selectedBookingIds[j]) {
-        //                 if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
-        //                     fps.push(bookings[i].vx_freight_provider);
-        //                 }
-
-        //                 if (!_.isNull(bookings[i].fk_manifest_id)) {
-        //                     manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-        //                 } else if (_.isNull(bookings[i].b_dateBookedDate)) {
-        //                     notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-        //                 } else {
-        //                     bookingIds.push(bookings[i].id);
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     if (fps.length !== 1) {
-        //         this.notify('Please select only one kind `Freight Provider` bookings.');
-        //     } else if (!_.isNull(manifestedBookingVisualIds)) {
-        //         this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
-        //     } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
-        //         this.notify('There are bookings which have not been `Booked`:' + notBookedVisualIds);
-        //     } else {
-        //         this.setState({loadingDownload: true});
-                
-        //         this.buildMANIFEST(bookingIds, fps[0], username)
-        //             .then(() => {
-        //                 if (fps[0] === 'TASFR') {
-        //                     this.buildXML(bookingIds, 'TASFR')
-        //                         .then((response) => {
-        //                             if (response.data.error && response.data.error === 'Found set has booked bookings') {
-        //                                 this.notify('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-        //                                 this.setState({loadingDownload: false});
-        //                             } else if (response.data.success && response.data.success === 'success') {
-        //                                 this.notify('XML’s have been generated successfully.');
-        //                                 this.setState({loading: true, loadingDownload: false});
-        //                                 this.props.setNeedUpdateBookingsState(true);
-        //                             } else {
-        //                                 this.notify('XML’s have been generated successfully. Labels will be generated');
-        //                                 this.buildPDF(bookingIds, 'TASFR');
-        //                             }
-        //                         });
-        //                 } else {
-        //                     this.setState({selectedBookingIds: [], loading: true, loadingDownload: false});
-        //                     this.props.setNeedUpdateBookingsState(true);
-        //                 }
-        //             })
-        //             .catch((err) => {
-        //                 this.notify('Error: ' + err);
-        //             });
-        //     }
-        // }
     }
 
     onClickGear() {
@@ -1617,6 +1623,20 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    getBookingsFromIds(bookingIds) {
+        const { bookings } = this.props;
+        const _bookings = [];
+
+        for (let i = 0; i < bookings.length; i++) {
+            for (let j = 0; j < bookingIds.length; j++) {
+                if (bookings[i].id === bookingIds[j])
+                    _bookings.push(bookings[i]);
+            }
+        }
+
+        return _bookings;
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets } = this.props;
@@ -1625,14 +1645,7 @@ class AllBookingsPage extends React.Component {
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
 
-        const selectedBookings = [];
-
-        for (let i = 0; i < bookings.length; i++) {
-            for (let j = 0; j < selectedBookingIds.length; j++) {
-                if (bookings[i].id === selectedBookingIds[j])
-                    selectedBookings.push(bookings[i]);
-            }
-        }
+        const selectedBookings = this.getBookingsFromIds(selectedBookingIds);
 
         const selectedClient = dmeClients.find(client => client.pk_id_dme_client === parseInt(clientPK));
         const warehousesList = warehouses
