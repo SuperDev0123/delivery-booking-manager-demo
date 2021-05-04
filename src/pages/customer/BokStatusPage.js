@@ -107,7 +107,7 @@ class BokStatusPage extends Component {
                             </div>
                         }
                         <div className="status-chart-button disp-inline-block">
-                            <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
+                            <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Update</Button>
                         </div>
                         {booking &&
                             <div className="main-info">
