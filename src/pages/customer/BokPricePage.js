@@ -265,6 +265,7 @@ class BokPricePage extends Component {
                             <td>{bok_3['zbld_104_text_4']}</td>
                             <td>{bok_3['zbld_122_integer_2']}</td>
                             <td>{bok_3['zbld_103_text_3']}</td>
+                            <td>{bok_3['zbld_105_text_5']}</td>
                             <td>{bok_3['zbld_101_text_1']}</td>
                             <td>{bok_3['zbld_131_decimal_1']}</td>
                             <td>{bok_3['zbld_132_decimal_2']}</td>
@@ -347,7 +348,8 @@ class BokPricePage extends Component {
                                     <tr>
                                         <th>Type Of Packaging</th>
                                         <th>Quantity</th>
-                                        <th>Item</th>
+                                        <th>Item No</th>
+                                        <th>Item Description</th>
                                         <th>Dim UOM</th>
                                         <th>Lenght</th>
                                         <th>Width</th>
