@@ -158,9 +158,9 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_078_b_pu_location']}
                                 >
                                     <option value="" selected disabled hidden>--- Select pickup location ---</option>
-                                    <option value='0'>Drop at Door / Warehouse Dock</option>
-                                    <option value='1'>Drop in Door / Warehouse</option>
-                                    <option value='2'>Room of Choice</option>
+                                    <option value="Pickup at Door / Warehouse Dock">Pickup at Door / Warehouse Dock</option>
+                                    <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
+                                    <option value='Room of Choice'>Room of Choice</option>
                                 </select>
                             </label>
                             <label>
@@ -212,7 +212,8 @@ class FreightOptionAccordion extends Component {
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
                                     <option value='Ramp'>Ramp</option>
-                                    <option value='None - lifting is required'>None - lifting is required</option>
+                                    <option value='Folklift'>Folklift</option>
+                                    <option value='NONE'>Not is required</option>
                                 </select>
                             </label>
                             <label>
@@ -225,6 +226,7 @@ class FreightOptionAccordion extends Component {
                                     <option value="" selected disabled hidden>--- Select service ---</option>
                                     <option value='Unpack'>Unpack</option>
                                     <option value='Install'>Install</option>
+                                    <option value='NONE'>Not required</option>
                                 </select>
                             </label>
                             <label>
@@ -297,9 +299,9 @@ class FreightOptionAccordion extends Component {
                                     value={bok_1['b_068_b_del_location']}
                                 >
                                     <option value="" selected disabled hidden>--- Select delivery location ---</option>
-                                    <option value='0'>Drop at Door / Warehouse Dock</option>
-                                    <option value='1'>Drop in Door / Warehouse</option>
-                                    <option value='2'>Room of Choice</option>
+                                    <option value='Drop at Door / Warehouse Dock'>Drop at Door / Warehouse Dock</option>
+                                    <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
+                                    <option value='Room of Choice'>Room of Choice</option>
                                 </select>
                             </label>
                             <label>

@@ -2114,7 +2114,7 @@ class BookingPage extends Component {
         }
     }
 
-    getCubicMeter(row) {
+    getCubicMeter(row) {  // TODO: need to use getCubicMeter from common/helpers
         if (row['e_dimUOM'].toUpperCase() === 'CM')
             return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000);
         else if (row['e_dimUOM'].toUpperCase() === 'METER')
@@ -2864,7 +2864,7 @@ class BookingPage extends Component {
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className=""><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
-                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">

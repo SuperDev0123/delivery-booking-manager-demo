@@ -12,6 +12,7 @@ import FreightOptionAccordion from '../../components/Accordion/FreightOptionAcco
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack } from '../../state/services/bokService';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
+import { getCubicMeter, getWeight } from '../../commons/helpers';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -187,6 +188,9 @@ class BokPricePage extends Component {
         let canBeChanged = true;
         let sortedPricings = [];
         let isSalesQuote = false;
+        let totalCubicMeter = 0;
+        let totalLinesCnt = 0;
+        let totalLinesKg = 0;
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -208,22 +212,28 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
-            bok_2s = bok_1['bok_2s'].map((bok_2, index) => (
-                <tr key={index}>
-                    <td>{bok_2['l_001_type_of_packaging']}</td>
-                    <td>{bok_2['zbl_121_integer_1']}</td>
-                    <td>{bok_2['e_item_type']}</td>
-                    <td>{bok_2['l_003_item']}</td>
-                    <td>{bok_2['l_002_qty']}</td>
-                    <td>{bok_2['l_004_dim_UOM']}</td>
-                    <td>{bok_2['l_005_dim_length']}</td>
-                    <td>{bok_2['l_006_dim_width']}</td>
-                    <td>{bok_2['l_007_dim_height']}</td>
-                    <td>{bok_2['l_008_weight_UOM']}</td>
-                    <td>{bok_2['l_009_weight_per_each']}</td>
-                    <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td>
-                </tr>
-            ));
+            bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
+                totalLinesKg += getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']);
+                totalLinesCnt += bok_2['l_002_qty'];
+                totalCubicMeter += getCubicMeter(bok_2['l_002_qty'], bok_2['l_004_dim_UOM'], bok_2['l_005_dim_length'], bok_2['l_006_dim_width'], bok_2['l_007_dim_height']);
+
+                return (
+                    <tr key={index}>
+                        <td>{bok_2['l_001_type_of_packaging']}</td>
+                        <td>{bok_2['zbl_121_integer_1']}</td>
+                        <td>{bok_2['e_item_type']}</td>
+                        <td>{bok_2['l_003_item']}</td>
+                        <td>{bok_2['l_002_qty']}</td>
+                        <td>{bok_2['l_004_dim_UOM']}</td>
+                        <td>{bok_2['l_005_dim_length']}</td>
+                        <td>{bok_2['l_006_dim_width']}</td>
+                        <td>{bok_2['l_007_dim_height']}</td>
+                        <td>{bok_2['l_008_weight_UOM']}</td>
+                        <td>{bok_2['l_009_weight_per_each']}</td>
+                        <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td>
+                    </tr>
+                );
+            });
             pricings = sortedPricings.map((price, index) => (
                 <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                     <td>{price['fp_name']}</td>
@@ -255,6 +265,7 @@ class BokPricePage extends Component {
                     }
                 </tr>
             ));
+            console.log('@1 - ', totalLinesKg, totalLinesCnt, totalCubicMeter);
 
             bok_3s = [];
             if (isShowLineData) {
@@ -320,6 +331,24 @@ class BokPricePage extends Component {
                             onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
                         <p><i className="fa fa-circle"></i> Lines:</p>
+                        {totalLinesCnt &&
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <thead>
+                                    <tr>
+                                        <th>Total Quantity</th>
+                                        <th>Total Weight (Kg)</th>
+                                        <th>Total Cubic Meter (M3)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{totalLinesCnt}</td>
+                                        <td>{totalLinesKg}</td>
+                                        <td>{totalCubicMeter.toFixed(2)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
                         <table className="table table-hover table-bordered sortable fixed_headers">
                             <thead>
                                 <tr>
@@ -341,7 +370,7 @@ class BokPricePage extends Component {
                                 {bok_2s}
                             </tbody>
                         </table>
-                        {isShowLineData && <p><i className="fa fa-circle"></i> Line Datas:</p>}
+                        {isShowLineData && <p><i className="fa fa-circle"></i> Line Data:</p>}
                         {isShowLineData &&
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
