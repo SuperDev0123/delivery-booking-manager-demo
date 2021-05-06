@@ -213,7 +213,7 @@ class FreightOptionAccordion extends Component {
                                     <option value='Stairs'>Stairs</option>
                                     <option value='Ramp'>Ramp</option>
                                     <option value='Folklift'>Folklift</option>
-                                    <option value='NONE'>Not is required</option>
+                                    <option value='NONE'>Not required</option>
                                 </select>
                             </label>
                             <label>
@@ -353,7 +353,7 @@ class FreightOptionAccordion extends Component {
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
                                     <option value='Ramp'>Ramp</option>
-                                    <option value='None - lifting is required'>None - lifting is required</option>
+                                    <option value='NONE'>Not required</option>
                                 </select>
                             </label>
                             <label>
@@ -366,6 +366,7 @@ class FreightOptionAccordion extends Component {
                                     <option value="" selected disabled hidden>--- Select service ---</option>
                                     <option value='Unpack'>Unpack</option>
                                     <option value='Install'>Install</option>
+                                    <option value='NONE'>Not required</option>
                                 </select>
                             </label>
                             <label>
