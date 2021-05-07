@@ -188,39 +188,32 @@ class UploadPage extends Component {
                     <div className="col-12">
                         <form onSubmit={(e) => this.handlePost(e)}>
                             <DropzoneComponent config={config} eventHandlers={eventHandlers} djsConfig={djsConfig} />
-                            {
-                                (clientname === 'dme') ?
-                                    <select
-                                        className="uploader"
-                                        name="uploader"
-                                        onChange={(e) => this.onInputChange(e)}
-                                        value = {formInputs['uploader']}
-                                    >
-                                        <option value="" selected disabled hidden>Select Uploader</option>
-                                        <option value='Jason L'>Jason L</option>
-                                        <option value='Seaway'>Seaway-Tempo</option>
-                                        <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
-                                        <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>
-                                        <option value='Seaway-Bunnings'>Seaway-Bunnings</option>
-                                        <option value='Tempo'>Tempo</option>
-                                    </select>
-                                    :
-                                    null
+                            {(clientname === 'dme') &&
+                                <select
+                                    className="uploader"
+                                    name="uploader"
+                                    onChange={(e) => this.onInputChange(e)}
+                                    value = {formInputs['uploader']}
+                                >
+                                    <option value="" selected disabled hidden>Select Uploader</option>
+                                    <option value='Jason L'>Jason L</option>
+                                    <option value='Seaway'>Seaway-Tempo</option>
+                                    <option value='Seaway-Hanalt'>Seaway-Hanalt</option>
+                                    <option value='Seaway-Tempo-Aldi'>Seaway-Tempo-Aldi</option>
+                                    <option value='Seaway-Bunnings'>Seaway-Bunnings</option>
+                                    <option value='Tempo'>Tempo</option>
+                                    <option value='BioPak'>BioPak</option>
+                                </select>
                             }
                             <button id="submit-upload" type="submit">upload</button>
                         </form>
                     </div>
                     <div className="col-12">
                         <p id="upload-status">{statusText}</p>
-                        {
-                            uploaded &&
-                            <p id="upload-filename">Uploaded file name: {uploadedFileName}</p>
-                        }
-                        {
-                            (xlsxErrors && xlsxErrors.length > 0) &&
+                        {uploaded &&<p id="upload-filename">Uploaded file name: {uploadedFileName}</p>}
+                        {(xlsxErrors && xlsxErrors.length > 0) &&
                             <div>
-                                <p>Errors: </p>
-                                {xlsx_errors_list}
+                                <p>Errors: {xlsx_errors_list}</p>
                             </div>
                         }
                     </div>
