@@ -7,7 +7,7 @@ import { withRouter, Link } from 'react-router-dom';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
-import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink} from 'reactstrap';
+import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
@@ -15,6 +15,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// import Geocode from 'react-geocode';
 // Constants
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
@@ -39,6 +40,7 @@ import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
+import Map from '../components/map';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -113,6 +115,7 @@ class AllBookingsPage extends React.Component {
             isShowBulkUpdateSlider: false,
             isShowPricingAnalyseSlider: false,
             isShowBookingSetModal: false,
+            mapData: []
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -1637,6 +1640,67 @@ class AllBookingsPage extends React.Component {
         return _bookings;
     }
 
+    showMap(bookings) {
+        // Geocode.setApiKey('AIzaSyAHT7vJhUtShMJQxipiuL702-14Q17jtec');
+        // Geocode.setLanguage('en');
+        // Geocode.setRegion('au');
+        // Geocode.setLocationType('ROOFTOP');
+        
+        // let puInfo = Geocode.fromAddress(`${booking.pu_Address_street_1} ${booking.pu_Address_City} ${booking.pu_Address_State}`);
+        // let deInfo = Geocode.fromAddress(`${booking.de_To_Address_street_1} ${booking.de_To_Address_City} ${booking.de_To_Address_State}`);
+        // Promise.all([puInfo, deInfo]).then((responses) => {
+        //     console.log(responses);
+        //     responses.map(item => {
+        //         const { lat, lng } = item.results[0].geometry.location;
+        //         return { lat, lng };
+        //     });
+        // });
+        let puAddress = '239 Ruthven Street ABBOTSBURY NSW Australia 2176';
+        let deToAddresses = [];
+        bookings.forEach(booking => {
+            if(`${booking.pu_Address_Street_1} ${booking.pu_Address_Suburb} ${booking.pu_Address_State} ${booking.pu_Address_Country} ${booking.pu_Address_PostalCode}` === puAddress) {
+                deToAddresses.push(`${booking.de_To_Address_Street_1} ${booking.de_To_Address_Suburb} ${booking.de_To_Address_State} ${booking.de_To_Address_Country} ${booking.de_To_Address_PostalCode}`);
+            }
+        });
+        let uniqueDeToAddresses = [...new Set(deToAddresses)];
+        let puGeolocation = {
+            lat: -27.5529669,
+            lng: 151.9537025
+        };
+        let deToGeolocations = [
+            {
+                lat: -29.755578,
+                lng: 153.2392541
+            },
+            {
+                lat: -28.7501841,
+                lng: 151.2470229
+            },
+            {
+                lat: -31.7555552, 
+                lng: 149.2391123
+            }
+        ];
+        let markerInfos = [
+            {
+                title: `Pick-up company: ${bookings[0].puCompany}\nAddress: ${puAddress}`,
+                position: puGeolocation
+            },
+            ...uniqueDeToAddresses.map((item, index) => {
+                let booking = bookings.find(booking => `${booking.de_To_Address_Street_1} ${booking.de_To_Address_Suburb} ${booking.de_To_Address_State} ${booking.de_To_Address_Country} ${booking.de_To_Address_PostalCode}` === item);
+                return {
+                    title: `Deliver-to company: ${booking.deToCompanyName}\nAddress: ${item}`,
+                    position: deToGeolocations[index]
+                };
+            })
+        ];
+        let data = {
+            center: puGeolocation,
+            markerInfos: markerInfos
+        };
+        this.setState({mapData: data});
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets } = this.props;
@@ -2264,6 +2328,7 @@ class AllBookingsPage extends React.Component {
                                                             <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                                            <button className="btn btn-primary" onClick={() => this.showMap(this.props.bookings)} disabled={this.state.activeTabInd === 0 ? false : true}>Display on map</button>
                                                         </LoadingOverlay>
                                                     </div>
                                                 </div>
@@ -3129,6 +3194,29 @@ class AllBookingsPage extends React.Component {
                 />
 
                 <ToastContainer />
+                <ReactstrapModal 
+                    isOpen={!_.isEmpty(this.state.mapData)} 
+                    className="bookingset-modal"
+                    style={{
+                        width: 800,
+                        height: 800,
+                        maxWidth: 800
+                    }}
+                >
+                    <ModalHeader>Google map<a className="close-popover" onClick={() => this.setState({mapData: {}})}>x</a></ModalHeader>
+                    <ModalBody style={{height: 770}}>
+                        <Map 
+                            center={this.state.mapData.center}
+                            zoom={6}
+                            markerInfos={this.state.mapData.markerInfos}
+                            style={{
+                                width: 'calc(100% - 30px)'
+                            }}
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                    </ModalFooter>
+                </ReactstrapModal>
             </div>
         );
     }
