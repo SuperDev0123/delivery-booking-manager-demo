@@ -177,6 +177,7 @@ class FindModal extends Component {
                             <p>Available options: </p>
                             <select value={postalCode} onChange={(e) => this.onInputChange(e, 'postalCode')}>
                                 <option value="" selected disabled hidden>--- Please select option ---</option>
+                                <option value="" disabled>--- Metro options ---</option>
                                 <option value="Canberra Metro">Canberra Metro (2600-2620, 2900-2914)</option>
                                 <option value="Sydney Metro">Sydney Metro (1000-2249, 2760-2770)</option>
                                 <option value="Darwin Metro">Darwin Metro (0800-0820, 0900-0910)</option>
@@ -185,6 +186,7 @@ class FindModal extends Component {
                                 <option value="Hobart Metro">Hobart Metro (7000-7010, 7249-7250)</option>
                                 <option value="Melbourne Metro">Melbourne Metro (3000-3207, 8000-8499)</option>
                                 <option value="Perth Metro">Perth Metro (6000-6199, 6800-6999)</option>
+                                <option value="" disabled>--- CBD options ---</option>
                                 <option value="Canberra CBD">Canberra CBD (2600, 2601, 2610)</option>
                                 <option value="Sydney CBD">Sydney CBD (1100-1299, 2000, 2001, 2007, 2009)</option>
                                 <option value="North Sydney CBD">North Sydney CBD (1545-1559, 2059-2060)</option>

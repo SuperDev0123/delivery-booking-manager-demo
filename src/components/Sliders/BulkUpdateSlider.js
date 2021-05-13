@@ -32,6 +32,8 @@ class BulkUpdateSlider extends React.Component {
         allBookingStatus: PropTypes.array.isRequired,
         selectedBookingIds: PropTypes.array.isRequired,
         onUpdate: PropTypes.func.isRequired,
+        clientname: PropTypes.string,
+        fps: PropTypes.array
     };
 
     onClickCancel() {
@@ -77,7 +79,7 @@ class BulkUpdateSlider extends React.Component {
 
     onChangeDateTime(dateTime, valueType=null) {
         let conveted_date = moment(dateTime).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(timeDiff, 'h');                    // UTC -> Sydney
+        conveted_date = conveted_date.add(timeDiff, 'h');               // UTC -> Sydney
 
         if (dateTime) {
             if (valueType === 'optionalValue') {
@@ -91,10 +93,19 @@ class BulkUpdateSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, allBookingStatus } = this.props;
+        const { isOpen, allBookingStatus, clientname, fps } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
             return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        });
+
+        const fpOptions = fps.map((fp, index) => {
+            if (clientname === 'Jason L') { // Jason L
+                if (fp.fp_company_name === 'Allied' || fp.fp_company_name === 'TNT' || fp.fp_company_name === 'Hunter')
+                    return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+            } else {
+                return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+            }
         });
 
         return (
@@ -111,56 +122,57 @@ class BulkUpdateSlider extends React.Component {
                             required
                             onChange={(e) => this.onSelected(e, 'field')} 
                         >
-                            <option value="" selected disabled hidden>Select a field</option>
-                            <option value="flag">Flag</option>
-                            <option value="status">Booking status</option>
-                            <option value="b_client_name" disabled>Client</option>
-                            <option value="b_client_name_sub">Sub Client</option>
-                            <option value="dme_status_detail">Status Detail</option>
-                            <option value="dme_status_action">Status Action</option>
-                            <option value="dme_status_history_notes">Status History Note</option>
-                            <option value="inv_billing_status_note">Invoice Billing Status Note</option>
+                            <option value="" selected disabled hidden>--- Select a field ---</option>
+                            {clientname === 'dme' && <option value="flag">Flag</option>}
+                            {clientname === 'dme' && <option value="status">Booking status</option>}
+                            {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
+                            {clientname === 'dme' && <option value="b_client_name_sub">Sub Client</option>}
+                            {clientname === 'dme' && <option value="dme_status_detail">Status Detail</option>}
+                            {clientname === 'dme' && <option value="dme_status_action">Status Action</option>}
+                            {clientname === 'dme' && <option value="dme_status_history_notes">Status History Note</option>}
+                            {clientname === 'dme' && <option value="inv_billing_status_note">Invoice Billing Status Note</option>}
 
-                            <option value="puCompany">Pickup Entity</option>
-                            <option value="pu_Address_Street_1">Pickup Street 1</option>
-                            <option value="pu_Address_street_2">Pickup Street 2</option>
-                            <option value="pu_Address_Suburb" disabled>Pickup Suburb</option>
-                            <option value="pu_Address_State" disabled>Pickup State</option>
-                            <option value="pu_Address_PostalCode" disabled>Pickup PostalCode</option>
-                            <option value="pu_Address_Country">Pickup Country</option>
-                            <option value="pu_Contact_F_L_Name">Pickup Contact</option>
-                            <option value="pu_Phone_Main">Pickup Tel</option>
-                            <option value="pu_Phone_Mobile">Pickup Mobile</option>
-                            <option value="pu_Email">Pickup Email</option>
-                            <option value="puPickUpAvailFrom_Date">Pickup From</option>
-                            <option value="pu_PickUp_By_Date_DME">Pickup By</option>
-                            <option value="pu_pickup_instructions_address">Pickup Instructions</option>
+                            {clientname === 'dme' && <option value="puCompany">Pickup Entity</option>}
+                            {clientname === 'dme' && <option value="pu_Address_Street_1">Pickup Street 1</option>}
+                            {clientname === 'dme' && <option value="pu_Address_street_2">Pickup Street 2</option>}
+                            {clientname === 'dme' && <option value="pu_Address_Suburb" disabled>Pickup Suburb</option>}
+                            {clientname === 'dme' && <option value="pu_Address_State" disabled>Pickup State</option>}
+                            {clientname === 'dme' && <option value="pu_Address_PostalCode" disabled>Pickup PostalCode</option>}
+                            {clientname === 'dme' && <option value="pu_Address_Country">Pickup Country</option>}
+                            {clientname === 'dme' && <option value="pu_Contact_F_L_Name">Pickup Contact</option>}
+                            {clientname === 'dme' && <option value="pu_Phone_Main">Pickup Tel</option>}
+                            {clientname === 'dme' && <option value="pu_Phone_Mobile">Pickup Mobile</option>}
+                            {clientname === 'dme' && <option value="pu_Email">Pickup Email</option>}
+                            {clientname === 'dme' && <option value="puPickUpAvailFrom_Date">Pickup From</option>}
+                            {clientname === 'dme' && <option value="pu_PickUp_By_Date_DME">Pickup By</option>}
+                            {clientname === 'dme' && <option value="pu_pickup_instructions_address">Pickup Instructions</option>}
 
-                            <option value="deToCompanyName">Deliver to Entity</option>
-                            <option value="de_To_Address_Street_1">Deliver to Street 1</option>
-                            <option value="de_To_Address_Street_2">Deliver to Street 2</option>
-                            <option value="de_To_Address_Suburb" disabled>Deliver to Suburb</option>
-                            <option value="de_To_Address_State" disabled>Deliver to State</option>
-                            <option value="de_To_Address_PostalCode" disabled>Deliver to PostalCode</option>
-                            <option value="de_To_Address_Country">Deliver to Country</option>
-                            <option value="de_to_Contact_F_LName">Deliver to Contact</option>
-                            <option value="de_to_Phone_Main">Deliver to Tel</option>
-                            <option value="de_to_Phone_Mobile">Deliver to Mobile</option>
-                            <option value="de_Email">Deliver to Email</option>
-                            <option value="de_Deliver_From_Date">Deliver to From</option>
-                            <option value="de_Deliver_By_Date">Deliver to By</option>
-                            <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>
+                            {clientname === 'dme' && <option value="deToCompanyName">Deliver to Entity</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_Street_1">Deliver to Street 1</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_Street_2">Deliver to Street 2</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_Suburb" disabled>Deliver to Suburb</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_State" disabled>Deliver to State</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_PostalCode" disabled>Deliver to PostalCode</option>}
+                            {clientname === 'dme' && <option value="de_To_Address_Country">Deliver to Country</option>}
+                            {clientname === 'dme' && <option value="de_to_Contact_F_LName">Deliver to Contact</option>}
+                            {clientname === 'dme' && <option value="de_to_Phone_Main">Deliver to Tel</option>}
+                            {clientname === 'dme' && <option value="de_to_Phone_Mobile">Deliver to Mobile</option>}
+                            {clientname === 'dme' && <option value="de_Email">Deliver to Email</option>}
+                            {clientname === 'dme' && <option value="de_Deliver_From_Date">Deliver to From</option>}
+                            {clientname === 'dme' && <option value="de_Deliver_By_Date">Deliver to By</option>}
+                            {clientname === 'dme' && <option value="de_to_Pick_Up_Instructions_Contact">Deliver to Instructions</option>}
 
-                            <option value="b_booking_Priority">Priority</option>
-                            <option value="b_booking_Category">Category</option>
-                            <option value="v_vehicle_Type">Vehicle Type</option>
-                            <option value="inv_dme_invoice_no">DME Invoice No</option>
-                            <option value="b_client_sales_inv_num">Your Invoice No</option>
+                            {clientname === 'dme' && <option value="b_booking_Priority">Priority</option>}
+                            {clientname === 'dme' && <option value="b_booking_Category">Category</option>}
+                            {clientname === 'dme' && <option value="v_vehicle_Type">Vehicle Type</option>}
+                            {clientname === 'dme' && <option value="inv_dme_invoice_no">DME Invoice No</option>}
+                            {clientname === 'dme' && <option value="b_client_sales_inv_num">Your Invoice No</option>}
 
-                            <option value="b_booking_project">Project Name</option>
-                            <option value="b_project_due_date">Project Due Date</option>
-                            <option value="fp_received_date_time">Transport Received</option>
-                            <option value="b_given_to_transport_date_time">Given to Transport</option>
+                            {clientname === 'dme' && <option value="b_booking_project">Project Name</option>}
+                            {clientname === 'dme' && <option value="b_project_due_date">Project Due Date</option>}
+                            {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
+                            {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
+                            <option value="vx_freight_provider">Freight Provider</option>
                         </select>
                     </label>
                     <br />
@@ -261,21 +273,32 @@ class BulkUpdateSlider extends React.Component {
                                 />
                                 : null
                         }
+                        {
+                            selectedField &&
+                            (selectedField === 'vx_freight_provider') ?
+                                <select
+                                    required
+                                    onChange={(e) => this.onSelected(e, 'value')} 
+                                >
+                                    <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
+                                    {fpOptions}
+                                    <option value="linehaul" disabled>Linehaul</option>
+                                </select>
+                                : null
+                        }
                     </div>
                     <br />
                     <div className="optional">
-                        {
-                            selectedField === 'status' && selectedValue === 'In Transit' ?
-                                <label className="value">Event Date: </label> : null
+                        {selectedField === 'status' && selectedValue === 'In Transit' ?
+                            <label className="value">Event Date: </label> : null
                         }
-                        {
-                            selectedField === 'status' && selectedValue === 'In Transit' ?
-                                <DateTimePicker
-                                    onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
-                                    value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                    format={'dd/MM/yyyy HH:mm'}
-                                />
-                                : null
+                        {selectedField === 'status' && selectedValue === 'In Transit' ?
+                            <DateTimePicker
+                                onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
+                                value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                format={'dd/MM/yyyy HH:mm'}
+                            />
+                            : null
                         }
                     </div>
                     <br />

@@ -1564,13 +1564,23 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickShowBulkUpdateButton() {
-        const { selectedBookingIds } = this.state;
+        const { selectedBookingIds, clientname } = this.state;
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select at least one booking');
         } else if (selectedBookingIds.length > 1000) {
             this.notify('Bulk operation can process 1000 bookings at once');
         } else {
+            if (clientname === 'Jason L') {
+                const bookings = this.getBookingsFromIds(selectedBookingIds);
+                const bookedBookings = bookings.filter(booking => !_.isNull(booking.b_dateBookedDate));
+
+                if (bookedBookings.length > 0) {
+                    this.notify('Booked bookings are selected!');    
+                    return;
+                }
+            }
+
             this.toggleBulkUpdateSlider();
         }
     }
@@ -1579,7 +1589,7 @@ class AllBookingsPage extends React.Component {
         this.togglePricingAnalyseSlider();
     }
 
-    onClickBulkUpdate(field, value, bookingIds, optionalValue=null) {
+    onBulkUpdate(field, value, bookingIds, optionalValue=null) {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
         } else if (field === 'status') {
@@ -2240,9 +2250,13 @@ class AllBookingsPage extends React.Component {
                                                 </select>
                                             </label>
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickFind()}><i className="fa fa-search"></i> Find</button>
-                                            {clientname === 'dme' || clientname === 'biopak' ?
+                                            {(clientname === 'dme' || clientname === 'Jason L') &&
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                </div>
+                                            }
+                                            {(clientname === 'dme' || clientname === 'biopak') &&
+                                                <div className="disp-inline-block">
                                                     <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                     <div className="disp-inline-block">
                                                         <LoadingOverlay
@@ -2256,7 +2270,6 @@ class AllBookingsPage extends React.Component {
                                                         </LoadingOverlay>
                                                     </div>
                                                 </div>
-                                                : null
                                             }
                                         </div>
                                         <div className="tabs">
@@ -3096,8 +3109,10 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowBulkUpdateSlider}
                     toggleSlider={this.toggleBulkUpdateSlider}
                     allBookingStatus={allBookingStatus}
+                    clientname={clientname}
+                    fps={allFPs}
                     selectedBookingIds={selectedBookingIds}
-                    onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
+                    onUpdate={(field, value, bookingIds, optionalValue) => this.onBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
                 <PricingAnalyseSlider
