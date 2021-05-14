@@ -10,22 +10,33 @@ class ExtraCostSummarySlider extends React.Component {
 
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
-        toggleSlider: PropTypes.func.isRequired
+        toggleSlider: PropTypes.func.isRequired,
+        selectedPrice: PropTypes.object
     };
 
     render() {
-        const { isOpen, toggleSlider } = this.props;
+        const { isOpen, toggleSlider, selectedPrice } = this.props;
+        const surchargeList = (selectedPrice.surcharges || []).map((surcharge, index) => (
+            <p className="surcharge" key={index}>
+                <strong>Name:</strong> {surcharge['name']}<br />
+                <strong>Description:</strong> {surcharge['description']}<br />
+                <strong>Amount:</strong> {surcharge['value']}<br />
+                <hr />
+            </p>
+        ));
 
         return (
             <SlidingPane
-                className='-slider'
-                overlayClassName='lt-slider-overlay'
+                className='esc-slider'
+                overlayClassName='ecs-slider-overlay'
                 isOpen={isOpen}
                 title='Extra Cost Summary Slider'
                 subtitle=''
-                onRequestClose={toggleSlider}>
+                onRequestClose={toggleSlider}
+            >
                 <div className="slider-content">
-                    <label>* Residential address: $32.00</label>
+                    <h4>Applied Surcharges:</h4>
+                    {surchargeList}
                 </div>
             </SlidingPane>
         );

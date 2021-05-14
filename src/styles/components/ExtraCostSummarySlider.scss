@@ -1,0 +1,12 @@
+.esc-slider {
+	.slider-content {
+		height: 100%;
+		overflow-y: auto;
+
+		p {
+			padding-left: 20px;
+
+			hr { margin-top: 10px }
+		}
+	}
+}

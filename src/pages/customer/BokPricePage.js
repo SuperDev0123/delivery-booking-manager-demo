@@ -30,6 +30,7 @@ class BokPricePage extends Component {
             isShowExtraCostSummarySlider: false,
             isShowPalletSlider: false,
             isShowLineData: false,
+            selectedPrice: {},
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -179,6 +180,11 @@ class BokPricePage extends Component {
         this.togglePalletSlider();
     }
 
+    onClickSurcharge(price) {
+        this.setState({selectedPrice: price});
+        this.toggleExtraCostSummarySlider();
+    }
+
     render() {
         const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
         const {bokWithPricings} = this.props;
@@ -234,38 +240,43 @@ class BokPricePage extends Component {
                     </tr>
                 );
             });
-            pricings = sortedPricings.map((price, index) => (
-                <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
-                    <td>{price['fp_name']}</td>
-                    <td>{price['service_name']}</td>
-                    <td>
-                        ${price['cost'].toFixed(2)}
-                        &nbsp;&nbsp;&nbsp;
-                        <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
-                    </td>
-                    <td>
-                        {price['fp_name'] === 'TNT' && bok_1['b_053_b_del_address_type'] === 'residential' ?
-                            <label>$32.00 <i className="fa fa-dollar-sign" onClick={() => this.toggleExtraCostSummarySlider()}></i></label> : ''
-                        }
-                    </td>
-                    <td>
-                        {price['fp_name'] === 'TNT' && bok_1['b_053_b_del_address_type'] === 'residential' ? `$${(price['cost'] + 32).toFixed(2)}` : `$${price['cost'].toFixed(2)}`}
-                    </td>
-                    <td>{price['eta']}</td>
-                    {isPricingPage && !isSalesQuote &&
+            pricings = sortedPricings.map((price, index) => {
+                let totalSurcharge = 0;
+
+                if (!_.isEmpty(price.surcharges)) {
+                    price.surcharges.map(surcharge => {
+                        totalSurcharge += surcharge['value'];
+                    });
+                }
+
+                return (
+                    <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
+                        <td>{price['fp_name']}</td>
+                        <td>{price['service_name']}</td>
                         <td>
-                            <Button
-                                disabled={canBeChanged ? null : 'disabled'}
-                                color="primary"
-                                onClick={() => this.onSelectPricing(price.cost_id)}
-                            >
-                                Select
-                            </Button>
+                            ${price['cost'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
                         </td>
-                    }
-                </tr>
-            ));
-            console.log('@1 - ', totalLinesKg, totalLinesCnt, totalCubicMeter);
+                        <td>
+                            ${totalSurcharge} {totalSurcharge > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                        </td>
+                        <td>{(price['cost'] + totalSurcharge).toFixed(2)}</td>
+                        <td>{price['eta']}</td>
+                        {isPricingPage && !isSalesQuote &&
+                            <td>
+                                <Button
+                                    color="primary"
+                                    disabled={canBeChanged ? null : 'disabled'}
+                                    onClick={() => this.onSelectPricing(price.cost_id)}
+                                >
+                                    Select
+                                </Button>
+                            </td>
+                        }
+                    </tr>
+                );
+            });
 
             bok_3s = [];
             if (isShowLineData) {
@@ -439,6 +450,7 @@ class BokPricePage extends Component {
                 <ExtraCostSummarySlider
                     isOpen={this.state.isShowExtraCostSummarySlider}
                     toggleSlider={this.toggleExtraCostSummarySlider}
+                    selectedPrice = {this.state.selectedPrice}
                 />
 
                 <PalletSlider
