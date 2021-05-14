@@ -19,6 +19,7 @@ class OrderModal extends Component {
         selectedBookingIds: PropTypes.array.isRequired,
         selectedBookingLinesCnt: PropTypes.number.isRequired,
         bookings: PropTypes.array.isRequired,
+        clientname: PropTypes.string,
     };
 
     static defaultProps = {
@@ -26,12 +27,17 @@ class OrderModal extends Component {
     };
 
     render() {
-        const {isOpen, selectedBookingIds, selectedBookingLinesCnt} = this.props;
+        const {isOpen, selectedBookingIds, selectedBookingLinesCnt, clientname} = this.props;
         const selectedBookings = this.props.bookings.filter(booking => selectedBookingIds.includes(booking.id));
         const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
-        const bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
-        const notBookedCnt = selectedBookingIds.length - bookedCnt;
+        let bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
+        let notBookedCnt = selectedBookingIds.length - bookedCnt;
         const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
+
+        if (clientname === 'Jason L') {
+            notBookedCnt = 0;
+            bookedCnt = selectedBookings.length;
+        }
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
@@ -48,9 +54,11 @@ class OrderModal extends Component {
                         <span className={puAvailFromDateCnt > 1 ? 'red' : ''}>
                             # There are {puAvailFromDateCnt} `Pick Up Available From Date`;
                         </span><br />
-                        <span className={notBookedCnt > 0 ? 'red' : ''}>
-                            # Not booked Count: {notBookedCnt}
-                        </span>
+                        {clientname !== 'Jason L' &&
+                            <span className={notBookedCnt > 0 ? 'red' : ''}>
+                                # Not booked Count: {notBookedCnt}
+                            </span>
+                        }
                     </label>
                 </ModalBody>
                 <ModalFooter>

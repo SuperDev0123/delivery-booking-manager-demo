@@ -1146,7 +1146,7 @@ class AllBookingsPage extends React.Component {
                 for (let i = 0; i < bookings.length; i++) {
                     for (let j = 0; j < selectedBookingIds.length; j++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
-                            if (bookings[i].fk_manifest_id) {
+                            if (bookings[i].z_manifest_url) {
                                 manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
                             } else {
                                 bookingIds.push(bookings[i].id);
@@ -1994,13 +1994,13 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td name='manifest_timestamp' className={
-                        !_.isNull(booking.manifest_timestamp) ?
-                            'bg-yellow'
+                        !booking.z_manifest_url ?
+                            (!_.isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
                         {
-                            !_.isNull(booking.manifest_timestamp) ? <div className="pod-status">M</div> : null
+                            !_.isNull(booking.z_manifest_url) ? <div className="pod-status">M</div> : null
                         }
                     </td>
                     <td name='b_is_flagged_add_on_services' className={booking.b_is_flagged_add_on_services ? 'bg-yellow' : null}>
@@ -2177,7 +2177,7 @@ class AllBookingsPage extends React.Component {
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
                             <a
-                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak' || clientname === 'Jason L') ? '' : 'none'} 
                                 onClick={() => this.onClickMANI()}
                             >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
@@ -3102,6 +3102,7 @@ class AllBookingsPage extends React.Component {
                     selectedBookingIds={selectedBookingIds}
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
                     bookings={bookings}
+                    clientname={clientname}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
                 />
 
