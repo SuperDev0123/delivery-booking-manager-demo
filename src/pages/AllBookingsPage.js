@@ -1062,7 +1062,13 @@ class AllBookingsPage extends React.Component {
 
     onMultiFind(fieldNameToFind, valueSet) {
         const { clientPK, warehouseId, pageItemCnt, startDate, endDate } = this.state;
-        this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
+        const today = moment().format('YYYY-MM-DD');
+
+        if (fieldNameToFind === 'postal_code_pair' || fieldNameToFind === 'postal_code_type')
+            this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
+        else
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
+
         this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
