@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
+import _ from 'lodash';
+import moment from 'moment-timezone';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -262,7 +263,7 @@ class BokPricePage extends Component {
                             ${totalSurcharge} {totalSurcharge > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>{(price['cost'] + totalSurcharge).toFixed(2)}</td>
-                        <td>{price['eta']}</td>
+                        <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
                         {isPricingPage && !isSalesQuote &&
                             <td>
                                 <Button
