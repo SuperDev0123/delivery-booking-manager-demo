@@ -1078,6 +1078,8 @@ class AllBookingsPage extends React.Component {
 
         if (activeTabInd === 0) { // All tab
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, '', downloadOption);
+        } else if (activeTabInd === 8) { // PreBooking tab
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 7) { // Today tab
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) { // Delivery Management tab
@@ -1999,14 +2001,12 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td name='manifest_timestamp' className={
-                        !booking.z_manifest_url ?
+                        booking.z_manifest_url ?
                             (!_.isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
-                        {
-                            !_.isNull(booking.z_manifest_url) ? <div className="pod-status">M</div> : null
-                        }
+                        {booking.z_manifest_url ? <div className="pod-status">M</div> : null}
                     </td>
                     <td name='b_is_flagged_add_on_services' className={booking.b_is_flagged_add_on_services ? 'bg-yellow' : null}>
                         {booking.b_is_flagged_add_on_services ? <div className="pod-status">F</div> : null}
@@ -2293,6 +2293,14 @@ class AllBookingsPage extends React.Component {
                                                         onClick={() => this.onClickTab(7)}
                                                     >
                                                         Today (or by date)
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 8 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(8)}
+                                                    >
+                                                        PreBookings
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
