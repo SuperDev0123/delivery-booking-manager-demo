@@ -126,7 +126,7 @@ class LabelPage extends Component {
                                     </Button>
                                 </td>
                             }
-                            {bookingLabels.vx_freight_provider !== 'Hunter' && sscc_info_index === 0 &&
+                            {sscc_info_index === 0 &&
                                 <td rowSpan={bookingLabels.sscc_obj[sscc].length.toString()}>
                                     <input
                                         name="switchInfo"
@@ -172,8 +172,8 @@ class LabelPage extends Component {
                                         <th style={{width: '20%'}}>Description</th>
                                         <th style={{width: '10%'}}>Qty</th>
                                         <th style={{width: '10%'}}>Type of Package</th>
-                                        {bookingLabels.vx_freight_provider !== 'Hunter' && <th style={{width: '10%'}}>Preview</th>}
-                                        {bookingLabels.vx_freight_provider !== 'Hunter' && <th style={{width: '10%'}}>Tick to Print</th>}
+                                        {<th style={{width: '10%'}}>Preview</th>}
+                                        {<th style={{width: '10%'}}>Tick to Print</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -182,7 +182,7 @@ class LabelPage extends Component {
                             </table>
                         </div>
                         <div className="action">
-                            {bookingLabels.vx_freight_provider === 'Hunter' && bookingLabels.url &&
+                            {bookingLabels.url &&
                                 <Button
                                     color="info"
                                     disabled={bookingLabels.url ? false : true}
