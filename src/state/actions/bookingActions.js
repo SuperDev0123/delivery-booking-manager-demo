@@ -111,6 +111,7 @@ export function successGetBookings(data) {
         closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
         missingLabels: data['missing_labels'],
+        unprintedLabels: data['unprinted_labels'],
     };
 }
 

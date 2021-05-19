@@ -110,6 +110,7 @@ const defaultState = {
     closed: 0,
     missingLabels: 0,
     toProcess: 0,
+    unprintedLabels: 0,
     startDate: moment().tz('Australia/Sydney').toDate(),
     endDate: moment().tz('Australia/Sydney').toDate(),
     warehouseId: 0,
@@ -158,6 +159,7 @@ export const BookingReducer = (state = defaultState, {
     toProcess,
     closed,
     missingLabels,
+    unprintedLabels,
     startDate,
     endDate,
     warehouseId,
@@ -255,6 +257,7 @@ export const BookingReducer = (state = defaultState, {
                 closed: closed,
                 missingLabels: missingLabels,
                 needUpdateBookingLines: false,
+                unprintedLabels: unprintedLabels,
             };
         case SET_STATE:
             return {

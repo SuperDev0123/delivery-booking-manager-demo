@@ -171,6 +171,7 @@ class AllBookingsPage extends React.Component {
         updateBookingSet: PropTypes.func.isRequired,
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
+        unprintedLabels: PropTypes.number,
     };
 
     componentDidMount() {
@@ -1084,6 +1085,8 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) { // Delivery Management tab
             this.props.setAllGetBookingsFilter('*', '*', 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
+        } else if (activeTabInd === 9) { // Unprinted Lables tab
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 10) { // More tab
             this.toggleStatusInfoSlider();
         } else {
@@ -1645,7 +1648,7 @@ class AllBookingsPage extends React.Component {
 
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets } = this.props;
+        const { bookings, bookingsets, unprintedLabels } = this.props;
 
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -2301,6 +2304,14 @@ class AllBookingsPage extends React.Component {
                                                         onClick={() => this.onClickTab(8)}
                                                     >
                                                         PreBookings
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 9 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(9)}
+                                                    >
+                                                        Unprinted Labels ({unprintedLabels})
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -3162,6 +3173,7 @@ const mapStateToProps = (state) => {
         toManifest: state.booking.toManifest,
         toProcess: state.booking.toProcess,
         closed: state.booking.closed,
+        unprintedLabels: state.booking.unprintedLabels,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
