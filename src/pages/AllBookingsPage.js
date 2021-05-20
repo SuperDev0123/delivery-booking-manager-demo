@@ -617,7 +617,7 @@ class AllBookingsPage extends React.Component {
             filterInputs[e.target.name] = e.target.value;
             this.setState({filterInputs});
             this.props.setGetBookingsFilter('columnFilters', filterInputs);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', isShowb_dateBookedDateRange: false, isShowpuPickUpAvailFrom_DateRange: false});
         }
     }
 
@@ -3045,7 +3045,7 @@ class AllBookingsPage extends React.Component {
                                                                     placeholder="DD/MM/YY-DD/MM/YY"
                                                                     onChange={(e) => this.onChangeFilterInput(e)}
                                                                     onKeyPress={(e) => this.onKeyPress(e)}
-                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange})}
+                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange, isShowb_dateBookedDateRange: false})}
                                                                 />
                                                                 {this.state.isShowpuPickUpAvailFrom_DateRange && (
                                                                     <DateRangePicker
@@ -3063,7 +3063,7 @@ class AllBookingsPage extends React.Component {
                                                                     placeholder="DD/MM/YY-DD/MM/YY"
                                                                     onChange={(e) => this.onChangeFilterInput(e)}
                                                                     onKeyPress={(e) => this.onKeyPress(e)}
-                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange})}
+                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange, isShowpuPickUpAvailFrom_DateRange: false})}
                                                                 />
                                                                 {this.state.isShowb_dateBookedDateRange && (
                                                                     <DateRangePicker
