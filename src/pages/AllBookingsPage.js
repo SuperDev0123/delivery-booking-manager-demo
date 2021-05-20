@@ -15,6 +15,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DateRangePicker from 'react-daterange-picker';
+import 'react-daterange-picker/dist/css/react-calendar.css'; // For some basic styling. (OPTIONAL)
 // Constants
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
@@ -434,6 +436,19 @@ class AllBookingsPage extends React.Component {
         if (scrollLeft !== this.state.scrollLeft) {
             this.setState({scrollLeft: tblContent.scrollLeft});
         }
+    }
+
+    onSelectDateRange (dateRange, field) {
+        let filterInputs = this.state.filterInputs;
+        filterInputs[field] = `${dateRange.start.format('DD/MM/YY')}-${dateRange.end.format('DD/MM/YY')}`;
+
+        if (field === 'puPickUpAvailFrom_Date')
+            this.setState({puPickUpAvailFrom_DateRange: dateRange, isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange});
+        else if (field === 'b_dateBookedDate')
+            this.setState({b_dateBookedDateRange: dateRange, isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange});
+
+        this.props.setGetBookingsFilter('columnFilters', filterInputs);
+        this.setState({filterInputs, selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     calcBookingLine(bookingLines) {
@@ -1062,15 +1077,16 @@ class AllBookingsPage extends React.Component {
     }
 
     onMultiFind(fieldNameToFind, valueSet) {
-        const { clientPK, warehouseId, pageItemCnt, startDate, endDate } = this.state;
+        const { clientPK, warehouseId, pageItemCnt, activeTabInd, filterInputs } = this.state;
         const today = moment().format('YYYY-MM-DD');
 
-        if (fieldNameToFind === 'postal_code_pair' || fieldNameToFind === 'postal_code_type')
-            this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
-        else
+        if (fieldNameToFind === 'postal_code_pair' || fieldNameToFind === 'postal_code_type') {
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+        } else {
             this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
-
-        this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
+            this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
+        }
     }
 
     onClickTab(activeTabInd) {
@@ -2213,16 +2229,18 @@ class AllBookingsPage extends React.Component {
                                                 selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
+                                                className="none"
                                             />
-                                            <span className='flow-sign'>~</span>
+                                            <span className='none flow-sign'>~</span>
                                             <DatePicker
                                                 id="endDate"
                                                 selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
+                                                className="none"
                                             />
                                             {(clientname === 'dme') &&
-                                                <label className="left-30px right-10px">
+                                                <label className="left-30px_ right-10px">
                                                     Client: 
                                                     <select 
                                                         id="client-select" 
@@ -2245,7 +2263,7 @@ class AllBookingsPage extends React.Component {
                                                     { warehousesList }
                                                 </select>
                                             </label>
-                                            <label className="right-10px">
+                                            <label className="none right-10px">
                                                 Project Name: 
                                                 <select 
                                                     id="project-name-select" 
@@ -3019,16 +3037,50 @@ class AllBookingsPage extends React.Component {
                                                             {activeTabInd === 6 ? <th name="b_booking_Priority"></th> : null}
                                                             <th name="b_client_name" scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_client_name_sub" scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="puPickUpAvailFrom_Date" scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="b_dateBookedDate" scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="puPickUpAvailFrom_Date" scope="col">
+                                                                <input
+                                                                    type="text"
+                                                                    name="puPickUpAvailFrom_Date"
+                                                                    value={filterInputs['puPickUpAvailFrom_Date'] || ''}
+                                                                    placeholder="DD/MM/YY-DD/MM/YY"
+                                                                    onChange={(e) => this.onChangeFilterInput(e)}
+                                                                    onKeyPress={(e) => this.onKeyPress(e)}
+                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange})}
+                                                                />
+                                                                {this.state.isShowpuPickUpAvailFrom_DateRange && (
+                                                                    <DateRangePicker
+                                                                        value={this.state.puPickUpAvailFrom_DateRange}
+                                                                        onSelect={(e) => this.onSelectDateRange(e, 'puPickUpAvailFrom_Date')}
+                                                                        singleDateRange={true}
+                                                                    />
+                                                                )}
+                                                            </th>
+                                                            <th name="b_dateBookedDate" scope="col">
+                                                                <input
+                                                                    type="text"
+                                                                    name="b_dateBookedDate"
+                                                                    value={filterInputs['b_dateBookedDate'] || ''}
+                                                                    placeholder="DD/MM/YY-DD/MM/YY"
+                                                                    onChange={(e) => this.onChangeFilterInput(e)}
+                                                                    onKeyPress={(e) => this.onKeyPress(e)}
+                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange})}
+                                                                />
+                                                                {this.state.isShowb_dateBookedDateRange && (
+                                                                    <DateRangePicker
+                                                                        value={this.state.b_dateBookedDateRange}
+                                                                        onSelect={(e) => this.onSelectDateRange(e, 'b_dateBookedDate')}
+                                                                        singleDateRange={true}
+                                                                    />
+                                                                )}
+                                                            </th>
                                                             <th name="puCompany" scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_Suburb" scope="col"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_State" scope="col"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="pu_Address_PostalCode" scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="pu_Address_PostalCode" scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} placeholder="xxxx-xxxx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="deToCompanyName" scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_To_Address_Suburb" scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_To_Address_State" scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="de_To_Address_PostalCode" scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="de_To_Address_PostalCode" scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} placeholder="xxxx-xxxx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_error_Capture"></th>
                                                             <th name="z_label_url"></th>
                                                             <th name="z_pod_url"></th>

@@ -199,6 +199,7 @@ $b_project_due_date_width: 130px;
 
     input {
       margin: 0 !important;
+      font-size: 12px;
     }
   }
 
@@ -347,6 +348,21 @@ $b_project_due_date_width: 130px;
       color: black;
       margin-left: 5px;
       cursor: pointer;
+    }
+  }
+
+  .DateRangePicker {
+    position: absolute;
+    margin-top: 15px;
+    margin-left: -182px;
+    background-color: lightgray;
+
+    th {padding: 0 6px !important}
+    td {padding: 3px 10px}
+
+    .DateRangePicker__Month {
+      width: unset !important;
+      margin: 0px 5px;
     }
   }
 }
