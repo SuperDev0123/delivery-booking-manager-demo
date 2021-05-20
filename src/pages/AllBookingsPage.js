@@ -1041,6 +1041,21 @@ class AllBookingsPage extends React.Component {
             } else {
                 this.notify('This booking has no POD or POD_SOG');
             }
+        } else if (type === 'manifest') {
+            if (booking.z_manifest_url && booking.z_manifest_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'manifest_timestamp', new Date())
+                    .then(() => {
+                        this.onClickFind();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_manifest_url, '_blank');
+                win.focus();
+            } else {
+                this.notify('This booking has no manifest');
+            }
         }
     }
 
@@ -1979,14 +1994,14 @@ class AllBookingsPage extends React.Component {
                             :
                             (booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'
                     }>
-                        {
+                        {(booking.z_label_url && booking.z_label_url.length > 0) ?
                             <div className="booking-status">
-                                {
-                                    <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
-                                }
+                                <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
+                                    <i className="icon icon-printer"></i>
+                                </a>
                             </div>
+                            :
+                            null
                         }
                     </td>
                     <td name='z_pod_url' className={
@@ -2025,7 +2040,13 @@ class AllBookingsPage extends React.Component {
                             :
                             null
                     }>
-                        {booking.z_manifest_url ? <div className="pod-status">M</div> : null}
+                        {(booking.z_manifest_url && booking.z_manifest_url.length > 0) ?
+                            <div className="booking-status">
+                                <a onClick={() => this.onClickLabelOrPOD(booking, 'manifest')}>M</a>
+                            </div>
+                            :
+                            null
+                        }
                     </td>
                     <td name='b_is_flagged_add_on_services' className={booking.b_is_flagged_add_on_services ? 'bg-yellow' : null}>
                         {booking.b_is_flagged_add_on_services ? <div className="pod-status">F</div> : null}

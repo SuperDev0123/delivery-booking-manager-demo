@@ -697,12 +697,16 @@ header > .qbootstrap-nav {
   }
 }
 
-.booking-status a {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-right: 3px;
-    padding-left: 3px;
-    text-decoration: none !important;
+.booking-status {
+  text-align: center;
+
+  a {
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-right: 3px;
+      padding-left: 3px;
+      text-decoration: none !important;
+  }
 }
 
 .booking-status .warning > i {
