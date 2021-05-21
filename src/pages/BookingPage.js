@@ -3513,44 +3513,40 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        {clientname === 'dme' &&
-                                            <div className="col-sm-1 form-group">
-                                                <div>
-                                                    <span className="c-red">Quoted $</span>
-                                                    {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_sell_quoted"
-                                                            value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
-                                                        />
-                                                    }
-                                                </div>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span className="c-red">Quoted $</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_sell_quoted'] && `$${parseFloat(formInputs['inv_sell_quoted']).toFixed(2)}`}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_sell_quoted"
+                                                        value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        onBlur={(e) => this.onHandleInputBlur(e)}
+                                                    />
+                                                }
                                             </div>
-                                        }
-                                        {clientname === 'dme' &&
-                                            <div className="col-sm-1 form-group">
-                                                <div>
-                                                    <span className="c-red">Quoted $*</span>
-                                                    {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)}`}</p>
-                                                        :
-                                                        <input
-                                                            className="form-control"
-                                                            type="text"
-                                                            name="inv_sell_quoted_override"
-                                                            value = {formInputs['inv_sell_quoted_override'] && `$${formInputs['inv_sell_quoted_override']}`}
-                                                            onChange={(e) => this.onHandleInput(e)}
-                                                            onBlur={(e) => this.onHandleInputBlur(e)}
-                                                        />
-                                                    }
-                                                </div>
+                                        </div>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span className="c-red">Quoted $*</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_sell_quoted_override'] && `$${parseFloat(formInputs['inv_sell_quoted_override']).toFixed(2)}`}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_sell_quoted_override"
+                                                        value = {formInputs['inv_sell_quoted_override'] && `$${formInputs['inv_sell_quoted_override']}`}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        onBlur={(e) => this.onHandleInputBlur(e)}
+                                                    />
+                                                }
                                             </div>
-                                        }
+                                        </div>
                                         {clientname === 'dme' &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
@@ -4935,24 +4931,22 @@ class BookingPage extends Component {
                                                             disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
                                                         >Update</button>
                                                     </div>
-                                                    {(clientname === 'dme') &&
-                                                        <div className="text-center mt-2 fixed-height pricing-btns">
-                                                            <button
-                                                                className="btn btn-theme custom-theme"
-                                                                onClick={() => this.onClickFC()}
-                                                                disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
-                                                            >
-                                                                Price & Time Calc(FC)
-                                                            </button>
-                                                            <button
-                                                                className="btn btn-theme custom-theme"
-                                                                onClick={() => this.onClickOpenPricingSlider()}
-                                                                disabled={curViewMode !== 1 ? '' : 'disabled'}
-                                                            >
-                                                                <i className="fa fa-caret-square-left"></i>
-                                                            </button>
-                                                        </div>
-                                                    }
+                                                    <div className="text-center mt-2 fixed-height pricing-btns">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickFC()}
+                                                            disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
+                                                        >
+                                                            Price & Time Calc(FC)
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickOpenPricingSlider()}
+                                                            disabled={curViewMode !== 1 ? '' : 'disabled'}
+                                                        >
+                                                            <i className="fa fa-caret-square-left"></i>
+                                                        </button>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         {(clientname === 'dme'
                                                             && booking && isBookedBooking
