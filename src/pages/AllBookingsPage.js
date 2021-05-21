@@ -550,10 +550,10 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickFind() {
-        const { startDate, endDate, projectName, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, activeTabInd, dmeStatus } = this.state;
+        const { endDate, projectName, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, activeTabInd, dmeStatus } = this.state;
         // this.props.setGetBookingsFilter('date', {startDate, endDate});
         // this.props.setGetBookingsFilter('columnFilters', {});
-        this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, {}, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
+        this.props.setAllGetBookingsFilter('*', endDate, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, {}, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
