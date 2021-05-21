@@ -41,6 +41,7 @@ import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
+import ManifestSlider from '../components/Sliders/ManifestSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -115,6 +116,7 @@ class AllBookingsPage extends React.Component {
             isShowBulkUpdateSlider: false,
             isShowPricingAnalyseSlider: false,
             isShowBookingSetModal: false,
+            isShowManifestSlider: false,
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -133,6 +135,7 @@ class AllBookingsPage extends React.Component {
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
+        this.toggleManifestSlider = this.toggleManifestSlider.bind(this);
     }
 
     static propTypes = {
@@ -726,11 +729,15 @@ class AllBookingsPage extends React.Component {
             this.props.getPricingAnalysis(selectedBookingIds);
         }
         
-        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));        
+        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));
     }
 
     toggleBookingSetModal() {
         this.setState(prevState => ({isShowBookingSetModal: !prevState.isShowBookingSetModal}));
+    }
+
+    toggleManifestSlider() {
+        this.setState(prevState => ({isShowManifestSlider: !prevState.isShowManifestSlider}));
     }
 
     onClickAllTrigger() {
@@ -1169,11 +1176,10 @@ class AllBookingsPage extends React.Component {
         this.setState({allCheckStatus, selectedBookingIds});
     }
 
-    onCreateOrder(selectedBookingIds, vx_freight_provider) {
+    onCreateOrder(selectedBookingIds, vx_freight_provider='') {
         const { username } = this.state;
         const { bookings } = this.props;
         const _vx_freight_provider = vx_freight_provider.toLowerCase();
-        this.toggleOrderModal();
 
         if (_vx_freight_provider === 'biopak') {
             this.props.fpOrder(selectedBookingIds, _vx_freight_provider);
@@ -1675,6 +1681,10 @@ class AllBookingsPage extends React.Component {
         }
 
         return _bookings;
+    }
+
+    onClickShowManifestSliderButton() {
+        this.toggleManifestSlider();
     }
 
     render() {
@@ -2300,6 +2310,11 @@ class AllBookingsPage extends React.Component {
                                             {(clientname === 'dme' || clientname === 'Jason L') &&
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                </div>
+                                            }
+                                            {(clientname === 'dme' || clientname === 'Jason L') && activeTabInd === 3 &&
+                                                <div className="disp-inline-block">
+                                                    <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowManifestSliderButton()}>Manifest</button>
                                                 </div>
                                             }
                                             {(clientname === 'dme' || clientname === 'biopak') &&
@@ -3198,6 +3213,15 @@ class AllBookingsPage extends React.Component {
                     toggle={this.toggleOrderModal}
                     selectedBookingIds={selectedBookingIds}
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
+                    bookings={bookings}
+                    clientname={clientname}
+                    onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
+                />
+
+                <ManifestSlider
+                    isOpen={this.state.isShowManifestSlider}
+                    toggleSlider={this.toggleManifestSlider}
+                    selectedBookings={bookings}
                     bookings={bookings}
                     clientname={clientname}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}

@@ -83,6 +83,9 @@ import {
     failedGetLabelsInfo, // Customer Label Page
     successUpdateAugment,
     failedUpdateAugment,
+    resetManifestSummary,
+    successGetManifestSummary,
+    failedGetManifestSummary,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -786,5 +789,21 @@ export const getLabels4Booking = (identifer) => {
         axios(options)
             .then(({ data }) => dispatch(successGetLabelsInfo(data)))
             .catch((error) => dispatch(failedGetLabelsInfo(error)));
+    };
+};
+
+export const getManifestSummary = (bookingIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token  },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_summary/`,
+        data: {bookingIds}
+    };
+    return dispatch => {
+        dispatch(resetManifestSummary());
+        axios(options)
+            .then(({ data }) => dispatch(successGetManifestSummary(data)))
+            .catch((error) => dispatch(failedGetManifestSummary(error)));
     };
 };

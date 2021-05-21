@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import _ from 'lodash';
+
+import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class OrderModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-        };
+        this.state = {};
     }
 
     static propTypes = {
@@ -25,6 +25,11 @@ class OrderModal extends Component {
     static defaultProps = {
         isOpen: false,
     };
+
+    onClickCreate(selectedBookings, selectedBookingIds) {
+        this.toggleOrderModal();
+        this.props.onCreateOrder(selectedBookingIds, selectedBookings[0].vx_freight_provider);
+    }
 
     render() {
         const {isOpen, selectedBookingIds, selectedBookingLinesCnt, clientname} = this.props;
@@ -64,7 +69,7 @@ class OrderModal extends Component {
                 <ModalFooter>
                     <Button
                         color="primary"
-                        onClick={() => this.props.onCreateOrder(selectedBookingIds, selectedBookings[0].vx_freight_provider)}
+                        onClick={() => this.onClickCreate(selectedBookings, selectedBookingIds)}
                         disabled={puAvailFromDateCnt > 1 || (selectedBookingIds.length - bookedCnt > 0) || fpCnt > 1 ? 'disabled' : ''}
                     >
                         Create

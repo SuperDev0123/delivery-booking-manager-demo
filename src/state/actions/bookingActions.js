@@ -95,6 +95,9 @@ import {
     FAILED_GET_LABELS_INFO,
     SUCCESS_UPDATE_AUGMENT,
     FAILED_UPDATE_AUGMENT,
+    RESET_MANIFEST_SUMMARY,
+    SUCCESS_GET_MANIFEST_SUMMARY,
+    FAILED_GET_MANIFEST_SUMMARY,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -870,6 +873,27 @@ export function successGetLabelsInfo(data) {
 export function failedGetLabelsInfo(error) {
     return {
         type: FAILED_GET_LABELS_INFO,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function resetManifestSummary(data) {
+    return {
+        type: RESET_MANIFEST_SUMMARY,
+        payload: data,
+    };
+}
+
+export function successGetManifestSummary(data) {
+    return {
+        type: SUCCESS_GET_MANIFEST_SUMMARY,
+        payload: data,
+    };
+}
+
+export function failedGetManifestSummary(error) {
+    return {
+        type: FAILED_GET_MANIFEST_SUMMARY,
         errorMessage: error.response.data.message
     };
 }
