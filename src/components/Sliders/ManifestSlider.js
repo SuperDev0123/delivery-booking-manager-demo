@@ -60,6 +60,7 @@ class ManifestSlider extends React.Component {
                         <label>
                             <h5>#{index}</h5>
                             <strong>Freight Provider name:</strong> {fpSummary}<br />
+                            <strong>Order Count:</strong> {manifestSummary[fpSummary]['orderCnt']}<br />
                             <strong>Total Quantity:</strong> {manifestSummary[fpSummary]['totalQty']}<br />
                             <strong>Total KGs:</strong> {manifestSummary[fpSummary]['totalKgs']} (KG)<br />
                             <strong>Total Cubic Meter:</strong> {manifestSummary[fpSummary]['totalCubicMeter'].toFixed(2)} (m3)
