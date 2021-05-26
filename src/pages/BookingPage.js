@@ -2506,8 +2506,8 @@ class BookingPage extends Component {
         formInputs['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
         formInputs['v_service_Type'] = pricingInfo['service_code'];
-        booking['inv_cost_quoted'] = (parseFloat(pricingInfo['fee']) * (1 + parseFloat(pricingInfo['mu_percentage_fuel_levy']))).toFixed(3);
-        formInputs['inv_cost_quoted'] = booking['inv_cost_quoted'];
+        booking['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
+        formInputs['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
         booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
         formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
         booking['api_booking_quote'] = pricingInfo['id'];
