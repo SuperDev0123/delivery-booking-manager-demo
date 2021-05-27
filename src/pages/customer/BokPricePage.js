@@ -267,11 +267,11 @@ class BokPricePage extends Component {
                         {isPricingPage && !isSalesQuote &&
                             <td>
                                 <Button
-                                    color="primary"
+                                    color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
                                     disabled={canBeChanged ? null : 'disabled'}
                                     onClick={() => this.onSelectPricing(price.cost_id)}
                                 >
-                                    Select
+                                    {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
                                 </Button>
                             </td>
                         }
@@ -315,34 +315,64 @@ class BokPricePage extends Component {
                             </div>
                             <div className="pu-info disp-inline-block">
                                 <label>Pickup From</label><br />
-                                <span>{bok_1['b_028_b_pu_company']}</span><br />
-                                <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
-                                {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}<br /></span>)}
-                                <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
-                                <span>{bok_1['b_031_b_pu_address_state'].toUpperCase()} {bok_1['b_034_b_pu_address_country']}</span><br />
-                                <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br /><br />
-                                <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
-                                <span>{bok_1['b_037_b_pu_email']}</span><br />
-                                <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                <div className="title disp-inline-block">
+                                    <strong>Entity Name: </strong><br />
+                                    <strong>Street 1: </strong><br />
+                                    <strong>Street 2: </strong><br />
+                                    <strong>Suburb: </strong><br />
+                                    <strong>State: </strong><br />
+                                    <strong>PostalCode: </strong><br />
+                                    <strong>Country: </strong><br />
+                                    <strong>Contact Name: </strong><br />
+                                    <strong>Email: </strong><br />
+                                    <strong>Phone: </strong><br />
+                                </div>
+                                <div className="data disp-inline-block">
+                                    <span>{bok_1['b_028_b_pu_company']}</span><br />
+                                    <span>{bok_1['b_029_b_pu_address_street_1']}</span><br />
+                                    {bok_1 && bok_1['b_030_b_pu_address_street_2'] && (<span>{bok_1['b_030_b_pu_address_street_2']}</span>)}<br />
+                                    <span>{bok_1['b_032_b_pu_address_suburb']}</span><br />
+                                    <span>{bok_1['b_031_b_pu_address_state']}</span><br />
+                                    <span>{bok_1['b_033_b_pu_address_postalcode']}</span><br />
+                                    <span>{bok_1['b_034_b_pu_address_country']}</span><br />
+                                    <span>{bok_1['b_035_b_pu_contact_full_name']}</span><br />
+                                    <span>{bok_1['b_037_b_pu_email']}</span><br />
+                                    <span>{bok_1['b_038_b_pu_phone_main']}</span><br />
+                                </div>
                             </div>
                             <div className="de-info disp-inline-block">
                                 <label>Deliver To</label><br />
-                                <span>{bok_1['b_054_b_del_company']}</span><br />
-                                <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
-                                {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}<br /></span>)}
-                                <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
-                                <span>{bok_1['b_057_b_del_address_state'].toUpperCase()} {bok_1['b_060_b_del_address_country']}</span><br />
-                                <span>{bok_1['b_059_b_del_address_postalcode']}</span><br /><br />
-                                <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
-                                <span>{bok_1['b_063_b_del_email']}</span><br />
-                                <span>{bok_1['b_064_b_del_phone_main']}</span><br />  
+                                <div className="title disp-inline-block">
+                                    <strong>Entity Name: </strong><br />
+                                    <strong>Street 1: </strong><br />
+                                    <strong>Street 2: </strong><br />
+                                    <strong>Suburb: </strong><br />
+                                    <strong>State: </strong><br />
+                                    <strong>PostalCode: </strong><br />
+                                    <strong>Country: </strong><br />
+                                    <strong>Contact Name: </strong><br />
+                                    <strong>Email: </strong><br />
+                                    <strong>Phone: </strong><br />
+                                </div>
+                                <div className="data disp-inline-block">
+                                    <span>{bok_1['b_054_b_del_company']}</span><br />
+                                    <span>{bok_1['b_055_b_del_address_street_1']}</span><br />
+                                    {bok_1 && bok_1['b_056_b_del_address_street_2'] && (<span>{bok_1['b_056_b_del_address_street_2']}</span>)}<br />
+                                    <span>{bok_1['b_058_b_del_address_suburb']}</span><br />
+                                    <span>{bok_1['b_057_b_del_address_state']}</span><br />
+                                    <span>{bok_1['b_059_b_del_address_postalcode']}</span><br />
+                                    <span>{bok_1['b_060_b_del_address_country']}</span><br />
+                                    <span>{bok_1['b_061_b_del_contact_full_name']}</span><br />
+                                    <span>{bok_1['b_063_b_del_email']}</span><br />
+                                    <span>{bok_1['b_064_b_del_phone_main']}</span><br />
+                                </div>
                             </div>
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
                             onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
-                        <p><i className="fa fa-circle"></i> Lines:</p>
+                        <h3><i className="fa fa-circle"></i> Lines:</h3>
                         {totalLinesCnt &&
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
@@ -370,7 +400,7 @@ class BokPricePage extends Component {
                                     <th>Item Descripton</th>
                                     <th>Quantity</th>
                                     <th>Dim UOM</th>
-                                    <th>Lenght</th>
+                                    <th>Length</th>
                                     <th>Width</th>
                                     <th>Height</th>
                                     <th>Weight UOM</th>
@@ -382,7 +412,7 @@ class BokPricePage extends Component {
                                 {bok_2s}
                             </tbody>
                         </table>
-                        {isShowLineData && <p><i className="fa fa-circle"></i> Line Data:</p>}
+                        {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
                         {isShowLineData &&
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
@@ -392,7 +422,7 @@ class BokPricePage extends Component {
                                         <th>Item No</th>
                                         <th>Item Description</th>
                                         <th>Dim UOM</th>
-                                        <th>Lenght</th>
+                                        <th>Length</th>
                                         <th>Width</th>
                                         <th>Height</th>
                                         <th>Weight UOM</th>
@@ -404,7 +434,7 @@ class BokPricePage extends Component {
                                 </tbody>
                             </table>
                         }
-                        <p><i className="fa fa-circle"></i> Freight Rates:</p>
+                        <h3><i className="fa fa-circle"></i> Freight Rates:</h3>
                         <LoadingOverlay
                             active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isAutoRepacking}
                             spinner
@@ -427,7 +457,7 @@ class BokPricePage extends Component {
                                 </tbody>
                             </table>
                             <div className="decision">
-                                {!isSalesQuote &&
+                                {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
                                     <Button
                                         disabled={canBeChanged ? null : 'disabled'}
                                         color="primary"

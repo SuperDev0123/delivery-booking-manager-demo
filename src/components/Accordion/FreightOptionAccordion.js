@@ -234,7 +234,7 @@ class FreightOptionAccordion extends Component {
                                 <textarea
                                     width="100%"
                                     name="b_014_b_pu_handling_instructions"
-                                    rows="1"
+                                    rows="3"
                                     cols="9"
                                     value={bok_1['b_014_b_pu_handling_instructions']}
                                     onChange={(e) => this.onInputChange(e)}
@@ -245,7 +245,7 @@ class FreightOptionAccordion extends Component {
                                 <textarea
                                     width="100%"
                                     name="b_016_b_pu_instructions_address"
-                                    rows="1"
+                                    rows="3"
                                     cols="9"
                                     value={bok_1['b_016_b_pu_instructions_address']}
                                     onChange={(e) => this.onInputChange(e)}
@@ -374,7 +374,7 @@ class FreightOptionAccordion extends Component {
                                 <textarea
                                     width="100%"
                                     name="b_044_b_del_instructions_address"
-                                    rows="1"
+                                    rows="3"
                                     cols="9"
                                     value={bok_1['b_044_b_del_instructions_address']}
                                     onChange={(e) => this.onInputChange(e)}
