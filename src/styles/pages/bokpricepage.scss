@@ -5,13 +5,11 @@ section.bok-price {
 	overflow-y: scroll;
 
 	.main-info {
-		width: 60%;
-		margin-left: 30px;
-		margin-right: 20%;
 		margin-bottom: 50px;
+		padding: 20px;
 
 		>div {
-			width: 50%;
+			width: 50%;			
 
 			label {
 				color: deepskyblue;
@@ -19,14 +17,15 @@ section.bok-price {
 			}
 
 			&.pu-info {
-
 			}
 
 			&.de-info {
-
 			}
 
-			.title { width: 150px }
+			.title {
+				width: 150px;
+				margin-left: 10px;
+			}
 		}
 	}
 

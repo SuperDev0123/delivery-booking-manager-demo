@@ -28,7 +28,10 @@
 		>div {
 			width: 50%;
 
-			h4 { color: deepskyblue }
+			h4 {
+				color: deepskyblue;
+				font-weight: bold;
+			}
 
 			label {
 				width: 100%;
