@@ -1950,7 +1950,7 @@ class AllBookingsPage extends React.Component {
                     </Popover>
                     <td
                         name='puPickUpAvailFrom_Date' 
-                        id={'edit-cell-popover-' + booking.id} 
+                        id={'edit-cell-popover-' + booking.id}
                         className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}
                     >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
@@ -1970,6 +1970,7 @@ class AllBookingsPage extends React.Component {
                     <EditablePopover 
                         isOpen={this.state.editCellPopoverOpens['edit-cell-popover-' + booking.id]}
                         booking={booking}
+                        key={booking.id}
                         onCancel={this.togglePopover}
                         onChange={(bookingId, booking) => this.props.updateBooking(bookingId, booking)}
                         inputType={'datepicker'}

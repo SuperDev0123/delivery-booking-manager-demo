@@ -50,6 +50,15 @@ section.bok-price {
 
 		button {
 			i { color: white }
+
+			&.reset {
+				margin-left: 20px;
+			}
+		}
+
+		input {
+			width: 25%;
+			height: 30px;
 		}
 	}
 

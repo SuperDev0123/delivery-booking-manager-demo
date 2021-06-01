@@ -32,6 +32,7 @@ class BokPricePage extends Component {
             isShowPalletSlider: false,
             isShowLineData: false,
             selectedPrice: {},
+            b_090_client_overrided_quote: null,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -66,7 +67,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, bokWithPricings} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -113,6 +114,10 @@ class BokPricePage extends Component {
             this.setState({isAutoRepacking: false, isLoadingBok: true});
             this.props.getBokWithPricings(this.props.match.params.id);
         }
+
+        if (bokWithPricings) {
+            this.setState({b_090_client_overrided_quote: bokWithPricings['b_090_client_overrided_quote']});
+        }
     }
 
     notify = (text) => {
@@ -143,8 +148,9 @@ class BokPricePage extends Component {
     }
 
     onSelectPricing(cost_id) {
+        const {b_090_client_overrided_quote} = this.state;
         this.setState({isLoadingPricing: true});
-        this.props.onSelectPricing(cost_id, this.props.match.params.id);
+        this.props.onSelectPricing(cost_id, this.props.match.params.id, parseFloat(b_090_client_overrided_quote).toFixed(2));
     }
 
     toggleExtraCostSummarySlider() {
@@ -186,8 +192,17 @@ class BokPricePage extends Component {
         this.toggleExtraCostSummarySlider();
     }
 
+    onChangeInput(event) {
+        const value = event.target.value;
+        this.setState({b_090_client_overrided_quote: value});
+    }
+
+    onClickResetBtn() {
+        this.setState({b_090_client_overrided_quote: ''});
+    } 
+
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, b_090_client_overrided_quote} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -255,6 +270,11 @@ class BokPricePage extends Component {
                         <td>{price['fp_name']}</td>
                         <td>{price['service_name']}</td>
                         <td>
+                            ${price['client_mu_1_minimum_values'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
+                        </td>
+                        <td>
                             ${price['cost'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
@@ -263,6 +283,22 @@ class BokPricePage extends Component {
                             ${totalSurcharge} {totalSurcharge > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>{(price['cost'] + totalSurcharge).toFixed(2)}</td>
+                        <td id={'edit-cell-popover-' + bok_1['b_client_order_num']}>
+                            $
+                            <input
+                                type="number"
+                                name="b_090_client_overrided_quote"
+                                value={b_090_client_overrided_quote}
+                                onChange={(e) => this.onChangeInput(e)}
+                            />
+                            <Button
+                                className='reset'
+                                color='danger'
+                                onClick={() => this.onClickResetBtn()}
+                            >
+                                Reset
+                            </Button>
+                        </td>
                         <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
                         {isPricingPage && !isSalesQuote &&
                             <td>
@@ -443,12 +479,14 @@ class BokPricePage extends Component {
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
                                     <tr>
-                                        <th style={{width: '15%'}}>Freight Provider</th>
-                                        <th style={{width: '15%'}}>Service Name</th>
-                                        <th style={{width: '10%'}} onClick={() => this.onClickColumn('lowest')}>Customer Sell (click & sort)</th>
-                                        <th style={{width: '10%'}}>Extra $</th>
-                                        <th style={{width: '10%'}}>Total $</th>
-                                        <th style={{width: '15%'}} onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                        <th>Freight Provider</th>
+                                        <th>Service Name</th>
+                                        <th onClick={() => this.onClickColumn('lowest')}>Quote $ (click & sort)</th>
+                                        <th onClick={() => this.onClickColumn('lowest')}>Customer Sell (click & sort)</th>
+                                        <th>Extra $</th>
+                                        <th>Total $</th>
+                                        <th>Client adjusted $</th>
+                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}
                                     </tr>
                                 </thead>
@@ -513,7 +551,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getBokWithPricings: (identifier) => dispatch(getBokWithPricings(identifier)),
-        onSelectPricing: (costId, identifier) => dispatch(onSelectPricing(costId, identifier)),
+        onSelectPricing: (costId, identifier, client_overrided_quote) => dispatch(onSelectPricing(costId, identifier, client_overrided_quote)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),

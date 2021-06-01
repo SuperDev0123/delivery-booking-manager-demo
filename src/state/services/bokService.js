@@ -71,11 +71,11 @@ export const getBokWithPricings = (identifier) => {
     };
 };
 
-export const onSelectPricing = (costId, identifier) => {
+export const onSelectPricing = (costId, identifier, client_overrided_quote=null) => {
     const options = {
         method: 'post',
         url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/select_pricing/`,
-        data: {'costId': costId, 'identifier': identifier},
+        data: {'costId': costId, 'identifier': identifier, client_overrided_quote},
     };
     return dispatch =>
         axios(options)
