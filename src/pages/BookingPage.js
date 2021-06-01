@@ -1380,10 +1380,7 @@ class BookingPage extends Component {
                         ) {
                             this.buildCSV([booking.id], freight_provider);
                             this.setState({loading: true, curViewMode: 0});
-                        } else if (
-                            freight_provider === 'allied' ||
-                            freight_provider === 'act'
-                        ) {
+                        } else if (freight_provider === 'act') {
                             this.buildXML([booking.id], freight_provider);
                             this.setState({loading: true, curViewMode: 0});
                         } else {
