@@ -212,8 +212,24 @@ class BokPricePage extends Component {
             isSalesQuote = true;
         }
 
+        if (bokWithPricings) {
+            bokWithPricings['pricings'].map((price, index) => {
+                let totalSurcharge = 0;
+
+                if (!_.isEmpty(price.surcharges)) {
+                    price.surcharges.map(surcharge => {
+                        totalSurcharge += surcharge['value'];
+                    });
+                }
+
+                bokWithPricings['pricings'][index]['totalSurcharge'] = totalSurcharge;
+                bokWithPricings['pricings'][index]['total'] = parseFloat((price['client_mu_1_minimum_values'] + totalSurcharge).toFixed(2));
+                bokWithPricings['pricings'][index]['sell'] = ((price['client_mu_1_minimum_values'] + totalSurcharge) * (1 + price['client_customer_mark_up'])).toFixed(2);
+            });
+        }
+
         if (bokWithPricings && sortedBy === 'lowest') {
-            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['cost']);
+            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['total']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
         }
@@ -243,17 +259,6 @@ class BokPricePage extends Component {
                 );
             });
             pricings = sortedPricings.map((price, index) => {
-                let totalSurcharge = 0;
-
-                if (!_.isEmpty(price.surcharges)) {
-                    price.surcharges.map(surcharge => {
-                        totalSurcharge += surcharge['value'];
-                    });
-                }
-
-                const total = (price['client_mu_1_minimum_values'] + totalSurcharge).toFixed(2);
-                const sell = ((price['client_mu_1_minimum_values'] + totalSurcharge) * (1 + price['client_customer_mark_up'])).toFixed(2);
-
                 return (
                     <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                         <td>{price['fp_name']}</td>
@@ -264,13 +269,13 @@ class BokPricePage extends Component {
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
                         <td>
-                            ${totalSurcharge} {totalSurcharge > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            ${price['totalSurcharge']} {price['totalSurcharge'] > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
-                        <td>{total}</td>
+                        <td>${price['total']}</td>
                         <td>
-                            ${sell}
+                            ${price['sell']}
                             &nbsp;&nbsp;&nbsp;
-                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(sell)}></i>
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['sell'])}></i>
                         </td>
                         <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
                         {isPricingPage && !isSalesQuote &&
