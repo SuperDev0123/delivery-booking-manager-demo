@@ -32,7 +32,6 @@ class BokPricePage extends Component {
             isShowPalletSlider: false,
             isShowLineData: false,
             selectedPrice: {},
-            b_090_client_overrided_quote: null,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
@@ -67,7 +66,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, bokWithPricings} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -113,10 +112,6 @@ class BokPricePage extends Component {
         if (this.state.isAutoRepacking && !this.props.autoRepackSuccess && newProps.autoRepackSuccess) {
             this.setState({isAutoRepacking: false, isLoadingBok: true});
             this.props.getBokWithPricings(this.props.match.params.id);
-        }
-
-        if (bokWithPricings) {
-            this.setState({b_090_client_overrided_quote: bokWithPricings['b_090_client_overrided_quote']});
         }
     }
 
@@ -192,17 +187,8 @@ class BokPricePage extends Component {
         this.toggleExtraCostSummarySlider();
     }
 
-    onChangeInput(event) {
-        const value = event.target.value;
-        this.setState({b_090_client_overrided_quote: value});
-    }
-
-    onClickResetBtn() {
-        this.setState({b_090_client_overrided_quote: ''});
-    } 
-
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, b_090_client_overrided_quote} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -265,6 +251,9 @@ class BokPricePage extends Component {
                     });
                 }
 
+                const total = (price['client_mu_1_minimum_values'] + totalSurcharge).toFixed(2);
+                const sell = ((price['client_mu_1_minimum_values'] + totalSurcharge) * (1 + price['client_customer_mark_up'])).toFixed(2);
+
                 return (
                     <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                         <td>{price['fp_name']}</td>
@@ -275,29 +264,13 @@ class BokPricePage extends Component {
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
                         <td>
-                            ${price['cost'].toFixed(2)}
-                            &nbsp;&nbsp;&nbsp;
-                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost'].toFixed(2))}></i>
-                        </td>
-                        <td>
                             ${totalSurcharge} {totalSurcharge > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
-                        <td>{(price['cost'] + totalSurcharge).toFixed(2)}</td>
-                        <td id={'edit-cell-popover-' + bok_1['b_client_order_num']}>
-                            $
-                            <input
-                                type="number"
-                                name="b_090_client_overrided_quote"
-                                value={b_090_client_overrided_quote}
-                                onChange={(e) => this.onChangeInput(e)}
-                            />
-                            <Button
-                                className='reset'
-                                color='danger'
-                                onClick={() => this.onClickResetBtn()}
-                            >
-                                Reset
-                            </Button>
+                        <td>{total}</td>
+                        <td>
+                            ${sell}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(sell)}></i>
                         </td>
                         <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
                         {isPricingPage && !isSalesQuote &&
@@ -481,11 +454,10 @@ class BokPricePage extends Component {
                                     <tr>
                                         <th>Freight Provider</th>
                                         <th>Service Name</th>
-                                        <th onClick={() => this.onClickColumn('lowest')}>Quote $ (click & sort)</th>
-                                        <th onClick={() => this.onClickColumn('lowest')}>Customer Sell (click & sort)</th>
+                                        <th onClick={() => this.onClickColumn('lowest')}>Cost $ (click & sort)</th>
                                         <th>Extra $</th>
-                                        <th>Total $</th>
-                                        <th>Client adjusted $</th>
+                                        <th>Total Cost $</th>
+                                        <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                         <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}
                                     </tr>

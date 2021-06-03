@@ -42,7 +42,8 @@ class FreightOptionAccordion extends Component {
         } else if (
             e.target.name === 'b_019_b_pu_tail_lift' ||
             e.target.name === 'b_041_b_del_tail_lift' ||
-            e.target.name === 'b_081_b_pu_auto_pack'
+            e.target.name === 'b_081_b_pu_auto_pack' ||
+            e.target.name === 'b_091_send_quote_to_pronto'
         ) {
             bok_1[e.target.name] = e.target.checked;
         } else {
@@ -102,10 +103,21 @@ class FreightOptionAccordion extends Component {
                 </div>
                 {isOpen &&
                     <div className="body">
+                        <div className="special">
+                            <label>
+                                <p><strong>Update Freight Sell Price to Sales Order?: </strong></p>
+                                <input
+                                    name="b_091_send_quote_to_pronto"
+                                    type="checkbox"
+                                    checked={bok_1['b_091_send_quote_to_pronto']}
+                                    onChange={(e) => this.onInputChange(e)}
+                                />
+                            </label>
+                        </div>
                         <div className="at-pu disp-inline-block">
                             <h4>At Pickup:</h4>
                             <label>
-                                <p>Auto repack:</p>
+                                <p><strong>Auto repack: </strong></p>
                                 <input
                                     name="b_081_b_pu_auto_pack"
                                     type="checkbox"
@@ -114,7 +126,7 @@ class FreightOptionAccordion extends Component {
                                 />
                             </label>
                             <label>
-                                <p>Address Type:</p>
+                                <p><strong>Address Type: </strong></p>
                                 <select
                                     name="b_027_b_pu_address_type"
                                     onChange={(e) => this.onInputChange(e)}
@@ -126,7 +138,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Tail Lift Required?:</p>
+                                <p><strong>Tail Lift Required?: </strong></p>
                                 <input
                                     name="b_019_b_pu_tail_lift"
                                     type="checkbox"
@@ -135,7 +147,7 @@ class FreightOptionAccordion extends Component {
                                 />
                             </label>
                             <label>
-                                <p>No of men to assist:</p>
+                                <p><strong>No of men to assist: </strong></p>
                                 <select
                                     name="b_072_b_pu_no_of_assists"
                                     onChange={(e) => this.onInputChange(e)}
@@ -151,7 +163,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Pickup Location:</p>
+                                <p><strong>Pickup Location: </strong></p>
                                 <select
                                     name="b_078_b_pu_location"
                                     onChange={(e) => this.onInputChange(e)}
@@ -164,7 +176,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Pickup Access:</p>
+                                <p><strong>Pickup Access: </strong></p>
                                 <select
                                     name="b_074_b_pu_access"
                                     onChange={(e) => this.onInputChange(e)}
@@ -179,7 +191,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Level:</p>
+                                <p><strong>Delivery Level: </strong></p>
                                 <select
                                     name="b_079_b_pu_floor_number"
                                     onChange={(e) => this.onInputChange(e)}
@@ -201,7 +213,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Level Access:</p>
+                                <p><strong>Level Access: </strong></p>
                                 <select
                                     name="b_080_b_pu_floor_access_by"
                                     onChange={(e) => this.onInputChange(e)}
@@ -217,7 +229,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Service:</p>
+                                <p><strong>Service: </strong></p>
                                 <select
                                     name="b_076_b_pu_service"
                                     onChange={(e) => this.onInputChange(e)}
@@ -230,7 +242,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Handling Instruction:</p>
+                                <p><strong>Handling Instruction: </strong></p>
                                 <textarea
                                     width="100%"
                                     name="b_014_b_pu_handling_instructions"
@@ -241,7 +253,7 @@ class FreightOptionAccordion extends Component {
                                 />
                             </label>
                             <label>
-                                <p>Pickup Instruction:</p>
+                                <p><strong>Pickup Instruction: </strong></p>
                                 <textarea
                                     width="100%"
                                     name="b_016_b_pu_instructions_address"
@@ -255,7 +267,7 @@ class FreightOptionAccordion extends Component {
                         <div className="at-de disp-inline-block">
                             <h4>At Delivery:</h4>
                             <label>
-                                <p>Address Type:</p>
+                                <p><strong>Address Type: </strong></p>
                                 <select
                                     name="b_053_b_del_address_type"
                                     onChange={(e) => this.onInputChange(e)}
@@ -267,7 +279,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Tail Lift Required?:</p>
+                                <p><strong>Tail Lift Required?: </strong></p>
                                 <input
                                     name="b_041_b_del_tail_lift"
                                     type="checkbox"
@@ -276,7 +288,7 @@ class FreightOptionAccordion extends Component {
                                 />
                             </label>
                             <label>
-                                <p>No of men to assist:</p>
+                                <p><strong>No of men to assist: </strong></p>
                                 <select
                                     name="b_073_b_del_no_of_assists"
                                     onChange={(e) => this.onInputChange(e)}
@@ -292,7 +304,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Location:</p>
+                                <p><strong>Delivery Location: </strong></p>
                                 <select
                                     name="b_068_b_del_location"
                                     onChange={(e) => this.onInputChange(e)}
@@ -305,7 +317,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Access:</p>
+                                <p><strong>Delivery Access: </strong></p>
                                 <select
                                     name="b_075_b_del_access"
                                     onChange={(e) => this.onInputChange(e)}
@@ -320,7 +332,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Level:</p>
+                                <p><strong>Delivery Level: </strong></p>
                                 <select
                                     name="b_069_b_del_floor_number"
                                     onChange={(e) => this.onInputChange(e)}
@@ -342,7 +354,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Level Access:</p>
+                                <p><strong>Level Access: </strong></p>
                                 <select
                                     name="b_070_b_del_floor_access_by"
                                     onChange={(e) => this.onInputChange(e)}
@@ -357,7 +369,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Service:</p>
+                                <p><strong>Service: </strong></p>
                                 <select
                                     name="b_077_b_del_service"
                                     onChange={(e) => this.onInputChange(e)}
@@ -370,7 +382,7 @@ class FreightOptionAccordion extends Component {
                                 </select>
                             </label>
                             <label>
-                                <p>Delivery Instruction:</p>
+                                <p><strong>Delivery Instruction: </strong></p>
                                 <textarea
                                     width="100%"
                                     name="b_044_b_del_instructions_address"
