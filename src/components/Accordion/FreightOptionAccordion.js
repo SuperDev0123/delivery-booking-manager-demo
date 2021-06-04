@@ -103,7 +103,7 @@ class FreightOptionAccordion extends Component {
                 </div>
                 {isOpen &&
                     <div className="body">
-                        <div className="special">
+                        <div className="special none">
                             <label>
                                 <p><strong>Update Freight Sell Price to Sales Order?: </strong></p>
                                 <input
