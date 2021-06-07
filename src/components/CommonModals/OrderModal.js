@@ -20,6 +20,7 @@ class OrderModal extends Component {
         selectedBookingLinesCnt: PropTypes.number.isRequired,
         bookings: PropTypes.array.isRequired,
         clientname: PropTypes.string,
+        toggleOrderModal: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
@@ -27,7 +28,7 @@ class OrderModal extends Component {
     };
 
     onClickCreate(selectedBookings, selectedBookingIds) {
-        this.toggleOrderModal();
+        this.props.toggleOrderModal();
         this.props.onCreateOrder(selectedBookingIds, selectedBookings[0].vx_freight_provider);
     }
 
