@@ -1181,7 +1181,7 @@ class AllBookingsPage extends React.Component {
         const { bookings } = this.props;
         const _vx_freight_provider = vx_freight_provider.toLowerCase();
 
-        if (_vx_freight_provider === 'biopak') {
+        if (_vx_freight_provider === 'startrack') {
             this.props.fpOrder(selectedBookingIds, _vx_freight_provider);
         } else {
             if (selectedBookingIds.length > 500) {
