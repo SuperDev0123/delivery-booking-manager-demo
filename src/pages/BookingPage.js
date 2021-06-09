@@ -287,12 +287,10 @@ class BookingPage extends Component {
         var bookingId = urlParams.get('bookingid');
 
         if (bookingId != null) {
-            console.log('@0 - ');
             this.props.getBooking(bookingId, 'id');
             this.props.getZohoTickets(bookingId);
             this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
-            console.log('@1 - ');
             this.props.getBooking();
             this.setState({loading: true, curViewMode: 0});
             // this.props.getSuburbStrings('state', undefined);
@@ -460,7 +458,6 @@ class BookingPage extends Component {
 
         if (needUpdateStatusHistories && booking && booking.pk_booking_id) {
             this.props.getBookingStatusHistory(booking.pk_booking_id);
-            console.log('@3 - ');
             this.props.getBooking(booking.id, 'id');
             this.setState({loading: true, curViewMode: 0});
         }
@@ -979,7 +976,6 @@ class BookingPage extends Component {
 
         if (booking && pricingInfos) {
             if (this.state.pricingInfos.length != pricingInfos.length) {
-                console.log('@4 - ');
                 this.props.getBooking(booking.id, 'id');
                 this.setState({loading: true, curViewMode: 0});
             }
@@ -1031,7 +1027,6 @@ class BookingPage extends Component {
 
     refreshBooking(booking) {
         let that = this;
-        console.log('@5 - ');
         this.props.getBooking(booking.id, 'id');
         setTimeout(() => {
             that.setState({loading: true, curViewMode: 0});
@@ -2348,7 +2343,6 @@ class BookingPage extends Component {
                 isBookingModified: false
             }, () => this.afterSetState(1)); // Reload GEO info
         } else if (curViewMode === 1 && newViewMode === 0) { // Create -> View
-            console.log('@1 - ');
             this.props.getBooking();
             this.setState({
                 curViewMode: newViewMode,
