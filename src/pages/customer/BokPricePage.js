@@ -218,11 +218,11 @@ class BokPricePage extends Component {
 
                 if (!_.isEmpty(price.surcharges)) {
                     price.surcharges.map(surcharge => {
-                        totalSurcharge += surcharge['value'];
+                        totalSurcharge += surcharge['amount'];
                     });
                 }
 
-                bokWithPricings['pricings'][index]['totalSurcharge'] = totalSurcharge;
+                bokWithPricings['pricings'][index]['totalSurcharge'] = totalSurcharge.toFixed(2);
                 bokWithPricings['pricings'][index]['total'] = parseFloat((price['client_mu_1_minimum_values'] + totalSurcharge).toFixed(2));
                 bokWithPricings['pricings'][index]['sell'] = ((price['client_mu_1_minimum_values'] + totalSurcharge) * (1 + price['client_customer_mark_up'])).toFixed(2);
             });
@@ -498,6 +498,7 @@ class BokPricePage extends Component {
                     isOpen={this.state.isShowExtraCostSummarySlider}
                     toggleSlider={this.toggleExtraCostSummarySlider}
                     selectedPrice = {this.state.selectedPrice}
+                    bok_2s = {bokWithPricings ? bokWithPricings['bok_2s'] : []}
                 />
 
                 <PalletSlider
