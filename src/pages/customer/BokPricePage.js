@@ -260,7 +260,7 @@ class BokPricePage extends Component {
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
                         <td>
-                            ${price['surcharge_total']} {price['surcharge_total'] > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            ${price['surcharge_total']} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>${price['total']}</td>
                         <td>

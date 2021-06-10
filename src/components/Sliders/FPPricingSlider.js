@@ -116,7 +116,7 @@ class FPPricingSlider extends React.Component {
                         </td>
                     }
                     <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null} {pricingInfo.tax_id_1 ? `(${pricingInfo.tax_id_1})` : null}</td>
-                    <td>{pricingInfo.surcharge_total ? '$' + pricingInfo.surcharge_total : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>: null}</td>
+                    <td>{pricingInfo.surcharge_total ? '$' + pricingInfo.surcharge_total.toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>: null}</td>
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
                     <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(3)}</td>
                     <td className="text-right none">${this.calcTotalValue(pricingInfo)}</td>
