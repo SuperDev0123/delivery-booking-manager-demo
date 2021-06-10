@@ -214,17 +214,8 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bokWithPricings['pricings'].map((price, index) => {
-                let totalSurcharge = 0;
-
-                if (!_.isEmpty(price.surcharges)) {
-                    price.surcharges.map(surcharge => {
-                        totalSurcharge += surcharge['amount'];
-                    });
-                }
-
-                bokWithPricings['pricings'][index]['totalSurcharge'] = totalSurcharge.toFixed(2);
-                bokWithPricings['pricings'][index]['total'] = parseFloat((price['client_mu_1_minimum_values'] + totalSurcharge).toFixed(2));
-                bokWithPricings['pricings'][index]['sell'] = ((price['client_mu_1_minimum_values'] + totalSurcharge) * (1 + price['client_customer_mark_up'])).toFixed(2);
+                bokWithPricings['pricings'][index]['total'] = (price['client_mu_1_minimum_values'].toFixed(2));
+                bokWithPricings['pricings'][index]['sell'] = (price['client_mu_1_minimum_values'] * (1 + price['client_customer_mark_up'])).toFixed(2);
             });
         }
 
@@ -269,7 +260,7 @@ class BokPricePage extends Component {
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
                         <td>
-                            ${price['totalSurcharge']} {price['totalSurcharge'] > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            ${price['surcharge_total']} {price['surcharge_total'] > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>${price['total']}</td>
                         <td>
