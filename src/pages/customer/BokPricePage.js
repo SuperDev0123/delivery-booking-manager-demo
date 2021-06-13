@@ -214,7 +214,6 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bokWithPricings['pricings'].map((price, index) => {
-                bokWithPricings['pricings'][index]['total'] = (price['client_mu_1_minimum_values'].toFixed(2));
                 bokWithPricings['pricings'][index]['sell'] = (price['client_mu_1_minimum_values'] * (1 + price['client_customer_mark_up'])).toFixed(2);
             });
         }
@@ -255,14 +254,13 @@ class BokPricePage extends Component {
                         <td>{price['fp_name']}</td>
                         <td>{price['service_name']}</td>
                         <td>
+                            ${price['surcharge_total']} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                        </td>
+                        <td>
                             ${price['client_mu_1_minimum_values'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
-                        <td>
-                            ${price['surcharge_total']} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
-                        </td>
-                        <td>${price['total']}</td>
                         <td>
                             ${price['sell']}
                             &nbsp;&nbsp;&nbsp;
@@ -451,9 +449,8 @@ class BokPricePage extends Component {
                                     <tr>
                                         <th>Freight Provider</th>
                                         <th>Service Name</th>
-                                        <th onClick={() => this.onClickColumn('lowest')}>Cost $ (click & sort)</th>
                                         <th>Extra $</th>
-                                        <th>Total Cost $</th>
+                                        <th>Cost $</th>
                                         <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                         <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}

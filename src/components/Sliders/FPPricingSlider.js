@@ -109,13 +109,9 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3)}</td>}
+                    {clientname === 'dme' && <td className="text-right">{pricingInfo.surcharge_total.toFixed(3)}%</td>}
                     {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(3)}%</td>}
-                    {clientname === 'dme' &&
-                        <td className="text-right">
-                            ${(parseFloat(pricingInfo.fee) * (1 + parseFloat(pricingInfo.mu_percentage_fuel_levy))).toFixed(3)}
-                        </td>
-                    }
-                    <td>{pricingInfo.tax_value_1 ? '$' + pricingInfo.tax_value_1 : null} {pricingInfo.tax_id_1 ? `(${pricingInfo.tax_id_1})` : null}</td>
+                    {clientname === 'dme' &&<td className="text-right">${(parseFloat(pricingInfo.fee) * (1 + parseFloat(pricingInfo.mu_percentage_fuel_levy))).toFixed(3)}</td>}
                     <td>{pricingInfo.surcharge_total ? '$' + pricingInfo.surcharge_total.toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>: null}</td>
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
                     <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(3)}</td>
@@ -240,9 +236,9 @@ class FPPricingSlider extends React.Component {
                                         <th className="" scope="col" nowrap><p>Service</p></th>
                                         <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Base Extra $</p></th>}
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>Quoted Cost</p></th>}
-                                        <th className="" scope="col" nowrap><p>Tax (ID)</p></th>
                                         <th className="" scope="col" nowrap><p>Extra $</p></th>
                                         <th className="" scope="col" nowrap><p>Quoted $</p></th>
                                         <th className="" scope="col" nowrap><p>Sell $</p></th>
