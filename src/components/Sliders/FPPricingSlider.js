@@ -106,18 +106,20 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.etd}</td>
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td>}
+                    {clientname === 'dme' && <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.fuel_levy_base.toFixed(2)}</td>}
                     {clientname === 'dme' &&<td className="text-right">${(pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.client_mark_up_percent.toFixed(2)}%</td>}
+                    {clientname === 'dme' && <td className="text-right">{(pricingInfo.client_mark_up_percent * 100).toFixed(2)}%</td>}
                     <td className="text-right">${pricingInfo.cost_dollar.toFixed(2)}</td>
+                    <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
+                    <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
                     <td className="text-right">
                         {pricingInfo.surcharge_total ?
                             '$' + (pricingInfo.surcharge_total * (1 + pricingInfo.client_customer_mark_up)).toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>
                             : null}
                     </td>
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
-                    <td className="text-right">{pricingInfo.client_customer_mark_up.toFixed(2)}%</td>
+                    <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
                     <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
                     <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                         {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
@@ -245,6 +247,8 @@ class FPPricingSlider extends React.Component {
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>DME Client Markup %</p></th>}
                                         <th className="" scope="col" nowrap><p>Cost $</p></th>
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
                                         <th className="" scope="col" nowrap><p>Extra $</p></th>
                                         <th className="" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
                                         <th className="" scope="col" nowrap><p>Client Customer Markup %</p></th>

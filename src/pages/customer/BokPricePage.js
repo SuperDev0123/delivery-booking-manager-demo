@@ -258,15 +258,17 @@ class BokPricePage extends Component {
                             &nbsp;&nbsp;&nbsp;
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
                         </td>
+                        <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
+                        <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
                         <td>
-                            ${price['surcharge_total']} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            ${price['surcharge_total'].toFixed(2)} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>
                             ${price['client_mu_1_minimum_values'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
-                        <td>${price['client_customer_mark_up'].toFixed(2)}</td>
+                        <td>{(price['client_customer_mark_up'] * 100).toFixed(2)}%</td>
                         <td>
                             ${price['sell']}
                             &nbsp;&nbsp;&nbsp;
@@ -456,6 +458,8 @@ class BokPricePage extends Component {
                                         <th>Freight Provider</th>
                                         <th>Service Name</th>
                                         <th>Cost $</th>
+                                        <th>Fuel Levy %</th>
+                                        <th>Fuel Levy $</th>
                                         <th>Extra $</th>
                                         <th>Total $</th>
                                         <th>Client Customer Markup %</th>
