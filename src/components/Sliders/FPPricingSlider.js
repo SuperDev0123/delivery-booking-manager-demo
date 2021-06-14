@@ -247,8 +247,8 @@ class FPPricingSlider extends React.Component {
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
                                         {clientname === 'dme' && <th className="" scope="col" nowrap><p>DME Client Markup %</p></th>}
                                         <th className="" scope="col" nowrap><p>Cost $</p></th>
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
+                                        <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>
+                                        <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
                                         <th className="" scope="col" nowrap><p>Extra $</p></th>
                                         <th className="" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
                                         <th className="" scope="col" nowrap><p>Client Customer Markup %</p></th>
