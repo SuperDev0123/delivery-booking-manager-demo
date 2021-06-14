@@ -14,7 +14,7 @@ class FPPricingSlider extends React.Component {
         super(props);
 
         this.state = {
-            currentTab: 0, // 0: All Pricings, 1: Errors, 2: Surcharges
+            currentTab: 0, // 0: All Pricing, 1: Errors, 2: Surcharges
             onLoadedError: false,
             selectedSurcharge: null
         };
@@ -115,8 +115,9 @@ class FPPricingSlider extends React.Component {
                     <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
                     <td className="text-right">
                         {pricingInfo.surcharge_total ?
-                            '$' + (pricingInfo.surcharge_total * (1 + pricingInfo.client_customer_mark_up)).toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>
-                            : null}
+                            '$' + (pricingInfo.surcharge_total * (1 + pricingInfo.client_customer_mark_up)).toFixed(2) : null}
+                            &nbsp;&nbsp;&nbsp;
+                            {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
                     </td>
                     <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                     <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
@@ -184,7 +185,7 @@ class FPPricingSlider extends React.Component {
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12">
                             <ul className="nav nav-tabs">
                                 <li className={currentTab == 0 ? 'active' : ''}>
-                                    <a onClick={(e) => this.onSelectTab(0, e)}>All Pricings</a>
+                                    <a onClick={(e) => this.onSelectTab(0, e)}>All Pricing</a>
                                 </li>
                                 <li className={currentTab == 1 ? 'active' : ''}>
                                     <a onClick={(e) => this.onSelectTab(1, e)}>Errors</a>
@@ -236,25 +237,25 @@ class FPPricingSlider extends React.Component {
                             {currentTab === 0 ?
                                 <table className="table table-hover table-bordered sortable fixed_headers">
                                     <tr>
-                                        <th className="" scope="col" nowrap><p>No</p></th>
-                                        <th className="" scope="col" nowrap><p>Transporter</p></th>
-                                        <th className="" scope="col" nowrap><p>Service</p></th>
-                                        <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>DME Client Markup %</p></th>}
-                                        <th className="" scope="col" nowrap><p>Cost $</p></th>
-                                        <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>
-                                        <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
-                                        <th className="" scope="col" nowrap><p>Extra $</p></th>
-                                        <th className="" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
-                                        <th className="" scope="col" nowrap><p>Client Customer Markup %</p></th>
-                                        <th className="" scope="col" nowrap><p>Sell $</p></th>
-                                        <th className="" scope="col" nowrap><p>ETA DE</p></th>
-                                        <th className="" scope="col" nowrap><p>Action</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>No</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Service</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Transport Days(working)</p></th>
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>DME Client Markup %</p></th>}
+                                        <th className="nowrap" scope="col" nowrap><p>Cost $</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Extra $</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Client Customer Markup %</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Sell $</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Action</p></th>
                                     </tr>
                                     { pricingList }
                                 </table>
@@ -279,7 +280,7 @@ class FPPricingSlider extends React.Component {
                                 surchargeList ?
                                     <div>{surchargeList}</div>
                                     :
-                                    <p>Please select surcharge $ sign on [ALL PRICINGS] tab.</p>
+                                    <p>Please select surcharge $ sign on [ALL PRICING] tab.</p>
                                 : null
                             }
                         </LoadingOverlay>

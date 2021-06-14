@@ -44,7 +44,6 @@ class ExtraCostSummarySlider extends React.Component {
             return (
                 <p className="surcharge" key={index}>
                     <strong>Name:</strong> {surcharge['name']}<br />
-                    <strong>Description:</strong> {surcharge['description']}<br />
                     <strong>Amount:</strong> {surcharge['amount_cl'].toFixed(2)}<br />
                     {lines ? lines : null}
                     <hr />
