@@ -37,10 +37,6 @@ class FPPricingSlider extends React.Component {
         toast(text);
     };
 
-    calcTotalValue(pricingInfo) {
-        return (pricingInfo.client_mu_1_minimum_values + (pricingInfo.tax_value_1 ? pricingInfo.tax_value_1 : 0)).toFixed(3);
-    }
-
     UNSAFE_componentWillReceiveProps(newProps) {
         const {isOpen} = newProps;
 
@@ -98,8 +94,8 @@ class FPPricingSlider extends React.Component {
         const {isOpen, booking, clientname, isBooked} = this.props;
         const {pricingInfos, errors} = this.props;
         const { currentTab, selectedSurcharge} = this.state;
-        pricingInfos.sort((a, b) =>  this.calcTotalValue(a) - this.calcTotalValue(b));
         let surchargeList = null;
+        pricingInfos.sort((a, b) =>  a.client_mu_1_minimum_values - b.client_mu_1_minimum_values);
 
         const pricingList = pricingInfos.map((pricingInfo, index) => {
             return (
@@ -108,14 +104,21 @@ class FPPricingSlider extends React.Component {
                     <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
                     <td>{pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(3)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.surcharge_total.toFixed(3)}%</td>}
-                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(3)}%</td>}
-                    {clientname === 'dme' &&<td className="text-right">${(parseFloat(pricingInfo.fee) * (1 + parseFloat(pricingInfo.mu_percentage_fuel_levy))).toFixed(3)}</td>}
-                    <td>{pricingInfo.surcharge_total ? '$' + pricingInfo.surcharge_total.toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>: null}</td>
-                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(3)}</td>
-                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(3)}</td>
-                    <td className="text-right none">${this.calcTotalValue(pricingInfo)}</td>
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
+                    {clientname === 'dme' && <td className="text-right">{pricingInfo.mu_percentage_fuel_levy.toFixed(2)}%</td>}
+                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fuel_levy_base.toFixed(2)}</td>}
+                    {clientname === 'dme' &&<td className="text-right">${(pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2)}</td>}
+                    {clientname === 'dme' && <td className="text-right">{pricingInfo.client_mark_up_percent.toFixed(2)}%</td>}
+                    <td className="text-right">${pricingInfo.cost_dollar.toFixed(2)}</td>
+                    <td className="text-right">
+                        {pricingInfo.surcharge_total ?
+                            '$' + (pricingInfo.surcharge_total * pricingInfo.client_customer_mark_up).toFixed(2) : null} {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i>
+                            : null}
+                    </td>
+                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                    <td className="text-right">{pricingInfo.client_customer_mark_up.toFixed(2)}%</td>
+                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
                     <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
                         {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
                     </td>
@@ -235,14 +238,17 @@ class FPPricingSlider extends React.Component {
                                         <th className="" scope="col" nowrap><p>Transporter</p></th>
                                         <th className="" scope="col" nowrap><p>Service</p></th>
                                         <th className="" scope="col" nowrap><p>Transport Days(working)</p></th>
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Base Extra $</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Fuel Levy %</p></th>}
-                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>Quoted Cost</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
+                                        {clientname === 'dme' && <th className="" scope="col" nowrap><p>DME Client Markup %</p></th>}
+                                        <th className="" scope="col" nowrap><p>Cost $</p></th>
                                         <th className="" scope="col" nowrap><p>Extra $</p></th>
-                                        <th className="" scope="col" nowrap><p>Quoted $</p></th>
+                                        <th className="" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
+                                        <th className="" scope="col" nowrap><p>Client Customer Markup %</p></th>
                                         <th className="" scope="col" nowrap><p>Sell $</p></th>
-                                        <th className="none" scope="col" nowrap><p>Total</p></th>
                                         <th className="" scope="col" nowrap><p>ETA DE</p></th>
                                         <th className="" scope="col" nowrap><p>Action</p></th>
                                     </tr>

@@ -214,12 +214,12 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bokWithPricings['pricings'].map((price, index) => {
-                bokWithPricings['pricings'][index]['sell'] = (price['client_mu_1_minimum_values'] * (1 + price['client_customer_mark_up'])).toFixed(2);
+                bokWithPricings['pricings'][index]['sell'] = parseFloat((price['client_mu_1_minimum_values'] * (1 + price['client_customer_mark_up'])).toFixed(2));
             });
         }
 
         if (bokWithPricings && sortedBy === 'lowest') {
-            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['total']);
+            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['sell']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
         }
@@ -254,6 +254,11 @@ class BokPricePage extends Component {
                         <td>{price['fp_name']}</td>
                         <td>{price['service_name']}</td>
                         <td>
+                            ${price['cost_dollar'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
+                        </td>
+                        <td>
                             ${price['surcharge_total']} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>
@@ -261,6 +266,7 @@ class BokPricePage extends Component {
                             &nbsp;&nbsp;&nbsp;
                             <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
                         </td>
+                        <td>${price['client_customer_mark_up'].toFixed(2)}</td>
                         <td>
                             ${price['sell']}
                             &nbsp;&nbsp;&nbsp;
@@ -449,8 +455,10 @@ class BokPricePage extends Component {
                                     <tr>
                                         <th>Freight Provider</th>
                                         <th>Service Name</th>
-                                        <th>Extra $</th>
                                         <th>Cost $</th>
+                                        <th>Extra $</th>
+                                        <th>Total $</th>
+                                        <th>Client Customer Markup %</th>
                                         <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
                                         <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
                                         {isPricingPage && !isSalesQuote && <th>Action</th>}
