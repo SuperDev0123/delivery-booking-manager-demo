@@ -142,7 +142,15 @@ class BokStatusPage extends Component {
                                 <p><strong>DME Booking Number: </strong><a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_bookingID_Visual}</a></p>
                                 : <p><strong>DME Booking Number: </strong>Not available</p>
                             }
-                            {booking && booking.hasOwnProperty('b_client_order_num') && <p><strong>Client Order Number: </strong>{booking.b_client_order_num}</p>}
+                            {booking && booking.hasOwnProperty('b_client_order_num') &&
+                                <p><
+                                    strong>Client Order Number: </strong>
+                                    {booking['uid'] ?
+                                    <a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_client_order_num}</a>
+                                    :
+                                    booking.b_client_order_num}
+                                </p>
+                            }
                             {booking && booking.hasOwnProperty('b_client_sales_inv_num') && <p><strong>Client Sales Invoice Number: </strong>{booking.b_client_sales_inv_num}</p>}
                             {!status && <p><strong>Status</strong>: Not available</p>}
                             {status && <p><strong>Status</strong>: {status}</p>}
