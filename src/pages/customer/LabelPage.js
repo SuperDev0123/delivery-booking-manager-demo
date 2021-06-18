@@ -81,15 +81,15 @@ class LabelPage extends Component {
         if (_.isEmpty(selectedSSCCs)) {
             this.notify('Please tick SSCC and click Print button');
         } else {
-            let zpls = '';
+            let pdfs = '';
 
             selectedSSCCs.map(sscc => {
-                zpls += decodeBase64(bookingLabels.sscc_obj[sscc][0].zpl);
+                pdfs += decodeBase64(bookingLabels.sscc_obj[sscc][0].pdf);
             });
 
             let printWindow = window.open();
-            printWindow.document.open('text/plain');
-            printWindow.document.write(zpls);
+            // printWindow.document.open('text/plain');
+            printWindow.document.write(pdfs);
             printWindow.document.close();
             printWindow.focus();
             printWindow.print();
