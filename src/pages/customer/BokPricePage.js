@@ -13,7 +13,7 @@ import FreightOptionAccordion from '../../components/Accordion/FreightOptionAcco
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack } from '../../state/services/bokService';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
-import { getCubicMeter, getWeight } from '../../commons/helpers';
+import { getWeight } from '../../commons/helpers';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -199,6 +199,7 @@ class BokPricePage extends Component {
         let totalCubicMeter = 0;
         let totalLinesCnt = 0;
         let totalLinesKg = 0;
+        let isAutoPacked = false;
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -226,10 +227,19 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
+            isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
+
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
                 totalLinesKg += getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']);
                 totalLinesCnt += bok_2['l_002_qty'];
-                totalCubicMeter += getCubicMeter(bok_2['l_002_qty'], bok_2['l_004_dim_UOM'], bok_2['l_005_dim_length'], bok_2['l_006_dim_width'], bok_2['l_007_dim_height']);
+                totalCubicMeter += bok_2['pallet_cubic_meter'];
+                let packedCubicMeter = 0;
+
+                bok_3s = bok_1['bok_3s']
+                    .filter(bok_3 => bok_3.fk_booking_lines_id === bok_2['pk_booking_lines_id'])
+                    .map(bok_3 => {
+                        packedCubicMeter += bok_3['cubic_meter'];
+                    });
 
                 return (
                     <tr key={index}>
@@ -242,12 +252,14 @@ class BokPricePage extends Component {
                         <td>{bok_2['l_005_dim_length']}</td>
                         <td>{bok_2['l_006_dim_width']}</td>
                         <td>{bok_2['l_007_dim_height']}</td>
-                        <td>{bok_2['l_008_weight_UOM']}</td>
-                        <td>{bok_2['l_009_weight_per_each']}</td>
+                        <td>{bok_2['pallet_cubic_meter'].toFixed(3)} (m3)</td>
+                        <td>{bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']} ({bok_2['l_008_weight_UOM']})</td>
+                        {isAutoPacked ? <td>{packedCubicMeter} (m3)</td> : null}
                         <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td>
                     </tr>
                 );
             });
+
             pricings = sortedPricings.map((price, index) => {
                 return (
                     <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
@@ -304,8 +316,8 @@ class BokPricePage extends Component {
                             <td>{bok_3['zbld_131_decimal_1']}</td>
                             <td>{bok_3['zbld_132_decimal_2']}</td>
                             <td>{bok_3['zbld_133_decimal_3']}</td>
-                            <td>{bok_3['zbld_102_text_2']}</td>
-                            <td>{bok_3['zbld_134_decimal_4']}</td>
+                            <td>{bok_3['zbld_122_integer_2'] * bok_3['zbld_134_decimal_4']} ({bok_3['zbld_102_text_2']})</td>
+                            <td>{bok_3['cubic_meter'].toFixed(3)} (m3)</td>
                         </tr>
                     ));
             }
@@ -407,16 +419,17 @@ class BokPricePage extends Component {
                             <thead>
                                 <tr>
                                     <th>Type Of Packaging</th>
-                                    <th>Sequence No</th>
+                                    <th>Seq #</th>
                                     <th>Item No</th>
                                     <th>Item Descripton</th>
-                                    <th>Quantity</th>
+                                    <th>Qty</th>
                                     <th>Dim UOM</th>
                                     <th>Length</th>
                                     <th>Width</th>
                                     <th>Height</th>
-                                    <th>Weight UOM</th>
-                                    <th>Weight Per Each</th>
+                                    <th>{isAutoPacked ? 'Pallet CBM' : 'CBM'}</th>
+                                    <th>Total Weight</th>
+                                    {isAutoPacked ? <th>Total Packed CBM</th> : null}
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -437,8 +450,8 @@ class BokPricePage extends Component {
                                         <th>Length</th>
                                         <th>Width</th>
                                         <th>Height</th>
-                                        <th>Weight UOM</th>
-                                        <th>Weight Per Each</th>
+                                        <th>Total Weight</th>
+                                        <th>CBM</th>
                                     </tr>
                                 </thead>
                                 <tbody>
