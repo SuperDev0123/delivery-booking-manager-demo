@@ -55,6 +55,8 @@ import {
     failedDeleteClientProduct,
     successCreateClientProduct,
     failedCreateClientProduct,
+    successUpdateClientProduct,
+    failedUpdateClientProduct,
     successGetAllErrors,
     failedGetAllErrors,
     successGetAllClientEmployees,
@@ -435,7 +437,7 @@ export const getZohoTickets = (dmeid) => {
     };
 };
 
-export const getDMEClientProducts = () => {
+export const getDMEClientProducts = (client_id) => {
     const token = localStorage.getItem('token');
 
     const options = {
@@ -445,6 +447,9 @@ export const getDMEClientProducts = () => {
             'Authorization': 'JWT ' + token
         },
         url: `${HTTP_PROTOCOL}://${API_HOST}/clientproducts/`,
+        params: {
+            'clientId': client_id
+        }
     };
     return dispatch =>
         axios(options)
@@ -491,8 +496,8 @@ export const updateClientProduct = (clientProduct) => {
     };
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successCreateClientProduct(data)))
-            .catch((error) => dispatch(failedCreateClientProduct(error)));
+            .then(({ data }) => dispatch(successUpdateClientProduct(data)))
+            .catch((error) => dispatch(failedUpdateClientProduct(error)));
 };
 
 

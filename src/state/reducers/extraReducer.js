@@ -54,6 +54,8 @@ import {
     FAILED_DELETE_CLIENT_PRODUCTS,
     SUCCESS_CREATE_CLIENT_PRODUCTS,
     FAILED_CREATE_CLIENT_PRODUCTS,
+    SUCCESS_UPDATE_CLIENT_PRODUCT,
+    FAILED_UPDATE_CLIENT_PRODUCT,
     SUCCESS_GET_ALL_ERRORS,
     FAILED_GET_ALL_ERRORS,
     SUCCESS_GET_CLIENT_EMPLOYEES,
@@ -275,8 +277,19 @@ export const ExtraReducer = (state = defaultState, {
         case SUCCESS_CREATE_CLIENT_PRODUCTS:
             return {
                 ...state,
+                clientProducts: [
+                    ...state.clientProducts,
+                    payload
+                ]
             };
-        
+        case SUCCESS_UPDATE_CLIENT_PRODUCT:
+            return {
+                ...state,
+                clientProducts: state.clientProducts.map((item) => {
+                    if (item.id === payload.id) return payload;
+                    else return item;
+                })
+            };
         case SUCCESS_DELETE_CLIENT_PRODUCTS: 
             var clientProducts = [];
             for (const clientProduct of state.clientProducts) {
@@ -361,6 +374,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_DELETE_CLIENT_PRODUCTS:
         case FAILED_CREATE_CLIENT_PRODUCTS:
+        case FAILED_UPDATE_CLIENT_PRODUCT:
         case FAILED_GET_CLIENT_EMPLOYEES:
         case FAILED_GET_CLIENT_EMPLOYEE:
         case FAILED_GET_PALLETS:
