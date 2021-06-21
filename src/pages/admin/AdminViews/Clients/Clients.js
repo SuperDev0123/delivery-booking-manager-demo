@@ -139,7 +139,7 @@ class Clients extends Component {
         this.setState({pk_id_dme_client: client.pk_id_dme_client, dmeClient:client});
     }
 
-    onClickOpenPricingSlider(client) {
+    onClickClientProductSlider(client) {
         this.setState({loadingClientProducts: true, dmeClient:client});
         this.toggleClientProductSlider();
         this.props.getDMEClientProducts(client.pk_id_dme_client);
@@ -151,7 +151,6 @@ class Clients extends Component {
 
     onClickSubmit(clientProductsFormInputs) {
         this.props.createClientProduct(clientProductsFormInputs);
-        this.toggleClientProductSlider();
     }
 
     onClickEdit(clientProductsFormInputs) {
@@ -174,7 +173,7 @@ class Clients extends Component {
                     <td>{client.client_min_markup_value}</td>
                     <td><a className="btn btn-info btn-sm" href={'/admin/clients/edit/' + client.pk_id_dme_client}>Edit</a></td>
                     <td>
-                        <button className="btn btn-info btn-sm" onClick={() => this.onClickOpenPricingSlider(client)}>View</button>
+                        <button className="btn btn-info btn-sm" onClick={() => this.onClickClientProductSlider(client)}>View</button>
                     </td>
                 </tr>
             );

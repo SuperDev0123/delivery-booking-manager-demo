@@ -87,6 +87,7 @@ export const AuthReducer = (state = defaultState, {
                 username: username,
                 clientname: clientname,
                 clientId: clientId,
+                clientPK: clientPK,
                 isLoggedIn: isLoggedIn,
                 redirect : false,
             };

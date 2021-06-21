@@ -27,6 +27,7 @@ class SidebarPush extends React.Component {
                 dashboard: this.activeRoute('dashboard'),
                 providers: this.activeRoute(['providers', 'providers/add', 'providers/edit']),
                 providersCollapsed: true,
+                clientProductsCollapsed: true,
                 pricingOnlyCollapsed: true,
                 pricingRuleCollapsed: true,
             },
@@ -109,7 +110,7 @@ class SidebarPush extends React.Component {
 
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, baseUrl } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -385,12 +386,25 @@ class SidebarPush extends React.Component {
                                     <span className="menu-title">Return Authorization</span>
                                 </Link>
                             </li>
-
-                            <li className={this.activeRoute('client-products') ? 'active' : ''}>
-                                <Link to={`${baseUrl}/clientproducts`} title="Client Products">
-                                    <i className="fa fa-fw fa-tachometer"></i>
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('clientproducts') || this.activeRoute('clientproducts/import') ? 'active' : ''}>
+                                <a onClick={() => this.setState({ clientProductsCollapsed: !clientProductsCollapsed })} style={{ 'cursor': 'pointer' }}>
+                                    <i className="fas fa-archive"></i>
                                     <span className="menu-title">Client Products</span>
-                                </Link>
+                                </a>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !clientProductsCollapsed })}>
+                                    <li>
+                                        <Link title="View All Augment Address Rules" to={`${baseUrl}/clientproducts`} className={this.activeRoute(['clientproducts']) ? 'active' : ''}>
+                                            <i className="fas fa-list"></i>
+                                            <span className="submenu-title">List</span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link title="Add New Augment Address Rule" to={`${baseUrl}/clientproducts/import`} className={this.activeRoute(['clientproducts/import']) ? 'active' : ''}>
+                                            <i className="fas fa-upload"></i>
+                                            <span className="submenu-title">Import</span>
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </nav>}
