@@ -107,7 +107,7 @@ class BokStatusPage extends Component {
                             </div>
                         }
                         <div className="status-chart-button disp-inline-block">
-                            <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Up To Date</Button>
+                            <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Update</Button>
                         </div>
                         {booking &&
                             <div className="main-info">
@@ -138,8 +138,16 @@ class BokStatusPage extends Component {
                             </div>
                         }
                         <div className="status-chart-detail">
-                            {booking && booking.hasOwnProperty('b_bookingID_Visual') && <p><strong>DME Booking Number: </strong>{booking.b_bookingID_Visual}</p>}
-                            {booking && booking.hasOwnProperty('b_client_order_num') && <p><strong>Client Order Number: </strong>{booking.b_client_order_num}</p>}
+                            {(booking && booking.hasOwnProperty('b_bookingID_Visual') && booking['b_bookingID_Visual']) ?
+                                <p><strong>DME Booking Number: </strong><a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_bookingID_Visual}</a></p>
+                                : <p><strong>DME Booking Number: </strong>Not available</p>
+                            }
+                            {booking && booking.hasOwnProperty('b_client_order_num') &&
+                                <p><strong>Client Order Number: </strong>
+                                    {booking['uid'] ? <a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_client_order_num}</a>
+                                        : booking.b_client_order_num}
+                                </p>
+                            }
                             {booking && booking.hasOwnProperty('b_client_sales_inv_num') && <p><strong>Client Sales Invoice Number: </strong>{booking.b_client_sales_inv_num}</p>}
                             {!status && <p><strong>Status</strong>: Not available</p>}
                             {status && <p><strong>Status</strong>: {status}</p>}

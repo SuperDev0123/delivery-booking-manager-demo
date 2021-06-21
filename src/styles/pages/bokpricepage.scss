@@ -1,25 +1,30 @@
 section.bok-price {
-	width: 90%;
-	margin: 0 auto;
+	padding-left: 10%;
+	padding-right: 10%;
 	height: calc(100% - 114px);
 	overflow-y: scroll;
 
 	.main-info {
-		width: 60%;
-		margin-left: 20%;
-		margin-right: 20%;
 		margin-bottom: 50px;
+		padding: 20px;
 
 		>div {
-			width: 50%;
+			width: 50%;			
 
 			label {
 				color: deepskyblue;
 				font-size: 18px;
 			}
 
+			&.pu-info {
+			}
+
 			&.de-info {
-				text-align: end;
+			}
+
+			.title {
+				width: 150px;
+				margin-left: 10px;
 			}
 		}
 	}
@@ -31,12 +36,30 @@ section.bok-price {
 	p {
 		font-weight: bolder;
 		font-size: 18px;
+		padding-left: 10px;
 	}
 
 	i {
 		font-size: 16px;
-		color: gray;
+		color: black;
 		cursor: pointer;
+	}
+
+	table {
+		i { color: goldenrod }
+
+		button {
+			i { color: white }
+
+			&.reset {
+				margin-left: 20px;
+			}
+		}
+
+		input {
+			width: 25%;
+			height: 30px;
+		}
 	}
 
 	div.decision {

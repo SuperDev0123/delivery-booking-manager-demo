@@ -1,7 +1,7 @@
 .find-modal {
 	width: 50%;
 	margin-top: 10%;
-	max-width: 500px;
+	max-width: 600px;
 
 	.modal-header h5 {
 		font-size: 20px !important;
@@ -19,6 +19,10 @@
 
 		select, textarea {
 			width: 50%;
+		}
+
+		input {
+			width: 20%;
 		}
 	}
 }

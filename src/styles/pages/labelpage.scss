@@ -1,0 +1,44 @@
+section.label {
+	padding-left: 10%;
+	padding-right: 10%;
+	height: calc(100% - 114px);
+	overflow-y: scroll;
+	display: block;
+	color: black;
+	text-align: left;
+
+	h4 {
+		margin-top: 30px !important;
+	}
+
+	p {
+		font-weight: lighter;
+		font-size: 14px;
+		padding-left: 10px;
+
+		i { color: black }
+
+		&.danger { color: red }
+	}
+
+	div.main-info {
+		margin-top: 30px;
+		padding-left: 30px;
+		width: 30%;
+	}
+
+	div.sscc-info {
+		margin-top: 30px;
+		padding-left: 30px;
+	}
+
+	div.action {
+		margin-top: 30px;
+		text-align: center;
+
+		button {
+			width: 150px;
+			margin-left: 30px;
+		}
+	}
+}

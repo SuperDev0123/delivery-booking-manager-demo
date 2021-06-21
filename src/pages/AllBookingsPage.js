@@ -15,6 +15,8 @@ import LoadingOverlay from 'react-loading-overlay';
 import BarLoader from 'react-spinners/BarLoader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DateRangePicker from 'react-daterange-picker';
+import 'react-daterange-picker/dist/css/react-calendar.css'; // For some basic styling. (OPTIONAL)
 // Constants
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
@@ -39,6 +41,7 @@ import OrderModal from '../components/CommonModals/OrderModal';
 import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
+import ManifestSlider from '../components/Sliders/ManifestSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -98,6 +101,7 @@ class AllBookingsPage extends React.Component {
             selectedOneBooking: null,
             activeBookingId: null,
             dmeStatus: null,
+            selectedWarehouseId: 0,
             isShowXLSModal: false,
             isShowProjectNameModal: false,
             isShowCheckPodModal: false,
@@ -112,6 +116,7 @@ class AllBookingsPage extends React.Component {
             isShowBulkUpdateSlider: false,
             isShowPricingAnalyseSlider: false,
             isShowBookingSetModal: false,
+            isShowManifestSlider: false,
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -130,6 +135,7 @@ class AllBookingsPage extends React.Component {
         this.toggleBulkUpdateSlider = this.toggleBulkUpdateSlider.bind(this);
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
+        this.toggleManifestSlider = this.toggleManifestSlider.bind(this);
     }
 
     static propTypes = {
@@ -170,6 +176,7 @@ class AllBookingsPage extends React.Component {
         updateBookingSet: PropTypes.func.isRequired,
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
+        unprintedLabels: PropTypes.number,
     };
 
     componentDidMount() {
@@ -434,6 +441,19 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onSelectDateRange (dateRange, field) {
+        let filterInputs = this.state.filterInputs;
+        filterInputs[field] = `${dateRange.start.format('DD/MM/YY')}-${dateRange.end.format('DD/MM/YY')}`;
+
+        if (field === 'puPickUpAvailFrom_Date')
+            this.setState({puPickUpAvailFrom_DateRange: dateRange, isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange});
+        else if (field === 'b_dateBookedDate')
+            this.setState({b_dateBookedDateRange: dateRange, isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange});
+
+        this.props.setGetBookingsFilter('columnFilters', filterInputs);
+        this.setState({filterInputs, selectedBookingIds: [], allCheckStatus: 'None'});
+    }
+
     calcBookingLine(bookingLines) {
         let total_qty = 0;
         let total_kgs = 0;
@@ -529,10 +549,18 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onClickDateFilter() {
-        const { startDate, endDate } = this.state;
-        this.props.setGetBookingsFilter('date', {startDate, endDate});
-        this.props.setGetBookingsFilter('columnFilters', {});
+    onClickFind() {
+        const { startDate, endDate, projectName, clientPK, selectedWarehouseId, pageItemCnt, pageInd, sortField, sortDirection, activeTabInd, dmeStatus } = this.state;
+        let _startDate = startDate;
+        let _sortField = sortField;
+
+        if (_.isNull(startDate))
+            _startDate = '*';
+
+        if (sortDirection === -1)
+            _sortField = '-' + _sortField;
+
+        this.props.setAllGetBookingsFilter(_startDate, endDate, clientPK, selectedWarehouseId, pageItemCnt, pageInd, _sortField, {}, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
@@ -544,18 +572,20 @@ class AllBookingsPage extends React.Component {
             if (selectedWarehouseId !== 'all')
                 warehouseId = selectedWarehouseId;
 
-            this.props.setGetBookingsFilter('warehouseId', warehouseId);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name});
+            // this.props.setGetBookingsFilter('warehouseId', warehouseId);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name, selectedWarehouseId: warehouseId});
         } else if (src === 'client') {
-            this.props.setGetBookingsFilter('clientPK', e.target.value);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+            // this.props.setGetBookingsFilter('clientPK', e.target.value);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', clientPK: e.target.value});
         } else if (src === 'status') {
-            this.setState({selectedStatusValue: e.target.value});
+            // this.setState({selectedStatusValue: e.target.value});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', dmeStatus: e.target.value});
         } else if (src === 'projectName') {
-            const today = moment().format('YYYY-MM-DD');
-            const projectName = e.target.value;
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
+            // const today = moment().format('YYYY-MM-DD');
+            // const projectName = e.target.value;
+            // this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
+            // this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0, projectName: e.target.value});
         }
     }
 
@@ -597,7 +627,7 @@ class AllBookingsPage extends React.Component {
             filterInputs[e.target.name] = e.target.value;
             this.setState({filterInputs});
             this.props.setGetBookingsFilter('columnFilters', filterInputs);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', isShowb_dateBookedDateRange: false, isShowpuPickUpAvailFrom_DateRange: false});
         }
     }
 
@@ -706,11 +736,15 @@ class AllBookingsPage extends React.Component {
             this.props.getPricingAnalysis(selectedBookingIds);
         }
         
-        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));        
+        this.setState(prevState => ({isShowPricingAnalyseSlider: !prevState.isShowPricingAnalyseSlider}));
     }
 
     toggleBookingSetModal() {
         this.setState(prevState => ({isShowBookingSetModal: !prevState.isShowBookingSetModal}));
+    }
+
+    toggleManifestSlider() {
+        this.setState(prevState => ({isShowManifestSlider: !prevState.isShowManifestSlider}));
     }
 
     onClickAllTrigger() {
@@ -984,7 +1018,7 @@ class AllBookingsPage extends React.Component {
             if (booking.z_label_url && booking.z_label_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -999,7 +1033,7 @@ class AllBookingsPage extends React.Component {
             if (booking.z_pod_url && booking.z_pod_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -1010,7 +1044,7 @@ class AllBookingsPage extends React.Component {
             } else if (booking.z_pod_signed_url && booking.z_pod_signed_url.length > 0) {
                 this.bulkBookingUpdate([booking.id], 'z_downloaded_pod_sog_timestamp', new Date())
                     .then(() => {
-                        this.onClickDateFilter();
+                        this.onClickFind();
                     })
                     .catch((err) => {
                         this.notify(err.response.data.message);
@@ -1020,6 +1054,21 @@ class AllBookingsPage extends React.Component {
                 win.focus();
             } else {
                 this.notify('This booking has no POD or POD_SOG');
+            }
+        } else if (type === 'manifest') {
+            if (booking.z_manifest_url && booking.z_manifest_url.length > 0) {
+                this.bulkBookingUpdate([booking.id], 'manifest_timestamp', new Date())
+                    .then(() => {
+                        this.onClickFind();
+                    })
+                    .catch((err) => {
+                        this.notify(err.response.data.message);
+                        this.setState({loading: false});
+                    });
+                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_manifest_url, '_blank');
+                win.focus();
+            } else {
+                this.notify('This booking has no manifest');
             }
         }
     }
@@ -1056,10 +1105,17 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onMultiFind(FieldName, valueSet) {
+    onMultiFind(fieldNameToFind, valueSet) {
+        const { clientPK, warehouseId, pageItemCnt, activeTabInd, filterInputs } = this.state;
         const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', FieldName, valueSet);
-        this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
+
+        if (fieldNameToFind === 'postal_code_pair' || fieldNameToFind === 'postal_code_type') {
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+        } else {
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
+            this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
+        }
     }
 
     onClickTab(activeTabInd) {
@@ -1068,10 +1124,14 @@ class AllBookingsPage extends React.Component {
 
         if (activeTabInd === 0) { // All tab
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, 0, '', downloadOption);
+        } else if (activeTabInd === 8) { // PreBooking tab
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 7) { // Today tab
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 6) { // Delivery Management tab
             this.props.setAllGetBookingsFilter('*', '*', 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
+        } else if (activeTabInd === 9) { // Unprinted Lables tab
+            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 10) { // More tab
             this.toggleStatusInfoSlider();
         } else {
@@ -1123,14 +1183,72 @@ class AllBookingsPage extends React.Component {
         this.setState({allCheckStatus, selectedBookingIds});
     }
 
-    onCreateOrder(bookingIds, vx_freight_provider) {
-        this.toggleOrderModal();
-        this.props.fpOrder(bookingIds, vx_freight_provider.toLowerCase());
+    onCreateOrder(selectedBookingIds, vx_freight_provider='') {
+        const { username } = this.state;
+        const { bookings } = this.props;
+        const _vx_freight_provider = vx_freight_provider.toLowerCase();
+
+        if (_vx_freight_provider === 'startrack') {
+            this.props.fpOrder(selectedBookingIds, _vx_freight_provider);
+        } else {
+            if (selectedBookingIds.length > 500) {
+                this.notify('You can generate Manifest with 500 bookings at most.');
+            } else {
+                const bookingIds = [];
+                let manifestedBookingVisualIds = null;
+
+                for (let i = 0; i < bookings.length; i++) {
+                    for (let j = 0; j < selectedBookingIds.length; j++) {
+                        if (bookings[i].id === selectedBookingIds[j]) {
+                            if (bookings[i].z_manifest_url) {
+                                manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                            } else {
+                                bookingIds.push(bookings[i].id);
+                            }
+                        }
+                    }
+                }
+
+                if (!_.isNull(manifestedBookingVisualIds)) {
+                    this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
+                } else {
+                    this.setState({loadingDownload: true});
+                    
+                    this.buildMANIFEST(bookingIds, _vx_freight_provider, username)
+                        .then(() => {
+                            if (_vx_freight_provider.toUpperCase() === 'TASFR') {
+                                this.buildXML(bookingIds, 'TASFR')
+                                    .then((response) => {
+                                        if (response.data.error && response.data.error === 'Found set has booked bookings') {
+                                            this.notify('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
+                                            this.setState({loadingDownload: false});
+                                        } else if (response.data.success && response.data.success === 'success') {
+                                            this.notify('XML’s have been generated successfully.');
+                                            this.setState({loading: true, loadingDownload: false});
+                                            this.props.setNeedUpdateBookingsState(true);
+                                        } else {
+                                            this.notify('XML’s have been generated successfully. Labels will be generated');
+                                            this.buildPDF(bookingIds, 'TASFR');
+                                        }
+                                    });
+                            } else {
+                                this.setState({loading: true, loadingDownload: false});
+                                this.props.setNeedUpdateBookingsState(true);
+                            }
+                        })
+                        .catch((err) => {
+                            this.notify('Error: ' + err);
+                            this.setState({loadingDownload: false});
+                        });
+                }
+            }
+        }
+
         this.setState({
-            selectedBookingIds: [],
+            selectedBookingIds2Order: selectedBookingIds,
             allCheckStatus: 'None',
-            selectedBookingIds2Order: this.state.selectedBookingIds,
-            selectedFP2Order: vx_freight_provider.toLowerCase(),
+            selectedFP2Order: _vx_freight_provider,
+            selectedBookingIds: [],
         });
     }
 
@@ -1377,71 +1495,6 @@ class AllBookingsPage extends React.Component {
             this.props.getBookingLinesCnt(selectedBookingIds);
             this.toggleOrderModal();
         }
-
-        // if (selectedBookingIds && selectedBookingIds.length === 0) {
-        //     this.notify('Please select bookings to *Book*.');
-        // } else if (selectedBookingIds.length > 500) {
-        //     this.notify('You can generate Manifest with 500 bookings at most.');
-        // } else {
-        //     const bookingIds = [];
-        //     const fps = [];
-        //     let manifestedBookingVisualIds = null;
-        //     let notBookedVisualIds = null;
-
-        //     for (let i = 0; i < bookings.length; i++) {
-        //         for (let j = 0; j < selectedBookingIds.length; j++) {
-        //             if (bookings[i].id === selectedBookingIds[j]) {
-        //                 if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
-        //                     fps.push(bookings[i].vx_freight_provider);
-        //                 }
-
-        //                 if (!_.isNull(bookings[i].fk_manifest_id)) {
-        //                     manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-        //                 } else if (_.isNull(bookings[i].b_dateBookedDate)) {
-        //                     notBookedVisualIds += _.isNull(notBookedVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
-        //                 } else {
-        //                     bookingIds.push(bookings[i].id);
-        //                 }
-        //             }
-        //         }
-        //     }
-
-        //     if (fps.length !== 1) {
-        //         this.notify('Please select only one kind `Freight Provider` bookings.');
-        //     } else if (!_.isNull(manifestedBookingVisualIds)) {
-        //         this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
-        //     } else if (!_.isNull(notBookedVisualIds) && fps[0] !== 'TASFR') {
-        //         this.notify('There are bookings which have not been `Booked`:' + notBookedVisualIds);
-        //     } else {
-        //         this.setState({loadingDownload: true});
-                
-        //         this.buildMANIFEST(bookingIds, fps[0], username)
-        //             .then(() => {
-        //                 if (fps[0] === 'TASFR') {
-        //                     this.buildXML(bookingIds, 'TASFR')
-        //                         .then((response) => {
-        //                             if (response.data.error && response.data.error === 'Found set has booked bookings') {
-        //                                 this.notify('Listed are some bookings that should not be processed because they have already been booked\n' + response.data.booked_list);
-        //                                 this.setState({loadingDownload: false});
-        //                             } else if (response.data.success && response.data.success === 'success') {
-        //                                 this.notify('XML’s have been generated successfully.');
-        //                                 this.setState({loading: true, loadingDownload: false});
-        //                                 this.props.setNeedUpdateBookingsState(true);
-        //                             } else {
-        //                                 this.notify('XML’s have been generated successfully. Labels will be generated');
-        //                                 this.buildPDF(bookingIds, 'TASFR');
-        //                             }
-        //                         });
-        //                 } else {
-        //                     this.setState({selectedBookingIds: [], loading: true, loadingDownload: false});
-        //                     this.props.setNeedUpdateBookingsState(true);
-        //                 }
-        //             })
-        //             .catch((err) => {
-        //                 this.notify('Error: ' + err);
-        //             });
-        //     }
-        // }
     }
 
     onClickGear() {
@@ -1565,13 +1618,23 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickShowBulkUpdateButton() {
-        const { selectedBookingIds } = this.state;
+        const { selectedBookingIds, clientname } = this.state;
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select at least one booking');
         } else if (selectedBookingIds.length > 1000) {
             this.notify('Bulk operation can process 1000 bookings at once');
         } else {
+            if (clientname === 'Jason L') {
+                const bookings = this.getBookingsFromIds(selectedBookingIds);
+                const bookedBookings = bookings.filter(booking => !_.isNull(booking.b_dateBookedDate));
+
+                if (bookedBookings.length > 0) {
+                    this.notify('Booked bookings are selected!');    
+                    return;
+                }
+            }
+
             this.toggleBulkUpdateSlider();
         }
     }
@@ -1580,7 +1643,7 @@ class AllBookingsPage extends React.Component {
         this.togglePricingAnalyseSlider();
     }
 
-    onClickBulkUpdate(field, value, bookingIds, optionalValue=null) {
+    onBulkUpdate(field, value, bookingIds, optionalValue=null) {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
         } else if (field === 'status') {
@@ -1588,7 +1651,7 @@ class AllBookingsPage extends React.Component {
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
-                    this.onClickDateFilter();
+                    this.onClickFind();
                 })
                 .catch((err) => {
                     this.notify(err.response.data.message);
@@ -1613,12 +1676,33 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    getBookingsFromIds(bookingIds) {
+        const { bookings } = this.props;
+        const _bookings = [];
+
+        for (let i = 0; i < bookings.length; i++) {
+            for (let j = 0; j < bookingIds.length; j++) {
+                if (bookings[i].id === bookingIds[j])
+                    _bookings.push(bookings[i]);
+            }
+        }
+
+        return _bookings;
+    }
+
+    onClickShowManifestSliderButton() {
+        this.toggleManifestSlider();
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets } = this.props;
+        const { bookings, bookingsets, unprintedLabels } = this.props;
 
+        // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
+
+        const selectedBookings = this.getBookingsFromIds(selectedBookingIds);
 
         const selectedClient = dmeClients.find(client => client.pk_id_dme_client === parseInt(clientPK));
         const warehousesList = warehouses
@@ -1873,7 +1957,7 @@ class AllBookingsPage extends React.Component {
                     </Popover>
                     <td
                         name='puPickUpAvailFrom_Date' 
-                        id={'edit-cell-popover-' + booking.id} 
+                        id={'edit-cell-popover-' + booking.id}
                         className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}
                     >
                         {booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}
@@ -1893,6 +1977,7 @@ class AllBookingsPage extends React.Component {
                     <EditablePopover 
                         isOpen={this.state.editCellPopoverOpens['edit-cell-popover-' + booking.id]}
                         booking={booking}
+                        key={booking.id}
                         onCancel={this.togglePopover}
                         onChange={(bookingId, booking) => this.props.updateBooking(bookingId, booking)}
                         inputType={'datepicker'}
@@ -1927,14 +2012,14 @@ class AllBookingsPage extends React.Component {
                             :
                             (booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'
                     }>
-                        {
+                        {(booking.z_label_url && booking.z_label_url.length > 0) ?
                             <div className="booking-status">
-                                {
-                                    <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
-                                        <i className="icon icon-printer"></i>
-                                    </a>
-                                }
+                                <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
+                                    <i className="icon icon-printer"></i>
+                                </a>
                             </div>
+                            :
+                            null
                         }
                     </td>
                     <td name='z_pod_url' className={
@@ -1968,13 +2053,17 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td name='manifest_timestamp' className={
-                        !_.isNull(booking.manifest_timestamp) ?
-                            'bg-yellow'
+                        booking.z_manifest_url ?
+                            (!_.isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
-                        {
-                            !_.isNull(booking.manifest_timestamp) ? <div className="pod-status">M</div> : null
+                        {(booking.z_manifest_url && booking.z_manifest_url.length > 0) ?
+                            <div className="booking-status">
+                                <a onClick={() => this.onClickLabelOrPOD(booking, 'manifest')}>M</a>
+                            </div>
+                            :
+                            null
                         }
                     </td>
                     <td name='b_is_flagged_add_on_services' className={booking.b_is_flagged_add_on_services ? 'bg-yellow' : null}>
@@ -1989,10 +2078,10 @@ class AllBookingsPage extends React.Component {
                     <td name='z_lock_status' className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                         <i className="fa fa-lock"></i>
                     </td>
-                    <td name='dme_delivery_status_category' className={(sortField === 'dme_delivery_status_category') ? 'current' : ''} id={'booking-' + 'dme_delivery_status_category' + '-tooltip-' + booking.id}>
-                        <p className="status">{booking.dme_delivery_status_category}</p>
-                        {!_.isEmpty(booking.dme_delivery_status_category) &&
-                            <TooltipItem object={booking} fields={['dme_delivery_status_category']} />
+                    <td name='b_status_category' className={(sortField === 'b_status_category') ? 'current' : ''} id={'booking-' + 'b_status_category' + '-tooltip-' + booking.id}>
+                        <p className="status">{booking.b_status_category}</p>
+                        {!_.isEmpty(booking.b_status_category) &&
+                            <TooltipItem object={booking} fields={['b_status_category']} />
                         }
                     </td>
                     <td name='b_status' className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
@@ -2008,7 +2097,7 @@ class AllBookingsPage extends React.Component {
                         {booking.de_Deliver_By_Date ? moment(booking.de_Deliver_By_Date).format('DD/MM/YYYY') : ''}
                     </td>
                     <td name='de_Deliver_By_Time'>{booking.de_Deliver_By_Time}</td>
-                    <td name='remaining_time' className={remainingTimeBgColor}>{booking.remaining_time ? booking.remaining_time.toFixed(2) : ''}</td>
+                    <td name='remaining_time' className={remainingTimeBgColor}>{booking.remaining_time}</td>
                     <td
                         name='de_Deliver_From_Date'
                         id={'booking-' + 'de_Deliver_From_Date' + '-tooltip-' + booking.id}
@@ -2092,7 +2181,7 @@ class AllBookingsPage extends React.Component {
                                 {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                                 <li className=""><Link to="/reports">Reports</Link></li>
                                 <li className="none"><a href="/bookinglines">Booking Lines</a></li>
-                                <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
+                                <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                             </ul>
                         </div>
                         <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">
@@ -2151,7 +2240,7 @@ class AllBookingsPage extends React.Component {
                             </a>
                             <a className={clientname === 'dme' ? '' : 'none'} onClick={() => this.onClickBOOK()}>BOOK</a>
                             <a
-                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak') ? '' : 'none'} 
+                                className={clientname && (clientname === 'dme' || clientname.toLowerCase() === 'biopak' || clientname === 'Jason L') ? '' : 'none'} 
                                 onClick={() => this.onClickMANI()}
                             >
                                 <span title="Manifest"><i className="fa fa-clipboard"></i></span>
@@ -2179,17 +2268,18 @@ class AllBookingsPage extends React.Component {
                                                 selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
+                                                className="none"
                                             />
-                                            <span className='flow-sign'>~</span>
+                                            <span className='none flow-sign'>~</span>
                                             <DatePicker
                                                 id="endDate"
                                                 selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
+                                                className="none"
                                             />
-                                            <button className="btn btn-primary left-10px" onClick={() => this.onClickDateFilter()}>Find</button>
                                             {(clientname === 'dme') &&
-                                                <label className="left-30px right-10px">
+                                                <label className="left-30px_ right-10px">
                                                     Client: 
                                                     <select 
                                                         id="client-select" 
@@ -2200,19 +2290,43 @@ class AllBookingsPage extends React.Component {
                                                     </select>
                                                 </label>
                                             }
-                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>Warehouse: </label>
-                                            <select 
-                                                id="warehouse" 
-                                                required 
-                                                onChange={(e) => this.onSelected(e, 'warehouse')} 
-                                                value={selectedWarehouseId}
-                                            >
-                                                <option value="all">All</option>
-                                                { warehousesList }
-                                            </select>
-                                            {clientname === 'dme' || clientname === 'biopak' ?
+                                            <label className={(clientname === 'dme') ? 'right-10px' : 'left-30px right-10px' }>
+                                                Warehouse: 
+                                                <select 
+                                                    id="warehouse" 
+                                                    required 
+                                                    onChange={(e) => this.onSelected(e, 'warehouse')} 
+                                                    value={selectedWarehouseId}
+                                                >
+                                                    <option value="all">All</option>
+                                                    { warehousesList }
+                                                </select>
+                                            </label>
+                                            <label className="none right-10px">
+                                                Project Name: 
+                                                <select 
+                                                    id="project-name-select" 
+                                                    required 
+                                                    onChange={(e) => this.onSelected(e, 'projectName')} 
+                                                    value={projectName}
+                                                >
+                                                    <option value="" selected disabled hidden>Select a project name</option>
+                                                    { projectNameOptions }
+                                                </select>
+                                            </label>
+                                            <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickFind()}><i className="fa fa-search"></i> Find</button>
+                                            {(clientname === 'dme' || clientname === 'Jason L') &&
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
+                                                </div>
+                                            }
+                                            {(clientname === 'dme' || clientname === 'Jason L') && activeTabInd === 3 &&
+                                                <div className="disp-inline-block">
+                                                    <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowManifestSliderButton()}>Manifest</button>
+                                                </div>
+                                            }
+                                            {(clientname === 'dme' || clientname === 'biopak') &&
+                                                <div className="disp-inline-block">
                                                     <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                     <div className="disp-inline-block">
                                                         <LoadingOverlay
@@ -2226,24 +2340,7 @@ class AllBookingsPage extends React.Component {
                                                         </LoadingOverlay>
                                                     </div>
                                                 </div>
-                                                : null
                                             }
-                                        </div>
-                                        <div className="row">
-                                            <div className="project-name-select">
-                                                <label className="left-30px right-10px">
-                                                    Project Name: 
-                                                    <select 
-                                                        id="project-name-select" 
-                                                        required 
-                                                        onChange={(e) => this.onSelected(e, 'projectName')} 
-                                                        value={projectName}
-                                                    >
-                                                        <option value="" selected disabled hidden>Select a project name</option>
-                                                        { projectNameOptions }
-                                                    </select>
-                                                </label>
-                                            </div>
                                         </div>
                                         <div className="tabs">
                                             <Nav tabs>
@@ -2261,6 +2358,22 @@ class AllBookingsPage extends React.Component {
                                                         onClick={() => this.onClickTab(7)}
                                                     >
                                                         Today (or by date)
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 8 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(8)}
+                                                    >
+                                                        PreBookings
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 9 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(9)}
+                                                    >
+                                                        Unprinted Labels ({unprintedLabels})
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2309,7 +2422,7 @@ class AllBookingsPage extends React.Component {
                                                             className={activeTabInd === 6 ? 'active' : ''}
                                                             onClick={() => this.onClickTab(6)}
                                                         >
-                                                            Delivery Mangement
+                                                            Delivery Management
                                                         </NavLink>
                                                     </NavItem>
                                                 }
@@ -2722,7 +2835,7 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th 
+                                                            <th
                                                                 name="v_FPBookingNumber"
                                                                 className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('v_FPBookingNumber')} 
@@ -2738,12 +2851,20 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th name="z_lock_status" className=""><i className="fa fa-lock"></i></th>
-                                                            <th 
-                                                                name="dme_delivery_status_category"
+                                                            <th
+                                                                name="b_status_category"
+                                                                className={(sortField === 'b_status_category') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_status_category')} 
                                                                 scope="col" 
                                                                 nowrap
                                                             >
                                                                 <p>Status Category</p>
+                                                                {(sortField === 'b_status_category') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                                }
                                                             </th>
                                                             <th 
                                                                 name="b_status"
@@ -2794,7 +2915,7 @@ class AllBookingsPage extends React.Component {
                                                                 <p>DE By Time</p>
                                                             </th>
                                                             <th name="remaining_time" scope="col" nowrap>
-                                                                <p>Remaining Time</p>
+                                                                <p>Delivery Due In</p>
                                                             </th>
                                                             <th 
                                                                 name="de_Deliver_From_Date"
@@ -2960,16 +3081,50 @@ class AllBookingsPage extends React.Component {
                                                             {activeTabInd === 6 ? <th name="b_booking_Priority"></th> : null}
                                                             <th name="b_client_name" scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_client_name_sub" scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="puPickUpAvailFrom_Date" scope="col"><input type="text" name="puPickUpAvailFrom_Date" value={filterInputs['puPickUpAvailFrom_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="b_dateBookedDate" scope="col"><input type="text" name="b_dateBookedDate" value={filterInputs['b_dateBookedDate'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="puPickUpAvailFrom_Date" scope="col">
+                                                                <input
+                                                                    type="text"
+                                                                    name="puPickUpAvailFrom_Date"
+                                                                    value={filterInputs['puPickUpAvailFrom_Date'] || ''}
+                                                                    placeholder="DD/MM/YY-DD/MM/YY"
+                                                                    onChange={(e) => this.onChangeFilterInput(e)}
+                                                                    onKeyPress={(e) => this.onKeyPress(e)}
+                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange, isShowb_dateBookedDateRange: false})}
+                                                                />
+                                                                {this.state.isShowpuPickUpAvailFrom_DateRange && (
+                                                                    <DateRangePicker
+                                                                        value={this.state.puPickUpAvailFrom_DateRange}
+                                                                        onSelect={(e) => this.onSelectDateRange(e, 'puPickUpAvailFrom_Date')}
+                                                                        singleDateRange={true}
+                                                                    />
+                                                                )}
+                                                            </th>
+                                                            <th name="b_dateBookedDate" scope="col">
+                                                                <input
+                                                                    type="text"
+                                                                    name="b_dateBookedDate"
+                                                                    value={filterInputs['b_dateBookedDate'] || ''}
+                                                                    placeholder="DD/MM/YY-DD/MM/YY"
+                                                                    onChange={(e) => this.onChangeFilterInput(e)}
+                                                                    onKeyPress={(e) => this.onKeyPress(e)}
+                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange, isShowpuPickUpAvailFrom_DateRange: false})}
+                                                                />
+                                                                {this.state.isShowb_dateBookedDateRange && (
+                                                                    <DateRangePicker
+                                                                        value={this.state.b_dateBookedDateRange}
+                                                                        onSelect={(e) => this.onSelectDateRange(e, 'b_dateBookedDate')}
+                                                                        singleDateRange={true}
+                                                                    />
+                                                                )}
+                                                            </th>
                                                             <th name="puCompany" scope="col"><input type="text" name="puCompany" value={filterInputs['puCompany'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_Suburb" scope="col"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_State" scope="col"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="pu_Address_PostalCode" scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="pu_Address_PostalCode" scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} placeholder="xxxx-xxxx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="deToCompanyName" scope="col"><input type="text" name="deToCompanyName" value={filterInputs['deToCompanyName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_To_Address_Suburb" scope="col"><input type="text" name="de_To_Address_Suburb" value={filterInputs['de_To_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_To_Address_State" scope="col"><input type="text" name="de_To_Address_State" value={filterInputs['de_To_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="de_To_Address_PostalCode" scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="de_To_Address_PostalCode" scope="col"><input type="text" name="de_To_Address_PostalCode" value={filterInputs['de_To_Address_PostalCode'] || ''} placeholder="xxxx-xxxx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_error_Capture"></th>
                                                             <th name="z_label_url"></th>
                                                             <th name="z_pod_url"></th>
@@ -2983,12 +3138,12 @@ class AllBookingsPage extends React.Component {
                                                             <th name="vx_serviceName" scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="z_lock_status" className="narrow-column"></th>
-                                                            <th name="dme_delivery_status_category" scope="col"><input type="text" name="dme_delivery_status_category" value={filterInputs['dme_delivery_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="b_status_category" scope="col"><input type="text" name="b_status_category" value={filterInputs['b_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_status" scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_PickUp_By_Date" scope="col"><input type="text" name="pu_PickUp_By_Date" value={filterInputs['pu_PickUp_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_Deliver_By_Date" scope="col"><input type="text" name="de_Deliver_By_Date" value={filterInputs['de_Deliver_By_Date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_Deliver_By_Time" scope="col"></th>
-                                                            <th name="remaining_time" scope="col">(Min)</th>
+                                                            <th name="remaining_time" scope="col">DD:HH:MM</th>
                                                             <th name="de_Deliver_From_Date" scope="col"><input type="text" name="delivery_booking" value={filterInputs['delivery_booking'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_given_to_transport_date_time" scope="col"><input type="text" name="b_given_to_transport_date_time" value={filterInputs['b_given_to_transport_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="fp_received_date_time" scope="col"><input type="text" name="fp_received_date_time" value={filterInputs['fp_received_date_time'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
@@ -3064,9 +3219,19 @@ class AllBookingsPage extends React.Component {
                 <OrderModal
                     isOpen={this.state.isShowOrderModal}
                     toggle={this.toggleOrderModal}
-                    selectedBookingIds={this.state.selectedBookingIds}
+                    selectedBookingIds={selectedBookingIds}
                     selectedBookingLinesCnt={this.state.selectedBookingLinesCnt}
                     bookings={bookings}
+                    clientname={clientname}
+                    onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
+                />
+
+                <ManifestSlider
+                    isOpen={this.state.isShowManifestSlider}
+                    toggleSlider={this.toggleManifestSlider}
+                    selectedBookings={bookings}
+                    bookings={bookings}
+                    clientname={clientname}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
                 />
 
@@ -3074,8 +3239,10 @@ class AllBookingsPage extends React.Component {
                     isOpen={this.state.isShowBulkUpdateSlider}
                     toggleSlider={this.toggleBulkUpdateSlider}
                     allBookingStatus={allBookingStatus}
+                    clientname={clientname}
+                    fps={allFPs}
                     selectedBookingIds={selectedBookingIds}
-                    onUpdate={(field, value, bookingIds, optionalValue) => this.onClickBulkUpdate(field, value, bookingIds, optionalValue)}
+                    onUpdate={(field, value, bookingIds, optionalValue) => this.onBulkUpdate(field, value, bookingIds, optionalValue)}
                 />
 
                 <PricingAnalyseSlider
@@ -3089,6 +3256,7 @@ class AllBookingsPage extends React.Component {
                     toggle={this.toggleBookingSetModal}
                     notify={this.notify}
                     bookingIds={this.state.selectedBookingIds}
+                    selectedBookings={selectedBookings}
                     bookingsets={bookingsets}
                     createBookingSet={this.props.createBookingSet}
                     updateBookingSet={this.props.updateBookingSet}
@@ -3110,6 +3278,7 @@ const mapStateToProps = (state) => {
         toManifest: state.booking.toManifest,
         toProcess: state.booking.toProcess,
         closed: state.booking.closed,
+        unprintedLabels: state.booking.unprintedLabels,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
@@ -3176,7 +3345,7 @@ const mapDispatchToProps = (dispatch) => {
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getPricingAnalysis: (bookingIds) => dispatch(getPricingAnalysis(bookingIds)),
         getBookingSets: () => dispatch(getBookingSets()),
-        createBookingSet: (bookingIds, name, note, auto_select_type) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type)),
+        createBookingSet: (bookingIds, name, note, auto_select_type, lineHaulDate) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type, lineHaulDate)),
         updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
     };
 };

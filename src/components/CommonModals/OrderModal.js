@@ -1,15 +1,15 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import _ from 'lodash';
+
+import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class OrderModal extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-        };
+        this.state = {};
     }
 
     static propTypes = {
@@ -19,43 +19,58 @@ class OrderModal extends Component {
         selectedBookingIds: PropTypes.array.isRequired,
         selectedBookingLinesCnt: PropTypes.number.isRequired,
         bookings: PropTypes.array.isRequired,
+        clientname: PropTypes.string,
     };
 
     static defaultProps = {
         isOpen: false,
     };
 
+    onClickCreate(selectedBookings, selectedBookingIds) {
+        // this.props.toggleOrderModal();
+        this.props.onCreateOrder(selectedBookingIds, selectedBookings[0].vx_freight_provider);
+    }
+
     render() {
-        const {isOpen} = this.props;
-        const selectedBookings = this.props.bookings.filter(booking => this.props.selectedBookingIds.includes(booking.id));
-        const puPickUpAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
-        const bookedCnt = this.props.bookings.filter(booking => booking.b_status==='Booked').length;
+        const {isOpen, selectedBookingIds, selectedBookingLinesCnt, clientname} = this.props;
+        const selectedBookings = this.props.bookings.filter(booking => selectedBookingIds.includes(booking.id));
+        const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
+        let bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
+        let notBookedCnt = selectedBookingIds.length - bookedCnt;
+        const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
+
+        if (clientname === 'Jason L') {
+            notBookedCnt = 0;
+            bookedCnt = selectedBookings.length;
+        }
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
-                <ModalHeader toggle={this.props.toggle}>FP Order Modal</ModalHeader>
+                <ModalHeader toggle={this.props.toggle}>FP Order(Manifest) Modal</ModalHeader>
                 <ModalBody>
-                    <h4>
-                        Please review info before creating the order.
-                    </h4>
+                    <h4>Please review info before creating the order.</h4>
                     <label>
                         <span>
-                            # There are {this.props.selectedBookingIds.length} Bookings with {this.props.selectedBookingLinesCnt} number of packages added together for the selected Bookings.
+                            # There are {selectedBookingIds.length} Bookings with {selectedBookingLinesCnt} number of packages added together for the selected Bookings.
                         </span><br />
-                        <span className={puPickUpAvailFromDateCnt > 1 ? 'red' : ''}>
-                            # There are {puPickUpAvailFromDateCnt} `Pick Up Available From Date`;
+                        <span className={fpCnt > 1 ? 'red' : ''}>
+                            # {fpCnt} `Freight Provider(s)`;
                         </span><br />
-                        <span className={this.props.selectedBookingIds.length - bookedCnt > 0 ? 'red' : ''}>
-                            # Not booked Count: {this.props.selectedBookingIds.length - bookedCnt}
-                        </span>
+                        <span className={puAvailFromDateCnt > 1 ? 'red' : ''}>
+                            # There are {puAvailFromDateCnt} `Pick Up Available From Date`;
+                        </span><br />
+                        {clientname !== 'Jason L' &&
+                            <span className={notBookedCnt > 0 ? 'red' : ''}>
+                                # Not booked Count: {notBookedCnt}
+                            </span>
+                        }
                     </label>
                 </ModalBody>
                 <ModalFooter>
                     <Button
                         color="primary"
-                        onClick={() => this.props.onCreateOrder(this.props.selectedBookingIds, selectedBookings[0].vx_freight_provider)}
-                        disabled={puPickUpAvailFromDateCnt > 1 || (this.props.selectedBookingIds.length - bookedCnt > 0) 
-                            ? 'disabled' : ''}
+                        onClick={() => this.onClickCreate(selectedBookings, selectedBookingIds)}
+                        disabled={puAvailFromDateCnt > 1 || (selectedBookingIds.length - bookedCnt > 0) || fpCnt > 1 ? 'disabled' : ''}
                     >
                         Create
                     </Button>

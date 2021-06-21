@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import _ from 'lodash';
+import moment from 'moment-timezone';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class BookingSetModal extends Component {
@@ -11,6 +14,7 @@ class BookingSetModal extends Component {
         this.state = {
             name: null,
             note: null,
+            lineHaulDate: '',
             actionType: 'create',
             selectedBookingSet: null,
             auto_select_type: true,
@@ -24,6 +28,7 @@ class BookingSetModal extends Component {
         createBookingSet: PropTypes.func.isRequired,
         updateBookingSet: PropTypes.func.isRequired,
         bookingIds: PropTypes.array.isRequired,
+        selectedBookings: PropTypes.array,
         bookingsets: PropTypes.array.isRequired,
     };
 
@@ -47,8 +52,20 @@ class BookingSetModal extends Component {
         }
     }
 
+    onDateChange(date) {
+        let lineHaulDate = '';
+
+        if (_.isNull(date)) {
+            lineHaulDate = moment().toDate();
+        } else {
+            lineHaulDate = date;
+        }
+
+        this.setState({lineHaulDate: moment(lineHaulDate).format('YYYY-MM-DD')});
+    }
+
     onClickOkBtn() {
-        const {name, note, actionType, selectedBookingSet, auto_select_type} = this.state;
+        const {name, note, actionType, selectedBookingSet, auto_select_type, lineHaulDate} = this.state;
 
         if (actionType === 'create') {
             if (!name) {
@@ -56,8 +73,14 @@ class BookingSetModal extends Component {
             } else if (!note) {
                 this.props.notify('Note is required');
             } else {
-                this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type);
-                this.props.toggle();
+                const bookedBookings = this.props.selectedBookings.filter(booking => booking.b_dateBookedDate);
+
+                if (bookedBookings.length > 0) {
+                    this.props.notify('LineHaul BookingSet shouldn`t include BOOKED bookings.');
+                } else {
+                    this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type, lineHaulDate);
+                    this.props.toggle();
+                }
             }
         } else {
             if (!selectedBookingSet) {
@@ -87,7 +110,7 @@ class BookingSetModal extends Component {
 
     render() {
         const {isOpen, bookingsets} = this.props;
-        const {name, note, actionType, selectedBookingSet, auto_select_type} = this.state;
+        const {name, note, actionType, selectedBookingSet, auto_select_type, lineHaulDate} = this.state;
 
         const bookingsetsList = (bookingsets || []).map(bookingset => {
             return (
@@ -105,7 +128,7 @@ class BookingSetModal extends Component {
             <ReactstrapModal isOpen={isOpen} className="bookingset-modal">
                 <ModalHeader toggle={this.props.toggle}>BookingSet Modal</ModalHeader>
                 <ModalBody>
-                    <p>{this.props.bookingIds.length} Bookings are selected</p>
+                    <p>* {this.props.bookingIds.length} Bookings are selected</p>
                     <label>
                         <p>Action Type:</p>
                         <select value={actionType} name="actionType" onChange={(e) => this.handleInputChange(e)}>
@@ -141,7 +164,7 @@ class BookingSetModal extends Component {
                         <label htmlFor="auto-select-fastest">Fastest</label>
                     </label><br />
                     <label>
-                        <p>Name:</p>
+                        <p>Name*:</p>
                         <input
                             className="form-control"
                             name="name"
@@ -151,7 +174,7 @@ class BookingSetModal extends Component {
                         />
                     </label><br />
                     <label>
-                        <p>Note:</p>
+                        <p>Note*:</p>
                         <textarea
                             className="form-control"
                             name="note"
@@ -160,6 +183,14 @@ class BookingSetModal extends Component {
                             disabled={actionType === 'add' ? 'disabled': ''}
                             col="40"
                             rows="4"
+                        />
+                    </label>
+                    <label>
+                        <p>LineHaul Date:</p>
+                        <DatePicker
+                            selected={lineHaulDate ? new Date(lineHaulDate) : ''}
+                            onChange={(e) => this.onDateChange(e)}
+                            dateFormat="dd MMM yyyy"
                         />
                     </label>
                 </ModalBody>

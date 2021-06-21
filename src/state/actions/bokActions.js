@@ -16,6 +16,10 @@ import {
     FAILED_BOOK_FREIGHT,
     SUCCESS_CANCEL_FREIGHT,
     FAILED_CANCEL_FREIGHT,
+    SUCCESS_UPDATE_BOK_1,
+    FAILED_UPDATE_BOK_1,
+    SUCCESS_AUTO_REPACK,
+    FAILED_AUTO_REPACK,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -131,5 +135,31 @@ export function failedCancelFreight(error) {
     return {
         type: FAILED_CANCEL_FREIGHT,
         payload: 'Unable to CANCEL freight. ' + error.response.data.message,
+    };
+}
+
+export function successUpdateBok_1() {
+    return {
+        type: SUCCESS_UPDATE_BOK_1,
+    };
+}
+
+export function failedUpdateBok_1(error) {
+    return {
+        type: FAILED_UPDATE_BOK_1,
+        payload: 'Unable to Update Bok_1. ' + error.response.data.message,
+    };
+}
+
+export function successAutoRepack() {
+    return {
+        type: SUCCESS_AUTO_REPACK,
+    };
+}
+
+export function failedAutoRepack(error) {
+    return {
+        type: FAILED_AUTO_REPACK,
+        payload: 'Unable to auto repack this BOK. ' + error.response.data.message,
     };
 }

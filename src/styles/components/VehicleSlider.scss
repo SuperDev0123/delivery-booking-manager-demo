@@ -1,0 +1,30 @@
+.vehicle-slider {
+    width: 60% !important;
+
+    .table-view {
+        >button {
+            margin-bottom: 20px;
+        }
+
+        table {
+            button {
+                padding: 7px;
+            }
+
+            .selected {
+                background: lightblue;
+            }
+        }
+
+        p {
+            width: 100px;
+            display: inline-block;
+        }
+
+        >select, >input, >textarea {
+            width: 200px;
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+}

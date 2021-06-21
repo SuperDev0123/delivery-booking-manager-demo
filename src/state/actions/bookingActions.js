@@ -91,8 +91,13 @@ import {
     RESET_NO_BOOKING,
     SUCCESS_GET_CLIENT_PROCESS,
     FAILED_GET_CLIENT_PROCESS,
+    SUCCESS_GET_LABELS_INFO,
+    FAILED_GET_LABELS_INFO,
     SUCCESS_UPDATE_AUGMENT,
     FAILED_UPDATE_AUGMENT,
+    RESET_MANIFEST_SUMMARY,
+    SUCCESS_GET_MANIFEST_SUMMARY,
+    FAILED_GET_MANIFEST_SUMMARY,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -109,6 +114,7 @@ export function successGetBookings(data) {
         closed: data['closed'],
         errorsToCorrect: data['errors_to_correct'],
         missingLabels: data['missing_labels'],
+        unprintedLabels: data['unprinted_labels'],
     };
 }
 
@@ -854,5 +860,40 @@ export function failedAugmentPuDate(error) {
 export function resetNoBookingAction() {
     return {
         type: RESET_NO_BOOKING,
+    };
+}
+
+export function successGetLabelsInfo(data) {
+    return {
+        type: SUCCESS_GET_LABELS_INFO,
+        payload: data.result,
+    };
+}
+
+export function failedGetLabelsInfo(error) {
+    return {
+        type: FAILED_GET_LABELS_INFO,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function resetManifestSummary(data) {
+    return {
+        type: RESET_MANIFEST_SUMMARY,
+        payload: data,
+    };
+}
+
+export function successGetManifestSummary(data) {
+    return {
+        type: SUCCESS_GET_MANIFEST_SUMMARY,
+        payload: data,
+    };
+}
+
+export function failedGetManifestSummary(error) {
+    return {
+        type: FAILED_GET_MANIFEST_SUMMARY,
+        errorMessage: error.response.data.message
     };
 }

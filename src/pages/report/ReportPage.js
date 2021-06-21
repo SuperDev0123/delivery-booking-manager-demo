@@ -67,7 +67,7 @@ class ReportPage extends React.Component {
                             {clientname === 'dme' && <li className=""><Link to="/zoho">Zoho</Link></li>}
                             <li className="active"><Link to="/reports">Reports</Link></li>
                             <li className="none"><a href="/bookinglines">Booking Lines</a></li>
-                            <li className="none"><a href="/bookinglinedetails">Booking Line Datas</a></li>
+                            <li className="none"><a href="/bookinglinedetails">Booking Line Data</a></li>
                         </ul>
                     </div>
                     <div id="icn" className="col-md-4 col-sm-12 col-lg-4 col-xs-12 text-right col-lg-pull-1">

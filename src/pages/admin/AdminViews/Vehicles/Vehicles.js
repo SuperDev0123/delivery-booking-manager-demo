@@ -20,7 +20,7 @@ class Vehicles extends Component {
 
         this.state = {
             loading: false,
-            allVehicles: [],
+            vehicles: [],
             selectedFile: null,
             selectedFileOption: null,
             isShowDeleteFileConfirmModal: false,
@@ -54,7 +54,7 @@ class Vehicles extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, allVehicles } = newProps;
+        const { redirect, vehicles } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -63,8 +63,8 @@ class Vehicles extends Component {
             this.props.history.push('/admin');
         }
 
-        if (allVehicles) {
-            this.setState({allVehicles, loading: false});
+        if (vehicles) {
+            this.setState({vehicles, loading: false});
             this.notify('Refreshed!');
         }
     }
@@ -112,9 +112,9 @@ class Vehicles extends Component {
     }
 
     render() {
-        const { loading, allVehicles } = this.state;
+        const { loading, vehicles } = this.state;
 
-        const timingList = allVehicles.map((vehicle, index) => {
+        const timingList = vehicles.map((vehicle, index) => {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
@@ -227,7 +227,7 @@ const mapStateToProps = (state) => {
     return {
         redirect: state.auth.redirect,
         username: state.auth.username,
-        allVehicles: state.vehicle.allVehicles,
+        vehicles: state.vehicle.vehicles,
         urlAdminHome: state.url.urlAdminHome,
     };
 };

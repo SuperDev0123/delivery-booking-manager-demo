@@ -21,6 +21,7 @@
 @import './pages/zohodetails.scss';
 @import './pages/bokpricepage.scss';
 @import './pages/statuspage.scss';
+@import './pages/labelpage.scss';
 
 // Components
 @import './components/_header.scss';
@@ -42,3 +43,8 @@
 @import './components/BookingSetModal.scss';
 @import './components/ClientProductSlider.scss';
 @import './components/CostSlider.scss';
+@import './components/PalletSlider.scss';
+@import './components/VehicleSlider.scss';
+@import './components/FreightOptionAccordion.scss';
+@import './components/ExtraCostSummarySlider.scss';
+@import './components/ManifestSlider.scss';

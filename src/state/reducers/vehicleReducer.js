@@ -4,7 +4,7 @@ import {
 } from '../constants/vehicleConstants';
 
 const defaultState = {
-    allVehicles: [],
+    vehicles: [],
     errorMessage: '',
 };
 
@@ -13,7 +13,7 @@ export const VehicleReducer = (state = defaultState, { type, payload }) => {
         case SUCCESS_GET_VEHICLES:
             return {
                 ...state,
-                allVehicles: payload,
+                vehicles: payload,
             };
         case FAILED_GET_VEHICLES:
             return {

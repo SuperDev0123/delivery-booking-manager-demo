@@ -68,12 +68,12 @@ table.booking-lines {
 #all_booking {
   .table-responsive {
     margin-top: 5px !important;
-    height: calc(100% - 190px);
+    height: calc(100% - 165px);
     width: 100%;
     overflow-x: auto;
 
     .tbl-content {
-      height: calc(100% - 70px);
+      height: calc(100% - 35px);
       overflow-x: hidden;
       overflow-y: auto;
     }
@@ -169,7 +169,7 @@ $vx_freight_provider_width: 90px;
 $vx_serviceName_width: 90px;
 $v_FPBookingNumber_width: 90px;
 $z_lock_status_width: 30px;
-$dme_delivery_status_category_width: 120px;
+$b_status_category_width: 120px;
 $b_status_width: 130px;
 
 $pu_PickUp_By_Date_width: 130px;
@@ -199,6 +199,7 @@ $b_project_due_date_width: 130px;
 
     input {
       margin: 0 !important;
+      font-size: 12px;
     }
   }
 
@@ -262,8 +263,8 @@ $b_project_due_date_width: 130px;
   td[name=v_FPBookingNumber] p, th[name=v_FPBookingNumber] p { width: 70px }
   td[name=z_lock_status], th[name=z_lock_status] { width: $z_lock_status_width; }
   td[name=z_lock_status] p, th[name=z_lock_status] p { width: 30px }
-  td[name=dme_delivery_status_category], th[name=dme_delivery_status_category] { width: $dme_delivery_status_category_width; }
-  td[name=dme_delivery_status_category] p, th[name=dme_delivery_status_category] p { width: 100px }
+  td[name=b_status_category], th[name=b_status_category] { width: $b_status_category_width; }
+  td[name=b_status_category] p, th[name=b_status_category] p { width: 100px }
   td[name=b_status], th[name=b_status] { width: $b_status_width; }
   td[name=b_status] p, th[name=b_status] p { width: 100px }
 
@@ -347,6 +348,21 @@ $b_project_due_date_width: 130px;
       color: black;
       margin-left: 5px;
       cursor: pointer;
+    }
+  }
+
+  .DateRangePicker {
+    position: absolute;
+    margin-top: 15px;
+    margin-left: -182px;
+    background-color: lightgray;
+
+    th {padding: 0 6px !important}
+    td {padding: 3px 10px}
+
+    .DateRangePicker__Month {
+      width: unset !important;
+      margin: 0px 5px;
     }
   }
 }
@@ -467,7 +483,7 @@ table {
 
 #warehouse {
   width: 250px;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 #status {
@@ -591,12 +607,15 @@ ul.nav-tabs {
 
 .filter-controls {
   padding-left: 51px;
+  margin-bottom: 10px;
 
   .btn {
     padding-right: 10px;
     padding-left: 10px;
-    padding-top: 2px;
-    padding-bottom: 2px;
+    padding-top: 8px;
+    height: 36px;
+
+    i { padding: 0 }
   }
 
   #startDate {
@@ -678,12 +697,16 @@ header > .qbootstrap-nav {
   }
 }
 
-.booking-status a {
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-right: 3px;
-    padding-left: 3px;
-    text-decoration: none !important;
+.booking-status {
+  text-align: center;
+
+  a {
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-right: 3px;
+      padding-left: 3px;
+      text-decoration: none !important;
+  }
 }
 
 .booking-status .warning > i {
@@ -709,14 +732,9 @@ header > .qbootstrap-nav {
   }
 }
 
-.project-name-select {
-  padding-left: 22px;
-
-  #project-name-select {
-    margin-left: 10px;
-    width: 200px;
-    height: 30px;
-  }
+#project-name-select {
+  margin-left: 10px;
+  width: 200px;
 }
 
 #client-select {

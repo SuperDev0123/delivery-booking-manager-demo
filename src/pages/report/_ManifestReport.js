@@ -53,7 +53,7 @@ class ManifestReport extends React.Component {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'ST__manifests__' + moment(report.manifest_date).format('YYYY_MM_DD') + '.zip');
+            link.setAttribute('download', 'manifest__' + moment(report.manifest_date).format('YYYY_MM_DD') + '.zip');
             document.body.appendChild(link);
             link.click();
             this.setState({loading: false});
