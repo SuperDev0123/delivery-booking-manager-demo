@@ -2828,8 +2828,7 @@ class BookingPage extends Component {
         const futileEmailCnt = emailLogs.filter(emailLog => emailLog['emailName'] === 'Futile Pickup').length;
 
         const createdForInfosList = this.state.createdForInfos
-            .filter(createdForInfo => (formInputs['b_client_name'] && formInputs['b_client_name'].toLowerCase() === 'dme')
-            || createdForInfo.company_name === formInputs['b_client_name'])
+            .filter(createdForInfo => createdForInfo.company_name === formInputs['b_client_name'])
             .map(createdForInfo => {
                 const name_first = createdForInfo.name_first ? createdForInfo.name_first : '';
                 const name_last = createdForInfo.name_last ? createdForInfo.name_last : '';
