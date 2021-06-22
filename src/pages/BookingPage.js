@@ -491,8 +491,7 @@ class BookingPage extends Component {
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital'
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl'
-                && this.state.booking.vx_freight_provider.toLowerCase() !== 'allied')
+                && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
             {
                 if (
                     bookingErrorMessage.indexOf('Successfully booked') !== -1 ||
@@ -2506,7 +2505,7 @@ class BookingPage extends Component {
         formInputs['v_service_Type'] = pricingInfo['service_code'];
         booking['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
         formInputs['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
-        booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(2);
+        booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
         formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
         booking['api_booking_quote'] = pricingInfo['id'];
 

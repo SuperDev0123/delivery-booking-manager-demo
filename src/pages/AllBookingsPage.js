@@ -7,7 +7,7 @@ import { withRouter, Link } from 'react-router-dom';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
-import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink} from 'reactstrap';
+import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
@@ -2337,6 +2337,7 @@ class AllBookingsPage extends React.Component {
                                                             <button className="btn btn-primary all-trigger none" onClick={() => this.onClickAllTrigger()}>All trigger</button>
                                                             <button className="btn btn-primary get-label" onClick={() => this.onClickGetLabel()}>Get Label</button>
                                                             <button className="btn btn-primary map-bok1-to-bookings" onClick={() => this.onClickMapBok1ToBookings()}>Map Bok_1 to Bookings</button>
+                                                            <button className="btn btn-primary" onClick={() => this.showMap(this.props.bookings)} disabled={this.state.activeTabInd === 0 ? false : true}>Display on map</button>
                                                         </LoadingOverlay>
                                                     </div>
                                                 </div>
@@ -3263,6 +3264,29 @@ class AllBookingsPage extends React.Component {
                 />
 
                 <ToastContainer />
+                {/* <ReactstrapModal 
+                    isOpen={!_.isEmpty(this.state.mapData)} 
+                    className="bookingset-modal"
+                    style={{
+                        width: 800,
+                        height: 800,
+                        maxWidth: 800
+                    }}
+                >
+                    <ModalHeader>Google map<a className="close-popover" onClick={() => this.setState({mapData: {}})}>x</a></ModalHeader>
+                    <ModalBody style={{height: 770}}>
+                        <Map 
+                            center={this.state.mapData.center}
+                            zoom={6}
+                            markerInfos={this.state.mapData.markerInfos}
+                            style={{
+                                width: 'calc(100% - 30px)'
+                            }}
+                        />
+                    </ModalBody>
+                    <ModalFooter>
+                    </ModalFooter>
+                </ReactstrapModal> */}
             </div>
         );
     }
