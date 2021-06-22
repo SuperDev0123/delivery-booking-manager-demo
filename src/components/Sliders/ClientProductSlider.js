@@ -102,7 +102,7 @@ class ClientProductSlider extends React.Component {
         if (clientProducts) {
             console.log('clientProducts', clientProducts);
             this.setState({ clientProducts });
-            if (clientProducts.length > this.props.clientProducts.length) {
+            if (clientProducts.length > this.props.clientProducts.length && this.props.clientProducts.length) {
                 const { updatedProductIds } = this.state;
                 updatedProductIds.push(clientProducts[clientProducts.length - 1].id);
                 this.setState({updatedProductIds});
