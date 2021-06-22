@@ -1,7 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import DropzoneComponent from 'react-dropzone-component';
 import PropTypes from 'prop-types';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -11,26 +8,16 @@ import BootstrapTable from 'react-bootstrap-table-next';
 import CustomPagination from '../Pagination/CustomPagination';
 import { Button } from 'reactstrap';
 import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
-import Modal from '../CommonModals/ConfirmModal';
-import { verifyToken, cleanRedirectState } from '../../state/services/authService';
-import { successGetDMEClientProducts } from '../../state/actions/extraActions';
-import { API_HOST, HTTP_PROTOCOL } from '../../config';
-import { LIST, EDIT, IMPORT } from '../../commons/constants';
 
 class ClientProductSlider extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            rowIdSelectd: '',
-            modalOpen: false,
-            uploadResult: '',
-            uploaded: false,
             pageItemCnt: 20,
             pageInd: 0,
             pageCnt: 0,
-            mode: LIST,
-            updatedProductIds: [],
+            editMode: 0,
             clientProductsFormInputs: {
                 parent_model_number: '',
                 child_model_number: '',
@@ -43,31 +30,9 @@ class ClientProductSlider extends React.Component {
                 e_weightPerEach: 0,
             },
         };
-
-        this.djsConfig = {
-            addRemoveLinks: true,
-            autoProcessQueue: false,
-            parallelUploads: 10,
-            timeout: 360000,
-        };
-
-        this.componentConfig = {
-            iconFiletypes: ['.xlsx'],
-            showFiletypeIcon: true,
-            postUrl: HTTP_PROTOCOL + '://' + API_HOST + '/upload/',
-        };
-
-        this.dropzone = null;
     }
 
     static propTypes = {
-        verifyToken: PropTypes.func.isRequired,
-        location: PropTypes.object.isRequired,
-        history: PropTypes.object.isRequired,
-        redirect: PropTypes.bool.isRequired,
-        cleanRedirectState: PropTypes.func.isRequired,
-        setClientProducts: PropTypes.func.isRequired,
-        urlAdminHome: PropTypes.string.isRequired,
         isOpen: PropTypes.bool.isRequired,
         toggleSlider: PropTypes.func.isRequired,
         onClickDelete: PropTypes.func.isRequired,
@@ -78,96 +43,6 @@ class ClientProductSlider extends React.Component {
         dmeClient: PropTypes.object.isRequired,
     };
 
-    componentDidMount() {
-        const token = localStorage.getItem('token');
-
-        if (token && token.length > 0) {
-            this.props.verifyToken();
-        } else {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.cleanRedirectState();
-            this.props.history.push('/admin/');
-        }
-    }
-
-    UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, clientProducts } = newProps;
-        const currentRoute = this.props.location.pathname;
-        if (redirect && currentRoute != '/') {
-            localStorage.setItem('isLoggedIn', 'false');
-            this.props.cleanRedirectState();
-            this.props.history.push('/admin');
-        }
-
-        if (clientProducts) {
-            console.log('clientProducts', clientProducts);
-            this.setState({ clientProducts });
-            if (clientProducts.length > this.props.clientProducts.length && this.props.clientProducts.length) {
-                const { updatedProductIds } = this.state;
-                updatedProductIds.push(clientProducts[clientProducts.length - 1].id);
-                this.setState({updatedProductIds});
-            }
-            this.setState({ loading: false });
-        }
-    }
-
-    handleUploadSuccess(file) {
-        let data = JSON.parse(file.xhr.responseText);
-        this.props.setClientProducts(data.created_products);
-        let msg = [
-            <h3 key='1' style={{color: 'red'}}>
-                Errors
-            </h3>
-        ];
-        if (data.import_status.failure_rows.empty_field_error.length) {
-            msg.push(
-                <div key='2'>
-                    <h4 style={{ color: 'red'}}>- These fields should not be empty: parent_model_number, child_model_number, description, qty.</h4>
-                    <div style={{color: 'black', marginLeft: 10, display: 'flex', marginBottom: 10}}>
-                        <p style={{margin: 0}}>row numbers:&nbsp;</p>
-                        <p style={{margin: 0}}>{data.import_status.failure_rows.empty_field_error.join(', ')}</p>
-                    </div>
-                </div>
-            );
-        }
-        if (data.import_status.failure_rows.wrong_type_error.length) {
-            msg.push(
-                <div key='3'>
-                    <h4 style={{color: 'red'}}>- There are some rows with wrong type fields.</h4>
-                    <div style={{marginLeft: 10}}>
-                        <p style={{margin: 0}}><b>Positive Integer: qty</b></p>
-                        <p style={{margin: 0}}><b>Float: e_dimLength, e_dimWidth, e_dimHeight, e_weightPerEach</b></p>
-                        <p style={{margin: 0}}><b>String: rest</b></p>
-                        <div style={{color: 'black', display: 'flex'}}>
-                            <p style={{width: 96, minWidth: 96, margin: 0}}>row numbers: </p>
-                            <p style={{margin: 0}}>{data.import_status.failure_rows.wrong_type_error.join(', ')}</p>
-                        </div>
-                    </div>
-                </div>
-            );
-        } 
-        if (!data.import_status.failure_count) {
-            msg = [<h3 key='1' style={{color: 'green'}}>Client products imported successfully!</h3>];
-        }
-        this.setState({
-            uploadedFileName: data.file_name,
-            uploaded: true,
-            uploadResult: msg
-        });
-    }
-
-    handlePost(e) {
-        e.preventDefault();
-        this.setState({uploadResult: ''});
-        this.dropzone.processQueue();
-    }
-
-    handleFileSending(data, xhr, formData) {
-        const { dmeClient } = this.props;
-        formData.append('uploadOption', 'client-products');
-        formData.append('clientId', dmeClient.pk_id_dme_client);
-    }
-
     handleClickPagination = (e) => {
         this.setState({ isLoading: true });
         const pageInd = parseInt(e);
@@ -175,57 +50,28 @@ class ClientProductSlider extends React.Component {
     }
 
     onClickDelete = (id) => {
-        this.setState({
-            rowIdSelectd: id,
-            modalOpen: true
-        });
+        this.props.onClickDelete(id);
     }
-
-    onDeleteOk = () => {
-        this.props.onClickDelete(this.state.rowIdSelectd);
-        this.setState({modalOpen: false});
-    };
 
     onCancel() {
-        this.setState({mode: LIST});
+        this.setState({editMode: 0});
     }
 
-    onClickNew() {
-        this.setState({
-            mode: EDIT,
-            clientProductsFormInputs: {
-                parent_model_number: '',
-                child_model_number: '',
-                description: '',
-                e_dimUOM: 'cm',
-                e_dimLength: 0,
-                e_dimWidth: 0,
-                e_dimHeight: 0,
-                e_weightUOM: 'kg',
-                e_weightPerEach: 0,
-            },
-        });
+    onClickNew(editMode) {
+        this.setState({editMode: editMode});
     }
 
-    onClickImport() {
-        this.setState({mode: IMPORT});
-    }
+    onAfterSaveCell = (oldValue, newValue,row, column) => {
+        console.log('onAfterSaveCell', oldValue, newValue,row, column);
 
-    onAfterSaveCell = async (oldValue, newValue, row, column) => {
-        console.log('onAfterSaveCell', oldValue, newValue, row, column);
-
-        if (['e_dimLength', 'e_dimWidth', 'e_dimHeight', 'e_weightPerEach'].indexOf(column.dataField) > -1){
-            row[column.dataField] = newValue===''?null:Number(Number(newValue).toFixed(2));
-        }
+        row['e_dimLength'] = Number(Number(row['e_dimLength']).toFixed(2));
+        row['e_dimWidth'] = Number(Number(row['e_dimWidth']).toFixed(2));
+        row['e_dimHeight'] = Number(Number(row['e_dimHeight']).toFixed(2));
+        row['e_weightPerEach'] = Number(Number(row['e_weightPerEach']).toFixed(2));
         
-        if (oldValue !== newValue) {
-            this.setState({clientProductsFormInputs: row});
-            await this.props.onClickEdit(row);
-    
-            const { updatedProductIds } = this.state;
-            updatedProductIds.push(row.id);
-            this.setState({updatedProductIds: [...new Set(updatedProductIds)]});
-        }
+
+        this.setState({clientProductsFormInputs: row});
+        this.props.onClickEdit(row);
     }
 
     onSubmit() {
@@ -241,7 +87,7 @@ class ClientProductSlider extends React.Component {
         
         console.log('clientProductsFormInput', clientProductsFormInputs);
         this.props.onClickSubmit(clientProductsFormInputs);
-        this.setState({mode: LIST});
+        this.setState({editMode: 0});
     }
 
     onInputChange(event) {
@@ -256,11 +102,9 @@ class ClientProductSlider extends React.Component {
 
 
     render() {
-        const { pageItemCnt, pageInd, mode, clientProductsFormInputs, updatedProductIds } = this.state;
+        const { pageItemCnt, pageInd, editMode, clientProductsFormInputs } = this.state;
         const { isOpen, dmeClient, clientProducts } = this.props;
         const { SearchBar } = Search;
-
-        const rowStyle = (row) => (updatedProductIds.includes(row.id) ? {backgroundColor: 'lightgreen'} : {});
 
         const pageCnt = Math.ceil(clientProducts.length / pageItemCnt);
         const items = clientProducts.slice(pageInd * pageItemCnt, (pageInd + 1) * pageItemCnt);
@@ -300,11 +144,9 @@ class ClientProductSlider extends React.Component {
                 text: 'Dim UOM',
                 editor: {
                     type: Type.SELECT,
-                    options: [
-                        { value: 'mm', label: 'mm' },
-                        { value: 'cm', label: 'cm' },
-                        { value: 'm', label: 'm' }
-                    ]
+                    options: [{
+                        value: 'cm', label: 'cm'
+                    }]
                 }
             }, {
                 dataField: 'e_dimLength',
@@ -323,11 +165,9 @@ class ClientProductSlider extends React.Component {
                 text: 'Wgt UOM',
                 editor: {
                     type: Type.SELECT,
-                    options: [
-                        { value: 'g', label: 'g' },
-                        { value: 'kg', label: 'kg' },
-                        { value: 't', label: 't' }
-                    ]
+                    options: [{
+                        value: 'kg', label: 'kg'
+                    }]
                 }
             }, {
                 dataField: 'e_weightPerEach',
@@ -340,15 +180,6 @@ class ClientProductSlider extends React.Component {
             }
         ];
 
-        this.djsConfig['headers'] = {'Authorization': 'JWT ' + localStorage.getItem('token')};
-        const config = this.componentConfig;
-        const djsConfig = this.djsConfig;
-        const eventHandlers = {
-            init: dz => this.dropzone = dz,
-            sending: this.handleFileSending.bind(this),
-            success: this.handleUploadSuccess.bind(this),
-        };
-
         return (
             <SlidingPane
                 className='client-product-pan'
@@ -358,14 +189,8 @@ class ClientProductSlider extends React.Component {
                 onRequestClose={this.props.toggleSlider}
             >
                 <div className="slider-content">
-                    {(mode === LIST) ? (<div className="table-view">
-                        <h5>
-                            {dmeClient.company_name} Products 
-                            <span className="pull-right">
-                                <button onClick={() => this.onClickImport()} className="btn btn-success">Import</button>
-                                <button onClick={() => this.onClickNew()} className="btn btn-success">Add New</button>
-                            </span>
-                        </h5>
+                    {(editMode === 0) ? (<div className="table-view">
+                        <h5>{dmeClient.company_name} Products <span className="pull-right"><button onClick={() => this.onClickNew(1)} className="btn btn-success">Add New</button></span></h5>
                         <hr />
                         <LoadingOverlay
                             active={this.props.isLoading}
@@ -386,7 +211,6 @@ class ClientProductSlider extends React.Component {
                                             <hr />
                                             <BootstrapTable id="zones_table"
                                                 {...props.baseProps}
-                                                rowStyle={rowStyle}
                                                 cellEdit={ cellEditFactory({ mode: 'click', blurToSave:true, afterSaveCell:this.onAfterSaveCell }) }
                                             />
                                         </div>
@@ -410,7 +234,7 @@ class ClientProductSlider extends React.Component {
                                 />
                             </div>
                         </LoadingOverlay>
-                    </div>) : mode === EDIT ? (<div className="line-form form-view">
+                    </div>) : (<div className="line-form form-view">
                         <label>
                             <p>Parent Model Number</p>
                             <input
@@ -483,6 +307,9 @@ class ClientProductSlider extends React.Component {
                                 <option value='kg'>kg</option>
                             </select>
                         </label>
+
+                        
+
                         <label>
                             <p>Weight Per Each</p>
                             <input
@@ -493,79 +320,18 @@ class ClientProductSlider extends React.Component {
                                 onChange={(e) => this.onInputChange(e)}
                             />
                         </label>
+
                         <label>
                             <Button color="primary" onClick={() => this.onSubmit()}>
                                 Submit
                             </Button>{' '}
                             <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
                         </label>
-                    </div>) : (<div className="client-products">
-                        <div className="pageheader">
-                            <h1>Upload sheet</h1>
-                            <div className="breadcrumb-wrapper hidden-xs">
-                                <span className="label">You are here:</span>
-                                <ol className="breadcrumb">
-                                    <li><a href={this.props.urlAdminHome}>Home</a></li>
-                                    <li><a href="/admin/clients">Clients</a></li>
-                                </ol>
-                            </div>
-                        </div>
-                        <section id="main-content" className="animated fadeInUp">
-                            <div className="panel panel-default">
-                                <div className="panel-heading">
-                                    <h3 className="panel-title">Import</h3>
-                                    <div className="actions pull-right">
-                                    </div>
-                                </div>
-                                <div className="panel-body">
-                                    <form onSubmit={(e) => this.handlePost(e)}>
-                                        <DropzoneComponent 
-                                            config={config}
-                                            eventHandlers={eventHandlers}
-                                            djsConfig={djsConfig}
-                                        />
-                                        <button className="btn btn-primary" type="submit">Upload</button>
-                                        <button className="btn btn-secondary" type="button" onClick={() => this.onCancel()}>Cancel</button>
-                                    </form>
-                                    <div>
-                                        <br/>
-                                        {this.state.uploadResult}
-                                        <br/>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
                     </div>)}
-                    <Modal 
-                        isOpen={this.state.modalOpen}
-                        onOk={() => this.onDeleteOk()}
-                        onCancel={() => this.setState({modalOpen: false})}
-                        title="Delete Confirmation"
-                        text="Are you sure about deleting this product?"
-                        okBtnName="Ok"
-                    />
                 </div>
             </SlidingPane>
         );
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        redirect: state.auth.redirect,
-        username: state.auth.username,
-        clientname: state.auth.clientname,
-        urlAdminHome: state.url.urlAdminHome,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        verifyToken: () => dispatch(verifyToken()),
-        cleanRedirectState: () => dispatch(cleanRedirectState()),
-        setClientProducts: (data) => dispatch(successGetDMEClientProducts(data))
-    };
-};
-
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ClientProductSlider));
+export default ClientProductSlider;
