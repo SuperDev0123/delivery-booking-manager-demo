@@ -75,14 +75,10 @@ class PalletSlider extends React.Component {
         this.setState({viewMode: FORM, saveMode: DUPLICATE, formInputs});
     }
 
-    onClickSelect(e, pallet=null) {
+    onClickSelect(e, pallet) {
         e.preventDefault();
         this.setState({selectedPallet: pallet});
-
-        if (pallet)
-            this.props.onSelectPallet(pallet.id);
-        else
-            this.props.onSelectPallet(-1);
+        this.props.onSelectPallet(pallet.id);
     }
 
     onClickCancel(e) {
@@ -179,7 +175,6 @@ class PalletSlider extends React.Component {
                                 <th className="" scope="col" nowrap><p>Action</p></th>
                             </tr>
                             { palletList }
-                            <tr><td><Button color="info" onClick={(e) => this.onClickSelect(e, null)}>Use DME AI</Button></td></tr>
                         </table>
                     </div>
                     :

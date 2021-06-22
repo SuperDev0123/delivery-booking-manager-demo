@@ -111,7 +111,7 @@ class Upload extends Component {
 
     handlePost(e) {
         e.preventDefault();
-        this.setState({uploadResult: ''});
+        this.setState({uploadResult: <span style={{color: 'blue', fontWeight: 'bold'}}>Uploading...</span>});
         this.dropzone.processQueue();
     }
 
