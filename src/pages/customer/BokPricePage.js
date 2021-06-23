@@ -1,19 +1,21 @@
+// React libs
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
+// Components
 import _ from 'lodash';
 import moment from 'moment-timezone';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
-
+// Custom components
 import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack } from '../../state/services/bokService';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
+// Services
 import { getWeight } from '../../commons/helpers';
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -45,6 +47,7 @@ class BokPricePage extends Component {
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
         onAutoRepack: PropTypes.func.isRequired,
+        sendEmail: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
         loadSuccess: PropTypes.bool,
@@ -185,6 +188,12 @@ class BokPricePage extends Component {
     onClickSurcharge(price) {
         this.setState({selectedPrice: price});
         this.toggleExtraCostSummarySlider();
+    }
+
+    onClickSendBookingNow () {
+        // Send "picking slip printed" email manually
+        this.notify('Booking will be sent in 1 minute!');
+        this.props.sendEmail(this.props.match.params.id);
     }
 
     render() {
@@ -495,6 +504,17 @@ class BokPricePage extends Component {
                                         {this.props.bookedSuccess || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ? 'Booked' : 'Book'}
                                     </Button>
                                 }
+                                {(bok_1 && bok_1['b_client_name'] === 'Jason L') &&
+                                    <Button
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        color="success"
+                                        title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
+                                            : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                                        onClick={() => this.onClickSendBookingNow()}
+                                    >
+                                        Send Booking Now <i className="fa fa-envelope"></i>
+                                    </Button>
+                                }
                                 <Button
                                     disabled={canBeChanged ? null : 'disabled'}
                                     color="danger"
@@ -547,6 +567,7 @@ const mapDispatchToProps = (dispatch) => {
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),
+        sendEmail: (identifier) => dispatch(sendEmail(identifier)),
     };
 };
 

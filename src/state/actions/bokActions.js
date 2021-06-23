@@ -20,6 +20,8 @@ import {
     FAILED_UPDATE_BOK_1,
     SUCCESS_AUTO_REPACK,
     FAILED_AUTO_REPACK,
+    SUCCESS_SEND_EMAIL,
+    FAILED_SEND_EMAIL,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -161,5 +163,18 @@ export function failedAutoRepack(error) {
     return {
         type: FAILED_AUTO_REPACK,
         payload: 'Unable to auto repack this BOK. ' + error.response.data.message,
+    };
+}
+
+export function successSendEmail() {
+    return {
+        type: SUCCESS_SEND_EMAIL,
+    };
+}
+
+export function failedSendEmail(error) {
+    return {
+        type: FAILED_SEND_EMAIL,
+        payload: 'Unable to send email. ' + error.response.data.message,
     };
 }

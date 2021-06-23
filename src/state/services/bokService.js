@@ -22,6 +22,8 @@ import {
     failedUpdateBok_1,
     successAutoRepack,
     failedAutoRepack,
+    successSendEmail,
+    failedSendEmail,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -147,5 +149,17 @@ export const autoRepack = (identifier, repackStatus, palletId) => {
         axios(options)
             .then(() => dispatch(successAutoRepack()))
             .catch((error) => dispatch(failedAutoRepack(error)));
+    };
+};
+
+export const sendEmail = (identifier) => {
+    const options = {
+        method: 'get',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/send_email/?identifier=${identifier}`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successSendEmail()))
+            .catch((error) => dispatch(failedSendEmail(error)));
     };
 };
