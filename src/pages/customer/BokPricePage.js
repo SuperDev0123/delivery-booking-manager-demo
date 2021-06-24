@@ -13,6 +13,7 @@ import { Button } from 'reactstrap';
 import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
+import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 // Services
 import { getWeight } from '../../commons/helpers';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail } from '../../state/services/bokService';
@@ -34,11 +35,13 @@ class BokPricePage extends Component {
             isShowPalletSlider: false,
             isShowLineData: false,
             selectedPrice: {},
+            isShowConfirmModal: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
         this.togglePalletSlider = this.togglePalletSlider.bind(this);
         this.onCancelAutoRepack = this.onCancelAutoRepack.bind(this);
+        this.toggleConfirmModal = this.toggleConfirmModal.bind(this);
     }
 
     static propTypes = {
@@ -159,6 +162,10 @@ class BokPricePage extends Component {
         this.setState(prevState => ({isShowPalletSlider: !prevState.isShowPalletSlider}));
     }
 
+    toggleConfirmModal() {
+        this.setState(prevState => ({isShowConfirmModal: !prevState.isShowConfirmModal}));
+    }
+
     onClickShowLineData(bok_2) {
         this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
     }
@@ -190,10 +197,13 @@ class BokPricePage extends Component {
         this.toggleExtraCostSummarySlider();
     }
 
-    onClickSendBookingNow () {
-        // Send "picking slip printed" email manually
-        this.notify('Booking will be sent in 1 minute!');
-        this.props.sendEmail(this.props.match.params.id);
+    onClickConfirmBtn(type) {
+        if (type === 'trigger-email') {
+            // Send "picking slip printed" email manually
+            this.notify('Booking will be sent in 1 minute!');
+            this.props.sendEmail(this.props.match.params.id);
+            this.toggleConfirmModal();
+        }
     }
 
     render() {
@@ -510,7 +520,7 @@ class BokPricePage extends Component {
                                         color="success"
                                         title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
                                             : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                                        onClick={() => this.onClickSendBookingNow()}
+                                        onClick={() => this.toggleConfirmModal()}
                                     >
                                         Send Booking Now <i className="fa fa-envelope"></i>
                                     </Button>
@@ -539,6 +549,15 @@ class BokPricePage extends Component {
                     toggleSlider={this.togglePalletSlider}
                     onCancelAutoRepack={this.onCancelAutoRepack}
                     onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowConfirmModal}
+                    onOk={() => this.onClickConfirmBtn('trigger-email')}
+                    onCancel={this.toggleConfirmModal}
+                    title={'Send Booking Now?'}
+                    text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
+                    okBtnName={'Yes'}
                 />
 
                 <ToastContainer />
