@@ -24,30 +24,30 @@ class ManifestSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         onCreateOrder: PropTypes.func.isRequired,
         getManifestSummary: PropTypes.func.isRequired,
-        bookings: PropTypes.array.isRequired,
         clientname: PropTypes.string,
         manifestSummary: PropTypes.object,
+        selectedBookings: PropTypes.array,
     };
 
     UNSAFE_componentWillReceiveProps(newProps) {
         if (!this.props.isOpen && newProps.isOpen) { // After Slider is opened
-            const bookingIds = newProps.bookings.map(booking => booking.id);
+            const bookingIds = newProps.selectedBookings.map(booking => booking.id);
             this.props.getManifestSummary(bookingIds);
             this.setState({bookingIds});
         }
     }
 
     render() {
-        const {isOpen, bookings, clientname, manifestSummary} = this.props;
-        const puAvailFromDateCnt = _.uniqBy(bookings, 'puPickUpAvailFrom_Date').length;
-        let bookedCnt = bookings.filter(booking => booking.b_status==='Booked').length;
-        let notBookedCnt = bookings.length - bookedCnt;
-        const fpCnt = _.uniqBy(bookings, 'vx_freight_provider').length;
+        const {isOpen, selectedBookings, clientname, manifestSummary} = this.props;
+        const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
+        let bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
+        let notBookedCnt = selectedBookings.length - bookedCnt;
+        const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
         const summaryList = [];
 
         if (clientname === 'Jason L') {
             notBookedCnt = 0;
-            bookedCnt = bookings.length;
+            bookedCnt = selectedBookings.length;
         }
 
         if (manifestSummary) {

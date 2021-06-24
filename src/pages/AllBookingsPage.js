@@ -1691,7 +1691,21 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickShowManifestSliderButton() {
-        this.toggleManifestSlider();
+        const {selectedBookingIds} = this.state;
+        const bookings = this.getBookingsFromIds(selectedBookingIds);
+        let bookedBookingsCnt = 0;
+
+        for (let i = 0; i < bookings.length; i++)
+            if (!_.isNull(bookings[i].b_dateBookedDate))
+                bookedBookingsCnt += 1;
+
+        if (selectedBookingIds.length === 0) {
+            this.notify('Please select bookings to MANIFEST!');
+        } else if (bookedBookingsCnt > 0) {
+            this.notify('You selected some BOOKED bookings!');
+        } else {
+            this.toggleManifestSlider();
+        }
     }
 
     render() {
@@ -3230,8 +3244,7 @@ class AllBookingsPage extends React.Component {
                 <ManifestSlider
                     isOpen={this.state.isShowManifestSlider}
                     toggleSlider={this.toggleManifestSlider}
-                    selectedBookings={bookings}
-                    bookings={bookings}
+                    selectedBookings={selectedBookings}
                     clientname={clientname}
                     onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
                 />
