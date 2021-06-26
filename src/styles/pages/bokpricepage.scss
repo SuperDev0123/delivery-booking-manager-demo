@@ -37,6 +37,11 @@ section.bok-price {
 		font-weight: bolder;
 		font-size: 18px;
 		padding-left: 10px;
+
+		&.ignored-items {
+			font-weight: lighter;
+			padding: 0px !important;
+		}
 	}
 
 	i {

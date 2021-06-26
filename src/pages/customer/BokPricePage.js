@@ -416,6 +416,7 @@ class BokPricePage extends Component {
                             onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
                         <h3><i className="fa fa-circle"></i> Lines:</h3>
+                        {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items'><strong>Ignored items: </strong>{bok_1['b_010_b_notes']}</p>}
                         {totalLinesCnt &&
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
