@@ -20,7 +20,6 @@ class FreightOptionAccordion extends Component {
         bok_1: PropTypes.array.isRequired,
         updateBok_1: PropTypes.func.isRequired,
         onClickAutoRepack: PropTypes.func.isRequired,
-        hasUnknownItems: PropTypes.bool,
     }
 
     onClickHeader = (e) => {
@@ -71,7 +70,7 @@ class FreightOptionAccordion extends Component {
 
     render() {
         const {isOpen, needToUpdate} = this.state;
-        const {bok_1, hasUnknownItems} = this.props;
+        const {bok_1} = this.props;
         let carton_cnt = 0;
         let is_auto_pack_checked = false;
 
@@ -124,7 +123,6 @@ class FreightOptionAccordion extends Component {
                                     type="checkbox"
                                     checked={is_auto_pack_checked}
                                     onChange={(e) => this.onInputChange(e)}
-                                    disabled={hasUnknownItems ? 'disabled' : ''}
                                 />
                             </label>
                             <label>

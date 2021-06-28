@@ -448,7 +448,6 @@ class BokPricePage extends Component {
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
-                            hasUnknownItems={hasUnknownItems}
                             onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
                         <h3><i className="fa fa-circle"></i> Lines:</h3>
