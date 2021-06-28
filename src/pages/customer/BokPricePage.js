@@ -279,7 +279,7 @@ class BokPricePage extends Component {
             isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
 
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
-                totalLinesKg += getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']);
+                totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
                 totalLinesCnt += bok_2['l_002_qty'];
                 totalCubicMeter += bok_2['pallet_cubic_meter'];
                 let packedCubicMeter = 0;
