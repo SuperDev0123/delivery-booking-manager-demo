@@ -22,6 +22,8 @@ import {
     FAILED_AUTO_REPACK,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
+    SUCCESS_UPDATE_ITEM_PRODUCT,
+    FAILED_UPDATE_ITEM_PRODUCT,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -176,5 +178,18 @@ export function failedSendEmail(error) {
     return {
         type: FAILED_SEND_EMAIL,
         payload: 'Unable to send email. ' + error.response.data.message,
+    };
+}
+
+export function successUpdateItemProduct() {
+    return {
+        type: SUCCESS_UPDATE_ITEM_PRODUCT,
+    };
+}
+
+export function failedUpdateItemProduct(error) {
+    return {
+        type: FAILED_UPDATE_ITEM_PRODUCT,
+        payload: 'Unable to update item product. ' + error.response.data.message,
     };
 }

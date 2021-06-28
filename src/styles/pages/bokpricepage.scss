@@ -29,8 +29,19 @@ section.bok-price {
 		}
 	}
 
-	tr.selected {
-		background-color: lightskyblue;
+	tr {
+		&.selected {
+			background-color: lightskyblue;
+		}
+
+		&.unknown {
+			background-color: lightpink;
+
+			td {
+				color: red;
+				font-weight: bolder;
+			}
+		}
 	}
 
 	p {

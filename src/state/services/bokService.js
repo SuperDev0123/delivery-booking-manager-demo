@@ -24,6 +24,8 @@ import {
     failedAutoRepack,
     successSendEmail,
     failedSendEmail,
+    successUpdateItemProduct,
+    failedUpdateItemProduct,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -161,5 +163,18 @@ export const sendEmail = (identifier) => {
         axios(options)
             .then(() => dispatch(successSendEmail()))
             .catch((error) => dispatch(failedSendEmail(error)));
+    };
+};
+
+export const onUpdateItemProduct = (line_id, product) => {
+    const options = {
+        method: 'post',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/update_item_product/`,
+        data: {line_id, product}
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successUpdateItemProduct()))
+            .catch((error) => dispatch(failedUpdateItemProduct(error)));
     };
 };

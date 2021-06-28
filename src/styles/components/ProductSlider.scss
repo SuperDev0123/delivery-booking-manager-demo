@@ -1,0 +1,41 @@
+.product-slider {
+  width: 40% !important;
+
+  h3 {
+    display: inline;
+  }
+
+  .new-btn {
+    padding: 5px;
+    margin-bottom: 10px;
+    font-size: 24px;
+    padding: 0px 15px !important;
+  }
+
+  form {
+    label {
+      display: block;
+      width: 40%;
+      margin-top: 10px;
+
+      &:last-child {
+        text-align: center;
+      }
+
+      p {
+        display: inline-block;
+        margin-top: 10px;
+      }
+
+      input, select {
+        width: 70%;
+        float: right;
+      }
+
+      select {
+        height: 30px;
+        margin-top: 7px;
+      }
+    }
+  }
+}

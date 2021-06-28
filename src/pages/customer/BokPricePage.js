@@ -14,9 +14,10 @@ import FreightOptionAccordion from '../../components/Accordion/FreightOptionAcco
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
+import ProductSlider from '../../components/Sliders/ProductSlider';
 // Services
 import { getWeight } from '../../commons/helpers';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail } from '../../state/services/bokService';
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail, onUpdateItemProduct } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -31,17 +32,21 @@ class BokPricePage extends Component {
             isLoadingPricing: false,
             isLoadingOper: false,
             isAutoRepacking: false,
+            isUpdatingItemProduct: false,
             isShowExtraCostSummarySlider: false,
             isShowPalletSlider: false,
             isShowLineData: false,
             selectedPrice: {},
+            selectedLine: null,
             isShowConfirmModal: false,
+            isShowProductSlider: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
         this.togglePalletSlider = this.togglePalletSlider.bind(this);
         this.onCancelAutoRepack = this.onCancelAutoRepack.bind(this);
         this.toggleConfirmModal = this.toggleConfirmModal.bind(this);
+        this.toggleProductSlider = this.toggleProductSlider.bind(this);
     }
 
     static propTypes = {
@@ -50,6 +55,7 @@ class BokPricePage extends Component {
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
         onAutoRepack: PropTypes.func.isRequired,
+        onUpdateItemProduct: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
@@ -58,6 +64,7 @@ class BokPricePage extends Component {
         canceledSuccess: PropTypes.bool,
         selectPricingSuccess: PropTypes.bool,
         autoRepackSuccess: PropTypes.bool,
+        updateItemProductSuccess: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -72,7 +79,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, updateItemProductSuccess} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -113,6 +120,11 @@ class BokPricePage extends Component {
 
         if (this.state.isLoadingOper && (!this.props.canceledSuccess && newProps.canceledSuccess)) {
             this.setState({isLoadingOper: false});
+        }
+
+        if (this.state.isUpdatingItemProduct && !this.props.updateItemProductSuccess && updateItemProductSuccess) {
+            this.setState({isUpdatingItemProduct: false, isLoadingBok: true});
+            this.props.getBokWithPricings(this.props.match.params.id);
         }
 
         if (this.state.isAutoRepacking && !this.props.autoRepackSuccess && newProps.autoRepackSuccess) {
@@ -170,6 +182,10 @@ class BokPricePage extends Component {
         this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
     }
 
+    toggleProductSlider() {
+        this.setState(prevState => ({isShowProductSlider: !prevState.isShowProductSlider}));
+    }
+
     onClickAutoRepack(status) {
         if (status) {
             this.setState({isShowPalletSlider: true});
@@ -206,6 +222,19 @@ class BokPricePage extends Component {
         }
     }
 
+    onClickEditLine(line) {
+        this.setState({selectedLine: line});
+        this.toggleProductSlider();
+    }
+
+    onUpdateProduct(newLineData) {
+        const {selectedLine} = this.state;
+
+        this.props.onUpdateItemProduct(selectedLine.pk_lines_id, newLineData);
+        this.setState({isUpdatingItemProduct: true});
+        this.toggleProductSlider();
+    }
+
     render() {
         const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
         const {bokWithPricings} = this.props;
@@ -219,6 +248,7 @@ class BokPricePage extends Component {
         let totalLinesCnt = 0;
         let totalLinesKg = 0;
         let isAutoPacked = false;
+        let hasUnknownItems = false;
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -253,6 +283,10 @@ class BokPricePage extends Component {
                 totalLinesCnt += bok_2['l_002_qty'];
                 totalCubicMeter += bok_2['pallet_cubic_meter'];
                 let packedCubicMeter = 0;
+                let isUnknownLine = bok_2['l_003_item'].indexOf('(Ignored)') > -1 ? true : false;
+
+                if (!hasUnknownItems && isUnknownLine)
+                    hasUnknownItems = true;
 
                 bok_3s = bok_1['bok_3s']
                     .filter(bok_3 => bok_3.fk_booking_lines_id === bok_2['pk_booking_lines_id'])
@@ -261,7 +295,7 @@ class BokPricePage extends Component {
                     });
 
                 return (
-                    <tr key={index}>
+                    <tr key={index} className={isUnknownLine ? 'unknown' : null}>
                         <td>{bok_2['l_001_type_of_packaging']}</td>
                         <td>{bok_2['zbl_121_integer_1']}</td>
                         <td>{bok_2['e_item_type']}</td>
@@ -272,9 +306,10 @@ class BokPricePage extends Component {
                         <td>{bok_2['l_006_dim_width']}</td>
                         <td>{bok_2['l_007_dim_height']}</td>
                         <td>{bok_2['pallet_cubic_meter'].toFixed(3)} (m3)</td>
-                        <td>{bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']} ({bok_2['l_008_weight_UOM']})</td>
-                        {isAutoPacked ? <td>{packedCubicMeter} (m3)</td> : null}
-                        <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td>
+                        <td>{(bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']).toFixed(3)} ({bok_2['l_008_weight_UOM']})</td>
+                        {isAutoPacked ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
+                        {isAutoPacked ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
+                        {!isAutoPacked ? <td><Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit Line</Button></td> : null}
                     </tr>
                 );
             });
@@ -413,10 +448,16 @@ class BokPricePage extends Component {
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
+                            hasUnknownItems={hasUnknownItems}
                             onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                         />
                         <h3><i className="fa fa-circle"></i> Lines:</h3>
-                        {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items'><strong>Ignored items: </strong>{bok_1['b_010_b_notes']}</p>}
+                        {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
+                        {hasUnknownItems &&
+                            <p className='c-red ignored-items'>
+                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Orders with unknown lines can *NOT* be auto repacked)
+                            </p>
+                        }
                         {totalLinesCnt &&
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
@@ -450,7 +491,8 @@ class BokPricePage extends Component {
                                     <th>{isAutoPacked ? 'Pallet CBM' : 'CBM'}</th>
                                     <th>Total Weight</th>
                                     {isAutoPacked ? <th>Total Packed CBM</th> : null}
-                                    <th>Action</th>
+                                    {isAutoPacked ? <th>Show Line Details</th> : null}
+                                    {!isAutoPacked ? <th>Edit line</th> : null}
                                 </tr>
                             </thead>
                             <tbody>
@@ -552,6 +594,13 @@ class BokPricePage extends Component {
                     onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
                 />
 
+                <ProductSlider
+                    isOpen={this.state.isShowProductSlider}
+                    toggleSlider={this.toggleProductSlider}
+                    line={this.state.selectedLine}
+                    onUpdateProduct={(newLineData) => this.onUpdateProduct(newLineData)}
+                />
+
                 <ConfirmModal
                     isOpen={this.state.isShowConfirmModal}
                     onOk={() => this.onClickConfirmBtn('trigger-email')}
@@ -577,6 +626,7 @@ const mapStateToProps = (state) => {
         canceledSuccess: state.bok.canceledSuccess,
         selectPricingSuccess: state.bok.selectPricingSuccess,
         autoRepackSuccess: state.bok.autoRepackSuccess,
+        updateItemProductSuccess: state.bok.updateItemProductSuccess,
     };
 };
 
@@ -588,6 +638,7 @@ const mapDispatchToProps = (dispatch) => {
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),
         sendEmail: (identifier) => dispatch(sendEmail(identifier)),
+        onUpdateItemProduct: (lineId, product) => dispatch(onUpdateItemProduct(lineId, product)),
     };
 };
 

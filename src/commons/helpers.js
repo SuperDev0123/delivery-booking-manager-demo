@@ -31,21 +31,35 @@ function decodeBase64(data) {
 }
 
 function getCubicMeter(e_qty, e_dimUOM, e_dimLength, e_dimWidth, e_dimHeight) {
+    let result;
+
+    if (!e_qty || !e_dimUOM || !e_dimLength || !e_dimWidth || !e_dimHeight)
+        return 0;
+
     if (e_dimUOM.toUpperCase() === 'CM' || e_dimUOM.toUpperCase() === 'CENTIMETER')
-        return parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight) / 1000000);
+        result = parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight) / 1000000);
     else if (e_dimUOM.toUpperCase() === 'METER' || e_dimUOM.toUpperCase() === 'M')
-        return parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight));
+        result = parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight));
     else
-        return parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight) / 1000000000);
+        result = parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight) / 1000000000);
+
+    return result.toFixed(2);
 }
 
 function getWeight(e_qty, e_weightUOM, e_weightPerEach) {
+    let result;
+
+    if (!e_qty || !e_weightUOM || !e_weightPerEach)
+        return 0;
+
     if (e_weightUOM.toUpperCase() === 'GRAM' || e_weightUOM.toUpperCase() === 'GRAMS')
-        return parseInt(e_qty) * parseFloat(e_weightPerEach) / 1000;
+        result = parseInt(e_qty) * parseFloat(e_weightPerEach) / 1000;
     else if (e_weightUOM.toUpperCase() === 'KILOGRAM' || e_weightUOM.toUpperCase() === 'KILOGRAMS' || e_weightUOM.toUpperCase() === 'KG' || e_weightUOM.toUpperCase() === 'KGS')
-        return parseInt(e_qty) * parseFloat(e_weightPerEach);
+        result = parseInt(e_qty) * parseFloat(e_weightPerEach);
     else if (e_weightUOM.toUpperCase() === 'TON' || e_weightUOM.toUpperCase() === 'TONS')
-        return parseInt(e_qty) * parseFloat(e_weightPerEach) * 1000;
+        result = parseInt(e_qty) * parseFloat(e_weightPerEach) * 1000;
+
+    return result.toFixed(2);
 }
 
 module.exports = {
