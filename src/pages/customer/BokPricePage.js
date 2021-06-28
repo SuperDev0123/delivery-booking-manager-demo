@@ -454,7 +454,7 @@ class BokPricePage extends Component {
                         {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
                         {hasUnknownItems &&
                             <p className='c-red ignored-items'>
-                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Orders with unknown lines can *NOT* be auto repacked)
+                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate.
                             </p>
                         }
                         {totalLinesCnt &&
