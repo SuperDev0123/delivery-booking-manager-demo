@@ -98,6 +98,8 @@ import {
     RESET_MANIFEST_SUMMARY,
     SUCCESS_GET_MANIFEST_SUMMARY,
     FAILED_GET_MANIFEST_SUMMARY,
+    SUCCESS_GET_DME_LABEL,
+    FAILED_GET_DME_LABEL,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -616,6 +618,24 @@ export function failedFPPricing(error) {
     return {
         type: FAILED_FP_PRICING,
         errorMessage: 'Failed to FC(Freight Calculation)'
+    };
+}
+
+export function successDMEGetLabel(data) {
+    alert(`Success get Label: ${data.message}`);
+
+    return {
+        type: GET_DME_LABEL_SUCCESS,
+        errorMessage: data.message
+    };
+}
+
+export function failedDMEGetLabel(error) {
+    alert(`Failed get Label: ${error.response.data.message}`);
+
+    return {
+        type: GET_DME_LABEL_FAILED,
+        errorMessage: error.response.data.message
     };
 }
 

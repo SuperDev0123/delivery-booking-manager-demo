@@ -38,6 +38,8 @@ import {
     failedFPTracking, // "
     successFPPricing, // "
     failedFPPricing, // FP Actions End
+    successDMEGetLabel,  // DME Actions Begin
+    failedDMEGetLabel,  // DME Actions End
     setAllLocalFilter,
     setLocalFilter,
     setNeedUpdateBookingsFlag,
@@ -572,6 +574,21 @@ export const fpPricing = (bookingId) => {
             .then(({data}) => dispatch(successFPPricing(data)))
             .catch((error) => dispatch(failedFPPricing(error)));
     };
+};
+
+export const dmeLabel = (bookingId, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {'booking_id': bookingId},
+        url: `${HTTP_PROTOCOL}://${API_HOST}/${vx_freight_provider}/get-label/`
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successDMEGetLabel(data)))
+            .catch((error) => dispatch(failedDMEGetLabel(error)));
 };
 
 export const resetPricingInfosFlag = () => {

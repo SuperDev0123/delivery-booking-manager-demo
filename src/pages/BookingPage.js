@@ -49,7 +49,7 @@ import { verifyToken, cleanRedirectState, getDMEClients } from '../state/service
 import { getCreatedForInfos } from '../state/services/userService';
 import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, updateAugment } from '../state/services/bookingService';
 // FP Services
-import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking } from '../state/services/bookingService';
+import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
@@ -234,6 +234,7 @@ class BookingPage extends Component {
         fpReprint: PropTypes.func.isRequired,
         fpTracking: PropTypes.func.isRequired,
         fpPricing: PropTypes.func.isRequired,
+        dmeLabel: PropTypes.func.isRequired,
         getPricingInfos: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
@@ -1311,6 +1312,7 @@ class BookingPage extends Component {
 
     onClickGetLabel() {
         const {booking, isBookedBooking, formInputs, bookingLineDetailsProduct} = this.state;
+        const {bookingLines, bookingLineDetails} = this.state;
 
         if (isBookedBooking) {
             const result = isValid4Label(formInputs, bookingLineDetailsProduct);
@@ -1321,7 +1323,38 @@ class BookingPage extends Component {
                 this.notify(result);
             }
         } else {
-            this.notify('This booking is not Booked!');
+            if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002') { // JasonL
+                // Check if ready for build label
+                // Each line should have "SSCC" in its lineData's `clientRefNumber` field
+                let isReady4Label = true;
+
+                for (let index0=0; index0 < bookingLines.length; index0++) {
+                    let isReadyLine = false;
+                    const line = bookingLines[index0];
+
+                    for (let index1=0; index1 < bookingLineDetails.length; index1++) {
+                        const lineData = bookingLineDetails[index1];
+
+                        if (line.pk_booking_lines_id === lineData.fk_booking_line_id && lineData.clientRefNumber) {
+                            isReadyLine = true;
+                            break;
+                        }
+                    }
+
+                    if (!isReadyLine) {
+                        isReady4Label = false;
+                        break;
+                    }
+                }
+
+                if (!isReady4Label) {
+                    this.notify('This Booking is not ready to get Label. Please set SSCC for all the Line in its lineData/Client Reference #.');
+                } else {
+                    this.props.dmeLabel(booking.id, booking.vx_freight_provider);
+                }
+            } else {
+                this.notify('This booking is not Booked!');
+            }
         }
     }
 
@@ -5534,6 +5567,7 @@ const mapDispatchToProps = (dispatch) => {
         fpReprint: (bookingId, vx_freight_provider) => dispatch(fpReprint(bookingId, vx_freight_provider)),
         fpTracking: (bookingId, vx_freight_provider) => dispatch(fpTracking(bookingId, vx_freight_provider)),
         fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
+        dmeLabel: (bookingId, vx_freight_provider) => dispatch(dmeLabel(bookingId, vx_freight_provider)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getWarehouses: () => dispatch(getWarehouses()),
