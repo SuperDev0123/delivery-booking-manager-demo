@@ -445,6 +445,7 @@ class BokPricePage extends Component {
                                     <span>{bok_1['b_064_b_del_phone_main']}</span><br />
                                 </div>
                             </div>
+                            {bok_1 && bok_1['zb_105_text_5'] && <p className='c-red ignored-items'><strong>Error: </strong>{bok_1['zb_105_text_5']}</p>}
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
