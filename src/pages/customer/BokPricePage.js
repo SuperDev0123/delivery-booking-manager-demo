@@ -445,7 +445,8 @@ class BokPricePage extends Component {
                                     <span>{bok_1['b_064_b_del_phone_main']}</span><br />
                                 </div>
                             </div>
-                            {bok_1 && bok_1['zb_105_text_5'] && <p className='c-red ignored-items'><strong>Error: </strong>{bok_1['zb_105_text_5']}</p>}
+                            {bok_1 && bok_1['zb_105_text_5'] && bok_1['zb_105_text_5'].indexOf('Error') !== -1 && <p className='c-red ignored-items'><strong>Error: </strong>{bok_1['zb_105_text_5']}</p>}
+                            {bok_1 && bok_1['zb_105_text_5'] && bok_1['zb_105_text_5'].indexOf('Warning') !== -1 && <p className='c-orange ignored-items'><strong>Error: </strong>{bok_1['zb_105_text_5']}</p>}
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
@@ -455,7 +456,7 @@ class BokPricePage extends Component {
                         {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
                         {hasUnknownItems &&
                             <p className='c-red ignored-items'>
-                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate.
+                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
                             </p>
                         }
                         {totalLinesCnt &&
