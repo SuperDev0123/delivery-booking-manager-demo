@@ -249,6 +249,7 @@ class BokPricePage extends Component {
         let totalLinesKg = 0;
         let isAutoPacked = false;
         let hasUnknownItems = false;
+        let errorList = [];
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -277,6 +278,15 @@ class BokPricePage extends Component {
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
             isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
+
+            if (bok_1 && bok_1['zb_105_text_5']) {
+                errorList = bok_1['zb_105_text_5'].split('***').map((error, index) => {
+                    if (error.indexOf('Error') !== -1)
+                        return (<li key={index} className={'c-red ignored-items'}>{index + 1}) {error}</li>);
+                    else
+                        return (<li key={index} className={'c-orange ignored-items'}>{index + 1}) {error}</li>);
+                });
+            }
 
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
                 totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
@@ -445,8 +455,7 @@ class BokPricePage extends Component {
                                     <span>{bok_1['b_064_b_del_phone_main']}</span><br />
                                 </div>
                             </div>
-                            {bok_1 && bok_1['zb_105_text_5'] && bok_1['zb_105_text_5'].indexOf('Error') !== -1 && <p className='c-red ignored-items'>{bok_1['zb_105_text_5']}</p>}
-                            {bok_1 && bok_1['zb_105_text_5'] && bok_1['zb_105_text_5'].indexOf('Warning') !== -1 && <p className='c-orange ignored-items'>{bok_1['zb_105_text_5']}</p>}
+                            <ul>{errorList}</ul>
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
