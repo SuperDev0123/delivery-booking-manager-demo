@@ -249,6 +249,7 @@ class BokPricePage extends Component {
         let totalLinesKg = 0;
         let isAutoPacked = false;
         let hasUnknownItems = false;
+        let errorList = [];
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -277,6 +278,18 @@ class BokPricePage extends Component {
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
             isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
+
+            if (bok_1 && bok_1['zb_105_text_5']) {
+                // Errors are joined with delimiter('***')
+                errorList = bok_1['zb_105_text_5']
+                    .split('***')
+                    .map((error, index) => {
+                        if (error.indexOf('Error') !== -1)
+                            return (<li key={index} className={'c-red ignored-items'}>{index + 1}) {error}</li>);
+                        else
+                            return (<li key={index} className={'c-orange ignored-items'}>{index + 1}) {error}</li>);
+                    });
+            }
 
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
                 totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
@@ -445,6 +458,7 @@ class BokPricePage extends Component {
                                     <span>{bok_1['b_064_b_del_phone_main']}</span><br />
                                 </div>
                             </div>
+                            <ul>{errorList}</ul>
                         </div>
                         <FreightOptionAccordion
                             bok_1={bok_1}
@@ -454,7 +468,7 @@ class BokPricePage extends Component {
                         {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
                         {hasUnknownItems &&
                             <p className='c-red ignored-items'>
-                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate.
+                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
                             </p>
                         }
                         {totalLinesCnt &&
