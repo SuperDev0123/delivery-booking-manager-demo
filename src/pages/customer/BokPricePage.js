@@ -280,12 +280,15 @@ class BokPricePage extends Component {
             isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
 
             if (bok_1 && bok_1['zb_105_text_5']) {
-                errorList = bok_1['zb_105_text_5'].split('***').map((error, index) => {
-                    if (error.indexOf('Error') !== -1)
-                        return (<li key={index} className={'c-red ignored-items'}>{index + 1}) {error}</li>);
-                    else
-                        return (<li key={index} className={'c-orange ignored-items'}>{index + 1}) {error}</li>);
-                });
+                // Errors are joined with delimiter('***')
+                errorList = bok_1['zb_105_text_5']
+                    .split('***')
+                    .map((error, index) => {
+                        if (error.indexOf('Error') !== -1)
+                            return (<li key={index} className={'c-red ignored-items'}>{index + 1}) {error}</li>);
+                        else
+                            return (<li key={index} className={'c-orange ignored-items'}>{index + 1}) {error}</li>);
+                    });
             }
 
             bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
