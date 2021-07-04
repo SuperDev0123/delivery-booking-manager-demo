@@ -1139,16 +1139,21 @@ class BookingPage extends Component {
 
         if (fileOption === 'label') {
             if (booking.z_label_url && booking.z_label_url.length > 0) {
-                this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
-                    .then(() => {
-                        this.onClickDateFilter();
-                    })
-                    .catch((err) => {
-                        this.notify(err.response.data.message);
-                        this.setState({loading: false});
-                    });
-                const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
-                win.focus();
+                if (booking.z_label_url.indexOf('http') !== -1) {
+                    const win = window.open(booking.z_label_url, '_blank');
+                    win.focus();
+                } else {
+                    this.bulkBookingUpdate([booking.id], 'z_downloaded_shipping_label_timestamp', new Date())
+                        .then(() => {
+                            this.onClickDateFilter();
+                        })
+                        .catch((err) => {
+                            this.notify(err.response.data.message);
+                            this.setState({loading: false});
+                        });
+                    const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/pdfs/' + booking.z_label_url, '_blank');
+                    win.focus();
+                }
             } else {
                 this.notify('This booking has no label');
             }
@@ -1335,7 +1340,7 @@ class BookingPage extends Component {
                     for (let index1=0; index1 < bookingLineDetails.length; index1++) {
                         const lineData = bookingLineDetails[index1];
 
-                        if (line.pk_booking_lines_id === lineData.fk_booking_line_id && lineData.clientRefNumber) {
+                        if (line.pk_booking_lines_id === lineData.fk_booking_lines_id && lineData.clientRefNumber) {
                             isReadyLine = true;
                             break;
                         }
@@ -1350,7 +1355,7 @@ class BookingPage extends Component {
                 if (!isReady4Label) {
                     this.notify('This Booking is not ready to get Label. Please set SSCC for all the Line in its lineData/Client Reference #.');
                 } else {
-                    this.props.dmeLabel(booking.id, booking.vx_freight_provider);
+                    this.props.dmeLabel(booking.id);
                 }
             } else {
                 this.notify('This booking is not Booked!');
@@ -5567,7 +5572,7 @@ const mapDispatchToProps = (dispatch) => {
         fpReprint: (bookingId, vx_freight_provider) => dispatch(fpReprint(bookingId, vx_freight_provider)),
         fpTracking: (bookingId, vx_freight_provider) => dispatch(fpTracking(bookingId, vx_freight_provider)),
         fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
-        dmeLabel: (bookingId, vx_freight_provider) => dispatch(dmeLabel(bookingId, vx_freight_provider)),
+        dmeLabel: (bookingId) => dispatch(dmeLabel(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getWarehouses: () => dispatch(getWarehouses()),

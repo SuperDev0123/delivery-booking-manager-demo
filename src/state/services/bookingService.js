@@ -576,13 +576,13 @@ export const fpPricing = (bookingId) => {
     };
 };
 
-export const dmeLabel = (bookingId, vx_freight_provider) => {
+export const dmeLabel = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
-        url: `${HTTP_PROTOCOL}://${API_HOST}/${vx_freight_provider}/get-label/`
+        url: `${HTTP_PROTOCOL}://${API_HOST}/build-label/`
     };
 
     return dispatch =>

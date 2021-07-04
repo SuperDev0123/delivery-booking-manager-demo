@@ -622,19 +622,19 @@ export function failedFPPricing(error) {
 }
 
 export function successDMEGetLabel(data) {
-    alert(`Success get Label: ${data.message}`);
+    alert(`Success: ${data.message}`);
 
     return {
-        type: GET_DME_LABEL_SUCCESS,
+        type: SUCCESS_GET_DME_LABEL,
         errorMessage: data.message
     };
 }
 
 export function failedDMEGetLabel(error) {
-    alert(`Failed get Label: ${error.response.data.message}`);
+    alert(`Failed: ${error.response.data.message}`);
 
     return {
-        type: GET_DME_LABEL_FAILED,
+        type: FAILED_GET_DME_LABEL,
         errorMessage: error.response.data.message
     };
 }

@@ -94,6 +94,8 @@ import {
     RESET_MANIFEST_SUMMARY,
     SUCCESS_GET_MANIFEST_SUMMARY,
     FAILED_GET_MANIFEST_SUMMARY,
+    SUCCESS_GET_DME_LABEL,
+    FAILED_GET_DME_LABEL,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -404,7 +406,8 @@ export const BookingReducer = (state = defaultState, {
         case BOOK_FAILED:
         case REBOOK_FAILED:
         case FAILED_CREATE_ORDER:
-        case GET_LABEL_FAILED:
+        case GET_LABEL_FAILED:          // FP Label
+        case FAILED_GET_DME_LABEL:      // DME Label
             return {
                 ...state,
                 needUpdateBookings: true,
@@ -412,7 +415,8 @@ export const BookingReducer = (state = defaultState, {
                 bookings: [],
             };
         case SUCCESS_CREATE_ORDER:
-        case GET_LABEL_SUCCESS:
+        case GET_LABEL_SUCCESS:         // FP Label
+        case SUCCESS_GET_DME_LABEL:     // DME Label
             return {
                 ...state,
                 needUpdateBookings: true,
