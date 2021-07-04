@@ -1,6 +1,6 @@
 section.status {
-    height: calc(100% - 114px);
-    overflow-y: scroll;
+    height: calc(100% - 96px);
+    overflow-y: auto;
 
     p.error {
         color: red;
@@ -28,55 +28,116 @@ section.status {
         }
     }
 
-    .status-chart {
-        width: 90%;
-        margin: 0 auto;
+    .status-content {
+        padding: 20px 10%;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
 
-        .status-chart-item {
-            width: 25%;
-            position: relative;
+        .status-summary {
+            display: flex;
+            justify-content: space-between;
+            margin: 0px -15px 10px;
+        }
 
-            .status-chart-item-wrapper {
-                &:first-child {
-                    padding: 25px;
-                    width: 150px;
-                    border-radius: 50%;
-                    margin-left: calc(50% - 75px);
-                    background: lightgray;
+        .status-summary-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
 
-                    img {
-                        width: 100%;
+        .status-summary-desc {
+            font-size: 16px;
+            color: rgb(0, 117, 225);
+        }
+
+        .status-summary-updated {
+            font-size: 16px;
+            color: black;
+        }
+
+        .status-chart {
+            .status-chart-bar {
+                display: flex;
+                align-items: center;
+                margin: 30px 0px;
+
+                input {
+                    width: 30px;
+                    height: 30px;
+                    margin: 0px;
+                }
+
+                .status-chart-bar-bar {
+                    flex-grow: 1;
+                    height: 10px;
+                    background-color: rgb(0, 117, 225);
+                }
+
+            }
+
+            .status-chart-desc {
+                display: flex;
+                justify-content: space-between;
+                gap: 5px;
+
+                .status-chart-desc-item {
+                    height: 60px; 
+
+                    .status-chart-desc-item-title {
+                        font-weight: bold;
+                    }
+                    .status-chart-desc-item-desc {
+                        font-size: 10px;
                     }
                 }
+            }
+        }
 
-                &:nth-child(2) {
-                    position: absolute;
-                    width: 50px;
-                    top: 50px;
-                    right: -25px;
+        .status-details {
+            display: flex;
+            justify-content: space-around;
+            margin: 0px;
+
+            .status-details-item {
+                padding: 16px 0px;
+
+                .status-details-item-title {
+                    font-size: 18px;
+                    font-weight: bold;
+                    height: 36px;
                 }
 
-                &.done img {
-                    filter: invert(100%);
+                .status-details-item-subtitle {
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                .status-details-item-subdesc {
+                    line-height: 1.5em;
+                    font-size: 16px;
+                    color: #4a4a4a;
                 }
             }
+        }
 
-            p {
-                text-align: center;
-                margin-top: 10px;
+        .order-details {
+            display: flex;
+            flex-direction: column;
+            margin: 0px 0px 50px;
+
+            .order-details-title {
+                font-size: 18px;
                 font-weight: bold;
-                font-size: 16px;
             }
         }
+    }
+}
 
-        .status-chart-button {
-            width: 100%;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .status-chart-detail p {
-            font-size: 18px;
-        }
+@media screen and (max-width: 768px) {
+    .status-chart-desc-item-title {
+        font-size: 12px;
+    }
+    .status-chart-desc-item {
+        max-width: 60px;
     }
 }

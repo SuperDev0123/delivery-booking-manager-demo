@@ -91,6 +91,11 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 deliveryStep: payload.step,
                 quote: payload.quote,
                 booking: payload.booking,
+                lastUpdated: payload.last_updated,
+                lines: payload.lines,
+                etaDate: payload.eta_date,
+                lastMilestone: payload.last_milestone,
+                timestamps: payload.timestamps
             };
         case SUCCESS_BOOK_FREIGHT:
             return {
