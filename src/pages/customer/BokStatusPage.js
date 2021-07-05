@@ -1,7 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import BootstrapTable from 'react-bootstrap-table-next';
+import moment from 'moment-timezone';
+
 import { getDeliveryStatus } from '../../state/services/bokService';
 
 class BokStatusPage extends Component {
@@ -83,8 +86,8 @@ class BokStatusPage extends Component {
                         subdesc: booking ? booking.b_bookingID_Visual : ''
                     },
                     {
-                        subtitle: 'ETA',
-                        subdesc: quote ? `${etaDate}(${quote.eta})` : ''
+                        subtitle: 'Delivery ETA',
+                        subdesc: quote ? `${moment(etaDate).format('DD/MM/YYYY')}(${quote.eta})` : ''
                     }
                 ]
             }
