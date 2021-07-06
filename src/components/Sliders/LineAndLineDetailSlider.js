@@ -374,9 +374,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     name="e_weightUOM" 
                                                     onChange={(e) => this.onInputChange(e)}
                                                     value = {lineFormInputs['e_weightUOM']} >
-                                                    <option value="Gram">Gram</option>
-                                                    <option value="Kilogram">Kilogram</option>
-                                                    <option value="Ton">Ton</option>
+                                                    <option value="kg">Kilogram</option>
+                                                    <option value="g">Gram</option>
+                                                    <option value="t">Ton</option>
                                                 </select>
                                             </label>
                                             <label>
@@ -405,9 +405,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     name="e_dimUOM" 
                                                     onChange={(e) => this.onInputChange(e)}
                                                     value = {lineFormInputs['e_dimUOM']} >
-                                                    <option value="MM">MM</option>
-                                                    <option value="CM">CM</option>
-                                                    <option value="METER">METER</option>
+                                                    <option value="m">METER</option>
+                                                    <option value="cm">CM</option>
+                                                    <option value="mm">MM</option>
                                                 </select>
                                             </label>
                                             <label>
