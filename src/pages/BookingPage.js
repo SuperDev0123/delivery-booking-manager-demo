@@ -2115,23 +2115,31 @@ class BookingPage extends Component {
     getCubicMeter(row) {  // TODO: need to use getCubicMeter from common/helpers
         if (row['e_dimUOM'].toUpperCase() === 'CM')
             return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000);
-        else if (row['e_dimUOM'].toUpperCase() === 'METER')
+        else if (row['e_dimUOM'].toUpperCase() === 'METER' || row['e_dimUOM'].toUpperCase() === 'M')
             return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']));
         else
             return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000000);
     }
 
     getTotalWeight(row) {
-        if (row['e_weightUOM'].toUpperCase() === 'GRAM' || 
-            row['e_weightUOM'].toUpperCase() === 'GRAMS')
+        if (
+            row['e_weightUOM'].toUpperCase() === 'GRAM' || 
+            row['e_weightUOM'].toUpperCase() === 'GRAMS' ||
+            row['e_weightUOM'].toUpperCase() === 'G'
+        )
             return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) / 1000;
-        else if (row['e_weightUOM'].toUpperCase() === 'KILOGRAM' || 
-                 row['e_weightUOM'].toUpperCase() === 'KILOGRAMS' ||
-                 row['e_weightUOM'].toUpperCase() === 'KG' ||
-                 row['e_weightUOM'].toUpperCase() === 'KGS')
+        else if (
+            row['e_weightUOM'].toUpperCase() === 'KILOGRAM' || 
+            row['e_weightUOM'].toUpperCase() === 'KILOGRAMS' ||
+            row['e_weightUOM'].toUpperCase() === 'KG' ||
+            row['e_weightUOM'].toUpperCase() === 'KGS'
+        )
             return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']);
-        else if (row['e_weightUOM'].toUpperCase() === 'TON' ||
-                 row['e_weightUOM'].toUpperCase() === 'TONS')
+        else if (
+            row['e_weightUOM'].toUpperCase() === 'TON' ||
+             row['e_weightUOM'].toUpperCase() === 'TONS' ||
+             row['e_weightUOM'].toUpperCase() === 'T'
+        )
             return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) * 1000;
     }
 
