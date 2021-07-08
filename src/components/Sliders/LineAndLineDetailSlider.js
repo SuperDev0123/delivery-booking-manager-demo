@@ -17,12 +17,13 @@ class LineAndLineDetailSlider extends React.Component {
             lineOrLineDetail: 1, // 1: line, 2: lineDetail
             selectedLineIndex: -1,
             lineFormInputs: {
+                e_type_of_packaging: 'carton',
                 e_qty: 0,
                 e_dimLength: 0,
                 e_dimWidth: 0,
                 e_dimHeight: 0,
-                e_dimUOM: 'CM',
-                e_weightUOM: 'Kilogram',
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
                 e_weightPerEach: 0,
             },
             lineDetailFormInputs: {},
@@ -51,7 +52,21 @@ class LineAndLineDetailSlider extends React.Component {
     }
 
     onClickNew(editMode, typeNum) {
-        this.setState({editMode: editMode, lineOrLineDetail: typeNum});
+        this.setState({
+            editMode: editMode,
+            lineOrLineDetail: typeNum,
+            lineFormInputs: {
+                e_type_of_packaging: 'carton',
+                e_qty: 0,
+                e_dimLength: 0,
+                e_dimWidth: 0,
+                e_dimHeight: 0,
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
+                e_weightPerEach: 0,
+            },
+            lineDetailFormInputs: {}
+        });
     }
 
     onClickEdit(editMode, typeNum, index) {
@@ -110,7 +125,20 @@ class LineAndLineDetailSlider extends React.Component {
             }
         }
 
-        this.setState({editMode: 0, lineFormInputs: {}, lineDetailFormInputs: {}});
+        this.setState({
+            editMode: 0,
+            lineFormInputs: {
+                e_type_of_packaging: 'carton',
+                e_qty: 0,
+                e_dimLength: 0,
+                e_dimWidth: 0,
+                e_dimHeight: 0,
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
+                e_weightPerEach: 0,
+            },
+            lineDetailFormInputs: {}
+        });
     }
 
     onCancel() {
@@ -361,8 +389,10 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Qty</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
-                                                        name="e_qty" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_qty"
                                                         value={lineFormInputs['e_qty']} 
                                                         onChange={(e) => this.onInputChange(e)}
                                                     />
@@ -382,7 +412,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Wgt Each</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         name="e_weightPerEach" 
                                                         value={lineFormInputs['e_weightPerEach']} 
                                                         onChange={(e) => this.onInputChange(e)}
@@ -392,7 +424,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Total Kgs</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         disabled="disabled"
                                                         name="e_Total_KG_weight" 
                                                         value={lineFormInputs['e_Total_KG_weight']} 
@@ -413,7 +447,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Length</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         name="e_dimLength" 
                                                         value={lineFormInputs['e_dimLength']} 
                                                         onChange={(e) => this.onInputChange(e)}
@@ -423,7 +459,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Width</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         name="e_dimWidth" 
                                                         value={lineFormInputs['e_dimWidth']} 
                                                         onChange={(e) => this.onInputChange(e)}
@@ -433,7 +471,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Height</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         name="e_dimHeight" 
                                                         value={lineFormInputs['e_dimHeight']} 
                                                         onChange={(e) => this.onInputChange(e)}
@@ -443,7 +483,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Cubic Meter</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="number" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         disabled="disabled"
                                                         name="e_1_Total_dimCubicMeter" 
                                                         value={lineFormInputs['e_1_Total_dimCubicMeter']} 
@@ -492,7 +534,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                     <p>Qty</p>
                                                     <input 
                                                         className="form-control" 
-                                                        type="text" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
                                                         name="quantity" 
                                                         value={lineDetailFormInputs['quantity']} 
                                                         onChange={(e) => this.onInputChange(e)}
