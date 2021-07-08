@@ -6,6 +6,8 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import LoadingOverlay from 'react-loading-overlay';
 import { Button } from 'reactstrap';
 
+import { getCubicMeter, getWeight } from '../../commons/helpers';
+
 class LineAndLineDetailSlider extends React.Component {
     constructor(props) {
         super(props);
@@ -36,8 +38,6 @@ class LineAndLineDetailSlider extends React.Component {
         onClickDelete: PropTypes.func.isRequired,
         loadingBookingLine: PropTypes.bool.isRequired,
         loadingBookingLineDetail: PropTypes.bool.isRequired,
-        getCubicMeter: PropTypes.func.isRequired,
-        getTotalWeight: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
@@ -71,14 +71,11 @@ class LineAndLineDetailSlider extends React.Component {
         const name = target.name;
 
         if (lineOrLineDetail === 1) {
-            console.log('@! - ', lineFormInputs);
             let lineFormInputs = this.state.lineFormInputs;
             lineFormInputs[name] = value;
-            lineFormInputs['e_1_Total_dimCubicMeter'] = this.props.getCubicMeter(lineFormInputs);
-            lineFormInputs['e_Total_KG_weight'] = this.props.getTotalWeight(lineFormInputs);
+            lineFormInputs['e_1_Total_dimCubicMeter'] = getCubicMeter(lineFormInputs['e_qty'], lineFormInputs['e_dimUOM'], lineFormInputs['e_dimLength'], lineFormInputs['e_dimWidth'], lineFormInputs['e_dimHeight']);
+            lineFormInputs['e_Total_KG_weight'] = getWeight(lineFormInputs['e_qty'], lineFormInputs['e_weightUOM'], lineFormInputs['e_weightPerEach']);
             lineFormInputs['total_2_cubic_mass_factor_calc'] = (Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250).toFixed(2);
-            lineFormInputs['e_1_Total_dimCubicMeter'] = lineFormInputs['e_1_Total_dimCubicMeter'].toFixed(2);
-            lineFormInputs['e_Total_KG_weight'] = lineFormInputs['e_Total_KG_weight'].toFixed(2);
             this.setState({lineFormInputs});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
