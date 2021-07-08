@@ -1376,6 +1376,7 @@ class BookingPage extends Component {
 
                         if (
                             freight_provider === 'cope' ||
+                            freight_provider === 'century' ||
                             freight_provider === 'state transport'
                         ) {
                             this.buildCSV([booking.id], freight_provider);
