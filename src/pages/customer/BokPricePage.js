@@ -14,10 +14,10 @@ import FreightOptionAccordion from '../../components/Accordion/FreightOptionAcco
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
-import ProductSlider from '../../components/Sliders/ProductSlider';
+import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
 import { getWeight } from '../../commons/helpers';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail, onUpdateItemProduct } from '../../state/services/bokService';
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine } from '../../state/services/bokService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -38,15 +38,17 @@ class BokPricePage extends Component {
             isShowLineData: false,
             selectedPrice: {},
             selectedLine: null,
-            isShowConfirmModal: false,
-            isShowProductSlider: false,
+            isShowTriggerEmailModal: false,
+            isShowDeleteConfirmModal: false,
+            isShowBokLineSlider: false,
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
         this.togglePalletSlider = this.togglePalletSlider.bind(this);
         this.onCancelAutoRepack = this.onCancelAutoRepack.bind(this);
-        this.toggleConfirmModal = this.toggleConfirmModal.bind(this);
-        this.toggleProductSlider = this.toggleProductSlider.bind(this);
+        this.toggleTriggerEmailModal = this.toggleTriggerEmailModal.bind(this);
+        this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
+        this.toggleBokLineSlider = this.toggleBokLineSlider.bind(this);
     }
 
     static propTypes = {
@@ -55,7 +57,9 @@ class BokPricePage extends Component {
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
         onAutoRepack: PropTypes.func.isRequired,
-        onUpdateItemProduct: PropTypes.func.isRequired,
+        onAddBokLine: PropTypes.func.isRequired,
+        onUpdateBokLine: PropTypes.func.isRequired,
+        onDeleteBokLine: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
@@ -64,7 +68,7 @@ class BokPricePage extends Component {
         canceledSuccess: PropTypes.bool,
         selectPricingSuccess: PropTypes.bool,
         autoRepackSuccess: PropTypes.bool,
-        updateItemProductSuccess: PropTypes.bool,
+        lineOperationSuccess: PropTypes.bool,
     };
 
     componentDidMount() {
@@ -79,7 +83,7 @@ class BokPricePage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, updateItemProductSuccess} = newProps;
+        const {errorMessage, needToUpdatePricings, bookedSuccess, canceledSuccess, lineOperationSuccess} = newProps;
 
         if (errorMessage) {
             this.setState({errorMessage});
@@ -122,7 +126,7 @@ class BokPricePage extends Component {
             this.setState({isLoadingOper: false});
         }
 
-        if (this.state.isUpdatingItemProduct && !this.props.updateItemProductSuccess && updateItemProductSuccess) {
+        if (this.state.isUpdatingItemProduct && !this.props.lineOperationSuccess && lineOperationSuccess) {
             this.setState({isUpdatingItemProduct: false, isLoadingBok: true});
             this.props.getBokWithPricings(this.props.match.params.id);
         }
@@ -174,16 +178,20 @@ class BokPricePage extends Component {
         this.setState(prevState => ({isShowPalletSlider: !prevState.isShowPalletSlider}));
     }
 
-    toggleConfirmModal() {
-        this.setState(prevState => ({isShowConfirmModal: !prevState.isShowConfirmModal}));
+    toggleTriggerEmailModal() {
+        this.setState(prevState => ({isShowTriggerEmailModal: !prevState.isShowTriggerEmailModal}));
+    }
+
+    toggleDeleteConfirmModal() {
+        this.setState(prevState => ({isShowDeleteConfirmModal: !prevState.isShowDeleteConfirmModal}));
     }
 
     onClickShowLineData(bok_2) {
         this.setState({isShowLineData: true, selectedBok_2Id: bok_2.pk_booking_lines_id});
     }
 
-    toggleProductSlider() {
-        this.setState(prevState => ({isShowProductSlider: !prevState.isShowProductSlider}));
+    toggleBokLineSlider() {
+        this.setState(prevState => ({isShowBokLineSlider: !prevState.isShowBokLineSlider}));
     }
 
     onClickAutoRepack(status) {
@@ -218,21 +226,42 @@ class BokPricePage extends Component {
             // Send "picking slip printed" email manually
             this.notify('Booking will be sent in 1 minute!');
             this.props.sendEmail(this.props.match.params.id);
-            this.toggleConfirmModal();
+            this.toggleTriggerEmailModal();
         }
+    }
+
+    onclickAddLine() {
+        this.setState({selectedLine: null});
+        this.toggleBokLineSlider();
     }
 
     onClickEditLine(line) {
         this.setState({selectedLine: line});
-        this.toggleProductSlider();
+        this.toggleBokLineSlider();
     }
 
-    onUpdateProduct(newLineData) {
+    onClickDeleteLine(line) {
+        this.setState({selectedLine: line});
+        this.toggleDeleteConfirmModal();
+    }
+
+    onUpdateBokLine(newLine, type) {
+        const {bokWithPricings} = this.props;
         const {selectedLine} = this.state;
 
-        this.props.onUpdateItemProduct(selectedLine.pk_lines_id, newLineData);
+        if (type === 'add') {
+            newLine['fk_header_id'] = bokWithPricings['pk_header_id'];
+            this.props.onAddBokLine(newLine);
+            this.toggleBokLineSlider();
+        } else if (type === 'update') {
+            this.props.onUpdateBokLine(selectedLine.pk_lines_id, newLine);
+            this.toggleBokLineSlider();
+        } else {
+            this.props.onDeleteBokLine(selectedLine.pk_lines_id);
+            this.toggleDeleteConfirmModal();
+        }
+
         this.setState({isUpdatingItemProduct: true});
-        this.toggleProductSlider();
     }
 
     render() {
@@ -322,7 +351,10 @@ class BokPricePage extends Component {
                         <td>{(bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']).toFixed(3)} ({bok_2['l_008_weight_UOM']})</td>
                         {isAutoPacked ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
                         {isAutoPacked ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
-                        {!isAutoPacked ? <td><Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit Line</Button></td> : null}
+                        <td>
+                            <Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit</Button>{'   '}
+                            <Button color="danger" onClick={() => this.onClickDeleteLine(bok_2)}>Delete</Button>
+                        </td>
                     </tr>
                 );
             });
@@ -460,86 +492,88 @@ class BokPricePage extends Component {
                             </div>
                             <ul>{errorList}</ul>
                         </div>
-                        <FreightOptionAccordion
-                            bok_1={bok_1}
-                            onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
-                        />
-                        <h3><i className="fa fa-circle"></i> Lines:</h3>
-                        {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
-                        {hasUnknownItems &&
-                            <p className='c-red ignored-items'>
-                                Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
-                            </p>
-                        }
-                        {totalLinesCnt &&
-                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                <thead>
-                                    <tr>
-                                        <th>Total Quantity</th>
-                                        <th>Total Weight (Kg)</th>
-                                        <th>Total Cubic Meter (M3)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>{totalLinesCnt}</td>
-                                        <td>{totalLinesKg}</td>
-                                        <td>{totalCubicMeter.toFixed(2)}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        }
-                        <table className="table table-hover table-bordered sortable fixed_headers">
-                            <thead>
-                                <tr>
-                                    <th>Type Of Packaging</th>
-                                    <th>Seq #</th>
-                                    <th>Item No</th>
-                                    <th>Item Descripton</th>
-                                    <th>Qty</th>
-                                    <th>Dim UOM</th>
-                                    <th>Length</th>
-                                    <th>Width</th>
-                                    <th>Height</th>
-                                    <th>{isAutoPacked ? 'Pallet CBM' : 'CBM'}</th>
-                                    <th>Total Weight</th>
-                                    {isAutoPacked ? <th>Total Packed CBM</th> : null}
-                                    {isAutoPacked ? <th>Show Line Details</th> : null}
-                                    {!isAutoPacked ? <th>Edit line</th> : null}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {bok_2s}
-                            </tbody>
-                        </table>
-                        {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
-                        {isShowLineData &&
-                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                <thead>
-                                    <tr>
-                                        <th>Type Of Packaging</th>
-                                        <th>Quantity</th>
-                                        <th>Item No</th>
-                                        <th>Item Description</th>
-                                        <th>Dim UOM</th>
-                                        <th>Length</th>
-                                        <th>Width</th>
-                                        <th>Height</th>
-                                        <th>Total Weight</th>
-                                        <th>CBM</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {bok_3s}
-                                </tbody>
-                            </table>
-                        }
-                        <h3><i className="fa fa-circle"></i> Freight Rates:</h3>
                         <LoadingOverlay
-                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isAutoRepacking}
+                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isAutoRepacking || this.state.isUpdatingItemProduct}
                             spinner
                             text='Loading...'
                         >
+                            <FreightOptionAccordion
+                                bok_1={bok_1}
+                                onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
+                            />
+                            <h3><i className="fa fa-circle"></i> Lines:</h3>
+                            {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
+                            {hasUnknownItems &&
+                                <p className='c-red ignored-items'>
+                                    Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
+                                </p>
+                            }
+                            {totalLinesCnt &&
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <thead>
+                                        <tr>
+                                            <th>Total Quantity</th>
+                                            <th>Total Weight (Kg)</th>
+                                            <th>Total Cubic Meter (M3)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>{totalLinesCnt}</td>
+                                            <td>{totalLinesKg}</td>
+                                            <td>{totalCubicMeter.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                <thead>
+                                    <tr>
+                                        <th className="valign-top">Type Of Packaging</th>
+                                        <th className="valign-top">Seq #</th>
+                                        <th className="valign-top">Item No</th>
+                                        <th className="valign-top">Item Descripton</th>
+                                        <th className="valign-top">Qty</th>
+                                        <th className="valign-top">Dim UOM</th>
+                                        <th className="valign-top">Length</th>
+                                        <th className="valign-top">Width</th>
+                                        <th className="valign-top">Height</th>
+                                        <th className="valign-top">{isAutoPacked ? 'Pallet CBM' : 'CBM'}</th>
+                                        <th className="valign-top">Total Weight</th>
+                                        {isAutoPacked ? <th className="valign-top">Total Packed CBM</th> : null}
+                                        {isAutoPacked ? <th className="valign-top">Show Line Details</th> : null}
+                                        <th className="valign-top">
+                                            Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bok_2s}
+                                </tbody>
+                            </table>
+                            {isShowLineData && <h3><i className="fa fa-circle"></i> Line Data:</h3>}
+                            {isShowLineData &&
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <thead>
+                                        <tr>
+                                            <th>Type Of Packaging</th>
+                                            <th>Quantity</th>
+                                            <th>Item No</th>
+                                            <th>Item Description</th>
+                                            <th>Dim UOM</th>
+                                            <th>Length</th>
+                                            <th>Width</th>
+                                            <th>Height</th>
+                                            <th>Total Weight</th>
+                                            <th>CBM</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {bok_3s}
+                                    </tbody>
+                                </table>
+                            }
+                            <h3><i className="fa fa-circle"></i> Freight Rates:</h3>
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
                                     <tr>
@@ -576,7 +610,7 @@ class BokPricePage extends Component {
                                         color="success"
                                         title={!canBeChanged ? 'This booking has already been sent to Deliver-ME. Changes need to be made in the Deliver-ME portal'
                                             : 'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
-                                        onClick={() => this.toggleConfirmModal()}
+                                        onClick={() => this.toggleTriggerEmailModal()}
                                     >
                                         Send Booking Now <i className="fa fa-envelope"></i>
                                     </Button>
@@ -607,20 +641,29 @@ class BokPricePage extends Component {
                     onSelectPallet={(palletId) => this.onSelectPallet(palletId)}
                 />
 
-                <ProductSlider
-                    isOpen={this.state.isShowProductSlider}
-                    toggleSlider={this.toggleProductSlider}
+                <BokLineSlider
+                    isOpen={this.state.isShowBokLineSlider}
+                    toggleSlider={this.toggleBokLineSlider}
                     line={this.state.selectedLine}
-                    onUpdateProduct={(newLineData) => this.onUpdateProduct(newLineData)}
+                    onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
                 />
 
                 <ConfirmModal
-                    isOpen={this.state.isShowConfirmModal}
+                    isOpen={this.state.isShowTriggerEmailModal}
                     onOk={() => this.onClickConfirmBtn('trigger-email')}
-                    onCancel={this.toggleConfirmModal}
+                    onCancel={this.toggleTriggerEmailModal}
                     title={'Send Booking Now?'}
                     text={'WARNING - This option books the freight now with the info on the screen as is and will not process any changes you make the Sales Order from this point forward. Are you sure you wish to continue?'}
                     okBtnName={'Yes'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowDeleteConfirmModal}
+                    onOk={() => this.onUpdateBokLine(null, 'delete')}
+                    onCancel={this.toggleDeleteConfirmModal}
+                    title={'Confirmation Modal'}
+                    text={'Do you really want to delete this line?'}
+                    okBtnName={'Delete'}
                 />
 
                 <ToastContainer />
@@ -639,7 +682,7 @@ const mapStateToProps = (state) => {
         canceledSuccess: state.bok.canceledSuccess,
         selectPricingSuccess: state.bok.selectPricingSuccess,
         autoRepackSuccess: state.bok.autoRepackSuccess,
-        updateItemProductSuccess: state.bok.updateItemProductSuccess,
+        lineOperationSuccess: state.bok.lineOperationSuccess,
     };
 };
 
@@ -651,7 +694,9 @@ const mapDispatchToProps = (dispatch) => {
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
         onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),
         sendEmail: (identifier) => dispatch(sendEmail(identifier)),
-        onUpdateItemProduct: (lineId, product) => dispatch(onUpdateItemProduct(lineId, product)),
+        onAddBokLine: (line) => dispatch(onAddBokLine(line)),
+        onUpdateBokLine: (lineId, line) => dispatch(onUpdateBokLine(lineId, line)),
+        onDeleteBokLine: (lineId) => dispatch(onDeleteBokLine(lineId)),
     };
 };
 

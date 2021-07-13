@@ -24,8 +24,12 @@ import {
     failedAutoRepack,
     successSendEmail,
     failedSendEmail,
-    successUpdateItemProduct,
-    failedUpdateItemProduct,
+    successAddBokLine,
+    failedAddBokLine,
+    successUpdateBokLine,
+    failedUpdateBokLine,
+    successDeleteBokLine,
+    failedDeleteBokLine,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -166,15 +170,41 @@ export const sendEmail = (identifier) => {
     };
 };
 
-export const onUpdateItemProduct = (line_id, product) => {
+export const onAddBokLine = (line) => {
     const options = {
         method: 'post',
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/update_item_product/`,
-        data: {line_id, product}
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/add_bok_line/`,
+        data: {line}
     };
     return dispatch => {
         axios(options)
-            .then(() => dispatch(successUpdateItemProduct()))
-            .catch((error) => dispatch(failedUpdateItemProduct(error)));
+            .then(() => dispatch(successAddBokLine()))
+            .catch((error) => dispatch(failedAddBokLine(error)));
+    };
+};
+
+export const onUpdateBokLine = (line_id, line) => {
+    const options = {
+        method: 'put',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/update_bok_line/`,
+        data: {line_id, line}
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successUpdateBokLine()))
+            .catch((error) => dispatch(failedUpdateBokLine(error)));
+    };
+};
+
+export const onDeleteBokLine = (line_id) => {
+    const options = {
+        method: 'delete',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/delete_bok_line/`,
+        data: {line_id}
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successDeleteBokLine()))
+            .catch((error) => dispatch(failedDeleteBokLine(error)));
     };
 };
