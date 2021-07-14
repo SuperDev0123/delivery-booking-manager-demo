@@ -4961,22 +4961,17 @@ class BookingPage extends Component {
                                                             </button>
                                                         }
                                                     </div>
-                                                    {
-                                                        (clientname === 'dme') ?
-                                                            <div className="text-center mt-2 fixed-height manual-book">
-                                                                <input
-                                                                    className="checkbox"
-                                                                    name="tickManualBook"
-                                                                    type="checkbox"
-                                                                    checked={formInputs['x_manual_booked_flag']}
-                                                                    onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
-                                                                />
-                                                                <p>Manual Book</p>
-                                                            </div>
-                                                            :
-                                                            null
-                                                    }
+                                                    <div className="text-center mt-2 fixed-height manual-book">
+                                                        <input
+                                                            className="checkbox"
+                                                            name="tickManualBook"
+                                                            type="checkbox"
+                                                            checked={formInputs['x_manual_booked_flag']}
+                                                            onChange={(e) => this.handleInputChange(e)}
+                                                            disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                        />
+                                                        <p>Manual Book</p>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
                                                             className="btn btn-theme custom-theme"
