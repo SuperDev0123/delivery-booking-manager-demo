@@ -123,6 +123,7 @@ class LabelPage extends Component {
                     <div>
                         <h4><i className="fa fa-circle"></i> Main Info:</h4>
                         <div className="main-info">
+                            <p><strong>DME Booking ID: </strong>{bookingLabels.b_bookingID_Visual}</p>
                             <p><strong>Client name: </strong>{bookingLabels.b_client_name}</p>
                             <p><strong>Client order number: </strong>{bookingLabels.b_client_order_num}</p>
                             <p><strong>Client invoice number: </strong>{bookingLabels.b_client_sales_inv_num}</p>
@@ -149,11 +150,11 @@ class LabelPage extends Component {
                             </table>
                         </div>
                         <div className="action">
-                            {bookingLabels.full_label_url &&
+                            {bookingLabels.full_label_name &&
                                 <Button
                                     color="info"
-                                    disabled={bookingLabels.full_label_url ? false : true}
-                                    onClick={() => this.onClickPreview(bookingLabels.full_label_url)}
+                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    onClick={() => this.onClickPreview(bookingLabels.full_label_name)}
                                 >
                                     Preview
                                 </Button>
