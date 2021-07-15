@@ -5046,16 +5046,17 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickGetLabel()}
-                                                            disabled={(booking && booking.z_label_url && booking.z_label_url.length > 0)
-                                                                || (curViewMode === 1) ? 'disabled' : ''}
+                                                            disabled={
+                                                                ((booking && booking.z_label_url && booking.z_label_url.length > 0) || (curViewMode === 1)) && 
+                                                                booking && booking.kf_client_id !== '1af6bcd2-6148-11eb-ae93-0242ac130002'
+                                                                    ? 'disabled' : ''}
                                                         >
                                                             Get Label
                                                         </button>
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickReprintLabel()}
-                                                            disabled={(booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt')
-                                                                || (curViewMode === 1) ? 'disabled' : ''}
+                                                            disabled={(booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt') || (curViewMode === 1) ? 'disabled' : ''}
                                                         >
                                                             Reprint
                                                         </button>
