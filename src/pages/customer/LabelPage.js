@@ -149,11 +149,11 @@ class LabelPage extends Component {
                             </table>
                         </div>
                         <div className="action">
-                            {bookingLabels.url &&
+                            {bookingLabels.full_label_url &&
                                 <Button
                                     color="info"
-                                    disabled={bookingLabels.url ? false : true}
-                                    onClick={() => this.onClickPreview(bookingLabels.url)}
+                                    disabled={bookingLabels.full_label_url ? false : true}
+                                    onClick={() => this.onClickPreview(bookingLabels.full_label_url)}
                                 >
                                     Preview
                                 </Button>
