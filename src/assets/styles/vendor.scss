@@ -4321,7 +4321,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
 }
 .navbar-nav {
-  margin: 7.5px -15px;
+  margin: 0px;
 }
 .navbar-nav > li > a {
   padding-top: 10px;
@@ -7521,4 +7521,12 @@ button.close {
 }
 .icon-social-dropbox:before {
   content: "\e00c";
+}
+.zsiq_floatmain {
+  margin-bottom: 15px;
+}
+@media screen and (max-width: 768px) {
+  .zsiq_floatmain {
+    margin-bottom: 55px;
+  }
 }

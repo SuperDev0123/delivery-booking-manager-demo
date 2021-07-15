@@ -1,19 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button } from 'reactstrap';
+
+import BootstrapTable from 'react-bootstrap-table-next';
+import moment from 'moment-timezone';
 
 import { getDeliveryStatus } from '../../state/services/bokService';
-
-import processingImg from '../../public/images/statusPage/processing.png';
-import bookedImg from '../../public/images/statusPage/booked.png';
-import inTransitImg from '../../public/images/statusPage/intransit.png';
-import deliveredImg from '../../public/images/statusPage/delivered.png';
-import futileImg from '../../public/images/statusPage/futile.png';
-import dashImg from '../../public/images/statusPage/dash.png';
-import dashDoneImg from '../../public/images/statusPage/dash-done.png';
-
-
 
 class BokStatusPage extends Component {
     constructor(props) {
@@ -30,8 +22,13 @@ class BokStatusPage extends Component {
         bokWithPricings: PropTypes.object,
         step: PropTypes.number,
         status: PropTypes.string,
+        lastUpdated: PropTypes.string,
         quote: PropTypes.object,
         booking: PropTypes.object,
+        lines: PropTypes.array,
+        etaDate: PropTypes.string,
+        lastMilestone: PropTypes.string,
+        timestamps: PropTypes.array,
         match: PropTypes.object,
     };
 
@@ -55,109 +52,159 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {status, step, quote, booking} = this.props;
+        const {status, step, lastUpdated, quote, booking, lines, lastMilestone, timestamps, etaDate} = this.props;
+        const steps = [
+            'Processing',
+            'Ready for Dispatch',
+            'In Transit',
+            'On Board for Delivery',
+            lastMilestone ? lastMilestone : 'Delivered'
+        ];
+        const details = [
+            {
+                title: 'CUSTOMER DETAILS',
+                content: [
+                    {
+                        subtitle: 'Customer name',
+                        subdesc: booking ? booking.b_061_b_del_contact_full_name : ''
+                    },
+                    {
+                        subtitle: 'Order number',
+                        subdesc: booking ? booking.b_client_order_num : ''
+                    }
+                ]
+            },
+            {
+                title: 'DELIVERY DETAILS',
+                content: [
+                    {
+                        subtitle: 'Shipment number',
+                        subdesc: booking ? booking.b_000_3_consignment_number : ''
+                    },
+                    {
+                        subtitle: 'DME number',
+                        subdesc: booking ? booking.b_bookingID_Visual : ''
+                    },
+                    {
+                        subtitle: 'Delivery ETA',
+                        subdesc: quote ? `${moment(etaDate).format('DD/MM/YYYY')}(${quote.eta})` : ''
+                    }
+                ]
+            }
+        ];
+
+        const bookingLineDetailsColumns = [
+            {
+                dataField: 'e_item_type',
+                text: 'Item Number',
+                // hidden: true,
+            }, {
+                dataField: 'l_003_item',
+                text: 'Item Description'
+            }, {
+                dataField: 'l_002_qty',
+                text: 'Quantity'
+            }
+        ];
 
         return (
             <section className="status">
                 {this.state.errorMessage ?
                     <p className="error">{this.state.errorMessage}</p>
-                    :
-                    <div className="status-chart">
-                        <div className="status-chart-item disp-inline-block">
-                            <div className={step > 0 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                <img className="" src={processingImg} />
-                            </div>
-                            <div className="status-chart-item-wrapper disp-inline-block">
-                                <img className="" src={step > 0 ? dashDoneImg: dashImg } />
-                            </div>
-                            <p>Processing</p>
-                        </div>
-                        <div className="status-chart-item disp-inline-block">
-                            <div className={step > 1 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                <img className="" src={bookedImg} />
-                            </div>
-                            <div className="status-chart-item-wrapper disp-inline-block">
-                                <img className="" src={step > 1 ? dashDoneImg: dashImg } />
-                            </div>
-                            <p>Booked</p>
-                        </div>
-                        <div className="status-chart-item disp-inline-block">
-                            <div className={step > 2 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                <img className="" src={inTransitImg} />
-                            </div>
-                            <div className="status-chart-item-wrapper disp-inline-block">
-                                <img className="" src={step > 2 ? dashDoneImg: dashImg } />
-                            </div>
-                            <p>In Transit</p>
-                        </div>
-                        {step !== 5 &&
-                            <div className="status-chart-item disp-inline-block">
-                                <div className={step > 3 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                    <img className="" src={deliveredImg} />
+                    : <Fragment>
+                        {booking && <div className="status-content">
+                            <div className="status-summary row">
+                                <div className="col-md-3 col-sm-12">
+                                    <p className="status-summary-title">
+                                        STATUS
+                                    </p>
+                                    <p className="status-summary-desc">
+                                        {status}
+                                    </p>
                                 </div>
-                                <p>Delivered</p>
-                            </div>
-                        }
-                        {step === 5 &&
-                            <div className="status-chart-item disp-inline-block">
-                                <div className={step > 4 ? 'status-chart-item-wrapper disp-inline-block bg-dme done' : 'status-chart-item-wrapper disp-inline-block'}>
-                                    <img className="" src={futileImg} />
+                                <div className="col-md-4 col-sm-12">
+                                    <p className="status-summary-title">
+                                        DELIVERY PARTNER
+                                    </p>
+                                    <p className="status-summary-desc">
+                                        {quote && quote.fp_name}
+                                    </p>
                                 </div>
-                                <p>Futile</p>
-                            </div>
-                        }
-                        <div className="status-chart-button disp-inline-block">
-                            <Button color="primary" onClick={() => this.props.getDeliveryStatus(this.state.identifier)}>Update</Button>
-                        </div>
-                        {booking &&
-                            <div className="main-info">
-                                <div className="pu-info disp-inline-block">
-                                    <label>Pickup From</label><br />
-                                    <span>{booking['b_028_b_pu_company']}</span><br />
-                                    <span>{booking['b_029_b_pu_address_street_1']}</span><br />
-                                    {booking && booking['b_030_b_pu_address_street_2'] && (<span>{booking['b_030_b_pu_address_street_2']}<br /></span>)}
-                                    <span>{booking['b_032_b_pu_address_suburb']}</span><br />
-                                    <span>{booking['b_031_b_pu_address_state'].toUpperCase()} {booking['b_034_b_pu_address_country']}</span><br />
-                                    <span>{booking['b_033_b_pu_address_postalcode']}</span><br /><br />
-                                    <span>{booking['b_035_b_pu_contact_full_name']}</span><br />
-                                    <span>{booking['b_037_b_pu_email']}</span><br />
-                                    <span>{booking['b_038_b_pu_phone_main']}</span><br />
-                                </div>
-                                <div className="de-info disp-inline-block">
-                                    <label>Deliver To</label><br />
-                                    <span>{booking['b_054_b_del_company']}</span><br />
-                                    <span>{booking['b_055_b_del_address_street_1']}</span><br />
-                                    {booking && booking['b_056_b_del_address_street_2'] && (<span>{booking['b_056_b_del_address_street_2']}<br /></span>)}
-                                    <span>{booking['b_058_b_del_address_suburb']}</span><br />
-                                    <span>{booking['b_057_b_del_address_state'].toUpperCase()} {booking['b_060_b_del_address_country']}</span><br />
-                                    <span>{booking['b_059_b_del_address_postalcode']}</span><br /><br />
-                                    <span>{booking['b_061_b_del_contact_full_name']}</span><br />
-                                    <span>{booking['b_063_b_del_email']}</span><br />
-                                    <span>{booking['b_064_b_del_phone_main']}</span><br />  
+                                <div className="col-md-5 col-sm-12">
+                                    <p className="status-summary-title">
+                                        SHIP TO
+                                    </p>
+                                    <p className="status-summary-desc">
+                                        {booking.b_055_b_del_address_street_1},&nbsp;
+                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2}, `}
+                                        {booking.b_058_b_del_address_suburb},&nbsp;
+                                        {booking.b_057_b_del_address_state},&nbsp;
+                                        {booking.b_059_b_del_address_postalcode}
+                                    </p>
                                 </div>
                             </div>
-                        }
-                        <div className="status-chart-detail">
-                            {(booking && booking.hasOwnProperty('b_bookingID_Visual') && booking['b_bookingID_Visual']) ?
-                                <p><strong>DME Booking Number: </strong><a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_bookingID_Visual}</a></p>
-                                : <p><strong>DME Booking Number: </strong>Not available</p>
-                            }
-                            {booking && booking.hasOwnProperty('b_client_order_num') &&
-                                <p><strong>Client Order Number: </strong>
-                                    {booking['uid'] ? <a href={`/booking?bookingid=${booking['uid']}`} rel="noopener noreferrer" target="_blank">{booking.b_client_order_num}</a>
-                                        : booking.b_client_order_num}
-                                </p>
-                            }
-                            {booking && booking.hasOwnProperty('b_client_sales_inv_num') && <p><strong>Client Sales Invoice Number: </strong>{booking.b_client_sales_inv_num}</p>}
-                            {!status && <p><strong>Status</strong>: Not available</p>}
-                            {status && <p><strong>Status</strong>: {status}</p>}
-                            {!quote && <p><strong>Quote</strong>: Not selected</p>}
-                            {quote && quote.hasOwnProperty('cost') && <p><strong>Shipping Cost</strong>: ${quote.cost}</p>}
-                            {quote && quote.hasOwnProperty('eta') && <p><strong>ETA</strong>: {quote.eta}</p>}
-                            {quote && quote.hasOwnProperty('fp_name') && <p><strong>Freight Provider</strong>: {quote.fp_name}</p>}
-                            {quote && quote.hasOwnProperty('service_name') && <p><strong>Service Name</strong>: {quote.service_name}</p>}
-                        </div>
-                    </div>
+                            {/* <div className="status-lastloc">
+                                Eastern Creek, NSW
+                            </div> */}
+                            <div>
+                                <span className="status-summary-title">Updated: </span>
+                                <span className="status-summary-updated">{lastUpdated}</span>
+                            </div>
+                            <div className="status-chart">
+                                <div className="status-chart-bar">
+                                    {[1, 2, 3, 4, 5].map((index) => (
+                                        <React.Fragment key={index}>
+                                            <input type="checkbox" checked={index <= step} readOnly></input>
+                                            {index !== 5 && <div className="status-chart-bar-bar"></div>}
+                                        </React.Fragment>
+                                    ))}
+                                </div>
+                                <div className="status-chart-desc">
+                                    {steps.map((step, index) => (
+                                        <div className="status-chart-desc-item" key={index}>
+                                            <div className="status-chart-desc-item-title">
+                                                {step}
+                                            </div>
+                                            {timestamps && <div className="status-chart-desc-item-desc">
+                                                {timestamps[index]}
+                                            </div>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="status-details row">
+                                {details.map((item, index) => (
+                                    <div className="status-details-item col-md-6 col-sm-12" key={index}>
+                                        <div className="status-details-item-title">
+                                            {item.title}
+                                        </div>
+                                        {item.content.map((itm, idx) => (
+                                            <React.Fragment key={idx}>
+                                                <span className="status-details-item-subtitle">
+                                                    {itm.subtitle}:&nbsp; 
+                                                </span>
+                                                <span className="status-details-item-subdesc">
+                                                    {itm.subdesc}
+                                                </span>
+                                                <br />
+                                            </React.Fragment>
+                                        ))}
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="order-details row">
+                                <div className="order-details-title">
+                                    ORDER DETAILS
+                                </div>
+                                {lines && <BootstrapTable
+                                    keyField="pk_lines_id"
+                                    data={ lines }
+                                    columns={ bookingLineDetailsColumns }
+                                    bootstrap4={ true }
+                                />}
+                            </div>
+                        </div>}
+                    </Fragment>
                 }
             </section>
         );
@@ -171,6 +218,11 @@ const mapStateToProps = (state) => {
         step: state.bok.deliveryStep,
         quote: state.bok.quote,
         booking: state.bok.booking,
+        lines: state.bok.lines,
+        etaDate: state.bok.etaDate,
+        lastUpdated: state.bok.lastUpdated,
+        lastMilestone: state.bok.lastMilestone,
+        timestamps: state.bok.timestamps
     };
 };
 

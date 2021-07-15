@@ -52,11 +52,11 @@ function getWeight(e_qty, e_weightUOM, e_weightPerEach) {
     if (!e_qty || !e_weightUOM || !e_weightPerEach)
         return 0;
 
-    if (e_weightUOM.toUpperCase() === 'GRAM' || e_weightUOM.toUpperCase() === 'GRAMS')
+    if (e_weightUOM.toUpperCase() === 'GRAM' || e_weightUOM.toUpperCase() === 'GRAMS' || e_weightUOM.toUpperCase() === 'G')
         result = parseInt(e_qty) * parseFloat(e_weightPerEach) / 1000;
     else if (e_weightUOM.toUpperCase() === 'KILOGRAM' || e_weightUOM.toUpperCase() === 'KILOGRAMS' || e_weightUOM.toUpperCase() === 'KG' || e_weightUOM.toUpperCase() === 'KGS')
         result = parseInt(e_qty) * parseFloat(e_weightPerEach);
-    else if (e_weightUOM.toUpperCase() === 'TON' || e_weightUOM.toUpperCase() === 'TONS')
+    else if (e_weightUOM.toUpperCase() === 'TON' || e_weightUOM.toUpperCase() === 'TONS' || e_weightUOM.toUpperCase() === 'T')
         result = parseInt(e_qty) * parseFloat(e_weightPerEach) * 1000;
 
     return result.toFixed(2);

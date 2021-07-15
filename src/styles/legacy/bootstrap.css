@@ -3771,10 +3771,6 @@ tbody.collapse.in {
     display: none;
   }
 }
-
-.navbar-nav {
-  margin: 8.75px -15px;
-}
 .navbar-nav > li > a {
   padding-top: 10px;
   padding-bottom: 10px;

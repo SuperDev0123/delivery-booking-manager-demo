@@ -6,6 +6,8 @@ import 'react-sliding-pane/dist/react-sliding-pane.css';
 import LoadingOverlay from 'react-loading-overlay';
 import { Button } from 'reactstrap';
 
+import { getCubicMeter, getWeight } from '../../commons/helpers';
+
 class LineAndLineDetailSlider extends React.Component {
     constructor(props) {
         super(props);
@@ -15,12 +17,13 @@ class LineAndLineDetailSlider extends React.Component {
             lineOrLineDetail: 1, // 1: line, 2: lineDetail
             selectedLineIndex: -1,
             lineFormInputs: {
+                e_type_of_packaging: 'carton',
                 e_qty: 0,
                 e_dimLength: 0,
                 e_dimWidth: 0,
                 e_dimHeight: 0,
-                e_dimUOM: 'CM',
-                e_weightUOM: 'Kilogram',
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
                 e_weightPerEach: 0,
             },
             lineDetailFormInputs: {},
@@ -36,8 +39,6 @@ class LineAndLineDetailSlider extends React.Component {
         onClickDelete: PropTypes.func.isRequired,
         loadingBookingLine: PropTypes.bool.isRequired,
         loadingBookingLineDetail: PropTypes.bool.isRequired,
-        getCubicMeter: PropTypes.func.isRequired,
-        getTotalWeight: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
         createBookingLine: PropTypes.func.isRequired,
         updateBookingLine: PropTypes.func.isRequired,
@@ -51,7 +52,21 @@ class LineAndLineDetailSlider extends React.Component {
     }
 
     onClickNew(editMode, typeNum) {
-        this.setState({editMode: editMode, lineOrLineDetail: typeNum});
+        this.setState({
+            editMode: editMode,
+            lineOrLineDetail: typeNum,
+            lineFormInputs: {
+                e_type_of_packaging: 'carton',
+                e_qty: 0,
+                e_dimLength: 0,
+                e_dimWidth: 0,
+                e_dimHeight: 0,
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
+                e_weightPerEach: 0,
+            },
+            lineDetailFormInputs: {}
+        });
     }
 
     onClickEdit(editMode, typeNum, index) {
@@ -73,11 +88,9 @@ class LineAndLineDetailSlider extends React.Component {
         if (lineOrLineDetail === 1) {
             let lineFormInputs = this.state.lineFormInputs;
             lineFormInputs[name] = value;
-            lineFormInputs['e_1_Total_dimCubicMeter'] = this.props.getCubicMeter(lineFormInputs);
-            lineFormInputs['e_Total_KG_weight'] = this.props.getTotalWeight(lineFormInputs);
+            lineFormInputs['e_1_Total_dimCubicMeter'] = getCubicMeter(lineFormInputs['e_qty'], lineFormInputs['e_dimUOM'], lineFormInputs['e_dimLength'], lineFormInputs['e_dimWidth'], lineFormInputs['e_dimHeight']);
+            lineFormInputs['e_Total_KG_weight'] = getWeight(lineFormInputs['e_qty'], lineFormInputs['e_weightUOM'], lineFormInputs['e_weightPerEach']);
             lineFormInputs['total_2_cubic_mass_factor_calc'] = (Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250).toFixed(2);
-            lineFormInputs['e_1_Total_dimCubicMeter'] = lineFormInputs['e_1_Total_dimCubicMeter'].toFixed(2);
-            lineFormInputs['e_Total_KG_weight'] = lineFormInputs['e_Total_KG_weight'].toFixed(2);
             this.setState({lineFormInputs});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
@@ -112,7 +125,20 @@ class LineAndLineDetailSlider extends React.Component {
             }
         }
 
-        this.setState({editMode: 0, lineFormInputs: {}, lineDetailFormInputs: {}});
+        this.setState({
+            editMode: 0,
+            lineFormInputs: {
+                e_type_of_packaging: 'carton',
+                e_qty: 0,
+                e_dimLength: 0,
+                e_dimWidth: 0,
+                e_dimHeight: 0,
+                e_dimUOM: 'm',
+                e_weightUOM: 'kg',
+                e_weightPerEach: 0,
+            },
+            lineDetailFormInputs: {}
+        });
     }
 
     onCancel() {
@@ -338,215 +364,229 @@ class LineAndLineDetailSlider extends React.Component {
                                 {
                                     (lineOrLineDetail === 1) ?
                                         <div className="line-form">
-                                            <label>
-                                                <p>Packaging</p>
-                                                <select
-                                                    name="e_type_of_packaging" 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                    value = {lineFormInputs['e_type_of_packaging']}
-                                                >
-                                                    {packageTypesOptions}
-                                                </select>
-                                            </label>
-                                            <label>
-                                                <p>Item Description</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_item" 
-                                                    value={lineFormInputs['e_item']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Qty</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_qty" 
-                                                    value={lineFormInputs['e_qty']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Wgt UOM</p>
-                                                <select
-                                                    name="e_weightUOM" 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                    value = {lineFormInputs['e_weightUOM']} >
-                                                    <option value="Gram">Gram</option>
-                                                    <option value="Kilogram">Kilogram</option>
-                                                    <option value="Ton">Ton</option>
-                                                </select>
-                                            </label>
-                                            <label>
-                                                <p>Wgt Each</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_weightPerEach" 
-                                                    value={lineFormInputs['e_weightPerEach']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Total Kgs</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    disabled="disabled"
-                                                    name="e_Total_KG_weight" 
-                                                    value={lineFormInputs['e_Total_KG_weight']} 
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Dim UOM</p>
-                                                <select
-                                                    name="e_dimUOM" 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                    value = {lineFormInputs['e_dimUOM']} >
-                                                    <option value="MM">MM</option>
-                                                    <option value="CM">CM</option>
-                                                    <option value="METER">METER</option>
-                                                </select>
-                                            </label>
-                                            <label>
-                                                <p>Length</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_dimLength" 
-                                                    value={lineFormInputs['e_dimLength']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Width</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_dimWidth" 
-                                                    value={lineFormInputs['e_dimWidth']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Height</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="e_dimHeight" 
-                                                    value={lineFormInputs['e_dimHeight']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Cubic Meter</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    disabled="disabled"
-                                                    name="e_1_Total_dimCubicMeter" 
-                                                    value={lineFormInputs['e_1_Total_dimCubicMeter']} 
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Cubic KG</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    disabled="disabled"
-                                                    name="total_2_cubic_mass_factor_calc" 
-                                                    value={lineFormInputs['total_2_cubic_mass_factor_calc']} 
-                                                />
-                                            </label>
-                                            <label>
-                                                <Button color="primary" onClick={() => this.onSubmit()}>
-                                                    {
-                                                        (editMode === 1) ? 'Submit' : 'Update'
-                                                    }
-                                                </Button>{' '}
-                                                <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                                            </label>
+                                            <form onSubmit={(e) => this.onSubmit(e)} role="form">
+                                                <label>
+                                                    <p>Packaging</p>
+                                                    <select
+                                                        name="e_type_of_packaging" 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                        value = {lineFormInputs['e_type_of_packaging']}
+                                                    >
+                                                        {packageTypesOptions}
+                                                    </select>
+                                                </label>
+                                                <label>
+                                                    <p>Item Description</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="e_item" 
+                                                        value={lineFormInputs['e_item']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Qty</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_qty"
+                                                        value={lineFormInputs['e_qty']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Wgt UOM</p>
+                                                    <select
+                                                        name="e_weightUOM" 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                        value = {lineFormInputs['e_weightUOM']} >
+                                                        <option value="kg">Kilogram</option>
+                                                        <option value="g">Gram</option>
+                                                        <option value="t">Ton</option>
+                                                    </select>
+                                                </label>
+                                                <label>
+                                                    <p>Wgt Each</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_weightPerEach" 
+                                                        value={lineFormInputs['e_weightPerEach']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Total Kgs</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        disabled="disabled"
+                                                        name="e_Total_KG_weight" 
+                                                        value={lineFormInputs['e_Total_KG_weight']} 
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Dim UOM</p>
+                                                    <select
+                                                        name="e_dimUOM" 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                        value = {lineFormInputs['e_dimUOM']} >
+                                                        <option value="m">METER</option>
+                                                        <option value="cm">CM</option>
+                                                        <option value="mm">MM</option>
+                                                    </select>
+                                                </label>
+                                                <label>
+                                                    <p>Length</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_dimLength" 
+                                                        value={lineFormInputs['e_dimLength']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Width</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_dimWidth" 
+                                                        value={lineFormInputs['e_dimWidth']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Height</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="e_dimHeight" 
+                                                        value={lineFormInputs['e_dimHeight']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Cubic Meter</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        disabled="disabled"
+                                                        name="e_1_Total_dimCubicMeter" 
+                                                        value={lineFormInputs['e_1_Total_dimCubicMeter']} 
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Cubic KG</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number" 
+                                                        disabled="disabled"
+                                                        name="total_2_cubic_mass_factor_calc" 
+                                                        value={lineFormInputs['total_2_cubic_mass_factor_calc']} 
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <Button type="submit" color="primary">{(editMode === 1) ? 'Submit' : 'Update'}</Button>{' '}
+                                                    <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                                                </label>
+                                            </form>
                                         </div>
                                         :
                                         <div className="line-detail-form">
-                                            <label>
-                                                <p>Model</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="modelNumber" 
-                                                    value={lineDetailFormInputs['modelNumber']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Item Description</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="itemDescription" 
-                                                    value={lineDetailFormInputs['itemDescription']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Qty</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="quantity" 
-                                                    value={lineDetailFormInputs['quantity']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Fault Description</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="itemFaultDescription" 
-                                                    value={lineDetailFormInputs['itemFaultDescription']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Insurance Value</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="insuranceValueEach" 
-                                                    value={lineDetailFormInputs['insuranceValueEach']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Gap / RA</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="gap_ra" 
-                                                    value={lineDetailFormInputs['gap_ra']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <p>Client Reference #</p>
-                                                <input 
-                                                    className="form-control" 
-                                                    type="text" 
-                                                    name="clientRefNumber" 
-                                                    value={lineDetailFormInputs['clientRefNumber']} 
-                                                    onChange={(e) => this.onInputChange(e)}
-                                                />
-                                            </label>
-                                            <label>
-                                                <Button color="primary" onClick={() => this.onSubmit()}>
-                                                    {(editMode === 1) ? 'Submit' : 'Update'}
-                                                </Button>{' '}
-                                                <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                                            </label>
+                                            <form onSubmit={(e) => this.onSubmit(e)} role="form">
+                                                <label>
+                                                    <p>Model</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="modelNumber" 
+                                                        value={lineDetailFormInputs['modelNumber']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Item Description</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="itemDescription" 
+                                                        value={lineDetailFormInputs['itemDescription']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Qty</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="number"
+                                                        step="0.01"
+                                                        min="0"
+                                                        name="quantity" 
+                                                        value={lineDetailFormInputs['quantity']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Fault Description</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="itemFaultDescription" 
+                                                        value={lineDetailFormInputs['itemFaultDescription']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Insurance Value</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="insuranceValueEach" 
+                                                        value={lineDetailFormInputs['insuranceValueEach']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Gap / RA</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="gap_ra" 
+                                                        value={lineDetailFormInputs['gap_ra']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <p>Client Reference #</p>
+                                                    <input 
+                                                        className="form-control" 
+                                                        type="text" 
+                                                        name="clientRefNumber" 
+                                                        value={lineDetailFormInputs['clientRefNumber']} 
+                                                        onChange={(e) => this.onInputChange(e)}
+                                                    />
+                                                </label>
+                                                <label>
+                                                    <Button color="primary" type="submit">{(editMode === 1) ? 'Submit' : 'Update'}</Button>{' '}
+                                                    <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                                                </label>
+                                            </form>
                                         </div>
                                 }
                             </div>

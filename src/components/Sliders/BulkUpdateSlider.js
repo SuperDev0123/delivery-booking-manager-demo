@@ -101,7 +101,7 @@ class BulkUpdateSlider extends React.Component {
 
         const fpOptions = fps.map((fp, index) => {
             if (clientname === 'Jason L') { // Jason L
-                if (fp.fp_company_name === 'Allied' || fp.fp_company_name === 'TNT' || fp.fp_company_name === 'Hunter')
+                if (fp.fp_company_name === 'Allied' || fp.fp_company_name === 'TNT' || fp.fp_company_name === 'Hunter' || fp.fp_company_name === 'Century')
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else {
                 return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);

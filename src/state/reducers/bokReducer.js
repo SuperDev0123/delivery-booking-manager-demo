@@ -20,8 +20,12 @@ import {
     FAILED_UPDATE_BOK_1,
     SUCCESS_AUTO_REPACK,
     FAILED_AUTO_REPACK,
-    SUCCESS_UPDATE_ITEM_PRODUCT,
-    FAILED_UPDATE_ITEM_PRODUCT,
+    SUCCESS_ADD_BOK_LINE,
+    FAILED_ADD_BOK_LINE,
+    SUCCESS_UPDATE_BOK_LINE,
+    FAILED_UPDATE_BOK_LINE,
+    SUCCESS_DELETE_BOK_LINE,
+    FAILED_DELETE_BOK_LINE,
 } from '../constants/bokConstants';
 
 const defaultState = {
@@ -40,7 +44,7 @@ const defaultState = {
     canceledSuccess: null,
     selectPricingSuccess: null,
     autoRepackSuccess: null,
-    updateItemProductSuccess: null,
+    lineOperationSuccess: null,
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -54,7 +58,7 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 canceledSuccess: null,
                 selectPricingSuccess: null,
                 autoRepackSuccess: null,
-                updateItemProductSuccess: null,
+                lineOperationSuccess: null,
             };
         case SUCCESS_GET_BOK_1_HEADERS:
             return {
@@ -91,6 +95,11 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 deliveryStep: payload.step,
                 quote: payload.quote,
                 booking: payload.booking,
+                lastUpdated: payload.last_updated,
+                lines: payload.lines,
+                etaDate: payload.eta_date,
+                lastMilestone: payload.last_milestone,
+                timestamps: payload.timestamps
             };
         case SUCCESS_BOOK_FREIGHT:
             return {
@@ -107,10 +116,12 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 ...state,
                 autoRepackSuccess: true,
             };
-        case SUCCESS_UPDATE_ITEM_PRODUCT:
+        case SUCCESS_ADD_BOK_LINE:
+        case SUCCESS_UPDATE_BOK_LINE:
+        case SUCCESS_DELETE_BOK_LINE:
             return {
                 ...state,
-                updateItemProductSuccess: true,
+                lineOperationSuccess: true,
             };
         case FAILED_SELECT_PRICING:
         case FAILED_GET_BOK_1_HEADERS:
@@ -122,7 +133,9 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
         case FAILED_CANCEL_FREIGHT:
         case FAILED_UPDATE_BOK_1:
         case FAILED_AUTO_REPACK:
-        case FAILED_UPDATE_ITEM_PRODUCT:
+        case FAILED_ADD_BOK_LINE:
+        case FAILED_UPDATE_BOK_LINE:
+        case FAILED_DELETE_BOK_LINE:
             return {
                 ...state,
                 errorMessage: payload,

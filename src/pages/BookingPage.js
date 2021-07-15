@@ -1414,6 +1414,7 @@ class BookingPage extends Component {
 
                         if (
                             freight_provider === 'cope' ||
+                            freight_provider === 'century' ||
                             freight_provider === 'state transport'
                         ) {
                             this.buildCSV([booking.id], freight_provider);
@@ -2147,29 +2148,6 @@ class BookingPage extends Component {
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
         }
-    }
-
-    getCubicMeter(row) {  // TODO: need to use getCubicMeter from common/helpers
-        if (row['e_dimUOM'].toUpperCase() === 'CM')
-            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000);
-        else if (row['e_dimUOM'].toUpperCase() === 'METER')
-            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']));
-        else
-            return parseInt(row['e_qty']) * (parseInt(row['e_dimLength']) * parseInt(row['e_dimWidth']) * parseInt(row['e_dimHeight']) / 1000000000);
-    }
-
-    getTotalWeight(row) {
-        if (row['e_weightUOM'].toUpperCase() === 'GRAM' || 
-            row['e_weightUOM'].toUpperCase() === 'GRAMS')
-            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) / 1000;
-        else if (row['e_weightUOM'].toUpperCase() === 'KILOGRAM' || 
-                 row['e_weightUOM'].toUpperCase() === 'KILOGRAMS' ||
-                 row['e_weightUOM'].toUpperCase() === 'KG' ||
-                 row['e_weightUOM'].toUpperCase() === 'KGS')
-            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']);
-        else if (row['e_weightUOM'].toUpperCase() === 'TON' ||
-                 row['e_weightUOM'].toUpperCase() === 'TONS')
-            return parseInt(row['e_qty']) * parseInt(row['e_weightPerEach']) * 1000;
     }
 
     toggleDuplicateBookingOptionsModal() {
@@ -5021,22 +4999,17 @@ class BookingPage extends Component {
                                                             </button>
                                                         }
                                                     </div>
-                                                    {
-                                                        (clientname === 'dme') ?
-                                                            <div className="text-center mt-2 fixed-height manual-book">
-                                                                <input
-                                                                    className="checkbox"
-                                                                    name="tickManualBook"
-                                                                    type="checkbox"
-                                                                    checked={formInputs['x_manual_booked_flag']}
-                                                                    onChange={(e) => this.handleInputChange(e)}
-                                                                    disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
-                                                                />
-                                                                <p>Manual Book</p>
-                                                            </div>
-                                                            :
-                                                            null
-                                                    }
+                                                    <div className="text-center mt-2 fixed-height manual-book">
+                                                        <input
+                                                            className="checkbox"
+                                                            name="tickManualBook"
+                                                            type="checkbox"
+                                                            checked={formInputs['x_manual_booked_flag']}
+                                                            onChange={(e) => this.handleInputChange(e)}
+                                                            disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
+                                                        />
+                                                        <p>Manual Book</p>
+                                                    </div>
                                                     <div className="text-center mt-2 fixed-height">
                                                         <button
                                                             className="btn btn-theme custom-theme"
@@ -5377,8 +5350,6 @@ class BookingPage extends Component {
                     loadingBookingLineDetail={this.state.loadingBookingLineDetail}
                     selectedLineIndex={this.state.selectedLineIndex}
                     onClickShowLine={(index) => this.onClickShowLine(index)}
-                    getCubicMeter={(row) => this.getCubicMeter(row)}
-                    getTotalWeight={(row) => this.getTotalWeight(row)}
                     booking={booking}
                     createBookingLine={(bookingLine) => this.props.createBookingLine(bookingLine)}
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}

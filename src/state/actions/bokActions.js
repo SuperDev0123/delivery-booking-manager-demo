@@ -22,8 +22,12 @@ import {
     FAILED_AUTO_REPACK,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
-    SUCCESS_UPDATE_ITEM_PRODUCT,
-    FAILED_UPDATE_ITEM_PRODUCT,
+    SUCCESS_ADD_BOK_LINE,
+    FAILED_ADD_BOK_LINE,
+    SUCCESS_UPDATE_BOK_LINE,
+    FAILED_UPDATE_BOK_LINE,
+    SUCCESS_DELETE_BOK_LINE,
+    FAILED_DELETE_BOK_LINE,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -181,15 +185,41 @@ export function failedSendEmail(error) {
     };
 }
 
-export function successUpdateItemProduct() {
+export function successAddBokLine() {
     return {
-        type: SUCCESS_UPDATE_ITEM_PRODUCT,
+        type: SUCCESS_ADD_BOK_LINE,
     };
 }
 
-export function failedUpdateItemProduct(error) {
+export function failedAddBokLine(error) {
     return {
-        type: FAILED_UPDATE_ITEM_PRODUCT,
-        payload: 'Unable to update item product. ' + error.response.data.message,
+        type: FAILED_ADD_BOK_LINE,
+        payload: 'Unable to add bok line. ' + error.response.data.message,
+    };
+}
+
+export function successUpdateBokLine() {
+    return {
+        type: SUCCESS_UPDATE_BOK_LINE,
+    };
+}
+
+export function failedUpdateBokLine(error) {
+    return {
+        type: FAILED_UPDATE_BOK_LINE,
+        payload: 'Unable to update bok line. ' + error.response.data.message,
+    };
+}
+
+export function successDeleteBokLine() {
+    return {
+        type: SUCCESS_DELETE_BOK_LINE,
+    };
+}
+
+export function failedDeleteBokLine(error) {
+    return {
+        type: FAILED_DELETE_BOK_LINE,
+        payload: 'Unable to delete bok line. ' + error.response.data.message,
     };
 }
