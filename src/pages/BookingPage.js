@@ -414,6 +414,7 @@ class BookingPage extends Component {
                 result['is_scanned'] = bookingLine.is_scanned;
                 result['pk_booking_lines_id'] = bookingLine.pk_booking_lines_id;
                 result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
+                result['sscc'] = bookingLine.sscc;
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
@@ -1317,7 +1318,7 @@ class BookingPage extends Component {
 
     onClickGetLabel() {
         const {booking, isBookedBooking, formInputs, bookingLineDetailsProduct} = this.state;
-        const {bookingLines, bookingLineDetails} = this.state;
+        const {bookingLines} = this.state;
 
         if (isBookedBooking) {
             const result = isValid4Label(formInputs, bookingLineDetailsProduct);
@@ -1330,33 +1331,22 @@ class BookingPage extends Component {
         } else {
             if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002') { // JasonL
                 // Check if ready for build label
-                // Each line should have "SSCC" in its lineData's `clientRefNumber` field
                 let isReady4Label = true;
 
-                for (let index0=0; index0 < bookingLines.length; index0++) {
-                    let isReadyLine = false;
-                    const line = bookingLines[index0];
+                for (let index=0; index < bookingLines.length; index++) {
+                    const line = bookingLines[index];
 
-                    for (let index1=0; index1 < bookingLineDetails.length; index1++) {
-                        const lineData = bookingLineDetails[index1];
-
-                        if (line.pk_booking_lines_id === lineData.fk_booking_lines_id && lineData.clientRefNumber) {
-                            isReadyLine = true;
-                            break;
-                        }
-                    }
-
-                    if (!isReadyLine) {
+                    if (!line.sscc) {
                         isReady4Label = false;
                         break;
                     }
                 }
 
                 if (!isReady4Label) {
-                    this.notify('This Booking is not ready to get Label. Please set SSCC for all the Line in its lineData/Client Reference #.');
-                } else {
-                    this.props.dmeLabel(booking.id);
+                    this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
                 }
+                
+                this.props.dmeLabel(booking.id);
             } else {
                 this.notify('This booking is not Booked!');
             }

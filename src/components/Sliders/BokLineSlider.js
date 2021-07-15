@@ -161,6 +161,7 @@ class BokLineSlider extends React.Component {
                             <input 
                                 className="form-control"
                                 required
+                                step="0.01"
                                 type="number"
                                 name="e_qty"
                                 value={formInputs['e_qty']}
@@ -220,6 +221,7 @@ class BokLineSlider extends React.Component {
                                 className="form-control"
                                 required
                                 type="number"
+                                step="0.01"
                                 name="e_dimLength"
                                 value={formInputs['e_dimLength']}
                                 onChange={(e) => this.onInputChange(e)}
@@ -231,6 +233,7 @@ class BokLineSlider extends React.Component {
                                 className="form-control"
                                 required
                                 type="number"
+                                step="0.01"
                                 name="e_dimWidth"
                                 value={formInputs['e_dimWidth']}
                                 onChange={(e) => this.onInputChange(e)}
@@ -242,6 +245,7 @@ class BokLineSlider extends React.Component {
                                 className="form-control"
                                 required
                                 type="number"
+                                step="0.01"
                                 name="e_dimHeight"
                                 value={formInputs['e_dimHeight']}
                                 onChange={(e) => this.onInputChange(e)}

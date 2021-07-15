@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
 import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -19,7 +18,6 @@ class LabelPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
-            ticks: {}
         };
     }
 
@@ -59,36 +57,13 @@ class LabelPage extends Component {
         }
     }
 
-    handleInputChange(event, sscc) {
-        const { ticks } = this.state;
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-
-        ticks[sscc] = value;
-        this.setState({ticks});
-    }
-
-    onClickPrint() {
-        const {ticks} = this.state;
+    onClickPrint(pdf = null) {
         const {bookingLabels} = this.props;
-        let selectedSSCCs = [];
 
-        for (const value of Object.entries(ticks)) {
-            if (ticks[value[0]]) {
-                selectedSSCCs.push(value[0]);
-            }
-        }
-
-        if (_.isEmpty(selectedSSCCs)) {
-            this.notify('Please tick SSCC and click Print button');
+        if (pdf) {
+            print({printable: pdf, type: 'pdf', showModal: true, base64: true});
         } else {
-            let pdfs = '';
-
-            selectedSSCCs.map(sscc => {
-                pdfs += bookingLabels.sscc_obj[sscc][0].pdf;
-            });
-
-            print({printable: pdfs, type: 'pdf', showModal: true, base64: true});
+            print({printable: bookingLabels['pdf'], type: 'pdf', showModal: true, base64: true});
         }
     }
 
@@ -122,19 +97,10 @@ class LabelPage extends Component {
                                     <Button
                                         color="primary"
                                         disabled={!sscc_info.is_available && 'disabled'}
-                                        onClick={() => this.onClickPrint(sscc_info['url'])}
+                                        onClick={() => this.onClickPrint(sscc_info['pdf'])}
                                     >
                                         Print
                                     </Button>
-                                </td>
-                            }
-                            {sscc_info_index === 0 &&
-                                <td rowSpan={bookingLabels.sscc_obj[sscc].length.toString()}>
-                                    <input
-                                        name="switchInfo"
-                                        type="checkbox"
-                                        disabled={!sscc_info.is_available && 'disabled'}
-                                        onChange={(e) => this.handleInputChange(e, sscc)} />
                                 </td>
                             }
                         </tr>
@@ -175,7 +141,6 @@ class LabelPage extends Component {
                                         <th style={{width: '10%'}}>Qty</th>
                                         <th style={{width: '10%'}}>Type of Package</th>
                                         {<th style={{width: '10%'}}>Preview</th>}
-                                        {<th style={{width: '10%'}}>Tick to Print</th>}
                                     </tr>
                                 </thead>
                                 <tbody>
