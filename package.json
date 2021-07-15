@@ -71,6 +71,7 @@
     "moment-range": "^4.0.2",
     "moment-timezone": "^0.5.23",
     "popper.js": "^1.12.9",
+    "print-js": "^1.6.0",
     "prop-types": "^15.6.0",
     "react": "^16.8.4",
     "react-bootstrap-modal": "^4.2.0",

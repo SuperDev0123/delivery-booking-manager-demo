@@ -6,9 +6,10 @@ import _ from 'lodash';
 import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import print from 'print-js';
 
 import { STATIC_HOST, HTTP_PROTOCOL } from '../../config';
-import { decodeBase64 } from '../../commons/helpers';
+// import { decodeBase64 } from '../../commons/helpers';
 import { getLabels4Booking } from '../../state/services/bookingService';
 
 class LabelPage extends Component {
@@ -84,16 +85,10 @@ class LabelPage extends Component {
             let pdfs = '';
 
             selectedSSCCs.map(sscc => {
-                pdfs += decodeBase64(bookingLabels.sscc_obj[sscc][0].pdf);
+                pdfs += bookingLabels.sscc_obj[sscc][0].pdf;
             });
 
-            let printWindow = window.open();
-            // printWindow.document.open('text/plain');
-            printWindow.document.write(pdfs);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-            printWindow.close();
+            print({printable: pdfs, type: 'pdf', showModal: true, base64: true});
         }
     }
 
@@ -123,6 +118,13 @@ class LabelPage extends Component {
                                         onClick={() => this.onClickPreview(sscc_info['url'])}
                                     >
                                         Preview
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        disabled={!sscc_info.is_available && 'disabled'}
+                                        onClick={() => this.onClickPrint(sscc_info['url'])}
+                                    >
+                                        Print
                                     </Button>
                                 </td>
                             }
