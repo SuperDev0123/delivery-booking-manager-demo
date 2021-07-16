@@ -5055,10 +5055,19 @@ class BookingPage extends Component {
                                                         </button>
                                                         <button
                                                             className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickViewFile('label')}
+                                                            disabled={(booking && booking.z_label_url) ? '' : 'disabled'}
+                                                        >
+                                                            View Label
+                                                        </button>
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className={(booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt') || (curViewMode === 1) ? 'none' : 'btn btn-theme custom-theme'}
                                                             onClick={() => this.onClickReprintLabel()}
                                                             disabled={(booking && booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() != 'tnt') || (curViewMode === 1) ? 'disabled' : ''}
                                                         >
-                                                            Reprint
+                                                            Reprint TNT Label
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height half-size">
