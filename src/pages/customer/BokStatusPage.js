@@ -172,6 +172,19 @@ class BokStatusPage extends Component {
                                     ))}
                                 </div>
                             </div>
+                            <div className="status-chart-sm">
+                                {[0, 1, 2, 3, 4].map((index) => (
+                                    <div className="status-chart-item-sm" key={index}>
+                                        <input type="checkbox" checked={index <= step} readOnly></input>
+                                        <div className="status-chart-desc-item-title">
+                                            {steps[index]}
+                                        </div>
+                                        {timestamps && <div className="status-chart-desc-item-desc">
+                                            {timestamps[index]}
+                                        </div>}
+                                    </div>
+                                ))}
+                            </div>
                             <div className="status-details row">
                                 {details.map((item, index) => (
                                     <div className="status-details-item col-md-6 col-sm-12" key={index}>
@@ -201,6 +214,7 @@ class BokStatusPage extends Component {
                                     data={ lines }
                                     columns={ bookingLineDetailsColumns }
                                     bootstrap4={ true }
+                                    bordered={ false }
                                 />}
                             </div>
                         </div>}
