@@ -1675,9 +1675,26 @@ class BookingPage extends Component {
         const {formInputs, createdForInfos} = this.state;
 
         if (fieldName === 'warehouse') {
+            let selectedWarehouse;
             formInputs['b_client_warehouse_code'] = selectedOption.value;
-            formInputs['b_clientPU_Warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'name');
-            formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(selectedOption.value, 'id');
+
+            for (let i = 0; i < this.props.warehouses.length; i++)
+                if (this.props.warehouses[i].client_warehouse_code === formInputs['b_client_warehouse_code'])
+                    selectedWarehouse = this.props.warehouses[i];
+
+            formInputs['b_clientPU_Warehouse'] = selectedWarehouse.name;
+            formInputs['fk_client_warehouse'] = selectedWarehouse.pk_id_client_warehouses;
+            formInputs['pu_Address_Street_1'] = selectedWarehouse.address1;
+            formInputs['pu_Address_street_2'] = selectedWarehouse.address2;
+            const puState = {'value': selectedWarehouse.state, 'label': selectedWarehouse.state};
+            const puPostalCode = {'value': selectedWarehouse.postal_code, 'label': selectedWarehouse.postal_code};
+            const puSuburb = {'value': selectedWarehouse.suburb, 'label': selectedWarehouse.suburb};
+            formInputs['pu_Address_Country'] = 'Australia';
+            formInputs['pu_Contact_F_L_Name'] = selectedWarehouse.contact_name;
+            formInputs['pu_Phone_Main'] = selectedWarehouse.phone_main;
+            formInputs['pu_Email'] = selectedWarehouse.contact_email;
+
+            this.setState({puState, puPostalCode, puSuburb});
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
 
@@ -3046,7 +3063,7 @@ class BookingPage extends Component {
                                 <div className="main-fields-section">
                                     <div className="row col-sm-12 booking-form-01">
                                         <div className="col-sm-3 form-group">
-                                            <span>Client Name</span>
+                                            <span>Client Name<span className='c-red'>*</span></span>
                                             {
                                                 (parseInt(curViewMode) === 0) ?
                                                     <p className="show-mode">{formInputs['b_client_name']}</p>
@@ -3338,7 +3355,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
-                                                <span>Freight Provider</span>
+                                                <span>Freight Provider<span className='c-red'>*</span></span>
                                                 {
                                                     (parseInt(curViewMode) === 0) ?
                                                         <p className="show-mode">{formInputs['vx_freight_provider']}</p>
@@ -3689,7 +3706,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-2">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pick Up Entity</label>
+                                                            <label className="" htmlFor="">Pick Up Entity<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -3697,7 +3714,7 @@ class BookingPage extends Component {
                                                                     <p className="show-mode">{formInputs['puCompany']}</p>
                                                                     :
                                                                     <input 
-                                                                        placeholder="Tempo Pty Ltd"
+                                                                        placeholder=""
                                                                         name="puCompany"
                                                                         type="text"
                                                                         value={formInputs['puCompany'] ? formInputs['puCompany'] : ''} 
@@ -3708,7 +3725,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Street 1</label>
+                                                            <label className="" htmlFor="">Street 1<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -3749,7 +3766,7 @@ class BookingPage extends Component {
                                                     >
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">State</label>
+                                                                <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -3769,7 +3786,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Postal Code</label>
+                                                                <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -3789,7 +3806,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Suburb</label>
+                                                                <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -3810,7 +3827,7 @@ class BookingPage extends Component {
                                                     </LoadingOverlay>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Country</label>
+                                                            <label className="" htmlFor="">Country<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -3828,7 +3845,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Contact</label>
+                                                            <label className="" htmlFor="">Contact<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -3864,7 +3881,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Email</label>
+                                                            <label className="" htmlFor="">Email<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4151,7 +4168,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-2">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Delivery Entity</label>
+                                                            <label className="" htmlFor="">Delivery Entity<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4170,7 +4187,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Street 1</label>
+                                                            <label className="" htmlFor="">Street 1<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4211,7 +4228,7 @@ class BookingPage extends Component {
                                                     >
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">State</label>
+                                                                <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -4231,7 +4248,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Postal Code</label>
+                                                                <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -4251,7 +4268,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="row mt-1">
                                                             <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Suburb</label>
+                                                                <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
                                                             </div>
                                                             <div className='col-sm-8 select-margin'>
                                                                 {
@@ -4272,7 +4289,7 @@ class BookingPage extends Component {
                                                     </LoadingOverlay>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Country</label>
+                                                            <label className="" htmlFor="">Country<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4290,7 +4307,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Contact </label>
+                                                            <label className="" htmlFor="">Contact<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4326,7 +4343,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Email</label>
+                                                            <label className="" htmlFor="">Email<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {
@@ -4582,14 +4599,14 @@ class BookingPage extends Component {
                                             <PopoverBody>
                                                 <div>
                                                     <label>
-                                                        <h5 className="bold">PU Entity: </h5>
+                                                        <h5 className="bold">PU Entity<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
                                                             <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany']} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_puCompany']}</span>
                                                         }
                                                     </label>
                                                     <label>
-                                                        <h5 className="bold">PU Street 1: </h5>
+                                                        <h5 className="bold">PU Street 1<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
                                                             <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1']} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_pu_Address_Street_1']}</span>
@@ -4606,7 +4623,7 @@ class BookingPage extends Component {
                                                 <hr />
                                                 <div>
                                                     <label>
-                                                        <h5 className="bold">DE Entity: </h5>
+                                                        <h5 className="bold">DE Entity<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
                                                             <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName']} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_deToCompanyName']}</span>
@@ -5057,8 +5074,9 @@ class BookingPage extends Component {
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickViewFile('label')}
                                                             disabled={(booking && booking.z_label_url) ? '' : 'disabled'}
+                                                            title="View Label"
                                                         >
-                                                            View Label
+                                                            View <i className="icon icon-printer"></i>
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
@@ -5126,7 +5144,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
                                             {curViewMode === 1 ?
-                                                <label className='red'>Not available on `New Booking` mode</label>
+                                                <label className='red'>Click `Create` with pickup and delivery details completed to add shipping lines</label>
                                                 :
                                                 <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
                                                     <Button 
