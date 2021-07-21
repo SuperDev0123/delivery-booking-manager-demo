@@ -15,7 +15,7 @@ class Footer extends Component {
     render() {
         const currentRoute = this.props.location.pathname;
         console.log(currentRoute);
-        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1) 
+        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('/status/') > -1) 
             return null;
         else return (
             <footer className={`bg-dark text-center px-3 text-white ${currentRoute.indexOf('status') > -1 && 'fixed-bottom'}`}>
