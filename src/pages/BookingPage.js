@@ -1330,23 +1330,27 @@ class BookingPage extends Component {
             }
         } else {
             if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002') { // JasonL
-                // Check if ready for build label
-                let isReady4Label = true;
+                if (booking.vx_freight_provider.toLowerCase() !== 'tnt') {
+                    // Check if ready for build label
+                    let isReady4Label = true;
 
-                for (let index=0; index < bookingLines.length; index++) {
-                    const line = bookingLines[index];
+                    for (let index=0; index < bookingLines.length; index++) {
+                        const line = bookingLines[index];
 
-                    if (!line.sscc) {
-                        isReady4Label = false;
-                        break;
+                        if (!line.sscc) {
+                            isReady4Label = false;
+                            break;
+                        }
                     }
-                }
 
-                if (!isReady4Label) {
-                    this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
+                    if (!isReady4Label) {
+                        this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
+                    }
+
+                    this.props.dmeLabel(booking.id);
+                } else {
+                    this.notify('Booking with TNT FP! Label can be gained after booked!');
                 }
-                
-                this.props.dmeLabel(booking.id);
             } else {
                 this.notify('This booking is not Booked!');
             }
