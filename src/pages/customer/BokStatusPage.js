@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import BootstrapTable from 'react-bootstrap-table-next';
-import moment from 'moment-timezone';
-
 import { getDeliveryStatus } from '../../state/services/bokService';
 
 class BokStatusPage extends Component {
@@ -87,7 +85,7 @@ class BokStatusPage extends Component {
                     },
                     {
                         subtitle: 'Delivery ETA',
-                        subdesc: quote ? `${moment(etaDate).format('DD/MM/YYYY')}(${quote.eta})` : ''
+                        subdesc: quote ? `${etaDate}(${quote.eta})` : ''
                     }
                 ]
             }
@@ -135,10 +133,13 @@ class BokStatusPage extends Component {
                                         SHIP TO
                                     </p>
                                     <p className="status-summary-desc">
-                                        {booking.b_055_b_del_address_street_1},&nbsp;
-                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2}, `}
-                                        {booking.b_058_b_del_address_suburb},&nbsp;
-                                        {booking.b_057_b_del_address_state},&nbsp;
+                                        {booking.b_061_b_del_contact_full_name}
+                                        <br />
+                                        {booking.b_055_b_del_address_street_1}&nbsp;
+                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2} `}
+                                        {booking.b_058_b_del_address_suburb}&nbsp;
+                                        {booking.b_057_b_del_address_state}&nbsp;
+                                        {booking.b_060_b_del_address_country}&nbsp;
                                         {booking.b_059_b_del_address_postalcode}
                                     </p>
                                 </div>
