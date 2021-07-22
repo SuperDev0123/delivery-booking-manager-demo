@@ -18,6 +18,7 @@ import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
 import { getWeight } from '../../commons/helpers';
 import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine } from '../../state/services/bokService';
+import { getPackageTypes } from '../../state/services/extraService';
 
 class BokPricePage extends Component {
     constructor(props) {
@@ -60,6 +61,8 @@ class BokPricePage extends Component {
         onAddBokLine: PropTypes.func.isRequired,
         onUpdateBokLine: PropTypes.func.isRequired,
         onDeleteBokLine: PropTypes.func.isRequired,
+        getPackageTypes: PropTypes.func.isRequired,
+        packageTypes: PropTypes.array,
         sendEmail: PropTypes.func.isRequired,
         bokWithPricings: PropTypes.object,
         match: PropTypes.object,
@@ -75,7 +78,13 @@ class BokPricePage extends Component {
         const identifier = this.props.match.params.id;
 
         if (identifier && identifier.length > 32) {
+            const that = this;
             this.props.getBokWithPricings(identifier);
+            
+            setTimeout(() => {
+                that.props.getPackageTypes();
+            }, 2000);
+
             this.setState({isLoadingBok: true});
         } else {
             this.setState({errorMessage: 'Wrong id.'});
@@ -646,6 +655,7 @@ class BokPricePage extends Component {
                     toggleSlider={this.toggleBokLineSlider}
                     line={this.state.selectedLine}
                     onSubmit={(newLineData, type) => this.onUpdateBokLine(newLineData, type)}
+                    packageTypes={this.props.packageTypes}
                 />
 
                 <ConfirmModal
@@ -683,6 +693,7 @@ const mapStateToProps = (state) => {
         selectPricingSuccess: state.bok.selectPricingSuccess,
         autoRepackSuccess: state.bok.autoRepackSuccess,
         lineOperationSuccess: state.bok.lineOperationSuccess,
+        packageTypes: state.extra.packageTypes,
     };
 };
 
@@ -697,6 +708,7 @@ const mapDispatchToProps = (dispatch) => {
         onAddBokLine: (line) => dispatch(onAddBokLine(line)),
         onUpdateBokLine: (lineId, line) => dispatch(onUpdateBokLine(lineId, line)),
         onDeleteBokLine: (lineId) => dispatch(onDeleteBokLine(lineId)),
+        getPackageTypes: () => dispatch(getPackageTypes()),
     };
 };
 

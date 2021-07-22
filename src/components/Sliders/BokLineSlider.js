@@ -25,6 +25,7 @@ class BokLineSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         line: PropTypes.object.isRequired,
         onSubmit: PropTypes.func.isRequired,
+        packageTypes: PropTypes.array.isRequired,
     };
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -91,7 +92,7 @@ class BokLineSlider extends React.Component {
     }
 
     render() {
-        const { isOpen, toggleSlider } = this.props;
+        const { isOpen, toggleSlider, packageTypes } = this.props;
         const { formInputs } = this.state;
 
         const e_1_Total_dimCubicMeter = getCubicMeter(1, formInputs['e_dimUOM'], formInputs['e_dimLength'], formInputs['e_dimWidth'], formInputs['e_dimHeight']);
@@ -99,8 +100,12 @@ class BokLineSlider extends React.Component {
         const total_2_cubic_mass_factor_calc = (Number.parseFloat(e_1_Total_dimCubicMeter).toFixed(4) * 250).toFixed(2);
 
         const sequenceOptions = [];
-        for(var i = 0;i <= 100; i++)
+        for (var i = 0;i <= 100; i++)
             sequenceOptions.push(<option index={i} value={i}>{i}</option>);
+
+        const packageTypesOptions = packageTypes.map((packageType, key) => {
+            return (<option key={key} value={packageType.dmePackageTypeDesc}>{packageType.dmePackageTypeDesc}</option>);
+        });
 
         return (
             <SlidingPane
@@ -131,9 +136,7 @@ class BokLineSlider extends React.Component {
                                 value = {formInputs['l_001_type_of_packaging']}
                                 required
                             >
-                                <option value="EACH" selected='selected'>EACH</option>
-                                <option value="PAIR">PAIR</option>
-                                <option value="PAL">Pallet</option>
+                                {packageTypesOptions}
                             </select>
                         </label>
                         <label>
