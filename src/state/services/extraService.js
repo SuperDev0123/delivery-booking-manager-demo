@@ -73,10 +73,9 @@ import {
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getPackageTypes = () => {
-    const token = localStorage.getItem('token');
     const options = {
         method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        headers: { 'Content-Type': 'application/json' },
         url: `${HTTP_PROTOCOL}://${API_HOST}/packagetype/get_packagetypes/`,
     };
     return dispatch =>
