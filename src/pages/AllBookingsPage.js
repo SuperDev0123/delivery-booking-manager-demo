@@ -1706,9 +1706,10 @@ class AllBookingsPage extends React.Component {
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select bookings to MANIFEST!');
-        } else if (bookedBookingsCnt > 0) {
-            this.notify('You selected some BOOKED bookings!');
         } else {
+            if (bookedBookingsCnt > 0)
+                this.notify('You selected some BOOKED bookings! Those will be just manifested. (no status change)');
+
             this.toggleManifestSlider();
         }
     }
