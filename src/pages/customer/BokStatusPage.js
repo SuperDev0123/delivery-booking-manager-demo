@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import BootstrapTable from 'react-bootstrap-table-next';
-import moment from 'moment-timezone';
-
 import { getDeliveryStatus } from '../../state/services/bokService';
 
 class BokStatusPage extends Component {
@@ -87,7 +85,7 @@ class BokStatusPage extends Component {
                     },
                     {
                         subtitle: 'Delivery ETA',
-                        subdesc: quote ? `${moment(etaDate).format('DD/MM/YYYY')}(${quote.eta})` : ''
+                        subdesc: quote ? `${etaDate}(${quote.eta})` : ''
                     }
                 ]
             }
@@ -135,10 +133,13 @@ class BokStatusPage extends Component {
                                         SHIP TO
                                     </p>
                                     <p className="status-summary-desc">
-                                        {booking.b_055_b_del_address_street_1},&nbsp;
-                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2}, `}
-                                        {booking.b_058_b_del_address_suburb},&nbsp;
-                                        {booking.b_057_b_del_address_state},&nbsp;
+                                        {booking.b_061_b_del_contact_full_name}
+                                        <br />
+                                        {booking.b_055_b_del_address_street_1}&nbsp;
+                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2} `}
+                                        {booking.b_058_b_del_address_suburb}&nbsp;
+                                        {booking.b_057_b_del_address_state}&nbsp;
+                                        {booking.b_060_b_del_address_country}&nbsp;
                                         {booking.b_059_b_del_address_postalcode}
                                     </p>
                                 </div>
@@ -172,6 +173,19 @@ class BokStatusPage extends Component {
                                     ))}
                                 </div>
                             </div>
+                            <div className="status-chart-sm">
+                                {[0, 1, 2, 3, 4].map((index) => (
+                                    <div className="status-chart-item-sm" key={index}>
+                                        <input type="checkbox" checked={index <= step} readOnly></input>
+                                        <div className="status-chart-desc-item-title">
+                                            {steps[index]}
+                                        </div>
+                                        {timestamps && <div className="status-chart-desc-item-desc">
+                                            {timestamps[index]}
+                                        </div>}
+                                    </div>
+                                ))}
+                            </div>
                             <div className="status-details row">
                                 {details.map((item, index) => (
                                     <div className="status-details-item col-md-6 col-sm-12" key={index}>
@@ -201,6 +215,7 @@ class BokStatusPage extends Component {
                                     data={ lines }
                                     columns={ bookingLineDetailsColumns }
                                     bootstrap4={ true }
+                                    bordered={ false }
                                 />}
                             </div>
                         </div>}
