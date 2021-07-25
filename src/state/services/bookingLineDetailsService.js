@@ -1,6 +1,18 @@
 import axios from 'axios';
 
-import { setBookingLineDetails, failedGetBookingLineDetails, successCreateBookingLineDetail, failedCreateBookingLineDetail, successUpdateBookingLineDetail, failedUpdateBookingLineDetail, successDeleteBookingLineDetail, failedDeleteBookingLineDetail, resetFlag } from '../actions/bookingLineDetailActions';
+import {
+    setBookingLineDetails,
+    failedGetBookingLineDetails,
+    successCreateBookingLineDetail,
+    failedCreateBookingLineDetail,
+    successUpdateBookingLineDetail,
+    failedUpdateBookingLineDetail,
+    successDeleteBookingLineDetail,
+    failedDeleteBookingLineDetail,
+    resetFlag,
+    successMoveLineDetails,
+    failedMoveLineDetails,
+} from '../actions/bookingLineDetailActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getBookingLineDetails = (pk_booking_id) => {
@@ -72,4 +84,18 @@ export const deleteBookingLineDetail = (bookingLineDetail) => {
         axios(options)
             .then(({ data }) => dispatch(successDeleteBookingLineDetail(data)))
             .catch((error) => dispatch(failedDeleteBookingLineDetail(error)));
+};
+
+export const moveLineDetails = (lineId, lineDetailIds) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookinglinedetails/bulk_move/`,
+        data: {lineId, lineDetailIds}
+    };
+    return dispatch =>
+        axios(options)
+            .then(() => dispatch(successMoveLineDetails()))
+            .catch((error) => dispatch(failedMoveLineDetails(error)));
 };

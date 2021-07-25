@@ -51,7 +51,7 @@ import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbSt
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
-import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail } from '../state/services/bookingLineDetailsService';
+import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
 import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
 // Validation
@@ -218,6 +218,7 @@ class BookingPage extends Component {
         duplicateBookingLineDetail: PropTypes.func.isRequired,
         deleteBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
+        moveLineDetails: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
@@ -387,8 +388,9 @@ class BookingPage extends Component {
             const calcedbookingLines = this.calcBookingLine(this.state.booking, bookingLines);
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
-            bookingLinesListProduct = calcedbookingLines.map((bookingLine) => {
+            bookingLinesListProduct = calcedbookingLines.map((bookingLine, index) => {
                 let result = {};
+                result['index'] = index + 1;
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
                 result['e_type_of_packaging'] = bookingLine.e_type_of_packaging ? bookingLine.e_type_of_packaging : '';
                 result['e_item'] = bookingLine.e_item ? bookingLine.e_item : '';
@@ -421,27 +423,30 @@ class BookingPage extends Component {
 
                 return result;
             });
+
+            if (bookingLineDetails) {
+                const tempBookings = bookingLineDetails;
+                let bookingLineDetailsProduct = [];
+                bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
+                    let result = {};
+                    const product = bookingLinesListProduct.find(product => product.pk_booking_lines_id === bookingLineDetail.fk_booking_lines_id);
+                    result['line_index'] = product ? product['index'] : 0;
+                    result['pk_id_lines_data'] = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
+                    result['modelNumber'] = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
+                    result['itemDescription'] = bookingLineDetail.itemDescription ? bookingLineDetail.itemDescription : '';
+                    result['quantity'] = bookingLineDetail.quantity ? bookingLineDetail.quantity : null;
+                    result['itemFaultDescription'] = bookingLineDetail.itemFaultDescription ? bookingLineDetail.itemFaultDescription : '';
+                    result['insuranceValueEach'] = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : null;
+                    result['gap_ra'] = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
+                    result['clientRefNumber'] = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
+                    result['fk_booking_lines_id'] = bookingLineDetail.fk_booking_lines_id ? bookingLineDetail.fk_booking_lines_id : '';
+                    return result;
+                });
+
+                this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
+            }
+
             this.setState({products: bookingLinesListProduct, bookingLinesListProduct, loadingBookingLine: false});
-        }
-
-        if (bookingLineDetails) {
-            const tempBookings = bookingLineDetails;
-            let bookingLineDetailsProduct = [];
-            bookingLineDetailsProduct = tempBookings.map((bookingLineDetail) => {
-                let result = {};
-                result['pk_id_lines_data'] = bookingLineDetail.pk_id_lines_data ? bookingLineDetail.pk_id_lines_data : '';
-                result['modelNumber'] = bookingLineDetail.modelNumber ? bookingLineDetail.modelNumber : '';
-                result['itemDescription'] = bookingLineDetail.itemDescription ? bookingLineDetail.itemDescription : '';
-                result['quantity'] = bookingLineDetail.quantity ? bookingLineDetail.quantity : null;
-                result['itemFaultDescription'] = bookingLineDetail.itemFaultDescription ? bookingLineDetail.itemFaultDescription : '';
-                result['insuranceValueEach'] = bookingLineDetail.insuranceValueEach ? bookingLineDetail.insuranceValueEach : null;
-                result['gap_ra'] = bookingLineDetail.gap_ra ? bookingLineDetail.gap_ra : '';
-                result['clientRefNumber'] = bookingLineDetail.clientRefNumber ? bookingLineDetail.clientRefNumber : '';
-                result['fk_booking_lines_id'] = bookingLineDetail.fk_booking_lines_id ? bookingLineDetail.fk_booking_lines_id : '';
-                return result;
-            });
-
-            this.setState({bookingLineDetailsProduct, bookingLineDetails, loadingBookingLineDetail: false});
         }
 
         if (needUpdateBookingLines && booking) {
@@ -2575,6 +2580,9 @@ class BookingPage extends Component {
 
         const bookingLineColumns = [
             {
+                dataField: 'index',
+                text: 'No.',
+            }, {
                 dataField: 'pk_lines_id',
                 text: 'Id',
                 hidden: true,
@@ -2636,8 +2644,8 @@ class BookingPage extends Component {
                 console.log('Booking Line checkbox event - ', rowIndex, e);
 
                 if (isSelect) {
-                    let conveted_date = moment().add(this.tzOffset, 'h');       // Current -> UTC
-                    conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
+                    let conveted_date = moment().add(this.tzOffset, 'h');           // Current -> UTC
+                    conveted_date = conveted_date.add(timeDiff, 'h');               // UTC -> Sydney
                     row['picked_up_timestamp'] = conveted_date;
                 } else {
                     row['picked_up_timestamp'] = null;
@@ -2649,6 +2657,9 @@ class BookingPage extends Component {
 
         const bookingLineDetailsColumns = [
             {
+                dataField: 'line_index',
+                text: 'Line No.',
+            }, {
                 dataField: 'pk_id_lines_data',
                 text: 'Id',
                 hidden: true,
@@ -5377,6 +5388,7 @@ class BookingPage extends Component {
                     updateBookingLine={(bookingLine) => this.props.updateBookingLine(bookingLine)}
                     createBookingLineDetail={(bookingLine) => this.props.createBookingLineDetail(bookingLine)}
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
+                    moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
                     packageTypes={this.state.packageTypes}
                 />
 
@@ -5595,6 +5607,7 @@ const mapDispatchToProps = (dispatch) => {
         resetNoBooking: () => dispatch(resetNoBooking()),
         getClientProcessMgr: (pk_booking_id) => dispatch(getClientProcessMgr(pk_booking_id)),
         updateAugment: (clientprocess) => dispatch(updateAugment(clientprocess)),
+        moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
     };
 };
 
