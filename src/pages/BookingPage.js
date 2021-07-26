@@ -2615,8 +2615,12 @@ class BookingPage extends Component {
             warehouses, emailLogs
         } = this.props;
 
-        const filteredProducts = products.filter(product => product['packed_status'] === currentPackedStatus);
-        console.log('@1 - ', products, filteredProducts, currentPackedStatus);
+        const filteredProducts = products.filter(product => {
+            if (currentPackedStatus !== 'original')
+                return product['packed_status'] === currentPackedStatus;
+            else
+                return _.isUndefined(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+        });
         const filterBookingLineDetailsProduct = bookingLineDetailsProduct.filter((lineDetail) => {
             const index = filteredProducts.findIndex(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
             return index > -1 ? true : false;
@@ -5224,8 +5228,9 @@ class BookingPage extends Component {
                                                     >
                                                         Edit Tracking
                                                     </Button>
-                                                    <span> | </span>
+                                                    <span className='none'> | </span>
                                                     <Button
+                                                        className='none'
                                                         color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('original')}
                                                         disabled={!isBookingSelected}
@@ -5234,6 +5239,7 @@ class BookingPage extends Component {
                                                         Send As
                                                     </Button>
                                                     <Button
+                                                        className='none'
                                                         color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('auto')}
                                                         disabled={!isBookingSelected}
@@ -5242,6 +5248,7 @@ class BookingPage extends Component {
                                                         Auto Repack
                                                     </Button>
                                                     <Button
+                                                        className='none'
                                                         color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('manual')}
                                                         disabled={!isBookingSelected}
