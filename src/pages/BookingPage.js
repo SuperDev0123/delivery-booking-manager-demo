@@ -44,6 +44,7 @@ import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 import CostSlider from '../components/Sliders/CostSlider';
+import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
@@ -154,7 +155,8 @@ class BookingPage extends Component {
             errors: [],
             clientprocess: {},
             puCommunicates: [],
-            deCommunicates: []
+            deCommunicates: [],
+            currentPackedStatus: 'original',
         };
 
         this.djsConfig = {
@@ -417,6 +419,7 @@ class BookingPage extends Component {
                 result['pk_booking_lines_id'] = bookingLine.pk_booking_lines_id;
                 result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
                 result['sscc'] = bookingLine.sscc;
+                result['packed_status'] = bookingLine.packed_status;
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
@@ -937,6 +940,24 @@ class BookingPage extends Component {
                 if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
                 else formInputs['b_handling_Instructions'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
+
+                // Freight Options
+                formInputs['pu_Address_Type'] = booking.pu_Address_Type;
+                formInputs['de_To_AddressType'] = booking.de_To_AddressType;
+                formInputs['b_booking_tail_lift_pickup'] = booking.b_booking_tail_lift_pickup;
+                formInputs['b_booking_tail_lift_deliver'] = booking.b_booking_tail_lift_deliver;
+                formInputs['pu_no_of_assists'] = booking.pu_no_of_assists;
+                formInputs['de_no_of_assists'] = booking.de_no_of_assists;
+                formInputs['pu_location'] = booking.pu_location;
+                formInputs['de_to_location'] = booking.de_to_location;
+                formInputs['pu_access'] = booking.pu_access;
+                formInputs['de_access'] = booking.de_access;
+                formInputs['pu_floor_number'] = booking.pu_floor_number;
+                formInputs['de_floor_number'] = booking.de_floor_number;
+                formInputs['pu_floor_access_by'] = booking.pu_floor_access_by;
+                formInputs['de_to_floor_access_by'] = booking.de_to_floor_access_by;
+                formInputs['pu_service'] = booking.pu_service;
+                formInputs['de_service'] = booking.de_service;
                 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -1593,40 +1614,40 @@ class BookingPage extends Component {
             isBookedBooking === false || 
             (clientname.lower() === 'biopak' && !booking.manifest_timestamp))
         {
-            if (event.target.name === 'dme_status_detail' && event.target.value === 'other') {
+            if (e.target.name === 'dme_status_detail' && e.target.value === 'other') {
                 this.setState({isShowStatusDetailInput: true});
-            } else if (event.target.name === 'dme_status_detail' && event.target.value !== 'other') {
+            } else if (e.target.name === 'dme_status_detail' && e.target.value !== 'other') {
                 this.setState({isShowStatusDetailInput: false});
-            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+            } else if (e.target.name === 'dme_status_action' && e.target.value === 'other') {
                 this.setState({isShowStatusActionInput: true});
-            } else if (event.target.name === 'dme_status_action' && event.target.value === 'other') {
+            } else if (e.target.name === 'dme_status_action' && e.target.value === 'other') {
                 this.setState({isShowStatusDetailInput: false});
             }
 
             let canUpdateField = true;
-            if (!_.isEmpty(event.target.value)) {
-                if (event.target.name === 'pu_PickUp_Avail_Time_Hours' ||
-                    event.target.name === 'pu_PickUp_By_Time_Hours' ||
-                    event.target.name === 'de_Deliver_From_Hours' ||
-                    event.target.name === 'de_Deliver_By_Hours') {
-                    if (_.isNaN(parseInt(event.target.value))) {
+            if (!_.isEmpty(e.target.value)) {
+                if (e.target.name === 'pu_PickUp_Avail_Time_Hours' ||
+                    e.target.name === 'pu_PickUp_By_Time_Hours' ||
+                    e.target.name === 'de_Deliver_From_Hours' ||
+                    e.target.name === 'de_Deliver_By_Hours') {
+                    if (_.isNaN(parseInt(e.target.value))) {
                         this.notify('Please input correct hour!');
                         canUpdateField = false;
-                    } else if (parseInt(event.target.value) > 23) {
+                    } else if (parseInt(e.target.value) > 23) {
                         this.notify('Please input correct hour!');
                         canUpdateField = false;
                     }
                 }
 
-                if (event.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
-                    event.target.name === 'pu_PickUp_By_Time_Minutes' ||
-                    event.target.name === 'de_Deliver_From_Minutes' ||
-                    event.target.name === 'de_Deliver_By_Minutes'
+                if (e.target.name === 'pu_PickUp_Avail_Time_Minutes' ||
+                    e.target.name === 'pu_PickUp_By_Time_Minutes' ||
+                    e.target.name === 'de_Deliver_From_Minutes' ||
+                    e.target.name === 'de_Deliver_By_Minutes'
                 ) {
-                    if (_.isNaN(parseInt(event.target.value))) {
+                    if (_.isNaN(parseInt(e.target.value))) {
                         this.notify('Please input correct minutes!');
                         canUpdateField = false;
-                    } else if (parseInt(event.target.value) > 59) {
+                    } else if (parseInt(e.target.value) > 59) {
                         this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     }
@@ -1648,6 +1669,18 @@ class BookingPage extends Component {
                         let value = e.target.value.replace(',', '').replace('$', '');
                         formInputs[e.target.name] = value;
                     }
+                } else if (
+                    e.target.name === 'pu_no_of_assists' ||
+                    e.target.name === 'pu_floor_number' ||
+                    e.target.name === 'de_no_of_assists' ||
+                    e.target.name === 'de_floor_number'
+                ) {
+                    formInputs[e.target.name] = parseInt(e.target.value);
+                } else if (
+                    e.target.name === 'b_booking_tail_lift_pickup' ||
+                    e.target.name === 'b_booking_tail_lift_deliver'
+                ) {
+                    formInputs[e.target.name] = e.target.checked;
                 } else {
                     formInputs[e.target.name] = e.target.value;
                 }
@@ -2570,13 +2603,24 @@ class BookingPage extends Component {
         this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
+    onChangePackedStatus(status) {
+        this.setState({currentPackedStatus: status});
+    }
+
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus
         } = this.state;
         const {
             warehouses, emailLogs
         } = this.props;
+
+        const filteredProducts = products.filter(product => product['packed_status'] === currentPackedStatus);
+        console.log('@1 - ', products, filteredProducts, currentPackedStatus);
+        const filterBookingLineDetailsProduct = bookingLineDetailsProduct.filter((lineDetail) => {
+            const index = filteredProducts.findIndex(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
+            return index > -1 ? true : false;
+        });
 
         const bookingLineColumns = [
             {
@@ -3703,6 +3747,10 @@ class BookingPage extends Component {
                                     </div>
                                     <div className="clearfix"></div>
                                 </div>
+                                <FreightOptionAccordion
+                                    formInputs={formInputs}
+                                    onHandleInput={(e) => this.onHandleInput(e)}
+                                />
                                 <div className="detail-tab">
                                     <div className="row">
                                         <div className="col-sm-4">
@@ -5162,20 +5210,46 @@ class BookingPage extends Component {
                                                 <label className='red'>Click `Create` with pickup and delivery details completed to add shipping lines</label>
                                                 :
                                                 <div className={isBookedBooking ? 'tab-inner not-editable' : 'tab-inner'}>
-                                                    <Button 
+                                                    <Button
                                                         className="edit-lld-btn btn-primary"
                                                         onClick={this.toggleLineSlider} 
                                                         disabled={!isBookingSelected || (isBookedBooking && clientname !== 'dme')}
                                                     >
                                                         Edit
                                                     </Button>
-                                                    <Button 
+                                                    <Button
                                                         className="edit-lld-btn btn-primary"
                                                         onClick={this.toggleLineTrackingSlider}
                                                         disabled={!isBookingSelected}
                                                     >
                                                         Edit Tracking
                                                     </Button>
+                                                    <span> | </span>
+                                                    <Button
+                                                        color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                                        onClick={() => this.onChangePackedStatus('original')}
+                                                        disabled={!isBookingSelected}
+                                                        title="Lines as sended"
+                                                    >
+                                                        Send As
+                                                    </Button>
+                                                    <Button
+                                                        color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                                        onClick={() => this.onChangePackedStatus('auto')}
+                                                        disabled={!isBookingSelected}
+                                                        title="Auto packed lines"
+                                                    >
+                                                        Auto Repack
+                                                    </Button>
+                                                    <Button
+                                                        color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                                        onClick={() => this.onChangePackedStatus('manual')}
+                                                        disabled={!isBookingSelected}
+                                                        title="Manual packed lines"
+                                                    >
+                                                        Manual Repack
+                                                    </Button>
+                                                    <hr />
                                                     <BootstrapTable
                                                         keyField="id"
                                                         data={ bookingTotals }
@@ -5189,13 +5263,12 @@ class BookingPage extends Component {
                                                     >
                                                         <BootstrapTable
                                                             keyField='pk_lines_id'
-                                                            data={ products }
+                                                            data={ filteredProducts }
                                                             columns={ bookingLineColumns }
                                                             selectRow={ bookingLineColumnsSelectRow }
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
-                                                    <hr />
                                                     <LoadingOverlay
                                                         active={this.state.loadingBookingLineDetail}
                                                         spinner
@@ -5203,7 +5276,7 @@ class BookingPage extends Component {
                                                     >
                                                         <BootstrapTable
                                                             keyField="pk_id_lines_data"
-                                                            data={ bookingLineDetailsProduct }
+                                                            data={ filterBookingLineDetailsProduct }
                                                             columns={ bookingLineDetailsColumns }
                                                             bootstrap4={ true }
                                                         />

@@ -10,7 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button } from 'reactstrap';
 // Custom components
-import FreightOptionAccordion from '../../components/Accordion/FreightOptionAccordion';
+import BokFreightOptionAccordion from '../../components/Accordion/BokFreightOptionAccordion';
 import ExtraCostSummarySlider from '../../components/Sliders/ExtraCostSummarySlider';
 import PalletSlider from '../../components/Sliders/PalletSlider';
 import ConfirmModal from '../../components/CommonModals/ConfirmModal';
@@ -506,7 +506,7 @@ class BokPricePage extends Component {
                             spinner
                             text='Loading...'
                         >
-                            <FreightOptionAccordion
+                            <BokFreightOptionAccordion
                                 bok_1={bok_1}
                                 onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                             />
