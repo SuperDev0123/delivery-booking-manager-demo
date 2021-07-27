@@ -2619,7 +2619,7 @@ class BookingPage extends Component {
             if (currentPackedStatus !== 'original')
                 return product['packed_status'] === currentPackedStatus;
             else
-                return _.isUndefined(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+                return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
         });
         const filterBookingLineDetailsProduct = bookingLineDetailsProduct.filter((lineDetail) => {
             const index = filteredProducts.findIndex(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
