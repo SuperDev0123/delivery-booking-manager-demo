@@ -449,6 +449,8 @@ class AllBookingsPage extends React.Component {
             this.setState({puPickUpAvailFrom_DateRange: dateRange, isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange});
         else if (field === 'b_dateBookedDate')
             this.setState({b_dateBookedDateRange: dateRange, isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange});
+        else if (field === 'manifest_timestamp')
+            this.setState({manifest_timestampDateRange: dateRange, isShowmanifest_timestampDateRange: !this.state.isShowmanifest_timestampDateRange});
 
         this.props.setGetBookingsFilter('columnFilters', filterInputs);
         this.setState({filterInputs, selectedBookingIds: [], allCheckStatus: 'None'});
@@ -627,7 +629,7 @@ class AllBookingsPage extends React.Component {
             filterInputs[e.target.name] = e.target.value;
             this.setState({filterInputs});
             this.props.setGetBookingsFilter('columnFilters', filterInputs);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', isShowb_dateBookedDateRange: false, isShowpuPickUpAvailFrom_DateRange: false});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', isShowb_dateBookedDateRange: false, isShowpuPickUpAvailFrom_DateRange: false, isShowmanifest_timestampDateRange: false});
         }
     }
 
@@ -2072,7 +2074,7 @@ class AllBookingsPage extends React.Component {
                                 null
                         }
                     </td>
-                    <td name='manifest_timestamp' className={
+                    <td name='z_manifest_url' className={
                         booking.z_manifest_url ?
                             (!_.isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
@@ -2088,6 +2090,9 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td name='b_is_flagged_add_on_services' className={booking.b_is_flagged_add_on_services ? 'bg-yellow' : null}>
                         {booking.b_is_flagged_add_on_services ? <div className="pod-status">F</div> : null}
+                    </td>
+                    <td name='manifest_timestamp' className={(sortField === 'manifest_timestamp') ? 'current' : ''}>
+                        {booking.manifest_timestamp ? moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm') : null}
                     </td>
                     <td name='b_clientReference_RA_Numbers' className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
                     <td name='b_client_order_num' className={(sortField === 'b_client_order_num') ? 'current' : ''}>{booking.b_client_order_num}</td>
@@ -2764,10 +2769,10 @@ class AllBookingsPage extends React.Component {
                                                                 <SimpleTooltipComponent text={'Connote'} />
                                                             </th>
                                                             <th
-                                                                name="manifest_timestamp"
+                                                                name="z_manifest_url"
                                                                 id={'booking-column-header-tooltip-Manifest'}
-                                                                className={(sortField === 'manifest_timestamp') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('manifest_timestamp')} 
+                                                                className={(sortField === 'z_manifest_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_manifest_url')} 
                                                             >
                                                                 M
                                                                 <SimpleTooltipComponent text={'Manifest'} />
@@ -2780,6 +2785,21 @@ class AllBookingsPage extends React.Component {
                                                             >
                                                                 F
                                                                 <SimpleTooltipComponent text={'Flagged'} />
+                                                            </th>
+                                                            <th 
+                                                                name="manifest_timestamp"
+                                                                className={(sortField === 'manifest_timestamp') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('manifest_timestamp')} 
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Manifested At</p>
+                                                                {(sortField === 'manifest_timestamp') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                                }
                                                             </th>
                                                             <th 
                                                                 name="b_clientReference_RA_Numbers"
@@ -3110,7 +3130,7 @@ class AllBookingsPage extends React.Component {
                                                                     placeholder="DD/MM/YY-DD/MM/YY"
                                                                     onChange={(e) => this.onChangeFilterInput(e)}
                                                                     onKeyPress={(e) => this.onKeyPress(e)}
-                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange, isShowb_dateBookedDateRange: false})}
+                                                                    onClick={() => this.setState({isShowpuPickUpAvailFrom_DateRange: !this.state.isShowpuPickUpAvailFrom_DateRange, isShowb_dateBookedDateRange: false, isShowmanifest_timestampDateRange: false})}
                                                                 />
                                                                 {this.state.isShowpuPickUpAvailFrom_DateRange && (
                                                                     <DateRangePicker
@@ -3128,7 +3148,7 @@ class AllBookingsPage extends React.Component {
                                                                     placeholder="DD/MM/YY-DD/MM/YY"
                                                                     onChange={(e) => this.onChangeFilterInput(e)}
                                                                     onKeyPress={(e) => this.onKeyPress(e)}
-                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange, isShowpuPickUpAvailFrom_DateRange: false})}
+                                                                    onClick={() => this.setState({isShowb_dateBookedDateRange: !this.state.isShowb_dateBookedDateRange, isShowpuPickUpAvailFrom_DateRange: false, isShowmanifest_timestampDateRange: false})}
                                                                 />
                                                                 {this.state.isShowb_dateBookedDateRange && (
                                                                     <DateRangePicker
@@ -3150,8 +3170,26 @@ class AllBookingsPage extends React.Component {
                                                             <th name="z_label_url"></th>
                                                             <th name="z_pod_url"></th>
                                                             <th name="z_connote_url"></th>
-                                                            <th name="manifest_timestamp"></th>
+                                                            <th name="z_manifest_url"></th>
                                                             <th name="b_is_flagged_add_on_services"></th>
+                                                            <th name="manifest_timestamp" scope="col">
+                                                                <input
+                                                                    type="text"
+                                                                    name="manifest_timestamp"
+                                                                    value={filterInputs['manifest_timestamp'] || ''}
+                                                                    placeholder="DD/MM/YY-DD/MM/YY"
+                                                                    onChange={(e) => this.onChangeFilterInput(e)}
+                                                                    onKeyPress={(e) => this.onKeyPress(e)}
+                                                                    onClick={() => this.setState({isShowmanifest_timestampDateRange: !this.state.isShowmanifest_timestampDateRange, isShowb_dateBookedDateRange: false, isShowpuPickUpAvailFrom_DateRange: false})}
+                                                                />
+                                                                {this.state.isShowmanifest_timestampDateRange && (
+                                                                    <DateRangePicker
+                                                                        value={this.state.manifest_timestampDateRange}
+                                                                        onSelect={(e) => this.onSelectDateRange(e, 'manifest_timestamp')}
+                                                                        singleDateRange={true}
+                                                                    />
+                                                                )}
+                                                            </th>
                                                             <th name="b_clientReference_RA_Numbers" scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_client_order_num" scope="col"><input type="text" name="b_client_order_num" value={filterInputs['b_client_order_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_client_sales_inv_num" scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>

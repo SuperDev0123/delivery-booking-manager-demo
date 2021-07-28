@@ -159,9 +159,10 @@ $b_error_Capture_width: 30px;
 $z_label_url_width: 30px;
 $z_pod_url_width: 30px;
 $z_connote_url_width: 30px;
-$manifest_timestamp_width: 30px;
+$manifest_width: 30px;
 $b_is_flagged_add_on_services_width: 30px;
 
+$manifest_timestamp_width: 105px;
 $b_clientReference_RA_Numbers_width: 95px;
 $b_client_order_num_width: 95px;
 $b_client_sales_inv_num_width: 95px;
@@ -244,11 +245,13 @@ $b_project_due_date_width: 130px;
   td[name=z_pod_url] p, th[name=z_pod_url] p { width: 30px }
   td[name=z_connote_url], th[name=z_connote_url] { width: $z_connote_url_width; }
   td[name=z_connote_url] p, th[name=z_connote_url] p { width: 30px }
-  td[name=manifest_timestamp], th[name=manifest_timestamp] { width: $manifest_timestamp_width; }
-  td[name=manifest_timestamp] p, th[name=manifest_timestamp] p { width: 30px }
+  td[name=z_manifest_url], th[name=z_manifest_url] { width: $manifest_width; }
+  td[name=z_manifest_url] p, th[name=z_manifest_url] p { width: 30px }
   td[name=b_is_flagged_add_on_services], th[name=b_is_flagged_add_on_services] { width: $b_is_flagged_add_on_services_width; }
   td[name=b_is_flagged_add_on_services] p, th[name=b_is_flagged_add_on_services] p { width: 30px }
 
+  td[name=manifest_timestamp], th[name=manifest_timestamp] { width: $manifest_timestamp_width; }
+  td[name=manifest_timestamp] p, th[name=manifest_timestamp] p { width: 80px }
   td[name=b_clientReference_RA_Numbers], th[name=b_clientReference_RA_Numbers] { width: $b_clientReference_RA_Numbers_width; }
   td[name=b_clientReference_RA_Numbers] p, th[name=b_clientReference_RA_Numbers] p { width: 70px }
   td[name=b_client_order_num], th[name=b_client_order_num] { width: $b_client_order_num_width; }
