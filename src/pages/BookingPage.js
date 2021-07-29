@@ -1364,7 +1364,7 @@ class BookingPage extends Component {
                 this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
 
             this.props.dmeLabel(booking.id);
-        } else (isBookedBooking) {
+        } else if (isBookedBooking) {
             const result = isValid4Label(formInputs, bookingLineDetailsProduct);
 
             if (result === 'valid') {
@@ -1372,6 +1372,8 @@ class BookingPage extends Component {
             } else {
                 this.notify(result);
             }
+        } else {
+            this.notify('Booking is not BOOKED!')
         }
     }
 
