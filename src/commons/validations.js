@@ -186,20 +186,21 @@ const isValid4Label = (formFields, lineDatas) => {
         //     return 'SpecialInstruction must be between 0 and 80 characters.';
         // }
 
-        for (let i = 0; i < lineDatas.length; i++) {
-            const lineData = lineDatas[i];
-            if (
-                _.isNull(lineData['itemDescription']) ||
-                _.isEmpty(lineData['itemDescription']) ||
-                _.isUndefined(lineData['itemDescription']) ||
-                (lineData['itemDescription'] && (
-                    lineData['itemDescription'].length === 0 ||
-                    lineData['itemDescription'].length > 19
-                ))
-            ){
-                return 'Line Data itemDescription should be 1 ~ 19 characters';
-            }
-        }
+        // Commented on 2021-07-29
+        // for (let i = 0; i < lineDatas.length; i++) {
+        //     const lineData = lineDatas[i];
+        //     if (
+        //         _.isNull(lineData['itemDescription']) ||
+        //         _.isEmpty(lineData['itemDescription']) ||
+        //         _.isUndefined(lineData['itemDescription']) ||
+        //         (lineData['itemDescription'] && (
+        //             lineData['itemDescription'].length === 0 ||
+        //             lineData['itemDescription'].length > 19
+        //         ))
+        //     ){
+        //         return 'Line Data itemDescription should be 1 ~ 19 characters';
+        //     }
+        // }
     }
 
     // Sendle Label
