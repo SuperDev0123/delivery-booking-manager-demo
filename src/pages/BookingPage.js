@@ -1373,7 +1373,7 @@ class BookingPage extends Component {
                 this.notify(result);
             }
         } else {
-            this.notify('Booking is not BOOKED!')
+            this.notify('Booking is not BOOKED!');
         }
     }
 
