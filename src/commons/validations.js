@@ -135,6 +135,8 @@ const isValid4Book = (formFields) => {
 };
 
 const isValid4Label = (formFields, lineDatas) => {
+    console.log('TEMP log: ', lineDatas.length);
+
     // TNT Label
     if (!_.isEmpty(formFields['vx_freight_provider']) &&
         formFields['vx_freight_provider'] === 'TNT') {
