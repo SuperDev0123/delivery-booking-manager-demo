@@ -76,7 +76,7 @@ class BokStatusPage extends Component {
                 title: 'DELIVERY DETAILS',
                 content: [
                     {
-                        subtitle: 'Shipment number',
+                        subtitle: 'Tracking number',
                         subdesc: booking ? booking.b_000_3_consignment_number : ''
                     },
                     {
@@ -144,19 +144,16 @@ class BokStatusPage extends Component {
                                     </p>
                                 </div>
                             </div>
-                            {/* <div className="status-lastloc">
-                                Eastern Creek, NSW
-                            </div> */}
                             <div>
                                 <span className="status-summary-title">Updated: </span>
                                 <span className="status-summary-updated">{lastUpdated}</span>
                             </div>
                             <div className="status-chart">
                                 <div className="status-chart-bar">
-                                    {[1, 2, 3, 4, 5].map((index) => (
+                                    {[0, 1, 2, 3, 4].map((index) => (
                                         <React.Fragment key={index}>
-                                            <input type="checkbox" checked={index <= step} readOnly></input>
-                                            {index !== 5 && <div className="status-chart-bar-bar"></div>}
+                                            <input type="checkbox" checked={index < step} readOnly></input>
+                                            {index !== 4 && <div className="status-chart-bar-bar"></div>}
                                         </React.Fragment>
                                     ))}
                                 </div>
@@ -176,7 +173,7 @@ class BokStatusPage extends Component {
                             <div className="status-chart-sm">
                                 {[0, 1, 2, 3, 4].map((index) => (
                                     <div className="status-chart-item-sm" key={index}>
-                                        <input type="checkbox" checked={index <= step} readOnly></input>
+                                        <input type="checkbox" checked={index < step} readOnly></input>
                                         <div className="status-chart-desc-item-title">
                                             {steps[index]}
                                         </div>
