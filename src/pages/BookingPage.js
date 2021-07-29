@@ -1346,35 +1346,31 @@ class BookingPage extends Component {
         const {booking, isBookedBooking, formInputs, bookingLineDetailsProduct} = this.state;
         const {bookingLines} = this.state;
 
-        if (isBookedBooking) {
+        // JasonL - Always create DME built-in label
+        if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002') {
+            // Check if ready for build label
+            let isReady4Label = true;
+
+            for (let index=0; index < bookingLines.length; index++) {
+                const line = bookingLines[index];
+
+                if (!line.sscc) {
+                    isReady4Label = false;
+                    break;
+                }
+            }
+
+            if (!isReady4Label)
+                this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
+
+            this.props.dmeLabel(booking.id);
+        } else (isBookedBooking) {
             const result = isValid4Label(formInputs, bookingLineDetailsProduct);
 
             if (result === 'valid') {
                 this.props.fpLabel(booking.id, booking.vx_freight_provider);
             } else {
                 this.notify(result);
-            }
-        } else {
-            if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002') { // JasonL
-                // Check if ready for build label
-                let isReady4Label = true;
-
-                for (let index=0; index < bookingLines.length; index++) {
-                    const line = bookingLines[index];
-
-                    if (!line.sscc) {
-                        isReady4Label = false;
-                        break;
-                    }
-                }
-
-                if (!isReady4Label) {
-                    this.notify('Some lines doesn`t have SSCC, so will be populated auto-SSCC.');
-                }
-
-                this.props.dmeLabel(booking.id);
-            } else {
-                this.notify('This booking is not Booked!');
             }
         }
     }
