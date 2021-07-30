@@ -54,8 +54,8 @@ class BokStatusPage extends Component {
         const steps = [
             'Processing',
             'Ready for Dispatch',
-            'In Transit',
-            'On Board for Delivery',
+            'Picked up by Delivery Partner',
+            'Out for Delivery',
             lastMilestone ? lastMilestone : 'Delivered'
         ];
         const details = [
@@ -76,11 +76,11 @@ class BokStatusPage extends Component {
                 title: 'DELIVERY DETAILS',
                 content: [
                     {
-                        subtitle: 'Tracking number',
+                        subtitle: 'Tracking Number',
                         subdesc: booking ? booking.b_000_3_consignment_number : ''
                     },
                     {
-                        subtitle: 'DME number',
+                        subtitle: 'DME Number',
                         subdesc: booking ? booking.b_bookingID_Visual : ''
                     },
                     {
