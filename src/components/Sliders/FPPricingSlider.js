@@ -102,7 +102,7 @@ class FPPricingSlider extends React.Component {
                 <tr key={index} className={booking.api_booking_quote === pricingInfo.id && 'selected'}>
                     <td>{index + 1}</td>
                     <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
-                    <td>{pricingInfo.service_name}</td>
+                    <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
                     <td>{pricingInfo.etd}</td>
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
                     {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
@@ -238,8 +238,8 @@ class FPPricingSlider extends React.Component {
                                     <tr>
                                         <th className="nowrap" scope="col" nowrap><p>No</p></th>
                                         <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Service</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Transport Days(working)</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Service (Vehicle)</p></th>
+                                        <th className="nowrap" scope="col" nowrap><p>Transport Days (working)</p></th>
                                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
                                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
                                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
