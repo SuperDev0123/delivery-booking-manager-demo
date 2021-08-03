@@ -372,7 +372,7 @@ class BokPricePage extends Component {
                 return (
                     <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
                         <td>{price['fp_name']}</td>
-                        <td>{price['service_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
                         <td>
                             ${price['cost_dollar'].toFixed(2)}
                             &nbsp;&nbsp;&nbsp;
@@ -587,7 +587,7 @@ class BokPricePage extends Component {
                                 <thead>
                                     <tr>
                                         <th>Freight Provider</th>
-                                        <th>Service Name</th>
+                                        <th>Service (Vehicle)</th>
                                         <th>Cost $</th>
                                         <th>Fuel Levy %</th>
                                         <th>Fuel Levy $</th>
