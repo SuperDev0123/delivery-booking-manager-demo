@@ -9,7 +9,8 @@ import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
-// import cellEditFactory from 'react-bootstrap-table2-editor';
+import ToolkitProvider from 'react-bootstrap-table2-toolkit';
+import cellEditFactory from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
@@ -54,7 +55,7 @@ import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, 
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors, updateZohoTicket } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 // Constants
@@ -265,6 +266,7 @@ class BookingPage extends Component {
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
         getZohoTickets: PropTypes.func.isRequired,
+        updateZohoTicket: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
         getClientProcessMgr: PropTypes.func.isRequired,
@@ -2601,6 +2603,18 @@ class BookingPage extends Component {
         this.setState({currentPackedStatus: status});
     }
 
+    onAfterSaveCell = async (oldValue, newValue, row, column) => {
+        let data = null;
+        if (column.text == 'Summary') {
+            data = {
+                cf: {
+                    cf_summary: newValue
+                }
+            };
+        }
+        this.props.updateZohoTicket(row.id, data);
+    }
+
     render() {
         const {
             isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus
@@ -2729,31 +2743,47 @@ class BookingPage extends Component {
             }
         ];
 
-        // const datetimeFormatter = (cell) => {
-        //     return (
-        //         moment(cell).format('DD/MM/YYYY HH:mm:ss')
-        //     );
-        // };
-
         const columnZohoTickets = [
             {
                 dataField: 'ticketNumber',
-                text: 'Ticket Number'
+                text: 'Ticket Number',
+                editable: () => {
+                    return false;
+                }
+            }, {
+                dataField: 'createdTime',
+                text: 'Created At',
+                formatter: (cell, row) => {
+                    console.log(row);
+                    moment.tz.setDefault('Australia/Sydney');
+                    return moment(cell).format('DD/MM/YYYY HH:MM');
+                },
+                editable: () => {
+                    return false;
+                }
             }, {
                 dataField: 'subject',
-                text: 'Subject'
+                text: 'Subject',
+                editable: () => {
+                    return false;
+                }
             }, {
-                dataField: 'email',
-                text: 'Email'
+                dataField: 'cf.cf_summary',
+                text: 'Summary'
             }, {
                 dataField: 'status',
-                text: 'Status'
+                text: 'Status',
+                editable: () => {
+                    return false;
+                }
             }, {
                 dataField: 'id',
                 text: 'View',
                 formatter:  (cell, row) => {
-                    console.log(cell, row);
                     return (<Link to={'/zohodetails?id=' + row.id}><i className="fa fa-eye"></i></Link>);
+                },
+                editable: () => {
+                    return false;
                 }
             }
         ];
@@ -5304,12 +5334,28 @@ class BookingPage extends Component {
                                                 text='Loading Zoho tickets...'
                                             >
                                                 <div className="tab-inner">
-                                                    <BootstrapTable
+                                                    <ToolkitProvider
+                                                        id="zohoTicketsLog"
                                                         keyField="ticketNumber"
                                                         data={zoho_tickets}
                                                         columns={ columnZohoTickets }
                                                         bootstrap4={ true }
-                                                    />
+                                                    >
+                                                        {
+                                                            props => (
+                                                                <div>
+                                                                    <BootstrapTable id="zohoTickets"
+                                                                        {...props.baseProps}
+                                                                        cellEdit={cellEditFactory({ 
+                                                                            mode: 'click', 
+                                                                            blurToSave: true, 
+                                                                            afterSaveCell: this.onAfterSaveCell 
+                                                                        })}
+                                                                    />
+                                                                </div>
+                                                            )
+                                                        }
+                                                    </ToolkitProvider>
                                                 </div>
                                             </LoadingOverlay>
                                         </div>
@@ -5677,6 +5723,7 @@ const mapDispatchToProps = (dispatch) => {
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
         getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
+        updateZohoTicket: (id, data) => dispatch(updateZohoTicket(id, data)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
         resetNoBooking: () => dispatch(resetNoBooking()),
         getClientProcessMgr: (pk_booking_id) => dispatch(getClientProcessMgr(pk_booking_id)),

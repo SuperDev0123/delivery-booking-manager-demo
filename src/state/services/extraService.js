@@ -436,6 +436,23 @@ export const getZohoTickets = (dmeid) => {
     };
 };
 
+export const updateZohoTicket = (id, data) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/update_zoho_ticket/`,
+        data: {
+            id,
+            data
+        },
+    };
+    return () =>
+        axios(options)
+            .then(({ data }) => console.log('Ticket updated', data))
+            .catch((error) => console.log('Ticket update error', error));
+};
+
 export const getDMEClientProducts = (client_id) => {
     const token = localStorage.getItem('token');
 
