@@ -34,7 +34,7 @@ class BokLineSlider extends React.Component {
         if (!this.props.isOpen && isOpen) {
             let formInputs = {
                 'l_001_type_of_packaging': 'EACH',
-                'zbld_131_decimal_1': 0,
+                'zbl_131_decimal_1': 0,
                 'e_item_type': '',
                 'e_weightUOM': 'kg',
                 'e_dimUOM': 'm',
@@ -45,7 +45,7 @@ class BokLineSlider extends React.Component {
             if (line)
                 formInputs = {
                     'l_001_type_of_packaging': line['l_001_type_of_packaging'],
-                    'zbld_131_decimal_1': line['zbld_131_decimal_1'],
+                    'zbl_131_decimal_1': line['zbl_131_decimal_1'],
                     'e_item_type': line['e_item_type'],
                     'e_item': line['l_003_item'].indexOf('(Ignored)') > -1 ? line['l_003_item'].substring(0, line['l_003_item'].indexOf('(Ignored)')) : line['l_003_item'],
                     'e_weightUOM': line['l_008_weight_UOM'].toUpperCase(),
@@ -120,9 +120,9 @@ class BokLineSlider extends React.Component {
                         <label>
                             <p>Sequence</p>
                             <select
-                                name="zbld_131_decimal_1"
+                                name="zbl_131_decimal_1"
                                 onChange={(e) => this.onInputChange(e)}
-                                value = {formInputs['zbld_131_decimal_1']}
+                                value = {formInputs['zbl_131_decimal_1']}
                                 required
                             >
                                 {sequenceOptions}
