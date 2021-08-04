@@ -348,7 +348,7 @@ class BokPricePage extends Component {
                 return (
                     <tr key={index} className={isUnknownLine ? 'unknown' : null}>
                         <td>{bok_2['l_001_type_of_packaging']}</td>
-                        <td>{bok_2['zbl_121_integer_1']}</td>
+                        <td>{bok_2['zbld_131_decimal_1']}</td>
                         <td>{bok_2['e_item_type']}</td>
                         <td>{bok_2['l_003_item']}</td>
                         <td>{bok_2['l_002_qty']}</td>
