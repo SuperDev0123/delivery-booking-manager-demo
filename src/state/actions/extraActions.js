@@ -45,9 +45,19 @@ import {
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
     SUCCESS_UPDATE_CLIENT_EMPLOYEE,
     FAILED_UPDATE_CLIENT_EMPLOYEE,
-    SUCCESS_GET_ZOHO_TICKETS,
-    FAILED_GET_ZOHO_TICKETS,
-    RESET_ZOHO_TICKETS,
+    SUCCESS_GET_ALL_ZOHO_TICKETS,
+    FAILED_GET_ALL_ZOHO_TICKETS,
+    SUCCESS_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    FAILED_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    RESET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    SUCCESS_GET_ZOHO_TICKET_DETAILS,
+    FAILED_GET_ZOHO_TICKET_DETAILS,
+    SUCCESS_GET_ZOHO_TICKET_CONVERSATIONS,
+    FAILED_GET_ZOHO_TICKET_CONVERSATIONS,
+    SUCCESS_GET_ZOHO_TICKET_THREAD,
+    FAILED_GET_ZOHO_TICKET_THREAD,
+    SUCCESS_SEND_ZOHO_TICKET_REPLY,
+    FAILED_SEND_ZOHO_TICKET_REPLY,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
@@ -403,24 +413,99 @@ export function failedGetAllClientEmployees(error) {
     };
 }
 
-export function successGetZohoTickets(data) {
+export function successGetAllZohoTickets(data) {
     return {
-        type: SUCCESS_GET_ZOHO_TICKETS,
+        type: SUCCESS_GET_ALL_ZOHO_TICKETS,
+        payload: data,
+        errorMessage: 'Successfully get all zoho tickets',
+    };
+}
+
+export function failedGetAllZohoTickets(error) {
+    return {
+        type: FAILED_GET_ALL_ZOHO_TICKETS,
+        errorMessage: 'Unable to get all zoho tickets. Error:' + error,
+    };
+}
+
+export function successGetZohoTicketsWithBookingId(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
         payload: data,
         errorMessage: 'Successfully get zoho tickets',
     };
 }
 
-export function failedGetZohoTickets(error) {
+export function failedGetZohoTicketsWithBookingId(error) {
     return {
-        type: FAILED_GET_ZOHO_TICKETS,
+        type: FAILED_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
         errorMessage: 'Unable to get zoho tickets. Error:' + error,
     };
 }
 
-export function resetZohoTickets() {
+export function successGetZohoTicketDetails(data) {
     return {
-        type: RESET_ZOHO_TICKETS,
+        type: SUCCESS_GET_ZOHO_TICKET_DETAILS,
+        payload: data,
+        errorMessage: 'Successfully get zoho ticket details',
+    };
+}
+
+export function failedGetZohoTicketDetails(error) {
+    return {
+        type: FAILED_GET_ZOHO_TICKET_DETAILS,
+        errorMessage: 'Unable to get zoho ticket details. Error:' + error,
+    };
+}
+
+export function successGetZohoTicketConversations(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_TICKET_CONVERSATIONS,
+        payload: data,
+        errorMessage: 'Successfully get zoho ticket conversations',
+    };
+}
+
+export function failedGetZohoTicketConversations(error) {
+    return {
+        type: FAILED_GET_ZOHO_TICKET_CONVERSATIONS,
+        errorMessage: 'Unable to get zoho ticket conversations. Error:' + error,
+    };
+}
+
+export function successGetZohoTicketThread(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_TICKET_THREAD,
+        payload: data,
+        errorMessage: 'Successfully get zoho ticket thread',
+    };
+}
+
+export function failedGetZohoTicketThread(error) {
+    return {
+        type: FAILED_GET_ZOHO_TICKET_THREAD,
+        errorMessage: 'Unable to get zoho ticket thread. Error:' + error,
+    };
+}
+
+export function successSendZohoTicketReply(data) {
+    return {
+        type: SUCCESS_SEND_ZOHO_TICKET_REPLY,
+        payload: data,
+        errorMessage: 'Successfully send zoho ticket reply',
+    };
+}
+
+export function failedSendZohoTicketReply(error) {
+    return {
+        type: FAILED_SEND_ZOHO_TICKET_REPLY,
+        errorMessage: 'Unable to send zoho ticket reply. Error:' + error,
+    };
+}
+
+export function resetZohoTicketsWithBookingId() {
+    return {
+        type: RESET_ZOHO_TICKETS_WITH_BOOKING_ID,
     };
 }
 
