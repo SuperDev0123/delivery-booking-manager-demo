@@ -925,23 +925,24 @@ class BookingPage extends Component {
                 else formInputs['inv_dme_invoice_no'] = '';
                 if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
                 else formInputs['fp_invoice_no'] = '';
-                if (booking.inv_cost_quoted && !_.isNaN(parseFloat(booking.inv_cost_quoted))) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
+                if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
                 else formInputs['inv_cost_quoted'] = null;
-                if (booking.inv_cost_actual && !_.isNaN(parseFloat(booking.inv_cost_actual))) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
+                if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
                 else formInputs['inv_cost_actual'] = null;
-                if (booking.inv_sell_quoted && !_.isNaN(parseFloat(booking.inv_sell_quoted))) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
+                if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
                 else formInputs['inv_sell_quoted'] = null;
-                if (booking.inv_sell_quoted_override && !_.isNaN(parseFloat(booking.inv_sell_quoted_override))) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
+                if (!_.isNull(booking.inv_sell_quoted_override)) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
                 else formInputs['inv_sell_quoted_override'] = null;
-                if (booking.inv_sell_actual && !_.isNaN(parseFloat(booking.inv_sell_actual))) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
+                if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
                 else formInputs['inv_sell_actual'] = null;
-                if (booking.customer_cost && !_.isNaN(parseFloat(booking.customer_cost))) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
+                if (!_.isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
                 else formInputs['customer_cost'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
                 if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
                 else formInputs['b_handling_Instructions'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
+                formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : '';
 
                 // Freight Options
                 formInputs['pu_Address_Type'] = booking.pu_Address_Type;
@@ -3589,7 +3590,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_cost_quoted"
-                                                            value = {formInputs['inv_cost_quoted'] && `$${formInputs['inv_cost_quoted']}`}
+                                                            value = {!_.isNull(formInputs['inv_cost_quoted']) ? `$${formInputs['inv_cost_quoted']}` : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -3609,7 +3610,7 @@ class BookingPage extends Component {
                                                                 className="form-control"
                                                                 type="text"
                                                                 name="inv_cost_actual"
-                                                                value = {formInputs['inv_cost_actual'] && `$${formInputs['inv_cost_actual']}`}
+                                                                value = {!_.isNull(formInputs['inv_cost_actual']) ? `$${formInputs['inv_cost_actual']}` : ''}
                                                                 onChange={(e) => this.onHandleInput(e)}
                                                                 onBlur={(e) => this.onHandleInputBlur(e)}
                                                             />
@@ -3629,7 +3630,7 @@ class BookingPage extends Component {
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_sell_quoted"
-                                                        value = {formInputs['inv_sell_quoted'] && `$${formInputs['inv_sell_quoted']}`}
+                                                        value = {!_.isNull(formInputs['inv_sell_quoted']) ? `$${formInputs['inv_sell_quoted']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -3646,7 +3647,7 @@ class BookingPage extends Component {
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_sell_quoted_override"
-                                                        value = {formInputs['inv_sell_quoted_override'] && `$${formInputs['inv_sell_quoted_override']}`}
+                                                        value = {!_.isNull(formInputs['inv_sell_quoted_override']) ? `$${formInputs['inv_sell_quoted_override']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -3665,7 +3666,7 @@ class BookingPage extends Component {
                                                                 className="form-control"
                                                                 type="text"
                                                                 name="inv_sell_actual"
-                                                                value = {formInputs['inv_sell_actual'] && `$${formInputs['inv_sell_actual']}`}
+                                                                value = {!_.isNull(formInputs['inv_sell_actual']) ? `$${formInputs['inv_sell_actual']}` : ''}
                                                                 onChange={(e) => this.onHandleInput(e)}
                                                                 onBlur={(e) => this.onHandleInputBlur(e)}
                                                             />
@@ -3686,7 +3687,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             disabled="disabled"
-                                                            value = {formInputs['customer_cost'] && `$${formInputs['customer_cost']}`}
+                                                            value = {!_.isNull(formInputs['customer_cost']) ? `$${formInputs['customer_cost']}` : ''}
                                                         />
                                                     }
                                                 </div>
@@ -3716,6 +3717,27 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
+                                        {((clientname === 'dme' || clientname === 'jasonl') && booking.b_client_name === 'Jason L') &&
+                                            <div className="col-sm-2 form-group">
+                                                <div>
+                                                    <span>Shipping Type</span>
+                                                    {(parseInt(curViewMode) === 0) ?
+                                                        <p className="show-mode">{formInputs['booking_type']}</p>
+                                                        :
+                                                        <select
+                                                            name="booking_type"
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            value = {formInputs['booking_type'] ? formInputs['booking_type'] : ''}
+                                                        >
+                                                            <option value="" selected disabled hidden>Select a Shipping type</option>
+                                                            <option value='DMEA'>DMEA</option>
+                                                            <option value='DMEM'>DMEM</option>
+                                                            <option value='DMEP'>DMEP</option>
+                                                        </select>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
                                     </div>
                                     <div className='row col-sm-12 booking-form-02'>
                                         <div className={clientname === 'dme' ? 'col-sm-6 form-group' : 'none'}>
