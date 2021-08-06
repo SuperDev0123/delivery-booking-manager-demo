@@ -942,7 +942,7 @@ class BookingPage extends Component {
                 if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
                 else formInputs['b_handling_Instructions'] = null;
                 formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
-                formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : '';
+                formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : null;
 
                 // Freight Options
                 formInputs['pu_Address_Type'] = booking.pu_Address_Type;
