@@ -45,9 +45,19 @@ import {
     FAILED_STATUSHISTORY_SAVE_PU_INFO,
     SUCCESS_UPDATE_CLIENT_EMPLOYEE,
     FAILED_UPDATE_CLIENT_EMPLOYEE,
-    SUCCESS_GET_ZOHO_TICKETS,
-    FAILED_GET_ZOHO_TICKETS,
-    RESET_ZOHO_TICKETS,
+    SUCCESS_GET_ALL_ZOHO_TICKETS,
+    FAILED_GET_ALL_ZOHO_TICKETS,
+    SUCCESS_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    FAILED_GET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    RESET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    SUCCESS_GET_ZOHO_TICKET_DETAILS,
+    FAILED_GET_ZOHO_TICKET_DETAILS,
+    SUCCESS_GET_ZOHO_TICKET_CONVERSATIONS,
+    FAILED_GET_ZOHO_TICKET_CONVERSATIONS,
+    SUCCESS_GET_ZOHO_TICKET_THREAD,
+    FAILED_GET_ZOHO_TICKET_THREAD,
+    SUCCESS_SEND_ZOHO_TICKET_REPLY,
+    FAILED_SEND_ZOHO_TICKET_REPLY,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
@@ -85,7 +95,11 @@ const defaultState = {
     emailLogs: [],
     bookingset: null,
     bookingsets: null,
+    allTickets: [],
     zoho_tickets: [],
+    ticketDetails: [],
+    ticketThread: [],
+    ticketConversations: [],
     loadingZohoTickets: false,
     clientProducts: [],
     allFPs: [],
@@ -155,7 +169,7 @@ export const ExtraReducer = (state = defaultState, {
                 statusHistories: null,
                 needUpdateStatusHistories: false,
             };
-        case RESET_ZOHO_TICKETS:
+        case RESET_ZOHO_TICKETS_WITH_BOOKING_ID:
             return {
                 ...state,
                 zoho_tickets: [],
@@ -263,7 +277,36 @@ export const ExtraReducer = (state = defaultState, {
                 needUpdateBookingSets: true,
                 isBookingSetDeleted: true,
             };
-        case SUCCESS_GET_ZOHO_TICKETS:
+        case SUCCESS_GET_ALL_ZOHO_TICKETS:
+            return {
+                ...state,
+                allTickets: payload,
+                // loadingZohoTickets: false
+            };
+        case SUCCESS_GET_ZOHO_TICKET_DETAILS:
+            return {
+                ...state,
+                ticketDetails: payload,
+                // loadingZohoTickets: false
+            };
+        case SUCCESS_GET_ZOHO_TICKET_CONVERSATIONS:
+            return {
+                ...state,
+                ticketConversations: payload,
+                // loadingZohoTickets: false
+            };
+        case SUCCESS_GET_ZOHO_TICKET_THREAD:
+            return {
+                ...state,
+                ticketThread: payload,
+                // loadingZohoTickets: false
+            };
+        case SUCCESS_SEND_ZOHO_TICKET_REPLY:
+            return {
+                ...state,
+                // loadingZohoTickets: false
+            };
+        case SUCCESS_GET_ZOHO_TICKETS_WITH_BOOKING_ID:
             return {
                 ...state,
                 zoho_tickets: payload,
@@ -348,10 +391,35 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 clientProducts: []
             };
-        case FAILED_GET_ZOHO_TICKETS:
+        case FAILED_GET_ALL_ZOHO_TICKETS:
             return {
                 ...state,
-                loadingZohoTickets: false
+                // loadingZohoTickets: false
+            };
+        case FAILED_GET_ZOHO_TICKETS_WITH_BOOKING_ID:
+            return {
+                ...state,
+                // loadingZohoTickets: false
+            };
+        case FAILED_GET_ZOHO_TICKET_DETAILS:
+            return {
+                ...state,
+                // loadingZohoTickets: false
+            };
+        case FAILED_GET_ZOHO_TICKET_CONVERSATIONS:
+            return {
+                ...state,
+                // loadingZohoTickets: false
+            };
+        case FAILED_GET_ZOHO_TICKET_THREAD:
+            return {
+                ...state,
+                // loadingZohoTickets: false
+            };
+        case FAILED_SEND_ZOHO_TICKET_REPLY:
+            return {
+                ...state,
+                // loadingZohoTickets: false
             };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:

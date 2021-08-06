@@ -55,7 +55,7 @@ import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, 
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTickets, getAllErrors, updateZohoTicket } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 // Constants
@@ -265,7 +265,7 @@ class BookingPage extends Component {
         saveStatusHistoryPuInfo: PropTypes.func.isRequired,
         getCreatedForInfos: PropTypes.func.isRequired,
         updateClientEmployee: PropTypes.func.isRequired,
-        getZohoTickets: PropTypes.func.isRequired,
+        getZohoTicketsWithBookingId: PropTypes.func.isRequired,
         updateZohoTicket: PropTypes.func.isRequired,
         getAllErrors: PropTypes.func.isRequired,
         resetNoBooking: PropTypes.func.isRequired,
@@ -294,7 +294,7 @@ class BookingPage extends Component {
 
         if (bookingId != null) {
             this.props.getBooking(bookingId, 'id');
-            this.props.getZohoTickets(bookingId);
+            this.props.getZohoTicketsWithBookingId(bookingId);
             this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
             this.props.getBooking();
@@ -1049,7 +1049,7 @@ class BookingPage extends Component {
             this.props.getAttachmentHistory(data.pk_booking_id);
             this.props.getEmailLogs(data.id);
             this.props.getClientProcessMgr(data.id);
-            this.props.getZohoTickets(data.b_bookingID_Visual);
+            this.props.getZohoTicketsWithBookingId(data.b_bookingID_Visual);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
@@ -2743,7 +2743,7 @@ class BookingPage extends Component {
             }
         ];
 
-        const columnZohoTickets = [
+        let columnZohoTickets = [
             {
                 dataField: 'ticketNumber',
                 text: 'Ticket Number',
@@ -2769,14 +2769,21 @@ class BookingPage extends Component {
                 }
             }, {
                 dataField: 'cf.cf_summary',
-                text: 'Summary'
+                text: 'Summary',
+                editable: () => {
+                    return clientname === 'dme';
+                }
             }, {
                 dataField: 'status',
                 text: 'Status',
                 editable: () => {
                     return false;
                 }
-            }, {
+            }
+        ];
+        if (clientname === 'dme') columnZohoTickets = [ 
+            ...columnZohoTickets, 
+            {
                 dataField: 'id',
                 text: 'View',
                 formatter:  (cell, row) => {
@@ -5213,13 +5220,11 @@ class BookingPage extends Component {
                                             <ul id="tab-button">
                                                 <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 0)}>Shipment Packages / Goods({curViewMode === 1 ? 0 : qtyTotal})</a></li>
                                                 <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 1)}>Additional Information</a></li>
-                                                {clientname === 'dme' &&
-                                                    <li className={activeTabInd === 3 ? 'selected' : ''}>
-                                                        <a onClick={(e) => this.onClickBottomTap(e, 3)}>
-                                                            Zoho Tickets Log({zoho_tickets.length})
-                                                        </a>
-                                                    </li>
-                                                }
+                                                <li className={activeTabInd === 3 ? 'selected' : ''}>
+                                                    <a onClick={(e) => this.onClickBottomTap(e, 3)}>
+                                                        Zoho Tickets Log({zoho_tickets.length})
+                                                    </a>
+                                                </li>
                                                 <li className={activeTabInd === 4 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 4)}>Attachments({curViewMode === 1 ? 0 : cntAttachments})</a></li>
                                                 <li className={activeTabInd === 5 ? 'selected' : ''}><a onClick={(e) => this.onClickBottomTap(e, 5)}>Label & Pod</a></li>
                                             </ul>
@@ -5722,7 +5727,7 @@ const mapDispatchToProps = (dispatch) => {
         saveStatusHistoryPuInfo: (bookingId) => dispatch(saveStatusHistoryPuInfo(bookingId)),
         getCreatedForInfos: () => dispatch(getCreatedForInfos()),
         updateClientEmployee: (clientEmployee) => dispatch(updateClientEmployee(clientEmployee)), 
-        getZohoTickets:  (b_bookingID_Visual) => dispatch(getZohoTickets(b_bookingID_Visual)),
+        getZohoTicketsWithBookingId:  (b_bookingID_Visual) => dispatch(getZohoTicketsWithBookingId(b_bookingID_Visual)),
         updateZohoTicket: (id, data) => dispatch(updateZohoTicket(id, data)),
         getAllErrors: (pk_booking_id) => dispatch(getAllErrors(pk_booking_id)),
         resetNoBooking: () => dispatch(resetNoBooking()),
