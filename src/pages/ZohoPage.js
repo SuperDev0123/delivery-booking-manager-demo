@@ -3,12 +3,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 import { Nav, NavItem, NavLink} from 'reactstrap';
-import axios from 'axios';
 
 import LoadingOverlay from 'react-loading-overlay';
 
 import { ZOHO_CLIENT_ID, ZOHO_ORG_ID, ZOHO_REDIRECT_URI } from '../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
+import { getAllZohoTickets, mergeZohoTickets, closeZohoTicket } from '../state/services/extraService';
 
 class ZohoPage extends React.Component {
     intervalID;
@@ -20,7 +20,7 @@ class ZohoPage extends React.Component {
         super(props);
 
         this.state = {
-            alltickets: [],
+            allTickets: [],
             filteredTickets: [], 
             activeTabInd: 0,
             merge: 'disabled',
@@ -40,6 +40,10 @@ class ZohoPage extends React.Component {
         getDMEClients: PropTypes.func.isRequired,
         clientname: PropTypes.string,
         cleanRedirectState: PropTypes.func.isRequired,
+        allTickets: PropTypes.array.isRequired,
+        getAllZohoTickets: PropTypes.func.isRequired,
+        mergeZohoTickets: PropTypes.func.isRequired,
+        closeZohoTicket: PropTypes.func.isRequired
     };
 
     componentDidMount() {
@@ -52,56 +56,7 @@ class ZohoPage extends React.Component {
             this.props.history.push('/');
         }
         this.props.getDMEClients();
-
-        //get signed in and/or access token for api calls
-
-        if (!localStorage.getItem('zohotoken') && window.location.href.indexOf('access_token=') < 1) {
-            window.location.href = 'https://accounts.zoho.com.au/oauth/v2/auth?client_id='+this.zohoclientid+'&response_type=token&scope=Desk.tickets.ALL&redirect_uri='+this.zohoredirecturi;
-        }
-
-        //setting token access expiry time
-
-        if (window.location.href.indexOf('access_token=') > -1) {
-            var setexpiry = new Date();
-            localStorage.setItem('expirytimeoftoken', setexpiry.getTime()+3600000); 
-            var querystring = require('querystring');
-            let url = window.location.href;
-            let params = querystring.parse(url);
-            localStorage.setItem('zohotoken', params.access_token);
-            this.props.history.push('/zoho');
-        }
-
-        //get tickets data
-
-        if (localStorage.getItem('zohotoken')) {
-            const options = {
-                method: 'get',
-                headers: { 'orgId': this.zohoorgid, 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken') },
-                url: 'https://desk.zoho.com.au/api/v1/tickets',
-            };
-            axios(options)
-                .then(({ data }) => {
-                    console.log(data);
-                    this.setState({ alltickets: data.data, filteredTickets: data.data });
-                    this.setState({ loadingStatus: false });
-                })
-                .catch((error) => console.log(error));
-        }
-
-        //checking for expiry time of token and request for new access token
-
-        if(localStorage.getItem('expirytimeoftoken') != '' &&
-            localStorage.getItem('expirytimeoftoken') != 'undefined' &&
-            localStorage.getItem('expirytimeoftoken') !== null)
-        {
-            var checkexpiry = new Date();
-            console.log(checkexpiry.getTime());
-            console.log(localStorage.getItem('expirytimeoftoken'));
-            if((checkexpiry.getTime() >= localStorage.getItem('expirytimeoftoken')  - 60000)){   // checking for a min less time
-                window.location.href = 'https://accounts.zoho.com.au/oauth/v2/auth?response_type=token&client_id='+this.zohoclientid+'&scope=Desk.tickets.ALL&redirect_uri='+this.zohoredirecturi+'&state=1523436222480536829';
-            }
-        }
-
+        
         this.setState({ loadingStatus: false });
 
         // precaution step to check for realtime data if response is slow
@@ -130,7 +85,6 @@ class ZohoPage extends React.Component {
 
     clickMerge(e){
 
-
         e.preventDefault();
 
         document.querySelectorAll('#merge').forEach(query => { query.removeAttribute('disabled');});
@@ -145,11 +99,7 @@ class ZohoPage extends React.Component {
         document.getElementsByName(element)[0].setAttribute('readOnly', 'true');
         console.log(document.getElementsByName(element));
 
-
         document.getElementsByName(element)[0].setAttribute('readOnly', 'true');
-
-
-
     }
 
     cancelMerge(e){
@@ -176,33 +126,16 @@ class ZohoPage extends React.Component {
             document.querySelectorAll('input[checked=checked]').forEach(query => {
                 // console.log(query.getAttribute('name'));
                 if (query.getAttribute('name') !== element) {
-                    var mergewithid = query.getAttribute('name');
+                    let id = query.getAttribute('name');
                     // var mergingid = ['"' + element + '"'];
-                    const options = {
-                        method: 'post',
-                        headers: {
-                            'orgId': '7000200810',
-                            'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
-                        },
-                        data: {
-                            'ids': [element],
-                            'source': {
-                                'contactId': element,
-                                'subject': element,
-                                'priority': element,
-                                'status': element
-                            }
-                        },
-                        url: 'https://desk.zoho.com.au/api/v1/tickets/' + mergewithid + '/merge',
+                    let idsToMerge =  [element];
+                    let source = {
+                        'contactId': element,
+                        'subject': element,
+                        'priority': element,
+                        'status': element
                     };
-                    axios(options)
-                        .then(() => {
-
-                            window.location.reload(false);
-
-                        })
-                        .catch((error) => console.log(error));
-
+                    this.props.mergeZohoTickets(id, idsToMerge, source);
                 }
             });
         }
@@ -214,22 +147,7 @@ class ZohoPage extends React.Component {
         if (r == true) {
             var ticketid = e.target.closest('td').getAttribute('id');
             
-
-            const options = {
-                method: 'patch',
-                headers: {
-                    'orgId': '7000200810',
-                    'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
-                },
-                contentType: 'application/json; charset=utf-8',
-                data: { 'status': 'Closed'},
-                url: 'https://desk.zoho.com.au/api/v1/tickets/' + ticketid,
-            };
-            axios(options)
-                .then(() => {
-                    window.location.reload(false);
-                })
-                .catch((error) => console.log(error));
+            this.props.closeZohoTicket(ticketid);
         }
     }
 
@@ -262,58 +180,8 @@ class ZohoPage extends React.Component {
     }
 
     getsetrealtimedata() {
-
-        //setting access token expiry time
-
-        if (window.location.href.indexOf('access_token=') > -1) {
-            var setexpiry = new Date();
-            localStorage.setItem('expirytimeoftoken', setexpiry.getTime()+3600000);
-            var querystring = require('querystring');
-            let url = window.location.href;
-            let params = querystring.parse(url);
-            console.log(window.location.href);
-            localStorage.setItem('zohotoken', params.access_token);
-            this.props.history.push('/zoho');
-        }
-
-
-        //get tickets data
-
-        if (localStorage.getItem('zohotoken') !== null &&
-            localStorage.getItem('zohotoken') !== 'undefined' &&
-            localStorage.getItem('zohotoken') !== null)
-        {
-            console.log(localStorage.getItem('zohotoken'));
-            const options = {
-                method: 'get',
-                headers: { 'orgId': this.zohoorgid, 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken') },
-                url: 'https://desk.zoho.com.au/api/v1/tickets',
-            };
-            axios(options)
-                .then(({ data }) => {
-                    console.log(data);
-                    this.setState({ alltickets: data.data, filteredTickets:data.data });
-                })
-                .catch((error) => console.log(error));
-
-
-
-        }
-
-        //checking for expiry time of token
-
-        if(localStorage.getItem('expirytimeoftoken') !== '' &&
-            localStorage.getItem('expirytimeoftoken') !== 'undefined' &&
-            localStorage.getItem('expirytimeoftoken') !== null)
-        {
-            var checkexpiry = new Date();
-            console.log(checkexpiry.getTime());
-            console.log(localStorage.getItem('expirytimeoftoken'));
-            if((checkexpiry.getTime() >= localStorage.getItem('expirytimeoftoken')  - 60000)){   // checking for a min less time
-                window.location.href = 'https://accounts.zoho.com.au/oauth/v2/auth?response_type=token&client_id='+this.zohoclientid+'&scope=Desk.tickets.ALL&redirect_uri='+this.zohoredirecturi+'&state=1523436222480536829';
-            }
-        }
-
+        this.props.getAllZohoTickets();
+        this.setState({ allTickets: this.props.allTickets, filteredTickets: this.props.allTickets });
     }
     
 
@@ -335,8 +203,8 @@ class ZohoPage extends React.Component {
 
     getFilteredTickets() {
         let filteredTickets = [];
-        let {activeTabInd, alltickets} = this.state;
-        for(let ticket of alltickets) {
+        let { activeTabInd, allTickets } = this.state;
+        for(let ticket of allTickets) {
             switch(activeTabInd) {
                 case 0:
                     filteredTickets.push(ticket);
@@ -402,13 +270,13 @@ class ZohoPage extends React.Component {
 
     onSimpleSearch(e) {
         e.preventDefault();
-        const {simpleSearchKeyword, alltickets, activeTabInd} = this.state;
+        const { simpleSearchKeyword, activeTabInd, allTickets } = this.state;
        
         let filteredTickets = [];
         if (simpleSearchKeyword.length === 0) {
             alert('Please input search keyword!');
         } else {
-            for (let ticket of alltickets) {
+            for (let ticket of allTickets) {
                 if(JSON.stringify(ticket).indexOf(simpleSearchKeyword) > 1)
                     switch(activeTabInd) {
                         case 0:
@@ -573,9 +441,8 @@ class ZohoPage extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state);
     return {
-        //tickets: state.ticket.tickets,
+        allTickets: state.extra.allTickets,
         dmeClients: state.auth.dmeClients,
         redirect: state.auth.redirect,
         clientname: state.auth.clientname,
@@ -586,8 +453,10 @@ const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
         getDMEClients: () => dispatch(getDMEClients()),
-        //getTickets: () => dispatch(getTickets()),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
+        getAllZohoTickets: () => dispatch(getAllZohoTickets()),
+        mergeZohoTickets: (id, ids, source) => dispatch(mergeZohoTickets(id, ids, source)),
+        closeZohoTicket: (id) => dispatch(closeZohoTicket(id))
     };
 };
 
