@@ -34,7 +34,9 @@ class LabelPage extends Component {
             this.props.getLabels4Booking(identifier);
             this.setState({identifier});
         } else {
-            this.setState({errorMessage: 'Wrong id.'});
+            this.setState({errorMessage: 'A Freight booking does not exist for this Sales Order. Please go to Pronto Sales Orders, \
+                click the "Freight Deliver-ME" button, select a valid freight option and when complete click the "Send Booking Now" button at the bottom of the screen. \
+                Your booking will then be ready for freight and freight labels can be printed from the Pronto "Enquire by Package" screen.'});
         }
     }
 
@@ -42,7 +44,13 @@ class LabelPage extends Component {
         const {errorMessage} = newProps;
 
         if (errorMessage) {
-            this.setState({errorMessage});
+            if (errorMessage === 'Order does not exist!') {
+                this.setState({errorMessage: 'A Freight booking does not exist for this Sales Order. Please go to Pronto Sales Orders, \
+                click the "Freight Deliver-ME" button, select a valid freight option and when complete click the "Send Booking Now" button at the bottom of the screen. \
+                Your booking will then be ready for freight and freight labels can be printed from the Pronto "Enquire by Package" screen.'});
+            } else {
+                this.setState({errorMessage});
+            }
         }
     }
 
@@ -116,7 +124,11 @@ class LabelPage extends Component {
             <section className="label">
                 {!bookingLabels ?
                     this.state.errorMessage ?
-                        <p className="danger">Error: {this.state.errorMessage}</p>
+                        <div className="error-msg">
+                            <p className="">
+                                {this.state.errorMessage}
+                            </p>
+                        </div>
                         :
                         <p className="info">Loading...</p>
                     :
@@ -130,6 +142,15 @@ class LabelPage extends Component {
                             <p><strong>Freight provider: </strong>{bookingLabels.vx_freight_provider}</p>
                             <p><strong>Consignment number: </strong>{bookingLabels.v_FPBookingNumber}</p>
                             <p><strong>No of sscc: </strong>{bookingLabels.no_of_sscc}</p>
+                            {bookingLabels.quotes_cnt === 0 &&
+                                <p>
+                                    <strong>Error: </strong>
+                                    Sales order {bookingLabels['b_client_order_num']} has either address and / or item line errors in it preventing freight being booked. <br />
+                                    Please go Deliver-ME booking <a href={`/booking/?bookingid=${bookingLabels.id}`} target='_blank' rel="noopener noreferrer">{bookingLabels.id}</a> and review the address and line information. <br />
+                                    When complete click &apos;Update&apos; and then &apos;Price & Time Calc (FC)&apos;. Select the appropriate provider. <br />
+                                    Your booking will then be ready for freight and freight labels can be printed from the Pronto &apos;Enquire by Package&apos; screen.
+                                </p>
+                            }
                         </div>
                         <h4><i className="fa fa-circle"></i> SSCC Info:</h4>
                         <div className="sscc-info">

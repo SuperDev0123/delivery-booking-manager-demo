@@ -11,6 +11,17 @@ section.label {
 		margin-top: 30px !important;
 	}
 
+	div.error-msg {
+		width: 100%;
+
+		p {
+			line-height: 25px;
+			white-space: normal;
+			line-height: 30px;
+			font-size: 20px;
+		}
+	}
+
 	p {
 		font-weight: lighter;
 		font-size: 14px;
