@@ -527,12 +527,31 @@ export const getZohoTicketConversations = (id) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_ticket_conversations/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_ticket_conversation_list/`,
         data: { id }
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successGetZohoTicketConversations(data.data)))
+            // .then(({ data }) => dispatch(successGetZohoTicketConversations(data.data)))
+            .then(({ data }) => {
+                const token = localStorage.getItem('token');
+                console.log('dtatatata', data.data);
+
+                let promises = data.data.map((item) => {
+                    const options = {
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+                        url: `${HTTP_PROTOCOL}://${API_HOST}/${item.type === 'thread' ? 'get_zoho_ticket_thread' : 'get_zoho_ticket_comment'}/`,
+                        data: { id: id, item: item.id }
+                    };
+                    return axios(options);
+                });
+                console.log('promises!', promises);
+                Promise.all(promises)
+                    .then((res) => console.log('pppppppppppp', res))
+                    .catch((error) => console.log('eeeeeeeeee', error));
+                dispatch(successGetZohoTicketConversations());
+            })
             .catch((error) => dispatch(failedGetZohoTicketConversations(error)));
     };
 };

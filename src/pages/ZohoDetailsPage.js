@@ -11,7 +11,7 @@ import ReactHtmlParser from 'react-html-parser';
 
 import { ZOHO_CLIENT_ID, ZOHO_ORG_ID, ZOHO_REDIRECT_URI } from '../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
-import { getZohoTicketDetails, getZohoTicketConversations, getZohoTicketThread, sendZohoTicketReply } from '../state/services/extraService';
+import { getZohoTicketDetails, getZohoTicketConversations, sendZohoTicketReply } from '../state/services/extraService';
 
 class ZohoDetailsPage extends React.Component {
     intervalID;
@@ -451,7 +451,7 @@ const mapStateToProps = (state) => {
         redirect: state.auth.redirect,
         threadcontent: state.extra.ticketDetails,
         threaddetails: state.extra.ticketConversations,
-        threadiddetails: state.extra.ticketThread
+        // threadiddetails: state.extra.ticketThread
     };
 };
 
@@ -462,7 +462,7 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getZohoTicketDetails: (id) => dispatch(getZohoTicketDetails(id)),
         getZohoTicketConversations: (id) => dispatch(getZohoTicketConversations(id)),
-        getZohoTicketThread: (id, item) => dispatch(getZohoTicketThread(id, item)),
+        // getZohoTicketThread: (id, item) => dispatch(getZohoTicketThread(id, item)),
         sendZohoTicketReply: (id, from, to, content) => dispatch(sendZohoTicketReply(id, from, to, content))
     };
 };
