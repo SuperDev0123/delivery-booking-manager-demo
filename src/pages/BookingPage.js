@@ -3724,7 +3724,7 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        {((clientname === 'dme' || clientname === 'jasonl') && booking.b_client_name === 'Jason L') &&
+                                        {((clientname === 'dme' || clientname === 'Jason L') && booking.b_client_name === 'Jason L') &&
                                             <div className="col-sm-2 form-group">
                                                 <div>
                                                     <span>Shipping Type</span>
