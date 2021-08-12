@@ -290,9 +290,6 @@ class BulkUpdateSlider extends React.Component {
                                 >
                                     <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
                                     {fpOptions}
-                                    <option value="linehaul">Linehaul</option>
-                                    <option value="linehaul">Linehaul</option>
-                                    <option value="linehaul">Linehaul</option>
                                 </select>
                                 : null
                         }
