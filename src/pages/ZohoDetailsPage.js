@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import axios from 'axios';
 import moment from 'moment-timezone';
 
 import LoadingOverlay from 'react-loading-overlay';
@@ -32,7 +31,7 @@ class ZohoDetailsPage extends React.Component {
             loadingStatus: false,
             ticketid: '',
             threadcontent: {},
-            threaddetails: [],
+            conversations: [],
             threadids: [],
             threadiddetails: [],
             mail: '',
@@ -47,6 +46,7 @@ class ZohoDetailsPage extends React.Component {
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         threadcontent: PropTypes.object.isRequired,
+        conversations: PropTypes.array.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         getZohoTicketDetails: PropTypes.func.isRequired,
@@ -58,7 +58,7 @@ class ZohoDetailsPage extends React.Component {
     componentDidMount() {
         var urlParams = new URLSearchParams(window.location.search);
         this.id = urlParams.get('id');
-        // this.setState({ loadingStatus: true });
+        this.setState({ loadingStatus: true });
 
         const token = localStorage.getItem('token');
         if (token && token.length > 0) {
@@ -104,59 +104,59 @@ class ZohoDetailsPage extends React.Component {
         return 0;
     }
 
-    getThreadsdata(){
-        if (this.id) {
-            const options = {
-                method: 'get',
-                headers: {
-                    'orgId': this.zohoorgid,
-                    'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
-                },
-                url: 'https://desk.zoho.com.au/api/v1/tickets/' + this.id + '/conversations',
-            };
-            axios(options)
-                .then(({data}) => {
-                    this.setState({threaddetails: data.data});
+    // getThreadsdata(){
+    //     if (this.id) {
+    //         const options = {
+    //             method: 'get',
+    //             headers: {
+    //                 'orgId': this.zohoorgid,
+    //                 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
+    //             },
+    //             url: 'https://desk.zoho.com.au/api/v1/tickets/' + this.id + '/conversations',
+    //         };
+    //         axios(options)
+    //             .then(({data}) => {
+    //                 this.setState({conversations: data.data});
 
-                    const { threaddetails } = this.state;
-                    threaddetails.map((item) => {
+    //                 const { conversations } = this.state;
+    //                 conversations.map((item) => {
 
-                        const { threadiddetails } = this.state;
-                        if (Number(threaddetails.length) > Number(threadiddetails.length)) {
-                            const options = {
-                                method: 'get',
-                                headers: { 'orgId': this.zohoorgid, 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken') },
-                                url: 'https://desk.zoho.com.au/api/v1/tickets/'+this.id+'/threads/'+item.id,
-                            };
-                            axios(options)
-                                .then(({ data }) => {
-                                    const { threadiddetails } = this.state;
-                                    if(Number(threadiddetails.length) > 0){
-                                        var flag = false;
-                                        for(var i = 0; i < Number(threadiddetails.length); i++ ){
-                                            if(Number(data.id) === Number(threadiddetails[i].id)){
-                                                flag = true;
-                                                break;
-                                            }
-                                        }
-                                        if(!flag){
-                                            this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
-                                            this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
-                                            this.setState({loadingStatus: false});
-                                        }
-                                    } else {
-                                        this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
-                                        this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
-                                        this.setState({loadingStatus: false});
-                                    }
-                                })
-                                .catch((error) => console.log(error));
-                        }
-                    });
-                })
-                .catch((error) => console.log(error));
-        }
-    }
+    //                     const { threadiddetails } = this.state;
+    //                     if (Number(conversations.length) > Number(threadiddetails.length)) {
+    //                         const options = {
+    //                             method: 'get',
+    //                             headers: { 'orgId': this.zohoorgid, 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken') },
+    //                             url: 'https://desk.zoho.com.au/api/v1/tickets/'+this.id+'/threads/'+item.id,
+    //                         };
+    //                         axios(options)
+    //                             .then(({ data }) => {
+    //                                 const { threadiddetails } = this.state;
+    //                                 if(Number(threadiddetails.length) > 0){
+    //                                     var flag = false;
+    //                                     for(var i = 0; i < Number(threadiddetails.length); i++ ){
+    //                                         if(Number(data.id) === Number(threadiddetails[i].id)){
+    //                                             flag = true;
+    //                                             break;
+    //                                         }
+    //                                     }
+    //                                     if(!flag){
+    //                                         this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
+    //                                         this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
+    //                                         this.setState({loadingStatus: false});
+    //                                     }
+    //                                 } else {
+    //                                     this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
+    //                                     this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
+    //                                     this.setState({loadingStatus: false});
+    //                                 }
+    //                             })
+    //                             .catch((error) => console.log(error));
+    //                     }
+    //                 });
+    //             })
+    //             .catch((error) => console.log(error));
+    //     }
+    // }
 
 
 
@@ -227,13 +227,14 @@ class ZohoDetailsPage extends React.Component {
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
+
+        const { threadcontent, conversations } = newProps;
+        if (threadcontent && conversations) this.setState({loadingStatus: false});
     }
 
     render() {
-        const { threadcontent } = this.props;
-        console.log('ttttttttttt', threadcontent);
-        const { threadiddetails } = this.state;
-        let items = threadiddetails.map((item, key) => {
+        const { threadcontent, conversations } = this.props;
+        let items = conversations.map((item, key) => {
             this.mailbackaddress = item.fromEmailAddress;
             if(item.channel.includes('ONLINE_CHAT')){
                 return (<SlideToggle collapsed key={key}>
@@ -393,50 +394,48 @@ class ZohoDetailsPage extends React.Component {
                         </div>
                     </div>
                     <div className="rounded-lg overflow-hidden container shadow py-5 px-4">
-                        <div className="col-3 px-0">
-                            <div className="bg-white">
-                                <div className="messages-box">
-                                    <div className="list-group rounded-0">
-                                        <a className="list-group-item list-group-item-action active text-white rounded-0">
-                                            <div className="media" style={{display:'block'}}>
-                                                <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
-                                                <small className="small font-weight-bold pull-right mr-2">
-                                                    { moment(threadcontent.createdTime).format('YYYY-MM-DD') }
-                                                    {/*<Moment format="MMM Do YY">{ threadcontent.createdTime }</Moment>*/}
-                                                </small>
-                                                <div className="media-body ml-4 text-left">
-                                                    <div className="d-flex align-items-center justify-content-between mb-1">
-                                                        <h6 className="mb-0">{ threadcontent.email }</h6>
+                        <div className="row">
+                            <div className="col-3 px-0">
+                                <div className="bg-white">
+                                    <div className="messages-box">
+                                        <div className="list-group rounded-0">
+                                            <a className="list-group-item list-group-item-action active text-white rounded-0">
+                                                { threadcontent && <div className="media" style={{display:'block'}}>
+                                                    <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
+                                                    <small className="small font-weight-bold pull-right mr-2">
+                                                        { moment(threadcontent.createdTime).format('YYYY-MM-DD') }
+                                                        {/*<Moment format="MMM Do YY">{ threadcontent.createdTime }</Moment>*/}
+                                                    </small>
+                                                    <div className="media-body ml-4 text-left">
+                                                        <div className="d-flex align-items-center justify-content-between mb-1">
+                                                            <h6 className="mb-0">{ threadcontent.email }</h6>
+                                                        </div>
+                                                        <p className="font-italic mb-0 text-small">#{ threadcontent.ticketNumber } { threadcontent.subject }</p>
                                                     </div>
-                                                    <p className="font-italic mb-0 text-small">#{ threadcontent.ticketNumber } { threadcontent.subject }</p>
-                                                </div>
 
-                                            </div>
-                                        </a>
+                                                </div>}
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
+                                {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                             </div>
-                            {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
-                        </div>
-
-
-                        {/*//  Chat Box*/}
-
-                        <div className="col-9 px-0">
-                            {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
-                            <div className="px-4 py-5 chat-box bg-white">
-                                { items }
-                            </div>
-
-                            {/*// Typing area*/}
-                            <form className="bg-light" onSubmit={this.addValue}>
-                                <div className="input-group" >
-                                    <input type="text" placeholder="Type a message" aria-describedby="button-addon2" className="form-control rounded-0 border-0 py-4 bg-light" onChange={this.updateInput}/>
-                                    <div className="input-group-append">
-                                        <button id="button-addon2" type="submit" className="btn btn-link"><i className="fa fa-paper-plane"></i></button>
-                                    </div>
+                            <div className="col-9 px-0">
+                                {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                                <div className="px-4 py-5 chat-box bg-white">
+                                    { conversations && items }
                                 </div>
-                            </form>
+
+                                {/*// Typing area*/}
+                                <form className="bg-light" onSubmit={this.addValue}>
+                                    <div className="input-group" >
+                                        <input type="text" placeholder="Type a message" aria-describedby="button-addon2" className="form-control rounded-0 border-0 py-4 bg-light" onChange={this.updateInput}/>
+                                        <div className="input-group-append">
+                                            <button id="button-addon2" type="submit" className="btn btn-link"><i className="fa fa-paper-plane"></i></button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -450,8 +449,7 @@ const mapStateToProps = (state) => {
         dmeClients: state.auth.dmeClients,
         redirect: state.auth.redirect,
         threadcontent: state.extra.ticketDetails,
-        threaddetails: state.extra.ticketConversations,
-        // threadiddetails: state.extra.ticketThread
+        conversations: state.extra.ticketConversations,
     };
 };
 
@@ -462,7 +460,6 @@ const mapDispatchToProps = (dispatch) => {
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getZohoTicketDetails: (id) => dispatch(getZohoTicketDetails(id)),
         getZohoTicketConversations: (id) => dispatch(getZohoTicketConversations(id)),
-        // getZohoTicketThread: (id, item) => dispatch(getZohoTicketThread(id, item)),
         sendZohoTicketReply: (id, from, to, content) => dispatch(sendZohoTicketReply(id, from, to, content))
     };
 };

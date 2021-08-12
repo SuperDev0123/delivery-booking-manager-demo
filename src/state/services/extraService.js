@@ -517,7 +517,7 @@ export const getZohoTicketDetails = (id) => {
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successGetZohoTicketDetails(data.data)))
+            .then((res) => dispatch(successGetZohoTicketDetails(res.data)))
             .catch((error) => dispatch(failedGetZohoTicketDetails(error)));
     };
 };
@@ -533,11 +533,9 @@ export const getZohoTicketConversations = (id) => {
     return dispatch => {
         axios(options)
             // .then(({ data }) => dispatch(successGetZohoTicketConversations(data.data)))
-            .then(({ data }) => {
+            .then((res) => {
                 const token = localStorage.getItem('token');
-                console.log('dtatatata', data.data);
-
-                let promises = data.data.map((item) => {
+                let promises = res.data.data.map((item) => {
                     const options = {
                         method: 'post',
                         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
@@ -546,11 +544,12 @@ export const getZohoTicketConversations = (id) => {
                     };
                     return axios(options);
                 });
-                console.log('promises!', promises);
                 Promise.all(promises)
-                    .then((res) => console.log('pppppppppppp', res))
-                    .catch((error) => console.log('eeeeeeeeee', error));
-                dispatch(successGetZohoTicketConversations());
+                    .then((res) => {
+                        let conversations = res.map(item => item.data);
+                        dispatch(successGetZohoTicketConversations(conversations));
+                    })
+                    .catch((error) => console.log('Get ticket Conversations error: ', error));
             })
             .catch((error) => dispatch(failedGetZohoTicketConversations(error)));
     };
