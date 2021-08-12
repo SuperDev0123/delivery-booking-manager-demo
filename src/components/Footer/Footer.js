@@ -18,7 +18,7 @@ class Footer extends Component {
         if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('/status/') > -1) 
             return null;
         else return (
-            <footer className={`bg-dark text-center px-3 text-white ${currentRoute.indexOf('status') > -1 && 'fixed-bottom'}`}>
+            <footer className="bg-dark text-center px-3 text-white fixed-bottom">
                 <span>
                     {'© 2020 Limited. All rights reserved. "Deliver-Me" and "Beautiful business" are trademarks of Deliver-Me Limited.'}
                 </span>
