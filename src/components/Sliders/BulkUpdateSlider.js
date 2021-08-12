@@ -101,7 +101,15 @@ class BulkUpdateSlider extends React.Component {
 
         const fpOptions = fps.map((fp, index) => {
             if (clientname === 'Jason L') { // Jason L
-                if (fp.fp_company_name === 'Allied' || fp.fp_company_name === 'TNT' || fp.fp_company_name === 'Hunter' || fp.fp_company_name === 'Century')
+                if (
+                    fp.fp_company_name === 'Allied' ||
+                    fp.fp_company_name === 'TNT' ||
+                    fp.fp_company_name === 'Hunter' ||
+                    fp.fp_company_name === 'Century' ||
+                    fp.fp_company_name === 'JasonL In house' ||
+                    fp.fp_company_name === 'Customer Pickup' ||
+                    fp.fp_company_name === 'Line haul General'
+                )
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else {
                 return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
@@ -282,7 +290,9 @@ class BulkUpdateSlider extends React.Component {
                                 >
                                     <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
                                     {fpOptions}
-                                    <option value="linehaul" disabled>Linehaul</option>
+                                    <option value="linehaul">Linehaul</option>
+                                    <option value="linehaul">Linehaul</option>
+                                    <option value="linehaul">Linehaul</option>
                                 </select>
                                 : null
                         }
