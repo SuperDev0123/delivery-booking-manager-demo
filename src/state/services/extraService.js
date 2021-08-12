@@ -517,7 +517,7 @@ export const getZohoTicketDetails = (id) => {
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successGetZohoTicketDetails(data.data)))
+            .then((res) => dispatch(successGetZohoTicketDetails(res.data)))
             .catch((error) => dispatch(failedGetZohoTicketDetails(error)));
     };
 };
@@ -527,12 +527,30 @@ export const getZohoTicketConversations = (id) => {
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_ticket_conversations/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_ticket_conversation_list/`,
         data: { id }
     };
     return dispatch => {
         axios(options)
-            .then(({ data }) => dispatch(successGetZohoTicketConversations(data.data)))
+            // .then(({ data }) => dispatch(successGetZohoTicketConversations(data.data)))
+            .then((res) => {
+                const token = localStorage.getItem('token');
+                let promises = res.data.data.map((item) => {
+                    const options = {
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+                        url: `${HTTP_PROTOCOL}://${API_HOST}/${item.type === 'thread' ? 'get_zoho_ticket_thread' : 'get_zoho_ticket_comment'}/`,
+                        data: { id: id, item: item.id }
+                    };
+                    return axios(options);
+                });
+                Promise.all(promises)
+                    .then((res) => {
+                        let conversations = res.map(item => item.data);
+                        dispatch(successGetZohoTicketConversations(conversations));
+                    })
+                    .catch((error) => console.log('Get ticket Conversations error: ', error));
+            })
             .catch((error) => dispatch(failedGetZohoTicketConversations(error)));
     };
 };
