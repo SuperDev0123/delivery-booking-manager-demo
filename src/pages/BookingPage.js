@@ -2754,8 +2754,7 @@ class BookingPage extends Component {
             }, {
                 dataField: 'createdTime',
                 text: 'Created At',
-                formatter: (cell, row) => {
-                    console.log(row);
+                formatter: (cell) => {
                     moment.tz.setDefault('Australia/Sydney');
                     return moment(cell).format('DD/MM/YYYY HH:MM');
                 },
@@ -2780,11 +2779,7 @@ class BookingPage extends Component {
                 editable: () => {
                     return false;
                 }
-            }
-        ];
-        if (clientname === 'dme') columnZohoTickets = [ 
-            ...columnZohoTickets, 
-            {
+            }, {
                 dataField: 'id',
                 text: 'View',
                 formatter:  (cell, row) => {
