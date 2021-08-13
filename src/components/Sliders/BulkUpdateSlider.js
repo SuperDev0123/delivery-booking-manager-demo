@@ -54,10 +54,25 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onSelected(e, src) {
+        const {clientname} = this.props;
+        const {selectedField} = this.state;
+        let errorMsg = null;
+
+        // Jason L
+        if (clientname === 'Jason L' &&
+            selectedField === 'vx_freight_provider' &&
+            (e.target.value === 'JasonL In house' ||
+             e.target.value === 'Customer Pickup' ||
+             e.target.value === 'Line haul General'
+            )
+        ) {
+            errorMsg = 'Please note that changing the provider with this function will set the selected booking to to DMEM manual bookings.';
+        }
+
         if (src === 'value') {
-            this.setState({selectedValue: e.target.value, errorMsg: null});
+            this.setState({selectedValue: e.target.value, errorMsg});
         } else if (src === 'field') {
-            this.setState({selectedField: e.target.value, selectedValue: null, errorMsg: null});
+            this.setState({selectedField: e.target.value, selectedValue: null, errorMsg});
         }
     }
 
