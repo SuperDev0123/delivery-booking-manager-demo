@@ -108,9 +108,6 @@ class ZohoDetailsPage extends React.Component {
     // getThreadsdata(){
     // }
 
-
-
-
     getsetrealtimedata() {
 
     }
