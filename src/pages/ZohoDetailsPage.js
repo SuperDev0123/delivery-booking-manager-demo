@@ -30,7 +30,7 @@ class ZohoDetailsPage extends React.Component {
             zohotickets: [],
             loadingStatus: false,
             ticketid: '',
-            threadcontent: {},
+            details: {},
             conversations: [],
             threadids: [],
             threadiddetails: [],
@@ -41,11 +41,12 @@ class ZohoDetailsPage extends React.Component {
     }
 
     static propTypes = {
+        clientname: PropTypes.string.isRequired,
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
-        threadcontent: PropTypes.object.isRequired,
+        details: PropTypes.object.isRequired,
         conversations: PropTypes.array.isRequired,
         getDMEClients: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
@@ -105,61 +106,7 @@ class ZohoDetailsPage extends React.Component {
     }
 
     // getThreadsdata(){
-    //     if (this.id) {
-    //         const options = {
-    //             method: 'get',
-    //             headers: {
-    //                 'orgId': this.zohoorgid,
-    //                 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken')
-    //             },
-    //             url: 'https://desk.zoho.com.au/api/v1/tickets/' + this.id + '/conversations',
-    //         };
-    //         axios(options)
-    //             .then(({data}) => {
-    //                 this.setState({conversations: data.data});
-
-    //                 const { conversations } = this.state;
-    //                 conversations.map((item) => {
-
-    //                     const { threadiddetails } = this.state;
-    //                     if (Number(conversations.length) > Number(threadiddetails.length)) {
-    //                         const options = {
-    //                             method: 'get',
-    //                             headers: { 'orgId': this.zohoorgid, 'Authorization': 'Zoho-oauthtoken ' + localStorage.getItem('zohotoken') },
-    //                             url: 'https://desk.zoho.com.au/api/v1/tickets/'+this.id+'/threads/'+item.id,
-    //                         };
-    //                         axios(options)
-    //                             .then(({ data }) => {
-    //                                 const { threadiddetails } = this.state;
-    //                                 if(Number(threadiddetails.length) > 0){
-    //                                     var flag = false;
-    //                                     for(var i = 0; i < Number(threadiddetails.length); i++ ){
-    //                                         if(Number(data.id) === Number(threadiddetails[i].id)){
-    //                                             flag = true;
-    //                                             break;
-    //                                         }
-    //                                     }
-    //                                     if(!flag){
-    //                                         this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
-    //                                         this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
-    //                                         this.setState({loadingStatus: false});
-    //                                     }
-    //                                 } else {
-    //                                     this.setState({threadiddetails: this.state.threadiddetails.concat(data)});
-    //                                     this.setState({threadiddetails: this.state.threadiddetails.sort(this.compare)});
-    //                                     this.setState({loadingStatus: false});
-    //                                 }
-    //                             })
-    //                             .catch((error) => console.log(error));
-    //                     }
-    //                 });
-    //             })
-    //             .catch((error) => console.log(error));
-    //     }
     // }
-
-
-
 
     getsetrealtimedata() {
 
@@ -194,10 +141,10 @@ class ZohoDetailsPage extends React.Component {
 
 
     //reply by mail
-    sendReply(tomail = '', fromemail = ''){
+    sendReply(fromEmail = '', toEmail = ''){
         var r = confirm('Send E-Mail?');
         if (r == true) {
-            this.props.sendZohoTicketReply(this.id, fromemail, tomail, this.state.mail);
+            this.props.sendZohoTicketReply(this.id, fromEmail, toEmail, this.state.mail);
         }
 
     }
@@ -206,8 +153,9 @@ class ZohoDetailsPage extends React.Component {
     addValue(evt) {
         evt.preventDefault();
         if(this.state.mail != undefined){
-            const { threadcontent } = this.props;
-            this.sendReply(threadcontent.email, 'support@dmesupport.zohodesk.com.au');
+            const { clientname, details } = this.props;
+            if (clientname === 'dme') this.sendReply('support@dmesupport.zohodesk.com.au', details.email);
+            else this.sendReply(details.email, 'support@dmesupport.zohodesk.com.au');
         } else{
             alert('Mail body missing!');
         }
@@ -228,12 +176,12 @@ class ZohoDetailsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        const { threadcontent, conversations } = newProps;
-        if (threadcontent && conversations) this.setState({loadingStatus: false});
+        const { details, conversations } = newProps;
+        if (details && conversations) this.setState({loadingStatus: false});
     }
 
     render() {
-        const { threadcontent, conversations } = this.props;
+        const { details, conversations } = this.props;
         let items = conversations.map((item, key) => {
             this.mailbackaddress = item.fromEmailAddress;
             if(item.channel.includes('ONLINE_CHAT')){
@@ -400,17 +348,17 @@ class ZohoDetailsPage extends React.Component {
                                     <div className="messages-box">
                                         <div className="list-group rounded-0">
                                             <a className="list-group-item list-group-item-action active text-white rounded-0">
-                                                { threadcontent && <div className="media" style={{display:'block'}}>
+                                                { details && <div className="media" style={{display:'block'}}>
                                                     <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
                                                     <small className="small font-weight-bold pull-right mr-2">
-                                                        { moment(threadcontent.createdTime).format('YYYY-MM-DD') }
-                                                        {/*<Moment format="MMM Do YY">{ threadcontent.createdTime }</Moment>*/}
+                                                        { moment(details.createdTime).format('YYYY-MM-DD') }
+                                                        {/*<Moment format="MMM Do YY">{ details.createdTime }</Moment>*/}
                                                     </small>
                                                     <div className="media-body ml-4 text-left">
                                                         <div className="d-flex align-items-center justify-content-between mb-1">
-                                                            <h6 className="mb-0">{ threadcontent.email }</h6>
+                                                            <h6 className="mb-0">{ details.email }</h6>
                                                         </div>
-                                                        <p className="font-italic mb-0 text-small">#{ threadcontent.ticketNumber } { threadcontent.subject }</p>
+                                                        <p className="font-italic mb-0 text-small">#{ details.ticketNumber } { details.subject }</p>
                                                     </div>
 
                                                 </div>}
@@ -446,9 +394,10 @@ class ZohoDetailsPage extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        clientname: state.auth.clientname,
         dmeClients: state.auth.dmeClients,
         redirect: state.auth.redirect,
-        threadcontent: state.extra.ticketDetails,
+        details: state.extra.ticketDetails,
         conversations: state.extra.ticketConversations,
     };
 };
