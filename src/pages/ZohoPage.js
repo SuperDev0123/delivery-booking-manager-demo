@@ -23,7 +23,8 @@ class ZohoPage extends React.Component {
             allTickets: [],
             filteredTickets: [], 
             activeTabInd: 0,
-            merge: 'disabled',
+            mergingId: '',
+            idToMerge: '',
             loadingStatus: false,
             showSimpleSearchBox: false,
             simpleSearchKeyword: '',
@@ -57,8 +58,6 @@ class ZohoPage extends React.Component {
         }
         this.props.getDMEClients();
         
-        this.setState({ loadingStatus: false });
-
         // precaution step to check for realtime data if response is slow
         this.getsetrealtimedata();
 
@@ -83,110 +82,66 @@ class ZohoPage extends React.Component {
     }
 
 
-    clickMerge(e){
-
-        e.preventDefault();
-
-        document.querySelectorAll('#merge').forEach(query => { query.removeAttribute('disabled');});
-        document.querySelectorAll('#btnmerge').forEach(query => { query.style.display='none';});
-
-        e.target.closest('td').children[2].style.display = 'inline';
-        e.target.closest('td').children[3].style.display = 'inline';
-
-        var element = e.target.closest('td').getAttribute('id');
-        document.getElementsByName(element)[0].setAttribute('checked', 'checked');
-        document.getElementsByName(element)[0].setAttribute('disabled', 'disabled');
-        document.getElementsByName(element)[0].setAttribute('readOnly', 'true');
-        console.log(document.getElementsByName(element));
-
-        document.getElementsByName(element)[0].setAttribute('readOnly', 'true');
+    clickMerge(id){
+        this.setState({ mergingId: id });
     }
 
-    cancelMerge(e){
-
-        //cancel a merge action before submitting
-
-        var element = e.target.closest('td').getAttribute('id');
-        document.getElementsByName(element)[0].removeAttribute('checked');
-        document.getElementsByName(element)[0].removeAttribute('disabled');
-        document.querySelectorAll('#merge').forEach(query => { query.setAttribute('disabled','disabled');});
-        document.querySelectorAll('#btnmerge').forEach(query => { query.style.display='inline';});
-        e.target.closest('td').children[2].style.display = 'none';
-        e.target.closest('td').children[3].style.display = 'none';
-        e.target.closest('td').children[4].style.display = 'none';
+    cancelMerge(){
+        this.setState({ mergingId: '', idToMerge: '' });
     }
 
-    submitMerge(e){
+    submitMerge(id, mergeFunc){
 
         //merging two tickets
 
         var r = confirm('Are you sure you want to Merge these two tickets?');
         if (r == true) {
-            var element = e.target.closest('td').getAttribute('id');
             document.querySelectorAll('input[checked=checked]').forEach(query => {
                 // console.log(query.getAttribute('name'));
-                if (query.getAttribute('name') !== element) {
-                    let id = query.getAttribute('name');
-                    // var mergingid = ['"' + element + '"'];
+                if (query.getAttribute('name') !== id) {
+                    let element = query.getAttribute('name');
+                    // var mergingid = ['"' + mergingId + '"'];
                     let idsToMerge =  [element];
                     let source = {
-                        'contactId': element,
-                        'subject': element,
-                        'priority': element,
-                        'status': element
+                        'contactId': id,
+                        'subject': id,
+                        'priority': id,
+                        'status': id
                     };
-                    this.props.mergeZohoTickets(id, idsToMerge, source);
+                    mergeFunc(id, idsToMerge, source);
                 }
             });
+            this.setState({ mergingId: '' });
         }
 
     }
 
-    closeTicket(e){
-        var r = confirm('Are you sure you want to Close these ticket?');
-        if (r == true) {
-            var ticketid = e.target.closest('td').getAttribute('id');
-            
-            this.props.closeZohoTicket(ticketid);
+    closeTicket(id, closeFunc){
+        let r = confirm('Are you sure you want to Close these ticket?');
+        if (r == true) {    
+            closeFunc(id);
         }
     }
 
-    updateCheck(e){
+    updateCheck(id){
 
         //checking for second checkbox's checked status
 
-        if( e.target.closest('input').getAttributeNode('checked') == null){
-            e.target.closest('input').setAttribute('checked', 'checked');
-        } else {
-            e.target.closest('input').removeAttribute('checked');
-        }
-
-        var countchecked = document.querySelectorAll('input[checked=checked]').length;
-
-        if(countchecked == 2){
-            document.querySelectorAll('#merge').forEach(query => {
-                if(query.getAttributeNode('checked') == null){
-                    query.setAttribute('disabled','disabled');
-                }
-            });
-
-        } else if(countchecked < 2){
-            document.querySelectorAll('#merge').forEach(query => {
-                if(query.getAttributeNode('checked') == null){
-                    query.removeAttribute('disabled');
-                }
-            });
+        const { idToMerge } = this.state;
+        if (idToMerge === '') {
+            this.setState({ idToMerge: id });
+        } else if (idToMerge === id) {
+            this.setState({ idToMerge: '' });
         }
     }
 
     getsetrealtimedata() {
         this.props.getAllZohoTickets();
-        this.setState({ allTickets: this.props.allTickets, filteredTickets: this.props.allTickets });
     }
     
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, allTickets } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -194,6 +149,9 @@ class ZohoPage extends React.Component {
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
+
+        if (!allTickets || allTickets.length === 0) this.setState({ loadingStatus: true });
+        else this.setState({ loadingStatus: false, allTickets: this.props.allTickets, filteredTickets: this.props.allTickets });
     }
 
     onClickTab(activeTabInd) {
@@ -311,20 +269,29 @@ class ZohoPage extends React.Component {
     }
 
     render() {
-        const { activeTabInd, showSimpleSearchBox, simpleSearchKeyword, filteredTickets } = this.state;
+        const { activeTabInd, showSimpleSearchBox, simpleSearchKeyword, filteredTickets, mergingId, idToMerge } = this.state;
+        const { closeZohoTicket, mergeZohoTickets } = this.props;
         let items = filteredTickets.map((item, key) => {
             return(
                 <tr key={key}>
-                    <td><input id="merge" name={ item.id } type="checkbox" onChange={this.updateCheck} disabled/></td>
+                    <td>
+                        <input id="merge" name={item.id} type="checkbox" onChange={() => this.updateCheck(item.id)} disabled={mergingId === ''} checked={item.id === mergingId || item.id === idToMerge}/>
+                    </td>
                     <td>{item.id}</td>
                     <td>{item.subject}</td>
                     <td>{item.email}</td>
                     <td>{item.status}</td>
-                    <td className="text-center" id={item.id}><Link to={'/zohodetails?id='+item.id}><i className="fa fa-eye"></i> </Link>
-                        <a id="btnmerge" onClick={this.clickMerge} data-toggle="tooltip" title="Merge"><i className="icon-flow-merge" aria-hidden="true"></i></a>
-                        <a id="btncancelmerge" onClick={this.cancelMerge} data-toggle="tooltip" title="Cancel Merge"><i className="icon-cancel" aria-hidden="true"></i></a>
-                        <a id="btnsubmitmerge" onClick={this.submitMerge} data-toggle="tooltip" title="Submit Merge"><i className="icon-check" aria-hidden="true"></i></a>
-                        <a id="btncloseticket" onClick={this.closeTicket} data-toggle="tooltip" title="Close Ticket"><i className="icon-delete2" aria-hidden="true"></i></a>
+                    <td className="text-center" id={item.id}>
+                        <Link to={'/zohodetails?id='+item.id}><i className="fa fa-eye"></i> </Link>
+                        {mergingId !== item.id ? (
+                            <a id="btnmerge" onClick={() => this.clickMerge(item.id)} data-toggle="tooltip" title="Merge"><i className="icon-flow-merge" aria-hidden="true"></i></a>
+                        ) : (
+                            <React.Fragment>
+                                <a id="btncancelmerge" onClick={() => this.cancelMerge()} data-toggle="tooltip" title="Cancel Merge"><i className="icon-cancel" aria-hidden="true"></i></a>
+                                <a id="btnsubmitmerge" onClick={() => this.submitMerge(item.id, mergeZohoTickets)} data-toggle="tooltip" title="Submit Merge"><i className="icon-check" aria-hidden="true"></i></a>
+                            </React.Fragment>
+                        )}
+                        <a id="btncloseticket" onClick={() => this.closeTicket(item.id, closeZohoTicket)} data-toggle="tooltip" title="Close Ticket"><i className="icon-delete2" aria-hidden="true"></i></a>
                         {/*<a href={'/zohodetails/' + item.id}>View</a>*/}
                     </td>
                 </tr>
@@ -418,7 +385,7 @@ class ZohoPage extends React.Component {
                         </Nav>
                     </div>
 
-                    <table className="table table-striped table-bordered table-hover custom-table p-2">
+                    <table className="table table-striped table-bordered table-hover custom-table p-2 mb-5">
                         <thead>
                             <tr>
                                 <th id="merge" className="text-center">Select</th>

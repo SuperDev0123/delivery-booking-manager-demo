@@ -470,7 +470,11 @@ export const mergeZohoTickets = (id, ids, source) => {
     };
     return dispatch => {
         axios(options)
-            .then(() => dispatch(getAllZohoTickets()))
+            .then(() => {
+                console.log('merge zoho tickets success');
+                dispatch(successGetAllZohoTickets([]));
+                dispatch(getAllZohoTickets());
+            })
             .catch((error) => console.log('merge zoho tickets error: ', error));
     };
 };
@@ -485,7 +489,11 @@ export const closeZohoTicket = (id) => {
     };
     return dispatch => {
         axios(options)
-            .then(() => dispatch(getAllZohoTickets()))
+            .then(() => {
+                console.log('close ticket success');
+                dispatch(successGetAllZohoTickets([]));
+                dispatch(getAllZohoTickets());
+            })
             .catch((error) => console.log('close zoho ticket error: ', error));
     };
 };
