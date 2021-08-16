@@ -95,7 +95,7 @@ const defaultState = {
     emailLogs: [],
     bookingset: null,
     bookingsets: null,
-    allTickets: [],
+    allTickets: null,
     zoho_tickets: [],
     ticketDetails: [],
     ticketThread: [],

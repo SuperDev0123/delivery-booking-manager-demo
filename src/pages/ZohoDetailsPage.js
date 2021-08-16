@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
+import { isEmpty } from 'lodash';
 import moment from 'moment-timezone';
 
 import LoadingOverlay from 'react-loading-overlay';
@@ -28,7 +28,6 @@ class ZohoDetailsPage extends React.Component {
 
         this.state = {
             zohotickets: [],
-            loadingStatus: false,
             ticketid: '',
             details: {},
             conversations: [],
@@ -59,7 +58,6 @@ class ZohoDetailsPage extends React.Component {
     componentDidMount() {
         var urlParams = new URLSearchParams(window.location.search);
         this.id = urlParams.get('id');
-        this.setState({ loadingStatus: true });
 
         const token = localStorage.getItem('token');
         if (token && token.length > 0) {
@@ -79,20 +77,12 @@ class ZohoDetailsPage extends React.Component {
         }
 
         this.getsetrealtimedata();
-        // this.getThreadsdata();
 
         this.intervalID = setInterval(this.getsetrealtimedata.bind(this), 30000);
-        // this.intervalID2 = setInterval(this.getThreadsdata.bind(this), 10000);
     }
 
     componentWillUnmount() {
         clearInterval(this.intervalID);
-        clearInterval(this.intervalID2);
-
-        //precautionary waiting for tickets data
-        // setTimeout(function(){
-        //     this.getThreadsdata();
-        // }, 5000);
     }
 
     compare( a, b ) {
@@ -105,11 +95,14 @@ class ZohoDetailsPage extends React.Component {
         return 0;
     }
 
-    // getThreadsdata(){
-    // }
-
     getsetrealtimedata() {
+        if (this.id) {
+            //get original ticket data
+            this.props.getZohoTicketDetails(this.id);
 
+            //get threads/conversations related to ticket
+            this.props.getZohoTicketConversations(this.id);
+        }
     }
 
     //attachment download
@@ -144,7 +137,12 @@ class ZohoDetailsPage extends React.Component {
     sendReply(fromEmail = '', toEmail = ''){
         var r = confirm('Send E-Mail?');
         if (r == true) {
-            this.props.sendZohoTicketReply(this.id, fromEmail, toEmail, this.state.mail);
+            const { mail } = this.state;
+            const { details, conversations } = this.state;
+            let content = `${mail}\n\n-----Original Message-----\nFrom: ${conversations[0].fromEmailAddress}\n\
+            Sent: ${moment.utc(conversations[0].createdTime).tz('Australia/Sydney').format('dddd, DD MMMM YYYY hh:mm A')}\nTo: ${conversations[0].to}\
+            Cc: ${conversations[0].cc}\nSubject: ${details.subject}\n\n${conversations[0].content}`;
+            this.props.sendZohoTicketReply(this.id, fromEmail, toEmail, content);
         }
 
     }
@@ -153,7 +151,8 @@ class ZohoDetailsPage extends React.Component {
     addValue(evt) {
         evt.preventDefault();
         if(this.state.mail != undefined){
-            const { clientname, details } = this.props;
+            const { clientname } = this.props;
+            const { details } = this.state;
             if (clientname === 'dme') this.sendReply('support@dmesupport.zohodesk.com.au', details.email);
             else this.sendReply(details.email, 'support@dmesupport.zohodesk.com.au');
         } else{
@@ -167,7 +166,7 @@ class ZohoDetailsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect } = newProps;
+        const { redirect, details, conversations } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -176,103 +175,143 @@ class ZohoDetailsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        const { details, conversations } = newProps;
-        if (details && conversations) this.setState({loadingStatus: false});
+        if(!isEmpty(details) && !isEmpty(conversations)) this.setState({ details, conversations });
     }
 
     render() {
-        const { details, conversations } = this.props;
+        const { details, conversations } = this.state;
         let items = conversations.map((item, key) => {
             this.mailbackaddress = item.fromEmailAddress;
-            if(item.channel.includes('ONLINE_CHAT')){
-                return (<SlideToggle collapsed key={key}>
-                    {({toggle, setCollapsibleElement}) => (
-                        <div>
+            if('author' in item) {
+                if(item.channel.includes('ONLINE_CHAT')){
+                    return (<SlideToggle collapsed key={key}>
+                        {({toggle, setCollapsibleElement}) => (
+                            <div>
 
-                            <div className="media p-3 mb-3 my-collapsible">
-                                <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
-                                <div className="media-body ml-3 ">
-                                    <div className="py-2 px-3 toggle-sec my-collapsible__toggle" onClick={toggle}>
-                                        <p className="small mb-0 text-muted"><strong>CHAT</strong> </p>
-                                    </div>
-                                    <p className="px-3">{ item.fromEmailAddress }</p>
-                                    <div className="my-collapsible__content" ref={setCollapsibleElement}>
-                                        <div className="table-responsive my-collapsible__content-inner">
-                                            { ReactHtmlParser(item.content) }
+                                <div className="media p-3 mb-3 my-collapsible">
+                                    <div className='border border-primary p-1 font-weight-bold'>{item.author.name.split(' ').map(item => item[0]).join('')}</div>
+                                    <div className="media-body ml-3 ">
+                                        <div className="py-2 px-3 toggle-sec my-collapsible__toggle" onClick={toggle}>
+                                            <p className="small mb-0 text-muted"><strong>CHAT</strong> </p>
                                         </div>
-                                    </div>
+                                        <p className="px-3">{ item.fromEmailAddress }</p>
+                                        <div className="my-collapsible__content" ref={setCollapsibleElement}>
+                                            <div className="table-responsive my-collapsible__content-inner">
+                                                { ReactHtmlParser(item.content) }
+                                            </div>
+                                        </div>
 
+                                    </div>
+                                </div>
+                                <div className="divattach">
+                                    {item.attachments[0] != undefined ? (
+                                        item.attachments.map((attach, keys) => {
+                                            return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                        })
+                                    // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                    ) : (
+                                        <p></p>
+                                    )}
                                 </div>
                             </div>
-                            <div className="divattach">
-                                {item.attachments[0] != undefined ? (
-                                    item.attachments.map((attach, keys) => {
-                                        return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
-                                    }
-                                    )
+                        )}
 
-                                // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
-                                ) : (
-                                    <p></p>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    </SlideToggle>
+                    );
+                } else if(item.channel.includes('EMAIL')){
+                    return (<SlideToggle collapsed key={key}>
+                        {({ toggle, setCollapsibleElement }) => (
+                            <div>
+                                <div className="media p-3  mb-3 my-collapsible">
+                                    <div className='border border-primary p-1 font-weight-bold'>{item.author.name.split(' ').map(item => item[0]).join('')}</div>
+                                    <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
+                                        <div className="py-2 px-3 toggle-sec">
+                                            <p className="small mb-0 text-muted"><strong>{ item.summary }</strong> { moment.utc(item.createdTime).tz('Australia/Sydney').format('YYYY-MM-DD') }</p>
+                                        </div>
+                                        <p className="px-3"> From { item.fromEmailAddress }
+                                        </p>
+                                        <div className="slide-toggle__box" ref={setCollapsibleElement}>
+                                            <div className="my-collapsible__content-inner">
+                                                <div className="gmail_attr">
+                                                    { ReactHtmlParser(item.content) }
+                                                </div>
 
-                </SlideToggle>
-                );
-            } else if(item.channel.includes('EMAIL')){
-                return (<SlideToggle collapsed key={key}>
-                    {({ toggle, setCollapsibleElement }) => (
-                        <div>
-                            <div className="media p-3  mb-3 my-collapsible"><img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
-                                <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
-                                    <div className="py-2 px-3 toggle-sec">
-                                        <p className="small mb-0 text-muted"><strong>{ item.summary }</strong> { moment(item.createdTime).format('YYYY-MM-DD') }</p>
+                                            </div>
+                                        </div>
+
                                     </div>
-                                    <p className="px-3"> From { item.fromEmailAddress }
-                                    </p>
-                                    <div className="slide-toggle__box" ref={setCollapsibleElement}>
-                                        <div className="my-collapsible__content-inner">
-                                            <div className="gmail_attr">
-                                                { ReactHtmlParser(item.content) }
+                                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                                </div>
+                                <div className="divattach">
+                                    {item.attachments[0] != undefined ? (
+                                        item.attachments.map((attach, keys) => {
+                                            return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                        })
+                                    // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                    ) : (
+                                        <p></p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                        {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    </SlideToggle>
+                    );
+                } else if(item.channel.includes('WEB')){
+                    return (<SlideToggle collapsed key={key}>
+                        {({ toggle, setCollapsibleElement }) => (
+                            <div>
+                                <div className="media p-3  mb-3 my-collapsible">
+                                    <div className='border border-primary p-1 font-weight-bold'>{item.author.name.split(' ').map(item => item[0]).join('')}</div>
+                                    <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
+                                        <div className="py-2 px-3 toggle-sec">
+                                            <p className="small mb-0 text-muted"><strong>{ item.summary }</strong> { moment.utc(item.createdTime).tz('Australia/Sydney').format('YYYY-MM-DD') } </p>
+                                        </div>
+                                        <p className="px-3"> From { item.fromEmailAddress }
+                                        </p>
+                                        <div className="slide-toggle__box" ref={setCollapsibleElement}>
+                                            <div className="my-collapsible__content-inner">
+                                                <div className="gmail_attr">
+                                                    { ReactHtmlParser(item.content) }
+                                                </div>
                                             </div>
 
                                         </div>
+                                        {/*{item.attachments[0] != undefined ? (*/}
+                                        {/*    <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>*/}
+                                        {/*) : (*/}
+                                        {/*    <p></p>*/}
+                                        {/*)}*/}
                                     </div>
-
+                                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                                 </div>
-                                {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                                <div className="divattach">
+                                    {item.attachments[0] != undefined ? (
+                                        item.attachments.map((attach, keys) => {
+                                            return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
+                                        })
+                                    // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
+                                    ) : (
+                                        <p></p>
+                                    )}
+                                </div>
                             </div>
-                            <div className="divattach">
-                                {item.attachments[0] != undefined ? (
-                                    item.attachments.map((attach, keys) => {
-                                        return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
-                                    }
-                                    )
-
-                                // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
-                                ) : (
-                                    <p></p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-
-                    {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
-                </SlideToggle>
-                );
-            } else if(item.channel.includes('WEB')){
+                        )}
+                        {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
+                    </SlideToggle>
+                    );
+                }
+            } else {
                 return (<SlideToggle collapsed key={key}>
                     {({ toggle, setCollapsibleElement }) => (
                         <div>
-                            <div className="media p-3  mb-3 my-collapsible"><img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
+                            <div className="media p-3  mb-3 my-collapsible">
+                                <div className='border border-info p-1 font-weight-bold'>{item.commenter.name.split(' ').map(item => item[0]).join('')}</div>
                                 <div className="media-body ml-3 my-collapsible__toggle" onClick={toggle}>
                                     <div className="py-2 px-3 toggle-sec">
-                                        <p className="small mb-0 text-muted"><strong>{ item.summary }</strong> { moment(item.createdTime).format('YYYY-MM-DD') } </p>
+                                        <p className="small mb-0 text-muted"><strong>{ item.summary }</strong> { moment.utc(item.modifiedTime).tz('Australia/Sydney').format('YYYY-MM-DD') } </p>
                                     </div>
-                                    <p className="px-3"> From { item.fromEmailAddress }
+                                    <p className="px-3"> From { item.commenter.email }
                                     </p>
                                     <div className="slide-toggle__box" ref={setCollapsibleElement}>
                                         <div className="my-collapsible__content-inner">
@@ -294,9 +333,7 @@ class ZohoDetailsPage extends React.Component {
                                 {item.attachments[0] != undefined ? (
                                     item.attachments.map((attach, keys) => {
                                         return <a key={keys} className="attachmentanchor" onClick={this.getattachment} href={attach.href} id={attach.name}>{attach.name}</a>;
-                                    }
-                                    )
-
+                                    })
                                 // <a className="attachmentanchor" onClick={this.getattachment} href={item.attachments[0].href}><p>{item.attachmentCount} </p>Attachment(s)</a>
                                 ) : (
                                     <p></p>
@@ -304,18 +341,14 @@ class ZohoDetailsPage extends React.Component {
                             </div>
                         </div>
                     )}
-                    
-
                     {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                 </SlideToggle>
                 );
             }
-
         });
 
-
         return (
-            <LoadingOverlay active={this.state.loadingStatus} spinner text='Please Wait...' >
+            <LoadingOverlay active={isEmpty(details) || isEmpty(conversations)} spinner text='Please Wait...' >
                 <div className="qbootstrap-nav pods" >
                     <div id="headr" className="col-md-12">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12 col-md-push-1">
@@ -348,19 +381,13 @@ class ZohoDetailsPage extends React.Component {
                                     <div className="messages-box">
                                         <div className="list-group rounded-0">
                                             <a className="list-group-item list-group-item-action active text-white rounded-0">
-                                                { details && <div className="media" style={{display:'block'}}>
-                                                    <img src="https://res.cloudinary.com/mhmd/image/upload/v1564960395/avatar_usae7z.svg" alt="user" width="50" className="rounded-circle"/>
-                                                    <small className="small font-weight-bold pull-right mr-2">
-                                                        { moment(details.createdTime).format('YYYY-MM-DD') }
-                                                        {/*<Moment format="MMM Do YY">{ details.createdTime }</Moment>*/}
-                                                    </small>
-                                                    <div className="media-body ml-4 text-left">
-                                                        <div className="d-flex align-items-center justify-content-between mb-1">
-                                                            <h6 className="mb-0">{ details.email }</h6>
-                                                        </div>
-                                                        <p className="font-italic mb-0 text-small">#{ details.ticketNumber } { details.subject }</p>
-                                                    </div>
-
+                                                { !isEmpty(details) && <div className="media" style={{display:'block'}}>
+                                                    <h5>#{ details.ticketNumber } { details.subject }</h5>
+                                                    {/* <p className="font-italic mb-0 text-medium">{conversations.length && conversations[conversations.length - 1].author.name}</p> */}
+                                                    <p className="font-italic mb-0 text-medium">{ details.email }</p>
+                                                    <p className="text-medium pull-right mb-0">
+                                                        {  moment.utc(details.createdTime).tz('Australia/Sydney').format('YYYY-MM-DD') }
+                                                    </p>
                                                 </div>}
                                             </a>
                                         </div>
@@ -371,7 +398,7 @@ class ZohoDetailsPage extends React.Component {
                             <div className="col-9 px-0">
                                 {/* eslint-disable-next-line react/jsx-no-comment-textnodes */}
                                 <div className="px-4 py-5 chat-box bg-white">
-                                    { conversations && items }
+                                    { !isEmpty(conversations) && items }
                                 </div>
 
                                 {/*// Typing area*/}
