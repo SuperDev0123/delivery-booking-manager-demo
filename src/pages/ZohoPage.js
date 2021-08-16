@@ -151,7 +151,7 @@ class ZohoPage extends React.Component {
         }
 
         if (!allTickets || allTickets.length === 0) this.setState({ loadingStatus: true });
-        else this.setState({ loadingStatus: false, allTickets: this.props.allTickets, filteredTickets: this.props.allTickets });
+        else this.setState({ loadingStatus: false, allTickets: allTickets, filteredTickets: allTickets });
     }
 
     onClickTab(activeTabInd) {
