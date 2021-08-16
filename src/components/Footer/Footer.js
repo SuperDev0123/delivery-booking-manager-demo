@@ -14,7 +14,6 @@ class Footer extends Component {
 
     render() {
         const currentRoute = this.props.location.pathname;
-        console.log(currentRoute);
         if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('/status/') > -1) 
             return null;
         else return (
