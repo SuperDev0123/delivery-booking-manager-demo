@@ -138,10 +138,11 @@ class ZohoDetailsPage extends React.Component {
         var r = confirm('Send E-Mail?');
         if (r == true) {
             const { mail } = this.state;
+            let html = mail.split('\n').map(p => `<p>${p}</p>`).join('');
             const { details, conversations } = this.state;
-            let content = `${mail}\n\n-----Original Message-----\nFrom: ${conversations[0].fromEmailAddress}\n\
-            Sent: ${moment.utc(conversations[0].createdTime).tz('Australia/Sydney').format('dddd, DD MMMM YYYY hh:mm A')}\nTo: ${conversations[0].to}\
-            Cc: ${conversations[0].cc}\nSubject: ${details.subject}\n\n${conversations[0].content}`;
+            let content = `<html><head></head><body><div>${html}<br /><br />-----Original Message-----<br />From: ${conversations[0].fromEmailAddress}<br />\
+            Sent: ${moment.utc(conversations[0].createdTime).tz('Australia/Sydney').format('dddd, DD MMMM YYYY hh:mm A')}<br />To: ${conversations[0].to}\
+            Cc: ${conversations[0].cc}<br />Subject: ${details.subject}<br /><br />${conversations[0].content}</div><body></html>`;
             this.props.sendZohoTicketReply(this.id, fromEmail, toEmail, content);
         }
 
@@ -153,8 +154,8 @@ class ZohoDetailsPage extends React.Component {
         if(this.state.mail != undefined){
             const { clientname } = this.props;
             const { details } = this.state;
-            if (clientname === 'dme') this.sendReply('support@dmesupport.zohodesk.com.au', details.email);
-            else this.sendReply(details.email, 'support@dmesupport.zohodesk.com.au');
+            if (clientname === 'dme') this.sendReply('care@deliver-me.com.au', details.email);
+            else this.sendReply(details.email, 'care@deliver-me.com.au');
         } else{
             alert('Mail body missing!');
         }
@@ -162,6 +163,7 @@ class ZohoDetailsPage extends React.Component {
 
     //update mail body content
     updateInput(evt) {
+        evt.preventDefault();
         this.setState({mail: evt.target.value});
     }
 
@@ -404,7 +406,7 @@ class ZohoDetailsPage extends React.Component {
                                 {/*// Typing area*/}
                                 <form className="bg-light" onSubmit={this.addValue}>
                                     <div className="input-group" >
-                                        <input type="text" placeholder="Type a message" aria-describedby="button-addon2" className="form-control rounded-0 border-0 py-4 bg-light" onChange={this.updateInput}/>
+                                        <textarea type="text" placeholder="Type a message" aria-describedby="button-addon2" className="form-control rounded-0 border-0 py-4 bg-light" onChange={this.updateInput} rows="1"/>
                                         <div className="input-group-append">
                                             <button id="button-addon2" type="submit" className="btn btn-link"><i className="fa fa-paper-plane"></i></button>
                                         </div>
