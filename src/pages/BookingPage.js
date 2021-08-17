@@ -731,6 +731,8 @@ class BookingPage extends Component {
 
                 let formInputs = this.state.formInputs;
 
+                formInputs['id'] = booking.id;
+                formInputs['b_bookingID_Visual'] = booking.b_bookingID_Visual;
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
