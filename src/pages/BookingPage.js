@@ -4293,7 +4293,7 @@ class BookingPage extends Component {
                                                                     <p className="show-mode">{formInputs['deToCompanyName']}</p>
                                                                     :
                                                                     <input 
-                                                                        placeholder="Tempo Pty Ltd"
+                                                                        placeholder=""
                                                                         type="text"
                                                                         name="deToCompanyName"
                                                                         value = {formInputs['deToCompanyName'] ? formInputs['deToCompanyName'] : ''} 
