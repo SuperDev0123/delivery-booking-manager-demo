@@ -733,6 +733,7 @@ class BookingPage extends Component {
 
                 formInputs['id'] = booking.id;
                 formInputs['b_bookingID_Visual'] = booking.b_bookingID_Visual;
+                formInputs['pk_booking_id'] = booking.pk_booking_id;
                 if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
                 else formInputs['puCompany'] = '';
                 if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
@@ -2622,9 +2623,7 @@ class BookingPage extends Component {
         const {
             isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zoho_tickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus
         } = this.state;
-        const {
-            warehouses, emailLogs
-        } = this.props;
+        const {warehouses, emailLogs} = this.props;
 
         const filteredProducts = products.filter(product => {
             if (currentPackedStatus !== 'original')

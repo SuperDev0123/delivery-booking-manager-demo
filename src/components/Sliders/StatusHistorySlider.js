@@ -58,7 +58,7 @@ class StatusHistorySlider extends React.Component {
         const {saveMode, event_time_stamp} = this.state;
         let statusHistory = _.clone(this.state.formInputs);
 
-        if (saveMode === 0) {        
+        if (saveMode === 0) {
             if (statusHistory['status_last'] === '') {
                 this.setState({errorMessage: 'Please select a status'});
             } else {
@@ -73,6 +73,7 @@ class StatusHistorySlider extends React.Component {
                         status_last: '',
                         dme_notes: '',
                     },
+                    event_time_stamp: null,
                 });
             }
         } else if (saveMode === 1) {
@@ -91,13 +92,14 @@ class StatusHistorySlider extends React.Component {
                         status_last: '',
                         dme_notes: '',
                     },
+                    event_time_stamp: null,
                 });
             }
         }
     }
 
     onClickCancel() {
-        this.setState({viewMode: 0});
+        this.setState({viewMode: 0, event_time_stamp: null});
     }
 
     onInputChange(event) {
