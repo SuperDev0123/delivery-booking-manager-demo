@@ -1116,13 +1116,8 @@ class AllBookingsPage extends React.Component {
         const { clientPK, warehouseId, pageItemCnt, activeTabInd, filterInputs } = this.state;
         const today = moment().format('YYYY-MM-DD');
 
-        if (fieldNameToFind === 'postal_code_pair' || fieldNameToFind === 'postal_code_type') {
-            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
-        } else {
-            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', {}, 0, '', 'label', '', fieldNameToFind, valueSet);
-            this.setState({activeTabInd: 0, selectedBookingIds: [], allCheckStatus: 'None'});
-        }
+        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onClickTab(activeTabInd) {
