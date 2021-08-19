@@ -1114,8 +1114,6 @@ class AllBookingsPage extends React.Component {
 
     onMultiFind(fieldNameToFind, valueSet) {
         const { startDate, endDate, clientPK, warehouseId, pageItemCnt, activeTabInd, filterInputs } = this.state;
-        const today = moment().format('YYYY-MM-DD');
-
         this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
