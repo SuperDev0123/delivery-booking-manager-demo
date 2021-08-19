@@ -1726,6 +1726,7 @@ class BookingPage extends Component {
 
             formInputs['b_clientPU_Warehouse'] = selectedWarehouse.name;
             formInputs['fk_client_warehouse'] = selectedWarehouse.pk_id_client_warehouses;
+            formInputs['puCompany'] = selectedWarehouse.name;
             formInputs['pu_Address_Street_1'] = selectedWarehouse.address1;
             formInputs['pu_Address_street_2'] = selectedWarehouse.address2;
             const puState = {'value': selectedWarehouse.state, 'label': selectedWarehouse.state};
