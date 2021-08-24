@@ -125,7 +125,7 @@ class BokStatusPage extends Component {
                                         DELIVERY PARTNER
                                     </p>
                                     <p className="status-summary-desc">
-                                        {quote && quote.fp_name}
+                                        {(booking && booking['vx_freight_provider']) ? booking['vx_freight_provider'] : ''}
                                     </p>
                                 </div>
                                 <div className="col-md-5 col-sm-12">
