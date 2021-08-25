@@ -49,7 +49,7 @@ import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordi
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, updateAugment } from '../state/services/bookingService';
+import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, updateAugment, repack } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
@@ -143,6 +143,7 @@ class BookingPage extends Component {
             isShowCostSlider: false,
             isShowAugmentInfoPopup: false,
             isAugmentEditable: false,
+            isShowManualRepackModal: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -202,6 +203,7 @@ class BookingPage extends Component {
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
         this.toggleCostSlider = this.toggleCostSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
+        this.toggleManualRepackModal = this.toggleManualRepackModal.bind(this);
     }
 
     static propTypes = {
@@ -271,6 +273,7 @@ class BookingPage extends Component {
         resetNoBooking: PropTypes.func.isRequired,
         getClientProcessMgr: PropTypes.func.isRequired,
         updateAugment: PropTypes.func.isRequired,
+        repack: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -455,6 +458,7 @@ class BookingPage extends Component {
         }
 
         if (needUpdateBookingLines && booking) {
+            console.log('@1 - ');
             this.setState({loadingBookingLine: true});
             this.setState({loadingBookingLineDetail: true});
             this.props.getBookingLines(booking.pk_booking_id);
@@ -1333,6 +1337,14 @@ class BookingPage extends Component {
             }
 
             this.toggleUpdateCreatedForEmailConfirmModal();
+        } else if (type === 'manual-from-original') {
+            this.props.repack(booking.id, type);
+            this.setState({loadingBooking: true, currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
+        } else if (type === 'manual-from-auto') {
+            this.props.repack(booking.id, type);
+            this.setState({loadingBooking: true, currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
         }
     }
 
@@ -2312,6 +2324,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowCostSlider: !prevState.isShowCostSlider}));   
     }
 
+    toggleManualRepackModal() {
+        this.setState(prevState => ({isShowManualRepackModal: !prevState.isShowManualRepackModal}));
+    }
+
     // onClickSwitchClientNavIcon(e) {
     //     e.preventDefault();
     //     this.props.getDMEClients();
@@ -2604,19 +2620,46 @@ class BookingPage extends Component {
         this.props.getAllErrors(this.state.booking.pk_booking_id);
     }
 
+    // status: `original`, `auto`, `manual`
     onChangePackedStatus(status) {
-        this.setState({currentPackedStatus: status});
+        const {booking, products} = this.state;
+
+        if (products.length === 0) {
+            this.notify('There are no lines. Please add lines first.');
+            return;
+        }
+
+        const currentPackedStatus = status;
+        const filteredProducts = products.filter(product => {
+            if (currentPackedStatus !== 'original')
+                return product['packed_status'] === currentPackedStatus;
+            else
+                return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+        });
+
+        if (filteredProducts.length === 0) {
+            if (status === 'auto') {
+                this.props.repack(booking.id, status);
+                this.setState({loadingBooking: true});
+            } else {
+                this.toggleManualRepackModal();
+            }
+        } else {
+            this.setState({currentPackedStatus});
+        }
     }
 
     onAfterSaveCell = async (oldValue, newValue, row, column) => {
         let data = null;
-        if (column.text == 'Summary') {
+
+        if (column.text === 'Summary') {
             data = {
                 cf: {
                     cf_summary: newValue
                 }
             };
         }
+
         this.props.updateZohoTicket(row.id, data);
     }
 
@@ -5630,6 +5673,17 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <ConfirmModal
+                    isOpen={this.state.isShowManualRepackModal}
+                    onOk={() => this.onClickConfirmBtn('manual-from-original')}
+                    onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
+                    onCancel={this.toggleManualRepackModal}
+                    title={'Manual Repack source selection'}
+                    text={'Please select the source for Manual Repack.'}
+                    okBtnName={'From Send As'}
+                    ok2BtnName={'From Auto Repack'}
+                />
+
                 <ToastContainer />
             </div>
         );
@@ -5753,6 +5807,7 @@ const mapDispatchToProps = (dispatch) => {
         getClientProcessMgr: (pk_booking_id) => dispatch(getClientProcessMgr(pk_booking_id)),
         updateAugment: (clientprocess) => dispatch(updateAugment(clientprocess)),
         moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
+        repack: (bookingId, repackStatus) => dispatch(repack(bookingId, repackStatus)),
     };
 };
 

@@ -96,6 +96,8 @@ import {
     FAILED_GET_MANIFEST_SUMMARY,
     SUCCESS_GET_DME_LABEL,
     FAILED_GET_DME_LABEL,
+    SUCCESS_REPACK,
+    FAILED_REPACK,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -336,7 +338,12 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 booking: booking,
-                needUpdateBookingLines: true,
+                needUpdateBooking: true,
+            };
+        case SUCCESS_REPACK:
+            return {
+                ...state,
+                needUpdateBooking: true,
             };
         case FAILED_GET_BOOKINGS:
             return {
@@ -635,6 +642,7 @@ export const BookingReducer = (state = defaultState, {
         case FAILED_PRICING_ANALYSIS:
         case FAILED_GET_LABELS_INFO:
         case FAILED_GET_MANIFEST_SUMMARY:
+        case FAILED_REPACK:
             return {
                 ...state,
                 errorMessage: errorMessage,

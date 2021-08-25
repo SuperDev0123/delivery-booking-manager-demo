@@ -100,6 +100,8 @@ import {
     FAILED_GET_MANIFEST_SUMMARY,
     SUCCESS_GET_DME_LABEL,
     FAILED_GET_DME_LABEL,
+    SUCCESS_REPACK,
+    FAILED_REPACK,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -914,6 +916,20 @@ export function successGetManifestSummary(data) {
 export function failedGetManifestSummary(error) {
     return {
         type: FAILED_GET_MANIFEST_SUMMARY,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successRepack(data) {
+    return {
+        type: SUCCESS_REPACK,
+        payload: data,
+    };
+}
+
+export function failedRepack(error) {
+    return {
+        type: FAILED_REPACK,
         errorMessage: error.response.data.message
     };
 }

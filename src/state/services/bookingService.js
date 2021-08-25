@@ -88,6 +88,8 @@ import {
     resetManifestSummary,
     successGetManifestSummary,
     failedGetManifestSummary,
+    successRepack,
+    failedRepack,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -822,5 +824,20 @@ export const getManifestSummary = (bookingIds) => {
         axios(options)
             .then(({ data }) => dispatch(successGetManifestSummary(data)))
             .catch((error) => dispatch(failedGetManifestSummary(error)));
+    };
+};
+
+export const repack = (id, repackStatus) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token  },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/` + id + '/repack/',
+        data: {repackStatus}
+    };
+    return dispatch => {
+        axios(options)
+            .then(() => dispatch(successRepack()))
+            .catch((error) => dispatch(failedRepack(error)));
     };
 };
