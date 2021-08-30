@@ -2,6 +2,27 @@ section.status {
     height: calc(100% - 96px);
     overflow-y: auto;
 
+    .status-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 120px;
+        margin: 0px 10%;
+
+        .navbar-brand {
+            padding: 0px;
+        }
+
+        .logo-desc {
+            font-size: 15.3px;
+            font-weight: bold;
+        }
+
+        .head-logo {
+            max-height: 100px;
+        }
+    }
+
     p.error {
         color: red;
         font-size: 20px;
@@ -179,6 +200,20 @@ section.status {
     section.status .status-content input {
         width: 20px;
         height: 20px;
+        margin: 0px;
+    }
+    section.status .status-head {
+        min-height: 50px;
+        margin: 10px 10%;
+    }
+    section.status .status-head .head-logo {
+        max-height: 36px;
+        margin-top: 20px;
+    }
+    section.status .status-head .logo-desc {
+        display: none;
+    }
+    section.status .status-head .navbar-brand {
         margin: 0px;
     }
 }
