@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import { getDeliveryStatus } from '../../state/services/bokService';
+import dmeLogo from '../../public/images/logos/dme.png';
 
 class BokStatusPage extends Component {
     constructor(props) {
@@ -27,6 +28,7 @@ class BokStatusPage extends Component {
         etaDate: PropTypes.string,
         lastMilestone: PropTypes.string,
         timestamps: PropTypes.array,
+        clientLogoUrl: PropTypes.string,
         match: PropTypes.object,
     };
 
@@ -50,7 +52,7 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {status, step, lastUpdated, quote, booking, lines, lastMilestone, timestamps, etaDate} = this.props;
+        const {status, step, lastUpdated, quote, booking, lines, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
         const steps = [
             'Processing',
             'Ready for Dispatch',
@@ -107,6 +109,15 @@ class BokStatusPage extends Component {
 
         return (
             <section className="status">
+                <nav className="status-head mt-md-5">
+                    <a href="/" className="navbar-brand mr-sm-0">
+                        <img src={dmeLogo} className="head-logo" alt="logo" />
+                        <span className="logo-desc">Your shipment powered by Deliver Me</span>
+                    </a>
+                    {clientLogoUrl && <a href="#" className="navbar-brand mr-sm-0 pull-right">
+                        <img src={require(`../../public/images/logos/${clientLogoUrl}`)} className="head-logo" alt="logo" />
+                    </a>}
+                </nav>
                 {this.state.errorMessage ?
                     <p className="error">{this.state.errorMessage}</p>
                     : <Fragment>
@@ -234,7 +245,8 @@ const mapStateToProps = (state) => {
         etaDate: state.bok.etaDate,
         lastUpdated: state.bok.lastUpdated,
         lastMilestone: state.bok.lastMilestone,
-        timestamps: state.bok.timestamps
+        timestamps: state.bok.timestamps,
+        clientLogoUrl: state.bok.clientLogoUrl
     };
 };
 
