@@ -53,7 +53,7 @@ class Header extends Component {
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
-        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1) 
+        if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('status') > -1) 
             return null;
         
         return (
