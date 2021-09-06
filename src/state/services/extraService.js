@@ -59,6 +59,10 @@ import {
     failedGetZohoTicketThread,
     successSendZohoTicketReply,
     failedSendZohoTicketReply,
+    successGetZohoDepartments,
+    failedGetZohoDepartments,
+    successGetZohoTicketSummaries,
+    failedGetZohoTicketSummaries,
     successGetDMEClientProducts,
     failedGetDMEClientProducts,
     successDeleteClientProduct,
@@ -436,7 +440,7 @@ export const getAllZohoTickets = () => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_all_zoho_tickets/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_auth_zoho_tickets/`,
     };
     return dispatch => {
         axios(options)
@@ -455,7 +459,10 @@ export const getZohoTicketsWithBookingId = (dmeid) => {
     return dispatch => {
         dispatch(resetZohoTicketsWithBookingId());
         axios(options)
-            .then(({ data }) => dispatch(successGetZohoTicketsWithBookingId(data.tickets)))
+            .then(({ data }) => {
+                dispatch(successGetZohoTicketsWithBookingId(data.tickets));
+                dispatch(getZohoDepartments());
+            })
             .catch((error) => dispatch(failedGetZohoTicketsWithBookingId(error)));
     };
 };
@@ -513,6 +520,23 @@ export const updateZohoTicket = (id, data) => {
         axios(options)
             .then(({ data }) => console.log('Ticket updated', data))
             .catch((error) => console.log('Ticket update error', error));
+};
+
+export const moveZohoTicket = (id, data) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/move_zoho_ticket/`,
+        data: {
+            id,
+            data
+        },
+    };
+    return () =>
+        axios(options)
+            .then(({ data }) => console.log('Ticket moved to other department', data))
+            .catch((error) => console.log('Ticket moved to other department error', error));
 };
 
 export const getZohoTicketDetails = (id) => {
@@ -590,6 +614,34 @@ export const sendZohoTicketReply = (id, from, to, content) => {
         axios(options)
             .then(({ data }) => dispatch(successSendZohoTicketReply(data.data)))
             .catch((error) => dispatch(failedSendZohoTicketReply(error)));
+    };
+};
+
+export const getZohoDepartments = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_departments/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetZohoDepartments(data.data)))
+            .catch((error) => dispatch(failedGetZohoDepartments(error)));
+    };
+};
+
+export const getZohoTicketSummaries = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get_zoho_ticket_summaries/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetZohoTicketSummaries(data)))
+            .catch((error) => dispatch(failedGetZohoTicketSummaries(error)));
     };
 };
 
