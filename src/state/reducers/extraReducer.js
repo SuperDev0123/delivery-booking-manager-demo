@@ -58,6 +58,10 @@ import {
     FAILED_GET_ZOHO_TICKET_THREAD,
     SUCCESS_SEND_ZOHO_TICKET_REPLY,
     FAILED_SEND_ZOHO_TICKET_REPLY,
+    SUCCESS_GET_ZOHO_DEPARTMENTS,
+    FAILED_GET_ZOHO_DEPARTMENTS,
+    SUCCESS_GET_ZOHO_TICKET_SUMMARIES,
+    FAILED_GET_ZOHO_TICKET_SUMMARIES,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
@@ -96,11 +100,15 @@ const defaultState = {
     bookingset: null,
     bookingsets: null,
     allTickets: null,
-    zoho_tickets: [],
+    zohoDepartments: [],
+    zohoTickets: [],
+    zohoTicketSummaries: [],
     ticketDetails: [],
     ticketThread: [],
     ticketConversations: [],
     loadingZohoTickets: false,
+    loadingZohoDepartments: false,
+    loadingZohoTicketSummaries: false,
     clientProducts: [],
     allFPs: [],
     errors: [],
@@ -309,8 +317,32 @@ export const ExtraReducer = (state = defaultState, {
         case SUCCESS_GET_ZOHO_TICKETS_WITH_BOOKING_ID:
             return {
                 ...state,
-                zoho_tickets: payload,
+                zohoTickets: payload,
                 loadingZohoTickets: false
+            };
+        case SUCCESS_GET_ZOHO_DEPARTMENTS:
+            return {
+                ...state,
+                zohoDepartments: payload,
+                loadingZohoDepartments: false
+            };
+        case FAILED_GET_ZOHO_DEPARTMENTS:
+            return {
+                ...state,
+                zohoDepartments: payload,
+                loadingZohoDepartments: false
+            };
+        case SUCCESS_GET_ZOHO_TICKET_SUMMARIES:
+            return {
+                ...state,
+                zohoTicketSummaries: payload,
+                loadingZohoTicketSummaries: false
+            };
+        case FAILED_GET_ZOHO_TICKET_SUMMARIES:
+            return {
+                ...state,
+                zohoTicketSummaries: payload,
+                loadingZohoTicketSummaries: false
             };
         case SUCCESS_GET_CLIENT_PRODUCTS:
             return {

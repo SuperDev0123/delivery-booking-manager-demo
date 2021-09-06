@@ -58,6 +58,10 @@ import {
     FAILED_GET_ZOHO_TICKET_THREAD,
     SUCCESS_SEND_ZOHO_TICKET_REPLY,
     FAILED_SEND_ZOHO_TICKET_REPLY,
+    SUCCESS_GET_ZOHO_DEPARTMENTS,
+    FAILED_GET_ZOHO_DEPARTMENTS,
+    SUCCESS_GET_ZOHO_TICKET_SUMMARIES,
+    FAILED_GET_ZOHO_TICKET_SUMMARIES,
     SUCCESS_GET_CLIENT_PRODUCTS,
     FAILED_GET_CLIENT_PRODUCTS,
     SUCCESS_DELETE_CLIENT_PRODUCTS,
@@ -506,6 +510,36 @@ export function failedSendZohoTicketReply(error) {
 export function resetZohoTicketsWithBookingId() {
     return {
         type: RESET_ZOHO_TICKETS_WITH_BOOKING_ID,
+    };
+}
+
+export function successGetZohoDepartments(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_DEPARTMENTS,
+        payload: data,
+        errorMessage: 'Successfully get zoho departments',
+    };
+}
+
+export function failedGetZohoDepartments(error) {
+    return {
+        type: FAILED_GET_ZOHO_DEPARTMENTS,
+        errorMessage: 'Unable to get zoho departments. Error:' + error,
+    };
+}
+
+export function successGetZohoTicketSummaries(data) {
+    return {
+        type: SUCCESS_GET_ZOHO_TICKET_SUMMARIES,
+        payload: data,
+        errorMessage: 'Successfully get zoho ticket summaries',
+    };
+}
+
+export function failedGetZohoTicketSummaries(error) {
+    return {
+        type: FAILED_GET_ZOHO_TICKET_SUMMARIES,
+        errorMessage: 'Unable to get zoho ticket summaries. Error:' + error,
     };
 }
 
