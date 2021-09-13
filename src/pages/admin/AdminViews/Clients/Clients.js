@@ -104,15 +104,15 @@ class Clients extends Component {
 
         if (roles) {
             this.setState({ roles });
-            console.log('roles', roles);
+            // console.log('roles', roles);
         }
         if (clients) {
             this.setState({ clients });
-            console.log('clients', clients);
+            // console.log('clients', clients);
         }
         if (warehouses) {
             this.setState({warehouses});
-            console.log('warehouses', warehouses);
+            // console.log('warehouses', warehouses);
         }
     }
 
