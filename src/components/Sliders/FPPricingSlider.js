@@ -96,52 +96,82 @@ class FPPricingSlider extends React.Component {
         const { currentTab, selectedSurcharge} = this.state;
         let surchargeList = null;
         pricingInfos.sort((a, b) =>  a.client_mu_1_minimum_values - b.client_mu_1_minimum_values);
+        let pricingTables = [];
 
-        const pricingList = pricingInfos.map((pricingInfo, index) => {
-            return (
-                <tr key={index} className={booking.api_booking_quote === pricingInfo.id && 'selected'}>
-                    <td>{index + 1}</td>
-                    <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
-                    <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
-                    <td>{pricingInfo.etd}</td>
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
-                    {clientname === 'dme' && <td className="text-right">${pricingInfo.fuel_levy_base.toFixed(2)}</td>}
-                    {clientname === 'dme' &&<td className="text-right">${(pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2)}</td>}
-                    {clientname === 'dme' && <td className="text-right">{(pricingInfo.client_mark_up_percent * 100).toFixed(2)}%</td>}
-                    <td className="text-right">${pricingInfo.cost_dollar.toFixed(2)}</td>
-                    <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
-                    <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
-                    <td className="text-right nowrap">
-                        {pricingInfo.surcharge_total ? '$' + (pricingInfo.surcharge_total * (1 + pricingInfo.client_customer_mark_up)).toFixed(2) : null}
-                        &nbsp;&nbsp;&nbsp;
-                        {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
-                    </td>
-                    <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
-                    <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
-                    <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
-                    <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
-                        {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
-                    </td>
-                    <td className="select">
-                        <Button
-                            color="primary"
-                            disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
-                            onClick={() => this.onClickSelect(pricingInfo)}
-                        >
-                            Select
-                        </Button>
-                    </td>
-                </tr>
-            );
-        });
+        for (let packed_status of ['original', 'auto', 'manual', 'scanned']) {
+            const pricingList = pricingInfos
+                .filter(pricingInfo => pricingInfo.packed_status === packed_status)
+                .map((pricingInfo, index) => {
+                    return (
+                        <tr key={index} className={booking.api_booking_quote === pricingInfo.id && 'selected'}>
+                            <td>{index + 1}</td>
+                            <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
+                            <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
+                            <td>{pricingInfo.etd}</td>
+                            {clientname === 'dme' && <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">${pricingInfo.surcharge_total.toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>}
+                            {clientname === 'dme' && <td className="text-right">${pricingInfo.fuel_levy_base.toFixed(2)}</td>}
+                            {clientname === 'dme' &&<td className="text-right">${(pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2)}</td>}
+                            {clientname === 'dme' && <td className="text-right">{(pricingInfo.client_mark_up_percent * 100).toFixed(2)}%</td>}
+                            <td className="text-right">${pricingInfo.cost_dollar.toFixed(2)}</td>
+                            <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
+                            <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
+                            <td className="text-right nowrap">
+                                {pricingInfo.surcharge_total ? '$' + (pricingInfo.surcharge_total * (1 + pricingInfo.client_customer_mark_up)).toFixed(2) : null}
+                                &nbsp;&nbsp;&nbsp;
+                                {pricingInfo.surcharge_total ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
+                            </td>
+                            <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
+                            <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
+                            <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
+                            <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
+                                {pricingInfo && pricingInfo.eta_de_by ? moment(pricingInfo.eta_de_by).format('DD/MM/YYYY') : ''}
+                            </td>
+                            <td className="select">
+                                <Button
+                                    color="primary"
+                                    disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
+                                    onClick={() => this.onClickSelect(pricingInfo)}
+                                >
+                                    Select
+                                </Button>
+                            </td>
+                        </tr>
+                    );
+                });
+            const pricingTable = pricingList.length > 0 ? (
+                <table className="table table-hover table-bordered sortable fixed_headers">
+                    <tr>
+                        <th className="nowrap" scope="col" nowrap><p>No</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Service (Vehicle)</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Transport Days (working)</p></th>
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
+                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>DME Client Markup %</p></th>}
+                        <th className="nowrap" scope="col" nowrap><p>Cost $</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Extra $</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Client Customer Markup %</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Sell $</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Action</p></th>
+                    </tr>
+                    { pricingList }
+                </table>
+            ) : 'No results';
+            pricingTables.push(pricingTable);
+        }
 
         (errors || []).sort((a, b) =>  {
-            if (a.fp_name > b.fp_name)
-                return 1;
-            else if (a.fp_name < b.fp_name)
-                return -1;
+            if (a.fp_name > b.fp_name) return 1;
+            else if (a.fp_name < b.fp_name) return -1;
             else return 0;
         });
 
@@ -180,7 +210,7 @@ class FPPricingSlider extends React.Component {
                 onRequestClose={this.props.toggleSlider}
             >
                 <div className="slider-content">
-                    <div id="headr" className="col-md-12 mb-5 qbootstrap-nav">
+                    <div id="headr" className="col-md-12 mb-5">
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12">
                             <ul className="nav nav-tabs">
                                 <li className={currentTab == 0 ? 'active' : ''}>
@@ -233,33 +263,16 @@ class FPPricingSlider extends React.Component {
                                 :
                                 null
                             }
-                            {currentTab === 0 ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                    <tr>
-                                        <th className="nowrap" scope="col" nowrap><p>No</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Service (Vehicle)</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Transport Days (working)</p></th>
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
-                                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>DME Client Markup %</p></th>}
-                                        <th className="nowrap" scope="col" nowrap><p>Cost $</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Extra $</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Client Customer Markup %</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Sell $</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
-                                        <th className="nowrap" scope="col" nowrap><p>Action</p></th>
-                                    </tr>
-                                    { pricingList }
-                                </table>
-                                :
-                                null
+                            {currentTab === 0 &&
+                                pricingTables.map((pricingTable, i) =>
+                                    <div key={i} className="pricing-table">
+                                        { i === 0 && <h3>Send As</h3> }
+                                        { i === 1 && <h3>Auto Repacked</h3> }
+                                        { i === 2 && <h3>Manual Repacked</h3> }
+                                        { i === 3 && <h3>Scanned</h3> }
+                                        <div className="table-wrapper">{pricingTable}</div>
+                                    </div>
+                                )
                             }
                             {currentTab === 1 ?
                                 <table className="table table-hover table-bordered sortable fixed_headers">

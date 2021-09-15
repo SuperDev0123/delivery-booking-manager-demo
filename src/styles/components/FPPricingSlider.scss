@@ -21,4 +21,13 @@
 	.text-right {
 		text-align: right;
 	}
+
+	.pricing-table {
+		margin-top: 30px;
+
+		.table-wrapper {
+			max-height: 300px !important;
+			overflow: scroll;
+		}
+	}
 }

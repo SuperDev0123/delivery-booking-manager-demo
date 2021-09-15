@@ -115,7 +115,6 @@ class BookingPage extends Component {
             attachmentsHistory: [],
             selectionChanged: 0,
             AdditionalServices: [],
-            bookingTotals: [],
             isShowDuplicateBookingOptionsModal: false,
             switchInfo: false,
             dupLineAndLineDetail: false,
@@ -286,6 +285,7 @@ class BookingPage extends Component {
         warehouses: PropTypes.array.isRequired,
         emailLogs: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
+        bookingLines: PropTypes.array,
     };
 
     componentDidMount() {
@@ -332,7 +332,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking ,bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -415,7 +415,7 @@ class BookingPage extends Component {
         }
 
         if (bookingLines) {
-            const calcedbookingLines = this.calcBookingLine(this.state.booking, bookingLines);
+            const calcedbookingLines = this.calcBookingLine(this.state.booking, bookingLines, false);
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
             bookingLinesListProduct = calcedbookingLines.map((bookingLine, index) => {
@@ -1095,7 +1095,7 @@ class BookingPage extends Component {
         }, 50);
     }
 
-    calcBookingLine(booking, bookingLines) {
+    calcBookingLine(booking, bookingLines, is4calcTotal) {
         let qty = 0;
         let total_qty_collected = 0;
         let total_qty_scanned = 0;
@@ -1137,20 +1137,22 @@ class BookingPage extends Component {
                 bookingLine['cubic_meter'] = 0;
             }
 
-            qty += bookingLine.e_qty;
-            total_kgs += bookingLine['total_kgs'];
-            cubic_meter += bookingLine['cubic_meter'];
-            total_qty_collected += bookingLine['e_qty_collected'];
-            total_qty_scanned += bookingLine['e_qty_scanned_fp'];
+            if (bookingLine.packed_status === this.state.currentPackedStatus) {
+                qty += bookingLine.e_qty;
+                total_kgs += bookingLine['total_kgs'];
+                cubic_meter += bookingLine['cubic_meter'];
+                total_qty_collected += bookingLine['e_qty_collected'];
+                total_qty_scanned += bookingLine['e_qty_scanned_fp'];
+            }
+
             return bookingLine;
         });
 
-        if (booking) {
+        if (booking)
             b_fp_qty_delivered = booking.b_fp_qty_delivered;
-        }
 
-        this.setState({
-            bookingTotals: [{
+        if (is4calcTotal)
+            return [{
                 id: 0,
                 qty,
                 total_qty_collected,
@@ -1158,8 +1160,7 @@ class BookingPage extends Component {
                 b_fp_qty_delivered: b_fp_qty_delivered,
                 total_kgs: total_kgs.toFixed(2),
                 cubic_meter: cubic_meter.toFixed(2)
-            }]
-        });
+            }];
 
         return newBookingLines;
     }
@@ -2487,7 +2488,6 @@ class BookingPage extends Component {
                 isBookingSelected: false, 
                 products: [], 
                 bookingLineDetailsProduct: [],
-                bookingTotals: [],
                 puState: null,
                 puSuburb: null,
                 puPostalCode: null,
@@ -2664,7 +2664,9 @@ class BookingPage extends Component {
         if (filteredProducts.length === 0) {
             if (status === 'auto') {
                 this.props.repack(booking.id, status);
-                this.setState({loadingBooking: true});
+                this.setState({loadingBooking: true, currentPackedStatus});
+            } else if (status === 'scanned') {
+                this.setState({currentPackedStatus});
             } else {
                 this.toggleManualRepackModal();
             }
@@ -2694,20 +2696,32 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, bookingTotals, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
         } = this.state;
-        const {warehouses, emailLogs} = this.props;
+        const {warehouses, emailLogs, bookingLines} = this.props;
 
-        const filteredProducts = products.filter(product => {
-            if (currentPackedStatus !== 'original')
-                return product['packed_status'] === currentPackedStatus;
-            else
-                return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
-        });
-        const filterBookingLineDetailsProduct = bookingLineDetailsProduct.filter((lineDetail) => {
-            const index = filteredProducts.findIndex(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
-            return index > -1 ? true : false;
-        });
+        const filteredProducts = products
+            .filter(product => {
+                if (currentPackedStatus !== 'original')
+                    return product['packed_status'] === currentPackedStatus;
+                else
+                    return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+            })
+            .map((line, index) => {
+                line['index'] = index + 1;
+                return line;
+            });
+        const filterBookingLineDetailsProduct = bookingLineDetailsProduct
+            .filter((lineDetail) => {
+                const index = filteredProducts.findIndex(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
+                return index > -1 ? true : false;
+            })
+            .map(lineDetail => {
+                const product = filteredProducts.find(product => product['pk_booking_lines_id'] === lineDetail['fk_booking_lines_id']);
+                lineDetail['line_index'] = product['index'];
+                return lineDetail;
+            });
+        const bookingTotals = bookingLines ? this.calcBookingLine(booking, bookingLines, true) : [];
 
         const bookingLineColumns = [
             {
@@ -5367,9 +5381,9 @@ class BookingPage extends Component {
                                                     >
                                                         Edit Tracking
                                                     </Button>
-                                                    <span className='none'> | </span>
+                                                    <span className=''> | </span>
                                                     <Button
-                                                        className='none'
+                                                        className=''
                                                         color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('original')}
                                                         disabled={!isBookingSelected}
@@ -5378,7 +5392,7 @@ class BookingPage extends Component {
                                                         Send As
                                                     </Button>
                                                     <Button
-                                                        className='none'
+                                                        className=''
                                                         color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('auto')}
                                                         disabled={!isBookingSelected}
@@ -5387,13 +5401,22 @@ class BookingPage extends Component {
                                                         Auto Repack
                                                     </Button>
                                                     <Button
-                                                        className='none'
+                                                        className=''
                                                         color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('manual')}
                                                         disabled={!isBookingSelected}
                                                         title="Manual packed lines"
                                                     >
                                                         Manual Repack
+                                                    </Button>
+                                                    <Button
+                                                        className=''
+                                                        color={currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
+                                                        onClick={() => this.onChangePackedStatus('scanned')}
+                                                        disabled={!isBookingSelected}
+                                                        title="Scanned"
+                                                    >
+                                                        Scanned
                                                     </Button>
                                                     <hr />
                                                     <BootstrapTable
@@ -5610,8 +5633,8 @@ class BookingPage extends Component {
                 <LineAndLineDetailSlider
                     isOpen={isShowLineSlider}
                     toggleLineSlider={this.toggleLineSlider}
-                    lines={products}
-                    lineDetails={bookingLineDetailsProduct}
+                    lines={filteredProducts}
+                    lineDetails={filterBookingLineDetailsProduct}
                     onClickDuplicate={(typeNum, data) => this.onClickDuplicate(typeNum, data)}
                     onClickDelete={(typeNum, data) => this.onClickDeleteLineOrLineData(typeNum, data)}
                     loadingBookingLine={this.state.loadingBookingLine}

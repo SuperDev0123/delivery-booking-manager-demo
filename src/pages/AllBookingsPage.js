@@ -121,6 +121,7 @@ class AllBookingsPage extends React.Component {
 
         moment.tz.setDefault('Australia/Sydney');
         this.myRef = React.createRef();
+        this.drRef = React.createRef();
         this.togglePopover = this.togglePopover.bind(this);
         this.setWrapperRef = this.setWrapperRef.bind(this);
         this.handleClickOutside = this.handleClickOutside.bind(this);
@@ -1716,6 +1717,15 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    setFooBarRef(ref) {
+        console.log('@0- ', ref);
+        console.log('@0- ', ref.refs);
+        console.log('@0- ', ref.cx());
+        console.log('@1- ', ref.current);
+        this.drRef = ref;
+        console.log('@2 - ', this.drRef.current);
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets, unprintedLabels } = this.props;
@@ -1723,6 +1733,13 @@ class AllBookingsPage extends React.Component {
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
+
+        // DateRange marge-left
+        console.log('@1 - ', 182 - scrollLeft);
+        // if (this.drRef.current) {
+        //     console.log(this.drRef);
+        //     this.drRef.current.style.marginLeft = 182 - scrollLeft;
+        // }
 
         const selectedBookings = this.getBookingsFromIds(selectedBookingIds);
 
@@ -3134,6 +3151,7 @@ class AllBookingsPage extends React.Component {
                                                                 />
                                                                 {this.state.isShowpuPickUpAvailFrom_DateRange && (
                                                                     <DateRangePicker
+                                                                        ref={this.setFooBarRef}
                                                                         value={this.state.puPickUpAvailFrom_DateRange}
                                                                         onSelect={(e) => this.onSelectDateRange(e, 'puPickUpAvailFrom_Date')}
                                                                         singleDateRange={true}
