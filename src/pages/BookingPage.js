@@ -1370,6 +1370,9 @@ class BookingPage extends Component {
             this.props.repack(booking.id, type);
             this.setState({loadingBooking: true, currentPackedStatus: 'manual'});
             this.toggleManualRepackModal();
+        } else if (type === 'enter-from-scratch') {
+            this.setState({currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
         }
     }
 
@@ -5389,7 +5392,7 @@ class BookingPage extends Component {
                                                         disabled={!isBookingSelected}
                                                         title="Lines as sended"
                                                     >
-                                                        Send As
+                                                        Send As Is
                                                     </Button>
                                                     <Button
                                                         className=''
@@ -5414,9 +5417,9 @@ class BookingPage extends Component {
                                                         color={currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('scanned')}
                                                         disabled={!isBookingSelected}
-                                                        title="Scanned"
+                                                        title="Scanned/Actual Shipped"
                                                     >
-                                                        Scanned
+                                                        Scanned / Actual Shipped
                                                     </Button>
                                                     <hr />
                                                     <BootstrapTable
@@ -5648,6 +5651,7 @@ class BookingPage extends Component {
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                     moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
                     packageTypes={this.state.packageTypes}
+                    currentPackedStatus={this.state.currentPackedStatus}
                 />
 
                 <StatusHistorySlider
@@ -5748,11 +5752,13 @@ class BookingPage extends Component {
                     isOpen={this.state.isShowManualRepackModal}
                     onOk={() => this.onClickConfirmBtn('manual-from-original')}
                     onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
+                    onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
                     onCancel={this.toggleManualRepackModal}
                     title={'Manual Repack source selection'}
-                    text={'Please select the source for Manual Repack.'}
-                    okBtnName={'From Send As'}
+                    text={'Copy data for manual re-repack from?'}
+                    okBtnName={'From Send As Is'}
                     ok2BtnName={'From Auto Repack'}
+                    ok3BtnName={'Enter from Scratch'}
                 />
 
                 <ToastContainer />

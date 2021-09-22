@@ -53,6 +53,7 @@ class LineAndLineDetailSlider extends React.Component {
         updateBookingLineDetail: PropTypes.func.isRequired,
         packageTypes: PropTypes.array.isRequired,
         moveLineDetails: PropTypes.func.isRequired,
+        currentPackedStatus: PropTypes.string,
     };
 
     notify = (text) => toast(text);
@@ -141,11 +142,12 @@ class LineAndLineDetailSlider extends React.Component {
 
     onSubmit() {
         const {editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs, selectedLineIndex} = this.state;
-        const {lines} = this.props;
+        const {lines, currentPackedStatus} = this.props;
 
         if (editMode === 1) {
             if (lineOrLineDetail === 1) {
                 lineFormInputs['fk_booking_id'] = this.props.booking.pk_booking_id;
+                lineFormInputs['packed_status'] = currentPackedStatus;
                 this.props.createBookingLine(lineFormInputs);
             } else if (lineOrLineDetail === 2) {
                 lineDetailFormInputs['fk_booking_id'] = this.props.booking.pk_booking_id;

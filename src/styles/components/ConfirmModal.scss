@@ -2,6 +2,10 @@
 	width: 40%;
 	top: 100px;
 
+	&.three-buttons {
+		max-width: 700px !important;
+	}
+
 	.modal-header h5 {
 		font-size: 20px !important;
 		font-weight: bold;

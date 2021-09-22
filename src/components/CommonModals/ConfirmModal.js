@@ -13,13 +13,15 @@ class ConfirmModal extends Component {
         okBtnName: PropTypes.string.isRequired,
         onOk2: PropTypes.func,
         ok2BtnName: PropTypes.string,
+        onOk3: PropTypes.func,
+        ok3BtnName: PropTypes.string,
     };
 
     render() {
-        const {isOpen, text, title, okBtnName, ok2BtnName} = this.props;
+        const {isOpen, text, title, okBtnName, ok2BtnName, ok3BtnName} = this.props;
 
         return (
-            <ReactstrapModal isOpen={isOpen} className="confirm-modal">
+            <ReactstrapModal isOpen={isOpen} className={ok3BtnName ? 'confirm-modal three-buttons' : 'confirm-modal'}>
                 <ModalHeader toggle={this.props.onCancel}>{title}</ModalHeader>
                 <ModalBody>
                     {text}
@@ -28,6 +30,9 @@ class ConfirmModal extends Component {
                     <Button color={okBtnName === 'Delete' ? 'danger' : 'primary'} onClick={this.props.onOk}>{okBtnName}</Button>
                     {ok2BtnName &&
                         <Button color={okBtnName === 'Delete' ? 'danger' : 'primary'} onClick={this.props.onOk2}>{ok2BtnName}</Button>
+                    }
+                    {ok3BtnName &&
+                        <Button color={okBtnName === 'Delete' ? 'danger' : 'primary'} onClick={this.props.onOk3}>{ok3BtnName}</Button>
                     }
                     <Button color="secondary" onClick={this.props.onCancel}>Cancel</Button>
                 </ModalFooter>
