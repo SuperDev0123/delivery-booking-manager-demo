@@ -1137,7 +1137,8 @@ class BookingPage extends Component {
                 bookingLine['cubic_meter'] = 0;
             }
 
-            if (bookingLine.packed_status === this.state.currentPackedStatus) {
+            if (bookingLine.packed_status === this.state.currentPackedStatus ||
+                (this.state.currentPackedStatus === 'original' && !bookingLine.packed_status)) {
                 qty += bookingLine.e_qty;
                 total_kgs += bookingLine['total_kgs'];
                 cubic_meter += bookingLine['cubic_meter'];
