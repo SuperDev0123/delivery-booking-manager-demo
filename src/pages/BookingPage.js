@@ -2654,6 +2654,12 @@ class BookingPage extends Component {
 
         if (products.length === 0) {
             this.notify('There are no lines. Please add lines first.');
+        }
+
+        // Reset
+        if (status === 'reset') {
+            this.props.repack(booking.id, '-' + this.state.currentPackedStatus);
+            this.setState({loadingBooking: true, currentPackedStatus: 'original'});
             return;
         }
 
@@ -5421,6 +5427,15 @@ class BookingPage extends Component {
                                                         title="Scanned/Actual Shipped"
                                                     >
                                                         Scanned / Actual Shipped
+                                                    </Button>
+                                                    <Button
+                                                        className='float-r'
+                                                        color='danger'
+                                                        onClick={() => this.onChangePackedStatus('reset')}
+                                                        disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                                        title="Reset all lines and LineDetails."
+                                                    >
+                                                        Reset
                                                     </Button>
                                                     <hr />
                                                     <BootstrapTable
