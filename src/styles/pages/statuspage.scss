@@ -125,6 +125,12 @@ section.status {
             justify-content: flex-start;
         }
 
+        .blurb {
+            .blurb-text {
+                font-size: 13px;
+            }
+        }
+
         .status-details {
             display: flex;
             justify-content: space-around;
@@ -156,6 +162,11 @@ section.status {
             display: flex;
             flex-direction: column;
             margin: 0px 0px 50px;
+
+            .lines-data {
+                overflow: auto;
+                width: 100%;
+            }
 
             .order-details-title {
                 font-size: 18px;
@@ -215,5 +226,8 @@ section.status {
     }
     section.status .status-head .navbar-brand {
         margin: 0px;
+    }
+    section.status .table > thead > tr > th, section.status .table > tbody > tr > td {
+        padding: 5px 5px 5px 0px;
     }
 }

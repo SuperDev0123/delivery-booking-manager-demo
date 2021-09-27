@@ -95,6 +95,10 @@ class BokStatusPage extends Component {
 
         const bookingLineDetailsColumns = [
             {
+                dataField: 'product',
+                text: 'Product'
+            },
+            {
                 dataField: 'e_item_type',
                 text: 'Item Number',
                 // hidden: true,
@@ -194,6 +198,14 @@ class BokStatusPage extends Component {
                                     </div>
                                 ))}
                             </div>
+                            <div className="row blurb">
+                                <p className="blurb-text">
+                                    Please note that your order may arrive in multiple deliveries due to the way that &apos;big and bulky&apos; items are sorted and scanned. Rest assured that the rest of your order will arrive soon.
+                                </p>
+                                <p className="blurb-text">
+                                    If the order status says &apos;Delivered&apos; and there are still undelivered items in your order, you may submit an inquiry in the chat window on this page. Our Customer Service team will check with our delivery partner and get back to you as soon as possible.
+                                </p>
+                            </div>
                             <div className="status-details row">
                                 {details.map((item, index) => (
                                     <div className="status-details-item col-md-6 col-sm-12" key={index}>
@@ -218,13 +230,15 @@ class BokStatusPage extends Component {
                                 <div className="order-details-title">
                                     ORDER DETAILS
                                 </div>
-                                {lines && <BootstrapTable
-                                    keyField="pk_lines_id"
-                                    data={ lines }
-                                    columns={ bookingLineDetailsColumns }
-                                    bootstrap4={ true }
-                                    bordered={ false }
-                                />}
+                                <div className="lines-data">
+                                    {lines && <BootstrapTable
+                                        keyField="pk_lines_id"
+                                        data={ lines }
+                                        columns={ bookingLineDetailsColumns }
+                                        bootstrap4={ true }
+                                        bordered={ false }
+                                    />}
+                                </div>
                             </div>
                         </div>}
                     </Fragment>
