@@ -2675,7 +2675,7 @@ class BookingPage extends Component {
             if (status === 'auto') {
                 this.props.repack(booking.id, status);
                 this.setState({loadingBooking: true, currentPackedStatus});
-            } else if (status === 'scanned') {
+            } else if (status === 'scanned' || status === 'original') {
                 this.setState({currentPackedStatus});
             } else {
                 this.toggleManualRepackModal();
