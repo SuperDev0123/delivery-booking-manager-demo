@@ -5426,7 +5426,7 @@ class BookingPage extends Component {
                                                         disabled={!isBookingSelected}
                                                         title="Scanned/Actual Shipped"
                                                     >
-                                                        Scanned / Actual Shipped
+                                                        Actual Packed / Packing Scans
                                                     </Button>
                                                     <Button
                                                         className='float-r'
