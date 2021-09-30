@@ -967,6 +967,8 @@ class BookingPage extends Component {
                 else formInputs['inv_sell_actual'] = null;
                 if (!_.isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
                 else formInputs['customer_cost'] = null;
+                if (!_.isNull(booking.inv_booked_quoted)) formInputs['inv_booked_quoted'] = parseFloat(booking.inv_booked_quoted).toFixed(2);
+                else formInputs['inv_booked_quoted'] = null;
                 if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
                 else formInputs['vx_futile_Booking_Notes'] = null;
                 if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
@@ -1700,7 +1702,8 @@ class BookingPage extends Component {
                     e.target.name === 'inv_sell_quoted_override' ||
                     e.target.name === 'inv_cost_quoted' ||
                     e.target.name === 'inv_sell_actual' ||
-                    e.target.name === 'inv_cost_actual'
+                    e.target.name === 'inv_cost_actual' ||
+                    e.target.name === 'inv_booked_quoted'
                 ) {
                     let value = e.target.value.replace(',', '').replace('$', '');
 
@@ -1738,7 +1741,8 @@ class BookingPage extends Component {
             e.target.name === 'inv_sell_quoted_override' ||
             e.target.name === 'inv_cost_quoted' ||
             e.target.name === 'inv_sell_actual' ||
-            e.target.name === 'inv_cost_actual'
+            e.target.name === 'inv_cost_actual' ||
+            e.target.name === 'inv_booked_quoted'
         ) {
             let value = e.target.value.replace(',', '').replace('$', '');
 
@@ -2615,8 +2619,15 @@ class BookingPage extends Component {
         formInputs['v_service_Type'] = pricingInfo['service_code'];
         booking['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
         formInputs['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
-        booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
-        formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
+
+        if (pricingInfo['pricingInfo'] !== 'scanned') {
+            booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
+            formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
+        } else {
+            booking['inv_booked_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
+            formInputs['inv_booked_quoted'] = booking['inv_booked_quoted'];
+        }
+
         booking['api_booking_quote'] = pricingInfo['id'];
 
         const selectedFP = this.props.allFPs
@@ -3750,6 +3761,23 @@ class BookingPage extends Component {
                                                         type="text"
                                                         name="inv_sell_quoted"
                                                         value = {!_.isNull(formInputs['inv_sell_quoted']) ? `$${formInputs['inv_sell_quoted']}` : ''}
+                                                        onChange={(e) => this.onHandleInput(e)}
+                                                        onBlur={(e) => this.onHandleInputBlur(e)}
+                                                    />
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span className="c-red">Booked $</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_booked_quoted'] && `$${parseFloat(formInputs['inv_booked_quoted']).toFixed(2)}`}</p>
+                                                    :
+                                                    <input
+                                                        className="form-control"
+                                                        type="text"
+                                                        name="inv_booked_quoted"
+                                                        value = {!_.isNull(formInputs['inv_booked_quoted']) ? `$${formInputs['inv_booked_quoted']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
