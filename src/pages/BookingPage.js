@@ -1461,7 +1461,7 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const { booking, isBookedBooking, clientname, isBookingModified } = this.state;
+        const { booking, isBookedBooking, clientname, isBookingModified, products } = this.state;
 
         if (isBookingModified) {
             this.notify('You can lose modified booking info. Please update it');
@@ -1491,6 +1491,18 @@ class BookingPage extends Component {
                             if (res !== 'valid') {
                                 this.notify(res);
                             } else {
+                                if (!booking.api_booking_quote) {
+                                    this.notify('Please select a pricing quote!');
+                                    return;
+                                } else {
+                                    const scannedProducts = products.filter(product => product['packed_status'] === 'scanned');
+
+                                    if (scannedProducts.length > 0 && booking.quote_packed_status !== 'scanned') {
+                                        this.notify('Current selected quote is not for "Actual Packed / Packing Scans"');
+                                        return;
+                                    }
+                                }
+
                                 this.props.fpBook(booking.id, booking.vx_freight_provider);
                                 this.setState({loading: true, curViewMode: 0});
                             }
