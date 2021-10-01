@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import { getDeliveryStatus } from '../../state/services/bokService';
@@ -13,6 +14,7 @@ class BokStatusPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
+            showScans: false
         };
     }
 
@@ -25,6 +27,7 @@ class BokStatusPage extends Component {
         quote: PropTypes.object,
         booking: PropTypes.object,
         lines: PropTypes.array,
+        scans: PropTypes.array,
         etaDate: PropTypes.string,
         lastMilestone: PropTypes.string,
         timestamps: PropTypes.array,
@@ -51,8 +54,13 @@ class BokStatusPage extends Component {
         }
     }
 
+    onScans() {
+        this.setState({showScans: !this.state.showScans});
+    }
+
     render() {
-        const {status, step, lastUpdated, quote, booking, lines, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
+        const { showScans } = this.state;
+        const {status, step, lastUpdated, quote, booking, lines, scans, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
         const steps = [
             'Processing',
             'Ready for Dispatch',
@@ -93,6 +101,29 @@ class BokStatusPage extends Component {
             }
         ];
 
+        const scansColumns = [
+            {
+                dataField: 'event_timestamp',
+                text: 'Scan Date',
+                formatter: (cell) => {
+                    return moment(cell).format('DD/MM/YYYY');
+                },
+                style: {
+                    paddingRight: '5px'
+                }
+            }, {
+                dataField: 'status',
+                text: 'Status',
+                style: {
+                    paddingRight: '5px',
+                    minWidth: '50px'
+                }
+            }, {
+                dataField: 'desc',
+                text: 'Description'
+            }
+        ];
+
         const bookingLineDetailsColumns = [
             {
                 dataField: 'product',
@@ -102,9 +133,15 @@ class BokStatusPage extends Component {
                 dataField: 'e_item_type',
                 text: 'Item Number',
                 // hidden: true,
+                style: {
+                    paddingRight: '5px'
+                }
             }, {
                 dataField: 'l_003_item',
-                text: 'Item Description'
+                text: 'Item Description',
+                style: {
+                    paddingRight: '5px'
+                }
             }, {
                 dataField: 'l_002_qty',
                 text: 'Quantity'
@@ -124,7 +161,7 @@ class BokStatusPage extends Component {
                 </nav>
                 {this.state.errorMessage ?
                     <p className="error">{this.state.errorMessage}</p>
-                    : <Fragment>
+                    : lastUpdated !== '' ? <Fragment>
                         {booking && <div className="status-content">
                             <div className="status-summary row">
                                 <div className="col-md-3 col-sm-12">
@@ -226,6 +263,18 @@ class BokStatusPage extends Component {
                                     </div>
                                 ))}
                             </div>
+                            <div className="scans-details row">
+                                <div className="scans-details-title" onClick={() => this.onScans()}>
+                                    FREIGHT PROVIDER SCANS
+                                </div>
+                                {scans && showScans && <BootstrapTable
+                                    keyField="id"
+                                    data={ scans }
+                                    columns={ scansColumns }
+                                    bootstrap4={ true }
+                                    bordered={ false }
+                                />}
+                            </div>
                             <div className="order-details row">
                                 <div className="order-details-title">
                                     ORDER DETAILS
@@ -241,7 +290,12 @@ class BokStatusPage extends Component {
                                 </div>
                             </div>
                         </div>}
-                    </Fragment>
+                    </Fragment> : (<div className="no-status">
+                        Your order has been received and is currently being processed.
+                        <br />
+                        <br />
+                        Once you receive a Shipping Confirmation email, please check back to see the delivery status.
+                    </div>)
                 }
             </section>
         );
@@ -256,6 +310,7 @@ const mapStateToProps = (state) => {
         quote: state.bok.quote,
         booking: state.bok.booking,
         lines: state.bok.lines,
+        scans: state.bok.scans,
         etaDate: state.bok.etaDate,
         lastUpdated: state.bok.lastUpdated,
         lastMilestone: state.bok.lastMilestone,

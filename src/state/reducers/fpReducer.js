@@ -24,14 +24,24 @@ import {
     SUCCESS_UPDATE_FP_ZONE,
     FAILED_UPDATE_FP_ZONE,
     SUCCESS_DELETE_FP_ZONE,
-    FAILED_DELETE_FP_ZONE
+    FAILED_DELETE_FP_ZONE,
+    SUCCESS_GET_FP_STATUSES, 
+    FAILED_GET_FP_STATUSES,
+    SUCCESS_CREATE_FP_STATUS, 
+    FAILED_CREATE_FP_STATUS,
+    SUCCESS_UPDATE_FP_STATUS,
+    FAILED_UPDATE_FP_STATUS,
+    SUCCESS_DELETE_FP_STATUS,
+    FAILED_DELETE_FP_STATUS
 } from '../constants/fpConstants';
 
 const defaultState = {
     allFPs: [],
     fpDetails: {},
     fpCarriers: [],
-    fpZones: []
+    fpZones: [],
+    dmeStatuses: [],
+    fpStatuses: []
 };
 
 export const FpReducer = (state = defaultState, {
@@ -42,7 +52,8 @@ export const FpReducer = (state = defaultState, {
     fpZones,
     pageCnt,
     pageInd,
-    pageItemCnt
+    pageItemCnt, 
+    payload
 }) => {
     switch (type) {
         case SUCCESS_GET_FPS:
@@ -126,6 +137,37 @@ export const FpReducer = (state = defaultState, {
                 needUpdateFpZones: true
             };
         case FAILED_DELETE_FP_ZONE:
+        case SUCCESS_GET_FP_STATUSES: 
+            return {
+                ...state, 
+                fpStatuses: payload
+            };
+        case FAILED_GET_FP_STATUSES:
+        case SUCCESS_CREATE_FP_STATUS:
+            state.fpStatuses.push(payload);
+            return {
+                ...state,
+                fpStatuses: [...state.fpStatuses]
+            };
+        case FAILED_CREATE_FP_STATUS:
+        case SUCCESS_UPDATE_FP_STATUS:
+        {
+            let index = state.fpStatuses.findIndex(function(item) {
+                return item.id === payload.id;
+            });
+            state.fpStatuses.splice(index, 1, payload);
+            return {
+                ...state,
+                fpStatuses: [...state.fpStatuses]
+            };
+        }
+        case FAILED_UPDATE_FP_STATUS:
+        case SUCCESS_DELETE_FP_STATUS:
+            return {
+                ...state,
+                fpStatuses: state.fpStatuses.filter(item => item.id !== payload)
+            };
+        case FAILED_DELETE_FP_STATUS:
         default:
             return state;
     }
