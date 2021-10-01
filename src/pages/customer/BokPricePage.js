@@ -381,7 +381,7 @@ class BokPricePage extends Component {
                         <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
                         <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
                         <td>
-                            ${price['surcharge_total'].toFixed(2)} {price['surcharge_total'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
                         </td>
                         <td>
                             ${price['client_mu_1_minimum_values'].toFixed(2)}
