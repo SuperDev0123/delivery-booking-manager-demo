@@ -46,6 +46,7 @@ const defaultState = {
     selectPricingSuccess: null,
     autoRepackSuccess: null,
     lineOperationSuccess: null,
+    lastUpdated: null
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -101,7 +102,8 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 lines: payload.lines,
                 etaDate: payload.eta_date,
                 lastMilestone: payload.last_milestone,
-                timestamps: payload.timestamps
+                timestamps: payload.timestamps,
+                scans: payload.scans
             };
         case SUCCESS_BOOK_FREIGHT:
             return {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { successGetAllFPs, failedGetAllFPs, successGetFP, failedGetFP, successCreateFp, failedCreateFp, successUpdateFp, failedUpdateFp, successDeleteFp, failedDeleteFp, successGetFPCarriers, failedGetFPCarriers, successGetFPZones, failedGetFPZones, setLocalFilter, setNeedUpdateZonesFlag, successCreateFpCarrier, failedCreateFpCarrier, successUpdateFpCarrier, failedUpdateFpCarrier, successDeleteFpCarrier, failedDeleteFpCarrier, successCreateFpZone, failedCreateFpZone, successUpdateFpZone, failedUpdateFpZone } from '../actions/fpActions';
+import { successGetAllFPs, failedGetAllFPs, successGetFP, failedGetFP, successCreateFp, failedCreateFp, successUpdateFp, failedUpdateFp, successDeleteFp, failedDeleteFp, successGetFPCarriers, failedGetFPCarriers, successGetFPZones, failedGetFPZones, setLocalFilter, setNeedUpdateZonesFlag, successCreateFpCarrier, failedCreateFpCarrier, successUpdateFpCarrier, failedUpdateFpCarrier, successDeleteFpCarrier, failedDeleteFpCarrier, successCreateFpZone, failedCreateFpZone, successUpdateFpZone, failedUpdateFpZone, successGetFpStatuses, failedGetFpStatuses, successCreateFpStatus, failedCreateFpStatus, successUpdateFpStatus, failedUpdateFpStatus, successDeleteFpStatus, failedDeleteFpStatus } from '../actions/fpActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
 export const getAllFPs = () => {
@@ -200,4 +200,61 @@ export const setNeedUpdateZonesState = (boolFlag) => {
     return dispatch => dispatch(setNeedUpdateZonesFlag(boolFlag));
 };
 
+export const getFpStatuses = (fp_name) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp_statuses/get_fp_statuses/?fp_name=${fp_name}`,
+    };
+    return dispatch => 
+        axios(options)
+            .then(({data}) => {
+                dispatch(successGetFpStatuses(data));
+            })
+            .catch((error) => {
+                dispatch(failedGetFpStatuses(error));
+            });
+};
 
+export const createFpStatus = (data) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp_statuses/`,
+    };
+    return dispatch => 
+        axios(options)
+            .then(({data}) => dispatch(successCreateFpStatus(data)))
+            .catch((error) => dispatch(failedCreateFpStatus(error)));
+};
+
+export const updateFpStatus = (param) => {
+    const token = localStorage.getItem('token');
+    const { id, data } = param;
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp_statuses/${id}/`,
+    };
+    return dispatch => 
+        axios(options)
+            .then(({data}) => dispatch(successUpdateFpStatus(data)))
+            .catch((error) => dispatch(failedUpdateFpStatus(error)));
+};
+
+export const deleteFpStatus = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/fp_statuses/${id}/`,
+    };
+    return dispatch => 
+        axios(options)
+            .then(() => dispatch(successDeleteFpStatus(id)))
+            .catch((error) => dispatch(failedDeleteFpStatus(error)));
+};

@@ -158,10 +158,26 @@ section.status {
             }
         }
 
+        .scans-details {
+            display: flex;
+            flex-direction: column;
+            margin: 0px 0px 10px;
+
+            .scans-details-title {
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .scans-details-title:hover {
+                opacity: 0.6;
+            }
+        }
+
         .order-details {
             display: flex;
             flex-direction: column;
-            margin: 0px 0px 50px;
+            margin: 0px 0px 10px;
 
             .lines-data {
                 overflow: auto;
@@ -184,6 +200,13 @@ section.status {
 
     .table > thead > tr > th {
         font-weight: bold;
+    }
+
+    .no-status {
+        margin-top: 30px;
+        padding: 30px;
+        font-size: 20px;
+        text-align: center;
     }
 }
 

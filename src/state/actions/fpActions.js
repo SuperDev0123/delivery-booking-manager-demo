@@ -27,7 +27,15 @@ import {
     SUCCESS_UPDATE_FP_ZONE,
     FAILED_UPDATE_FP_ZONE,
     SUCCESS_DELETE_FP_ZONE,
-    FAILED_DELETE_FP_ZONE
+    FAILED_DELETE_FP_ZONE,
+    SUCCESS_GET_FP_STATUSES, 
+    FAILED_GET_FP_STATUSES,
+    SUCCESS_CREATE_FP_STATUS, 
+    FAILED_CREATE_FP_STATUS,
+    SUCCESS_UPDATE_FP_STATUS,
+    FAILED_UPDATE_FP_STATUS,
+    SUCCESS_DELETE_FP_STATUS,
+    FAILED_DELETE_FP_STATUS
 } from '../constants/fpConstants';
 
 export function successGetAllFPs(data) {
@@ -245,5 +253,61 @@ export function setNeedUpdateZonesFlag(boolFlag) {
     return {
         type: SET_FETCH_ZONES_FLAG,
         needUpdateZones: boolFlag,
+    };
+}
+
+export function successGetFpStatuses(data) {
+    return {
+        type: SUCCESS_GET_FP_STATUSES,
+        payload: data
+    };
+}
+
+export function failedGetFpStatuses(error) {
+    return {
+        type: FAILED_GET_FP_STATUSES,
+        payload: error
+    };
+}
+
+export function successCreateFpStatus(data) {
+    return {
+        type: SUCCESS_CREATE_FP_STATUS,
+        payload: data
+    };
+}
+
+export function failedCreateFpStatus(error) {
+    return {
+        type: FAILED_CREATE_FP_STATUS,
+        payload: error
+    };
+}
+
+export function successUpdateFpStatus(data) {
+    return {
+        type: SUCCESS_UPDATE_FP_STATUS,
+        payload: data
+    };
+}
+
+export function failedUpdateFpStatus(error) {
+    return {
+        type: FAILED_UPDATE_FP_STATUS,
+        payload: error
+    };
+}
+
+export function successDeleteFpStatus(data) {
+    return {
+        type: SUCCESS_DELETE_FP_STATUS,
+        payload: data
+    };
+}
+
+export function failedDeleteFpStatus(error) {
+    return {
+        type: FAILED_DELETE_FP_STATUS,
+        payload: error
     };
 }
