@@ -1508,7 +1508,7 @@ class BookingPage extends Component {
                                     }
 
                                     this.props.fpBook(booking.id, booking.vx_freight_provider);
-                                    this.setState({loading: true, curViewMode: 0});    
+                                    this.setState({loading: true, curViewMode: 0});
                                 }
                             }
                         }
