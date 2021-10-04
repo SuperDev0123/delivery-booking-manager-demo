@@ -1491,7 +1491,7 @@ class BookingPage extends Component {
                             if (res !== 'valid') {
                                 this.notify(res);
                             } else {
-                                if (freight_provider === 'biopak') {
+                                if (freight_provider === 'startrack') {
                                     this.props.fpBook(booking.id, booking.vx_freight_provider);
                                     this.setState({loading: true, curViewMode: 0});
                                 } else {
