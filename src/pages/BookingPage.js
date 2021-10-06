@@ -2634,8 +2634,8 @@ class BookingPage extends Component {
         formInputs['vx_serviceName'] = pricingInfo['service_name'];
         booking['v_service_Type'] = pricingInfo['service_code'];
         formInputs['v_service_Type'] = pricingInfo['service_code'];
-        booking['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
-        formInputs['inv_cost_quoted'] = pricingInfo['inv_cost_quoted'];
+        booking['inv_cost_quoted'] = (pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2);
+        formInputs['inv_cost_quoted'] = booking['inv_cost_quoted'];
 
         if (pricingInfo['pricingInfo'] !== 'scanned') {
             booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
