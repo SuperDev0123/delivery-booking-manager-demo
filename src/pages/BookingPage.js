@@ -39,6 +39,7 @@ import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
 import StatusHistorySlider from '../components/Sliders/StatusHistorySlider';
+import ScansSlider from '../components/Sliders/ScansSlider';
 import ProjectDataSlider from '../components/Sliders/ProjectDataSlider';
 import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
@@ -55,7 +56,7 @@ import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, 
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails } from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket, getZohoTicketSummaries, moveZohoTicket } from '../state/services/extraService';
+import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket, getZohoTicketSummaries, moveZohoTicket, getScans } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 // Constants
@@ -122,9 +123,11 @@ class BookingPage extends Component {
             isBookingSelected: false,
             isShowSwitchClientModal: false,
             statusHistories: [],
+            scans: [],
             findKeyword: null,
             isShowLineSlider: false,
             isShowStatusHistorySlider: false,
+            isShowScansSlider: false,
             selectedLineIndex: -1,
             isBookingModified: false,
             curViewMode: 0, // 0: Show view, 1: Create view, 2: Update view
@@ -197,6 +200,7 @@ class BookingPage extends Component {
         this.toggleLineSlider = this.toggleLineSlider.bind(this);
         this.toggleLineTrackingSlider = this.toggleLineTrackingSlider.bind(this);
         this.toggleStatusHistorySlider = this.toggleStatusHistorySlider.bind(this);
+        this.toggleScansSlider = this.toggleScansSlider.bind(this);
         this.toggleDateSlider = this.toggleDateSlider.bind(this);
         this.toggleStatusLockModal = this.toggleStatusLockModal.bind(this);
         this.toggleStatusNoteModal = this.toggleStatusNoteModal.bind(this);
@@ -279,6 +283,7 @@ class BookingPage extends Component {
         getClientProcessMgr: PropTypes.func.isRequired,
         updateAugment: PropTypes.func.isRequired,
         repack: PropTypes.func.isRequired,
+        getScans: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -303,11 +308,13 @@ class BookingPage extends Component {
 
         if (bookingId) {
             this.props.getBooking(bookingId, 'id');
+            this.props.getScans(bookingId);
             // this.props.getZohoTicketsWithBookingId(bookingId);
             // this.props.getZohoTicketSummaries();
             this.setState({bookingId, loading: true, curViewMode: 0});
         } else {
             this.props.getBooking();
+            this.props.getScans();
             this.setState({loading: true, curViewMode: 0});
             // this.props.getSuburbStrings('state', undefined);
             // this.props.getDeliverySuburbStrings('state', undefined);
@@ -332,7 +339,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess, scans} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -1068,6 +1075,10 @@ class BookingPage extends Component {
         if(clientprocess != this.state.clientprocess)  {
             this.setState({clientprocess});
         }
+
+        if(scans) {
+            this.setState({scans});
+        }
     }
 
     notify = (text) => toast(text);
@@ -1084,6 +1095,7 @@ class BookingPage extends Component {
             this.props.getClientProcessMgr(data.id);
             this.props.getZohoTicketsWithBookingId(data.b_bookingID_Visual);
             this.props.getZohoTicketSummaries();
+            this.props.getScans(data.id);
         } else if (type === 1) {
             this.props.setFetchGeoInfoFlag(true);
         }
@@ -2347,6 +2359,16 @@ class BookingPage extends Component {
         }
     }
 
+    toggleScansSlider() {
+        const { isBookingSelected } = this.state;
+
+        if (isBookingSelected) {
+            this.setState(prevState => ({isShowScansSlider: !prevState.isShowScansSlider}));
+        } else {
+            this.notify('Please select a booking.');
+        }
+    }
+
     toggleDateSlider() {
         const { isBookingSelected } = this.state;
 
@@ -2524,9 +2546,14 @@ class BookingPage extends Component {
         }
     }
 
-    onClickOpenSlide(e) {
+    onClickOpenHistorySlide(e) {
         e.preventDefault();
         this.toggleStatusHistorySlider();
+    }
+
+    onClickOpenScansSlide(e) {
+        e.preventDefault();
+        this.toggleScansSlider();
     }
 
     onClickOpenDateSlide(e) {
@@ -2734,7 +2761,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
+            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
         } = this.state;
         const {warehouses, emailLogs, bookingLines} = this.props;
 
@@ -3257,7 +3284,8 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         <div className="col-sm-5">
-                                            <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                            <a onClick={(e) => this.onClickOpenScansSlide(e)} className="open-slide ml-6 mr-0"><i className="fas fa-barcode" aria-hidden="true"></i></a>
+                                            <a onClick={(e) => this.onClickOpenHistorySlide(e)} className="open-slide ml-6 mr-0"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
                                                 <p>{isBookingSelected ? booking.b_status : '***'}</p>
                                                 <p 
@@ -5726,6 +5754,12 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <ScansSlider
+                    isOpen={isShowScansSlider}
+                    scans={scans}
+                    toggleScansSlider={this.toggleScansSlider}
+                />
+
                 <LineTrackingSlider
                     isOpen={isShowLineTrackingSlider}
                     toggleLineTrackingSlider={this.toggleLineTrackingSlider}
@@ -5860,6 +5894,7 @@ const mapStateToProps = (state) => {
         packageTypes: state.extra.packageTypes,
         allBookingStatus: state.extra.allBookingStatus,
         statusHistories: state.extra.statusHistories,
+        scans: state.extra.scans,
         needUpdateStatusHistories: state.extra.needUpdateStatusHistories,
         statusActions: state.extra.statusActions,
         statusDetails: state.extra.statusDetails,
@@ -5952,6 +5987,7 @@ const mapDispatchToProps = (dispatch) => {
         updateAugment: (clientprocess) => dispatch(updateAugment(clientprocess)),
         moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
         repack: (bookingId, repackStatus) => dispatch(repack(bookingId, repackStatus)),
+        getScans: (bookingId) => dispatch(getScans(bookingId))
     };
 };
 

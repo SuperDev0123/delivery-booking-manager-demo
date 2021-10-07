@@ -82,6 +82,8 @@ import {
     FAILED_GET_PALLETS,
     SUCCESS_CREATE_PALLET,
     FAILED_CREATE_PALLET,
+    SUCCESS_GET_SCANS,
+    FAILED_GET_SCANS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -668,5 +670,19 @@ export function failedCreatePallet() {
     return {
         type: FAILED_CREATE_PALLET,
         errorMessage: 'Failed to create a pallet',
+    };
+}
+
+export function successGetScans(data) {
+    return {
+        type: SUCCESS_GET_SCANS,
+        payload: data
+    };
+}
+
+export function failedGetScans() {
+    return {
+        type: FAILED_GET_SCANS,
+        errorMessage: 'Failed to get scans data',
     };
 }
