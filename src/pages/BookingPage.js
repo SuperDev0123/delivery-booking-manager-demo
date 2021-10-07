@@ -525,7 +525,7 @@ class BookingPage extends Component {
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
             if (this.state.booking
-                && !this.state.isBookedBooking
+                && !isBookedBooking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
@@ -553,7 +553,7 @@ class BookingPage extends Component {
             }
         }
 
-        if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
+        if (needToFetchGeoInfo || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
