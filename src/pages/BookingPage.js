@@ -5469,7 +5469,7 @@ class BookingPage extends Component {
                                                         color={currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('scanned')}
                                                         disabled={!isBookingSelected}
-                                                        title="Scanned/Actual Shipped"
+                                                        title="Actual Packed / Packing Scans"
                                                     >
                                                         Actual Packed / Packing Scans
                                                     </Button>
