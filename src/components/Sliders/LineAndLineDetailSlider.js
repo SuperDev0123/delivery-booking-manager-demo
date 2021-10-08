@@ -403,6 +403,9 @@ class LineAndLineDetailSlider extends React.Component {
                                                 <p>Show Only</p>
                                             </th>
                                             <th className="" scope="col" nowrap>
+                                                <p>Move</p>
+                                            </th>
+                                            <th className="" scope="col" nowrap>
                                                 <p>Edit</p>
                                             </th>
                                             <th className="" scope="col" nowrap>
