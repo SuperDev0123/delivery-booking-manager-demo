@@ -2653,7 +2653,7 @@ class BookingPage extends Component {
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
-        this.setState({formInputs, booking, loading: true, curViewMode: 0});
+        this.setState({formInputs, booking, loading: true, curViewMode: 0, isBookingModified: false});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
     }
