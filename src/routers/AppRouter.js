@@ -68,6 +68,8 @@ import EditClient from '../pages/admin/AdminViews/Clients/EditClient';
 import ClientEmployees from '../pages/admin/AdminViews/ClientEmployees/ClientEmployees';
 import AddClientEmployee from '../pages/admin/AdminViews/ClientEmployees/AddClientEmployee';
 import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditClientEmployee';
+import QuickViewLogs from '../pages/admin/AdminViews/Logs/QuickView';
+import DownloadLogs from '../pages/admin/AdminViews/Logs/Download';
 
 import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
 import CustomerAddClientEmployee from '../pages/admin/CustomerViews/ClientEmployees/AddClientEmployee';
@@ -150,6 +152,9 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/augmentaddress' component={AugmentAddress} />
                     <AdminPrivateRoute exact path='/admin/augmentaddress/add' component={AddAugmentAddress} />
                     <AdminPrivateRoute exact path='/admin/augmentaddress/edit/:id' component={EditAugmentAddress} />
+
+                    <AdminPrivateRoute exact path='/admin/logs/quickview' component={QuickViewLogs} />
+                    <AdminPrivateRoute exact path='/admin/logs/download' component={DownloadLogs} />
 
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
