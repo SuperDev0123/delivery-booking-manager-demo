@@ -2646,6 +2646,7 @@ class BookingPage extends Component {
         }
 
         booking['api_booking_quote'] = pricingInfo['id'];
+        formInputs['api_booking_quote'] = booking['api_booking_quote'];
 
         const selectedFP = this.props.allFPs
             .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
