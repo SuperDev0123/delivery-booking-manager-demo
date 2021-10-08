@@ -84,6 +84,8 @@ import {
     FAILED_CREATE_PALLET,
     SUCCESS_GET_SCANS,
     FAILED_GET_SCANS
+    SUCCESS_GET_LOGS,
+    FAILED_GET_LOGS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -680,9 +682,21 @@ export function successGetScans(data) {
     };
 }
 
+export function successGetLogs(data) {
+    return {
+        type: SUCCESS_GET_LOGS,
+        payload: data
+    };
+}
+
 export function failedGetScans() {
     return {
         type: FAILED_GET_SCANS,
         errorMessage: 'Failed to get scans data',
+
+export function failedGetLogs(error) {
+    return {
+        type: FAILED_GET_LOGS,
+        errorMessage: `Failed to get logs: ${error.toString()}`,
     };
 }

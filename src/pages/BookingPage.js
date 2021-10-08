@@ -532,7 +532,7 @@ class BookingPage extends Component {
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
 
             if (this.state.booking
-                && !this.state.isBookedBooking
+                && !isBookedBooking
                 && this.state.booking.vx_freight_provider
                 && !_.isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
@@ -560,7 +560,7 @@ class BookingPage extends Component {
             }
         }
 
-        if ((!isBookedBooking && needToFetchGeoInfo) || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
+        if (needToFetchGeoInfo || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
             if (puStates && puStates.length > 0) {
                 if ( !this.state.loadedPostal ) {
                     if (puPostalCodes == '' || puPostalCodes == null)
@@ -2673,13 +2673,14 @@ class BookingPage extends Component {
         }
 
         booking['api_booking_quote'] = pricingInfo['id'];
+        formInputs['api_booking_quote'] = booking['api_booking_quote'];
 
         const selectedFP = this.props.allFPs
             .find(fp => fp.fp_company_name.toLowerCase() === pricingInfo['freight_provider'].toLowerCase());
         booking['s_02_Booking_Cutoff_Time'] = selectedFP['service_cutoff_time'];
         formInputs['s_02_Booking_Cutoff_Time'] = booking['s_02_Booking_Cutoff_Time'];
 
-        this.setState({formInputs, booking, loading: true, curViewMode: 0});
+        this.setState({formInputs, booking, loading: true, curViewMode: 0, isBookingModified: false});
         this.props.updateBooking(booking.id, booking);
         this.toggleFPPricingSlider();
     }
@@ -5497,7 +5498,7 @@ class BookingPage extends Component {
                                                         color={currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('scanned')}
                                                         disabled={!isBookingSelected}
-                                                        title="Scanned/Actual Shipped"
+                                                        title="Actual Packed / Packing Scans"
                                                     >
                                                         Actual Packed / Packing Scans
                                                     </Button>

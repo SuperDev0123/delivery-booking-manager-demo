@@ -269,7 +269,7 @@ class FPPricingSlider extends React.Component {
                                         { i === 0 && <h3>Send As</h3> }
                                         { i === 1 && <h3>Auto Repacked</h3> }
                                         { i === 2 && <h3>Manual Repacked</h3> }
-                                        { i === 3 && <h3>Scanned</h3> }
+                                        { i === 3 && <h3>Actual Packed / Packing Scans</h3> }
                                         <div className="table-wrapper">{pricingTable}</div>
                                     </div>
                                 )
