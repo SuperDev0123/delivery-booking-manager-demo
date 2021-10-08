@@ -30,6 +30,8 @@ class SidebarPush extends React.Component {
                 clientProductsCollapsed: true,
                 pricingOnlyCollapsed: true,
                 pricingRuleCollapsed: true,
+                logsCollapsed: true,
+                augmentCollapsed: true
             },
             baseUrl:baseUrl
         };
@@ -110,7 +112,7 @@ class SidebarPush extends React.Component {
 
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl, augmentCollapsed, logsCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -185,8 +187,8 @@ class SidebarPush extends React.Component {
                         </Dropdown>
                     </div>
                 </div>
-                {
-                    baseUrl === '/admin'? <nav className="sidebarNav">
+                <div>
+                    {baseUrl === '/admin'? <nav className="sidebarNav">
                         <h5 className="sidebar-header">Navigation</h5>
                         <ul className="nav nav-pills nav-stacked">
                             <li className={this.activeRoute('dashboard') ? 'active' : ''}>
@@ -343,11 +345,11 @@ class SidebarPush extends React.Component {
                             </li>
 
                             <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('augmentaddress') || this.activeRoute('augmentaddress/add') ? 'active' : ''}>
-                                <a onClick={() => this.setState({ providersCollapsed: !providersCollapsed })}>
+                                <a onClick={() => this.setState({ augmentCollapsed: !augmentCollapsed })}>
                                     <i className="fa fa-bars fa-fw"></i>
                                     <span className="menu-title">Augment Address Rules</span>
                                 </a>
-                                <ul className={classNames({ 'nav-sub': true, 'collapse': !providersCollapsed })}>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !augmentCollapsed })}>
                                     <li>
                                         <Link title="View All Augment Address Rules" to="/admin/augmentaddress" className={this.activeRoute(['augmentaddress']) ? 'active' : ''}>
                                             <span className="submenu-title">All</span>
@@ -366,6 +368,25 @@ class SidebarPush extends React.Component {
                                     <i className="fa fa-fw fa-users"></i>
                                     <span className="menu-title">Client Employees</span>
                                 </Link>
+                            </li>
+
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('logs/quickview') || this.activeRoute('logs/download') ? 'active' : ''}>
+                                <a onClick={() => this.setState({ logsCollapsed: !logsCollapsed })}>
+                                    <i className="fa fa-bars fa-fw"></i>
+                                    <span className="menu-title">Logs</span>
+                                </a>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !logsCollapsed })}>
+                                    <li>
+                                        <Link title="View last 300 lines of log" to="/admin/logs/quickview" className={this.activeRoute(['logs/quickview']) ? 'active' : ''}>
+                                            <span className="submenu-title">Quick View</span>
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link title="Download log files" to="/admin/logs/download" className={this.activeRoute(['logs/download']) ? 'active' : ''}>
+                                            <span className="submenu-title">Download</span>
+                                        </Link>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </nav>: <nav className="sidebarNav">
@@ -413,6 +434,7 @@ class SidebarPush extends React.Component {
                             </li>
                         </ul>
                     </nav>}
+                </div>
             </aside>
         );
     }

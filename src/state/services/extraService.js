@@ -83,6 +83,8 @@ import {
     failedGetPallets,   // "
     successCreatePallet,// "
     failedCreatePallet, // Pallet end
+    successGetLogs,
+    failedGetLogs
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -748,4 +750,18 @@ export const createPallet = (pallet) => {
         axios(options)
             .then(({ data }) => dispatch(successCreatePallet(data)))
             .catch((error) => dispatch(failedCreatePallet(error)));
+};
+
+export const getLogs = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/logs/`,
+    };
+
+    return dispatch => 
+        axios(options)
+            .then(({ data }) => dispatch(successGetLogs(data.logs)))
+            .catch((error) => dispatch(failedGetLogs(error)));
 };

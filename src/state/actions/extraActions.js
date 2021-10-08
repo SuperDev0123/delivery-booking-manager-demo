@@ -82,6 +82,8 @@ import {
     FAILED_GET_PALLETS,
     SUCCESS_CREATE_PALLET,
     FAILED_CREATE_PALLET,
+    SUCCESS_GET_LOGS,
+    FAILED_GET_LOGS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -668,5 +670,19 @@ export function failedCreatePallet() {
     return {
         type: FAILED_CREATE_PALLET,
         errorMessage: 'Failed to create a pallet',
+    };
+}
+
+export function successGetLogs(data) {
+    return {
+        type: SUCCESS_GET_LOGS,
+        payload: data
+    };
+}
+
+export function failedGetLogs(error) {
+    return {
+        type: FAILED_GET_LOGS,
+        errorMessage: `Failed to get logs: ${error.toString()}`,
     };
 }
