@@ -124,4 +124,12 @@
 		color: white;
 		padding: 5px;
 	}
+
+	.admin-logs-quick {
+		textarea {
+			margin-top: 15px;
+			width: 100%;
+			height: 85vh;
+		}
+	}
 }
