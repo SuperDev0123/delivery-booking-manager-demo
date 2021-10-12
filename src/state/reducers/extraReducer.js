@@ -423,6 +423,7 @@ export const ExtraReducer = (state = defaultState, {
             return {
                 ...state,
                 scans: payload
+            };
         case SUCCESS_GET_LOGS:
             return {
                 ...state,

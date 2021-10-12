@@ -83,7 +83,7 @@ import {
     SUCCESS_CREATE_PALLET,
     FAILED_CREATE_PALLET,
     SUCCESS_GET_SCANS,
-    FAILED_GET_SCANS
+    FAILED_GET_SCANS,
     SUCCESS_GET_LOGS,
     FAILED_GET_LOGS
 } from '../constants/extraConstants';
@@ -693,6 +693,8 @@ export function failedGetScans() {
     return {
         type: FAILED_GET_SCANS,
         errorMessage: 'Failed to get scans data',
+    };
+}
 
 export function failedGetLogs(error) {
     return {

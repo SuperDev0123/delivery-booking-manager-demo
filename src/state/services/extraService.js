@@ -84,7 +84,7 @@ import {
     successCreatePallet,// "
     failedCreatePallet, // Pallet end
     successGetScans,
-    failedGetScans
+    failedGetScans,
     successGetLogs,
     failedGetLogs
 } from '../actions/extraActions';
@@ -759,7 +759,7 @@ export const getScans = (bookingId) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/get_scans/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/get_scans_from_booking_id`,
         params: {
             bookingId
         }
@@ -769,7 +769,7 @@ export const getScans = (bookingId) => {
         axios(options)
             .then(({ data }) => dispatch(successGetScans(data.scans)))
             .catch((error) => dispatch(failedGetScans(error)));
-}
+};
 
 export const getLogs = () => {
     const token = localStorage.getItem('token');
