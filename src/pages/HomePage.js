@@ -44,10 +44,11 @@ class HomePage extends Component {
             <section className="theme-bg">
                 <div className="right-pan">
                     <p>Deliver Me</p>
-                    <h5>Your Freight Department - Automated</h5>
+                    <h5 style={{fontWeight: 'bold'}}>Your Freight Department - Automated</h5>
                     <br />
                     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 30}}>
-                        <h4>The Deliver-ME freight department module is a platform that allows our clients to automate their frieght function</h4>
+                        <h4>The Deliver-ME freight department module is a platform that allows our clients to automate their freight department</h4>
+                        <br />
                         <h4>From organising all requirements needed to optimise the freight logistics function and their customer&apos;s experience</h4>
                         <i className="fas fa-angle-double-down" style={{fontSize: 16, fontWeight: 'bold'}}></i>
                         <h4>to accurate live costing of freight sensitive to the end customer&apos;s needs when selling online or via their internal sales application</h4>
