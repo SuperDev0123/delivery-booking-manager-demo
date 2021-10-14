@@ -49,6 +49,7 @@ class HomePage extends Component {
                     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 30}}>
                         <h4>The Deliver-ME freight department module is a platform that allows our clients to automate their freight department</h4>
                         <br />
+                        <br />
                         <h4>From organising all requirements needed to optimise the freight logistics function and their customer&apos;s experience</h4>
                         <i className="fas fa-angle-double-down" style={{fontSize: 16, fontWeight: 'bold'}}></i>
                         <h4>to accurate live costing of freight sensitive to the end customer&apos;s needs when selling online or via their internal sales application</h4>
