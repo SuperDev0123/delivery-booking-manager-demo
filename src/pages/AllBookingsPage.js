@@ -1722,7 +1722,7 @@ class AllBookingsPage extends React.Component {
         // console.log('@0- ', ref.refs);
         // console.log('@0- ', ref.cx());
         // console.log('@1- ', ref.current);
-        this.drRef = ref;
+        // this.drRef = ref;
         // console.log('@2 - ', this.drRef.current);
     }
 
