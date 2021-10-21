@@ -22,6 +22,7 @@ class ClientProductSlider extends React.Component {
                 parent_model_number: '',
                 child_model_number: '',
                 description: '',
+                qty: 0,
                 e_dimUOM: 'cm',
                 e_dimLength: 0,
                 e_dimWidth: 0,
@@ -58,6 +59,7 @@ class ClientProductSlider extends React.Component {
     }
 
     onClickNew(editMode) {
+        this.resetFormInputs();
         this.setState({editMode: editMode});
     }
 
@@ -74,6 +76,22 @@ class ClientProductSlider extends React.Component {
         this.props.onClickEdit(row);
     }
 
+    resetFormInputs() {
+        const clientProductsFormInputs = {
+            parent_model_number: '',
+            child_model_number: '',
+            qty: 0,
+            description: '',
+            e_dimUOM: 'cm',
+            e_dimLength: 0,
+            e_dimWidth: 0,
+            e_dimHeight: 0,
+            e_weightUOM: 'kg',
+            e_weightPerEach: 0,
+        };
+        this.setState({clientProductsFormInputs});
+    }
+
     onSubmit() {
         const { clientProductsFormInputs } = this.state;
         const { dmeClient } = this.props;
@@ -85,7 +103,6 @@ class ClientProductSlider extends React.Component {
         clientProductsFormInputs['e_dimHeight'] = Number(Number(clientProductsFormInputs['e_dimHeight']).toFixed(2));
         clientProductsFormInputs['e_weightPerEach'] = Number(Number(clientProductsFormInputs['e_weightPerEach']).toFixed(2));
         
-        console.log('clientProductsFormInput', clientProductsFormInputs);
         this.props.onClickSubmit(clientProductsFormInputs);
         this.setState({editMode: 0});
     }
@@ -139,6 +156,9 @@ class ClientProductSlider extends React.Component {
             }, {
                 dataField: 'description',
                 text: 'Description',
+            }, {
+                dataField: 'qty',
+                text: 'Quantity',
             }, {
                 dataField: 'e_dimUOM',
                 text: 'Dim UOM',
@@ -262,6 +282,16 @@ class ClientProductSlider extends React.Component {
                                 type="text"
                                 name="description"
                                 value={clientProductsFormInputs['description']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label>
+                        <label>
+                            <p>Quantity</p>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="qty"
+                                value={clientProductsFormInputs['qty']}
                                 onChange={(e) => this.onInputChange(e)}
                             />
                         </label>

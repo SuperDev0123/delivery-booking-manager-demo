@@ -25,6 +25,7 @@ class ClientProduct extends React.Component {
             clientProductsFormInputs: {
                 parent_model_number: '',
                 child_model_number: '',
+                qty: 0,
                 description: '',
                 e_dimUOM: 'CM',
                 e_dimLength: 0,
@@ -166,6 +167,7 @@ class ClientProduct extends React.Component {
         const clientProductsFormInputs = {
             parent_model_number: '',
             child_model_number: '',
+            qty: 0,
             description: '',
             e_dimUOM: 'cm',
             e_dimLength: 0,
@@ -218,6 +220,9 @@ class ClientProduct extends React.Component {
             }, {
                 dataField: 'description',
                 text: 'Description',
+            }, {
+                dataField: 'qty',
+                text: 'Quantity',
             }, {
                 dataField: 'e_dimUOM',
                 text: 'Dim UOM',
@@ -334,6 +339,16 @@ class ClientProduct extends React.Component {
                                 type="text"
                                 name="description"
                                 value={clientProductsFormInputs['description']}
+                                onChange={(e) => this.onInputChange(e)}
+                            />
+                        </label><br />
+                        <label>
+                            <span className="text-left">Quantity</span>
+                            <input
+                                className="form-control"
+                                type="text"
+                                name="qty"
+                                value={clientProductsFormInputs['qty']}
                                 onChange={(e) => this.onInputChange(e)}
                             />
                         </label><br />
