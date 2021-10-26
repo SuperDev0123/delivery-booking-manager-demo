@@ -18,8 +18,6 @@ import {
     FAILED_CANCEL_FREIGHT,
     SUCCESS_UPDATE_BOK_1,
     FAILED_UPDATE_BOK_1,
-    SUCCESS_AUTO_REPACK,
-    FAILED_AUTO_REPACK,
     SUCCESS_SEND_EMAIL,
     FAILED_SEND_EMAIL,
     SUCCESS_ADD_BOK_LINE,
@@ -28,6 +26,8 @@ import {
     FAILED_UPDATE_BOK_LINE,
     SUCCESS_DELETE_BOK_LINE,
     FAILED_DELETE_BOK_LINE,
+    SUCCESS_BOK_REPACK,
+    FAILED_BOK_REPACK,
 } from '../constants/bokConstants';
 
 export function successGetBok1Headers(data) {
@@ -159,19 +159,6 @@ export function failedUpdateBok_1(error) {
     };
 }
 
-export function successAutoRepack() {
-    return {
-        type: SUCCESS_AUTO_REPACK,
-    };
-}
-
-export function failedAutoRepack(error) {
-    return {
-        type: FAILED_AUTO_REPACK,
-        payload: 'Unable to auto repack this BOK. ' + error.response.data.message,
-    };
-}
-
 export function successSendEmail() {
     return {
         type: SUCCESS_SEND_EMAIL,
@@ -221,5 +208,19 @@ export function failedDeleteBokLine(error) {
     return {
         type: FAILED_DELETE_BOK_LINE,
         payload: 'Unable to delete bok line. ' + error.response.data.message,
+    };
+}
+
+export function successRepack(data) {
+    return {
+        type: SUCCESS_BOK_REPACK,
+        payload: data,
+    };
+}
+
+export function failedRepack(error) {
+    return {
+        type: FAILED_BOK_REPACK,
+        errorMessage: error.response.data.message
     };
 }

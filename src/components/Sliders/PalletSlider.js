@@ -33,7 +33,6 @@ class PalletSlider extends React.Component {
     static propTypes = {
         isOpen: PropTypes.bool.isRequired,
         toggleSlider: PropTypes.func.isRequired,
-        onCancelAutoRepack: PropTypes.func.isRequired,
         onSelectPallet: PropTypes.func.isRequired,
         getPallets: PropTypes.func.isRequired,
         createPallet: PropTypes.func.isRequired,
@@ -125,13 +124,6 @@ class PalletSlider extends React.Component {
             this.props.createPallet(formInputs);
     }
 
-    onClose(e) {
-        e.preventDefault();
-
-        this.props.onCancelAutoRepack();
-        this.props.toggleSlider();
-    }
-
     render() {
         const { isOpen, pallets } = this.props;
         const { viewMode, saveMode, formInputs } = this.state;
@@ -160,7 +152,7 @@ class PalletSlider extends React.Component {
                 isOpen={isOpen}
                 title='Pallet Slider'
                 subtitle=''
-                onRequestClose={(e) => this.onClose(e)}
+                onRequestClose={() => this.props.toggleSlider()}
             >
                 {viewMode === LIST ?
                     <div className="table-view">

@@ -17,7 +17,7 @@ import ConfirmModal from '../../components/CommonModals/ConfirmModal';
 import BokLineSlider from '../../components/Sliders/BokLineSlider';
 // Services
 import { getWeight } from '../../commons/helpers';
-import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, autoRepack, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine } from '../../state/services/bokService';
+import { getBokWithPricings, onSelectPricing, bookFreight, cancelFreight, sendEmail, onAddBokLine, onUpdateBokLine, onDeleteBokLine, repack } from '../../state/services/bokService';
 import { getPackageTypes } from '../../state/services/extraService';
 
 class BokPricePage extends Component {
@@ -32,7 +32,7 @@ class BokPricePage extends Component {
             isLoadingBok: false,
             isLoadingPricing: false,
             isLoadingOper: false,
-            isAutoRepacking: false,
+            isRepacking: false,
             isUpdatingItemProduct: false,
             isShowExtraCostSummarySlider: false,
             isShowPalletSlider: false,
@@ -42,11 +42,11 @@ class BokPricePage extends Component {
             isShowTriggerEmailModal: false,
             isShowDeleteConfirmModal: false,
             isShowBokLineSlider: false,
+            currentPackedStatus: 'original',
         };
 
         this.toggleExtraCostSummarySlider = this.toggleExtraCostSummarySlider.bind(this);
         this.togglePalletSlider = this.togglePalletSlider.bind(this);
-        this.onCancelAutoRepack = this.onCancelAutoRepack.bind(this);
         this.toggleTriggerEmailModal = this.toggleTriggerEmailModal.bind(this);
         this.toggleDeleteConfirmModal = this.toggleDeleteConfirmModal.bind(this);
         this.toggleBokLineSlider = this.toggleBokLineSlider.bind(this);
@@ -57,7 +57,6 @@ class BokPricePage extends Component {
         onSelectPricing: PropTypes.func.isRequired,
         onBookFreight: PropTypes.func.isRequired,
         onCancelFreight: PropTypes.func.isRequired,
-        onAutoRepack: PropTypes.func.isRequired,
         onAddBokLine: PropTypes.func.isRequired,
         onUpdateBokLine: PropTypes.func.isRequired,
         onDeleteBokLine: PropTypes.func.isRequired,
@@ -70,8 +69,9 @@ class BokPricePage extends Component {
         bookedSuccess: PropTypes.bool,
         canceledSuccess: PropTypes.bool,
         selectPricingSuccess: PropTypes.bool,
-        autoRepackSuccess: PropTypes.bool,
+        repackSuccess: PropTypes.bool,
         lineOperationSuccess: PropTypes.bool,
+        repack: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -140,15 +140,13 @@ class BokPricePage extends Component {
             this.props.getBokWithPricings(this.props.match.params.id);
         }
 
-        if (this.state.isAutoRepacking && !this.props.autoRepackSuccess && newProps.autoRepackSuccess) {
-            this.setState({isAutoRepacking: false, isLoadingBok: true});
+        if (this.state.isRepacking && !this.props.repackSuccess && newProps.repackSuccess) {
+            this.setState({isRepacking: false, isLoadingBok: true});
             this.props.getBokWithPricings(this.props.match.params.id);
         }
     }
 
-    notify = (text) => {
-        toast(text);
-    };
+    notify = (text) => toast(text);
 
     copyToClipBoard = async text => {
         try {
@@ -203,25 +201,26 @@ class BokPricePage extends Component {
         this.setState(prevState => ({isShowBokLineSlider: !prevState.isShowBokLineSlider}));
     }
 
-    onClickAutoRepack(status) {
+    toggleManualRepackModal() {
+        this.setState(prevState => ({isShowManualRepackModal: !prevState.isShowManualRepackModal}));
+    }
+
+    onClickRepack(status) {
+        const {bokWithPricings} = this.props;
+
         if (status) {
             this.setState({isShowPalletSlider: true});
         } else {
-            this.setState({isAutoRepacking: true, isShowLineData: false});
-            this.props.onAutoRepack(this.props.match.params.id, status, null);
+            this.setState({isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto'});
+            this.props.repack(bokWithPricings.pk_auto_id, 'auto', null);
         }
     }
 
-    onCancelAutoRepack() {
+    onSelectPallet(palletId) {
         const {bokWithPricings} = this.props;
 
-        bokWithPricings.b_081_b_pu_auto_pack = false;
-        this.setState({bokWithPricings});
-    }
-
-    onSelectPallet(palletId) {
-        this.setState({isAutoRepacking: true, isShowLineData: false});
-        this.props.onAutoRepack(this.props.match.params.id, true, palletId);
+        this.setState({isRepacking: true, isShowLineData: false, currentPackedStatus: 'auto'});
+        this.props.repack(bokWithPricings.pk_auto_id, 'auto', palletId);
         this.togglePalletSlider();
     }
 
@@ -231,11 +230,24 @@ class BokPricePage extends Component {
     }
 
     onClickConfirmBtn(type) {
+        const {bokWithPricings} = this.props;
+
         if (type === 'trigger-email') {
             // Send "picking slip printed" email manually
             this.notify('Booking will be sent in 1 minute!');
             this.props.sendEmail(this.props.match.params.id);
             this.toggleTriggerEmailModal();
+        } else if (type === 'manual-from-original') {
+            this.props.repack(bokWithPricings.pk_auto_id, type, null);
+            this.setState({isRepacking: true, currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
+        } else if (type === 'manual-from-auto') {
+            this.props.repack(bokWithPricings.pk_auto_id, type, null);
+            this.setState({isRepacking: true, currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
+        } else if (type === 'enter-from-scratch') {
+            this.setState({currentPackedStatus: 'manual'});
+            this.toggleManualRepackModal();
         }
     }
 
@@ -256,10 +268,11 @@ class BokPricePage extends Component {
 
     onUpdateBokLine(newLine, type) {
         const {bokWithPricings} = this.props;
-        const {selectedLine} = this.state;
+        const {selectedLine, currentPackedStatus} = this.state;
 
         if (type === 'add') {
             newLine['fk_header_id'] = bokWithPricings['pk_header_id'];
+            newLine['b_093_packed_status'] = currentPackedStatus;
             this.props.onAddBokLine(newLine);
             this.toggleBokLineSlider();
         } else if (type === 'update') {
@@ -273,8 +286,39 @@ class BokPricePage extends Component {
         this.setState({isUpdatingItemProduct: true});
     }
 
+    // status: `original`, `auto`, `manual`
+    onChangePackedStatus(status) {
+        const {bokWithPricings} = this.props;
+
+        // Reset
+        if (status === 'reset') {
+            this.props.repack(bokWithPricings.pk_auto_id, '-' + this.state.currentPackedStatus, null);
+            this.setState({isRepacking: true, currentPackedStatus: 'original'});
+            return;
+        } else if (status === 'quote') {
+            this.props.repack(bokWithPricings.pk_auto_id, `${status}-${this.state.currentPackedStatus}`, null);
+            this.setState({isRepacking: true});
+            return;
+        }
+
+        const currentPackedStatus = status;
+        const filteredProducts = bokWithPricings['bok_2s'].filter(bok_2 => bok_2['b_093_packed_status'] === currentPackedStatus);
+
+        if (filteredProducts.length === 0) {
+            if (status === 'auto') {
+                this.togglePalletSlider();
+            } else if (status === 'original') {
+                this.setState({currentPackedStatus});
+            } else {
+                this.toggleManualRepackModal();
+            }
+        } else {
+            this.setState({currentPackedStatus});
+        }
+    }
+
     render() {
-        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id} = this.state;
+        const {sortedBy, isBooked, isCanceled, isShowLineData, selectedBok_2Id, currentPackedStatus} = this.state;
         const {bokWithPricings} = this.props;
 
         let bok_1, bok_2s, bok_3s, pricings;
@@ -285,7 +329,6 @@ class BokPricePage extends Component {
         let totalCubicMeter = 0;
         let totalLinesCnt = 0;
         let totalLinesKg = 0;
-        let isAutoPacked = false;
         let hasUnknownItems = false;
         let errorList = [];
 
@@ -315,7 +358,6 @@ class BokPricePage extends Component {
 
         if (bokWithPricings) {
             bok_1 = bokWithPricings;
-            isAutoPacked = bok_1['b_081_b_pu_auto_pack'];
 
             if (bok_1 && bok_1['zb_105_text_5']) {
                 // Errors are joined with delimiter('***')
@@ -329,86 +371,91 @@ class BokPricePage extends Component {
                     });
             }
 
-            bok_2s = bok_1['bok_2s'].map((bok_2, index) => {
-                totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
-                totalLinesCnt += bok_2['l_002_qty'];
-                totalCubicMeter += bok_2['pallet_cubic_meter'];
-                let packedCubicMeter = 0;
-                let isUnknownLine = bok_2['l_003_item'].indexOf('(Ignored)') > -1 ? true : false;
+            bok_2s = bok_1['bok_2s']
+                .filter(bok_2 => bok_2['b_093_packed_status'] === currentPackedStatus)
+                .map((bok_2, index) => {
+                    totalLinesKg += Number.parseFloat(getWeight(bok_2['l_002_qty'], bok_2['l_008_weight_UOM'], bok_2['l_009_weight_per_each']));
+                    totalLinesCnt += bok_2['l_002_qty'];
+                    totalCubicMeter += bok_2['pallet_cubic_meter'];
 
-                if (!hasUnknownItems && isUnknownLine)
-                    hasUnknownItems = true;
+                    let packedCubicMeter = 0;
+                    let isUnknownLine = bok_2['l_003_item'].indexOf('(Ignored)') > -1;
 
-                bok_3s = bok_1['bok_3s']
-                    .filter(bok_3 => bok_3.fk_booking_lines_id === bok_2['pk_booking_lines_id'])
-                    .map(bok_3 => {
-                        packedCubicMeter += bok_3['cubic_meter'];
-                    });
+                    if (!hasUnknownItems && isUnknownLine)
+                        hasUnknownItems = true;
 
-                return (
-                    <tr key={index} className={isUnknownLine ? 'unknown' : null}>
-                        <td>{bok_2['l_001_type_of_packaging']}</td>
-                        <td>{bok_2['zbld_131_decimal_1']}</td>
-                        <td>{bok_2['e_item_type']}</td>
-                        <td>{bok_2['l_003_item']}</td>
-                        <td>{bok_2['l_002_qty']}</td>
-                        <td>{bok_2['l_004_dim_UOM']}</td>
-                        <td>{bok_2['l_005_dim_length']}</td>
-                        <td>{bok_2['l_006_dim_width']}</td>
-                        <td>{bok_2['l_007_dim_height']}</td>
-                        <td>{bok_2['pallet_cubic_meter'].toFixed(3)} (m3)</td>
-                        <td>{(bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']).toFixed(3)} ({bok_2['l_008_weight_UOM']})</td>
-                        {isAutoPacked ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
-                        {isAutoPacked ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
-                        <td>
-                            <Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit</Button>{'   '}
-                            <Button color="danger" onClick={() => this.onClickDeleteLine(bok_2)}>Delete</Button>
-                        </td>
-                    </tr>
-                );
-            });
+                    bok_3s = bok_1['bok_3s']
+                        .filter(bok_3 => bok_3.fk_booking_lines_id === bok_2['pk_booking_lines_id'])
+                        .map(bok_3 => {
+                            packedCubicMeter += bok_3['cubic_meter'];
+                        });
 
-            pricings = sortedPricings.map((price, index) => {
-                return (
-                    <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
-                        <td>{price['fp_name']}</td>
-                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
-                        <td>
-                            ${price['cost_dollar'].toFixed(2)}
-                            &nbsp;&nbsp;&nbsp;
-                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
-                        </td>
-                        <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
-                        <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
-                        <td>
-                            ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
-                        </td>
-                        <td>
-                            ${price['client_mu_1_minimum_values'].toFixed(2)}
-                            &nbsp;&nbsp;&nbsp;
-                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
-                        </td>
-                        <td>{(price['client_customer_mark_up'] * 100).toFixed(2)}%</td>
-                        <td>
-                            ${price['sell']}
-                            &nbsp;&nbsp;&nbsp;
-                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['sell'])}></i>
-                        </td>
-                        <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
-                        {isPricingPage && !isSalesQuote &&
+                    return (
+                        <tr key={index} className={isUnknownLine ? 'unknown' : null}>
+                            <td>{bok_2['l_001_type_of_packaging']}</td>
+                            <td>{bok_2['zbld_131_decimal_1']}</td>
+                            <td>{bok_2['e_item_type']}</td>
+                            <td>{bok_2['l_003_item']}</td>
+                            <td>{bok_2['l_002_qty']}</td>
+                            <td>{bok_2['l_004_dim_UOM']}</td>
+                            <td>{bok_2['l_005_dim_length']}</td>
+                            <td>{bok_2['l_006_dim_width']}</td>
+                            <td>{bok_2['l_007_dim_height']}</td>
+                            <td>{bok_2['pallet_cubic_meter'].toFixed(3)} (m3)</td>
+                            <td>{(bok_2['l_002_qty'] * bok_2['l_009_weight_per_each']).toFixed(3)} ({bok_2['l_008_weight_UOM']})</td>
+                            {currentPackedStatus === 'auto' ? <td>{packedCubicMeter.toFixed(3)} (m3)</td> : null}
+                            {currentPackedStatus === 'auto' ? <td><Button color="primary" onClick={() => this.onClickShowLineData(bok_2)}>Show LineData</Button></td> : null}
                             <td>
-                                <Button
-                                    color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
-                                    disabled={canBeChanged ? null : 'disabled'}
-                                    onClick={() => this.onSelectPricing(price.cost_id)}
-                                >
-                                    {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
-                                </Button>
+                                <Button color="primary" onClick={() => this.onClickEditLine(bok_2)}>Edit</Button>{'   '}
+                                <Button color="danger" onClick={() => this.onClickDeleteLine(bok_2)}>Delete</Button>
                             </td>
-                        }
-                    </tr>
-                );
-            });
+                        </tr>
+                    );
+                });
+
+            pricings = sortedPricings
+                .filter(pricing => pricing.packed_status === currentPackedStatus)
+                .map((price, index) => {
+                    return (
+                        <tr key={index} className={bok_1.quote_id === price.cost_id ? 'selected' : null}>
+                            <td>{price['fp_name']}</td>
+                            <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                            <td>
+                                ${price['cost_dollar'].toFixed(2)}
+                                &nbsp;&nbsp;&nbsp;
+                                <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
+                            </td>
+                            <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
+                            <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
+                            <td>
+                                ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0 ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i> : ''}
+                            </td>
+                            <td>
+                                ${price['client_mu_1_minimum_values'].toFixed(2)}
+                                &nbsp;&nbsp;&nbsp;
+                                <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
+                            </td>
+                            <td>{(price['client_customer_mark_up'] * 100).toFixed(2)}%</td>
+                            <td>
+                                ${price['sell']}
+                                &nbsp;&nbsp;&nbsp;
+                                <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['sell'])}></i>
+                            </td>
+                            <td>{moment(bok_1['b_021_b_pu_avail_from_date']).add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
+                            {isPricingPage && !isSalesQuote &&
+                                <td>
+                                    <Button
+                                        color={bok_1.quote_id === price.cost_id ? 'success' : 'primary'}
+                                        disabled={canBeChanged ? null : 'disabled'}
+                                        onClick={() => this.onSelectPricing(price.cost_id)}
+                                    >
+                                        {bok_1.quote_id === price.cost_id ? <i className="fa fa-check"></i> : null} {bok_1.quote_id === price.cost_id ? 'Selected' : 'Select'}
+                                    </Button>
+                                </td>
+                            }
+                        </tr>
+                    );
+                });
 
             bok_3s = [];
             if (isShowLineData) {
@@ -503,22 +550,59 @@ class BokPricePage extends Component {
                             <ul>{errorList}</ul>
                         </div>
                         <LoadingOverlay
-                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isAutoRepacking || this.state.isUpdatingItemProduct}
+                            active={this.state.isLoadingBok || this.state.isLoadingPricing || this.state.isLoadingOper || this.state.isRepacking || this.state.isUpdatingItemProduct}
                             spinner
                             text='Loading...'
                         >
                             <BokFreightOptionAccordion
                                 bok_1={bok_1}
-                                onClickAutoRepack={(status) => this.onClickAutoRepack(status)}
                             />
                             <h3><i className="fa fa-circle"></i> Lines:</h3>
+                            <div className='action-btns'>
+                                <Button
+                                    color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                    onClick={() => this.onChangePackedStatus('original')}
+                                >
+                                    Send As Is
+                                </Button>
+                                <Button
+                                    color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                    onClick={() => this.onChangePackedStatus('auto')}
+                                >
+                                    Auto Repack
+                                </Button>
+                                <Button
+                                    color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                    onClick={() => this.onChangePackedStatus('manual')}
+                                >
+                                    Manual Repack
+                                </Button>
+                                <Button
+                                    className='mar-left-30 reset'
+                                    color='danger'
+                                    onClick={() => this.onChangePackedStatus('reset')}
+                                    disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                    title="Reset all lines and LineDetails."
+                                >
+                                    Reset
+                                </Button>
+                                <Button
+                                    className='float-r'
+                                    color='primary'
+                                    onClick={() => this.onChangePackedStatus('quote')}
+                                    disabled={bok_2s.length > 0 ? null : 'disabled'}
+                                    title="Get quotes again"
+                                >
+                                    Complete & Calc Quote
+                                </Button>
+                            </div>
                             {bok_1 && bok_1['b_010_b_notes'] && <p className='c-red ignored-items none'><strong>Unknown lines: </strong>{bok_1['b_010_b_notes']}</p>}
                             {hasUnknownItems &&
                                 <p className='c-red ignored-items'>
                                     Red highlighted lines are all unknown lines, and are excluded from freight rate calculation. Please click edit button to manually populate. (Unavailable for auto repacked status)
                                 </p>
                             }
-                            {totalLinesCnt &&
+                            {totalLinesCnt ?
                                 <table className="table table-hover table-bordered sortable fixed_headers">
                                     <thead>
                                         <tr>
@@ -535,6 +619,8 @@ class BokPricePage extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
+                                :
+                                null
                             }
                             <table className="table table-hover table-bordered sortable fixed_headers">
                                 <thead>
@@ -548,10 +634,10 @@ class BokPricePage extends Component {
                                         <th className="valign-top">Length</th>
                                         <th className="valign-top">Width</th>
                                         <th className="valign-top">Height</th>
-                                        <th className="valign-top">{isAutoPacked ? 'Pallet CBM' : 'CBM'}</th>
+                                        <th className="valign-top">{currentPackedStatus === 'auto' ? 'Pallet CBM' : 'CBM'}</th>
                                         <th className="valign-top">Total Weight</th>
-                                        {isAutoPacked ? <th className="valign-top">Total Packed CBM</th> : null}
-                                        {isAutoPacked ? <th className="valign-top">Show Line Details</th> : null}
+                                        {currentPackedStatus === 'auto' ? <th className="valign-top">Total Packed CBM</th> : null}
+                                        {currentPackedStatus === 'auto' ? <th className="valign-top">Show Line Details</th> : null}
                                         <th className="valign-top">
                                             Actions <Button color="success" className='float-r' onClick={() => this.onclickAddLine()}>New Line</Button>
                                         </th>
@@ -584,26 +670,30 @@ class BokPricePage extends Component {
                                 </table>
                             }
                             <h3><i className="fa fa-circle"></i> Freight Rates:</h3>
-                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                <thead>
-                                    <tr>
-                                        <th>Freight Provider</th>
-                                        <th>Service (Vehicle)</th>
-                                        <th>Cost $</th>
-                                        <th>Fuel Levy %</th>
-                                        <th>Fuel Levy $</th>
-                                        <th>Extra $</th>
-                                        <th>Total $</th>
-                                        <th>Client Customer Markup %</th>
-                                        <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
-                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                        {isPricingPage && !isSalesQuote && <th>Action</th>}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {pricings}
-                                </tbody>
-                            </table>
+                            {pricings.length > 0 ?
+                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <thead>
+                                        <tr>
+                                            <th>Freight Provider</th>
+                                            <th>Service (Vehicle)</th>
+                                            <th>Cost $</th>
+                                            <th>Fuel Levy %</th>
+                                            <th>Fuel Levy $</th>
+                                            <th>Extra $</th>
+                                            <th>Total $</th>
+                                            <th>Client Customer Markup %</th>
+                                            <th onClick={() => this.onClickColumn('lowest')}>Sell $ (click & sort)</th>
+                                            <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                            {isPricingPage && !isSalesQuote && <th>Action</th>}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {pricings}
+                                    </tbody>
+                                </table>
+                                :
+                                <p>No results</p>
+                            }
                             <div className="decision">
                                 {(!isSalesQuote && bok_1 && bok_1['b_client_name'] !== 'Jason L') &&
                                     <Button
@@ -677,6 +767,19 @@ class BokPricePage extends Component {
                     okBtnName={'Delete'}
                 />
 
+                <ConfirmModal
+                    isOpen={this.state.isShowManualRepackModal}
+                    onOk={() => this.onClickConfirmBtn('manual-from-original')}
+                    onOk2={() => this.onClickConfirmBtn('manual-from-auto')}
+                    onOk3={() => this.onClickConfirmBtn('enter-from-scratch')}
+                    onCancel={() => this.toggleManualRepackModal()}
+                    title={'Manual Repack source selection'}
+                    text={'Copy data for manual re-repack from?'}
+                    okBtnName={'From Send As Is'}
+                    ok2BtnName={'From Auto Repack'}
+                    ok3BtnName={'Enter from Scratch'}
+                />
+
                 <ToastContainer />
             </section>
         );
@@ -692,7 +795,7 @@ const mapStateToProps = (state) => {
         bookedSuccess: state.bok.bookedSuccess,
         canceledSuccess: state.bok.canceledSuccess,
         selectPricingSuccess: state.bok.selectPricingSuccess,
-        autoRepackSuccess: state.bok.autoRepackSuccess,
+        repackSuccess: state.bok.repackSuccess,
         lineOperationSuccess: state.bok.lineOperationSuccess,
         packageTypes: state.extra.packageTypes,
     };
@@ -704,12 +807,12 @@ const mapDispatchToProps = (dispatch) => {
         onSelectPricing: (costId, identifier, client_overrided_quote) => dispatch(onSelectPricing(costId, identifier, client_overrided_quote)),
         onBookFreight: (identifier) => dispatch(bookFreight(identifier)),
         onCancelFreight: (identifier) => dispatch(cancelFreight(identifier)),
-        onAutoRepack: (identifier, repackStatus, palletId) => dispatch(autoRepack(identifier, repackStatus, palletId)),
         sendEmail: (identifier) => dispatch(sendEmail(identifier)),
         onAddBokLine: (line) => dispatch(onAddBokLine(line)),
         onUpdateBokLine: (lineId, line) => dispatch(onUpdateBokLine(lineId, line)),
         onDeleteBokLine: (lineId) => dispatch(onDeleteBokLine(lineId)),
         getPackageTypes: () => dispatch(getPackageTypes()),
+        repack: (bookingId, repackStatus, palletId) => dispatch(repack(bookingId, repackStatus, palletId)),
     };
 };
 

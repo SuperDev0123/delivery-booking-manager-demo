@@ -19,7 +19,6 @@ class BokFreightOptionAccordion extends Component {
     static propTypes = {
         bok_1: PropTypes.array.isRequired,
         updateBok_1: PropTypes.func.isRequired,
-        onClickAutoRepack: PropTypes.func.isRequired,
     }
 
     onClickHeader = (e) => {
@@ -51,10 +50,6 @@ class BokFreightOptionAccordion extends Component {
         }
 
         this.setState({needToUpdate: true});
-
-        if (e.target.name === 'b_081_b_pu_auto_pack') {
-            this.props.onClickAutoRepack(e.target.checked);
-        }
     }
 
     onClickSave(e) {
@@ -116,7 +111,7 @@ class BokFreightOptionAccordion extends Component {
                         </div>
                         <div className="at-pu disp-inline-block">
                             <h4>At Pickup:</h4>
-                            <label>
+                            <label className='none'>
                                 <p><strong>Auto repack: </strong></p>
                                 <input
                                     name="b_081_b_pu_auto_pack"

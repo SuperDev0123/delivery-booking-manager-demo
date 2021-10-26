@@ -20,8 +20,6 @@ import {
     failedCancelFreight,
     successUpdateBok_1,
     failedUpdateBok_1,
-    successAutoRepack,
-    failedAutoRepack,
     successSendEmail,
     failedSendEmail,
     successAddBokLine,
@@ -30,6 +28,8 @@ import {
     failedUpdateBokLine,
     successDeleteBokLine,
     failedDeleteBokLine,
+    successRepack,
+    failedRepack,
 } from '../actions/bokActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -145,19 +145,6 @@ export const updateBok_1 = (bok_1) => {
     };
 };
 
-export const autoRepack = (identifier, repackStatus, palletId) => {
-    const options = {
-        method: 'post',
-        url: `${HTTP_PROTOCOL}://${API_HOST}/boks/auto_repack/`,
-        data: {'status': repackStatus, 'identifier': identifier, 'palletId': palletId},
-    };
-    return dispatch => {
-        axios(options)
-            .then(() => dispatch(successAutoRepack()))
-            .catch((error) => dispatch(failedAutoRepack(error)));
-    };
-};
-
 export const sendEmail = (identifier) => {
     const options = {
         method: 'get',
@@ -206,5 +193,19 @@ export const onDeleteBokLine = (line_id) => {
         axios(options)
             .then(() => dispatch(successDeleteBokLine()))
             .catch((error) => dispatch(failedDeleteBokLine(error)));
+    };
+};
+
+export const repack = (pk_auto_id, repackStatus, palletId) => {
+    const options = {
+        method: 'post',
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bok_1_headers/${pk_auto_id}/repack/`,
+        data: {repackStatus, palletId}
+    };
+    return dispatch => {
+        dispatch(resetNeedToUpdatePricings());
+        axios(options)
+            .then(() => dispatch(successRepack()))
+            .catch((error) => dispatch(failedRepack(error)));
     };
 };
