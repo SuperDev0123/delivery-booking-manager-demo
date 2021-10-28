@@ -460,7 +460,7 @@ class BokPricePage extends Component {
             bok_3s = [];
             if (isShowLineData) {
                 bok_3s = bok_1['bok_3s']
-                    .filter(bok_3 => bok_3.fk_booking_lines_id === selectedBok_2Id)
+                    .filter(bok_3 => bok_3.fk_booking_lines_id === selectedBok_2Id && currentPackedStatus !== 'manual')
                     .map((bok_3, index) => (
                         <tr key={index}>
                             <td>{bok_3['zbld_104_text_4']}</td>
