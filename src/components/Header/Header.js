@@ -112,6 +112,8 @@ class Header extends Component {
                                         {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
                                         {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
                                         <div className="dropdown-divider"></div>
+                                        <a className="dropdown-item" href="/bok">Find Order</a>
+                                        <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/booking">Booking</a>
                                         <div className="dropdown-divider"></div>
                                         <a className="dropdown-item" href="/allbookings">All Bookings</a>

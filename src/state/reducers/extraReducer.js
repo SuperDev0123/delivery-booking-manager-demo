@@ -82,7 +82,10 @@ import {
     SUCCESS_CREATE_PALLET,
     FAILED_CREATE_PALLET,
     SUCCESS_GET_LOGS,
-    FAILED_GET_LOGS
+    FAILED_GET_LOGS,
+    SUCCESS_FIND_BOOKING,
+    FAILED_FIND_BOOKING,
+    RESET_PAGE_URLS,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -117,7 +120,9 @@ const defaultState = {
     clientEmployee: {},
     updatedClientEmployee: {},
     pallets: [],
-    logs: []
+    logs: [],
+    pricePageUrl: null,
+    statusPageUrl: null,
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -138,6 +143,13 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_PAGE_URLS:
+            return {
+                ...state,
+                pricePageUrl: null,
+                statusPageUrl: null,
+                errorMessage: null,
+            };
         case RESET_BOOKING_SET_FLAGS:
             return {
                 ...state,
@@ -421,6 +433,13 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 logs: payload
             };
+        case SUCCESS_FIND_BOOKING:
+            return {
+                ...state,
+                pricePageUrl: payload.pricePageUrl,
+                statusPageUrl: payload.statusPageUrl,
+                errorMessage: payload.message,
+            };
         case FAILED_GET_ALL_ERRORS:
             return {
                 ...state,
@@ -488,6 +507,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_PALLETS:
         case FAILED_CREATE_PALLET:
         case FAILED_GET_LOGS:
+        case FAILED_FIND_BOOKING:
             return {
                 ...state,
                 errorMessage: errorMessage,
