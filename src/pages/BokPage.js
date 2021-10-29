@@ -3,8 +3,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import BootstrapTable from 'react-bootstrap-table-next';
 import '../styles/pages/dmeapiinv.scss';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Button } from 'reactstrap';
 
 import { getBookings, getBookingLines, getBookingLinesData } from '../state/services/bokService';
+import { cleanRedirectState, getDMEClients } from '../state/services/authService';
+import { findBooking } from '../state/services/extraService';
 
 class BokPage extends Component {
     constructor(props) {
@@ -14,6 +19,9 @@ class BokPage extends Component {
             BOK_1_headers: [],
             BOK_2_lines: [],
             BOK_3_lines_data: [],
+            clientPK: null,
+            orderNumber: '',
+            dest: null, // 'status' | 'price' - page to go
         };
     }
 
@@ -21,20 +29,28 @@ class BokPage extends Component {
         getBookings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLinesData: PropTypes.func.isRequired,
+        getDMEClients: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
+        findBooking: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
+        dmeClients: PropTypes.array,
     };
 
     componentDidMount() {
-        this.props.getBookings();
-        this.props.getBookingLines();
-        this.props.getBookingLinesData();
+        this.props.getDMEClients();
+        // this.props.getBookings();
+        // this.props.getBookingLines();
+        // this.props.getBookingLinesData();
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {BOK_1_headers, BOK_2_lines, BOK_3_lines_data, redirect} = newProps;
+        const {BOK_1_headers, BOK_2_lines, BOK_3_lines_data, dmeClients, redirect, statusPageUrl, pricePageUrl, extraErrorMessage} = newProps;
+
+        if (extraErrorMessage)
+            this.notify(extraErrorMessage);
+
         if (BOK_1_headers) {
             this.setState({BOK_1_headers});
         }
@@ -51,10 +67,74 @@ class BokPage extends Component {
             this.props.cleanRedirectState();
             this.props.history.push('/');
         }
+
+        if (dmeClients && dmeClients.length === 1) // When logged in with the Client
+            this.setState({clientPK: dmeClients[0].pk_id_dme_client});
+
+        if (this.state.dest && (statusPageUrl || pricePageUrl)) {
+            if (this.state.dest  === 'status') {
+                if (statusPageUrl) {
+                    // window.location.href = statusPageUrl;
+                    this.openTab(statusPageUrl);
+                } else {
+                    this.notify('Status page is not available for this Order Number.');
+                }
+            } else {
+                if (pricePageUrl) {
+                    // window.location.href = pricePageUrl;
+                    this.openTab(pricePageUrl);
+                } else {
+                    this.notify('This Order Number does not exist.');
+                }
+            }
+
+            this.setState({dest: null});
+        }
+    }
+
+    notify = (text) => toast(text);
+
+    openTab = (url) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel='noopener noreferrer';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    onSelected(e, src) {
+        if (src === 'client') {
+            this.setState({clientPK: e.target.value});
+        }
+    }
+
+    onChangeInput(e) {
+        this.setState({orderNumber: e.target.value});
+    }
+
+    onClickRedirect(dest) {
+        const { clientPK, orderNumber } = this.state;
+
+        if (!clientPK) {
+            this.notify('Please select a Client');
+        } else if (!orderNumber) {
+            this.notify('Order number is required');
+        } else {
+            this.notify('Finding a booking...');
+            this.props.findBooking(clientPK, orderNumber);
+            this.setState({dest});
+        }
     }
 
     render() {
-        const { BOK_1_headers, BOK_2_lines, BOK_3_lines_data } = this.state;
+        const { BOK_1_headers, BOK_2_lines, BOK_3_lines_data, clientPK, orderNumber } = this.state;
+        const { dmeClients } = this.props;
+
+        const clientOptionsList = dmeClients
+            .map((client, index) => (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>));
+
         const columns1 = [
             {
                 dataField: 'pk_header_id',
@@ -245,9 +325,47 @@ class BokPage extends Component {
         ];
 
         return (
-            <section>
+            <section className="bok-page">
                 <div className="container-fluid">
                     <div className="row">
+                        <div className="col-sm-12">
+                            {(clientOptionsList.length > 0) ?
+                                <div className="find-a-booking">
+                                    <h2>Find an Order</h2>
+                                    <label className="content">
+                                        Client: 
+                                        <select 
+                                            id="client-select" 
+                                            required 
+                                            onChange={(e) => this.onSelected(e, 'client')} 
+                                            value={clientPK}>
+                                            <option value="" selected disabled hidden>--- Select a Client ---</option>
+                                            { clientOptionsList }
+                                        </select>
+                                    </label>
+                                    <label className="content">
+                                        Order Number: 
+                                        <input
+                                            type="text"
+                                            className="mar-l-30p"
+                                            name="orderNumber"
+                                            value={orderNumber}
+                                            placeholder="XXX"
+                                            onChange={(e) => this.onChangeInput(e)}
+                                        />
+                                    </label><br />
+                                    <Button className="content" color="primary" onClick={() => this.onClickRedirect('price')}>Go to Price($) page</Button>
+                                    <Button className="mar-l-30p" color="primary" onClick={() => this.onClickRedirect('status')}>Go to Status page</Button>
+                                </div>
+                                :
+                                <div className="find-a-booking">
+                                    <label>Find a Booking</label><br />
+                                    <label className="content">* This feature is not available without logging in.</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div className="row none">
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
@@ -266,7 +384,7 @@ class BokPage extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row none">
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
@@ -285,7 +403,7 @@ class BokPage extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="row">
+                    <div className="row none">
                         <div className="col-sm-12">
                             <div className="panel panel-default">
                                 <div className="panel-heading">
@@ -305,6 +423,8 @@ class BokPage extends Component {
                         </div>
                     </div>
                 </div>
+
+                <ToastContainer />
             </section>
         );
     }
@@ -318,6 +438,10 @@ const mapStateToProps = (state) => {
         BOK_1_headers: state.bok.BOK_1_headers,
         BOK_2_lines: state.bok.BOK_2_lines,
         BOK_3_lines_data: state.bok.BOK_3_lines_data,
+        dmeClients: state.auth.dmeClients,
+        pricePageUrl: state.extra.pricePageUrl,
+        statusPageUrl: state.extra.statusPageUrl,
+        extraErrorMessage: state.extra.errorMessage,
     };
 };
 
@@ -325,7 +449,10 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getBookings: () => dispatch(getBookings()),
         getBookingLines: () => dispatch(getBookingLines()),
-        getBookingLinesData: () => dispatch(getBookingLinesData())
+        getBookingLinesData: () => dispatch(getBookingLinesData()),
+        cleanRedirectState: () => dispatch(cleanRedirectState()),
+        getDMEClients: () => dispatch(getDMEClients()),
+        findBooking: (clientPK, orderNumber) => dispatch(findBooking(clientPK, orderNumber)),
     };
 };
 

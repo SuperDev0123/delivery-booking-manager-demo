@@ -84,7 +84,10 @@ import {
     successCreatePallet,// "
     failedCreatePallet, // Pallet end
     successGetLogs,
-    failedGetLogs
+    failedGetLogs,
+    successFindBooking,
+    failedFindBooking,
+    resetPageUrls,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -764,4 +767,20 @@ export const getLogs = () => {
         axios(options)
             .then(({ data }) => dispatch(successGetLogs(data.logs)))
             .catch((error) => dispatch(failedGetLogs(error)));
+};
+
+export const findBooking = (clientPK, orderNumber) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/find-a-booking?clientPK=${clientPK}&orderNumber=${orderNumber}`,
+    };
+
+    return dispatch => {
+        dispatch(resetPageUrls());
+        axios(options)
+            .then(({ data }) => dispatch(successFindBooking(data)))
+            .catch((error) => dispatch(failedFindBooking(error)));
+    };
 };

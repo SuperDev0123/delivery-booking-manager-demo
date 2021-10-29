@@ -1,0 +1,16 @@
+section.bok-page {
+	.find-a-booking {
+		padding: 10px;
+		border: 1px dashed;
+		border-radius: 5px;
+		margin-bottom: 20px;
+
+		.content {
+			margin-left: 20px;
+		}
+
+		button {
+			margin-top: 20px;
+		}
+	}
+}
