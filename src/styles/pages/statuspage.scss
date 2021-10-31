@@ -164,13 +164,15 @@ section.status {
             margin: 0px 0px 10px;
 
             .scans-details-title {
+                border-radius: 0.25rem;
+                background-color: lightgray;
                 font-size: 18px;
                 font-weight: bold;
                 cursor: pointer;
             }
 
             .scans-details-title:hover {
-                opacity: 0.6;
+                background-color: rgb(228, 228, 228);
             }
         }
 
