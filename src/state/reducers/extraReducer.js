@@ -123,7 +123,6 @@ const defaultState = {
     updatedClientEmployee: {},
     pallets: [],
     scans: [],
-    logs: []
     logs: [],
     pricePageUrl: null,
     statusPageUrl: null,
