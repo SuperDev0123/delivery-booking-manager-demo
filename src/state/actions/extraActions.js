@@ -85,7 +85,10 @@ import {
     SUCCESS_GET_SCANS,
     FAILED_GET_SCANS,
     SUCCESS_GET_LOGS,
-    FAILED_GET_LOGS
+    FAILED_GET_LOGS,
+    SUCCESS_FIND_BOOKING,
+    FAILED_FIND_BOOKING,
+    RESET_PAGE_URLS
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -700,5 +703,25 @@ export function failedGetLogs(error) {
     return {
         type: FAILED_GET_LOGS,
         errorMessage: `Failed to get logs: ${error.toString()}`,
+    };
+}
+
+export function successFindBooking(data) {
+    return {
+        type: SUCCESS_FIND_BOOKING,
+        payload: data
+    };
+}
+
+export function failedFindBooking(error) {
+    return {
+        type: FAILED_FIND_BOOKING,
+        errorMessage: `Failed to find a booking: ${error.toString()}`,
+    };
+}
+
+export function resetPageUrls() {
+    return {
+        type: RESET_PAGE_URLS,
     };
 }

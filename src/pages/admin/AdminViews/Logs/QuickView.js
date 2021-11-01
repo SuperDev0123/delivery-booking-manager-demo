@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { isEmpty } from 'lodash';
 import PropTypes from 'prop-types';
-import { Parser } from 'html-to-react';
 import LoadingOverlay from 'react-loading-overlay';
 import { getLogs } from '../../../../state/services/extraService';
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
@@ -16,8 +15,7 @@ class QuickView extends React.Component {
             logs: [],
             filtered: [],
         };
-
-        this.parser = new Parser();
+        this.textArea = React.createRef();
     }
 
     static propTypes = {
@@ -55,8 +53,11 @@ class QuickView extends React.Component {
         }
         if (logs) {
             this.setState({ logs, filtered: logs });
+            let that = this;
+            setTimeout(function(){
+                that.textArea.current.scrollTop = that.textArea.current.scrollHeight;
+            }, 500);
         }
-        window.scrollTo(0, document.body.scrollHeight);
     }
 
     onRefresh() {
@@ -72,25 +73,32 @@ class QuickView extends React.Component {
     }
 
     render() {
-
         const { logs, filtered } = this.state;
+        let logSum = '';
+        filtered.map(log => logSum += log);
 
         return (
-            <div>
+            <div className='admin-logs-quick'>
                 <div className="pageheader">
                     <h1>Quick Logs View</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
                         <span className="label">You are here:</span>
                         <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
-                            </li>
+                            <li><a href={this.props.urlAdminHome}>Home</a></li>
                             <li className="active">Logs</li>
                         </ol>
                     </div>
                 </div>
                 <section id="main-content" className="animated fadeInUp">
                     <div className="d-flex justify-content-between">
-                        <input type="search" className="bg-white border border-gray rounded shadow-none p-2" placeholder="Search text..." onChange={(e) => this.onSearch(e, logs)} />
+                        <input
+                            type="search"
+                            className="bg-white border border-gray rounded shadow-none p-2"
+                            placeholder="Search text..."
+                            onChange={(e) => this.onSearch(e, logs)}
+                            disabled="disabled"
+                            title="Coming soon!"
+                        />
                         <button className="btn btn-success" onClick={() => this.onRefresh()}>Refresh</button>
                     </div>
                     <LoadingOverlay
@@ -98,9 +106,7 @@ class QuickView extends React.Component {
                         spinner
                         text='Loading...'
                     >
-                        <div className="mt-3 p-3 border border-info rounded" style={{minHeight: 300}}>
-                            { filtered.map((item, index) => (<p key={index}>{this.parser.parse(item)}</p>)) }
-                        </div>
+                        <textarea ref={this.textArea} value={logSum}></textarea>
                     </LoadingOverlay>
                 </section>
             </div>

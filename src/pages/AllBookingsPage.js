@@ -1719,11 +1719,11 @@ class AllBookingsPage extends React.Component {
 
     setFooBarRef(ref) {
         console.log('@0- ', ref);
-        console.log('@0- ', ref.refs);
-        console.log('@0- ', ref.cx());
-        console.log('@1- ', ref.current);
-        this.drRef = ref;
-        console.log('@2 - ', this.drRef.current);
+        // console.log('@0- ', ref.refs);
+        // console.log('@0- ', ref.cx());
+        // console.log('@1- ', ref.current);
+        // this.drRef = ref;
+        // console.log('@2 - ', this.drRef.current);
     }
 
     render() {
@@ -1735,7 +1735,7 @@ class AllBookingsPage extends React.Component {
         const tblContentWidth = {width: tblContentWidthVal};
 
         // DateRange marge-left
-        console.log('@1 - ', 182 - scrollLeft);
+        // console.log('@1 - ', 182 - scrollLeft);
         // if (this.drRef.current) {
         //     console.log(this.drRef);
         //     this.drRef.current.style.marginLeft = 182 - scrollLeft;
