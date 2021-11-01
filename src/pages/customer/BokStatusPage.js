@@ -265,7 +265,10 @@ class BokStatusPage extends Component {
                             </div>
                             <div className="scans-details row">
                                 <div className="scans-details-title" onClick={() => this.onScans()}>
-                                    FREIGHT PROVIDER SCANS
+                                    <span>
+                                        &nbsp;<i className={showScans ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                        &nbsp;FREIGHT PROVIDER SCANS
+                                    </span>
                                 </div>
                                 {scans && showScans && <BootstrapTable
                                     keyField="id"

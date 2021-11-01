@@ -83,6 +83,8 @@ import {
     failedGetPallets,   // "
     successCreatePallet,// "
     failedCreatePallet, // Pallet end
+    successGetScans,
+    failedGetScans,
     successGetLogs,
     failedGetLogs,
     successFindBooking,
@@ -753,6 +755,23 @@ export const createPallet = (pallet) => {
         axios(options)
             .then(({ data }) => dispatch(successCreatePallet(data)))
             .catch((error) => dispatch(failedCreatePallet(error)));
+};
+
+export const getScans = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/get_scans_from_booking_id`,
+        params: {
+            bookingId
+        }
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successGetScans(data.scans)))
+            .catch((error) => dispatch(failedGetScans(error)));
 };
 
 export const getLogs = () => {

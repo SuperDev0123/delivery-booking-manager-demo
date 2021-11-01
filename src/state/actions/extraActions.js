@@ -82,6 +82,8 @@ import {
     FAILED_GET_PALLETS,
     SUCCESS_CREATE_PALLET,
     FAILED_CREATE_PALLET,
+    SUCCESS_GET_SCANS,
+    FAILED_GET_SCANS,
     SUCCESS_GET_LOGS,
     FAILED_GET_LOGS,
     SUCCESS_FIND_BOOKING,
@@ -676,10 +678,24 @@ export function failedCreatePallet() {
     };
 }
 
+export function successGetScans(data) {
+    return {
+        type: SUCCESS_GET_SCANS,
+        payload: data
+    };
+}
+
 export function successGetLogs(data) {
     return {
         type: SUCCESS_GET_LOGS,
         payload: data
+    };
+}
+
+export function failedGetScans() {
+    return {
+        type: FAILED_GET_SCANS,
+        errorMessage: 'Failed to get scans data',
     };
 }
 
