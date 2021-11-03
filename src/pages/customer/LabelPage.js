@@ -6,9 +6,9 @@ import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import print from 'print-js';
+import axios from 'axios';
 
-import { STATIC_HOST, HTTP_PROTOCOL } from '../../config';
-// import { decodeBase64 } from '../../commons/helpers';
+import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../../config';
 import { getLabels4Booking } from '../../state/services/bookingService';
 
 class LabelPage extends Component {
@@ -73,6 +73,43 @@ class LabelPage extends Component {
         } else {
             print({printable: bookingLabels['pdf'], type: 'pdf', showModal: true, base64: true});
         }
+    }
+
+    bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            this.notify('Login required!');
+        }
+
+        return new Promise((resolve, reject) => {
+            const options = {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+                url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
+                data: {bookingIds, fieldName, fieldContent},
+            };
+
+            axios(options)
+                .then(() => {
+                    resolve();
+                })
+                .catch((err) => {
+                    reject(err);
+                });
+        });
+    }
+
+    onClickUseCheapest(quote) {
+        const {bookingLabels} = this.props;
+
+        this.bulkBookingUpdate([bookingLabels['id']], 'vx_freight_provider', quote.fp)
+            .then(() => {
+                window.location.reload(false);
+            })
+            .catch(() => {
+                this.notify('Failed, please contact support center.');
+            });
     }
 
     render() {
@@ -182,6 +219,28 @@ class LabelPage extends Component {
                             }
                             <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
                         </div>
+                        {(bookingLabels && bookingLabels.quote && bookingLabels.quote.cheapest) &&
+                            <div>
+                                <h4><i className="fa fa-circle"></i> Cost Comparison:</h4>
+                                <div className="cost-comparision">
+                                    <p>
+                                        <strong>Current Provider: </strong>
+                                        {bookingLabels.quote.original &&
+                                            `${bookingLabels.quote.original.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.original.cost_dollar).toFixed(2)}, `
+                                        }
+                                        {bookingLabels.quote.scanned &&
+                                            `${bookingLabels.quote.scanned.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.scanned.cost_dollar).toFixed(2)}`
+                                        }
+                                    </p><br />
+                                    <p>
+                                        <strong>Most Cost Effective Provider: </strong> 
+                                        {bookingLabels.quote.cheapest.fp} Quoted Cost on Actual DIMS: 
+                                        ${parseFloat(bookingLabels.quote.cheapest.cost_dollar).toFixed(2)}, Savings: ${parseFloat(bookingLabels.quote.cheapest.savings).toFixed(2)}
+                                    </p>
+                                    <Button color="info" onClick={() => this.onClickUseCheapest(bookingLabels.quote.cheapest)}>YES CHANGE</Button>
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
                 <ToastContainer />

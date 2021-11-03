@@ -1667,8 +1667,7 @@ class AllBookingsPage extends React.Component {
                 });
         }
 
-        this.toggleBulkUpdateSlider();
-        this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
+        this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None', isShowBulkUpdateSlider: false});
     }
 
     onClickPagination(pageInd) {
@@ -1715,6 +1714,18 @@ class AllBookingsPage extends React.Component {
 
             this.toggleManifestSlider();
         }
+    }
+
+    onClickUseCheapest(cheapest_quote, booking) {
+        this.onBulkUpdate('vx_freight_provider', cheapest_quote.fp, [booking.id])
+            .then(() => {
+                this.onClickFind();
+            })
+            .catch((err) => {
+                this.notify(err.response.data.message);
+                this.setState({loading: false});
+            });
+        this.setState({loading: true, isShowBulkUpdateSlider: false});
     }
 
     setFooBarRef(ref) {
@@ -2114,8 +2125,12 @@ class AllBookingsPage extends React.Component {
                     <td name='b_clientReference_RA_Numbers' className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
                     <td name='b_client_order_num' className={(sortField === 'b_client_order_num') ? 'current' : ''}>{booking.b_client_order_num}</td>
                     <td name='b_client_sales_inv_num' className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
-                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider}</td>
+                    <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${booking.cost_dollar})` : ''}</td>
                     <td name='vx_serviceName' className={(sortField === 'vx_serviceName') ? 'current' : ''}>{booking.vx_serviceName}</td>
+                    <td name='cheapest_freight_provider'>
+                        <strong>{booking.cheapest_quote.fp ? `${booking.cheapest_quote.fp} ($${booking.cheapest_quote.cost_dollar})` : ''}</strong>
+                        {booking.cheapest_quote.fp && <button className='btn btn-primary btn-use-cheapest-quote' onClick={() => this.onClickUseCheapest(booking.cheapest_quote, booking)}>USE</button>}
+                    </td>
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
                     <td name='z_lock_status' className={booking.z_lock_status ? 'status-active' : 'status-inactive'} onClick={() => this.onClickStatusLock(booking)}>
                         <i className="fa fa-lock"></i>
@@ -2894,6 +2909,13 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th
+                                                                name="cheapest_freight_provider"
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Cheapest FP</p>
+                                                            </th>
+                                                            <th
                                                                 name="v_FPBookingNumber"
                                                                 className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('v_FPBookingNumber')} 
@@ -3213,6 +3235,7 @@ class AllBookingsPage extends React.Component {
                                                             <th name="b_client_sales_inv_num" scope="col"><input type="text" name="b_client_sales_inv_num" value={filterInputs['b_client_sales_inv_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="vx_freight_provider" scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="vx_serviceName" scope="col"><input type="text" name="vx_serviceName" value={filterInputs['vx_serviceName'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="cheapest_freight_provider" scope="col"></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="z_lock_status" className="narrow-column"></th>
                                                             <th name="b_status_category" scope="col"><input type="text" name="b_status_category" value={filterInputs['b_status_category'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>

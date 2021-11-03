@@ -166,8 +166,9 @@ $manifest_timestamp_width: 105px;
 $b_clientReference_RA_Numbers_width: 95px;
 $b_client_order_num_width: 95px;
 $b_client_sales_inv_num_width: 95px;
-$vx_freight_provider_width: 90px;
-$vx_serviceName_width: 90px;
+$vx_freight_provider_width: 120px;
+$vx_serviceName_width: 120px;
+$cheapest_freight_provider_width: 120px;
 $v_FPBookingNumber_width: 90px;
 $z_lock_status_width: 30px;
 $b_status_category_width: 120px;
@@ -262,6 +263,8 @@ $b_project_due_date_width: 130px;
   td[name=vx_freight_provider] p, th[name=vx_freight_provider] p { width: 70px }
   td[name=vx_serviceName], th[name=vx_serviceName] { width: $vx_serviceName_width; }
   td[name=vx_serviceName] p, th[name=vx_serviceName] p { width: 50px }
+  td[name=cheapest_freight_provider], th[name=cheapest_freight_provider] { width: $cheapest_freight_provider_width; }
+  td[name=cheapest_freight_provider] p, th[name=cheapest_freight_provider] p { width: 100px; }
   td[name=v_FPBookingNumber], th[name=v_FPBookingNumber] { width: $v_FPBookingNumber_width; }
   td[name=v_FPBookingNumber] p, th[name=v_FPBookingNumber] p { width: 70px }
   td[name=z_lock_status], th[name=z_lock_status] { width: $z_lock_status_width; }
@@ -351,6 +354,12 @@ $b_project_due_date_width: 130px;
       color: black;
       margin-left: 5px;
       cursor: pointer;
+    }
+
+    .btn-use-cheapest-quote {
+      margin-left: 5px;
+      border: none;
+      padding: 0 5px;
     }
   }
 

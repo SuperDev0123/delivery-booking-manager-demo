@@ -2666,12 +2666,12 @@ class BookingPage extends Component {
         booking['inv_cost_quoted'] = (pricingInfo.fee + pricingInfo.fuel_levy_base + pricingInfo.surcharge_total).toFixed(2);
         formInputs['inv_cost_quoted'] = booking['inv_cost_quoted'];
 
-        if (pricingInfo['pricingInfo'] !== 'scanned') {
-            booking['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
-            formInputs['inv_sell_quoted'] = booking['inv_sell_quoted'];
+        if (pricingInfo['packed_status'] !== 'scanned') {
+            booking['inv_sell_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+            formInputs['inv_sell_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
         } else {
-            booking['inv_booked_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
-            formInputs['inv_booked_quoted'] = booking['inv_booked_quoted'];
+            booking['inv_booked_quoted'] = pricingInfo['client_mu_1_minimum_values'];
+            formInputs['inv_booked_quoted'] = parseFloat(pricingInfo['client_mu_1_minimum_values']).toFixed(3);
         }
 
         booking['api_booking_quote'] = pricingInfo['id'];
