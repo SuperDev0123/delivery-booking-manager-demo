@@ -461,14 +461,22 @@ export const fpEditBook = (bookingId, vx_freight_provider) => {
             .catch((error) => dispatch(failedFPEditBook(error)));
 };
 
-export const fpCancelBook = (bookingId, vx_freight_provider) => {
+export const fpCancelBook = (bookingId, vx_freight_provider, isPlum) => {
     const token = localStorage.getItem('token');
-    const options = {
+    let options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
         data: {'booking_id': bookingId},
         url: `${HTTP_PROTOCOL}://${API_HOST}/fp-api/${vx_freight_provider}/cancel-book/`
     };
+    if (isPlum) {
+        options = {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+            data: {'booking_id': bookingId},
+            url: `${HTTP_PROTOCOL}://${API_HOST}/booking/cancel_book/`
+        };
+    }
     return dispatch =>
         axios(options)
             .then(({data}) => dispatch(successFPCancelBook(data)))

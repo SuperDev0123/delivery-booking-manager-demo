@@ -2415,11 +2415,12 @@ class BookingPage extends Component {
 
     onClickCancelBook() {
         const {booking} = this.state;
+        const {clientId} = this.props;
 
         if (!booking) {
             this.notify('Please select booking to cancel');
         } else {
-            this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
+            this.props.fpCancelBook(booking.id, booking.vx_freight_provider, clientId === '461162D2-90C7-BF4E-A905-000000000004');
         }
     }
 
@@ -2766,7 +2767,7 @@ class BookingPage extends Component {
         const {
             isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
         } = this.state;
-        const {warehouses, emailLogs, bookingLines} = this.props;
+        const {warehouses, emailLogs, bookingLines, clientId} = this.props;
 
         const filteredProducts = products
             .filter(product => {
@@ -5339,10 +5340,12 @@ class BookingPage extends Component {
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickCancelBook()}
                                                             disabled={
-                                                                booking
-                                                                && (isBookedBooking || !isLockedBooking)
-                                                                && booking.vx_freight_provider
-                                                                && booking.vx_freight_provider.toLowerCase() === 'startrack'
+                                                                (
+                                                                    booking
+                                                                    && (isBookedBooking || !isLockedBooking)
+                                                                    && booking.vx_freight_provider
+                                                                    && booking.vx_freight_provider.toLowerCase() === 'startrack'
+                                                                ) || (!isBookedBooking && clientId === '461162D2-90C7-BF4E-A905-000000000004')
                                                                     ? '' : 'disabled'
                                                             }
                                                         >
@@ -5950,7 +5953,7 @@ const mapDispatchToProps = (dispatch) => {
         fpRebook: (bookingId, vx_freight_provider) => dispatch(fpRebook(bookingId, vx_freight_provider)),
         fpPod: (bookingId, vx_freight_provider) => dispatch(fpPod(bookingId, vx_freight_provider)),
         fpEditBook: (bookingId, vx_freight_provider) => dispatch(fpEditBook(bookingId, vx_freight_provider)),
-        fpCancelBook: (bookingId, vx_freight_provider) => dispatch(fpCancelBook(bookingId, vx_freight_provider)),
+        fpCancelBook: (bookingId, vx_freight_provider, isPlum) => dispatch(fpCancelBook(bookingId, vx_freight_provider, isPlum)),
         fpLabel: (bookingId, vx_freight_provider) => dispatch(fpLabel(bookingId, vx_freight_provider)),
         fpReprint: (bookingId, vx_freight_provider) => dispatch(fpReprint(bookingId, vx_freight_provider)),
         fpTracking: (bookingId, vx_freight_provider) => dispatch(fpTracking(bookingId, vx_freight_provider)),
