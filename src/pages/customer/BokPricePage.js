@@ -331,6 +331,7 @@ class BokPricePage extends Component {
         let totalLinesKg = 0;
         let hasUnknownItems = false;
         let errorList = [];
+        let lowest_price_summary = 'not available';
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
@@ -354,6 +355,24 @@ class BokPricePage extends Component {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['sell']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
             sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
+        }
+
+        if (bokWithPricings && bokWithPricings['pricings']) {
+            const _pricings = _.sortBy(bokWithPricings['pricings'], ['sell']);
+
+            if (_pricings.length > 0) {
+                const lowest_price = _pricings[0];
+                let packed_status_title = '';
+
+                if (lowest_price.packed_status === 'original')
+                    packed_status_title = 'Send As Is';
+                else if (lowest_price.packed_status === 'auto')
+                    packed_status_title = 'Auto Repack';
+                else if (lowest_price.packed_status === 'manual')
+                    packed_status_title = 'Manual Repack';
+
+                lowest_price_summary = `${packed_status_title} | Freight Provider: ${lowest_price.fp_name} | Cost: $${lowest_price.sell}`;
+            }
         }
 
         if (bokWithPricings) {
@@ -586,6 +605,7 @@ class BokPricePage extends Component {
                                 >
                                     Reset
                                 </Button>
+                                <p className='lowest-price-summary disp-inline-block mar-left-30'><strong>Your Lowest Cost Option is - </strong>{lowest_price_summary}</p>
                                 <Button
                                     className='float-r'
                                     color='primary'

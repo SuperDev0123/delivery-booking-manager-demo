@@ -53,6 +53,11 @@ section.bok-price {
 			font-weight: lighter;
 			padding: 0px !important;
 		}
+
+		&.lowest-price-summary {
+			margin-top: 7px;
+			font-weight: normal; 
+		}
 	}
 
 	i {

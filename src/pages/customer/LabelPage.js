@@ -8,8 +8,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import print from 'print-js';
 import axios from 'axios';
 
+import FPPricingSlider from '../../components/Sliders/FPPricingSlider';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../../config';
-import { getLabels4Booking } from '../../state/services/bookingService';
+import { getLabels4Booking, getPricingInfos } from '../../state/services/bookingService';
 
 class LabelPage extends Component {
     constructor(props) {
@@ -18,13 +19,21 @@ class LabelPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
+            isShowFPPricingSlider: false,
+            loadingPricingInfos: false,
+            pricingInfos: [],
         };
+
+        this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
     }
 
     static propTypes = {
         match: PropTypes.object,
         getLabels4Booking: PropTypes.func.required,
         bookingLabels: PropTypes.object,
+        clientname: PropTypes.string,
+        getPricingInfos: PropTypes.func.isRequired,
+        pricingInfos: PropTypes.array,
     };
 
     componentDidMount() {
@@ -41,7 +50,7 @@ class LabelPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage} = newProps;
+        const {errorMessage, pricingInfos} = newProps;
 
         if (errorMessage) {
             if (errorMessage === 'Order does not exist!') {
@@ -52,9 +61,17 @@ class LabelPage extends Component {
                 this.setState({errorMessage});
             }
         }
+
+        if (pricingInfos) {
+            this.setState({loadingPricingInfos: false});
+        }
     }
 
     notify = (text) => toast(text);
+
+    toggleFPPricingSlider() {
+        this.setState(prevState => ({isShowFPPricingSlider: !prevState.isShowFPPricingSlider}));
+    }
 
     onClickPreview(url) {
         if (url && url.length > 0) {
@@ -80,6 +97,7 @@ class LabelPage extends Component {
 
         if (!token) {
             this.notify('Login required!');
+            return;
         }
 
         return new Promise((resolve, reject) => {
@@ -112,10 +130,43 @@ class LabelPage extends Component {
             });
     }
 
-    render() {
+    onSelectPricing(pricingInfo) {
         const {bookingLabels} = this.props;
+
+        this.bulkBookingUpdate([bookingLabels['id']], 'vx_freight_provider', pricingInfo.freight_provider)
+            .then(() => {
+                this.toggleFPPricingSlider();
+                window.location.reload(false);
+            })
+            .catch(() => {
+                this.notify('Failed, please contact support center.');
+            });
+    }
+
+    onClickOpenPricingSlider() {
+        const {bookingLabels} = this.props;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            this.notify('Login required!');
+            return;
+        }
+
+        this.setState({loadingPricingInfos: true});
+        this.toggleFPPricingSlider();
+        this.props.getPricingInfos(bookingLabels.pk_booking_id);
+    }
+
+    render() {
+        const {bookingLabels, pricingInfos} = this.props;
         let sscc_trs = [];
         let index = 0;
+        let _pricingInfos = [];
+
+        if (pricingInfos) {
+            const scanned_pricings = pricingInfos.filter(pricingInfo => pricingInfo.packed_status === 'scanned');
+            _pricingInfos = scanned_pricings.length > 0 ? scanned_pricings : pricingInfos;
+        }
 
         if (bookingLabels) {
             for (const value of Object.entries(bookingLabels.sscc_obj)) {
@@ -155,7 +206,6 @@ class LabelPage extends Component {
                 });
             }
         }
-
 
         return (
             <section className="label">
@@ -219,30 +269,44 @@ class LabelPage extends Component {
                             }
                             <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
                         </div>
+                        <h4><i className="fa fa-circle"></i> Cost Comparison:</h4>
+                        <Button color="info" onClick={() => this.onClickOpenPricingSlider()} className="see-all-quotes">See all quotes</Button>
                         {(bookingLabels && bookingLabels.quote && bookingLabels.quote.cheapest) &&
-                            <div>
-                                <h4><i className="fa fa-circle"></i> Cost Comparison:</h4>
-                                <div className="cost-comparision">
-                                    <p>
-                                        <strong>Current Provider: </strong>
-                                        {bookingLabels.quote.original &&
-                                            `${bookingLabels.quote.original.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.original.cost_dollar).toFixed(2)}, `
-                                        }
-                                        {bookingLabels.quote.scanned &&
-                                            `${bookingLabels.quote.scanned.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.scanned.cost_dollar).toFixed(2)}`
-                                        }
-                                    </p><br />
-                                    <p>
-                                        <strong>Most Cost Effective Provider: </strong> 
-                                        {bookingLabels.quote.cheapest.fp} Quoted Cost on Actual DIMS: 
-                                        ${parseFloat(bookingLabels.quote.cheapest.cost_dollar).toFixed(2)}, Savings: ${parseFloat(bookingLabels.quote.cheapest.savings).toFixed(2)}
-                                    </p>
-                                    <Button color="info" onClick={() => this.onClickUseCheapest(bookingLabels.quote.cheapest)}>YES CHANGE</Button>
-                                </div>
+                            <div className="cost-comparision">
+                                <p>
+                                    <strong>Current Provider: </strong>
+                                    {bookingLabels.quote.original &&
+                                        `${bookingLabels.quote.original.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.original.cost_dollar).toFixed(2)}, `
+                                    }
+                                    {bookingLabels.quote.scanned &&
+                                        `${bookingLabels.quote.scanned.fp} Quoted Cost at Time of Order: $${parseFloat(bookingLabels.quote.scanned.cost_dollar).toFixed(2)}`
+                                    }
+                                </p><br />
+                                <p>
+                                    <strong>Most Cost Effective Provider: </strong> 
+                                    {bookingLabels.quote.cheapest.fp} Quoted Cost on Actual DIMS: 
+                                    ${parseFloat(bookingLabels.quote.cheapest.cost_dollar).toFixed(2)}, Savings: ${parseFloat(bookingLabels.quote.cheapest.savings).toFixed(2)}
+                                </p>
+                                <Button color="info" onClick={() => this.onClickUseCheapest(bookingLabels.quote.cheapest)}>YES CHANGE</Button>
                             </div>
                         }
+
+                        <FPPricingSlider
+                            isOpen={this.state.isShowFPPricingSlider}
+                            toggleSlider={this.toggleFPPricingSlider}
+                            pricingInfos={_pricingInfos}
+                            onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                            isLoading={this.state.loadingPricingInfos}
+                            x_manual_booked_flag={bookingLabels.x_manual_booked_flag}
+                            api_booking_quote_id={bookingLabels.api_booking_quote}
+                            onLoadPricingErrors={this.onLoadPricingErrors}
+                            errors={this.state.errors}
+                            isBooked={bookingLabels.b_dateBookedDate ? true : false}
+                            clientname={this.props.clientname}
+                        />
                     </div>
                 }
+
                 <ToastContainer />
             </section>
         );
@@ -251,7 +315,9 @@ class LabelPage extends Component {
 
 const mapStateToProps = (state) => {
     return {
+        clientname: state.auth.clientname,
         errorMessage: state.booking.errorMessage,
+        pricingInfos: state.booking.pricingInfos,
         bookingLabels: state.booking.bookingLabels
     };
 };
@@ -259,6 +325,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getLabels4Booking: (identifier) => dispatch(getLabels4Booking(identifier)),
+        getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
     };
 };
 

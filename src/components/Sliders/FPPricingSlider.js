@@ -25,17 +25,16 @@ class FPPricingSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         pricingInfos: PropTypes.array.isRequired,
         onSelectPricing: PropTypes.func.isRequired,
-        booking: PropTypes.object.isRequired,
         clientname: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isBooked: PropTypes.bool.isRequired,
         onLoadPricingErrors: PropTypes.func.isRequired,
         errors: PropTypes.array.isRequired,
+        x_manual_booked_flag: PropTypes.bool,
+        api_booking_quote_id: PropTypes.number,
     };
 
-    notify = (text) => {
-        toast(text);
-    };
+    notify = (text) => toast(text);
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const {isOpen} = newProps;
@@ -46,9 +45,9 @@ class FPPricingSlider extends React.Component {
     }
 
     onSelectLowest() {
-        const {pricingInfos, booking} = this.props;
+        const {pricingInfos, x_manual_booked_flag} = this.props;
 
-        if (booking.x_manual_booked_flag) {
+        if (x_manual_booked_flag) {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             const sortedPricingInfos = sortBy(pricingInfos, ['mu_percentage_fuel_levy']);
@@ -57,9 +56,9 @@ class FPPricingSlider extends React.Component {
     }
 
     onSelectFastest() {
-        const {pricingInfos, booking} = this.props;
+        const {pricingInfos, x_manual_booked_flag} = this.props;
 
-        if (booking.x_manual_booked_flag) {
+        if (x_manual_booked_flag) {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             const sortedPricingInfos = sortBy(pricingInfos, [function(o) { return o.eta_de_by; }]);
@@ -68,9 +67,9 @@ class FPPricingSlider extends React.Component {
     }
 
     onClickSelect(pricingInfo) {
-        const {booking} = this.props;
+        const {x_manual_booked_flag} = this.props;
 
-        if (booking.x_manual_booked_flag) {
+        if (x_manual_booked_flag) {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             this.props.onSelectPricing(pricingInfo);
@@ -91,7 +90,7 @@ class FPPricingSlider extends React.Component {
     }
 
     render() {
-        const {isOpen, booking, clientname, isBooked} = this.props;
+        const {isOpen, clientname, isBooked, api_booking_quote_id} = this.props;
         const {pricingInfos, errors} = this.props;
         const { currentTab, selectedSurcharge} = this.state;
         let surchargeList = null;
@@ -103,7 +102,7 @@ class FPPricingSlider extends React.Component {
                 .filter(pricingInfo => pricingInfo.packed_status === packed_status)
                 .map((pricingInfo, index) => {
                     return (
-                        <tr key={index} className={booking.api_booking_quote === pricingInfo.id && 'selected'}>
+                        <tr key={index} className={api_booking_quote_id === pricingInfo.id && 'selected'}>
                             <td>{index + 1}</td>
                             <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
                             <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
@@ -131,7 +130,7 @@ class FPPricingSlider extends React.Component {
                             <td className="select">
                                 <Button
                                     color="primary"
-                                    disabled={(booking.api_booking_quote === pricingInfo.id || isBooked) && 'disabled'}
+                                    disabled={(api_booking_quote_id === pricingInfo.id || isBooked) && 'disabled'}
                                     onClick={() => this.onClickSelect(pricingInfo)}
                                 >
                                     Select

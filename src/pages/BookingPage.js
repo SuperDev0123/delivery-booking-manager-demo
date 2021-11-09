@@ -5826,7 +5826,8 @@ class BookingPage extends Component {
                     pricingInfos={this.state.pricingInfos}
                     onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
                     isLoading={this.state.loadingPricingInfos}
-                    booking={booking}
+                    x_manual_booked_flag={this.state.booking.x_manual_booked_flag}
+                    api_booking_quote_id={this.state.booking.api_booking_quote}
                     isBooked={isBookedBooking}
                     clientname={clientname}
                     onLoadPricingErrors={this.onLoadPricingErrors}
