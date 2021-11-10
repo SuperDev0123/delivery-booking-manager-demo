@@ -77,7 +77,7 @@ class FPPricingSlider extends React.Component {
     }
 
     onSelectTab(value) {
-        this.setState({currentTab:value});
+        this.setState({currentTab: value});
 
         if (value === 1 && !this.state.onLoadedError) {
             this.props.onLoadPricingErrors();
@@ -213,13 +213,13 @@ class FPPricingSlider extends React.Component {
                         <div className="col-md-7 col-sm-12 col-lg-8 col-xs-12">
                             <ul className="nav nav-tabs">
                                 <li className={currentTab == 0 ? 'active' : ''}>
-                                    <a onClick={(e) => this.onSelectTab(0, e)}>All Pricing</a>
+                                    <a onClick={() => this.onSelectTab(0)}>All Pricing</a>
                                 </li>
                                 <li className={currentTab == 1 ? 'active' : ''}>
-                                    <a onClick={(e) => this.onSelectTab(1, e)}>Errors</a>
+                                    <a onClick={() => this.onSelectTab(1)}>Errors</a>
                                 </li>
                                 <li className={currentTab == 2 ? 'active' : ''}>
-                                    <a onClick={(e) => this.onSelectTab(2, e)}>Surcharges</a>
+                                    <a onClick={() => this.onSelectTab(2)}>Surcharges</a>
                                 </li>
                             </ul>
                         </div>
