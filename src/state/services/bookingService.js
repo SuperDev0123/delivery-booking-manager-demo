@@ -650,12 +650,13 @@ export const getExcel = () => {
             .catch((error) => dispatch(console.log('@2 - Failed getExcel', error)));
 };
 
-export const duplicateBooking = (bookingId, switchInfo, dupLineAndLineDetail) => {
+export const duplicateBooking = (bookingId, data) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/duplicate_booking/?bookingId=` + bookingId + '&switchInfo=' + switchInfo + '&dupLineAndLineDetail=' + dupLineAndLineDetail,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/${bookingId}/duplicate_booking/`,
+        data: data,
     };
     return dispatch => {
         dispatch(resetBooking());

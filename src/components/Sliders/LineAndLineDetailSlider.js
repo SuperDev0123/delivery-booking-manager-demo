@@ -58,12 +58,11 @@ class LineAndLineDetailSlider extends React.Component {
 
     notify = (text) => toast(text);
 
+    /*
+     *  index: selected Line index
+     *  mode: 'showOnly' or 'highlight'
+     */
     onClickShowLine(index, mode) {
-        /*
-         *  index: selected Line index
-         *  mode: 'showOnly' or 'highlight'
-         */
-
         if (mode === 'highlight' && this.state.isShowAllLineDetails)
             this.setState({selectedLineIndex: index});
         else

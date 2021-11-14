@@ -1514,11 +1514,11 @@ class AllBookingsPage extends React.Component {
         this.setState({downloadOption: e.target.value});
     }
 
-    onClickLink(num, bookingId) {
+    onClickLink(num, b_bookingID_Visual) {
         if (num === 0)
-            this.props.history.push('/booking?bookingid=' + bookingId);
+            this.props.history.push('/booking?bookingId=' + b_bookingID_Visual);
         else if (num === 1)
-            this.props.history.push('/booking?bookingid=' + bookingId);
+            this.props.history.push('/booking?bookingId=' + b_bookingID_Visual);
     }
 
     onClickStatusLock(booking) {
@@ -1981,7 +1981,7 @@ class AllBookingsPage extends React.Component {
                     </Popover>
                     <td name='b_bookingID_Visual' 
                         id={'link-popover-' + booking.id} 
-                        onClick={() => this.onClickLink(0, booking.id)}
+                        onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}
                         className={(sortField === 'b_bookingID_Visual') ? 'visualID-box current' : 'visualID-box'}
                     >
 
@@ -2001,7 +2001,7 @@ class AllBookingsPage extends React.Component {
                         hideArrow={true} >
                         <PopoverBody>
                             <div className="links-div">
-                                <Button color="primary" onClick={() => this.onClickLink(0, booking.id)}>Go to Detail</Button>
+                                <Button color="primary" onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}>Go to Detail</Button>
                             </div>
                         </PopoverBody>
                     </Popover>

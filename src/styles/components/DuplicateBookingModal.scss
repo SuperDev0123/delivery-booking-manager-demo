@@ -1,0 +1,33 @@
+.duplicate-option-modal {
+  bottom: 0 !important;
+  top: 0 !important;
+  transform: unset !important;
+  -webkit-transform: unset !important;
+
+  .modal-header {
+    h5 {
+      font-size: 20px !important;
+    }
+  }
+
+  input {
+    margin-right: 10px;
+    width: unset !important;
+    height: unset !important;
+    text-align: left;
+  }
+
+  td input {
+    width: 40px;
+  }
+
+  .modal-body {
+    max-height: 70vh;
+    overflow: scroll;
+  }
+
+  &.build-child-mode {
+    width: 70%;
+    max-width: unset;
+  }
+}

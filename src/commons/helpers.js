@@ -62,9 +62,14 @@ function getWeight(e_qty, e_weightUOM, e_weightPerEach) {
     return result.toFixed(2);
 }
 
+function isInt(value) {
+    return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
+}
+
 module.exports = {
     encodeBase64,
     decodeBase64,
     getCubicMeter,
     getWeight,
+    isInt,
 };

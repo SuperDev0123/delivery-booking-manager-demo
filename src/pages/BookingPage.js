@@ -13,7 +13,7 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import cellEditFactory, {Type} from 'react-bootstrap-table2-editor';
 import LoadingOverlay from 'react-loading-overlay';
 import DropzoneComponent from 'react-dropzone-component';
-import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import Modal from 'react-modal';
 import DateTimePicker from 'react-datetime-picker';
 import TimePicker from 'react-time-picker';
@@ -22,19 +22,13 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import user from '../public/images/user.png';
-import imgGeneral from  '../public/images/general_email_white.png';
-import imgPod from  '../public/images/pod_email_white.png';
-import imgReturn from  '../public/images/returns_email_white.png';
-import imgUnpacked from  '../public/images/returns_unpacked_email.png';
-import imgFutile from '../public/images/futile_email.png';
-import imgLogsSlider from '../public/images/email_logs_slider.png';
 import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // import CommTooltipItem from '../components/Tooltip/CommTooltipComponent';
 // Custom Modals
 // import SwitchClientModal from '../components/CommonModals/SwitchClientModal';
 import StatusLockModal from '../components/CommonModals/StatusLockModal';
 import StatusNoteModal from '../components/CommonModals/StatusNoteModal';
+import DuplicateBookingModal from '../components/CommonModals/DuplicateBookingModal';
 // Custom Sliders
 import LineAndLineDetailSlider from '../components/Sliders/LineAndLineDetailSlider';
 import LineTrackingSlider from '../components/Sliders/LineTrackingSlider';
@@ -47,20 +41,40 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 import CostSlider from '../components/Sliders/CostSlider';
 import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
+import Children from '../components/Modules/Children';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
-import { getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, updateAugment, repack } from '../state/services/bookingService';
+import {
+    getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, 
+    tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, 
+    updateAugment, repack
+} from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
-import { getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails } from '../state/services/bookingLineDetailsService';
+import {
+    getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails
+} from '../state/services/bookingLineDetailsService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail, createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket, getZohoTicketSummaries, moveZohoTicket, getScans } from '../state/services/extraService';
+import {
+    getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail,
+    createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket,
+    getZohoTicketSummaries, moveZohoTicket, getScans
+} from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 // Constants
 import { timeDiff } from '../commons/constants';
+
+// Images
+import user from '../public/images/user.png';
+import imgGeneral from  '../public/images/general_email_white.png';
+import imgPod from  '../public/images/pod_email_white.png';
+import imgReturn from  '../public/images/returns_email_white.png';
+import imgUnpacked from  '../public/images/returns_unpacked_email.png';
+import imgFutile from '../public/images/futile_email.png';
+import imgLogsSlider from '../public/images/email_logs_slider.png';
 
 class BookingPage extends Component {
     constructor(props) {
@@ -117,8 +131,6 @@ class BookingPage extends Component {
             selectionChanged: 0,
             AdditionalServices: [],
             isShowDuplicateBookingOptionsModal: false,
-            switchInfo: false,
-            dupLineAndLineDetail: false,
             clientname: null,
             isBookingSelected: false,
             isShowSwitchClientModal: false,
@@ -304,11 +316,11 @@ class BookingPage extends Component {
         }
 
         var urlParams = new URLSearchParams(window.location.search);
-        var bookingId = urlParams.get('bookingid');
+        var bookingId = urlParams.get('bookingId');
 
         if (bookingId) {
-            this.props.getBooking(bookingId, 'id');
-            this.props.getScans(bookingId);
+            this.props.getBooking(bookingId, 'dme');
+            // this.props.getScans(bookingId);
             // this.props.getZohoTicketsWithBookingId(bookingId);
             // this.props.getZohoTicketSummaries();
             this.setState({bookingId, loading: true, curViewMode: 0});
@@ -2179,29 +2191,34 @@ class BookingPage extends Component {
         this.props.getAttachmentHistory(this.state.booking.pk_booking_id);
     }
 
-    onClickDuplicate(typeNum, row={}) {
-        console.log('onDuplicate: ', typeNum, row);
-        const {booking} = this.state;
-
+    /**
+     * typeNum:
+     *      0 -  duplicate a Line
+     *      1 -  duplicate a Line Detail
+     *      2 -  open DuplicateBookingModal
+     *      3 -  duplicate a Booking
+     * 
+     * data:
+     *      info object
+     */
+    onClickDuplicate(typeNum, data={}) {
         if (typeNum === 0) { // Duplicate line
-            let duplicatedBookingLine = { pk_lines_id: row.pk_lines_id };
+            let duplicatedBookingLine = { pk_lines_id: data.pk_lines_id };
             this.props.duplicateBookingLine(duplicatedBookingLine);
             this.setState({loadingBookingLine: true});
         } else if (typeNum === 1) { // Duplicate line detail
-            let duplicatedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
+            let duplicatedBookingLineDetail = { pk_id_lines_data: data.pk_id_lines_data };
             this.props.duplicateBookingLineDetail(duplicatedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
         } else if (typeNum === 2) { // On click `Duplicate Booking` button
-            if (!booking.hasOwnProperty('id')) {
+            if (!this.state.booking.hasOwnProperty('id')) {
                 this.notify('Please select a booking.');
             } else {
                 this.toggleDuplicateBookingOptionsModal();
             }
         } else if (typeNum === 3) { // On click `Duplicate` on modal
-            const {switchInfo, dupLineAndLineDetail} = this.state;
-            this.props.duplicateBooking(booking.id, switchInfo, dupLineAndLineDetail);
-            this.toggleDuplicateBookingOptionsModal();
-            this.setState({switchInfo: false, dupLineAndLineDetail: false, loading: true, curViewMode: 0});
+            this.props.duplicateBooking(this.state.booking.id, data);
+            this.setState({loading: true, curViewMode: 0});
         }
     }
 
@@ -3280,10 +3297,21 @@ class BookingPage extends Component {
                                             >
                                                 <i className="fa fa-sync"></i>
                                             </button>
-                                            {(curViewMode !== 1
-                                                && booking && booking.x_booking_Created_With
-                                                && booking.x_booking_Created_With.indexOf('Duped') !== -1) &&
-                                                <label className="mar-left-20 color-white">({booking.x_booking_Created_With})</label>
+                                            {(curViewMode !== 1 && booking && booking.x_booking_Created_With && booking.x_booking_Created_With.indexOf('#') !== -1) &&
+                                                <label className="mar-left-20 color-white">
+                                                    ({booking.x_booking_Created_With.substring(0, booking.x_booking_Created_With.indexOf('#') + 1)} 
+                                                    <a
+                                                        className='url'
+                                                        href={`/booking?bookingId=${booking.x_booking_Created_With.substring(booking.x_booking_Created_With.indexOf('#') + 1)}`}
+                                                    >
+                                                        {booking.x_booking_Created_With.substring(booking.x_booking_Created_With.indexOf('#') + 1)}
+                                                    </a>)
+                                                </label>
+                                            }
+                                            {(curViewMode !== 1 && booking && booking.x_booking_Created_With && booking.x_booking_Created_With.indexOf('#') === -1) &&
+                                                <label className="mar-left-20 color-white">
+                                                    ({booking.x_booking_Created_With})
+                                                </label>
                                             }
                                         </div>
                                         <div className="col-sm-5">
@@ -5355,7 +5383,7 @@ class BookingPage extends Component {
                                                             onClick={() => this.onClickDuplicate(2)}
                                                             disabled={(curViewMode === 1) ? 'disabled' : ''}
                                                         >
-                                                            Duplicate Booking
+                                                            Duplicate / Bear
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
@@ -5545,6 +5573,13 @@ class BookingPage extends Component {
                                                             bootstrap4={ true }
                                                         />
                                                     </LoadingOverlay>
+                                                    {(booking && booking.children && booking.children.length > 0) &&
+                                                        <div>
+                                                            <hr />
+                                                            <h4>Children Bookings:</h4>
+                                                            <Children childBookings={booking.children} />
+                                                        </div>
+                                                    }
                                                 </div>
                                             }
                                         </div>
@@ -5698,32 +5733,15 @@ class BookingPage extends Component {
                     </section>
                 </LoadingOverlay>
 
-                <ReactstrapModal isOpen={this.state.isShowDuplicateBookingOptionsModal} toggle={this.toggleDuplicateBookingOptionsModal} className="duplicate-option-modal">
-                    <ModalHeader toggle={this.toggleDuplicateBookingOptionsModal}>Duplicate Booking Options</ModalHeader>
-                    <ModalBody>
-                        <label>
-                            <input
-                                name="switchInfo"
-                                type="checkbox"
-                                checked={this.state.switchInfo}
-                                onChange={(e) => this.handleInputChange(e)} />
-                            Switch Addresses & Contacts
-                        </label>
-                        <br />
-                        <label>
-                            <input
-                                name="dupLineAndLineDetail"
-                                type="checkbox"
-                                checked={this.state.dupLineAndLineDetail}
-                                onChange={(e) => this.handleInputChange(e)} />
-                            Duplicate related Lines and LineDetails
-                        </label>
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.onClickDuplicate(3)}>Duplicate</Button>{' '}
-                        <Button color="secondary" onClick={this.toggleDuplicateBookingOptionsModal}>Cancel</Button>
-                    </ModalFooter>
-                </ReactstrapModal>
+                <DuplicateBookingModal
+                    isOpen={this.state.isShowDuplicateBookingOptionsModal}
+                    toggleModal={this.toggleDuplicateBookingOptionsModal}
+                    onClickDuplicate={(data) => this.onClickDuplicate(3, data)}
+                    booking={booking}
+                    lines={filteredProducts}
+                    lineDetails={filterBookingLineDetailsProduct}
+                    childBookings={booking.children}
+                />
 
                 <LineAndLineDetailSlider
                     isOpen={isShowLineSlider}
@@ -5930,7 +5948,7 @@ const mapDispatchToProps = (dispatch) => {
         revertAugmentBooking: (bookingId) => dispatch(revertAugmentBooking(bookingId)),
         augmentPuDate: (bookingId) => dispatch(augmentPuDate(bookingId)),
         saveBooking: (booking) => dispatch(saveBooking(booking)),
-        duplicateBooking: (bookingId, switchInfo, dupLineAndLineDetail) => dispatch(duplicateBooking(bookingId, switchInfo, dupLineAndLineDetail)),
+        duplicateBooking: (bookingId, data) => dispatch(duplicateBooking(bookingId, data)),
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         manualBook: (id) => dispatch(manualBook(id)),
         tickManualBook: (id) => dispatch(tickManualBook(id)),
