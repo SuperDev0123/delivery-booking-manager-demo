@@ -45,6 +45,15 @@ class DuplicateBookingModal extends Component {
         const {toggleModal, onClickDuplicate, booking} = this.props;
         const {switchInfo, dupLineAndLineDetail, is4Child, qtys4Children} = this.state;
 
+        // Is Booked Booking?
+        if (!_.isNull(booking.b_dateBookedDate) &&
+            !_.isUndefined(booking.b_dateBookedDate) &&
+            !_.isEmpty(booking.b_dateBookedDate)) 
+        {
+            this.notify('This booking is BOOKED booking, you can NOT create child from this.');
+            return;
+        }
+
         if (is4Child && Object.keys(qtys4Children).length) {
             const qtys_in_stock = booking.qtys_in_stock;
             let wrong_qtys = [];
@@ -145,6 +154,7 @@ class DuplicateBookingModal extends Component {
                     <td>{line.e_item}</td>
                     <td>{line.e_qty}</td>
                     <td>{qty_in_stock ? qty_in_stock['qty_in_stock'] : null}</td>
+                    <td>{qty_in_stock ? qty_in_stock['qty_out_stock'] : null}</td>
                     <td>
                         <input
                             name='qty'
@@ -250,13 +260,16 @@ class DuplicateBookingModal extends Component {
                                             <p>Item Description</p>
                                         </th>
                                         <th className="" scope="col" nowrap>
-                                            <p>Qty</p>
+                                            <p>Qty Ordered</p>
                                         </th>
                                         <th className="" scope="col" nowrap>
-                                            <p>Qty in stock</p>
+                                            <p>QTY Sent To Children</p>
                                         </th>
                                         <th className="" scope="col" nowrap>
-                                            <p>Qty for child</p>
+                                            <p>QTY Sent To Children</p>
+                                        </th>
+                                        <th className="" scope="col" nowrap>
+                                            <p>Qty Remaining</p>
                                         </th>
                                         <th className="" scope="col" nowrap>
                                             <p>Wgt UOM</p>
