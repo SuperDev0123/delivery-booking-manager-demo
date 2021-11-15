@@ -49,8 +49,9 @@ class DuplicateBookingModal extends Component {
         // Is Booked Booking?
         if (!_.isNull(booking.b_dateBookedDate) &&
             !_.isUndefined(booking.b_dateBookedDate) &&
-            !_.isEmpty(booking.b_dateBookedDate)) 
-        {
+            !_.isEmpty(booking.b_dateBookedDate) &&
+            is4Child
+        ) {
             this.notify('This booking is BOOKED booking, you can NOT create child from this.');
             return;
         }
