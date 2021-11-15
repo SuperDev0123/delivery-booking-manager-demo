@@ -5385,7 +5385,7 @@ class BookingPage extends Component {
                                                             onClick={() => this.onClickDuplicate(2)}
                                                             disabled={(curViewMode === 1) ? 'disabled' : ''}
                                                         >
-                                                            Duplicate / Bear
+                                                            Duplicate | Child Booking
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
