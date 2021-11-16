@@ -5292,7 +5292,7 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickFC()}
-                                                            disabled={(booking && !isBookedBooking && curViewMode !== 1) ? '' : 'disabled'}
+                                                            disabled={(clientname === 'dme' || (booking && !isBookedBooking && curViewMode !== 1)) ? '' : 'disabled'}
                                                         >
                                                             Price & Time Calc(FC)
                                                         </button>
