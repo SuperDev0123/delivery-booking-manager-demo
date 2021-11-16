@@ -67,9 +67,9 @@ class FPPricingSlider extends React.Component {
     }
 
     onClickSelect(pricingInfo) {
-        const {x_manual_booked_flag} = this.props;
+        const {x_manual_booked_flag, clientname} = this.props;
 
-        if (x_manual_booked_flag) {
+        if (x_manual_booked_flag && clientname !== 'dme') {
             this.notify('Cannot select a FC, this booking is manually booked');
         } else {
             this.props.onSelectPricing(pricingInfo);
