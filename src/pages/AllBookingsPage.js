@@ -1142,6 +1142,8 @@ class AllBookingsPage extends React.Component {
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 10) { // More tab
             this.toggleStatusInfoSlider();
+        } else if (activeTabInd === 11) { // Parent bookings (in progress)
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else {
             this.props.setGetBookingsFilter('activeTabInd', activeTabInd);
             this.props.setGetBookingsFilter('columnFilters', {});
