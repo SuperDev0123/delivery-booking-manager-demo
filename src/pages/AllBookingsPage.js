@@ -2474,6 +2474,14 @@ class AllBookingsPage extends React.Component {
                                                         Closed ({closed})
                                                     </NavLink>
                                                 </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 11 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(11)}
+                                                    >
+                                                        Parents (In Progress)
+                                                    </NavLink>
+                                                </NavItem>
                                                 {(clientname === 'dme') &&
                                                     <NavItem>
                                                         <NavLink
