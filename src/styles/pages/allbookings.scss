@@ -363,6 +363,10 @@ $b_project_due_date_width: 130px;
     }
   }
 
+  td[name=b_clientReference_RA_Numbers] {
+    overflow: hidden;
+  }
+
   .DateRangePicker {
     position: absolute;
     margin-top: 15px;

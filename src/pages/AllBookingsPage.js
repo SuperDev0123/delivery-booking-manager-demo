@@ -1739,6 +1739,14 @@ class AllBookingsPage extends React.Component {
         // console.log('@2 - ', this.drRef.current);
     }
 
+    copyText(text) {
+        console.log(text);
+        if (text) {
+            navigator.clipboard.writeText(text);
+            this.notify('Text copied!');
+        }
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets, unprintedLabels } = this.props;
@@ -2124,7 +2132,13 @@ class AllBookingsPage extends React.Component {
                     <td name='manifest_timestamp' className={(sortField === 'manifest_timestamp') ? 'current' : ''}>
                         {booking.manifest_timestamp ? moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm') : null}
                     </td>
-                    <td name='b_clientReference_RA_Numbers' className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}>{booking.b_clientReference_RA_Numbers}</td>
+                    <td
+                        name='b_clientReference_RA_Numbers'
+                        className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
+                        onClick={() => this.copyText(booking.b_clientReference_RA_Numbers)}
+                    >
+                        {booking.b_clientReference_RA_Numbers}
+                    </td>
                     <td name='b_client_order_num' className={(sortField === 'b_client_order_num') ? 'current' : ''}>{booking.b_client_order_num}</td>
                     <td name='b_client_sales_inv_num' className={(sortField === 'b_client_sales_inv_num') ? 'current' : ''}>{booking.b_client_sales_inv_num}</td>
                     <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${booking.cost_dollar})` : ''}</td>
