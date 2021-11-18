@@ -1420,8 +1420,9 @@ class BookingPage extends Component {
         const {bookingLines} = this.state;
 
         // JasonL - Always create DME built-in label
-        if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002' ||
-            booking.kf_client_id === '461162D2-90C7-BF4E-A905-000000000004'
+        if (booking.kf_client_id === '1af6bcd2-6148-11eb-ae93-0242ac130002' || // Plum
+            booking.kf_client_id === '461162D2-90C7-BF4E-A905-000000000004' || // Jason L
+            booking.kf_client_id === '9e72da0f-77c3-4355-a5ce-70611ffd0bc8' // Bathroom Sales Direct
         ) {
             // Check if ready for build label
             let isReady4Label = true;

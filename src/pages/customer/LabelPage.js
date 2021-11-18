@@ -92,6 +92,28 @@ class LabelPage extends Component {
         }
     }
 
+    onClickDownload(pdfUrl) {
+        const {bookingLabels} = this.props;
+        const token = localStorage.getItem('token');
+
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+            headers: {'Authorization': 'JWT ' + token},
+            data: {url: pdfUrl, downloadOption: 'zpl', id: bookingLabels['id']},
+            responseType: 'blob', // important
+        };
+
+        axios(options).then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'zpl.zip');
+            document.body.appendChild(link);
+            link.click();
+        });
+    }
+
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
         const token = localStorage.getItem('token');
 
@@ -197,6 +219,13 @@ class LabelPage extends Component {
                                     >
                                         Print
                                     </Button>
+                                    <Button
+                                        color="primary"
+                                        disabled={!sscc_info.is_available && 'disabled'}
+                                        onClick={() => this.onClickDownload(sscc_info['url'])}
+                                    >
+                                        Download(ZPL)
+                                    </Button>
                                 </td>
                             }
                         </tr>
@@ -268,6 +297,15 @@ class LabelPage extends Component {
                                 </Button>
                             }
                             <Button color="primary" onClick={() => this.onClickPrint()}>Print</Button>
+                            {bookingLabels.full_label_name &&
+                                <Button
+                                    color="primary"
+                                    disabled={bookingLabels.full_label_name ? false : true}
+                                    onClick={() => this.onClickDownload(bookingLabels.full_label_name)}
+                                >
+                                    Download(ZPL)
+                                </Button>
+                            }
                         </div>
                         <h4><i className="fa fa-circle"></i> Cost Comparison:</h4>
                         <Button color="info" onClick={() => this.onClickOpenPricingSlider()} className="see-all-quotes">See all quotes</Button>
