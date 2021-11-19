@@ -66,6 +66,8 @@ import {
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
 // Constants
 import { timeDiff } from '../commons/constants';
+// Helpers
+import { getM3ToKgFactor } from '../commons/helpers';
 
 // Images
 import user from '../public/images/user.png';
@@ -438,6 +440,15 @@ class BookingPage extends Component {
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
             bookingLinesListProduct = calcedbookingLines.map((bookingLine, index) => {
+                const m3ToKgFactor = getM3ToKgFactor(
+                    this.state.booking.vx_freight_provider,
+                    bookingLine.e_dimLength,
+                    bookingLine.e_dimWidth,
+                    bookingLine.e_dimHeight,
+                    bookingLine.e_weightPerEach,
+                    bookingLine.e_dimUOM,
+                    bookingLine.e_weightUOM
+                );
                 let result = {};
                 result['index'] = index + 1;
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
@@ -452,7 +463,7 @@ class BookingPage extends Component {
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
                 result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : 0;
-                result['total_2_cubic_mass_factor_calc'] = bookingLine.e_1_Total_dimCubicMeter ? (Number.parseFloat(bookingLine.e_1_Total_dimCubicMeter).toFixed(4) * 250).toFixed(2) : 0;
+                result['total_2_cubic_mass_factor_calc'] = bookingLine.e_1_Total_dimCubicMeter ? (Number.parseFloat(bookingLine.e_1_Total_dimCubicMeter).toFixed(4) * m3ToKgFactor).toFixed(2) : 0;
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
                 result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;

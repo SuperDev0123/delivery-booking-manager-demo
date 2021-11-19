@@ -66,10 +66,56 @@ function isInt(value) {
     return !isNaN(value) && parseInt(Number(value)) == value && !isNaN(parseInt(value, 10));
 }
 
+function getDimRatio(dimUOM){
+    const _dimUOM = dimUOM.toUpperCase();
+
+    if (_dimUOM === 'CM' || _dimUOM === 'CENTIMETER')
+        return 0.01;
+    else if (_dimUOM === 'METER' || _dimUOM === 'M')
+        return 1;
+    else if (_dimUOM === 'MILIMETER' || _dimUOM === 'MM')
+        return 0.001;
+    else
+        return 1;
+}
+
+function getWeightRatio(weightUOM){
+    const _weightUOM = weightUOM.toUpperCase();
+
+    if (_weightUOM === 'T' || _weightUOM === 'TON')
+        return 1000;
+    else if (_weightUOM === 'KG' || _weightUOM === 'KILOGRAM')
+        return 1;
+    else if (_weightUOM === 'G' || _weightUOM === 'GRAM')
+        return 0.001;
+    else
+        return 1;
+}
+
+function getM3ToKgFactor(freight_provider, length, width, height, weight, dimUOM, weightUOM) {
+    if (freight_provider.toLower() === 'hunter') {
+        const _length = length * getDimRatio(dimUOM);
+        const _width = width * getDimRatio(dimUOM);
+        const _height = height * getDimRatio(dimUOM);
+        const _weight = weight * getWeightRatio(weightUOM);
+
+        if (_length > 1.2 && _width > 1.2) return 333;
+        if (_height > 1.8) return 333;
+        if ((_length > 1.2 || _width > 1.2) && _weight > 59) return 333;
+    } else if (freight_provider.toLower() === 'northline') {
+        return 333;
+    }
+
+    return 250;
+}
+
 module.exports = {
     encodeBase64,
     decodeBase64,
     getCubicMeter,
     getWeight,
     isInt,
+    getDimRatio,
+    getWeightRatio,
+    getM3ToKgFactor,
 };
