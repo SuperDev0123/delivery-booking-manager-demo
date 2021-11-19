@@ -93,7 +93,7 @@ function getWeightRatio(weightUOM){
 }
 
 function getM3ToKgFactor(freight_provider, length, width, height, weight, dimUOM, weightUOM) {
-    if (freight_provider.toLower() === 'hunter') {
+    if (freight_provider.toLowerCase() === 'hunter') {
         const _length = length * getDimRatio(dimUOM);
         const _width = width * getDimRatio(dimUOM);
         const _height = height * getDimRatio(dimUOM);
@@ -102,7 +102,7 @@ function getM3ToKgFactor(freight_provider, length, width, height, weight, dimUOM
         if (_length > 1.2 && _width > 1.2) return 333;
         if (_height > 1.8) return 333;
         if ((_length > 1.2 || _width > 1.2) && _weight > 59) return 333;
-    } else if (freight_provider.toLower() === 'northline') {
+    } else if (freight_provider.toLowerCase() === 'northline') {
         return 333;
     }
 
