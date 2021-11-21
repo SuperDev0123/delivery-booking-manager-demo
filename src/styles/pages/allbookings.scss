@@ -146,12 +146,12 @@ $b_client_name_sub_width: 110px;
 $puPickUpAvailFrom_Date_width: 125px;
 $b_dateBookedDate_width: 110px;
 
-$puCompany_width: 250px;
-$pu_Address_Suburb_width: 250px;
+$puCompany_width: 200px;
+$pu_Address_Suburb_width: 200px;
 $pu_Address_State_width: 70px;
 $pu_Address_PostalCode_width: 70px;
-$deToCompanyName_width: 250px;
-$de_To_Address_Suburb_width: 250px;
+$deToCompanyName_width: 200px;
+$de_To_Address_Suburb_width: 200px;
 $de_To_Address_State_width: 70px;
 $de_To_Address_PostalCode_width: 70px;
 
@@ -260,7 +260,7 @@ $b_project_due_date_width: 130px;
   td[name=b_client_sales_inv_num], th[name=b_client_sales_inv_num] { width: $b_client_sales_inv_num_width; }
   td[name=b_client_sales_inv_num] p, th[name=b_client_sales_inv_num] p { width: 70px }
   td[name=vx_freight_provider], th[name=vx_freight_provider] { width: $vx_freight_provider_width; }
-  td[name=vx_freight_provider] p, th[name=vx_freight_provider] p { width: 70px }
+  td[name=vx_freight_provider] p, th[name=vx_freight_provider] p { width: 100px }
   td[name=vx_serviceName], th[name=vx_serviceName] { width: $vx_serviceName_width; }
   td[name=vx_serviceName] p, th[name=vx_serviceName] p { width: 50px }
   td[name=cheapest_freight_provider], th[name=cheapest_freight_provider] { width: $cheapest_freight_provider_width; }
