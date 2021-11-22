@@ -1989,6 +1989,49 @@ class AllBookingsPage extends React.Component {
                             </div>
                         </PopoverBody>
                     </Popover>
+                    <td
+                        name='b_error_Capture' 
+                        className={'text-center'}
+                        id={'booking-b_error_Capture-tooltip-' + booking.id}
+                    >
+                        {booking.b_error_Capture &&
+                            <React.Fragment>
+                                <i className="fa fa-exclamation-triangle c-red" aria-hidden="true"></i>
+                                <TooltipItem object={booking} fields={['b_error_Capture']} />
+                            </React.Fragment>
+                        }
+                    </td>
+                    <td name='z_label_url' className={
+                        (booking.z_downloaded_shipping_label_timestamp != null) ?
+                            'bg-yellow'
+                            :
+                            (booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'
+                    }>
+                        {(booking.z_label_url && booking.z_label_url.length > 0) ?
+                            <div className="booking-status">
+                                <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
+                                    <i className="icon icon-printer"></i>
+                                </a>
+                            </div>
+                            :
+                            null
+                        }
+                    </td>
+                    <td name='z_pod_url' className={
+                        (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
+                            (!_.isEmpty(booking.z_downloaded_pod_timestamp)) ? 'bg-yellow' : 'dark-blue'
+                            :
+                            null
+                    }>
+                        {
+                            (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
+                                <div className="pod-status">
+                                    <i className="icon icon-image"></i>
+                                </div>
+                                :
+                                null
+                        }
+                    </td>
                     <td name='b_bookingID_Visual' 
                         id={'link-popover-' + booking.id} 
                         onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}
@@ -2011,8 +2054,6 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td name='b_client_order_num' className={(sortField === 'b_client_order_num') ? 'current' : ''}>{booking.b_client_order_num}</td>
                     {activeTabInd === 6 ? <td name='b_booking_Priority' className={priorityBgColor + ' nowrap bold uppercase'}>{booking.b_booking_Priority}</td> : null}
-                    <td name='b_client_name' className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
-                    <td name='b_client_name_sub' className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
                     <Popover
                         isOpen={this.state.linkPopoverOpens['link-popover-' + booking.id]}
                         target={'link-popover-' + booking.id}
@@ -2063,49 +2104,8 @@ class AllBookingsPage extends React.Component {
                     <td name='pu_Address_Suburb' className={(sortField === 'pu_Address_Suburb') ? 'current' : ''}>{booking.pu_Address_Suburb}</td>
                     <td name='pu_Address_State' className={(sortField === 'pu_Address_State') ? 'current' : ''}>{booking.pu_Address_State}</td>
                     <td name='pu_Address_PostalCode' className={(sortField === 'pu_Address_PostalCode') ? 'current' : ''}>{booking.pu_Address_PostalCode}</td>
-                    <td
-                        name='b_error_Capture' 
-                        className={'text-center'}
-                        id={'booking-b_error_Capture-tooltip-' + booking.id}
-                    >
-                        {booking.b_error_Capture &&
-                            <React.Fragment>
-                                <i className="fa fa-exclamation-triangle c-red" aria-hidden="true"></i>
-                                <TooltipItem object={booking} fields={['b_error_Capture']} />
-                            </React.Fragment>
-                        }
-                    </td>
-                    <td name='z_label_url' className={
-                        (booking.z_downloaded_shipping_label_timestamp != null) ?
-                            'bg-yellow'
-                            :
-                            (booking.z_label_url && booking.z_label_url.length > 0) ? 'bg-green' : 'bg-gray'
-                    }>
-                        {(booking.z_label_url && booking.z_label_url.length > 0) ?
-                            <div className="booking-status">
-                                <a onClick={() => this.onClickLabelOrPOD(booking, 'label')}>
-                                    <i className="icon icon-printer"></i>
-                                </a>
-                            </div>
-                            :
-                            null
-                        }
-                    </td>
-                    <td name='z_pod_url' className={
-                        (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
-                            (!_.isEmpty(booking.z_downloaded_pod_timestamp)) ? 'bg-yellow' : 'dark-blue'
-                            :
-                            null
-                    }>
-                        {
-                            (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
-                                <div className="pod-status">
-                                    <i className="icon icon-image"></i>
-                                </div>
-                                :
-                                null
-                        }
-                    </td>
+                    <td name='b_client_name' className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
+                    <td name='b_client_name_sub' className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
                     <td name='z_connote_url' className={
                         !_.isEmpty(booking.z_connote_url) ?
                             (!_.isEmpty(booking.z_downloaded_connote_timestamp)) ? 'bg-yellow' : 'dark-blue'
@@ -2575,6 +2575,33 @@ class AllBookingsPage extends React.Component {
                                                             <th name="lines_info" className=""></th>
                                                             <th name="additional_info" className=""></th>
                                                             <th
+                                                                name="b_error_Capture"
+                                                                id={'booking-column-header-tooltip-Error'}
+                                                                className={(sortField === 'b_error_Capture') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('b_error_Capture')} 
+                                                            >
+                                                                <i className="fa fa-exclamation-triangle"></i>
+                                                                <SimpleTooltipComponent text={'Error'} />
+                                                            </th>
+                                                            <th
+                                                                name="z_label_url"
+                                                                id={'booking-column-header-tooltip-Label'}
+                                                                className={(sortField === 'z_label_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_label_url')} 
+                                                            >
+                                                                L
+                                                                <SimpleTooltipComponent text={'Label'} />
+                                                            </th>
+                                                            <th
+                                                                name="z_pod_url"
+                                                                id={'booking-column-header-tooltip-POD-or-POD-Signed'}
+                                                                className={(sortField === 'z_pod_url') ? 'narrow-column current' : 'narrow-column'}
+                                                                onClick={() => this.onChangeSortField('z_pod_url')} 
+                                                            >
+                                                                P|S
+                                                                <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
+                                                            </th>
+                                                            <th
                                                                 name="b_bookingID_Visual"
                                                                 className={(sortField === 'b_bookingID_Visual') ? 'current' : ''}
                                                                 onClick={() => this.onChangeSortField('b_bookingID_Visual')} 
@@ -2660,38 +2687,6 @@ class AllBookingsPage extends React.Component {
                                                                     <p>Priority</p>
                                                                 </th>
                                                             }
-                                                            <th 
-                                                                name="b_client_name"
-                                                                className={(sortField === 'b_client_name') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('b_client_name')} 
-                                                                scope="col" 
-                                                                nowrap
-                                                            >
-                                                                <p>Client</p>
-                                                                {
-                                                                    (sortField === 'b_client_name') ?
-                                                                        (sortDirection > 0) ?
-                                                                            <i className="fa fa-sort-up"></i>
-                                                                            : <i className="fa fa-sort-down"></i>
-                                                                        : <i className="fa fa-sort"></i>
-                                                                }
-                                                            </th>
-                                                            <th 
-                                                                name="b_client_name_sub"
-                                                                className={(sortField === 'b_client_name_sub') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('b_client_name_sub')} 
-                                                                scope="col" 
-                                                                nowrap
-                                                            >
-                                                                <p>Sub Client</p>
-                                                                {
-                                                                    (sortField === 'b_client_name_sub') ?
-                                                                        (sortDirection > 0) ?
-                                                                            <i className="fa fa-sort-up"></i>
-                                                                            : <i className="fa fa-sort-down"></i>
-                                                                        : <i className="fa fa-sort"></i>
-                                                                }
-                                                            </th>
                                                             <th 
                                                                 name="puPickUpAvailFrom_Date"
                                                                 className={(sortField === 'puPickUpAvailFrom_Date') ? 'current' : ''}
@@ -2852,32 +2847,37 @@ class AllBookingsPage extends React.Component {
                                                                         : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
-                                                            <th
-                                                                name="b_error_Capture"
-                                                                id={'booking-column-header-tooltip-Error'}
-                                                                className={(sortField === 'b_error_Capture') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('b_error_Capture')} 
+                                                            <th 
+                                                                name="b_client_name"
+                                                                className={(sortField === 'b_client_name') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_client_name')} 
+                                                                scope="col" 
+                                                                nowrap
                                                             >
-                                                                <i className="fa fa-exclamation-triangle"></i>
-                                                                <SimpleTooltipComponent text={'Error'} />
+                                                                <p>Client</p>
+                                                                {
+                                                                    (sortField === 'b_client_name') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
                                                             </th>
-                                                            <th
-                                                                name="z_label_url"
-                                                                id={'booking-column-header-tooltip-Label'}
-                                                                className={(sortField === 'z_label_url') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('z_label_url')} 
+                                                            <th 
+                                                                name="b_client_name_sub"
+                                                                className={(sortField === 'b_client_name_sub') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('b_client_name_sub')} 
+                                                                scope="col" 
+                                                                nowrap
                                                             >
-                                                                L
-                                                                <SimpleTooltipComponent text={'Label'} />
-                                                            </th>
-                                                            <th
-                                                                name="z_pod_url"
-                                                                id={'booking-column-header-tooltip-POD-or-POD-Signed'}
-                                                                className={(sortField === 'z_pod_url') ? 'narrow-column current' : 'narrow-column'}
-                                                                onClick={() => this.onChangeSortField('z_pod_url')} 
-                                                            >
-                                                                P|S
-                                                                <SimpleTooltipComponent text={'POD-or-POD-Signed'} />
+                                                                <p>Sub Client</p>
+                                                                {
+                                                                    (sortField === 'b_client_name_sub') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                }
                                                             </th>
                                                             <th
                                                                 name="z_connote_url"
@@ -3185,14 +3185,15 @@ class AllBookingsPage extends React.Component {
                                                             </th>
                                                             <th name="lines_info"><i className="icon icon-th-list"></i></th>
                                                             <th name="additional_info"><i className="icon icon-plus"></i></th>
+                                                            <th name="b_error_Capture"></th>
+                                                            <th name="z_label_url"></th>
+                                                            <th name="z_pod_url"></th>
                                                             <th name="b_bookingID_Visual" scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="vx_freight_provider" scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_status" scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_client_order_num" scope="col"><input type="text" name="b_client_order_num" value={filterInputs['b_client_order_num'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             {activeTabInd === 6 ? <th name="b_booking_Priority"></th> : null}
-                                                            <th name="b_client_name" scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="b_client_name_sub" scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="puPickUpAvailFrom_Date" scope="col">
                                                                 <input
                                                                     type="text"
@@ -3238,9 +3239,8 @@ class AllBookingsPage extends React.Component {
                                                             <th name="pu_Address_Suburb" scope="col"><input type="text" name="pu_Address_Suburb" value={filterInputs['pu_Address_Suburb'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_State" scope="col"><input type="text" name="pu_Address_State" value={filterInputs['pu_Address_State'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="pu_Address_PostalCode" scope="col"><input type="text" name="pu_Address_PostalCode" value={filterInputs['pu_Address_PostalCode'] || ''} placeholder="xxxx-xxxx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="b_error_Capture"></th>
-                                                            <th name="z_label_url"></th>
-                                                            <th name="z_pod_url"></th>
+                                                            <th name="b_client_name" scope="col"><input type="text" name="b_client_name" value={filterInputs['b_client_name'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="b_client_name_sub" scope="col"><input type="text" name="b_client_name_sub" value={filterInputs['b_client_name_sub'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="z_connote_url"></th>
                                                             <th name="z_manifest_url"></th>
                                                             <th name="b_is_flagged_add_on_services"></th>
