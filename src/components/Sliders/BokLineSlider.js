@@ -37,7 +37,7 @@ class BokLineSlider extends React.Component {
                 'zbl_131_decimal_1': 0,
                 'e_item_type': '',
                 'e_weightUOM': 'kg',
-                'e_dimUOM': 'm',
+                'e_dimUOM': 'cm',
                 'is_ignored': false,
                 'apply_to_product': false
             };
