@@ -26,7 +26,7 @@ class LineAndLineDetailSlider extends React.Component {
                 e_dimLength: 0,
                 e_dimWidth: 0,
                 e_dimHeight: 0,
-                e_dimUOM: 'm',
+                e_dimUOM: 'cm',
                 e_weightUOM: 'kg',
                 e_weightPerEach: 0,
                 sscc: null,
