@@ -1839,6 +1839,17 @@ class BookingPage extends Component {
             formInputs['pu_Phone_Main'] = selectedWarehouse.phone_main;
             formInputs['pu_Email'] = selectedWarehouse.contact_email;
 
+            // BSD
+            if (selectedOption.value === 'BSD_MERRYLANDS') {
+                formInputs['pu_Address_Type'] = 'business';
+                formInputs['de_To_AddressType'] = 'residential';
+                formInputs['booking_Created_For'] = {'value': 109, 'label': 'Bathroom Sales Direct'};
+                formInputs['booking_Created_For_Email'] = 'info@bathroomsalesdirect.com.au';
+                formInputs['puPickUpAvailFrom_Date'] = moment().format('YYYY-MM-DD');
+                formInputs['pu_PickUp_Avail_Time_Hours'] = 8;
+                formInputs['pu_PickUp_Avail_Time_Minutes'] = 0;
+            }
+
             this.setState({puState, puPostalCode, puSuburb});
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
