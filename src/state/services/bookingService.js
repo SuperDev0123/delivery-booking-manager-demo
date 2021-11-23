@@ -90,6 +90,8 @@ import {
     failedGetManifestSummary,
     successRepack,
     failedRepack,
+    successDMECancelBook,
+    failedDMECancelBook,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -591,6 +593,20 @@ export const dmeLabel = (bookingId) => {
         axios(options)
             .then(({data}) => dispatch(successDMEGetLabel(data)))
             .catch((error) => dispatch(failedDMEGetLabel(error)));
+};
+
+export const dmeCancelBook = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/${bookingId}/cancel_book/`,
+    };
+
+    return dispatch =>
+        axios(options)
+            .then(({data}) => dispatch(successDMECancelBook(data)))
+            .catch((error) => dispatch(failedDMECancelBook(error)));
 };
 
 export const resetPricingInfosFlag = () => {

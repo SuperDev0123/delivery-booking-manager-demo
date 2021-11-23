@@ -102,6 +102,8 @@ import {
     FAILED_GET_DME_LABEL,
     SUCCESS_REPACK,
     FAILED_REPACK,
+    SUCCESS_DME_CANCEL_BOOK,
+    FAILED_DME_CANCEL_BOOK,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -637,6 +639,24 @@ export function failedDMEGetLabel(error) {
 
     return {
         type: FAILED_GET_DME_LABEL,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successDMECancelBook(data) {
+    alert(`Success: ${data.message}`);
+
+    return {
+        type: SUCCESS_DME_CANCEL_BOOK,
+        errorMessage: data.message
+    };
+}
+
+export function failedDMECancelBook(error) {
+    alert(`Failed: ${error.response.data.message}`);
+
+    return {
+        type: FAILED_DME_CANCEL_BOOK,
         errorMessage: error.response.data.message
     };
 }

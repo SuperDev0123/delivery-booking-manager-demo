@@ -98,6 +98,8 @@ import {
     FAILED_GET_DME_LABEL,
     SUCCESS_REPACK,
     FAILED_REPACK,
+    SUCCESS_DME_CANCEL_BOOK,
+    FAILED_DME_CANCEL_BOOK,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -424,6 +426,7 @@ export const BookingReducer = (state = defaultState, {
         case SUCCESS_CREATE_ORDER:
         case GET_LABEL_SUCCESS:         // FP Label
         case SUCCESS_GET_DME_LABEL:     // DME Label
+        case SUCCESS_DME_CANCEL_BOOK:   // DME CANCEL BOOK
             return {
                 ...state,
                 needUpdateBookings: true,
@@ -624,6 +627,7 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 manifestSummary: payload
             };
+        case FAILED_DME_CANCEL_BOOK:
         case FAILED_AUTO_AUGMENT:
         case FAILED_AUGMENT_PU_DATE:
         case FAILED_TICK_MANUAL_BOOK:

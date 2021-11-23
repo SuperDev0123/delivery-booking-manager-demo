@@ -51,7 +51,7 @@ import {
     updateAugment, repack
 } from '../state/services/bookingService';
 // FP Services
-import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel } from '../state/services/bookingService';
+import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel, dmeCancelBook } from '../state/services/bookingService';
 import { getBookingLines, createBookingLine, updateBookingLine, deleteBookingLine, duplicateBookingLine, calcCollected } from '../state/services/bookingLinesService';
 import {
     getBookingLineDetails, createBookingLineDetail, updateBookingLineDetail, deleteBookingLineDetail, duplicateBookingLineDetail, moveLineDetails
@@ -261,6 +261,7 @@ class BookingPage extends Component {
         fpReprint: PropTypes.func.isRequired,
         fpTracking: PropTypes.func.isRequired,
         fpPricing: PropTypes.func.isRequired,
+        dmeCancelBook: PropTypes.func.isRequired,
         dmeLabel: PropTypes.func.isRequired,
         getPricingInfos: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
@@ -2456,12 +2457,24 @@ class BookingPage extends Component {
     // }
 
     onClickCancelBook() {
-        const {booking} = this.state;
+        const {booking, isBookedBooking, isLockedBooking} = this.state;
 
         if (!booking) {
             this.notify('Please select booking to cancel');
         } else {
-            this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
+            if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'startrack') {
+                this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
+            } else {
+                if (isBookedBooking) {
+                    this.notify('You can`t cancel BOOKED booking, please contact support center');
+                } else if (isLockedBooking) {
+                    this.notify('You can`t cancel LOCKED booking, please contact support center');
+                } else if (booking.b_status === 'Cancelled' || booking.b_status === 'Closed') {
+                    this.notify('This booking is already cancelled');
+                } else {
+                    this.props.dmeCancelBook(booking.id);
+                }
+            }
         }
     }
 
@@ -5391,13 +5404,6 @@ class BookingPage extends Component {
                                                         <button
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickCancelBook()}
-                                                            disabled={
-                                                                booking
-                                                                && (isBookedBooking || !isLockedBooking)
-                                                                && booking.vx_freight_provider
-                                                                && booking.vx_freight_provider.toLowerCase() === 'startrack'
-                                                                    ? '' : 'disabled'
-                                                            }
                                                         >
                                                             Cancel Request
                                                         </button>
@@ -6000,6 +6006,7 @@ const mapDispatchToProps = (dispatch) => {
         fpTracking: (bookingId, vx_freight_provider) => dispatch(fpTracking(bookingId, vx_freight_provider)),
         fpPricing: (bookingId) => dispatch(fpPricing(bookingId)),
         dmeLabel: (bookingId) => dispatch(dmeLabel(bookingId)),
+        dmeCancelBook: (bookingId) => dispatch(dmeCancelBook(bookingId)),
         updateBooking: (id, booking) => dispatch(updateBooking(id, booking)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getWarehouses: () => dispatch(getWarehouses()),
