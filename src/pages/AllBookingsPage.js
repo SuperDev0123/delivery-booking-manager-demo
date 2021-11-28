@@ -64,11 +64,6 @@ class AllBookingsPage extends React.Component {
             editCellPopoverOpens: [],
             bookingLinesQtyTotal: 0,
             bookingLineDetailsQtyTotal: 0,
-            errorsToCorrect: 0,
-            toManifest: 0,
-            toProcess: 0,
-            closed: 0,
-            missingLabels: 0,
             simpleSearchKeyword: '',
             showSimpleSearchBox: false,
             loading: false,
@@ -177,7 +172,6 @@ class AllBookingsPage extends React.Component {
         updateBookingSet: PropTypes.func.isRequired,
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
-        unprintedLabels: PropTypes.number,
     };
 
     componentDidMount() {
@@ -223,7 +217,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, errorsToCorrect, toManifest, toProcess, missingLabels, closed, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -244,7 +238,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (!_.isNull(bookingsCnt)) {
-            this.setState({ filteredBookingIds, bookingsCnt, errorsToCorrect, toManifest, toProcess, closed, missingLabels, activeTabInd, loading: false });
+            this.setState({ filteredBookingIds, bookingsCnt, activeTabInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -1748,8 +1742,8 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, errorsToCorrect, toManifest, toProcess, missingLabels, closed, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets, unprintedLabels } = this.props;
+        const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
+        const { bookings, bookingsets } = this.props;
 
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -2348,18 +2342,18 @@ class AllBookingsPage extends React.Component {
                                                 selected={startDate ? new Date(startDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
-                                                className="none"
+                                                className=""
                                             />
-                                            <span className='none flow-sign'>~</span>
+                                            <span className='flow-sign'>~</span>
                                             <DatePicker
                                                 id="endDate"
                                                 selected={endDate ? new Date(endDate) : ''}
                                                 onChange={(e) => this.onDateChange(e, 'endDate')}
                                                 dateFormat="dd MMM yyyy"
-                                                className="none"
+                                                className=""
                                             />
                                             {(clientname === 'dme') &&
-                                                <label className="left-30px_ right-10px">
+                                                <label className="left-30px right-10px">
                                                     Client: 
                                                     <select 
                                                         id="client-select" 
@@ -2427,7 +2421,7 @@ class AllBookingsPage extends React.Component {
                                             <Nav tabs>
                                                 <NavItem>
                                                     <NavLink
-                                                        className={activeTabInd === 0 ? 'active' : ''}
+                                                        className={activeTabInd === 0 ? 'active none' : 'none'}
                                                         onClick={() => this.onClickTab(0)}
                                                     >
                                                         All
@@ -2438,7 +2432,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 7 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(7)}
                                                     >
-                                                        Today (or by date)
+                                                        Today | Date Range
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2454,7 +2448,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 9 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(9)}
                                                     >
-                                                        Unprinted Labels ({unprintedLabels})
+                                                        Unprinted Labels
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2462,7 +2456,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 1 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(1)}
                                                     >
-                                                        Errors to Correct ({errorsToCorrect})
+                                                        Errors to Correct
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2470,7 +2464,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 2 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(2)}
                                                     >
-                                                        Missing Labels ({missingLabels})
+                                                        Missing Labels
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2478,7 +2472,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 3 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(3)}
                                                     >
-                                                        To Manifest ({toManifest})
+                                                        To Manifest
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2486,7 +2480,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 4 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(4)}
                                                     >
-                                                        To Process ({toProcess})
+                                                        To Process
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2494,7 +2488,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 5 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(5)}
                                                     >
-                                                        Closed ({closed})
+                                                        Closed
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -3432,12 +3426,6 @@ const mapStateToProps = (state) => {
         bookings: state.booking.bookings,
         filteredBookingIds: state.booking.filteredBookingIds,
         bookingsCnt: state.booking.bookingsCnt,
-        errorsToCorrect: state.booking.errorsToCorrect,
-        missingLabels: state.booking.missingLabels,
-        toManifest: state.booking.toManifest,
-        toProcess: state.booking.toProcess,
-        closed: state.booking.closed,
-        unprintedLabels: state.booking.unprintedLabels,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,

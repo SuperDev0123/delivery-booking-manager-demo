@@ -115,12 +115,6 @@ export function successGetBookings(data) {
         pageCnt: data['page_cnt'],
         pageInd: data['page_ind'],
         pageItemCnt: data['page_item_cnt'],
-        toManifest: data['to_manifest'],
-        toProcess: data['to_process'],
-        closed: data['closed'],
-        errorsToCorrect: data['errors_to_correct'],
-        missingLabels: data['missing_labels'],
-        unprintedLabels: data['unprinted_labels'],
     };
 }
 
