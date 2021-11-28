@@ -2480,7 +2480,15 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 4 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(4)}
                                                     >
-                                                        To Process
+                                                        In Progress
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 12 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(12)}
+                                                    >
+                                                        Delivered
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
