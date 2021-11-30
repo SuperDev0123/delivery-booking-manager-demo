@@ -210,6 +210,7 @@ export function setAllLocalFilter(
     multiFindField,
     multiFindValues,
     projectName,
+    fpName,
     bookingIds,
 ) {
     return {
@@ -229,6 +230,7 @@ export function setAllLocalFilter(
         multiFindField: multiFindField,
         multiFindValues: multiFindValues,
         projectName: projectName,
+        fpName: fpName,
         bookingIds: bookingIds,
     };
 }

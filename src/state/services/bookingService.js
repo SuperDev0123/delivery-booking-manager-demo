@@ -111,6 +111,7 @@ export const getBookings = (
     multiFindField=null,
     multiFindValues='',
     projectName=null,
+    fpName=null,
     bookingIds=null,
 ) => {
     const token = localStorage.getItem('token');
@@ -134,6 +135,7 @@ export const getBookings = (
             multiFindField: multiFindField,
             multiFindValues: multiFindValues,
             projectName: projectName,
+            fpName: fpName,
             bookingIds: bookingIds,
         }
     };
@@ -165,6 +167,7 @@ export const setAllGetBookingsFilter = (
     multiFindField=null,
     multiFindValues='',
     projectName=null,
+    fpName=null,
     bookingIds=null,
 ) => {
     return dispatch => dispatch(setAllLocalFilter(
@@ -183,6 +186,7 @@ export const setAllGetBookingsFilter = (
         multiFindField,
         multiFindValues,
         projectName,
+        fpName,
         bookingIds,
     ));
 };
