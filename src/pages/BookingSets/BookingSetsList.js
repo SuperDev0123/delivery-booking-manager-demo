@@ -1011,17 +1011,19 @@ class BookingSetList extends React.Component {
                     okBtnName={'Continue'}
                 />
 
-                <FPPricingSlider
-                    isOpen={this.state.isShowFPPricingSlider}
-                    toggleSlider={this.toggleFPPricingSlider}
-                    pricingInfos={this.state.pricingInfos}
-                    onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
-                    isLoading={this.state.loadingPricingInfos}
-                    clientname={clientname}
-                    x_manual_booked_flag={this.state.selectedBooking.x_manual_booked_flag}
-                    api_booking_quote_id={this.state.selectedBooking.api_booking_quote}
-                    isBooked={this.state.selectedBooking.b_dateBookedDate ? true : false}
-                />
+                {this.state.selectedBooking &&
+                    <FPPricingSlider
+                        isOpen={this.state.isShowFPPricingSlider}
+                        toggleSlider={this.toggleFPPricingSlider}
+                        pricingInfos={this.state.pricingInfos}
+                        onSelectPricing={(pricingInfo) => this.onSelectPricing(pricingInfo)}
+                        isLoading={this.state.loadingPricingInfos}
+                        clientname={clientname}
+                        x_manual_booked_flag={this.state.selectedBooking.x_manual_booked_flag}
+                        api_booking_quote_id={this.state.selectedBooking.api_booking_quote}
+                        isBooked={this.state.selectedBooking.b_dateBookedDate ? true : false}
+                    />
+                }
 
                 <VehicleSlider
                     isOpen={this.state.isShowVehicleSlider}
