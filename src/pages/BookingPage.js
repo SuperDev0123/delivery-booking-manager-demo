@@ -2059,7 +2059,7 @@ class BookingPage extends Component {
             const res = isFormValid('booking', formInputs);
             if (res === 'valid') {
                 this.props.saveBooking(formInputs);
-                this.setState({loadingBookingSave: true});
+                this.setState({loadingBookingSave: true, isBookingModified: false});
             } else {
                 this.notify(res);
             }
