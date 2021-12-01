@@ -1111,11 +1111,12 @@ class AllBookingsPage extends React.Component {
         const { startDate, endDate, clientPK, warehouseId, pageItemCnt, activeTabInd, filterInputs } = this.state;
         const today = moment().format('YYYY-MM-DD');
 
-        if (activeTabInd === 0) { // All tab
-            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
-        } else {
-            this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
-        }
+        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        // if (activeTabInd === 0) { // All tab
+        //     this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        // } else {
+        //     this.props.setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        // }
 
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
@@ -1137,6 +1138,8 @@ class AllBookingsPage extends React.Component {
         } else if (activeTabInd === 10) { // More tab
             this.toggleStatusInfoSlider();
         } else if (activeTabInd === 11) { // Parent bookings (in progress)
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
+        } else if (activeTabInd === 3) { // Manifest
             this.props.setAllGetBookingsFilter('*', today, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else {
             this.props.setGetBookingsFilter('activeTabInd', activeTabInd);
