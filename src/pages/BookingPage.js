@@ -2822,7 +2822,7 @@ class BookingPage extends Component {
 
         if (linkType === 'status-page-link') {
             if (booking && booking.b_client_booking_ref_num) {
-                const link = `${window.location.protocol}://${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
+                const link = `${window.location.protocol}//${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
                 navigator.clipboard.writeText(link);
                 this.notify('Status page url is copied on clipboard');
             }
