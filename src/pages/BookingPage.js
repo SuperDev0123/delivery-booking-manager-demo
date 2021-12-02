@@ -2817,6 +2817,18 @@ class BookingPage extends Component {
         }
     }
 
+    onClickLink(linkType) {
+        const {booking} = this.state;
+
+        if (linkType === 'status-page-link') {
+            if (booking && booking.b_client_booking_ref_num) {
+                const link = `${window.location.protocol}://${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
+                navigator.clipboard.writeText(link);
+                this.notify('Status page url is copied on clipboard');
+            }
+        }
+    }
+
     render() {
         const {
             isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
@@ -3357,6 +3369,9 @@ class BookingPage extends Component {
                                             <a onClick={(e) => this.onClickOpenHistorySlide(e)} className="open-slide ml-6 mr-0"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
                                                 <p>{isBookingSelected ? booking.b_status : '***'}</p>
+                                                <p className='status-icon inactive' onClick={() => this.onClickLink('status-page-link')}>
+                                                    <i className="fa fa-link"></i>
+                                                </p>
                                                 <p 
                                                     id={'booking-' + 'b_status_API' + '-tooltip-' + booking.id}
                                                     className={booking.b_status_API ? 'status-icon active' : 'status-icon inactive'}
