@@ -2823,6 +2823,12 @@ class BookingPage extends Component {
         if (linkType === 'status-page-link') {
             if (booking && booking.b_client_booking_ref_num) {
                 const link = `${window.location.protocol}//${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
+                const win = window.open(link, '_blank');
+                win.focus();
+            }
+        } else if (linkType === 'status-page-link-copy') {
+            if (booking && booking.b_client_booking_ref_num) {
+                const link = `${window.location.protocol}//${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
                 navigator.clipboard.writeText(link);
                 this.notify('Status page url is copied on clipboard');
             }
@@ -3368,8 +3374,8 @@ class BookingPage extends Component {
                                             <a onClick={(e) => this.onClickOpenScansSlide(e)} className="open-slide ml-6 mr-0"><i className="fas fa-barcode" aria-hidden="true"></i></a>
                                             <a onClick={(e) => this.onClickOpenHistorySlide(e)} className="open-slide ml-6 mr-0"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                             <label className="color-white float-right">
-                                                <p>{isBookingSelected ? booking.b_status : '***'}</p>
-                                                <p className='status-icon inactive' onClick={() => this.onClickLink('status-page-link')}>
+                                                <p className='cursor-pointer' onClick={() => this.onClickLink('status-page-link')}>{isBookingSelected ? booking.b_status : '***'}</p>
+                                                <p className='status-icon inactive' onClick={() => this.onClickLink('status-page-link-copy')}>
                                                     <i className="fa fa-link"></i>
                                                 </p>
                                                 <p 
