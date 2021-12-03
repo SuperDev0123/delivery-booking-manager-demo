@@ -14,7 +14,7 @@ class BokStatusPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
-            showScans: false
+            showScans: true
         };
     }
 
