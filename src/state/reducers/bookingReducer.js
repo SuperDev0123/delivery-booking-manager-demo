@@ -29,6 +29,7 @@ import {
     SET_LOCAL_FILTER_ALL,
     SET_LOCAL_FILTER_SELECTEDATE,
     SET_LOCAL_FILTER_WAREHOUSEID,
+    SET_LOCAL_FILTER_FPID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_ACTIVE_TAB_IND,
@@ -117,6 +118,7 @@ const defaultState = {
     startDate: moment().tz('Australia/Sydney').toDate(),
     endDate: moment().tz('Australia/Sydney').toDate(),
     warehouseId: 0,
+    fpId: 0,
     pageItemCnt: 100,
     pageInd: 0,
     sortField: '-id',
@@ -161,6 +163,7 @@ export const BookingReducer = (state = defaultState, {
     startDate,
     endDate,
     warehouseId,
+    fpId,
     sortField,
     columnFilters,
     activeTabInd,
@@ -423,6 +426,7 @@ export const BookingReducer = (state = defaultState, {
                 startDate: startDate,
                 endDate: endDate,
                 warehouseId: warehouseId,
+                fpId: fpId,
                 sortField: sortField,
                 columnFilters: columnFilters,
                 activeTabInd: activeTabInd,
@@ -448,6 +452,12 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 warehouseId: warehouseId,
+                needUpdateBookings: true,
+            };
+        case SET_LOCAL_FILTER_FPID:
+            return {
+                ...state,
+                fpId: fpId,
                 needUpdateBookings: true,
             };
         case SET_LOCAL_FILTER_SORTFIELD:

@@ -30,6 +30,7 @@ import {
     SET_LOCAL_FILTER_ALL, // Filter start
     SET_LOCAL_FILTER_SELECTEDATE,
     SET_LOCAL_FILTER_WAREHOUSEID,
+    SET_LOCAL_FILTER_FPID,
     SET_LOCAL_FILTER_SORTFIELD,
     SET_LOCAL_FILTER_COLUMNFILTER,
     SET_LOCAL_FILTER_ACTIVE_TAB_IND,
@@ -136,6 +137,11 @@ export function setLocalFilter(key, value) {
             type: SET_LOCAL_FILTER_WAREHOUSEID,
             warehouseId: value,
         };
+    } else if (key === 'fpId') {
+        return {
+            type: SET_LOCAL_FILTER_FPID,
+            fpId: value,
+        };
     } else if (key === 'sortField') {
         return {
             type: SET_LOCAL_FILTER_SORTFIELD,
@@ -199,6 +205,7 @@ export function setAllLocalFilter(
     endDate,
     clientPK,
     warehouseId,
+    fpId,
     pageItemCnt,
     pageInd,
     sortField,
@@ -217,9 +224,10 @@ export function setAllLocalFilter(
         startDate: startDate,
         endDate: endDate,
         warehouseId: warehouseId,
-        sortField: sortField,
+        fpId: fpId,
         pageItemCnt: pageItemCnt,
         pageInd: pageInd,
+        sortField: sortField,
         columnFilters: columnFilters,
         activeTabInd: activeTabInd,
         simpleSearchKeyword: simpleSearchKeyword,
