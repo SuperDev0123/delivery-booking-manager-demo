@@ -2513,7 +2513,7 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 4 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(4)}
                                                     >
-                                                        In Progress
+                                                        In Transit
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
