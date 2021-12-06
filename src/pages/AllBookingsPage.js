@@ -1132,20 +1132,23 @@ class AllBookingsPage extends React.Component {
 
         if (activeTabInd === 0) { // All tab
             this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, pageItemCnt, 0, '-id', {}, 0, '', downloadOption);
-        } else if (activeTabInd === 8) { // PreBooking tab
+        } else if (
+            activeTabInd === 8 ||   // Pre-Processing
+            activeTabInd === 81 ||  // Processing
+            activeTabInd === 9 ||   // Unprinted Lables
+            activeTabInd === 11 ||  // Parent bookings (in progress)
+            activeTabInd === 3 ||   // Manifest
+            activeTabInd === 12 ||  // Delivered
+            activeTabInd === 5 ||   // Closed
+            activeTabInd === 51     // Closed with Issue
+        ) {
             this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
-        } else if (activeTabInd === 7) { // Today tab
+        } else if (activeTabInd === 7) { // Today
             this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
-        } else if (activeTabInd === 6) { // Delivery Management tab
+        } else if (activeTabInd === 6) { // Delivery Management
             this.props.setAllGetBookingsFilter('*', '*', 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
-        } else if (activeTabInd === 9) { // Unprinted Lables tab
-            this.props.setAllGetBookingsFilter(startDate, endDate, 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else if (activeTabInd === 10) { // More tab
             this.toggleStatusInfoSlider();
-        } else if (activeTabInd === 11) { // Parent bookings (in progress)
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
-        } else if (activeTabInd === 3) { // Manifest
-            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, pageItemCnt, 0, '-id', {}, activeTabInd);
         } else {
             this.props.setGetBookingsFilter('activeTabInd', activeTabInd);
             this.props.setGetBookingsFilter('columnFilters', {});
@@ -2462,7 +2465,15 @@ class AllBookingsPage extends React.Component {
                                                         className={activeTabInd === 8 ? 'active' : ''}
                                                         onClick={() => this.onClickTab(8)}
                                                     >
-                                                        PreBookings
+                                                        Pre-Processing
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 81 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(81)}
+                                                    >
+                                                        Processing
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
@@ -2519,6 +2530,14 @@ class AllBookingsPage extends React.Component {
                                                         onClick={() => this.onClickTab(5)}
                                                     >
                                                         Closed
+                                                    </NavLink>
+                                                </NavItem>
+                                                <NavItem>
+                                                    <NavLink
+                                                        className={activeTabInd === 51 ? 'active' : ''}
+                                                        onClick={() => this.onClickTab(5)}
+                                                    >
+                                                        Closed with Issue
                                                     </NavLink>
                                                 </NavItem>
                                                 <NavItem>
