@@ -201,8 +201,8 @@ class BokStatusPage extends Component {
                                 <span className="status-summary-updated">{lastUpdated}</span>
                             </div>
                             <div className='c-red'>
-                                <p>Dear Customer, please note that with unforeseen levels of freight moving in the current environment, freight providers are experiencing significant delivery delays beyond standard service levels. There is a high likelihood this will impact the estimated deliver by date provided with this booking.</p>
-                                <p>To keep you up to date as far as possible, in the event of potential delays, a SMS and email will be sent to you no later than the ‘deliver by date’ if there’s an impending delay. Thereafter additional SMS and emails will be sent as soon as a status update is received OR at a minimum, by end of each day as to what action is being taken to expedite your delivery. We understand the frustration with the potential delays and having to call customer care for updates. To save you that time, we will provide ALL information via SMS or email to the extent we could when called.</p>
+                                <p>Dear Customer, please note that freight providers are experiencing significant delivery delays beyond standard service levels. There is a high chance that this will impact the estimated `deliver by date`.</p>
+                                <p>To keep you up to date a SMS and email will be sent out no later than the ‘deliver by date’ of an impending delay. We understand the frustration with the potential delays and having to call customer care for updates. To save you that time, we will provide ALL information via SMS or email as and when updates are possible.</p>
                             </div>
                             <div className="status-chart">
                                 <div className="status-chart-bar">
