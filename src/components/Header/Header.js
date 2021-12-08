@@ -2,7 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { getUser, logout } from '../../state/services/authService';
+import { getStatusPageUrl } from '../../state/services/bookingService';
+import { openTab } from '../../commons/browser';
 
 import logo from '../../public/images/logo-2.png';
 
@@ -13,6 +18,7 @@ class Header extends Component {
         this.state = {
             username: '',
             clientname: '',
+            findKeyword: '',
         };
     }
 
@@ -21,6 +27,7 @@ class Header extends Component {
         history: PropTypes.object.isRequired,
         getUser: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired,
+        getStatusPageUrl: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -32,7 +39,7 @@ class Header extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { username, clientname, isLoggedIn } = newProps;
+        const { username, clientname, isLoggedIn, statusPageUrl } = newProps;
 
         if (username)
             this.setState({username});
@@ -40,16 +47,50 @@ class Header extends Component {
         if (clientname)
             this.setState({clientname});
 
+        if (statusPageUrl) {
+            console.log('@1 - ', statusPageUrl);
+            if (statusPageUrl === 'not_found')
+                this.notify('Not found with "' + this.state.findKeyword + '"');
+            else
+                openTab(statusPageUrl);
+
+            this.setState({isFindingBooking: false});
+        }
+
         this.setState({isLoggedIn});
     }
+
+    notify = (text) => toast(text);
 
     logout() {
         this.props.logout();
         this.props.history.push('/');
     }
 
+    onChangeText(e) {
+        this.setState({findKeyword: e.target.value});
+    }
+
+    onKeyPress(e) {
+        const findKeyword = e.target.value;
+
+        if (e.key === 'Enter' && !this.state.loading) {
+            e.preventDefault();
+
+            if ((findKeyword == undefined) || (findKeyword == '')) {
+                this.notify('Value is required!');
+                return;
+            }
+
+            this.props.getStatusPageUrl(findKeyword);
+            this.setState({isFindingBooking: true});
+        }
+
+        this.setState({findKeyword});
+    }
+
     render() {
-        const { username, clientname } = this.state;
+        const { username, clientname, findKeyword } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -95,6 +136,18 @@ class Header extends Component {
                         </a>
 
                         <ul className="navbar-nav flex-row ml-auto d-md-flex">
+                            <li className="nav-item mar-right-20 track">
+                                <label>Track:&nbsp;&nbsp;</label>
+                                <input 
+                                    className="form-control"
+                                    type="text"
+                                    value={findKeyword}
+                                    onChange={this.onChangeText.bind(this)} 
+                                    onKeyPress={(e) => this.onKeyPress(e)} 
+                                    placeholder="Consignment Number & Enter"
+                                    disabled={this.state.isFindingBooking ? 'disabled' : ''}
+                                />
+                            </li>
                             {clientname && isLoggedIn === 'true' ?
                                 <li className="nav-item dropdown show">
                                     <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -135,6 +188,7 @@ class Header extends Component {
                         </ul>
                     </nav>
                 }
+                <ToastContainer />
             </header>
         );
     }
@@ -145,6 +199,7 @@ const mapStateToProps = (state) => {
         username: state.auth.username,
         clientname: state.auth.clientname,
         isLoggedIn: state.auth.isLoggedIn,
+        statusPageUrl: state.booking.statusPageUrl,
     };
 };
 
@@ -152,6 +207,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getUser: (token) => dispatch(getUser(token)),
         logout: () => dispatch(logout()),
+        getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
     };
 };
 

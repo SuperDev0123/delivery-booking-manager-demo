@@ -105,6 +105,8 @@ import {
     FAILED_REPACK,
     SUCCESS_DME_CANCEL_BOOK,
     FAILED_DME_CANCEL_BOOK,
+    SUCCESS_GET_STATUS_PAGE_URL,
+    FAILED_GET_STATUS_PAGE_URL,
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -952,6 +954,21 @@ export function successRepack(data) {
 export function failedRepack(error) {
     return {
         type: FAILED_REPACK,
+        errorMessage: error.response.data.message
+    };
+}
+
+export function successGetStatusPageUrl(data) {
+    console.log('@1 - ', data);
+    return {
+        type: SUCCESS_GET_STATUS_PAGE_URL,
+        payload: data,
+    };
+}
+
+export function failedGetStatusPageUrl(error) {
+    return {
+        type: FAILED_GET_STATUS_PAGE_URL,
         errorMessage: error.response.data.message
     };
 }

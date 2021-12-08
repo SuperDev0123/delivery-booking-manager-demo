@@ -10,6 +10,7 @@ import { Button } from 'reactstrap';
 import { getBookings, getBookingLines, getBookingLinesData } from '../state/services/bokService';
 import { cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { findBooking } from '../state/services/extraService';
+import { openTab } from '../commons/browser';
 
 class BokPage extends Component {
     constructor(props) {
@@ -75,14 +76,14 @@ class BokPage extends Component {
             if (this.state.dest  === 'status') {
                 if (statusPageUrl) {
                     // window.location.href = statusPageUrl;
-                    this.openTab(statusPageUrl);
+                    openTab(statusPageUrl);
                 } else {
                     this.notify('Status page is not available for this Order Number.');
                 }
             } else {
                 if (pricePageUrl) {
                     // window.location.href = pricePageUrl;
-                    this.openTab(pricePageUrl);
+                    openTab(pricePageUrl);
                 } else {
                     this.notify('This Order Number does not exist.');
                 }
@@ -93,16 +94,6 @@ class BokPage extends Component {
     }
 
     notify = (text) => toast(text);
-
-    openTab = (url) => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel='noopener noreferrer';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
 
     onSelected(e, src) {
         if (src === 'client') {

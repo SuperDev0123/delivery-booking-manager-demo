@@ -101,6 +101,8 @@ import {
     FAILED_REPACK,
     SUCCESS_DME_CANCEL_BOOK,
     FAILED_DME_CANCEL_BOOK,
+    SUCCESS_GET_STATUS_PAGE_URL,
+    FAILED_GET_STATUS_PAGE_URL,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -143,6 +145,7 @@ const defaultState = {
     clientprocess: {},
     bookingLabels: null,
     manifestSummary: null,
+    statusPageUrl: null,
 };
 
 export const BookingReducer = (state = defaultState, {
@@ -618,6 +621,16 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 manifestSummary: payload
+            };
+        case SUCCESS_GET_STATUS_PAGE_URL:
+            return {
+                ...state,
+                statusPageUrl: payload.statusPageUrl
+            };
+        case FAILED_GET_STATUS_PAGE_URL:
+            return {
+                ...state,
+                statusPageUrl: 'not_found'
             };
         case FAILED_DME_CANCEL_BOOK:
         case FAILED_AUTO_AUGMENT:

@@ -92,6 +92,8 @@ import {
     failedRepack,
     successDMECancelBook,
     failedDMECancelBook,
+    successGetStatusPageUrl,
+    failedGetStatusPageUrl,
 } from '../actions/bookingActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -860,5 +862,18 @@ export const repack = (id, repackStatus) => {
         axios(options)
             .then(() => dispatch(successRepack()))
             .catch((error) => dispatch(failedRepack(error)));
+    };
+};
+
+export const getStatusPageUrl = (v_FPBookingNumber) => {
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/booking/get_status_page_url/?v_FPBookingNumber=${v_FPBookingNumber}`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({data}) => dispatch(successGetStatusPageUrl(data)))
+            .catch((error) => dispatch(failedGetStatusPageUrl(error)));
     };
 };

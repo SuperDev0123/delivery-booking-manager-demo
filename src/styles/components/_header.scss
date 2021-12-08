@@ -7,6 +7,16 @@
 
 .navbar {
 	border-bottom: none;
+
+  .track {
+    width: 280px;
+    display: inline-block;
+  }
+
+  input {
+    width: 210px;
+    display: inline-block;
+  }
 }
 
 .loader {
