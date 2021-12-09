@@ -200,10 +200,10 @@ class BokStatusPage extends Component {
                                 <span className="status-summary-title">Updated: </span>
                                 <span className="status-summary-updated">{lastUpdated}</span>
                             </div>
-                            <div className='c-red'>
+                            {!(step === 5 && status === 'Delivered') && <div className='c-red'>
                                 <p>Dear Customer, please note that freight providers are experiencing significant delivery delays beyond standard service levels. There is a high chance that this will impact the estimated `deliver by date`.</p>
                                 <p>To keep you up to date a SMS and email will be sent out no later than the ‘deliver by date’ of an impending delay. We understand the frustration with the potential delays and having to call customer care for updates. To save you that time, we will provide ALL information via SMS or email as and when updates are possible.</p>
-                            </div>
+                            </div>}
                             <div className="status-chart">
                                 <div className="status-chart-bar">
                                     {[0, 1, 2, 3, 4].map((index) => (
