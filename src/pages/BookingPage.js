@@ -787,142 +787,6 @@ class BookingPage extends Component {
                     this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false}, () => this.afterSetState(0, booking));
                 }
 
-                let formInputs = this.state.formInputs;
-
-                formInputs['id'] = booking.id;
-                formInputs['b_bookingID_Visual'] = booking.b_bookingID_Visual;
-                formInputs['pk_booking_id'] = booking.pk_booking_id;
-                if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
-                else formInputs['puCompany'] = '';
-                if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
-                else formInputs['pu_Address_Street_1'] = '';
-                if (booking.pu_Address_street_2 != null) formInputs['pu_Address_street_2'] = booking.pu_Address_street_2;
-                else formInputs['pu_Address_street_2'] = '';
-                if (booking.pu_Address_Country != null) formInputs['pu_Address_Country'] = booking.pu_Address_Country;
-                else formInputs['pu_Address_Country'] = '';
-                if (booking.pu_Contact_F_L_Name != null) formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
-                else formInputs['pu_Contact_F_L_Name'] = '';
-                if (booking.pu_Phone_Main != null) formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
-                else formInputs['pu_Phone_Main'] = '';
-                if (booking.pu_Email != null) formInputs['pu_Email'] = booking.pu_Email;
-                else formInputs['pu_Email'] = '';
-                if (booking.pu_email_Group_Name != null) formInputs['pu_email_Group_Name'] = booking.pu_email_Group_Name;
-                else formInputs['pu_email_Group_Name'] = '';
-                if (booking.pu_email_Group != null) formInputs['pu_email_Group'] = booking.pu_email_Group;
-                else formInputs['pu_email_Group'] = '';
-                if (booking.de_To_Address_Street_1 != null) formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
-                else formInputs['de_To_Address_Street_1'] = '';
-                if (booking.de_To_Address_Street_2 != null) {formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;}
-                else formInputs['de_To_Address_Street_2'] = '';
-                formInputs['pu_Address_State'] = booking.pu_Address_State;
-                formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
-                formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
-                formInputs['de_To_Address_State'] = booking.de_To_Address_State;
-                formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
-                formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
-                if (booking.de_To_Address_Country != null) formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
-                else formInputs['de_To_Address_Country'] = '';
-                if (booking.de_to_Contact_F_LName != null) formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
-                else formInputs['de_to_Contact_F_LName'] = '';
-                if (booking.de_to_Phone_Main != null) formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
-                else formInputs['de_to_Phone_Main'] = '';
-                if (booking.de_Email != null) formInputs['de_Email'] = booking.de_Email;
-                else formInputs['de_Email'] = '';
-                if (booking.de_Email_Group_Name != null) formInputs['de_Email_Group_Name'] = booking.de_Email_Group_Name;
-                else formInputs['de_Email_Group_Name'] = '';
-                if (booking.de_Email_Group_Emails != null) formInputs['de_Email_Group_Emails'] = booking.de_Email_Group_Emails;
-                else formInputs['de_Email_Group_Emails'] = '';
-                if (booking.deToCompanyName != null) formInputs['deToCompanyName'] = booking.deToCompanyName;
-                else formInputs['deToCompanyName'] = '';
-                if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
-                else formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
-                if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp;
-                else formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
-                if (booking.b_client_name != null) formInputs['b_client_name'] = booking.b_client_name;
-                else formInputs['b_client_name'] = '';
-                if (booking.b_client_warehouse_code != null) formInputs['b_client_warehouse_code'] = booking.b_client_warehouse_code;
-                else formInputs['b_client_warehouse_code'] = '';
-                if (booking.b_clientPU_Warehouse != null) formInputs['b_clientPU_Warehouse'] = booking.b_clientPU_Warehouse;
-                else formInputs['b_clientPU_Warehouse'] = '';
-                if (booking.booking_Created_For_Email != null) formInputs['booking_Created_For_Email'] = booking.booking_Created_For_Email;
-                else formInputs['booking_Created_For_Email'] = '';
-                if (booking.booking_Created_For) formInputs['booking_Created_For'] = {'value': booking.booking_Created_For, 'label': booking.booking_Created_For};
-                else formInputs['booking_Created_For'] = '';
-                if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = {'value': booking.b_booking_Category, 'label': booking.b_booking_Category};
-                else formInputs['b_booking_Category'] = '';
-                if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
-                else formInputs['b_booking_Priority'] = '';
-
-                // Saved `ETA PU BY`, `ETA DE BY`
-                if (booking.eta_pu_by != null) formInputs['eta_pu_by'] = booking.eta_pu_by;
-                else formInputs['eta_pu_by'] = null;
-                if (booking.eta_de_by != null) formInputs['eta_de_by'] = booking.eta_de_by;
-                else formInputs['eta_de_by'] = null;
-                if (booking.s_05_Latest_Pick_Up_Date_TimeSet != null) formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = booking.s_05_Latest_Pick_Up_Date_TimeSet;
-                else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
-                if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
-                else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
-
-                if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
-                else formInputs['b_clientReference_RA_Numbers'] = '';
-                if (booking.de_to_Pick_Up_Instructions_Contact != null) formInputs['de_to_Pick_Up_Instructions_Contact'] = booking.de_to_Pick_Up_Instructions_Contact;
-                else formInputs['de_to_Pick_Up_Instructions_Contact'] = '';
-                if (booking.de_to_PickUp_Instructions_Address != null) formInputs['de_to_PickUp_Instructions_Address'] = booking.de_to_PickUp_Instructions_Address;
-                else formInputs['de_to_PickUp_Instructions_Address'] = '';
-                if (booking.pu_pickup_instructions_address != null) formInputs['pu_pickup_instructions_address'] = booking.pu_pickup_instructions_address;
-                else formInputs['pu_pickup_instructions_address'] = '';
-                if (booking.pu_PickUp_Instructions_Contact != null) formInputs['pu_PickUp_Instructions_Contact'] = booking.pu_PickUp_Instructions_Contact;
-                else formInputs['pu_PickUp_Instructions_Contact'] = '';
-                if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
-                else formInputs['b_status_API'] = '';
-                if (booking.b_booking_Notes != null) formInputs['b_booking_Notes'] = booking.b_booking_Notes;
-                else formInputs['b_booking_Notes'] = '';
-                if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
-                else formInputs['dme_status_detail'] = '';
-                if (booking.dme_status_action != null) formInputs['dme_status_action'] = booking.dme_status_action;
-                else formInputs['dme_status_action'] = '';
-                if (booking.dme_status_linked_reference_from_fp != null) formInputs['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
-                else formInputs['dme_status_linked_reference_from_fp'] = '';
-
-                if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
-                else formInputs['puPickUpAvailFrom_Date'] = null;
-                if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
-                else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
-                if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
-                else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
-                if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
-                else formInputs['pu_PickUp_By_Date'] = null;
-                if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
-                else formInputs['pu_PickUp_By_Time_Hours'] = null;
-                if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
-                else formInputs['pu_PickUp_By_Time_Minutes'] = null;
-
-                if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
-                else formInputs['de_Deliver_From_Date'] = null;
-                if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
-                else formInputs['de_Deliver_From_Hours'] = null;
-                if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
-                else formInputs['de_Deliver_From_Minutes'] = null;
-                if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
-                else formInputs['de_Deliver_By_Date'] = null;
-                if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
-                else formInputs['de_Deliver_By_Hours'] = null;
-                if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
-                else formInputs['de_Deliver_By_Minutes'] = null;
-                if (!_.isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
-                else formInputs['s_02_Booking_Cutoff_Time'] = null;
-
-                if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
-                else formInputs['b_project_due_date'] = null;
-                if (booking.fp_store_event_date) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
-                else formInputs['fp_store_event_date'] = null;
-                if (booking.z_calculated_ETA) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
-                else formInputs['z_calculated_ETA'] = null;
-                if (booking.fp_received_date_time) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
-                else formInputs['fp_received_date_time'] = null;
-                if (booking.b_given_to_transport_date_time) formInputs['b_given_to_transport_date_time'] = booking.b_given_to_transport_date_time;
-                else formInputs['b_given_to_transport_date_time'] = null;
-
                 if (booking.pu_Address_Country != undefined && booking.pu_Address_State != undefined) {
                     this.setState({puTimeZone: this.getTime(booking.pu_Address_Country, booking.pu_Address_State)});
                 }
@@ -956,74 +820,6 @@ class BookingPage extends Component {
                 if (booking.b_dateBookedDate != null) tempAdditionalServices.b_dateBookedDate = booking.b_dateBookedDate;
                 else tempAdditionalServices.b_dateBookedDate = '';
                 tempAdditionalServices.Invoiced = '';
-
-                // Added new main fields
-                if (!_.isNull(booking.v_FPBookingNumber)) formInputs['v_FPBookingNumber'] = booking.v_FPBookingNumber;
-                else formInputs['v_FPBookingNumber'] = '';
-                if (!_.isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
-                else formInputs['vx_freight_provider'] = '';
-                if (!_.isNull(booking.vx_serviceName)) formInputs['vx_serviceName'] = booking.vx_serviceName;
-                else formInputs['vx_serviceName'] = '';
-                if (!_.isNull(booking.vx_account_code)) formInputs['vx_account_code'] = booking.vx_account_code;
-                else formInputs['vx_account_code'] = '';
-                if (!_.isNull(booking.v_service_Type)) formInputs['v_service_Type'] = booking.v_service_Type;
-                else formInputs['v_service_Type'] = '';
-                if (!_.isNull(booking.fk_fp_pickup_id)) formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
-                else formInputs['fk_fp_pickup_id'] = '';
-                if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
-                else formInputs['v_vehicle_Type'] = '';
-                if (!_.isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
-                else formInputs['inv_billing_status'] = '';
-                if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
-                else formInputs['inv_billing_status_note'] = '';
-                if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
-                else formInputs['b_client_sales_inv_num'] = '';
-                if (!_.isNull(booking.b_client_order_num)) formInputs['b_client_order_num'] = booking.b_client_order_num;
-                else formInputs['b_client_order_num'] = '';
-                if (!_.isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
-                else formInputs['b_client_name_sub'] = '';
-                if (!_.isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
-                else formInputs['inv_dme_invoice_no'] = '';
-                if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
-                else formInputs['fp_invoice_no'] = '';
-                if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
-                else formInputs['inv_cost_quoted'] = null;
-                if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
-                else formInputs['inv_cost_actual'] = null;
-                if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
-                else formInputs['inv_sell_quoted'] = null;
-                if (!_.isNull(booking.inv_sell_quoted_override)) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
-                else formInputs['inv_sell_quoted_override'] = null;
-                if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
-                else formInputs['inv_sell_actual'] = null;
-                if (!_.isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
-                else formInputs['customer_cost'] = null;
-                if (!_.isNull(booking.inv_booked_quoted)) formInputs['inv_booked_quoted'] = parseFloat(booking.inv_booked_quoted).toFixed(2);
-                else formInputs['inv_booked_quoted'] = null;
-                if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
-                else formInputs['vx_futile_Booking_Notes'] = null;
-                if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
-                else formInputs['b_handling_Instructions'] = null;
-                formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
-                formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : null;
-
-                // Freight Options
-                formInputs['pu_Address_Type'] = booking.pu_Address_Type;
-                formInputs['de_To_AddressType'] = booking.de_To_AddressType;
-                formInputs['b_booking_tail_lift_pickup'] = booking.b_booking_tail_lift_pickup;
-                formInputs['b_booking_tail_lift_deliver'] = booking.b_booking_tail_lift_deliver;
-                formInputs['pu_no_of_assists'] = booking.pu_no_of_assists;
-                formInputs['de_no_of_assists'] = booking.de_no_of_assists;
-                formInputs['pu_location'] = booking.pu_location;
-                formInputs['de_to_location'] = booking.de_to_location;
-                formInputs['pu_access'] = booking.pu_access;
-                formInputs['de_access'] = booking.de_access;
-                formInputs['pu_floor_number'] = booking.pu_floor_number;
-                formInputs['de_floor_number'] = booking.de_floor_number;
-                formInputs['pu_floor_access_by'] = booking.pu_floor_access_by;
-                formInputs['de_to_floor_access_by'] = booking.de_to_floor_access_by;
-                formInputs['pu_service'] = booking.pu_service;
-                formInputs['de_service'] = booking.de_service;
                 
                 let AdditionalServices = [];
                 AdditionalServices.push(tempAdditionalServices);
@@ -1060,6 +856,8 @@ class BookingPage extends Component {
                 if (this.attachmentsDz) this.attachmentsDz.removeAllFiles();
                 if (this.labelDz) this.labelDz.removeAllFiles();
                 if (this.podDz) this.podDz.removeAllFiles();
+
+                let formInputs = this.getInitialFormInputs(booking);
 
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
@@ -1105,7 +903,221 @@ class BookingPage extends Component {
         }
     }
 
+    getInitialFormInputs(booking) {
+        let formInputs = this.state.formInputs;
+
+        formInputs['id'] = booking.id;
+        formInputs['b_bookingID_Visual'] = booking.b_bookingID_Visual;
+        formInputs['pk_booking_id'] = booking.pk_booking_id;
+        if (booking.puCompany != null) formInputs['puCompany'] = booking.puCompany;
+        else formInputs['puCompany'] = '';
+        if (booking.pu_Address_Street_1 != null) formInputs['pu_Address_Street_1'] = booking.pu_Address_Street_1;
+        else formInputs['pu_Address_Street_1'] = '';
+        if (booking.pu_Address_street_2 != null) formInputs['pu_Address_street_2'] = booking.pu_Address_street_2;
+        else formInputs['pu_Address_street_2'] = '';
+        if (booking.pu_Address_Country != null) formInputs['pu_Address_Country'] = booking.pu_Address_Country;
+        else formInputs['pu_Address_Country'] = '';
+        if (booking.pu_Contact_F_L_Name != null) formInputs['pu_Contact_F_L_Name'] = booking.pu_Contact_F_L_Name;
+        else formInputs['pu_Contact_F_L_Name'] = '';
+        if (booking.pu_Phone_Main != null) formInputs['pu_Phone_Main'] = booking.pu_Phone_Main;
+        else formInputs['pu_Phone_Main'] = '';
+        if (booking.pu_Email != null) formInputs['pu_Email'] = booking.pu_Email;
+        else formInputs['pu_Email'] = '';
+        if (booking.pu_email_Group_Name != null) formInputs['pu_email_Group_Name'] = booking.pu_email_Group_Name;
+        else formInputs['pu_email_Group_Name'] = '';
+        if (booking.pu_email_Group != null) formInputs['pu_email_Group'] = booking.pu_email_Group;
+        else formInputs['pu_email_Group'] = '';
+        if (booking.de_To_Address_Street_1 != null) formInputs['de_To_Address_Street_1'] = booking.de_To_Address_Street_1;
+        else formInputs['de_To_Address_Street_1'] = '';
+        if (booking.de_To_Address_Street_2 != null) {formInputs['de_To_Address_Street_2'] = booking.de_To_Address_Street_2;}
+        else formInputs['de_To_Address_Street_2'] = '';
+        formInputs['pu_Address_State'] = booking.pu_Address_State;
+        formInputs['pu_Address_PostalCode'] = booking.pu_Address_PostalCode;
+        formInputs['pu_Address_Suburb'] = booking.pu_Address_Suburb;
+        formInputs['de_To_Address_State'] = booking.de_To_Address_State;
+        formInputs['de_To_Address_PostalCode'] = booking.de_To_Address_PostalCode;
+        formInputs['de_To_Address_Suburb'] = booking.de_To_Address_Suburb;
+        if (booking.de_To_Address_Country != null) formInputs['de_To_Address_Country'] = booking.de_To_Address_Country;
+        else formInputs['de_To_Address_Country'] = '';
+        if (booking.de_to_Contact_F_LName != null) formInputs['de_to_Contact_F_LName'] = booking.de_to_Contact_F_LName;
+        else formInputs['de_to_Contact_F_LName'] = '';
+        if (booking.de_to_Phone_Main != null) formInputs['de_to_Phone_Main'] = booking.de_to_Phone_Main;
+        else formInputs['de_to_Phone_Main'] = '';
+        if (booking.de_Email != null) formInputs['de_Email'] = booking.de_Email;
+        else formInputs['de_Email'] = '';
+        if (booking.de_Email_Group_Name != null) formInputs['de_Email_Group_Name'] = booking.de_Email_Group_Name;
+        else formInputs['de_Email_Group_Name'] = '';
+        if (booking.de_Email_Group_Emails != null) formInputs['de_Email_Group_Emails'] = booking.de_Email_Group_Emails;
+        else formInputs['de_Email_Group_Emails'] = '';
+        if (booking.deToCompanyName != null) formInputs['deToCompanyName'] = booking.deToCompanyName;
+        else formInputs['deToCompanyName'] = '';
+        if (booking.s_20_Actual_Pickup_TimeStamp != null) formInputs['s_20_Actual_Pickup_TimeStamp'] = booking.s_20_Actual_Pickup_TimeStamp;
+        else formInputs['s_20_Actual_Pickup_TimeStamp'] = null;
+        if (booking.s_21_Actual_Delivery_TimeStamp != null) formInputs['s_21_Actual_Delivery_TimeStamp'] = booking.s_21_Actual_Delivery_TimeStamp;
+        else formInputs['s_21_Actual_Delivery_TimeStamp'] = null;
+        if (booking.b_client_name != null) formInputs['b_client_name'] = booking.b_client_name;
+        else formInputs['b_client_name'] = '';
+        if (booking.b_client_warehouse_code != null) formInputs['b_client_warehouse_code'] = booking.b_client_warehouse_code;
+        else formInputs['b_client_warehouse_code'] = '';
+        if (booking.b_clientPU_Warehouse != null) formInputs['b_clientPU_Warehouse'] = booking.b_clientPU_Warehouse;
+        else formInputs['b_clientPU_Warehouse'] = '';
+        if (booking.booking_Created_For_Email != null) formInputs['booking_Created_For_Email'] = booking.booking_Created_For_Email;
+        else formInputs['booking_Created_For_Email'] = '';
+        if (booking.booking_Created_For) formInputs['booking_Created_For'] = {'value': booking.booking_Created_For, 'label': booking.booking_Created_For};
+        else formInputs['booking_Created_For'] = '';
+        if (booking.b_booking_Category != null) formInputs['b_booking_Category'] = {'value': booking.b_booking_Category, 'label': booking.b_booking_Category};
+        else formInputs['b_booking_Category'] = '';
+        if (booking.b_booking_Priority != null) formInputs['b_booking_Priority'] = {'value': booking.b_booking_Priority, 'label': booking.b_booking_Priority};
+        else formInputs['b_booking_Priority'] = '';
+
+        // Saved `ETA PU BY`, `ETA DE BY`
+        if (booking.eta_pu_by != null) formInputs['eta_pu_by'] = booking.eta_pu_by;
+        else formInputs['eta_pu_by'] = null;
+        if (booking.eta_de_by != null) formInputs['eta_de_by'] = booking.eta_de_by;
+        else formInputs['eta_de_by'] = null;
+        if (booking.s_05_Latest_Pick_Up_Date_TimeSet != null) formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = booking.s_05_Latest_Pick_Up_Date_TimeSet;
+        else formInputs['s_05_Latest_Pick_Up_Date_TimeSet'] = null;
+        if (booking.s_06_Latest_Delivery_Date_TimeSet != null) formInputs['s_06_Latest_Delivery_Date_TimeSet'] = booking.s_06_Latest_Delivery_Date_TimeSet;
+        else formInputs['s_06_Latest_Delivery_Date_TimeSet'] = null;
+
+        if (booking.b_clientReference_RA_Numbers != null) formInputs['b_clientReference_RA_Numbers'] = booking.b_clientReference_RA_Numbers;
+        else formInputs['b_clientReference_RA_Numbers'] = '';
+        if (booking.de_to_Pick_Up_Instructions_Contact != null) formInputs['de_to_Pick_Up_Instructions_Contact'] = booking.de_to_Pick_Up_Instructions_Contact;
+        else formInputs['de_to_Pick_Up_Instructions_Contact'] = '';
+        if (booking.de_to_PickUp_Instructions_Address != null) formInputs['de_to_PickUp_Instructions_Address'] = booking.de_to_PickUp_Instructions_Address;
+        else formInputs['de_to_PickUp_Instructions_Address'] = '';
+        if (booking.pu_pickup_instructions_address != null) formInputs['pu_pickup_instructions_address'] = booking.pu_pickup_instructions_address;
+        else formInputs['pu_pickup_instructions_address'] = '';
+        if (booking.pu_PickUp_Instructions_Contact != null) formInputs['pu_PickUp_Instructions_Contact'] = booking.pu_PickUp_Instructions_Contact;
+        else formInputs['pu_PickUp_Instructions_Contact'] = '';
+        if (booking.b_status_API != null) formInputs['b_status_API'] = booking.b_status_API;
+        else formInputs['b_status_API'] = '';
+        if (booking.b_booking_Notes != null) formInputs['b_booking_Notes'] = booking.b_booking_Notes;
+        else formInputs['b_booking_Notes'] = '';
+        if (booking.dme_status_detail != null) formInputs['dme_status_detail'] = booking.dme_status_detail;
+        else formInputs['dme_status_detail'] = '';
+        if (booking.dme_status_action != null) formInputs['dme_status_action'] = booking.dme_status_action;
+        else formInputs['dme_status_action'] = '';
+        if (booking.dme_status_linked_reference_from_fp != null) formInputs['dme_status_linked_reference_from_fp'] = booking.dme_status_linked_reference_from_fp;
+        else formInputs['dme_status_linked_reference_from_fp'] = '';
+
+        if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
+        else formInputs['puPickUpAvailFrom_Date'] = null;
+        if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
+        else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
+        if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
+        else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
+        if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
+        else formInputs['pu_PickUp_By_Date'] = null;
+        if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
+        else formInputs['pu_PickUp_By_Time_Hours'] = null;
+        if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
+        else formInputs['pu_PickUp_By_Time_Minutes'] = null;
+
+        if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
+        else formInputs['de_Deliver_From_Date'] = null;
+        if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
+        else formInputs['de_Deliver_From_Hours'] = null;
+        if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
+        else formInputs['de_Deliver_From_Minutes'] = null;
+        if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
+        else formInputs['de_Deliver_By_Date'] = null;
+        if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
+        else formInputs['de_Deliver_By_Hours'] = null;
+        if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
+        else formInputs['de_Deliver_By_Minutes'] = null;
+        if (!_.isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
+        else formInputs['s_02_Booking_Cutoff_Time'] = null;
+
+        if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
+        else formInputs['b_project_due_date'] = null;
+        if (booking.fp_store_event_date) formInputs['fp_store_event_date'] = booking.fp_store_event_date;
+        else formInputs['fp_store_event_date'] = null;
+        if (booking.z_calculated_ETA) formInputs['z_calculated_ETA'] = booking.z_calculated_ETA;
+        else formInputs['z_calculated_ETA'] = null;
+        if (booking.fp_received_date_time) formInputs['fp_received_date_time'] = booking.fp_received_date_time;
+        else formInputs['fp_received_date_time'] = null;
+        if (booking.b_given_to_transport_date_time) formInputs['b_given_to_transport_date_time'] = booking.b_given_to_transport_date_time;
+        else formInputs['b_given_to_transport_date_time'] = null;
+
+        // Added new main fields
+        if (!_.isNull(booking.v_FPBookingNumber)) formInputs['v_FPBookingNumber'] = booking.v_FPBookingNumber;
+        else formInputs['v_FPBookingNumber'] = '';
+        if (!_.isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
+        else formInputs['vx_freight_provider'] = '';
+        if (!_.isNull(booking.vx_serviceName)) formInputs['vx_serviceName'] = booking.vx_serviceName;
+        else formInputs['vx_serviceName'] = '';
+        if (!_.isNull(booking.vx_account_code)) formInputs['vx_account_code'] = booking.vx_account_code;
+        else formInputs['vx_account_code'] = '';
+        if (!_.isNull(booking.v_service_Type)) formInputs['v_service_Type'] = booking.v_service_Type;
+        else formInputs['v_service_Type'] = '';
+        if (!_.isNull(booking.fk_fp_pickup_id)) formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
+        else formInputs['fk_fp_pickup_id'] = '';
+        if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
+        else formInputs['v_vehicle_Type'] = '';
+        if (!_.isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
+        else formInputs['inv_billing_status'] = '';
+        if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
+        else formInputs['inv_billing_status_note'] = '';
+        if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
+        else formInputs['b_client_sales_inv_num'] = '';
+        if (!_.isNull(booking.b_client_order_num)) formInputs['b_client_order_num'] = booking.b_client_order_num;
+        else formInputs['b_client_order_num'] = '';
+        if (!_.isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
+        else formInputs['b_client_name_sub'] = '';
+        if (!_.isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
+        else formInputs['inv_dme_invoice_no'] = '';
+        if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
+        else formInputs['fp_invoice_no'] = '';
+        if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
+        else formInputs['inv_cost_quoted'] = null;
+        if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
+        else formInputs['inv_cost_actual'] = null;
+        if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
+        else formInputs['inv_sell_quoted'] = null;
+        if (!_.isNull(booking.inv_sell_quoted_override)) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
+        else formInputs['inv_sell_quoted_override'] = null;
+        if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
+        else formInputs['inv_sell_actual'] = null;
+        if (!_.isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
+        else formInputs['customer_cost'] = null;
+        if (!_.isNull(booking.inv_booked_quoted)) formInputs['inv_booked_quoted'] = parseFloat(booking.inv_booked_quoted).toFixed(2);
+        else formInputs['inv_booked_quoted'] = null;
+        if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
+        else formInputs['vx_futile_Booking_Notes'] = null;
+        if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
+        else formInputs['b_handling_Instructions'] = null;
+        formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
+        formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : null;
+
+        // Freight Options
+        formInputs['pu_Address_Type'] = booking.pu_Address_Type;
+        formInputs['de_To_AddressType'] = booking.de_To_AddressType;
+        formInputs['b_booking_tail_lift_pickup'] = booking.b_booking_tail_lift_pickup;
+        formInputs['b_booking_tail_lift_deliver'] = booking.b_booking_tail_lift_deliver;
+        formInputs['pu_no_of_assists'] = booking.pu_no_of_assists;
+        formInputs['de_no_of_assists'] = booking.de_no_of_assists;
+        formInputs['pu_location'] = booking.pu_location;
+        formInputs['de_to_location'] = booking.de_to_location;
+        formInputs['pu_access'] = booking.pu_access;
+        formInputs['de_access'] = booking.de_access;
+        formInputs['pu_floor_number'] = booking.pu_floor_number;
+        formInputs['de_floor_number'] = booking.de_floor_number;
+        formInputs['pu_floor_access_by'] = booking.pu_floor_access_by;
+        formInputs['de_to_floor_access_by'] = booking.de_to_floor_access_by;
+        formInputs['pu_service'] = booking.pu_service;
+        formInputs['de_service'] = booking.de_service;
+
+        return formInputs;
+    }
+
     notify = (text) => toast(text);
+
+    onClickCancelUpdate() {
+        const { booking } = this.state;
+        let formInputs = this.getInitialFormInputs(booking);
+        this.setState({ formInputs, isBookingModified: false });
+    }
 
     afterSetState(type, data) {
         if (type === 0) {
@@ -2837,7 +2849,7 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
+            isBookingModified, isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
         } = this.state;
         const {warehouses, emailLogs, bookingLines} = this.props;
 
@@ -5332,19 +5344,33 @@ class BookingPage extends Component {
                                                     </div>
                                                 </div>
                                                 <div className="buttons">
-                                                    <div className="text-center mt-2 fixed-height form-view-btns">
+                                                    {parseInt(curViewMode) === 1 && <div className="text-center mt-2 fixed-height">
                                                         <button
-                                                            className={(parseInt(curViewMode) === 1) ?
-                                                                'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'} 
+                                                            className="btn btn-theme custom-theme btn-primary"
                                                             onClick={() => this.onClickCreateBooking()}
-                                                        >Create</button>
+                                                        >
+                                                            Create
+                                                        </button>
+                                                    </div>}
+                                                    {parseInt(curViewMode) === 0 && <div className="text-center mt-2 fixed-height form-view-btns">
+                                                        <button className="btn btn-theme custom-theme disabled" disabled>Update</button>
+                                                        <button className="btn btn-theme custom-theme disabled" disabled>Cancel</button>
+                                                    </div>}
+                                                    {parseInt(curViewMode) === 2 && <div className="text-center mt-2 fixed-height form-view-btns">
                                                         <button
-                                                            className={(parseInt(curViewMode) === 2) ?
-                                                                'btn btn-theme custom-theme' : 'btn btn-theme custom-theme disabled'}
+                                                            className={isBookingModified ? 'btn btn-theme custom-theme btn-primary' : 'btn btn-theme custom-theme'}
                                                             onClick={() => this.onClickUpdateBooking()}
                                                             disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
-                                                        >Update</button>
-                                                    </div>
+                                                        >
+                                                            Update
+                                                        </button>
+                                                        <button
+                                                            className={isBookingModified ? 'btn btn-theme custom-theme btn-danger' : 'btn btn-theme custom-theme'}
+                                                            onClick={() => this.onClickCancelUpdate()}
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>}
                                                     <div className="text-center mt-2 fixed-height pricing-btns">
                                                         <button
                                                             className="btn btn-theme custom-theme"
