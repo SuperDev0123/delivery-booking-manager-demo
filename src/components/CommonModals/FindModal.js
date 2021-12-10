@@ -144,7 +144,7 @@ class FindModal extends Component {
                     <label>
                         <p>Select field to be searched: </p>
                         <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
-                            <option value="b_client_order_num" selected="selected">Your Invoice Number</option>
+                            <option value="b_client_order_num" selected="selected">Your Order Number</option>
                             <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
                             <option value="clientRefNumber">Client Ref Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
