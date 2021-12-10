@@ -10,7 +10,7 @@ class FindModal extends Component {
 
         this.state = {
             // selectedFieldName: 'b_client_sales_inv_num',
-            selectedFieldName: 'postal_code',
+            selectedFieldName: 'b_client_order_num',
             postalCodeMin: 0,
             postalCodeMax: 0,
             postalCode: null,
