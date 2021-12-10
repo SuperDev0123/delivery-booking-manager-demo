@@ -3948,28 +3948,26 @@ class BookingPage extends Component {
                                                 }
                                             </div>
                                         </div>
-                                        {clientname === 'dme' &&
-                                            <div className="col-sm-1 form-group">
-                                                <div>
-                                                    <span>Actual $</span>
-                                                    {(parseInt(curViewMode) === 0) ?
-                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                        <div className="col-sm-1 form-group">
+                                            <div>
+                                                <span>Actual $</span>
+                                                {(parseInt(curViewMode) === 0) ?
+                                                    <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                    :
+                                                    clientname === 'dme' ?
+                                                        <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            name="inv_sell_actual"
+                                                            value = {!_.isNull(formInputs['inv_sell_actual']) ? `$${formInputs['inv_sell_actual']}` : ''}
+                                                            onChange={(e) => this.onHandleInput(e)}
+                                                            onBlur={(e) => this.onHandleInputBlur(e)}
+                                                        />
                                                         :
-                                                        clientname === 'dme' ?
-                                                            <input
-                                                                className="form-control"
-                                                                type="text"
-                                                                name="inv_sell_actual"
-                                                                value = {!_.isNull(formInputs['inv_sell_actual']) ? `$${formInputs['inv_sell_actual']}` : ''}
-                                                                onChange={(e) => this.onHandleInput(e)}
-                                                                onBlur={(e) => this.onHandleInputBlur(e)}
-                                                            />
-                                                            :
-                                                            <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
-                                                    }
-                                                </div>
+                                                        <p className="show-mode">{formInputs['inv_sell_actual'] && `$${parseFloat(formInputs['inv_sell_actual']).toFixed(2)}`}</p>
+                                                }
                                             </div>
-                                        }
+                                        </div>
                                         {formInputs && formInputs['customer_cost'] &&
                                             <div className="col-sm-1 form-group">
                                                 <div>
