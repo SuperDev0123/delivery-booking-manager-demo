@@ -613,18 +613,6 @@ hr {
   margin-bottom: 3px;
 }
 
-ul.nav-tabs {
-  //width: 70%;
-
-  li {
-    cursor: pointer;
-
-    a {
-      font-weight: lighter;
-    }
-  }
-}
-
 .filter-controls {
   padding-left: 51px;
   margin-bottom: 10px;
@@ -755,11 +743,28 @@ header > .qbootstrap-nav {
   .tabs {
     height: 38px;
 
-    ul {
-      display: inline-block;
+    div.scrollmenu {
+      overflow: auto;
+      white-space: nowrap;
 
-      li.nav-item a.nav-link {
+      a {
+        display: inline-block;
+        color: white;
+        text-align: center;
+        padding: 9px;
+        text-decoration: none;
         color: #048fc2;
+
+        &:hover {
+          cursor: pointer;
+          background-color: #aaa;
+        }
+
+        &.active {
+          border-left: 1px solid #eee;
+          border-right: 1px solid #eee;
+          border-top: 1px solid #eee;
+        }
       }
     }
 

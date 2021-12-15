@@ -7,7 +7,7 @@ import { withRouter, Link } from 'react-router-dom';
 import moment from 'moment-timezone';
 import _ from 'lodash';
 import axios from 'axios';
-import { Button, Popover, PopoverHeader, PopoverBody, Nav, NavItem, NavLink } from 'reactstrap';
+import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Clock from 'react-live-clock';
@@ -2443,133 +2443,27 @@ class AllBookingsPage extends React.Component {
                                             }
                                         </div>
                                         <div className="tabs">
-                                            <Nav tabs>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 0 ? 'active none' : 'none'}
-                                                        onClick={() => this.onClickTab(0)}
-                                                    >
-                                                        All
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 7 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(7)}
-                                                    >
-                                                        Today | Date Range
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 8 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(8)}
-                                                    >
-                                                        Pre-Processing
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 81 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(81)}
-                                                    >
-                                                        Processing
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 9 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(9)}
-                                                    >
-                                                        Unprinted Labels
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 1 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(1)}
-                                                    >
-                                                        Errors to Correct
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 2 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(2)}
-                                                    >
-                                                        Missing Labels
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 3 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(3)}
-                                                    >
-                                                        To Manifest
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 4 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(4)}
-                                                    >
-                                                        In Transit
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 12 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(12)}
-                                                    >
-                                                        Delivered
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 5 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(5)}
-                                                    >
-                                                        Closed
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 51 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(5)}
-                                                    >
-                                                        Closed with Issue
-                                                    </NavLink>
-                                                </NavItem>
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 11 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(11)}
-                                                    >
-                                                        Parents (In Progress)
-                                                    </NavLink>
-                                                </NavItem>
+                                            <div className="scrollmenu">
+                                                <a className={activeTabInd === 0 ? 'active none' : 'none'} onClick={() => this.onClickTab(0)}>All</a>
+                                                <a className={activeTabInd === 7 ? 'active' : ''} onClick={() => this.onClickTab(7)}>Today | Date Range</a>
+                                                <a className={activeTabInd === 8 ? 'active' : ''} onClick={() => this.onClickTab(8)}>Pre-Processing</a>
+                                                <a className={activeTabInd === 81 ? 'active' : ''} onClick={() => this.onClickTab(81)}>Processing</a>
+                                                <a className={activeTabInd === 9 ? 'active' : ''} onClick={() => this.onClickTab(9)}>Unprinted Labels</a>
+                                                <a className={activeTabInd === 1 ? 'active' : ''} onClick={() => this.onClickTab(1)}>Errors to Correct</a>
+                                                <a className={activeTabInd === 2 ? 'active' : ''} onClick={() => this.onClickTab(2)}>Missing Labels</a>
+                                                <a className={activeTabInd === 3 ? 'active' : ''} onClick={() => this.onClickTab(3)}>To Manifest</a>
+                                                <a className={activeTabInd === 4 ? 'active' : ''} onClick={() => this.onClickTab(4)}>In Transit</a>
+                                                <a className={activeTabInd === 12 ? 'active' : ''} onClick={() => this.onClickTab(12)}>Delivered</a>
+                                                <a className={activeTabInd === 5 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed</a>
+                                                <a className={activeTabInd === 51 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed with Issue</a>
+                                                <a className={activeTabInd === 11 ? 'active' : ''} onClick={() => this.onClickTab(11)}>Parents (In Progress)</a>
                                                 {(clientname === 'dme') &&
-                                                    <NavItem>
-                                                        <NavLink
-                                                            className={activeTabInd === 6 ? 'active' : ''}
-                                                            onClick={() => this.onClickTab(6)}
-                                                        >
-                                                            Delivery Management
-                                                        </NavLink>
-                                                    </NavItem>
+                                                    <a className={activeTabInd === 6 ? 'active' : ''} onClick={() => this.onClickTab(6)}>Delivery Management</a>
                                                 }
-                                                <NavItem>
-                                                    <NavLink
-                                                        className={activeTabInd === 10 ? 'active' : ''}
-                                                        onClick={() => this.onClickTab(10)}
-                                                    >
-                                                        More
-                                                        {this.state.dmeStatus &&
-                                                            ' (' + this.state.dmeStatus + ')'
-                                                        }
-                                                    </NavLink>
-                                                </NavItem>
-                                            </Nav>
+                                                <a className={activeTabInd === 10 ? 'active' : ''} onClick={() => this.onClickTab(10)}>
+                                                    More {this.state.dmeStatus && ' (' + this.state.dmeStatus + ')'}
+                                                </a>
+                                            </div>
                                             <p className="font-24px float-right">Selected / Found: {selectedBookingIds.length}/{bookingsCnt ? bookingsCnt : '*'}</p>
                                         </div>
                                         <hr />
