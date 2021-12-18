@@ -67,7 +67,7 @@ import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations
 // Constants
 import { timeDiff } from '../commons/constants';
 // Helpers
-import { getM3ToKgFactor } from '../commons/helpers';
+import { getM3ToKgFactor, getCubicMeter } from '../commons/helpers';
 
 // Images
 import user from '../public/images/user.png';
@@ -463,8 +463,6 @@ class BookingPage extends Component {
                 result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : 0;
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
-                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter ? bookingLine.e_1_Total_dimCubicMeter.toFixed(2) : 0;
-                result['total_2_cubic_mass_factor_calc'] = bookingLine.e_1_Total_dimCubicMeter ? (Number.parseFloat(bookingLine.e_1_Total_dimCubicMeter).toFixed(4) * m3ToKgFactor).toFixed(2) : 0;
                 result['e_qty_awaiting_inventory'] = bookingLine.e_qty_awaiting_inventory ? bookingLine.e_qty_awaiting_inventory : 0;
                 result['e_qty_collected'] = bookingLine.e_qty_collected ? bookingLine.e_qty_collected : 0;
                 result['e_qty_scanned_depot'] = bookingLine.e_qty_scanned_depot ? bookingLine.e_qty_scanned_depot : 0;
@@ -482,6 +480,13 @@ class BookingPage extends Component {
 
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
+                result['e_1_Total_dimCubicMeter'] = getCubicMeter(
+                    bookingLine.e_qty,
+                    bookingLine.e_dimUOM,
+                    bookingLine.e_dimWidth,
+                    bookingLine.e_dimHeight
+                );
+                result['total_2_cubic_mass_factor_calc'] = (result['e_1_Total_dimCubicMeter'] * m3ToKgFactor).toFixed(2);
 
                 return result;
             });
