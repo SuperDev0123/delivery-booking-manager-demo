@@ -43,7 +43,7 @@ function getCubicMeter(e_qty, e_dimUOM, e_dimLength, e_dimWidth, e_dimHeight) {
     else
         result = parseInt(e_qty) * (parseFloat(e_dimLength) * parseFloat(e_dimWidth) * parseFloat(e_dimHeight) / 1000000000);
 
-    return result.toFixed(2);
+    return result;
 }
 
 function getWeight(e_qty, e_weightUOM, e_weightPerEach) {
@@ -59,7 +59,7 @@ function getWeight(e_qty, e_weightUOM, e_weightPerEach) {
     else if (e_weightUOM.toUpperCase() === 'TON' || e_weightUOM.toUpperCase() === 'TONS' || e_weightUOM.toUpperCase() === 'T')
         result = parseInt(e_qty) * parseFloat(e_weightPerEach) * 1000;
 
-    return result.toFixed(2);
+    return result;
 }
 
 function isInt(value) {
