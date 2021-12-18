@@ -487,7 +487,7 @@ class BookingPage extends Component {
                     bookingLine.e_dimWidth,
                     bookingLine.e_dimHeight
                 );
-                result['total_2_cubic_mass_factor_calc'] = (result['e_1_Total_dimCubicMeter'] * m3ToKgFactor).toFixed(2);
+                result['total_2_cubic_mass_factor_calc'] = Math.ceil(result['e_1_Total_dimCubicMeter'] * m3ToKgFactor);
                 result['e_1_Total_dimCubicMeter'] = result['e_1_Total_dimCubicMeter'].toFixed(3);
 
                 return result;
