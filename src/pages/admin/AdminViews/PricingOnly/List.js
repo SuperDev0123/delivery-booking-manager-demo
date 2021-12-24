@@ -137,6 +137,30 @@ class List extends Component {
             });
     }
 
+    onClickProcessFile(file) {
+        const token = localStorage.getItem('token');
+
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/process_pricing/',
+            headers: {'Authorization': 'JWT ' + token },
+            data: {fileName: file.file_name},
+        };
+
+        axios(options)
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'pricing-only__' + file.file_name + '.zip');
+                document.body.appendChild(link);
+                link.click();
+            })
+            .catch(error => {
+                this.notify('Failed to download files: ' + error);
+            });
+    }
+
     render() {
         const { loading, files } = this.state;
 
@@ -149,6 +173,15 @@ class List extends Component {
                     <td>{moment(file.z_createdTimestamp).format('DD/MM/YYYY HH:mm')}</td>
                     <td>{file.z_createdByAccount}</td>
                     <td>{file.note}</td>
+                    <td>
+                        <button 
+                            className="btn btn-primary"
+                            style={{cursor: file.note.includes('In progress') ? 'not-allowed' : 'pointer'}}
+                            onClick={() => this.onClickProcessFile(file, 'pricing-only')}
+                        >
+                            {file.note.includes('Uploaded to get Pricings only') ? 'Start' : file.note.includes('In progress') ? 'Processing' : 'Restart'}
+                        </button>
+                    </td>
                     <td>
                         <button 
                             className="btn btn-primary"
@@ -212,6 +245,7 @@ class List extends Component {
                                             <th>Created At</th>
                                             <th>Created By</th>
                                             <th>Note</th>
+                                            <th>Action</th>
                                             <th>Download</th>
                                             <th>Delete</th>
                                         </thead>
