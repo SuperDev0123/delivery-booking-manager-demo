@@ -63,7 +63,7 @@ import {
     getZohoTicketSummaries, moveZohoTicket, getScans
 } from '../state/services/extraService';
 // Validation
-import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
+import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../commons/validations';
 // Constants
 import { timeDiff } from '../commons/constants';
 // Helpers
@@ -459,7 +459,7 @@ class BookingPage extends Component {
                 result['e_weightUOM'] = bookingLine.e_weightUOM ? bookingLine.e_weightUOM : 'Kgs';
                 result['e_weightPerEach'] = bookingLine.e_weightPerEach ? bookingLine.e_weightPerEach : 0;
                 result['e_Total_KG_weight'] = bookingLine.e_Total_KG_weight ? bookingLine.e_Total_KG_weight.toFixed(2) : 0;
-                result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : 'CM';
+                result['e_dimUOM'] = bookingLine.e_dimUOM ? bookingLine.e_dimUOM : '';
                 result['e_dimLength'] = bookingLine.e_dimLength ? bookingLine.e_dimLength : 0;
                 result['e_dimWidth'] = bookingLine.e_dimWidth ? bookingLine.e_dimWidth : 0;
                 result['e_dimHeight'] = bookingLine.e_dimHeight ? bookingLine.e_dimHeight : 0;
@@ -2708,8 +2708,11 @@ class BookingPage extends Component {
     }
 
     onClickFC() { // On click Freight Calculation button
-        const {booking, formInputs} = this.state;
-
+        const {booking, formInputs, bookingLines} = this.state;
+        const validCheckResult = isValid4Pricing(bookingLines, 'e_dimUOM');
+        if (validCheckResult != 'valid') {
+            this.notify(validCheckResult);
+        } 
         if (!formInputs['puPickUpAvailFrom_Date']) {
             this.notify('PU Available From Date is required!');
         } else {
