@@ -88,6 +88,14 @@ import {
     SUCCESS_FIND_BOOKING,
     FAILED_FIND_BOOKING,
     RESET_PAGE_URLS,
+    SUCCESS_GET_CS_NOTES,       // CS Note
+    FAILED_GET_CS_NOTES,        // "
+    SUCCESS_CREATE_CS_NOTE,     // "
+    FAILED_CREATE_CS_NOTE,      // "
+    SUCCESS_UPDATE_CS_NOTE,     // "
+    FAILED_UPDATE_CS_NOTE,      // "
+    SUCCESS_DELETE_CS_NOTE,     // "
+    FAILED_DELETE_CS_NOTE,      // CS Note
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -126,6 +134,7 @@ const defaultState = {
     logs: [],
     pricePageUrl: null,
     statusPageUrl: null,
+    csNotes: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -488,6 +497,38 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 // loadingZohoTickets: false
             };
+        case SUCCESS_GET_CS_NOTES:
+            return {
+                ...state,
+                csNotes: payload
+            };
+        case SUCCESS_CREATE_CS_NOTE:
+            return {
+                ...state,
+                csNotes: [
+                    ...state.csNotes,
+                    payload
+                ]
+            };
+        case SUCCESS_UPDATE_CS_NOTE:
+            return {
+                ...state,
+                csNotes: state.csNotes.map((item) => {
+                    if (item.id === payload.id) return payload;
+                    else return item;
+                })
+            };
+        case SUCCESS_DELETE_CS_NOTE: 
+            var csNotes = [];
+            for (const csNote of state.csNotes) {
+                if ( csNote.id != payload.id) {
+                    csNotes.push(csNote);
+                }
+            }
+            return {
+                ...state,
+                csNotes
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -505,6 +546,10 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_BOOKING_SETS:
         case FAILED_UPDATE_BOOKING_SET:
         case FAILED_DELETE_BOOKING_SET:
+        case FAILED_GET_CS_NOTES:
+        case FAILED_CREATE_CS_NOTE:
+        case FAILED_UPDATE_CS_NOTE:
+        case FAILED_DELETE_CS_NOTE:
         case FAILED_STATUSHISTORY_SAVE_PU_INFO:
         case FAILED_UPDATE_CLIENT_EMPLOYEE:
         case FAILED_DELETE_CLIENT_PRODUCTS:

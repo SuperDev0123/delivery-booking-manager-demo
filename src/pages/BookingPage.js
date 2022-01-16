@@ -41,6 +41,7 @@ import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
 import CostSlider from '../components/Sliders/CostSlider';
 import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
+import CSNoteSlider from '../components/Sliders/CSNoteSlider';
 import Children from '../components/Modules/Children';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
@@ -60,7 +61,7 @@ import { getWarehouses } from '../state/services/warehouseService';
 import {
     getPackageTypes, getAllBookingStatus, createStatusHistory, updateStatusHistory, getBookingStatusHistory, getStatusDetails, getStatusActions, createStatusDetail,
     createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket,
-    getZohoTicketSummaries, moveZohoTicket, getScans
+    getZohoTicketSummaries, moveZohoTicket, getScans, getCSNotes
 } from '../state/services/extraService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book } from '../commons/validations';
@@ -162,6 +163,7 @@ class BookingPage extends Component {
             isShowAugmentInfoPopup: false,
             isAugmentEditable: false,
             isShowManualRepackModal: false,
+            isShowCSNoteSlider: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -225,6 +227,7 @@ class BookingPage extends Component {
         this.toggleCostSlider = this.toggleCostSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
         this.toggleManualRepackModal = this.toggleManualRepackModal.bind(this);
+        this.toggleCSNoteSlider = this.toggleCSNoteSlider.bind(this);
     }
 
     static propTypes = {
@@ -299,6 +302,7 @@ class BookingPage extends Component {
         updateAugment: PropTypes.func.isRequired,
         repack: PropTypes.func.isRequired,
         getScans: PropTypes.func.isRequired,
+        getCSNotes: PropTypes.func.isRequired,
         // Data
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
@@ -2450,6 +2454,10 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowEmailLogSlider: !prevState.isShowEmailLogSlider}));
     }
 
+    toggleCSNoteSlider() {
+        this.setState(prevState => ({isShowCSNoteSlider: !prevState.isShowCSNoteSlider}));
+    }
+
     toggleCostSlider() {
         if (!this.state.booking.vx_freight_provider) {
             this.notify('Freight Provider is required to open this slider.');
@@ -2621,19 +2629,24 @@ class BookingPage extends Component {
         }
     }
 
-    onClickOpenHistorySlide(e) {
+    onClickOpenSlider(e, type) {
         e.preventDefault();
-        this.toggleStatusHistorySlider();
-    }
 
-    onClickOpenScansSlide(e) {
-        e.preventDefault();
-        this.toggleScansSlider();
-    }
-
-    onClickOpenDateSlide(e) {
-        e.preventDefault();
-        this.toggleDateSlider();
+        if (type === 'dme-status-history') {
+            this.toggleStatusHistorySlider();
+        } else if (type === 'fp-status-history') {
+            this.toggleScansSlider();
+        } else if (type === 'project-data') {
+            this.toggleDateSlider();
+        } else if (type === 'pricing') {
+            this.props.getPricingInfos(this.state.booking.pk_booking_id);
+            this.setState({loadingPricingInfos: true, pricingInfos: []});
+            this.toggleFPPricingSlider();
+        } else if (type === 'cs-note') {
+            this.props.getCSNotes(this.state.booking.id);
+            // this.setState({loadingCSNotes: true, csNo: []});
+            this.toggleCSNoteSlider();
+        }
     }
 
     OnCreateStatusHistory(statusHistory) {
@@ -2717,12 +2730,6 @@ class BookingPage extends Component {
             this.setState({loading: true});
             this.toggleFPPricingSlider();
         }
-    }
-
-    onClickOpenPricingSlider() {
-        this.props.getPricingInfos(this.state.booking.pk_booking_id);
-        this.setState({loadingPricingInfos: true, pricingInfos: []});
-        this.toggleFPPricingSlider();
     }
 
     onSelectPricing(pricingInfo) {
@@ -3389,8 +3396,15 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         <div className="col-sm-5">
-                                            <a onClick={(e) => this.onClickOpenScansSlide(e)} className="open-slide ml-6 mr-0"><i className="fas fa-barcode" aria-hidden="true"></i></a>
-                                            <a onClick={(e) => this.onClickOpenHistorySlide(e)} className="open-slide ml-6 mr-0"><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                            <a onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title='Customer Service Notes'>
+                                                <i className="fa fa-user-plus" aria-hidden="true"></i>
+                                            </a>
+                                            <a onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0" title='Freight Provider Scans'>
+                                                <i className="fas fa-barcode" aria-hidden="true"></i>
+                                            </a>
+                                            <a onClick={(e) => this.onClickOpenSlider(e, 'dme-status-history')} className="open-slide ml-6 mr-0" title='DME Status Histories'>
+                                                <i className="fa fa-columns" aria-hidden="true"></i>
+                                            </a>
                                             <label className="color-white float-right">
                                                 <p className='cursor-pointer' onClick={() => this.onClickLink('status-page-link')}>{isBookingSelected ? booking.b_status : '***'}</p>
                                                 <p className='status-icon inactive' onClick={() => this.onClickLink('status-page-link-copy')}>
@@ -5089,7 +5103,7 @@ class BookingPage extends Component {
                                                                 </button>
                                                             }
                                                             <a onClick={(e) => this.onClickAugmentPuDate(e)} ><i className="fa fa-calendar" aria-hidden="true"></i></a>
-                                                            <a onClick={(e) => this.onClickOpenDateSlide(e)} ><i className="fa fa-columns" aria-hidden="true"></i></a>
+                                                            <a onClick={(e) => this.onClickOpenSlider(e, 'project-data')} ><i className="fa fa-columns" aria-hidden="true"></i></a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -5385,7 +5399,7 @@ class BookingPage extends Component {
                                                         </button>
                                                         <button
                                                             className="btn btn-theme custom-theme"
-                                                            onClick={() => this.onClickOpenPricingSlider()}
+                                                            onClick={(e) => this.onClickOpenSlider(e, 'pricing')}
                                                             disabled={curViewMode !== 1 ? '' : 'disabled'}
                                                         >
                                                             <i className="fa fa-caret-square-left"></i>
@@ -5947,6 +5961,13 @@ class BookingPage extends Component {
                     clientname={clientname}
                 />
 
+                <CSNoteSlider
+                    isOpen={this.state.isShowCSNoteSlider}
+                    toggleSlider={this.toggleCSNoteSlider}
+                    booking={booking}
+                    clientname={clientname}
+                />
+
                 <ConfirmModal
                     isOpen={this.state.isShowManualRepackModal}
                     onOk={() => this.onClickConfirmBtn('manual-from-original')}
@@ -6092,7 +6113,8 @@ const mapDispatchToProps = (dispatch) => {
         updateAugment: (clientprocess) => dispatch(updateAugment(clientprocess)),
         moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
         repack: (bookingId, repackStatus) => dispatch(repack(bookingId, repackStatus)),
-        getScans: (bookingId) => dispatch(getScans(bookingId))
+        getScans: (bookingId) => dispatch(getScans(bookingId)),
+        getCSNotes: (bookingId) => dispatch(getCSNotes(bookingId)),
     };
 };
 

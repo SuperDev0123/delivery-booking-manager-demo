@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { isEmpty, clone } from 'lodash';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
@@ -56,7 +56,7 @@ class StatusHistorySlider extends React.Component {
     onClickSave() {
         const {booking} = this.props;
         const {saveMode, event_time_stamp} = this.state;
-        let statusHistory = _.clone(this.state.formInputs);
+        let statusHistory = clone(this.state.formInputs);
 
         if (saveMode === 0) {
             if (statusHistory['status_last'] === '') {
@@ -122,7 +122,7 @@ class StatusHistorySlider extends React.Component {
     }
 
     onClickEditButton(index) {
-        const formInputs = _.clone(this.props.statusHistories[index]);
+        const formInputs = clone(this.props.statusHistories[index]);
 
         formInputs['event_time_stamp'] = formInputs['event_time_stamp'] ? moment(formInputs['event_time_stamp']).toDate() : null;
         this.setState({formInputs, viewMode: 1, saveMode: 1});
@@ -143,11 +143,8 @@ class StatusHistorySlider extends React.Component {
                     <small> Linked Reference: {statusHistory.dme_status_linked_reference_from_fp} </small><br/>
                     <small> Event Time: {statusHistory.event_time_stamp ? moment(statusHistory.event_time_stamp).format('DD/MM/YYYY HH:mm:ss') : ''} </small><br/>
                     <small> Create Time: {statusHistory.z_createdTimeStamp ? moment(statusHistory.z_createdTimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''} </small>
-                    {
-                        (clientname === 'dme') ?
-                            <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
-                            :
-                            null
+                    {(clientname === 'dme') &&
+                        <Button onClick={() => this.onClickEditButton(index)}><i className="icon icon-pencil"></i></Button>
                     }
                 </div>
             );
@@ -236,13 +233,12 @@ class StatusHistorySlider extends React.Component {
                                     disabled='disabled'
                                 />
                             </label>
-                            {
-                                _.isEmpty(errorMessage) ?
-                                    <label></label>
-                                    :
-                                    <label>
-                                        <p className='red'>{errorMessage}</p>
-                                    </label>
+                            {isEmpty(errorMessage) ?
+                                <label></label>
+                                :
+                                <label>
+                                    <p className='red'>{errorMessage}</p>
+                                </label>
                             }
                             <Button
                                 color="primary"
@@ -250,7 +246,7 @@ class StatusHistorySlider extends React.Component {
                             >
                                 {saveMode === 0 ? 'Create' : 'Update'}
                             </Button>
-                            <Button color="primary" onClick={() => this.onClickCancel()}>
+                            <Button color="danger" onClick={() => this.onClickCancel()}>
                                 Cancel
                             </Button>
                         </div>

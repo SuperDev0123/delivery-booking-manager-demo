@@ -88,7 +88,15 @@ import {
     FAILED_GET_LOGS,
     SUCCESS_FIND_BOOKING,
     FAILED_FIND_BOOKING,
-    RESET_PAGE_URLS
+    RESET_PAGE_URLS,
+    SUCCESS_GET_CS_NOTES,       // CS Note
+    FAILED_GET_CS_NOTES,        // "
+    SUCCESS_CREATE_CS_NOTE,     // "
+    FAILED_CREATE_CS_NOTE,      // "
+    SUCCESS_UPDATE_CS_NOTE,     // "
+    FAILED_UPDATE_CS_NOTE,      // "
+    SUCCESS_DELETE_CS_NOTE,     // "
+    FAILED_DELETE_CS_NOTE,      // CS Note
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -723,5 +731,61 @@ export function failedFindBooking(error) {
 export function resetPageUrls() {
     return {
         type: RESET_PAGE_URLS,
+    };
+}
+
+export function successGetCSNotes(data) {
+    return {
+        type: SUCCESS_GET_CS_NOTES,
+        payload: data,
+    };
+}
+
+export function failedGetCSNotes(error) {
+    return {
+        type: FAILED_GET_CS_NOTES,
+        errorMessage: 'Unable to get CS notes. Error:' + error,
+    };
+}
+
+export function successCreateCSNote(data) {
+    return {
+        type: SUCCESS_CREATE_CS_NOTE,
+        payload: data,
+    };
+}
+
+export function failedCreateCSNote(error) {
+    return {
+        type: FAILED_CREATE_CS_NOTE,
+        errorMessage: 'Unable to create CS Note. Error:' + error,
+    };
+}
+
+export function successUpdateCSNote(data) {
+    return {
+        type: SUCCESS_UPDATE_CS_NOTE,
+        payload: data,
+    };
+}
+
+export function failedUpdateCSNote(error) {
+    return {
+        type: FAILED_UPDATE_CS_NOTE,
+        errorMessage: 'Unable to update CS Note. Error:' + error,
+    };
+}
+
+export function successDeleteCSNote(data) {
+    return {
+        type: SUCCESS_DELETE_CS_NOTE,
+        payload: data,
+    };
+}
+
+export function failedDeleteCSNote(error) {
+    return {
+        type: FAILED_DELETE_CS_NOTE,
+        errorMessage: 'Unable to delete CS Note. Error:' + error,
     };
 }

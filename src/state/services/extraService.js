@@ -90,6 +90,14 @@ import {
     successFindBooking,
     failedFindBooking,
     resetPageUrls,
+    successGetCSNotes,      // CS NOTE
+    failedGetCSNotes,       // "
+    successCreateCSNote,    // "
+    failedCreateCSNote,     // "
+    successUpdateCSNote,    // "
+    failedUpdateCSNote,     // "
+    successDeleteCSNote,    // "
+    failedDeleteCSNote,     // CS NOTE
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -801,5 +809,63 @@ export const findBooking = (clientPK, orderNumber) => {
         axios(options)
             .then(({ data }) => dispatch(successFindBooking(data)))
             .catch((error) => dispatch(failedFindBooking(error)));
+    };
+};
+
+export const getCSNotes = (bookingId) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/cs_notes/?bookingId=${bookingId}`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetCSNotes(data)))
+            .catch((error) => dispatch(failedGetCSNotes(error)));
+    };
+};
+
+export const createCSNote = (csNote) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/cs_notes/`,
+        data: csNote
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successCreateCSNote(data)))
+            .catch((error) => dispatch(failedCreateCSNote(error)));
+    };
+};
+
+export const updateCSNote = (csNote) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/cs_notes/${csNote.id}/`,
+        data: csNote
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateCSNote(data)))
+            .catch((error) => dispatch(failedUpdateCSNote(error)));
+    };
+};
+
+export const deleteCSNote = (id) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'delete',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/cs_notes/${id}/`,
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successDeleteCSNote(data)))
+            .catch((error) => dispatch(failedDeleteCSNote(error)));
     };
 };

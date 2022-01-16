@@ -1,0 +1,90 @@
+.cs-note-slider {
+    width: 55% !important;
+
+    .list-view {
+        button {
+            font-size: 30px;
+            padding: 0px 10px;
+            margin-bottom: 20px;
+        }
+
+        .list {
+            height: 700px;
+            overflow-y: auto;
+        }
+
+        .item {
+            padding: 10px;
+            border: 1px solid gray;
+            border-bottom: 0px;
+            position: relative;
+
+            &:last-child {
+                border-bottom: 1px solid gray;
+            }
+
+            p {
+                width: 80%;
+                border: 1px solid gray;
+                margin-left: 10%;
+            }
+
+            .text {
+                height: 50px;
+                overflow-y: scroll;
+            }
+
+            button {
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 20px;
+                padding: 3px 5px;
+            }
+        }
+
+        small {
+            margin-left: 10%;
+        }
+    }
+
+    .form-view {
+        text-align: center;
+
+        label {
+          display: block;
+          text-align: left;
+          margin-top: 10px;
+          margin-bottom: 10px;
+
+          p {
+            width: 100px;
+            display: inline-block;
+
+            &.red {
+                width: 100%;
+            }
+          }
+
+          >select, >input, >textarea {
+            width: 60%;
+            display: inline-block;
+            vertical-align: top;
+          }
+
+          >select {
+            height: 25px;
+          }
+
+          >div {
+            width: 220px;
+            display: inline-block;
+            vertical-align: top;
+          }
+        }
+
+        >button {
+            margin-top: 30px;
+        }
+    }
+}
