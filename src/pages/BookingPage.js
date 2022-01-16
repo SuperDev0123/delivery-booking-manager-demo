@@ -3355,7 +3355,7 @@ class BookingPage extends Component {
 
                                 <div className="head">
                                     <div className="row">
-                                        <div className="col-sm-7">
+                                        <div className="col-sm-6">
                                             <button
                                                 onClick={(e) => this.onClickPrev(e)}
                                                 disabled={this.state.prevBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
@@ -3395,7 +3395,7 @@ class BookingPage extends Component {
                                                 </label>
                                             }
                                         </div>
-                                        <div className="col-sm-5">
+                                        <div className="col-sm-6">
                                             <a onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title='Customer Service Notes'>
                                                 <i className="fa fa-user-plus" aria-hidden="true"></i>
                                             </a>
