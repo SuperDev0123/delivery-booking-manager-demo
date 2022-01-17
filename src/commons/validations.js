@@ -216,9 +216,15 @@ const isValid4Label = (formFields, lineDatas) => {
     return 'valid';
 };
 
+const isValid4Pricing = (lines, fieldName) => {
+    let isNullExisted = lines.some(item => item[fieldName] == null);
+    return isNullExisted ? `${fieldName} is NULL` : 'valid';
+};
+
 module.exports = {
     isFormValid,
     validateEmail,
     isValid4Label,
     isValid4Book,
+    isValid4Pricing,
 };
