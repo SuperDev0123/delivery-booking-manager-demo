@@ -24,7 +24,6 @@ class AddClient extends Component {
             augment_pu_by_time: '',
             client_customer_mark_up: '',
             gap_percent: 0,
-            logo_url: '',
             loading: false,
             status_email: '',
             status_phone: '',
@@ -83,11 +82,11 @@ class AddClient extends Component {
             augment_pu_by_time,
             client_customer_mark_up,
             gap_percent,
-            logo_url,
             status_email,
             status_phone,
             status_flag,
-        } = this.state; 
+        } = this.state;
+        
         this.props.createClient({ 
             company_name,
             phone,
@@ -101,7 +100,6 @@ class AddClient extends Component {
             augment_pu_by_time,
             client_customer_mark_up,
             gap_percent,
-            logo_url,
             status_email,
             status_phone,
             status_flag,
@@ -145,12 +143,12 @@ class AddClient extends Component {
                                     <form onSubmit={(e) => this.onSubmit(e)} role="form">
                                         <div className="form-group">
                                             <div className="panel-default panel-heading p-1 mt-4 bg-lightgray">General Info</div>
-                                            <label htmlFor="company_name">Company Name</label>
+                                            <label htmlFor="company_name">Company Name<span style={{color: 'red'}}>*</span></label>
                                             <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} required/>
-                                            <label htmlFor="dme_account_num">Dme Account Num</label>
+                                            <label htmlFor="dme_account_num">Dme Account Num<span style={{color: 'red'}}>*</span></label>
                                             <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} required/>
-                                            <label htmlFor="phone">Phone</label>
-                                            <input name="phone" type="number" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
+                                            <label htmlFor="phone">Phone<span style={{color: 'red'}}>*</span></label>
+                                            <input name="phone" type="number" className="form-control" id="phone" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="current_freight_provider">Freight Provider</label>
                                             <input name="current_freight_provider" type="text" className="form-control" placeholder="Enter Freight Provider" value={this.state.current_freight_provider} onChange={(e) => this.onInputChange(e)} />
                                         </div>
@@ -176,8 +174,6 @@ class AddClient extends Component {
                                             <div className="panel-default panel-heading p-1 mt-5 bg-lightgray">Other Info</div>
                                             <label htmlFor="gap_percent">Gap Percent</label>
                                             <input name="gap_percent" type="text" className="form-control" placeholder="Enter Gap Percent" value={this.state.gap_percent} onChange={(e) => this.onInputChange(e)} />
-                                            <label htmlFor="logo_url">Logo URL</label>
-                                            <input name="logo_url" type="text" className="form-control" placeholder="Enter Logo URL" value={this.state.logo_url} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="exampleFormControlSelect1">Example select</label>
                                             <label htmlFor="client_filter_date_field">Client Filter Date Field</label>
                                             <select className="rounded-0 form-control py-0" name="client_filter_date_field" value={this.state.client_filter_date_field} onChange={(e) => this.onInputChange(e)}>
@@ -187,11 +183,11 @@ class AddClient extends Component {
                                         </div>
                                         <div className="form-group">
                                             <div className="panel-default panel-heading p-1 mt-5 bg-lightgray">status Info</div>
-                                            <label htmlFor="status_email">Status Email</label>
+                                            <label htmlFor="status_email">Status Email<span style={{color: 'red'}}>*</span></label>
                                             <input name="status_email" type="text" className="form-control" placeholder="Enter Status Email" value={this.state.status_email} onChange={(e) => this.onInputChange(e)} required/>
-                                            <label htmlFor="status_phone">Status Phone</label>
+                                            <label htmlFor="status_phone">Status Phone<span style={{color: 'red'}}>*</span></label>
                                             <input name="status_phone" type="text" className="form-control" placeholder="Enter Status Phone" value={this.state.status_phone} onChange={(e) => this.onInputChange(e)} required/>
-                                            <label htmlFor="status_flag">Status Flag</label>
+                                            <label htmlFor="status_flag">Status Flag<span style={{color: 'red'}}>*</span></label>
                                             <input name="status_flag" type="text" className="form-control" placeholder="Enter Status Flag" value={this.state.status_flag} onChange={(e) => this.onInputChange(e)} required/>
                                         </div>
                                         <button type="submit" className="btn btn-primary mt-2">Submit</button>
