@@ -2722,10 +2722,10 @@ class BookingPage extends Component {
 
     onClickFC() { // On click Freight Calculation button
         const {booking, formInputs, bookingLines} = this.state;
-        const validCheckResult = isValid4Pricing(bookingLines, 'e_dimUOM');
-        if (validCheckResult != 'valid') {
+        if (isValid4Pricing(bookingLines, 'e_dimUOM') != 'valid') {
             this.notify(validCheckResult);
         } 
+
         if (!formInputs['puPickUpAvailFrom_Date']) {
             this.notify('PU Available From Date is required!');
         } else {
