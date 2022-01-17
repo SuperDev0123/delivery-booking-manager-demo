@@ -26,6 +26,9 @@ class AddClient extends Component {
             gap_percent: 0,
             logo_url: '',
             loading: false,
+            status_email: '',
+            status_phone: '',
+            status_flag: 0,
         };
     }
 
@@ -80,8 +83,11 @@ class AddClient extends Component {
             augment_pu_by_time,
             client_customer_mark_up,
             gap_percent,
-            logo_url 
-        } = this.state;      
+            logo_url,
+            status_email,
+            status_phone,
+            status_flag,
+        } = this.state; 
         this.props.createClient({ 
             company_name,
             phone,
@@ -95,7 +101,10 @@ class AddClient extends Component {
             augment_pu_by_time,
             client_customer_mark_up,
             gap_percent,
-            logo_url 
+            logo_url,
+            status_email,
+            status_phone,
+            status_flag,
         });
         this.setState({ loading: false });
         this.props.history.push('/admin/clients');
@@ -137,11 +146,11 @@ class AddClient extends Component {
                                         <div className="form-group">
                                             <div className="panel-default panel-heading p-1 mt-4 bg-lightgray">General Info</div>
                                             <label htmlFor="company_name">Company Name</label>
-                                            <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} />
+                                            <input name="company_name" type="text" className="form-control" id="company_name" placeholder="Enter Company Name" value={this.state.company_name} onChange={(e) => this.onInputChange(e)} required/>
                                             <label htmlFor="dme_account_num">Dme Account Num</label>
-                                            <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} />
+                                            <input name="dme_account_num" type="text" className="form-control" id="dme_account_num" placeholder="Enter Account Num" value={this.state.dme_account_num} onChange={(e) => this.onInputChange(e)} required/>
                                             <label htmlFor="phone">Phone</label>
-                                            <input name="phone" type="text" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
+                                            <input name="phone" type="number" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
                                             <label htmlFor="current_freight_provider">Freight Provider</label>
                                             <input name="current_freight_provider" type="text" className="form-control" placeholder="Enter Freight Provider" value={this.state.current_freight_provider} onChange={(e) => this.onInputChange(e)} />
                                         </div>
@@ -176,11 +185,17 @@ class AddClient extends Component {
                                                 <option value="puPickUpAvailFrom_Date">PU Pickup Available From Date</option>
                                             </select>
                                         </div>
-
+                                        <div className="form-group">
+                                            <div className="panel-default panel-heading p-1 mt-5 bg-lightgray">status Info</div>
+                                            <label htmlFor="status_email">Status Email</label>
+                                            <input name="status_email" type="text" className="form-control" placeholder="Enter Status Email" value={this.state.status_email} onChange={(e) => this.onInputChange(e)} required/>
+                                            <label htmlFor="status_phone">Status Phone</label>
+                                            <input name="status_phone" type="text" className="form-control" placeholder="Enter Status Phone" value={this.state.status_phone} onChange={(e) => this.onInputChange(e)} required/>
+                                            <label htmlFor="status_flag">Status Flag</label>
+                                            <input name="status_flag" type="text" className="form-control" placeholder="Enter Status Flag" value={this.state.status_flag} onChange={(e) => this.onInputChange(e)} required/>
+                                        </div>
                                         <button type="submit" className="btn btn-primary mt-2">Submit</button>
                                     </form>
-
-
                                 </div>
                             </div>
                         </div>
