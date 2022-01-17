@@ -22,7 +22,7 @@ class AddClientEmployee extends Component {
             job_title: '',
             role: '',
             fk_id_dme_client: '',
-            warehouse_id: '',
+            warehouse_id: '0',
             loading: false,
             roles: [],
             clients: [],
@@ -133,12 +133,12 @@ class AddClientEmployee extends Component {
                                             <input name="name_last" type="text" className="form-control" id="name_last" placeholder="Enter Last Name" value={this.state.name_last} onChange={(e) => this.onInputChange(e)} />
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="email">Email</label>
-                                            <input name="email" type="email" className="form-control" id="name_last" placeholder="Enter Email" value={this.state.email} onChange={(e) => this.onInputChange(e)} />
+                                            <label htmlFor="email">Email<span style={{color: 'red'}}>*</span></label>
+                                            <input name="email" type="email" className="form-control" id="name_last" placeholder="Enter Email" value={this.state.email} onChange={(e) => this.onInputChange(e)} required/>
                                         </div>
                                         <div className="form-group">
-                                            <label htmlFor="phone">Phone</label>
-                                            <input name="phone" type="text" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} />
+                                            <label htmlFor="phone">Phone<span style={{color: 'red'}}>*</span></label>
+                                            <input name="phone" type="number" className="form-control" id="name_last" placeholder="Enter Phone" value={this.state.phone} onChange={(e) => this.onInputChange(e)} required/>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="job_title">Job Title</label>
@@ -172,7 +172,7 @@ class AddClientEmployee extends Component {
                                         </div>
 
                                         <div className="form-group">
-                                            <label htmlFor="warehouse_id">Warehouse</label>
+                                            <label htmlFor="warehouse_id">Warehouse<span style={{color: 'red'}}>*</span></label>
                                             <select name="warehouse_id" className="form-control" id="warehouse_id" onChange={(e) => this.onInputChange(e)}>
                                                 {
                                                     warehouses.map((warehouse, index) => {
