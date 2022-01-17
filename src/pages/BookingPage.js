@@ -2724,6 +2724,7 @@ class BookingPage extends Component {
         const {booking, formInputs, bookingLines} = this.state;
         if (isValid4Pricing(bookingLines, 'e_dimUOM') != 'valid') {
             this.notify(validCheckResult);
+            return;
         } 
 
         if (!formInputs['puPickUpAvailFrom_Date']) {
