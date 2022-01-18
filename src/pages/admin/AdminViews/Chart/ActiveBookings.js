@@ -45,7 +45,7 @@ class ActiveBookings extends Component {
         let { num_active_bookings_per_client } = newProps;
 
         if (num_active_bookings_per_client) {
-            num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'ondeliveries', 'desc');
+            num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'inprogress', 'desc');
             this.setState({ num_active_bookings_per_client });
             const chart_data = num_active_bookings_per_client.slice(0, TABLE_PAGINATION_SIZE);
             this.setState({ chart_data });
@@ -75,7 +75,7 @@ class ActiveBookings extends Component {
                 sort: true
             }, {
                 text: 'Total Deliveries',
-                dataField: 'ondeliveries',
+                dataField: 'inprogress',
                 sort: true
             }
         ];
@@ -100,7 +100,7 @@ class ActiveBookings extends Component {
                                         padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                     >
                                         <XAxis type="number" textAnchor="end" height={70}>
-                                            <Label value="On Deliveries" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
+                                            <Label value="In-progress Bookings" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
                                         </XAxis>
                                         <YAxis type="category" dataKey="b_client" angle={-30} textAnchor="end" width={100} interval={0}>
                                             <Label value="Client companies" offset={10} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
@@ -108,8 +108,8 @@ class ActiveBookings extends Component {
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <Tooltip />
                                         <Legend verticalAlign="top" height={36} />
-                                        <Bar dataKey="ondeliveries" fill="#0050A0" barSize={350} name="onDeliveries">
-                                            <LabelList dataKey="ondeliveries" position="right" />
+                                        <Bar dataKey="inprogress" fill="#0050A0" barSize={350} name="In-progress Bookings">
+                                            <LabelList dataKey="inprogress" position="right" />
                                             {
                                                 data.map((entry, index) => {
                                                     const color = this.getColor();
@@ -130,7 +130,7 @@ class ActiveBookings extends Component {
                                         columns={columns}
                                         bootstrap4={true}
                                         pagination={paginationFactory({ sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }], hideSizePerPage: true, hidePageListOnlyOnePage: true, withFirstAndLast: false, alwaysShowAllBtns: false, onPageChange: (page, sizePerPage) => { this.onPageChange(page, sizePerPage); } })}
-                                        defaultSorted={[{ dataField: 'ondeliveries', order: 'desc' }]}
+                                        defaultSorted={[{ dataField: 'inprogress', order: 'desc' }]}
                                     />
                                 </div>
                             </div>
