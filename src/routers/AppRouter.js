@@ -82,6 +82,7 @@ import CustomerLogin from '../pages/admin/CustomerViews/Login';
 import CustomerDashboard from '../pages/admin/CustomerViews/Dashboard';
 import ClientRas from '../pages/admin/CustomerViews/ClientRas';
 import ClientRasAction from '../pages/admin/CustomerViews/ClientRas/ClientRasAction';
+import ActiveBookings from '../pages/admin/AdminViews/Chart/ActiveBookings';
 export const AppRouter = () => (
     <BrowserRouter history={createBrowserHistory()}>
         <Fragment>
@@ -149,6 +150,8 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/chart/totaldeliveries' component={TotalDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/ontimelatedeliveries' component={OnTimeLateDeliveries} />
                     <AdminPrivateRoute exact path='/admin/chart/deliveriesbyclient' component={DeliveriesByClient} />
+                    <AdminPrivateRoute exact path='/admin/chart/activebooking' component={ActiveBookings} />
+
                     <AdminPrivateRoute exact path='/admin/augmentaddress' component={AugmentAddress} />
                     <AdminPrivateRoute exact path='/admin/augmentaddress/add' component={AddAugmentAddress} />
                     <AdminPrivateRoute exact path='/admin/augmentaddress/edit/:id' component={EditAugmentAddress} />

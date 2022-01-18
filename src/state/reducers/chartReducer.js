@@ -3,6 +3,8 @@ import {
     FAILED_GET_NUM_BOOKINGS,
     SUCCESS_GET_NUM_BOOKINGS_PER_STATUS,
     FAILED_GET_NUM_BOOKINGS_PER_STATUS,
+    SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT,
+    FAILED_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT,
 } from '../constants/chartConstants';
 
 const defaultState = {
@@ -32,6 +34,17 @@ export const ChartReducer = (state = defaultState, { type, payload }) => {
                 num_bookings_status: payload,
             };
         case FAILED_GET_NUM_BOOKINGS_PER_STATUS:
+            return {
+                ...state,
+                errorMessage: payload,
+            };
+        case SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT:
+            console.log('SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT', payload);
+            return {
+                ...state,
+                num_active_bookings_per_client: payload,
+            };
+        case FAILED_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT:
             return {
                 ...state,
                 errorMessage: payload,

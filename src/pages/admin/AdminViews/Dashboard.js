@@ -129,6 +129,12 @@ class Dashboard extends Component {
                                         <i className="fa fa-cog"></i>
                                     </span>&nbsp;&nbsp;&nbsp;&nbsp;Total Client Bookings</a>
                             </li>
+                            <li style={{padding:'5px'}}>
+                                <a href='/admin/chart/activebooking'>
+                                    <span className="icon">
+                                        <i className="fa fa-cog"></i>
+                                    </span>&nbsp;&nbsp;&nbsp;&nbsp;Active Bookings</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
