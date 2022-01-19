@@ -5,6 +5,8 @@ import {
     failedGetNumBookingsPerFp,
     successGetNumBookingsPerStatus,
     failedGetNumBookingsPerStatus,
+    successGetNumActiveBookingsPerClient,
+    failedGetNumActiveBookingsPerClient,
 } from '../actions/chartActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -54,4 +56,18 @@ export const getNumBookingsPerStatus = ({startDate, endDate, client_name}) => {
         axios(options)
             .then(({ data }) => dispatch(successGetNumBookingsPerStatus(data)))
             .catch((error) => dispatch(failedGetNumBookingsPerStatus(error)));
+};
+
+export const getNumActiveBookingsPerClient = () => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/charts/get_num_active_bookings_per_client/`  ,
+    };
+
+    return dispatch => 
+        axios(options)
+            .then(({ data }) => dispatch(successGetNumActiveBookingsPerClient(data)))
+            .catch((error) => dispatch(failedGetNumActiveBookingsPerClient(error)));
 };
