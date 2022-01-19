@@ -27,7 +27,7 @@ class AddClient extends Component {
             loading: false,
             status_email: '',
             status_phone: '',
-            status_flag: 0,
+            status_send_flag: false,
         };
     }
 
@@ -67,6 +67,10 @@ class AddClient extends Component {
         this.setState({ [event.target.name]: event.target.value });
     }
 
+    onCheckChange() {
+        this.setState( {status_send_flag: !this.state.status_send_flag});
+    }
+
     onSubmit(event) {
         this.setState({ loading: true });
         const { 
@@ -84,7 +88,7 @@ class AddClient extends Component {
             gap_percent,
             status_email,
             status_phone,
-            status_flag,
+            status_send_flag,
         } = this.state;
         
         this.props.createClient({ 
@@ -102,7 +106,7 @@ class AddClient extends Component {
             gap_percent,
             status_email,
             status_phone,
-            status_flag,
+            status_send_flag,
         });
         this.setState({ loading: false });
         this.props.history.push('/admin/clients');
@@ -187,8 +191,7 @@ class AddClient extends Component {
                                             <input name="status_email" type="text" className="form-control" placeholder="Enter Status Email" value={this.state.status_email} onChange={(e) => this.onInputChange(e)} required/>
                                             <label htmlFor="status_phone">Status Phone<span style={{color: 'red'}}>*</span></label>
                                             <input name="status_phone" type="text" className="form-control" placeholder="Enter Status Phone" value={this.state.status_phone} onChange={(e) => this.onInputChange(e)} required/>
-                                            <label htmlFor="status_flag">Status Flag<span style={{color: 'red'}}>*</span></label>
-                                            <input name="status_flag" type="text" className="form-control" placeholder="Enter Status Flag" value={this.state.status_flag} onChange={(e) => this.onInputChange(e)} required/>
+                                            <input name="status_send_flag" type="checkbox" className="" style={{marginTop: '12px'}} placeholder="Enter Status Flag" value={this.state.status_send_flag} onChange={() => this.onCheckChange()} required /><span>&nbsp;&nbsp;Need status update via sms or email?<span style={{color: 'red'}}>*</span></span>
                                         </div>
                                         <button type="submit" className="btn btn-primary mt-2">Submit</button>
                                     </form>
