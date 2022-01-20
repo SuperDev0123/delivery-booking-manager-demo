@@ -173,6 +173,7 @@ $v_FPBookingNumber_width: 90px;
 $z_lock_status_width: 30px;
 $b_status_category_width: 120px;
 $b_status_width: 130px;
+$b_promo_code_width: 130px;
 
 $pu_PickUp_By_Date_width: 130px;
 $de_Deliver_By_Date_width: 130px;
@@ -273,6 +274,8 @@ $b_project_due_date_width: 130px;
   td[name=b_status_category] p, th[name=b_status_category] p { width: 100px }
   td[name=b_status], th[name=b_status] { width: $b_status_width; }
   td[name=b_status] p, th[name=b_status] p { width: 100px }
+  td[name=b_promo_code], th[name=b_promo_code] { width: $b_promo_code_width; }
+  td[name=b_promo_code] p, th[name=b_promo_code] p { width: 100px }
 
   td[name=pu_PickUp_By_Date], th[name=pu_PickUp_By_Date] { width: $pu_PickUp_By_Date_width; }
   td[name=pu_PickUp_By_Date] p, th[name=pu_PickUp_By_Date] p { width: 110px }

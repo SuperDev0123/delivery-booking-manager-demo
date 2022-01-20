@@ -2036,6 +2036,9 @@ class AllBookingsPage extends React.Component {
                             <TooltipItem object={booking} fields={['b_status']} />
                         }
                     </td>
+                    {(clientname === 'dme' || clientname === 'Bathroom Sales Direct') &&
+                        <td name='b_promo_code' className={(sortField === 'b_promo_code') ? 'current' : ''}>{booking.b_promo_code}</td>
+                    }
                     {clientname === 'BioPak' ?
                         <td
                             name='b_clientReference_RA_Numbers'
@@ -2592,6 +2595,23 @@ class AllBookingsPage extends React.Component {
                                                                     : <i className="fa fa-sort"></i>
                                                                 }
                                                             </th>
+                                                            {(clientname === 'Bathroom Sales Direct' || clientname === 'dme') &&
+                                                                <th
+                                                                    name="b_promo_code"
+                                                                    className={(sortField === 'b_promo_code') ? 'current' : ''}
+                                                                    onClick={() => this.onChangeSortField('b_promo_code')} 
+                                                                    scope="col" 
+                                                                    nowrap
+                                                                >
+                                                                    <p>Promo Code</p>
+                                                                    {(sortField === 'b_promo_code') ?
+                                                                        (sortDirection > 0) ?
+                                                                            <i className="fa fa-sort-up"></i>
+                                                                            : <i className="fa fa-sort-down"></i>
+                                                                        : <i className="fa fa-sort"></i>
+                                                                    }
+                                                                </th>
+                                                            }
                                                             {clientname === 'BioPak' ?
                                                                 <th 
                                                                     name="b_clientReference_RA_Numbers"
@@ -3141,6 +3161,9 @@ class AllBookingsPage extends React.Component {
                                                             <th name="vx_freight_provider" scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_status" scope="col"><input type="text" name="b_status" value={filterInputs['b_status'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            {(clientname === 'dme' || clientname === 'Bathroom Sales Direct') &&
+                                                                <th name="b_promo_code" scope="col"><input type="text" name="b_promo_code" value={filterInputs['b_promo_code'] || ''} onChange={(e) => this.onChangeFilterInput(e)} /></th>
+                                                            }
                                                             {clientname === 'BioPak' ?
                                                                 <th name="b_clientReference_RA_Numbers" scope="col"><input type="text" name="b_clientReference_RA_Numbers" value={filterInputs['b_clientReference_RA_Numbers'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                                 :
