@@ -111,7 +111,16 @@ class BulkUpdateSlider extends React.Component {
         const { isOpen, allBookingStatus, clientname, fps } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
-            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
+                if (
+                    bookingStatus.dme_delivery_status === 'Imported / Integrated' ||
+                    bookingStatus.dme_delivery_status === 'Collected' ||
+                    bookingStatus.dme_delivery_status === 'Delivered'
+                )
+                    return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            } else {
+                return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            }
         });
 
         const fpOptions = fps.map((fp, index) => {
@@ -147,7 +156,12 @@ class BulkUpdateSlider extends React.Component {
                         >
                             <option value="" selected disabled hidden>--- Select a field ---</option>
                             {clientname === 'dme' && <option value="flag">Flag</option>}
-                            {clientname === 'dme' && <option value="status">Booking status</option>}
+                            {(clientname === 'dme' || clientname === 'Bathroom Sales Direct') &&
+                                <option value="status">Booking status</option>
+                            }
+                            {(clientname === 'dme' || clientname === 'Jason L') &&
+                                <option value="vx_freight_provider">Freight Provider</option>
+                            }
                             {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
                             {clientname === 'dme' && <option value="b_client_name_sub">Sub Client</option>}
                             {clientname === 'dme' && <option value="dme_status_detail">Status Detail</option>}
@@ -195,7 +209,6 @@ class BulkUpdateSlider extends React.Component {
                             {clientname === 'dme' && <option value="b_project_due_date">Project Due Date</option>}
                             {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
                             {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
-                            <option value="vx_freight_provider">Freight Provider</option>
                         </select>
                     </label>
                     <br />
@@ -206,7 +219,7 @@ class BulkUpdateSlider extends React.Component {
                         {
                             selectedField === 'flag' ?
                                 <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled>-------------     Flags    -------------</option>
+                                    <option value="" disabled selected hidden>-------------     Flags    -------------</option>
                                     <option value="flag_add_on_services">Flag - add on services</option>
                                     <option value="unflag_add_on_services">Unflag - add on services</option>
                                 </select>
@@ -215,7 +228,7 @@ class BulkUpdateSlider extends React.Component {
                         {
                             selectedField === 'status' ?
                                 <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled>-------------     Booking Status    -------------</option>
+                                    <option value="" disabled selected hidden>-------------     Booking Status    -------------</option>
                                     { bookingStatusList }
                                 </select>
                                 : null

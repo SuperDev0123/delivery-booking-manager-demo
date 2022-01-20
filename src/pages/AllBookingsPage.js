@@ -1645,7 +1645,15 @@ class AllBookingsPage extends React.Component {
                 const bookedBookings = bookings.filter(booking => !_.isNull(booking.b_dateBookedDate));
 
                 if (bookedBookings.length > 0) {
-                    this.notify('Booked bookings are selected!');    
+                    this.notify('Booked bookings are selected!');
+                    return;
+                }
+            } else if (clientname === 'Bathroom Sales Direct') {
+                const bookings = this.getBookingsFromIds(selectedBookingIds);
+                const bookedBookings = bookings.filter(booking => booking.b_status === 'Delivered');
+
+                if (bookedBookings.length > 0) {
+                    this.notify('Delivered bookings are selected! (If you want to change Delivered bookings, please contact support center.)');
                     return;
                 }
             }
@@ -2414,7 +2422,7 @@ class AllBookingsPage extends React.Component {
                                                 </select>
                                             </label>
                                             <button className="btn btn-primary left-10px right-50px" onClick={() => this.onClickFind()}><i className="fa fa-search"></i> Find</button>
-                                            {(clientname === 'dme' || clientname === 'Jason L') &&
+                                            {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
                                                 <div className="disp-inline-block">
                                                     <button className="btn btn-primary left-10px right-10px" onClick={() => this.onClickShowBulkUpdateButton()}>Update(bulk)</button>
                                                 </div>
