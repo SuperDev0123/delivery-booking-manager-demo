@@ -54,3 +54,5 @@ export const timeSelectOptions = [
     {value: '05:00', label: '05:00'},
     {value: '05:30', label: '05:30'},
 ];
+
+export const specialFPs = ['Linehaul General', 'Customer Pickup', 'Customer Collect', 'In House Fleet'];
