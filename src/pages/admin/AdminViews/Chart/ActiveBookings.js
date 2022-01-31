@@ -45,18 +45,13 @@ class ActiveBookings extends Component {
         let { num_active_bookings_per_client } = newProps;
 
         if (num_active_bookings_per_client) {
-            num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'ondeliveries', 'desc');
-            this.setState({ num_active_bookings_per_client });
+            num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'inprogress', 'desc');
             const chart_data = num_active_bookings_per_client.slice(0, TABLE_PAGINATION_SIZE);
-            this.setState({ chart_data });
+            this.setState({ chart_data, num_active_bookings_per_client });
         }
     }
 
-    renderColorfulLegendText(value, entry) {
-        const { color } = entry;
-
-        return <span style={{ color }}>{value}</span>;
-    }
+    renderColorfulLegendText = (value, entry) => <span style={ entry['color'] }>{value}</span>;
 
     onPageChange(page, sizePerPage) {
         const { num_active_bookings_per_client } = this.state;
@@ -75,11 +70,10 @@ class ActiveBookings extends Component {
                 sort: true
             }, {
                 text: 'Total Deliveries',
-                dataField: 'ondeliveries',
+                dataField: 'inprogress',
                 sort: true
             }
         ];
-
 
         return (
             <div id="main-wrapper" className="theme-default admin-theme">
@@ -100,7 +94,7 @@ class ActiveBookings extends Component {
                                         padding={{ top: 15, right: 50, left: 50, bottom: 15 }}
                                     >
                                         <XAxis type="number" textAnchor="end" height={70}>
-                                            <Label value="On Deliveries" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
+                                            <Label value="In-progress Bookings" position="bottom" style={{ textAnchor: 'middle' }} offset={-10} />
                                         </XAxis>
                                         <YAxis type="category" dataKey="b_client" angle={-30} textAnchor="end" width={100} interval={0}>
                                             <Label value="Client companies" offset={10} position="left" angle={-90} style={{ textAnchor: 'middle' }} />
@@ -108,16 +102,14 @@ class ActiveBookings extends Component {
                                         <CartesianGrid strokeDasharray="3 3" />
                                         <Tooltip />
                                         <Legend verticalAlign="top" height={36} />
-                                        <Bar dataKey="ondeliveries" fill="#0050A0" barSize={350} name="onDeliveries">
-                                            <LabelList dataKey="ondeliveries" position="right" />
-                                            {
-                                                data.map((entry, index) => {
-                                                    const color = this.getColor();
-                                                    return (
-                                                        <Cell key={`cell-${index}`} fill={color} stroke={color} />
-                                                    );
-                                                })
-                                            }
+                                        <Bar dataKey="inprogress" fill="#0050A0" barSize={350} name="In-progress Bookings">
+                                            <LabelList dataKey="inprogress" position="right" />
+                                            {data.map((entry, index) => {
+                                                const color = this.getColor();
+                                                return (
+                                                    <Cell key={`cell-${index}`} fill={color} stroke={color} />
+                                                );
+                                            })}
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -125,12 +117,19 @@ class ActiveBookings extends Component {
                             <div className="col-md-5 col">
                                 <div className="table-responsive">
                                     <BootstrapTable
-                                        keyField="id"
+                                        keyField="b_client"
                                         data={data}
                                         columns={columns}
                                         bootstrap4={true}
-                                        pagination={paginationFactory({ sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }], hideSizePerPage: true, hidePageListOnlyOnePage: true, withFirstAndLast: false, alwaysShowAllBtns: false, onPageChange: (page, sizePerPage) => { this.onPageChange(page, sizePerPage); } })}
-                                        defaultSorted={[{ dataField: 'ondeliveries', order: 'desc' }]}
+                                        pagination={paginationFactory({
+                                            sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }],
+                                            hideSizePerPage: true,
+                                            hidePageListOnlyOnePage: true,
+                                            withFirstAndLast: false,
+                                            alwaysShowAllBtns: false,
+                                            onPageChange: (page, sizePerPage) => this.onPageChange(page, sizePerPage)
+                                        })}
+                                        defaultSorted={[{ dataField: 'inprogress', order: 'desc' }]}
                                     />
                                 </div>
                             </div>
@@ -141,8 +140,6 @@ class ActiveBookings extends Component {
         );
     }
 }
-
-
 
 const mapStateToProps = (state) => {
     return {
