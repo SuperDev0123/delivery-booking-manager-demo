@@ -46,17 +46,12 @@ class ActiveBookings extends Component {
 
         if (num_active_bookings_per_client) {
             num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'inprogress', 'desc');
-            this.setState({ num_active_bookings_per_client });
             const chart_data = num_active_bookings_per_client.slice(0, TABLE_PAGINATION_SIZE);
-            this.setState({ chart_data });
+            this.setState({ chart_data, num_active_bookings_per_client });
         }
     }
 
-    renderColorfulLegendText(value, entry) {
-        const { color } = entry;
-
-        return <span style={{ color }}>{value}</span>;
-    }
+    renderColorfulLegendText = (value, entry) => <span style={ entry['color'] }>{value}</span>;
 
     onPageChange(page, sizePerPage) {
         const { num_active_bookings_per_client } = this.state;
@@ -79,7 +74,6 @@ class ActiveBookings extends Component {
                 sort: true
             }
         ];
-
 
         return (
             <div id="main-wrapper" className="theme-default admin-theme">
@@ -110,14 +104,12 @@ class ActiveBookings extends Component {
                                         <Legend verticalAlign="top" height={36} />
                                         <Bar dataKey="inprogress" fill="#0050A0" barSize={350} name="In-progress Bookings">
                                             <LabelList dataKey="inprogress" position="right" />
-                                            {
-                                                data.map((entry, index) => {
-                                                    const color = this.getColor();
-                                                    return (
-                                                        <Cell key={`cell-${index}`} fill={color} stroke={color} />
-                                                    );
-                                                })
-                                            }
+                                            {data.map((entry, index) => {
+                                                const color = this.getColor();
+                                                return (
+                                                    <Cell key={`cell-${index}`} fill={color} stroke={color} />
+                                                );
+                                            })}
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
@@ -125,11 +117,18 @@ class ActiveBookings extends Component {
                             <div className="col-md-5 col">
                                 <div className="table-responsive">
                                     <BootstrapTable
-                                        keyField="id"
+                                        keyField="b_client"
                                         data={data}
                                         columns={columns}
                                         bootstrap4={true}
-                                        pagination={paginationFactory({ sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }], hideSizePerPage: true, hidePageListOnlyOnePage: true, withFirstAndLast: false, alwaysShowAllBtns: false, onPageChange: (page, sizePerPage) => { this.onPageChange(page, sizePerPage); } })}
+                                        pagination={paginationFactory({
+                                            sizePerPageList: [{ text: `${TABLE_PAGINATION_SIZE}`, value: TABLE_PAGINATION_SIZE }],
+                                            hideSizePerPage: true,
+                                            hidePageListOnlyOnePage: true,
+                                            withFirstAndLast: false,
+                                            alwaysShowAllBtns: false,
+                                            onPageChange: (page, sizePerPage) => this.onPageChange(page, sizePerPage)
+                                        })}
                                         defaultSorted={[{ dataField: 'inprogress', order: 'desc' }]}
                                     />
                                 </div>
