@@ -17,7 +17,7 @@ export const ChartReducer = (state = defaultState, { type, payload }) => {
     switch (type) {
         
         case SUCCESS_GET_NUM_BOOKINGS:
-            console.log('SUCCESS_GET_NUM_BOOKINGS', payload);
+            // console.log('SUCCESS_GET_NUM_BOOKINGS', payload);
             return {
                 ...state,
                 num_bookings_fp: payload,
@@ -28,7 +28,7 @@ export const ChartReducer = (state = defaultState, { type, payload }) => {
                 errorMessage: payload,
             };
         case SUCCESS_GET_NUM_BOOKINGS_PER_STATUS:
-            console.log('SUCCESS_GET_NUM_BOOKINGS_PER_STATUS', payload);
+            // console.log('SUCCESS_GET_NUM_BOOKINGS_PER_STATUS', payload);
             return {
                 ...state,
                 num_bookings_status: payload,
@@ -39,7 +39,7 @@ export const ChartReducer = (state = defaultState, { type, payload }) => {
                 errorMessage: payload,
             };
         case SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT:
-            console.log('SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT', payload);
+            // console.log('SUCCESS_GET_NUM_ACTIVE_BOOKINGS_PER_CLIENT', payload);
             return {
                 ...state,
                 num_active_bookings_per_client: payload,

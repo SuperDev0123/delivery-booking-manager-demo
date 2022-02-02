@@ -38,7 +38,11 @@ class BokStatusPage extends Component {
     componentDidMount() {
         const identifier = this.props.match.params.id;
 
-        if (identifier && identifier.length > 32) {
+        if (identifier && (
+            identifier.length > 32 ||
+            identifier.length === 6 ||
+            identifier.length === 7
+        )) {
             this.props.getDeliveryStatus(identifier);
             this.setState({identifier});
         } else {
