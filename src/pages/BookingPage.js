@@ -3341,22 +3341,41 @@ class BookingPage extends Component {
                                 <div className="userclock disp-inline-block">
                                     Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                 </div>
-                                <div className="booked-date disp-inline-block">
-                                    <span>Booked Date:</span>
-                                    {
-                                        (parseInt(curViewMode) === 0) ?
-                                            <p className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</p>
-                                            :
-                                            <DateTimePicker
-                                                onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={(!_.isNull(booking) &&
-                                                    !_.isNull(booking.b_dateBookedDate) &&
-                                                    !_.isUndefined(booking.b_dateBookedDate)) &&
-                                                    new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                }
-                                                format={'dd/MM/yyyy HH:mm'}
-                                            />
-                                    }
+                                <div className="booking-date disp-inline-block">
+                                    <div className="manifest-date"> 
+                                        <span>Manifest Date:&nbsp;&nbsp;</span>
+                                        {
+                                            (parseInt(curViewMode) === 0) ?
+                                                <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                :
+                                                <DateTimePicker
+                                                    onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
+                                                    value={(!_.isNull(booking) &&
+                                                        !_.isNull(booking.b_dateBookedDate) &&
+                                                        !_.isUndefined(booking.b_dateBookedDate)) &&
+                                                        new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    }
+                                                    format={'dd/MM/yyyy HH:mm'}
+                                                />
+                                        }
+                                    </div>
+                                    <div className="booked-date">
+                                        <span>Booked Date:&nbsp;&nbsp;</span>
+                                        {
+                                            (parseInt(curViewMode) === 0) ?
+                                                <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                :
+                                                <DateTimePicker
+                                                    onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
+                                                    value={(!_.isNull(booking) &&
+                                                        !_.isNull(booking.b_dateBookedDate) &&
+                                                        !_.isUndefined(booking.b_dateBookedDate)) &&
+                                                        new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                    }
+                                                    format={'dd/MM/yyyy HH:mm'}
+                                                />
+                                        }
+                                    </div>
                                 </div>
 
                                 <div className="head">
