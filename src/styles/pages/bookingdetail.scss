@@ -570,7 +570,7 @@ p.status-icon {
         }
     }
 
-    .userclock, .booked-date {
+    .userclock, .booking-date {
         width: 40%;
         height: 40px;
 
@@ -584,10 +584,17 @@ p.status-icon {
         padding-top: 15px;
     }
 
-    .booked-date {
+    .booking-date {
+        width: 60%;
         float: right;
         padding-right: 15px;
         text-align: right;
+    }
+    
+    .booked-date, .manifest-date {
+        width: 40%;
+        display: inline !important;
+        margin-left: 36px;
     }
 
     .detail-tab {
