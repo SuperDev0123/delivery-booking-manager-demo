@@ -111,16 +111,17 @@ class BulkUpdateSlider extends React.Component {
         const { isOpen, allBookingStatus, clientname, fps } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
         const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
-            if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
-                if (
-                    bookingStatus.dme_delivery_status === 'Imported / Integrated' ||
-                    bookingStatus.dme_delivery_status === 'Collected' ||
-                    bookingStatus.dme_delivery_status === 'Delivered'
-                )
-                    return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
-            } else {
-                return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
-            }
+            // if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
+            //     if (
+            //         bookingStatus.dme_delivery_status === 'Imported / Integrated' ||
+            //         bookingStatus.dme_delivery_status === 'Collected' ||
+            //         bookingStatus.dme_delivery_status === 'Delivered'
+            //     )
+            //         return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            // } else {
+            //     return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            // }
+            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
         });
 
         const fpOptions = fps.map((fp, index) => {
@@ -130,9 +131,19 @@ class BulkUpdateSlider extends React.Component {
                     fp.fp_company_name === 'TNT' ||
                     fp.fp_company_name === 'Hunter' ||
                     fp.fp_company_name === 'Century' ||
-                    fp.fp_company_name === 'JasonL In house' ||
-                    fp.fp_company_name === 'Customer Pickup' ||
-                    fp.fp_company_name === 'Line haul General'
+                    fp.fp_company_name === 'In House Fleet' ||
+                    fp.fp_company_name === 'Customer Collect' ||
+                    fp.fp_company_name === 'DME Linehaul General'
+                )
+                    return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
+            } else if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
+                if (
+                    fp.fp_company_name === 'Allied' ||
+                    fp.fp_company_name === 'TNT' ||
+                    fp.fp_company_name === 'Hunter' ||
+                    fp.fp_company_name === 'In House Fleet' ||
+                    fp.fp_company_name === 'Customer Collect' ||
+                    fp.fp_company_name === 'DME Linehaul General'
                 )
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else {
@@ -156,10 +167,7 @@ class BulkUpdateSlider extends React.Component {
                         >
                             <option value="" selected disabled hidden>--- Select a field ---</option>
                             {clientname === 'dme' && <option value="flag">Flag</option>}
-                            {(clientname === 'dme' || clientname === 'Bathroom Sales Direct') &&
-                                <option value="status">Booking status</option>
-                            }
-                            {(clientname === 'dme' || clientname === 'Jason L') &&
+                            {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
                                 <option value="vx_freight_provider">Freight Provider</option>
                             }
                             {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
@@ -309,17 +317,14 @@ class BulkUpdateSlider extends React.Component {
                                 />
                                 : null
                         }
-                        {
-                            selectedField &&
-                            (selectedField === 'vx_freight_provider') ?
-                                <select
-                                    required
-                                    onChange={(e) => this.onSelected(e, 'value')} 
-                                >
-                                    <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
-                                    {fpOptions}
-                                </select>
-                                : null
+                        {selectedField && (selectedField === 'vx_freight_provider') &&
+                            <select
+                                required
+                                onChange={(e) => this.onSelected(e, 'value')} 
+                            >
+                                <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
+                                {fpOptions}
+                            </select>
                         }
                     </div>
                     <br />
