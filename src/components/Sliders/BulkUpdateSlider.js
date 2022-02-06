@@ -245,7 +245,7 @@ class BulkUpdateSlider extends React.Component {
                             selectedField &&
                             (selectedField === 'dme_status_detail' ||
                             selectedField === 'dme_status_action' ||
-                            selectedField === 'dme_status_history_notes' ||
+                            selectedField === 'b_booking_Notes' ||
                             selectedField === 'inv_billing_status_note' ||
                             selectedField === 'pu_pickup_instructions_address' ||
                             selectedField === 'de_to_Pick_Up_Instructions_Contact' ||
