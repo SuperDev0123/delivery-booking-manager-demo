@@ -74,12 +74,8 @@ class EditablePopover extends React.Component {
             selectedDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
             this.setState({selectedDate});
         } else {
-            if (moment(date) < moment().subtract(1, 'd')) {
-                alert('Past dates not allowed');
-            } else {
-                selectedDate = moment(date).format('YYYY-MM-DD');
-                this.setState({selectedDate});
-            }
+            selectedDate = moment(date).format('YYYY-MM-DD');
+            this.setState({selectedDate});
         }
     }
 
