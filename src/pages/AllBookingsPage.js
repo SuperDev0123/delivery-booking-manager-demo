@@ -1138,8 +1138,9 @@ class AllBookingsPage extends React.Component {
             activeTabInd === 9 ||   // Unprinted Lables
             activeTabInd === 11 ||  // Parent bookings (in progress)
             activeTabInd === 3 ||   // Manifest
+            activeTabInd === 40 ||  // Booked
+            activeTabInd === 41 ||  // In Transit
             activeTabInd === 12 ||  // Delivered
-            activeTabInd === 5 ||   // In Transit
             activeTabInd === 5 ||   // Closed
             activeTabInd === 51     // Closed with Issue
         ) {
@@ -2464,7 +2465,8 @@ class AllBookingsPage extends React.Component {
                                                 <a className={activeTabInd === 1 ? 'active' : ''} onClick={() => this.onClickTab(1)}>Errors to Correct</a>
                                                 <a className={activeTabInd === 2 ? 'active' : ''} onClick={() => this.onClickTab(2)}>Missing Labels</a>
                                                 <a className={activeTabInd === 3 ? 'active' : ''} onClick={() => this.onClickTab(3)}>To Manifest</a>
-                                                <a className={activeTabInd === 4 ? 'active' : ''} onClick={() => this.onClickTab(4)}>In Transit</a>
+                                                <a className={activeTabInd === 40 ? 'active' : ''} onClick={() => this.onClickTab(40)}>Booked</a>
+                                                <a className={activeTabInd === 41 ? 'active' : ''} onClick={() => this.onClickTab(41)}>In Transit</a>
                                                 <a className={activeTabInd === 12 ? 'active' : ''} onClick={() => this.onClickTab(12)}>Delivered</a>
                                                 <a className={activeTabInd === 5 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed</a>
                                                 <a className={activeTabInd === 51 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed with Issue</a>
