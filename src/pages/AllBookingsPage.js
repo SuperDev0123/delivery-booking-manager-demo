@@ -1139,6 +1139,7 @@ class AllBookingsPage extends React.Component {
             activeTabInd === 11 ||  // Parent bookings (in progress)
             activeTabInd === 3 ||   // Manifest
             activeTabInd === 12 ||  // Delivered
+            activeTabInd === 5 ||   // In Transit
             activeTabInd === 5 ||   // Closed
             activeTabInd === 51     // Closed with Issue
         ) {
