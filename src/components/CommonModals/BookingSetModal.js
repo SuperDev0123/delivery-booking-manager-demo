@@ -73,14 +73,17 @@ class BookingSetModal extends Component {
             } else if (!note) {
                 this.props.notify('Note is required');
             } else {
-                const bookedBookings = this.props.selectedBookings.filter(booking => booking.b_dateBookedDate);
+                // const bookedBookings = this.props.selectedBookings.filter(booking => booking.b_dateBookedDate);
 
-                if (bookedBookings.length > 0) {
-                    this.props.notify('LineHaul BookingSet shouldn`t include BOOKED bookings.');
-                } else {
-                    this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type, lineHaulDate);
-                    this.props.toggle();
-                }
+                // if (bookedBookings.length > 0) {
+                //     this.props.notify('LineHaul BookingSet shouldn`t include BOOKED bookings.');
+                // } else {
+                //     this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type, lineHaulDate);
+                //     this.props.toggle();
+                // }
+
+                this.props.createBookingSet(this.props.bookingIds, name, note, auto_select_type, lineHaulDate);
+                this.props.toggle();
             }
         } else {
             if (!selectedBookingSet) {
