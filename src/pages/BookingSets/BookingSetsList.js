@@ -103,7 +103,7 @@ class BookingSetList extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt, pricingInfos, allFPs } = newProps;
+        const { redirect, bookingSets, clientname, isBookingSetDeleted, needUpdateBookingSets, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, clientPK, bookingIds, needUpdateBookings, bookings, bookingsCnt, filteredBookingIds, dmeStatus, projectName, multiFindField, multiFindValues, pageCnt, pricingInfos, allFPs } = newProps;
         const currentRoute = this.props.location.pathname;
 
         if (redirect && currentRoute != '/') {
@@ -166,12 +166,13 @@ class BookingSetList extends React.Component {
             }
 
             this.setState({
+                selectedFPId: fpId,
                 filterInputs: columnFilters,
                 pageItemCnt: pageItemCnt,
                 pageInd: pageInd,
                 bookingIds: bookingIds,
             });
-            this.props.getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds);
+            this.props.getBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds);
         }
     }
 
@@ -257,7 +258,7 @@ class BookingSetList extends React.Component {
 
     onClickShowBtn(selectedBookingSet) {
         this.setState({selectedBookingSet, viewMode: 1, selectedBookingIds: []});
-        this.props.setAllGetBookingsFilter('*', '2099-01-01', 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, null, selectedBookingSet.booking_ids);
+        this.props.setAllGetBookingsFilter('*', '2099-01-01', 0, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, null, selectedBookingSet.booking_ids);
     }
 
     onChangeSortField(fieldName) {
@@ -1070,9 +1071,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         verifyToken: () => dispatch(verifyToken()),
-        getBookings: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds)),
+        getBookings: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds) => dispatch(getBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds)),
         setGetBookingsFilter: (key, value) => dispatch(setGetBookingsFilter(key, value)),
-        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds)),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName, bookingIds)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getBookingSets: () => dispatch(getBookingSets()),
         deleteBookingSet: (id) => dispatch(deleteBookingSet(id)),
