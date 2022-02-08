@@ -583,17 +583,11 @@ class AllBookingsPage extends React.Component {
 
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', selectedname: e.target.name, selectedFPId: fpId});
         } else if (src === 'client') {
-            // this.props.setGetBookingsFilter('clientPK', e.target.value);
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', clientPK: e.target.value});
         } else if (src === 'status') {
-            // this.setState({selectedStatusValue: e.target.value});
             this.setState({selectedBookingIds: [], allCheckStatus: 'None', dmeStatus: e.target.value});
         } else if (src === 'projectName') {
-            // const today = moment().format('YYYY-MM-DD');
-            // const projectName = e.target.value;
-            // this.props.setAllGetBookingsFilter('*', today, 0, 0, this.state.pageItemCnt, 0, '-id', {}, 0, '', 'label', '', null, null, projectName);
-            // this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0});
-            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0, projectName: e.target.value});
+            this.setState({selectedBookingIds: [], allCheckStatus: 'None', activeTabInd: 0, startDate: null, projectName: e.target.value});
         }
     }
 
@@ -1205,7 +1199,7 @@ class AllBookingsPage extends React.Component {
         const { bookings } = this.props;
         const _vx_freight_provider = vx_freight_provider.toLowerCase();
 
-        if (_vx_freight_provider === 'startrack') {
+        if (_vx_freight_provider === 'startrack' || _vx_freight_provider === 'auspost') {
             this.props.fpOrder(selectedBookingIds, _vx_freight_provider);
         } else {
             if (selectedBookingIds.length > 500) {
@@ -2384,7 +2378,7 @@ class AllBookingsPage extends React.Component {
                                                     <select 
                                                         id="client-select" 
                                                         required 
-                                                        onChange={(e) => this.onSelected(e, 'client')} 
+                                                        onChange={(e) => this.onSelected(e, 'client')}
                                                         value={clientPK}>
                                                         { clientOptionsList }
                                                     </select>
@@ -2414,7 +2408,7 @@ class AllBookingsPage extends React.Component {
                                                     { fpsList }
                                                 </select>
                                             </label>
-                                            <label className="none right-10px">
+                                            <label className="right-10px">
                                                 Project Name: 
                                                 <select 
                                                     id="project-name-select" 

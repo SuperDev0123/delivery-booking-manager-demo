@@ -2488,7 +2488,10 @@ class BookingPage extends Component {
         if (!booking) {
             this.notify('Please select booking to cancel');
         } else {
-            if (booking.vx_freight_provider && booking.vx_freight_provider.toLowerCase() === 'startrack') {
+            if (booking.vx_freight_provider && (
+                booking.vx_freight_provider.toLowerCase() === 'startrack' ||
+                booking.vx_freight_provider.toLowerCase() === 'auspost'
+            )) {
                 this.props.fpCancelBook(booking.id, booking.vx_freight_provider);
             } else {
                 if (isBookedBooking) {
