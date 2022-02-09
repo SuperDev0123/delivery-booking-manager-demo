@@ -133,7 +133,7 @@ class BulkUpdateSlider extends React.Component {
                     fp.fp_company_name === 'Century' ||
                     fp.fp_company_name === 'In House Fleet' ||
                     fp.fp_company_name === 'Customer Collect' ||
-                    fp.fp_company_name === 'DME Linehaul General'
+                    fp.fp_company_name === 'Deliver-ME'
                 )
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
@@ -143,7 +143,7 @@ class BulkUpdateSlider extends React.Component {
                     fp.fp_company_name === 'Hunter' ||
                     fp.fp_company_name === 'In House Fleet' ||
                     fp.fp_company_name === 'Customer Collect' ||
-                    fp.fp_company_name === 'DME Linehaul General'
+                    fp.fp_company_name === 'Deliver-ME'
                 )
                     return (<option key={index} value={fp.fp_company_name}>{fp.fp_company_name}</option>);
             } else {
