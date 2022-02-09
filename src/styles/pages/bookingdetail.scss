@@ -411,8 +411,16 @@ input.orange-color {
     }
 }
 
-.pickup-detail .buttons {
-    margin-top: 10px !important;
+.pickup-detail {
+    .buttons {
+        margin-top: 10px !important;
+    }
+
+    li.project-name {
+        width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+    }
 }
 
 .open-slide {

@@ -218,7 +218,12 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField, redirect, username, needUpdateBookings, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus, allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt, projectNames, projectName, pricingAnalyses } = newProps;
+        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField,
+            redirect, username, needUpdateBookings, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField,
+            columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus,
+            allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt,
+            projectNames, projectName, pricingAnalyses
+        } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -1383,23 +1388,15 @@ class AllBookingsPage extends React.Component {
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            const options = {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
-                data: {bookingIds, fieldName, fieldContent},
-            };
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
+            data: {bookingIds, fieldName, fieldContent},
+        };
 
-            axios(options)
-                .then(() => {
-                    resolve();
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return axios(options);
     }
 
     buildCSV(bookingIds, vx_freight_provider) {
@@ -1425,23 +1422,15 @@ class AllBookingsPage extends React.Component {
     }
 
     buildXML(bookingIds, vx_freight_provider) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            let options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-                data: {bookingIds, vx_freight_provider},
-            };
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+            data: {bookingIds, vx_freight_provider},
+        };
 
-            axios(options)
-                .then((response) => {
-                    resolve(response);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return axios(options);
     }
 
     buildPDF(bookingIds, vx_freight_provider) {
@@ -1624,8 +1613,16 @@ class AllBookingsPage extends React.Component {
 
     onUpdateProjectsName(name) {
         const { selectedBookingIds } = this.state;
-        this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name);
-        this.toggleProjectNameModal();
+        this.bulkBookingUpdate(selectedBookingIds, 'b_booking_project', name)
+            .then(() => {
+                this.toggleProjectNameModal();
+                this.notify('Successfully updated!');
+                this.props.setNeedUpdateBookingsState(true);
+                this.props.getAllProjectNames();
+            })
+            .catch(() => {
+                this.notify('Failed operation!');
+            });
     }
 
     onClickShowBulkUpdateButton() {
@@ -1757,7 +1754,11 @@ class AllBookingsPage extends React.Component {
     }
 
     render() {
-        const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses, filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword, showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft, isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId, projectNames, projectName, allCheckStatus } = this.state;
+        const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses,
+            filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
+            showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
+            isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
+            projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets } = this.props;
 
         // Table width

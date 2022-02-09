@@ -2869,6 +2869,12 @@ class BookingPage extends Component {
         }
     }
 
+    onCopyToClipboard(e, text) {
+        e.preventDefault();
+        navigator.clipboard.writeText(text);
+        this.notify('Copied to clipboard!');
+    }
+
     render() {
         const {
             isBookingModified, isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
@@ -5098,7 +5104,16 @@ class BookingPage extends Component {
                                             <div className="pickup-detail">
                                                 <div className="head text-white">
                                                     <ul>
-                                                        <li>Project: {booking.b_booking_project}</li>
+                                                        <li
+                                                            className='project-name'
+                                                            id={'booking-' + 'b_booking_project' + '-tooltip-' + booking.id}
+                                                            onClick={(e) => this.onCopyToClipboard(e, booking.b_booking_project)}
+                                                        >
+                                                            Project: {booking.b_booking_project}
+                                                            {!_.isEmpty(booking.b_booking_project) &&
+                                                                <TooltipItem object={booking} placement='top' fields={['b_booking_project']} />
+                                                            }
+                                                        </li>
                                                         <li>
                                                             {(clientname === 'dme' && booking && !booking.is_auto_augmented) ?
                                                                 <button

@@ -12,8 +12,8 @@ class TooltipItem extends React.Component {
     }
 
     static propTypes = {
-        object: PropTypes.object.isRequired,
-        fields: PropTypes.array.isRequired,
+        object: PropTypes.object,
+        fields: PropTypes.array,
         name: PropTypes.string,
         placement: PropTypes.string,
         hideArrow: PropTypes.bool,
