@@ -45,7 +45,7 @@ class BulkUpdateSlider extends React.Component {
         const {selectedValue, selectedField, optionalValue} = this.state;
         const {selectedBookingIds} = this.props;
 
-        if (selectedField === 'status' && selectedValue === 'In Transit' && !optionalValue) {
+        if (selectedField === 'status' && !optionalValue) {
             this.setState({errorMsg: 'Event Date Time is required!'});
         } else {
             this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
@@ -172,6 +172,7 @@ class BulkUpdateSlider extends React.Component {
                             }
                             {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
                             {clientname === 'dme' && <option value="b_client_name_sub">Sub Client</option>}
+                            {clientname === 'dme' && <option value="status">Status</option>}
                             {clientname === 'dme' && <option value="dme_status_detail">Status Detail</option>}
                             {clientname === 'dme' && <option value="dme_status_action">Status Action</option>}
                             {clientname === 'dme' && <option value="b_booking_Notes">Status History Note</option>}
@@ -329,16 +330,13 @@ class BulkUpdateSlider extends React.Component {
                     </div>
                     <br />
                     <div className="optional">
-                        {selectedField === 'status' && selectedValue === 'In Transit' ?
-                            <label className="value">Event Date: </label> : null
-                        }
-                        {selectedField === 'status' && selectedValue === 'In Transit' ?
+                        {selectedField === 'status' && <label className="value">Event Date: </label>}
+                        {selectedField === 'status' &&
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date, 'optionalValue')}
                                 value={optionalValue ? new Date(moment(optionalValue).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
                                 format={'dd/MM/yyyy HH:mm'}
                             />
-                            : null
                         }
                     </div>
                     <br />
