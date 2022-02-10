@@ -86,7 +86,6 @@ class AllBookingsPage extends React.Component {
             scrollLeft: 0,
             selectedStatusValue: null,
             selectedname: 'All',
-            allBookingStatus: [],
             allFPs: [],
             pricingAnalyses: [],
             isShowStatusLockModal: false,
@@ -173,6 +172,7 @@ class AllBookingsPage extends React.Component {
         updateBookingSet: PropTypes.func.isRequired,
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
+        allBookingStatus: PropTypes.array,
     };
 
     componentDidMount() {
@@ -220,7 +220,7 @@ class AllBookingsPage extends React.Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField,
             redirect, username, needUpdateBookings, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField,
-            columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK, allBookingStatus,
+            columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK,
             allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt,
             projectNames, projectName, pricingAnalyses
         } = newProps;
@@ -312,10 +312,6 @@ class AllBookingsPage extends React.Component {
 
         if (userDateFilterField) {
             this.setState({ userDateFilterField });
-        }
-
-        if (allBookingStatus) {
-            this.setState({ allBookingStatus });
         }
 
         if (allFPs) {
@@ -1138,8 +1134,12 @@ class AllBookingsPage extends React.Component {
             activeTabInd === 11 ||  // Parent bookings (in progress)
             activeTabInd === 3 ||   // Manifest
             activeTabInd === 40 ||  // Booked
-            activeTabInd === 41 ||  // In Transit
+            activeTabInd === 41 ||  // Cancel Requested
+            activeTabInd === 42 ||  // In Transit
+            activeTabInd === 43 ||  // On Hold
             activeTabInd === 12 ||  // Delivered
+            activeTabInd === 90 ||  // Returning
+            activeTabInd === 91 ||  // Returned
             activeTabInd === 5 ||   // Closed
             activeTabInd === 51     // Closed with Issue
         ) {
@@ -1757,9 +1757,9 @@ class AllBookingsPage extends React.Component {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses,
             filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
             showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
-            isShowXLSModal, isShowProjectNameModal, allBookingStatus, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
+            isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets } = this.props;
+        const { bookings, bookingsets, allBookingStatus } = this.props;
 
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -2461,8 +2461,12 @@ class AllBookingsPage extends React.Component {
                                                 <a className={activeTabInd === 2 ? 'active' : ''} onClick={() => this.onClickTab(2)}>Missing Labels</a>
                                                 <a className={activeTabInd === 3 ? 'active' : ''} onClick={() => this.onClickTab(3)}>To Manifest</a>
                                                 <a className={activeTabInd === 40 ? 'active' : ''} onClick={() => this.onClickTab(40)}>Booked</a>
-                                                <a className={activeTabInd === 41 ? 'active' : ''} onClick={() => this.onClickTab(41)}>In Transit</a>
+                                                <a className={activeTabInd === 41 ? 'active' : ''} onClick={() => this.onClickTab(41)}>Cancel Requested</a>
+                                                <a className={activeTabInd === 42 ? 'active' : ''} onClick={() => this.onClickTab(42)}>In Transit</a>
+                                                <a className={activeTabInd === 43 ? 'active' : ''} onClick={() => this.onClickTab(43)}>On Hold</a>
                                                 <a className={activeTabInd === 12 ? 'active' : ''} onClick={() => this.onClickTab(12)}>Delivered</a>
+                                                <a className={activeTabInd === 90 ? 'active' : ''} onClick={() => this.onClickTab(90)}>Returning</a>
+                                                <a className={activeTabInd === 91 ? 'active' : ''} onClick={() => this.onClickTab(91)}>Returned</a>
                                                 <a className={activeTabInd === 5 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed</a>
                                                 <a className={activeTabInd === 51 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed with Issue</a>
                                                 <a className={activeTabInd === 11 ? 'active' : ''} onClick={() => this.onClickTab(11)}>Parents (In Progress)</a>

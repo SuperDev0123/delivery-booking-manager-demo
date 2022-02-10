@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { isEmpty, clone } from 'lodash';
+import { sortBy, isEmpty, clone } from 'lodash';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
@@ -150,8 +150,15 @@ class StatusHistorySlider extends React.Component {
             );
         });
 
-        const statusOptions = allBookingStatus.map((bookingStatus, key) => {
-            return (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        const statusOptions = sortBy(allBookingStatus, ['sort_order']).map((bookingStatus, key) => {
+            if (bookingStatus.dme_delivery_status === 'On Hold') {
+                return [
+                    (<option key={key + 10} value="" disabled>*******************************************************************************</option>),
+                    (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>)
+                ];
+            } else {
+                return (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            }
         });
 
         return (

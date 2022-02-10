@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button } from 'reactstrap';
+import { sortBy } from 'lodash';
 import moment from 'moment-timezone';
 import DateTimePicker from 'react-datetime-picker';
 import DatePicker from 'react-datepicker';
@@ -110,18 +111,15 @@ class BulkUpdateSlider extends React.Component {
     render() {
         const { isOpen, allBookingStatus, clientname, fps } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
-        const bookingStatusList = allBookingStatus.map((bookingStatus, index) => {
-            // if (clientname === 'Bathroom Sales Direct') { // Bathroom Sales Direct
-            //     if (
-            //         bookingStatus.dme_delivery_status === 'Imported / Integrated' ||
-            //         bookingStatus.dme_delivery_status === 'Collected' ||
-            //         bookingStatus.dme_delivery_status === 'Delivered'
-            //     )
-            //         return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
-            // } else {
-            //     return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
-            // }
-            return (<option key={index} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+        const bookingStatusList = sortBy(allBookingStatus, ['sort_order']).map((bookingStatus, key) => {
+            if (bookingStatus.dme_delivery_status === 'On Hold') {
+                return [
+                    (<option key={key + 10} value="" disabled>*******************************************************************************</option>),
+                    (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>)
+                ];
+            } else {
+                return (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>);
+            }
         });
 
         const fpOptions = fps.map((fp, index) => {
