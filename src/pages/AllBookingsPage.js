@@ -2468,7 +2468,7 @@ class AllBookingsPage extends React.Component {
                                                 <a className={activeTabInd === 90 ? 'active' : ''} onClick={() => this.onClickTab(90)}>Returning</a>
                                                 <a className={activeTabInd === 91 ? 'active' : ''} onClick={() => this.onClickTab(91)}>Returned</a>
                                                 <a className={activeTabInd === 5 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed</a>
-                                                <a className={activeTabInd === 51 ? 'active' : ''} onClick={() => this.onClickTab(5)}>Closed with Issue</a>
+                                                <a className={activeTabInd === 51 ? 'active' : ''} onClick={() => this.onClickTab(51)}>Closed with Issue</a>
                                                 <a className={activeTabInd === 11 ? 'active' : ''} onClick={() => this.onClickTab(11)}>Parents (In Progress)</a>
                                                 {(clientname === 'dme') &&
                                                     <a className={activeTabInd === 6 ? 'active' : ''} onClick={() => this.onClickTab(6)}>Delivery Management</a>
