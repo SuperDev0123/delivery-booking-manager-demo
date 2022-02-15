@@ -55,13 +55,15 @@ class ScansSlider extends React.Component {
                 subtitle={'List View'}
                 onRequestClose={toggleScansSlider}>
                 <div className="slider-content">
-                    {scans && <BootstrapTable
-                        keyField="id"
-                        data={ scans }
-                        columns={ scansColumns }
-                        bootstrap4={ true }
-                        bordered={ false }
-                    />}
+                    {scans &&
+                        <BootstrapTable
+                            keyField="id"
+                            data={ scans }
+                            columns={ scansColumns }
+                            bootstrap4={ true }
+                            bordered={ false }
+                        />
+                    }
                 </div>
             </SlidingPane>
         );

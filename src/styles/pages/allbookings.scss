@@ -112,10 +112,13 @@ table.booking-lines {
 
     label {
       vertical-align: top;
+      margin-top: 11px;
     }
 
     nav {
       display: inline-block !important;
+      margin-top: 3px;
+      margin-right: 8px;
     }
 
     .pagination-sm {
@@ -500,17 +503,8 @@ table {
   }
 }
 
-#warehouse {
-  width: 250px;
-  margin-left: 10px;
-}
-
-#fp {
-  margin-left: 10px;
-}
-
-#status {
-  margin-right: 10px;
+#warehouse, #project-name-select, #fp, #status {
+  margin-left: 3px;
 }
 
 .tooltipitem {
@@ -620,6 +614,10 @@ hr {
   padding-left: 51px;
   margin-bottom: 10px;
 
+  select {
+    width: 100px;
+  }
+
   .btn {
     padding-right: 10px;
     padding-left: 10px;
@@ -727,11 +725,6 @@ header > .qbootstrap-nav {
   button:hover {
     background: #0995a5;
   }
-}
-
-#project-name-select {
-  margin-left: 10px;
-  width: 200px;
 }
 
 #client-select {

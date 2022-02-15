@@ -2433,7 +2433,7 @@ class AllBookingsPage extends React.Component {
                                                 </div>
                                             }
                                             {(clientname === 'dme' || clientname === 'biopak') &&
-                                                <div className="disp-inline-block">
+                                                <div className="disp-inline-block none">
                                                     <button className="btn btn-primary " onClick={() => this.onClickPricingAnalyse()}>Price Analysis</button>
                                                     <div className="disp-inline-block">
                                                         <LoadingOverlay
