@@ -56,3 +56,37 @@ export const timeSelectOptions = [
 ];
 
 export const specialFPs = ['Deliver-ME', 'Customer Pickup', 'Customer Collect', 'In House Fleet'];
+
+export const BOOKING_IMPORTANT_FIELDS = [
+    'pu_Address_State',
+    'pu_Address_Suburb',
+    'pu_Address_PostalCode',
+    'pu_Address_Country',
+    'de_To_Address_State',
+    'de_To_Address_Suburb',
+    'de_To_Address_PostalCode',
+    'pu_Address_Type',
+    'de_To_AddressType',
+    'pu_no_of_assists',
+    'de_no_of_assists',
+    'pu_location',
+    'de_to_location',
+    'pu_access',
+    'de_access',
+    'pu_floor_number',
+    'de_floor_number',
+    'pu_floor_access_by',
+    'de_to_floor_access_by',
+    'pu_service',
+    'de_service',
+];
+
+export const LINE_IMPORTANT_FIELDS = [
+    'e_qty',
+    'e_dimLength',
+    'e_dimWidth',
+    'e_dimHeight',
+    'e_weightPerEach',
+    'e_dimUOM',
+    'e_weightUOM',
+];

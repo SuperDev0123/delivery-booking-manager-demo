@@ -520,7 +520,9 @@ class AllBookingsPage extends React.Component {
 
         if (dateType === 'startDate') {
             if (_.isNull(date)) {
-                startDate = moment().toDate();
+                // startDate = moment().toDate();
+                this.setState({startDate: null});
+                return;
             } else {
                 startDate = date;
             }
@@ -1760,7 +1762,7 @@ class AllBookingsPage extends React.Component {
             isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets, allBookingStatus } = this.props;
-
+        console.log('@1 - ', startDate, endDate);
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2360,7 +2362,7 @@ class AllBookingsPage extends React.Component {
                                         <div className="row filter-controls">
                                             <DatePicker
                                                 id="startDate"
-                                                selected={startDate ? new Date(startDate) : ''}
+                                                selected={startDate ? new Date(startDate) : null}
                                                 onChange={(e) => this.onDateChange(e, 'startDate')}
                                                 dateFormat="dd MMM yyyy"
                                                 className=""

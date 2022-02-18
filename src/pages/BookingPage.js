@@ -66,7 +66,7 @@ import {
 // Validation
 import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../commons/validations';
 // Constants
-import { timeDiff } from '../commons/constants';
+import { timeDiff, BOOKING_IMPORTANT_FIELDS } from '../commons/constants';
 // Helpers
 import { getM3ToKgFactor, getCubicMeter } from '../commons/helpers';
 
@@ -164,6 +164,7 @@ class BookingPage extends Component {
             isAugmentEditable: false,
             isShowManualRepackModal: false,
             isShowCSNoteSlider: false,
+            isShowUpdateBookingModal: false,
             bookingId: null,
             apiBCLs: [],
             createdForInfos: [],
@@ -228,6 +229,7 @@ class BookingPage extends Component {
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
         this.toggleManualRepackModal = this.toggleManualRepackModal.bind(this);
         this.toggleCSNoteSlider = this.toggleCSNoteSlider.bind(this);
+        this.toggleUpdateBookingModal = this.toggleUpdateBookingModal.bind(this);
     }
 
     static propTypes = {
@@ -867,8 +869,7 @@ class BookingPage extends Component {
                 if (this.labelDz) this.labelDz.removeAllFiles();
                 if (this.podDz) this.podDz.removeAllFiles();
 
-                let formInputs = this.getInitialFormInputs(booking);
-
+                const formInputs = this.getInitialFormInputs(booking);
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
@@ -1124,8 +1125,7 @@ class BookingPage extends Component {
     notify = (text) => toast(text);
 
     onClickCancelUpdate() {
-        const { booking } = this.state;
-        let formInputs = this.getInitialFormInputs(booking);
+        const formInputs = this.getInitialFormInputs(this.state.booking);
         this.setState({ formInputs, isBookingModified: false });
     }
 
@@ -2089,7 +2089,10 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        const {isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput, booking} = this.state;
+        const {
+            isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, 
+            isShowStatusActionInput, booking
+        } = this.state;
         const {clientId} = this.props;
 
         if (isBookedBooking &&
@@ -2106,6 +2109,10 @@ class BookingPage extends Component {
             this.notify('Booking is already Manifested!');
         } else {
             let bookingToUpdate = this.state.booking;
+            const updatedFields = [];
+            Object.keys(formInputs).forEach((key) => {
+                if (booking[key] != formInputs[key]) updatedFields.push(key);
+            });
 
             if (isShowStatusDetailInput && 
                 (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail'])))
@@ -2155,6 +2162,10 @@ class BookingPage extends Component {
                 Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
+                    if (_.intersection(updatedFields, BOOKING_IMPORTANT_FIELDS)) {
+                        this.toggleUpdateBookingModal();
+                    }
+
                     this.props.updateBooking(booking.id, bookingToUpdate);
                     this.setState({loadingBookingUpdate: true, isBookingModified: false});
                 } else {
@@ -2253,6 +2264,7 @@ class BookingPage extends Component {
         if (typeNum === 0) { // Duplicate line
             let duplicatedBookingLine = { pk_lines_id: data.pk_lines_id };
             this.props.duplicateBookingLine(duplicatedBookingLine);
+            this.toggleUpdateBookingModal();
             this.setState({loadingBookingLine: true});
         } else if (typeNum === 1) { // Duplicate line detail
             let duplicatedBookingLineDetail = { pk_id_lines_data: data.pk_id_lines_data };
@@ -2330,11 +2342,12 @@ class BookingPage extends Component {
     onClickDeleteLineOrLineData(typeNum, row) {
         console.log('#204 onDelete: ', typeNum, row);
 
-        if (typeNum === 0) { // Duplicate line
+        if (typeNum === 0) { // line
             let deletedBookingLine = { pk_lines_id: row.pk_lines_id };
             this.props.deleteBookingLine(deletedBookingLine);
+            this.toggleUpdateBookingModal();
             this.setState({loadingBookingLine: true, loadingBookingLineDetail: true});
-        } else if (typeNum === 1) { // Duplicate line detail
+        } else if (typeNum === 1) { // line detail
             let deletedBookingLineDetail = { pk_id_lines_data: row.pk_id_lines_data };
             this.props.deleteBookingLineDetail(deletedBookingLineDetail);
             this.setState({loadingBookingLineDetail: true});
@@ -2469,6 +2482,10 @@ class BookingPage extends Component {
 
     toggleManualRepackModal() {
         this.setState(prevState => ({isShowManualRepackModal: !prevState.isShowManualRepackModal}));
+    }
+
+    toggleUpdateBookingModal() {
+        this.setState(prevState => ({isShowUpdateBookingModal: !prevState.isShowUpdateBookingModal}));
     }
 
     // onClickSwitchClientNavIcon(e) {
@@ -5889,6 +5906,7 @@ class BookingPage extends Component {
                     moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
                     packageTypes={this.state.packageTypes}
                     currentPackedStatus={this.state.currentPackedStatus}
+                    toggleUpdateBookingModal={this.toggleUpdateBookingModal}
                 />
 
                 <StatusHistorySlider
@@ -6010,6 +6028,21 @@ class BookingPage extends Component {
                     okBtnName={'From Send As Is'}
                     ok2BtnName={'From Auto Repack'}
                     ok3BtnName={'Enter from Scratch'}
+                />
+
+                <ConfirmModal
+                    isOpen={this.state.isShowUpdateBookingModal}
+                    onOk={this.toggleUpdateBookingModal}
+                    onCancel={this.toggleUpdateBookingModal}
+                    title={'Update Booking'}
+                    text={this.state.booking && this.state.booking.booking_type === 'DMEM' ?
+                        'You have changed info on your booking, which is set for manual freight price selection. \
+                        Freight calculation will now run again so you can update your preferred option.'
+                        :
+                        'You have changed info on your booking, which is set for automatic freight price selection. \
+                        Freight calculation will now run in the background and automatically select your automatic option.'
+                    }
+                    okBtnName={'Ok'}
                 />
 
                 <ToastContainer />

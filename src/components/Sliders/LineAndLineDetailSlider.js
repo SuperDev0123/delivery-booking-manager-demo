@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Custom
 import { getCubicMeter, getWeight } from '../../commons/helpers';
+import { LINE_IMPORTANT_FIELDS } from '../../commons/constants';
 
 class LineAndLineDetailSlider extends React.Component {
     constructor(props) {
@@ -34,6 +35,7 @@ class LineAndLineDetailSlider extends React.Component {
             lineDetailFormInputs: {},
             isShowAllLineDetails: false,
             selectedLineDetails: [],
+            updatedFields: [],
         };
     }
 
@@ -51,6 +53,7 @@ class LineAndLineDetailSlider extends React.Component {
         updateBookingLine: PropTypes.func.isRequired,
         createBookingLineDetail: PropTypes.func.isRequired,
         updateBookingLineDetail: PropTypes.func.isRequired,
+        toggleUpdateBookingModal: PropTypes.func.isRequired,
         packageTypes: PropTypes.array.isRequired,
         moveLineDetails: PropTypes.func.isRequired,
         currentPackedStatus: PropTypes.string,
@@ -92,9 +95,9 @@ class LineAndLineDetailSlider extends React.Component {
         const {lines, lineDetails} = this.props;
 
         if (typeNum === 1) {
-            this.setState({editMode: editMode, lineOrLineDetail: typeNum, lineFormInputs: lines[index]});
+            this.setState({editMode, lineOrLineDetail: typeNum, lineFormInputs: lines[index], selectedLineIndex: index});
         } else if (typeNum === 2) {
-            this.setState({editMode: editMode, lineOrLineDetail: typeNum, lineDetailFormInputs: lineDetails[index]});
+            this.setState({editMode, lineOrLineDetail: typeNum, lineDetailFormInputs: lineDetails[index]});
         }
     }
 
@@ -105,6 +108,7 @@ class LineAndLineDetailSlider extends React.Component {
         */
 
         const {lineOrLineDetail, selectedLineDetails} = this.state;
+        let updatedFields = this.state.updatedFields;
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const name = target.name;
@@ -126,7 +130,9 @@ class LineAndLineDetailSlider extends React.Component {
             lineFormInputs['e_1_Total_dimCubicMeter'] = getCubicMeter(lineFormInputs['e_qty'], lineFormInputs['e_dimUOM'], lineFormInputs['e_dimLength'], lineFormInputs['e_dimWidth'], lineFormInputs['e_dimHeight']);
             lineFormInputs['e_Total_KG_weight'] = getWeight(lineFormInputs['e_qty'], lineFormInputs['e_weightUOM'], lineFormInputs['e_weightPerEach']);
             lineFormInputs['total_2_cubic_mass_factor_calc'] = (Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250).toFixed(2);
-            this.setState({lineFormInputs});
+            updatedFields.push(name);
+            updatedFields = _.uniq(updatedFields);
+            this.setState({lineFormInputs, updatedFields});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
             lineDetailFormInputs[name] = value;
@@ -140,7 +146,7 @@ class LineAndLineDetailSlider extends React.Component {
     }
 
     onSubmit() {
-        const {editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs, selectedLineIndex} = this.state;
+        const {editMode, lineOrLineDetail, lineFormInputs, lineDetailFormInputs, selectedLineIndex, updatedFields} = this.state;
         const {lines, currentPackedStatus} = this.props;
 
         if (editMode === 1) {
@@ -148,6 +154,7 @@ class LineAndLineDetailSlider extends React.Component {
                 lineFormInputs['fk_booking_id'] = this.props.booking.pk_booking_id;
                 lineFormInputs['packed_status'] = currentPackedStatus;
                 this.props.createBookingLine(lineFormInputs);
+                this.props.toggleUpdateBookingModal();
             } else if (lineOrLineDetail === 2) {
                 lineDetailFormInputs['fk_booking_id'] = this.props.booking.pk_booking_id;
                 lineDetailFormInputs['fk_booking_lines_id'] = lines[selectedLineIndex].pk_booking_lines_id;
@@ -155,6 +162,10 @@ class LineAndLineDetailSlider extends React.Component {
             }
         } else if (editMode === 2) {
             if (lineOrLineDetail === 1) {
+                if (_.intersection(updatedFields, LINE_IMPORTANT_FIELDS)) {
+                    this.props.toggleUpdateBookingModal();
+                }
+
                 this.props.updateBookingLine(lineFormInputs);
             } else if (lineOrLineDetail === 2) {
                 this.props.updateBookingLineDetail(lineDetailFormInputs);
