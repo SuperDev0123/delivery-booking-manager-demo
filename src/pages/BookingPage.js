@@ -1664,11 +1664,12 @@ class BookingPage extends Component {
 
     onKeyPress(e) {
         const {selected} = this.state;
-        const findKeyword = e.target.value;
+        let findKeyword = e.target.value;
 
         if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
-
+            findKeyword = findKeyword.replace(/dme/i, '');
+            e.target.value = findKeyword;
             if ((selected == undefined) || (selected == '')) {
                 this.notify('id value is empty');
                 return;
