@@ -180,6 +180,11 @@ const isValid4Label = (formFields, lineDatas) => {
             return 'Address.Name must be between 0 and 30 characters.';
         }
 
+        if ((!_.isEmpty(formFields['pu_pickup_instructions_address']) && formFields['pu_pickup_instructions_address'].length > 80)
+        ) {
+            return 'PU Inst Address should be 0 ~ 80 characters';
+        }
+
         // Commented on 2021-02-15
         // SpecialInstruction will be populated on AA
         // if (_.isEmpty(formFields['pu_pickup_instructions_address']) ||
