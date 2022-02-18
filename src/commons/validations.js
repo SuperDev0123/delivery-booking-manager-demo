@@ -185,6 +185,21 @@ const isValid4Label = (formFields, lineDatas) => {
             return 'PU Inst Address should be 0 ~ 80 characters';
         }
 
+        if ((!_.isEmpty(formFields['pu_PickUp_Instructions_Contact']) && formFields['pu_PickUp_Instructions_Contact'].length > 80)
+        ) {
+            return 'PU Inst Contact should be 0 ~ 80 characters';
+        }
+
+        if ((!_.isEmpty(formFields['de_to_PickUp_Instructions_Address']) && formFields['de_to_PickUp_Instructions_Address'].length > 80)
+        ) {
+            return 'DE Inst Address should be 0 ~ 80 characters';
+        }
+
+        if ((!_.isEmpty(formFields['pu_PickUp_Instructions_Contact']) && formFields['pu_PickUp_Instructions_Contact'].length > 80)
+        ) {
+            return 'DE Inst Contact should be 0 ~ 80 characters';
+        }
+
         // Commented on 2021-02-15
         // SpecialInstruction will be populated on AA
         // if (_.isEmpty(formFields['pu_pickup_instructions_address']) ||

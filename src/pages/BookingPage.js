@@ -1668,7 +1668,11 @@ class BookingPage extends Component {
 
         if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
-            findKeyword = findKeyword.replace(/dme/i, '');
+
+            if (selected === 'dme') {
+                findKeyword = findKeyword.replace(/dme/i, '');
+            }
+
             e.target.value = findKeyword;
             if ((selected == undefined) || (selected == '')) {
                 this.notify('id value is empty');
