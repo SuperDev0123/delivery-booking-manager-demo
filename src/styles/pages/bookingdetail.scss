@@ -427,15 +427,21 @@ input.orange-color {
     float: right;
     margin-right: 20px;
     margin-left: 20px;
-    padding: 0 !important;
+    padding: 2px !important;
     margin-top: 5px;
     cursor: pointer;
+    border: 2px solid transparent;
 
     i {
         color: white;
-        font-size: 25px;
+        font-size: 20px;
+    }
+
+    &:hover {
+        border: 2px solid yellow;
     }
 }
+
 
 .color-white {
     color: white;
@@ -450,6 +456,7 @@ p.status-icon {
     width: 33px;
     height: 33px;
     background: white;
+    border: 2px solid transparent;
     border-radius: 20px;
     padding-top: 4px !important;
     margin-left: 10px;
@@ -465,8 +472,12 @@ p.status-icon {
     }
 
     &.active, &.inactive {
-        font-size: 18px;
+        font-size: 15px;
         text-align: center;
+    }
+
+    &:hover {
+        border: 2px solid yellow;
     }
 }
 

@@ -3215,6 +3215,17 @@ class BookingPage extends Component {
             'Admin / Other',
         ];
 
+        const tooltipText = {
+            cs_note: 'Customer service notes',
+            fp_status_history: 'Freight provider scans',
+            dme_status_history: 'DME status histories',
+            link: 'Copy status page url to clipboard',
+            b_status_API: 'Last freight provider status',
+            b_error_Capture: 'Booking provider error message',
+            b_booking_Notes: 'Status notes',
+            z_lock_status: 'Red indicates status locked by DME user'
+        };
+
         let bookingCategoryOptions = bookingCategroies.map(category => ({value: category, label: category}));
 
         const bookingPriorities = ['Low', 'Standard', 'High', 'Critical'];
@@ -3440,25 +3451,38 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         <div className="col-sm-6">
-                                            <a onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title='Customer Service Notes'>
-                                                <i className="fa fa-user-plus" aria-hidden="true"></i>
+                                            <a id={'booking-' + 'cs_note' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" >
+                                                <i className="fa fa-user-plus" style={{fontSize: '18px', paddingTop: '0px'}} aria-hidden="true"></i>
+                                                <TooltipItem object={tooltipText} placement='bottom' fields={['cs_note']} />
                                             </a>
-                                            <a onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0" title='Freight Provider Scans'>
+                                            <a id={'booking-' + 'fp_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0">
                                                 <i className="fas fa-barcode" aria-hidden="true"></i>
+                                                <TooltipItem object={tooltipText} placement='bottom' fields={['fp_status_history']} />
                                             </a>
-                                            <a onClick={(e) => this.onClickOpenSlider(e, 'dme-status-history')} className="open-slide ml-6 mr-0" title='DME Status Histories'>
+                                            <a id={'booking-' + 'dme_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'dme-status-history')} className="open-slide ml-6 mr-0">
                                                 <i className="fa fa-columns" aria-hidden="true"></i>
+                                                <TooltipItem object={tooltipText} placement='bottom' fields={['dme_status_history']} />
                                             </a>
                                             <label className="color-white float-right">
-                                                <p className='cursor-pointer' onClick={() => this.onClickLink('status-page-link')}>{isBookingSelected ? booking.b_status : '***'}</p>
-                                                <p className='status-icon inactive' onClick={() => this.onClickLink('status-page-link-copy')}>
+                                                <p 
+                                                    className='cursor-pointer' 
+                                                    onClick={() => this.onClickLink('status-page-link')}
+                                                >
+                                                    {isBookingSelected ? booking.b_status : '***'}</p>
+                                                <p
+                                                    id={'booking-' + 'link' + '-tooltip-' + booking.id}
+                                                    className='status-icon inactive' 
+                                                    onClick={() => this.onClickLink('status-page-link-copy')} 
+                                                >
                                                     <i className="fa fa-link"></i>
+                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['link']} />
                                                 </p>
                                                 <p 
                                                     id={'booking-' + 'b_status_API' + '-tooltip-' + booking.id}
                                                     className={booking.b_status_API ? 'status-icon active' : 'status-icon inactive'}
                                                 >
                                                     <i className="fa fa-truck"></i>
+                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_status_API']} />
                                                     {!_.isEmpty(booking.b_status_API) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_status_API']} />
                                                     }
@@ -3468,6 +3492,7 @@ class BookingPage extends Component {
                                                     className={booking.b_error_Capture ? 'status-icon active' : 'status-icon inactive'}
                                                 >
                                                     <i className="fa fa-exclamation-triangle"></i>
+                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_error_Capture']} />
                                                     {!_.isEmpty(booking.b_error_Capture) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_error_Capture']} />
                                                     }
@@ -3477,12 +3502,18 @@ class BookingPage extends Component {
                                                     className={booking.b_booking_Notes ? 'status-icon active' : 'status-icon inactive'}
                                                 >
                                                     <i className="fa fa-sticky-note"></i>
+                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_booking_Notes']} />
                                                     {!_.isEmpty(booking.b_booking_Notes) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                                     }
                                                 </p>
-                                                <p className={booking.z_lock_status ? 'status-icon active' : 'status-icon inactive'} onClick={() => this.onClickStatusLock(booking)}>
+                                                <p 
+                                                    id={'booking-' + 'z_lock_status' + '-tooltip-' + booking.id}
+                                                    className={booking.z_lock_status ? 'status-icon active' : 'status-icon inactive'} 
+                                                    onClick={() => this.onClickStatusLock(booking)}
+                                                >
                                                     <i className="fa fa-lock"></i>
+                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['z_lock_status']} />
                                                 </p>
                                             </label>
                                         </div>
