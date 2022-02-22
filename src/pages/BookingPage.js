@@ -3216,6 +3216,7 @@ class BookingPage extends Component {
         ];
 
         const tooltipText = {
+            id: booking.id,
             cs_note: 'Customer service notes',
             fp_status_history: 'Freight provider scans',
             dme_status_history: 'DME status histories',
