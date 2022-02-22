@@ -444,6 +444,16 @@ table {
 }
 .cursor-pointer {
   cursor: pointer;
+  div {
+    text-decoration: underline;
+    color: white;
+    font-size: 12px;
+    font-weight: bolder;
+
+    &:hover {
+      color: blue;
+    }
+  }
 }
 
 .font-size-16px {
