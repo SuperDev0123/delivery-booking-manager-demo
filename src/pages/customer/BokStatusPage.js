@@ -42,7 +42,7 @@ class BokStatusPage extends Component {
             this.props.getDeliveryStatus(identifier);
             this.setState({identifier});
         } else {
-            this.setState({errorMessage: 'Wrong id.'});
+            this.setState({errorMessage: 'We\'re sorry, the tracking number seems to be incorrect. Please contact our support via the chat option during normal business hours.'});
         }
     }
 
