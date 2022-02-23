@@ -2876,15 +2876,21 @@ class BookingPage extends Component {
     onClickLink(linkType) {
         const {booking} = this.state;
 
+        if (!booking) {
+            this.notify('Booking is not selected.');
+            return;
+        }
+
+        const identifier = booking.b_client_booking_ref_num || booking.pk_booking_id;
         if (linkType === 'status-page-link') {
             if (booking && booking.b_client_booking_ref_num) {
-                const link = `${window.location.protocol}//${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
+                const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
                 const win = window.open(link, '_blank');
                 win.focus();
             }
         } else if (linkType === 'status-page-link-copy') {
             if (booking && booking.b_client_booking_ref_num) {
-                const link = `${window.location.protocol}//${window.location.hostname}/status/${booking.b_client_booking_ref_num}`;
+                const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
                 navigator.clipboard.writeText(link);
                 this.notify('Status page url is copied on clipboard');
             }
