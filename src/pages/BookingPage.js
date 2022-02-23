@@ -3452,17 +3452,17 @@ class BookingPage extends Component {
                                             }
                                         </div>
                                         <div className="col-sm-6">
-                                            <a id={'booking-' + 'cs_note' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" >
+                                            <a id={'booking-' + 'cs_note' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title={tooltipText.cs_note}>
                                                 <i className="fa fa-user-plus" style={{fontSize: '18px', paddingTop: '0px'}} aria-hidden="true"></i>
-                                                <TooltipItem object={tooltipText} placement='bottom' fields={['cs_note']} />
+                                                {/* <TooltipItem object={tooltipText} placement='bottom' fields={['cs_note']} /> */}
                                             </a>
-                                            <a id={'booking-' + 'fp_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0">
+                                            <a id={'booking-' + 'fp_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0" title={tooltipText.fp_status_history}>
                                                 <i className="fas fa-barcode" aria-hidden="true"></i>
-                                                <TooltipItem object={tooltipText} placement='bottom' fields={['fp_status_history']} />
+                                                {/* <TooltipItem object={tooltipText} placement='bottom' fields={['fp_status_history']} /> */}
                                             </a>
-                                            <a id={'booking-' + 'dme_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'dme-status-history')} className="open-slide ml-6 mr-0">
+                                            <a id={'booking-' + 'dme_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'dme-status-history')} className="open-slide ml-6 mr-0" title={tooltipText.dme_status_history}>
                                                 <i className="fa fa-columns" aria-hidden="true"></i>
-                                                <TooltipItem object={tooltipText} placement='bottom' fields={['dme_status_history']} />
+                                                {/* <TooltipItem object={tooltipText} placement='bottom' fields={['dme_status_history']} /> */}
                                             </a>
                                             <label className="color-white float-right">
                                                 <p 
@@ -3474,16 +3474,18 @@ class BookingPage extends Component {
                                                     id={'booking-' + 'link' + '-tooltip-' + booking.id}
                                                     className='status-icon inactive' 
                                                     onClick={() => this.onClickLink('status-page-link-copy')} 
+                                                    title={tooltipText.link}
                                                 >
                                                     <i className="fa fa-link"></i>
-                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['link']} />
+                                                    {/* <TooltipItem object={tooltipText} placement='bottom' fields={['link']} /> */}
                                                 </p>
                                                 <p 
                                                     id={'booking-' + 'b_status_API' + '-tooltip-' + booking.id}
                                                     className={booking.b_status_API ? 'status-icon active' : 'status-icon inactive'}
+                                                    title={tooltipText.b_status_API}
                                                 >
                                                     <i className="fa fa-truck"></i>
-                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_status_API']} />
+                                                    {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_status_API']} /> */}
                                                     {!_.isEmpty(booking.b_status_API) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_status_API']} />
                                                     }
@@ -3491,9 +3493,10 @@ class BookingPage extends Component {
                                                 <p 
                                                     id={'booking-' + 'b_error_Capture' + '-tooltip-' + booking.id}
                                                     className={booking.b_error_Capture ? 'status-icon active' : 'status-icon inactive'}
+                                                    title={tooltipText.b_error_Capture}
                                                 >
                                                     <i className="fa fa-exclamation-triangle"></i>
-                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_error_Capture']} />
+                                                    {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_error_Capture']} /> */}
                                                     {!_.isEmpty(booking.b_error_Capture) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_error_Capture']} />
                                                     }
@@ -3501,20 +3504,22 @@ class BookingPage extends Component {
                                                 <p 
                                                     id={'booking-' + 'b_booking_Notes' + '-tooltip-' + booking.id}
                                                     className={booking.b_booking_Notes ? 'status-icon active' : 'status-icon inactive'}
+                                                    title={tooltipText.b_booking_Notes}
                                                 >
                                                     <i className="fa fa-sticky-note"></i>
-                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['b_booking_Notes']} />
+                                                    {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_booking_Notes']} /> */}
                                                     {!_.isEmpty(booking.b_booking_Notes) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                                     }
                                                 </p>
                                                 <p 
                                                     id={'booking-' + 'z_lock_status' + '-tooltip-' + booking.id}
-                                                    className={booking.z_lock_status ? 'status-icon active' : 'status-icon inactive'} 
+                                                    className={booking.z_lock_status ? 'status-icon active' : 'status-icon inactive'}
+                                                    title={tooltipText.z_lock_status}
                                                     onClick={() => this.onClickStatusLock(booking)}
                                                 >
                                                     <i className="fa fa-lock"></i>
-                                                    <TooltipItem object={tooltipText} placement='bottom' fields={['z_lock_status']} />
+                                                    {/* <TooltipItem object={tooltipText} placement='bottom' fields={['z_lock_status']} /> */}
                                                 </p>
                                             </label>
                                         </div>
