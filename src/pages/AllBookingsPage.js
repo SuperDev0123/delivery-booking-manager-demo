@@ -1762,7 +1762,7 @@ class AllBookingsPage extends React.Component {
             isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets, allBookingStatus } = this.props;
-        console.log('@1 - ', startDate, endDate);
+
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};

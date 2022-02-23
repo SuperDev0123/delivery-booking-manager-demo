@@ -2883,17 +2883,13 @@ class BookingPage extends Component {
 
         const identifier = booking.b_client_booking_ref_num || booking.pk_booking_id;
         if (linkType === 'status-page-link') {
-            if (booking && booking.b_client_booking_ref_num) {
-                const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
-                const win = window.open(link, '_blank');
-                win.focus();
-            }
+            const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
+            const win = window.open(link, '_blank');
+            win.focus();
         } else if (linkType === 'status-page-link-copy') {
-            if (booking && booking.b_client_booking_ref_num) {
-                const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
-                navigator.clipboard.writeText(link);
-                this.notify('Status page url is copied on clipboard');
-            }
+            const link = `${window.location.protocol}//${window.location.hostname}/status/${identifier}`;
+            navigator.clipboard.writeText(link);
+            this.notify('Status page url is copied on clipboard');
         }
     }
 
