@@ -3467,9 +3467,9 @@ class BookingPage extends Component {
                                             <label className="color-white float-right">
                                                 <p 
                                                     className='cursor-pointer' 
-                                                    onClick={() => this.onClickLink('status-page-link')}
+                                                    onClick={() => isBookingSelected && this.onClickLink('status-page-link')}
                                                 >
-                                                    {isBookingSelected ? <div>{booking.b_status}</div> : '***'}</p>
+                                                    {isBookingSelected ? <span>{booking.b_status}</span> : '***'}</p>
                                                 <p
                                                     id={'booking-' + 'link' + '-tooltip-' + booking.id}
                                                     className='status-icon inactive' 
