@@ -39,7 +39,7 @@ import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
-import CostSlider from '../components/Sliders/CostSlider';
+import AdditionalSurchargeSlider from '../components/Sliders/AdditionalSurchargeSlider';
 import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
 import CSNoteSlider from '../components/Sliders/CSNoteSlider';
 import Children from '../components/Modules/Children';
@@ -159,7 +159,7 @@ class BookingPage extends Component {
             isShowStatusNoteModal: false,
             isShowDeleteFileConfirmModal: false,
             isShowEmailLogSlider: false,
-            isShowCostSlider: false,
+            isShowAdditionalSurchargeSlider: false,
             isShowAugmentInfoPopup: false,
             isAugmentEditable: false,
             isShowManualRepackModal: false,
@@ -225,7 +225,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
-        this.toggleCostSlider = this.toggleCostSlider.bind(this);
+        this.toggleAdditionalSurchargeSlider = this.toggleAdditionalSurchargeSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
         this.toggleManualRepackModal = this.toggleManualRepackModal.bind(this);
         this.toggleCSNoteSlider = this.toggleCSNoteSlider.bind(this);
@@ -312,6 +312,7 @@ class BookingPage extends Component {
         emailLogs: PropTypes.array.isRequired,
         clientId: PropTypes.string.isRequired,
         bookingLines: PropTypes.array,
+        cntAdditionalSurcharges: PropTypes.number
     };
 
     componentDidMount() {
@@ -2476,13 +2477,17 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowCSNoteSlider: !prevState.isShowCSNoteSlider}));
     }
 
-    toggleCostSlider() {
+    toggleAdditionalSurchargeSlider() {
         if (!this.state.booking.vx_freight_provider) {
             this.notify('Freight Provider is required to open this slider.');
             return;
         }
 
-        this.setState(prevState => ({isShowCostSlider: !prevState.isShowCostSlider}));   
+        if (this.state.isShowAdditionalSurchargeSlider) {
+            this.refreshBooking(this.state.booking);
+        }
+
+        this.setState(prevState => ({isShowAdditionalSurchargeSlider: !prevState.isShowAdditionalSurchargeSlider}));
     }
 
     toggleManualRepackModal() {
@@ -2901,9 +2906,14 @@ class BookingPage extends Component {
 
     render() {
         const {
-            isBookingModified, isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct, formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes, deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider, isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal, isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates, deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
+            isBookingModified, isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct,
+            formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes,
+            deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider,
+            isShowScansSlider, scans, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal,
+            isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates,
+            deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries
         } = this.state;
-        const {warehouses, emailLogs, bookingLines} = this.props;
+        const {warehouses, emailLogs, bookingLines, cntAdditionalSurcharges} = this.props;
 
         const filteredProducts = products
             .filter(product => {
@@ -4090,8 +4100,12 @@ class BookingPage extends Component {
                                         }
                                         <div className="col-sm-1 form-group">
                                             <div>
-                                                <span>Misc. Costs</span><br />
-                                                <Button className="custom-button btn-primary" onClick={() => this.toggleCostSlider()} disabled={!isBookingSelected}>
+                                                <span>Misc surcharges</span><br />
+                                                <Button
+                                                    className={cntAdditionalSurcharges ? 'custom-button btn-primary' : 'custom-button btn-secondary'}
+                                                    onClick={() => this.toggleAdditionalSurchargeSlider()}
+                                                    disabled={!isBookingSelected || !this.props.allFPs}
+                                                >
                                                     <i className="fa fa-columns"></i>
                                                 </Button>
                                             </div>
@@ -6047,11 +6061,12 @@ class BookingPage extends Component {
                     emailLogs={emailLogs}
                 />
 
-                <CostSlider
-                    isOpen={this.state.isShowCostSlider}
-                    toggleSlider={this.toggleCostSlider}
+                <AdditionalSurchargeSlider
+                    isOpen={this.state.isShowAdditionalSurchargeSlider}
+                    toggleSlider={this.toggleAdditionalSurchargeSlider}
                     booking={booking}
                     clientname={clientname}
+                    fps={this.props.allFPs}
                 />
 
                 <CSNoteSlider
@@ -6102,6 +6117,7 @@ const mapStateToProps = (state) => {
         prevBookingId: state.booking.prevBookingId,
         qtyTotal: state.booking.qtyTotal,
         cntAttachments: state.booking.cntAttachments,
+        cntAdditionalSurcharges: state.booking.cntAdditionalSurcharges,
         redirect: state.auth.redirect,
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,

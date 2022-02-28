@@ -278,6 +278,7 @@ export function successGetBooking(data) {
         qtyTotal: data['e_qty_total'],
         cntComms: data['cnt_comms'],
         cntAttachments: data['cnt_attachments'],
+        cntAdditionalSurcharges: data['cnt_additional_surcharges'],
         noBooking: false,
     };
 }

@@ -1,0 +1,83 @@
+.additional-surcharge-slider {
+    .slider-content {
+        height: 100%;
+        overflow-y: auto;
+
+        .selected {
+            background: lightblue;
+        }
+    }
+
+    .form-view {
+        text-align: center;
+        width: 60%;
+        margin: 0 auto;
+
+        h2 {
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        label {
+          display: block;
+          text-align: left;
+          margin-top: 10px;
+          margin-bottom: 10px;
+
+          >span {
+            width: 20%;
+            display: inline-block;
+
+            &.red {
+                width: 100%;
+            }
+          }
+
+          >select, >input, >textarea {
+            width: 70%;
+            display: inline-block;
+            vertical-align: top;
+          }
+
+          >select {
+            height: 25px;
+          }
+
+          >div {
+            width: 220px;
+            display: inline-block;
+            vertical-align: top;
+          }
+        }
+
+        form > button {
+            margin-top: 30px;
+
+            &.btn-primary {
+                margin-right: 3%;
+            }
+
+            &.btn-danger {
+                margin-left: 3%;
+            }
+        }
+    }
+
+    .list-view {
+        button {
+            font-size: 30px;
+            padding: 0px 10px;
+
+            i { font-size: 20px }
+
+            &.new { margin-bottom: 20px }
+        }
+    }
+
+    table {
+        button {
+             margin-bottom: 0px;
+             font-size: 20px;
+        }
+    }
+}

@@ -1,120 +1,73 @@
 import axios from 'axios';
 
-import {
-    successGetFPCosts,
-    failedGetFPCosts,
-    successGetCostOptions,
-    failedGetCostOptions,
-    successGetCostOptionMaps,
-    failedGetCostOptionMaps,
-    successGetBookingCostOptions,
-    failedGetBookingCostOptions,
-    successCreateBookingCostOption,
-    failedCreateBookingCostOption,
-    successUpdateBookingCostOption,
-    failedUpdateBookingCostOption,
-    successDeleteBookingCostOption,
-    failedDeleteBookingCostOption,
-} from '../actions/costActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
+import {
+    successGetSurcharges,
+    failedGetSurcharges,
+    successCreateSurcharge,
+    failedCreateSurcharge,
+    successUpdateSurcharge,
+    failedUpdateSurcharge,
+    successDeleteSurcharge,
+    failedDeleteSurcharge,
+} from '../actions/costActions';
 
-export const getFPCosts = () => {
+
+export const getSurcharges = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/fp-cost/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/?bookingId=${bookingId}`,
     };
     
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successGetFPCosts(data)))
-            .catch((error) => dispatch(failedGetFPCosts(error)));
+            .then(({ data }) => dispatch(successGetSurcharges(data)))
+            .catch((error) => dispatch(failedGetSurcharges(error)));
 };
 
-export const getCostOptions = () => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/cost-option/`,
-    };
-    
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetCostOptions(data)))
-            .catch((error) => dispatch(failedGetCostOptions(error)));
-};
-
-export const getCostOptionMaps = (fpName='') => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/cost-option-map/?fpName=${fpName}`,
-    };
-    
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetCostOptionMaps(data)))
-            .catch((error) => dispatch(failedGetCostOptionMaps(error)));
-};
-
-export const getBookingCostOptions = (bookingId='') => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/?bookingId=${bookingId}`,
-    };
-    
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetBookingCostOptions(data)))
-            .catch((error) => dispatch(failedGetBookingCostOptions(error)));
-};
-
-export const createBookingCostOption = (bookingCostOption) => {
+export const createSurcharge = (surcharge) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/`,
-        data: bookingCostOption,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/`,
+        data: surcharge,
     };
     
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successCreateBookingCostOption(data)))
-            .catch((error) => dispatch(failedCreateBookingCostOption(error)));
+            .then(({ data }) => dispatch(successCreateSurcharge(data)))
+            .catch((error) => dispatch(failedCreateSurcharge(error)));
 };
 
-export const updateBookingCostOption = (bookingCostOption) => {
+export const updateSurcharge = (surcharge) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/${bookingCostOption.id}/?bookingId=${bookingCostOption.booking}`,
-        data: bookingCostOption,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/?bookingId=${surcharge.booking}`,
+        data: surcharge,
     };
     
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successUpdateBookingCostOption(data)))
-            .catch((error) => dispatch(failedUpdateBookingCostOption(error)));
+            .then(({ data }) => dispatch(successUpdateSurcharge(data)))
+            .catch((error) => dispatch(failedUpdateSurcharge(error)));
 };
 
-export const deleteBookingCostOption = (bookingCostOption) => {
+export const deleteSurcharge = (surcharge) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/booking-cost-option/${bookingCostOption.id}/?bookingId=${bookingCostOption.booking}`,
-        data: bookingCostOption,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/?bookingId=${surcharge.booking}`,
+        data: surcharge,
     };
     
     return dispatch =>
         axios(options)
-            .then(() => dispatch(successDeleteBookingCostOption(bookingCostOption)))
-            .catch((error) => dispatch(failedDeleteBookingCostOption(error)));
+            .then(() => dispatch(successDeleteSurcharge(surcharge)))
+            .catch((error) => dispatch(failedDeleteSurcharge(error)));
 };

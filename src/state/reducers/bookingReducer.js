@@ -183,6 +183,7 @@ export const BookingReducer = (state = defaultState, {
     qtyTotal,
     cntComms,
     cntAttachments,
+    cntAdditionalSurcharges,
     dmeStatus,
     projectName,
     multiFindField,
@@ -306,6 +307,7 @@ export const BookingReducer = (state = defaultState, {
                 qtyTotal: qtyTotal,
                 cntComms: cntComms,
                 cntAttachments: cntAttachments,
+                cntAdditionalSurcharges: cntAdditionalSurcharges,
                 noBooking: noBooking,
                 needUpdateBooking: false,
             };

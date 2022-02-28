@@ -113,8 +113,8 @@ class StatusHistorySlider extends React.Component {
     }
 
     onChangeDateTime(date, fieldName) {
-        let conveted_date = moment(date).add(this.tzOffset, 'h');   // Current -> UTC
-        conveted_date = conveted_date.add(timeDiff, 'h');                // UTC -> Sydney
+        let conveted_date = moment(date).add(this.tzOffset, 'h');           // Current -> UTC
+        conveted_date = conveted_date.add(timeDiff, 'h');                   // UTC -> Sydney
 
         if (fieldName === 'event_time_stamp') {
             this.setState({event_time_stamp: conveted_date});
