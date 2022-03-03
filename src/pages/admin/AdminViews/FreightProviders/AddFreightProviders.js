@@ -6,6 +6,8 @@ import { withRouter } from 'react-router-dom';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { createFpDetail } from '../../../../state/services/fpService';
+import 'rc-color-picker/assets/index.css';
+import ColorPicker from 'rc-color-picker';
 
 class AddFreightProviders extends Component {
     constructor(props) {
@@ -15,6 +17,8 @@ class AddFreightProviders extends Component {
             fp_company_name: '',
             fp_address_country: 'AU',
             loading: false,
+            fp_markupfuel_levy_percent: '',
+            hex_color_code: '#36c',
         };
     }
 
@@ -62,11 +66,20 @@ class AddFreightProviders extends Component {
 
     onSubmit(event) {
         this.setState({ loading: true });
-        const { fp_company_name, fp_address_country } = this.state;
-        this.props.createFpDetail({ fp_company_name: fp_company_name, fp_address_country: fp_address_country });
+        const { fp_company_name, fp_address_country, fp_markupfuel_levy_percent, hex_color_code } = this.state;
+        this.props.createFpDetail({ 
+            fp_company_name, 
+            fp_address_country, 
+            fp_markupfuel_levy_percent,
+            hex_color_code
+        });
         this.setState({ loading: false });
         this.props.history.push('/admin/providers');
         event.preventDefault();
+    }
+
+    onChangeColor(colors) {
+        this.setState({ hex_color_code: colors.color} );
     }
 
     render() {
@@ -111,6 +124,23 @@ class AddFreightProviders extends Component {
                                                 <option value="AUS">Australia</option>
                                             </select>
                                         </div>
+                                        <div className="form-group">
+                                            <label htmlFor="fp_markupfuel_levy_percent ">Fuel Levy Percent</label>
+                                            <input name="fp_markupfuel_levy_percent" type="text" className="form-control" id="fp_markupfuel_levy_percent" placeholder="Fuel Levy Percent" value={this.state.fp_markupfuel_levy_percent} onChange={(e) => this.onInputChange(e)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="hex_color_code ">Hex Color Code</label>
+                                            <div className='d-flex mr-0-1'>
+                                                <input name="hex_color_code" type="text" className="form-control mr-n2 pr-2" id="hex_color_code " placeholder="Hex Color Code" value={this.state.hex_color_code}/>
+                                                <ColorPicker
+                                                    className="fp-color-picker"
+                                                    animation="slide-up"
+                                                    color={this.state.hex_color_code}
+                                                    onChange={(colors) => this.onChangeColor(colors)}
+                                                />
+                                            </div>
+                                        </div>
+                                                                                                                        
                                         <button type="submit" className="btn btn-primary  mt-5 mb-2">Submit</button>
                                     </form>
                                 </div>

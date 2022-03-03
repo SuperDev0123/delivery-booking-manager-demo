@@ -73,6 +73,7 @@
     "popper.js": "^1.12.9",
     "print-js": "^1.6.0",
     "prop-types": "^15.6.0",
+    "rc-color-picker": "^1.2.6",
     "react": "^16.8.4",
     "react-bootstrap-modal": "^4.2.0",
     "react-bootstrap-table": "^4.3.1",

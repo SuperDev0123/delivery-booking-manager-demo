@@ -4,10 +4,13 @@ import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
 import Modal from 'react-modal';
+import 'rc-color-picker/assets/index.css';
+import ColorPicker from 'rc-color-picker';
 
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';
 import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
+import AdminHeader from '../../../../components/admin/AdminHeader';
 
 class EditFreightProviders extends Component {
     constructor(props) {
@@ -17,7 +20,7 @@ class EditFreightProviders extends Component {
             id: 0,
             loading: false,
             isShowFPDataSlider: false,
-            fpDetails: { id: 0, fp_company_name: '', fp_address_country: 'AU' },
+            fpDetails: { id: 0, fp_company_name: '', fp_address_country: 'AU', fp_markupfuel_levy_percent: '', hex_color_code: '#36c'},
             fpCarriers: [],
             fpZones: [],
             pageItemCnt: 10,
@@ -120,15 +123,24 @@ class EditFreightProviders extends Component {
 
     onInputChange(event) {
         const { fpDetails } = this.state;
-        if (event.target.name == 'fp_company_name') {
-            this.setState({ fpDetails: { fp_company_name: event.target.value, id: fpDetails.id, fp_address_country: fpDetails.fp_address_country } });
-        }
+        this.setState({
+            fpDetails: {
+                ...fpDetails,
+                [event.target.name]: event.target.value
+            }
+        });
     }
 
     onSubmit(event) {
         this.setState({ loading: true });
         const { fpDetails } = this.state;
-        this.props.updateFpDetail({ id: fpDetails.id, fp_company_name: fpDetails.fp_company_name, fp_address_country: fpDetails.fp_address_country });
+        this.props.updateFpDetail({
+            id: fpDetails.id, 
+            fp_company_name: fpDetails.fp_company_name, 
+            fp_address_country: fpDetails.fp_address_country,
+            fp_markupfuel_levy_percent: fpDetails.fp_markupfuel_levy_percent,
+            hex_color_code: fpDetails.hex_color_code
+        });
         this.setState({ loading: false });
         this.props.history.push('/admin/providers');
         event.preventDefault();
@@ -166,24 +178,26 @@ class EditFreightProviders extends Component {
         }
     }
 
+    onChangeColor(colors) {
+        this.setState({
+            fpDetails: {
+                ...this.state.fpDetails,
+                hex_color_code: colors.color
+            }
+        });
+    }
+
     render() {
         const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt } = this.state;
+        const breadcrumbs = [
+            {name: 'Home', url: this.props.urlAdminHome},
+            {name: 'Freight Providers', url: '/admin/providers'},
+            {name: 'Edit', url:'#'}
+        ];
 
         return (
             <div>
-
-                <div className="pageheader">
-                    <h1>Edit Freight Providers</h1>
-                    <div className="breadcrumb-wrapper hidden-xs">
-                        <span className="label">You are here:</span>
-                        <ol className="breadcrumb">
-                            <li><a href={this.props.urlAdminHome}>Home</a>
-                            </li>
-                            <li><a href="/admin/providers">Freight Providers</a></li>
-                            <li className="active">Edit</li>
-                        </ol>
-                    </div>
-                </div>
+                <AdminHeader title='Edit Freight Providers' breadcrumbs={breadcrumbs} />
                 <section id="main-content" className="animated fadeInUp">
                     <LoadingOverlay
                         active={this.state.loading}
@@ -232,6 +246,23 @@ class EditFreightProviders extends Component {
                                                 <option value="AUS">Australia</option>
                                             </select>
                                         </div>
+                                        <div className="form-group">
+                                            <label htmlFor="fp_markupfuel_levy_percent ">Fuel Levy Percent</label>
+                                            <input name="fp_markupfuel_levy_percent" type="text" className="form-control" id="fp_markupfuel_levy_percent" placeholder="Fuel Levy Percent" value={this.state.fpDetails.fp_markupfuel_levy_percent} onChange={(e) => this.onInputChange(e)} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label htmlFor="hex_color_code ">Hex Color Code</label>
+                                            <div className='d-flex mr-0-1'>
+                                                <input name="hex_color_code" type="text" className="form-control mr-n2 pr-2" id="hex_color_code " placeholder="Hex Color Code" value={this.state.fpDetails.hex_color_code}/>
+                                                <ColorPicker
+                                                    className="fp-color-picker"
+                                                    animation="slide-up"
+                                                    color={this.state.fpDetails.hex_color_code}
+                                                    onChange={(colors) => this.onChangeColor(colors)}
+                                                />
+                                            </div>
+                                        </div>
+
                                         <button type="submit" className="btn btn-primary">Submit</button>
                                     </form>
                                 </div>
