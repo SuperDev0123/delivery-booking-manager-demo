@@ -1057,16 +1057,11 @@ class BookingPage extends Component {
         else formInputs['v_FPBookingNumber'] = '';
         if (!_.isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
         else formInputs['vx_freight_provider'] = '';
-        if (!_.isNull(booking.vx_serviceName)) formInputs['vx_serviceName'] = booking.vx_serviceName;
-        else formInputs['vx_serviceName'] = '';
-        if (!_.isNull(booking.vx_account_code)) formInputs['vx_account_code'] = booking.vx_account_code;
-        else formInputs['vx_account_code'] = '';
-        if (!_.isNull(booking.v_service_Type)) formInputs['v_service_Type'] = booking.v_service_Type;
-        else formInputs['v_service_Type'] = '';
-        if (!_.isNull(booking.fk_fp_pickup_id)) formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
-        else formInputs['fk_fp_pickup_id'] = '';
-        if (!_.isNull(booking.v_vehicle_Type)) formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
-        else formInputs['v_vehicle_Type'] = '';
+        formInputs['vx_serviceName'] = booking.vx_serviceName;
+        formInputs['vx_account_code'] = booking.vx_account_code;
+        formInputs['v_service_Type'] = booking.v_service_Type;
+        formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
+        formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
         if (!_.isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
         else formInputs['inv_billing_status'] = '';
         if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
@@ -2168,7 +2163,7 @@ class BookingPage extends Component {
                 Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
-                    if (_.intersection(updatedFields, BOOKING_IMPORTANT_FIELDS)) {
+                    if (_.intersection(updatedFields, BOOKING_IMPORTANT_FIELDS).length > 0) {
                         this.toggleUpdateBookingModal();
                     }
 

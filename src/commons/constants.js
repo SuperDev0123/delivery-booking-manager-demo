@@ -79,6 +79,7 @@ export const BOOKING_IMPORTANT_FIELDS = [
     'de_to_floor_access_by',
     'pu_service',
     'de_service',
+    'booking_type'
 ];
 
 export const LINE_IMPORTANT_FIELDS = [
