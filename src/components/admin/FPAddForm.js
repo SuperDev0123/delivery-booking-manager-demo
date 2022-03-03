@@ -24,23 +24,28 @@ class FPAddForm extends Component {
         match: PropTypes.object.isRequired,
         getFPDetails: PropTypes.func.isRequired,
         componentType: PropTypes.string.isRequired,
-        fpDetails: PropTypes.object.isRequired,
+        onChangeState: PropTypes.func.isRequired,
+        fpDetails: PropTypes.object,
         createFpDetail: PropTypes.func.isRequired,
         updateFpDetail: PropTypes.func.isRequired
     }
 
     componentDidMount() {
-        const { componentType } = this.props;
+        const { componentType, fpDetails } = this.props;
         if (componentType == 'edit') {
-            const fp_id = this.state.id;
-            this.props.getFPDetails(fp_id);
+            this.setState({
+                id: fpDetails.id,
+                fp_company_name: fpDetails.fp_company_name,
+                fp_address_country: fpDetails.fp_address_country,
+                fp_markupfuel_levy_percent: fpDetails.fp_markupfuel_levy_percent,
+                hex_color_code: fpDetails.hex_color_code,
+            });
         } 
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { componentType, fpDetails } = newProps;
-        console.log(fpDetails);
-        if (componentType == 'edit') {
+        if (componentType == 'edit' && fpDetails) {
             this.setState({
                 id: fpDetails.id,
                 fp_company_name: fpDetails.fp_company_name,
@@ -68,17 +73,26 @@ class FPAddForm extends Component {
             });
         }
         this.setState({ loading: false });
-        this.props.history.push('/admin/providers');
+        this.props.onChangeState();
         event.preventDefault();
     }
+
+    onChangeColor(colors) {
+        this.setState({ hex_color_code: colors.color} );
+    }
+    
+    onInputChange(event) {
+        this.setState({ [event.target.name]: event.target.value });
+    }
+
     render() {
         return (
             <div className="panel-body">
-                <form onSubmit={(e) => this.onSubmit(e)} role="form">
+                <form role="form">
                     <div className="form-group">
                         <label htmlFor="fp_company_name">Company Name</label>
                         <input name="fp_company_name" type="text" className="form-control" id="fp_company_name" placeholder="Enter Company Name" value={this.state.fp_company_name} onChange={(e) => this.onInputChange(e)} />
-                        <input name="id" type="hidden" value={this.state.id} />
+                        {/* <input name="id" type="hidden" value={this.state.id} onChange={(e) => this.onInputChange(e)}/> */}
                     </div>
                     <div className="form-group">
                         <label htmlFor="fp_address_country">Country</label>
@@ -93,7 +107,7 @@ class FPAddForm extends Component {
                     <div className="form-group">
                         <label htmlFor="hex_color_code ">Hex Color Code</label>
                         <div className='d-flex mr-0-1'>
-                            <input name="hex_color_code" type="text" className="form-control mr-n2 pr-2" id="hex_color_code " placeholder="Hex Color Code" value={this.state.hex_color_code}/>
+                            <input name="hex_color_code" type="text" className="form-control mr-n2 pr-2" id="hex_color_code " placeholder="Hex Color Code" value={this.state.hex_color_code} onChange={(e) => this.onInputChange(e)}/>
                             <ColorPicker
                                 className="fp-color-picker"
                                 animation="slide-up"
@@ -102,7 +116,7 @@ class FPAddForm extends Component {
                             />
                         </div>
                     </div>
-                    <button type="submit" className="btn btn-primary">Submit</button>
+                    <button type="button" className="btn btn-primary" onClick={(e) => this.onSubmit(e)}>Submit</button>
                 </form>
             </div>
         );

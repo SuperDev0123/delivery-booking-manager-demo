@@ -45,8 +45,6 @@ import AddUser from '../pages/admin/AdminViews/Users/AddUser';
 import EditUser from '../pages/admin/AdminViews/Users/EditUser';
 import CronOptions from '../pages/admin/AdminViews/CronOptions/CronOptions';
 import FreightProviders from '../pages/admin/AdminViews/FreightProviders/FreightProviders';
-import AddFreightProviders from '../pages/admin/AdminViews/FreightProviders/AddFreightProviders';
-import EditFreightProviders from '../pages/admin/AdminViews/FreightProviders/EditFreightProviders';
 import StatusMapping from '../pages/admin/AdminViews/FreightProviders/StatusMapping';
 import SqlQueries from '../pages/admin/AdminViews/SqlQueries';
 import SqlQueriesAction from '../pages/admin/AdminViews/SqlQueries/SqlQueriesAction';
@@ -127,8 +125,6 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/sqlqueries/duplicate/:id' component={SqlQueriesAction} />
                     <AdminPrivateRoute exact path='/admin/crons' component={CronOptions} />
                     <AdminPrivateRoute exact path='/admin/providers' component={FreightProviders} />
-                    <AdminPrivateRoute exact path='/admin/providers/add' component={AddFreightProviders} />
-                    <AdminPrivateRoute exact path='/admin/providers/edit/:id' component={EditFreightProviders} />
                     <AdminPrivateRoute exact path='/admin/providers/statusmapping' component={StatusMapping} />
                     <AdminPrivateRoute exact path='/admin/pricing-only' component={PricingOnlyList} />
                     <AdminPrivateRoute exact path='/admin/pricing-only/upload' component={PricingOnlyUpload} />

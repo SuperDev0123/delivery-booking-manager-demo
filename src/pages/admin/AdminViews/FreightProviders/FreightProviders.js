@@ -11,7 +11,7 @@ import 'react-confirm-alert/src/react-confirm-alert.css';
 import { verifyToken, cleanRedirectState } from '../../../../state/services/authService';
 import { getAllFPs, deleteFpDetail, createFpDetail } from '../../../../state/services/fpService';
 import { getFPDetails, updateFpDetail, getFPCarriers, getFPZones, setGetZonesFilter, setNeedUpdateZonesState, createFpCarrier, updateFpCarrier, deleteFpCarrier, createFpZone, updateFpZone, deleteFpZone } from '../../../../state/services/fpService';
-// import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
+import FPDataSlider from '../../../../components/Sliders/FPDataSlider';
 import AdminHeader from '../../../../components/admin/AdminHeader';
 import FPAddForm from '../../../../components/admin/FPAddForm';
 
@@ -21,7 +21,7 @@ class FreightProviders extends Component {
 
         this.state = {
             id: 0,
-            componentState: 'edit',
+            componentState: 'listView',
             allFPs: [],
             fpCarries: [],
             username: null,
@@ -98,7 +98,7 @@ class FreightProviders extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { redirect, allFPs, needUpdateFpDetails, fp_company_name, fp_address_country } = newProps;
+        const { redirect, allFPs, fp_company_name, fp_address_country } = newProps;
         const { fpDetails, id, fpCarriers, fpZones, pageItemCnt, pageInd, pageCnt, needUpdateFpCarriers, needUpdateFpZones } = newProps;
 
         const currentRoute = this.props.location.pathname;
@@ -110,9 +110,7 @@ class FreightProviders extends Component {
         if (allFPs) {
             this.setState({ allFPs });
         }
-        if (needUpdateFpDetails) {
-            this.props.getAllFPs();
-        }
+
         if (fpDetails) {
             this.setState({ fpDetails: fpDetails });
         }
@@ -196,6 +194,7 @@ class FreightProviders extends Component {
     }
 
     onEditClick(fp_id) {
+        this.props.getFPDetails(fp_id);
         this.setState({
             componentState: 'edit',
             id: fp_id,
@@ -213,8 +212,12 @@ class FreightProviders extends Component {
             hex_color_code: fpDetails.hex_color_code
         });
         this.setState({ loading: false });
-        this.props.history.push('/admin/providers');
         event.preventDefault();
+    }
+
+    onChangeComponentState(componentState) {
+        this.setState({componentState});
+        this.props.getAllFPs();
     }
 
     removeFpDetail(event, fp) {
@@ -239,7 +242,7 @@ class FreightProviders extends Component {
     }
 
     render() {
-        // const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt } = this.state;
+        const { fpDetails, isShowFPDataSlider, fpCarriers, fpZones, pageCnt, pageInd, pageItemCnt } = this.state;
         const { allFPs, componentState } = this.state;
         const addBreadcrumbs = [
             {name: 'Home', url: this.props.urlAdminHome},
@@ -265,7 +268,9 @@ class FreightProviders extends Component {
                     <td>{fp.id}</td>
                     <td>{fp.fp_company_name}</td>
                     <td>{fp.fp_address_country}</td>
-                    <td><button className="btn btn-info btn-sm" onClick={this.onEditClick(fp.id)}>Edit</button>&nbsp;&nbsp;<a onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm" href="javascript:void(0)">Delete</a></td>
+                    <td>{fp.fp_markupfuel_levy_percent}</td>
+                    <td>{fp.hex_color_code}</td>
+                    <td><button className="btn btn-info btn-sm" onClick={() => this.onEditClick(fp.id)}>Edit</button>&nbsp;&nbsp;<button onClick={(event) => this.removeFpDetail(event, fp)} className="btn btn-danger btn-sm">Delete</button></td>
                 </tr>
             );
         });
@@ -289,7 +294,7 @@ class FreightProviders extends Component {
                                             <div className="panel-heading">
                                                 <h3 className="panel-title">Freight Providers</h3>
                                                 <div className="actions pull-right">
-                                                    <button className="btn btn-success" onClick={this.onAddClick()}>Add New</button>
+                                                    <button className="btn btn-success" onClick={() => this.onAddClick()}>Add New</button>
                                                 </div>
                                             </div>
                                             <div className="panel-body">
@@ -299,6 +304,8 @@ class FreightProviders extends Component {
                                                             <th>id</th>
                                                             <th>Name</th>
                                                             <th>Country</th>
+                                                            <th>Markup</th>
+                                                            <th>Color</th>
                                                             <th>Actions</th>
                                                         </tr>
                                                     </thead>
@@ -326,7 +333,7 @@ class FreightProviders extends Component {
                                     spinner
                                     text='Loading...'
                                 />
-                                {/* <FPDataSlider
+                                <FPDataSlider
                                     isOpen={isShowFPDataSlider}
                                     toggleShowFPDataSlider={this.toggleShowFPDataSlider}
                                     fpCarriers={fpCarriers}
@@ -345,7 +352,7 @@ class FreightProviders extends Component {
                                     updateFpZone={(data) => this.props.updateFpZone(data)}
                                     deleteFpZone={(data) => this.props.deleteFpZone(data)}
                                     onClickDelete={(typeNum, data) => this.onClickDelete(typeNum, data)}
-                                /> */}
+                                />
                                 <div className="row">
                                     <div className="col-md-6">
                                         <div className="panel panel-default">
@@ -355,7 +362,7 @@ class FreightProviders extends Component {
                                                     <a onClick={(e) => this.onClickOpenSlide(e)} className="open-slide"><i className="fa fa-columns" aria-hidden="true"></i></a>
                                                 </div>
                                             </div>
-                                            <FPAddForm componentType="edit" />
+                                            <FPAddForm componentType="edit" onChangeState={() => this.onChangeComponentState('listView')}/>
                                         </div>
                                     </div>
                                 </div>
@@ -383,7 +390,7 @@ class FreightProviders extends Component {
 
                                                 </div>
                                             </div>
-                                            <FPAddForm componentType="add" />
+                                            <FPAddForm componentType="add" onChangeState={() => this.onChangeComponentState('listView')}/>
                                         </div>
                                     </div>
                                 </div>

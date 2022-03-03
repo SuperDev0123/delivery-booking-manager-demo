@@ -227,11 +227,6 @@ class SidebarPush extends React.Component {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link title="Add New Freight Providers" to="/admin/providers/add" className={this.activeRoute(['providers/add']) ? 'active' : ''}>
-                                            <span className="submenu-title">Add New</span>
-                                        </Link>
-                                    </li>
-                                    <li>
                                         <Link title="Add New Freight Providers" to="/admin/providers/statusmapping" className={this.activeRoute(['providers/statusmapping']) ? 'active' : ''}>
                                             <span className="submenu-title">Status Mapping</span>
                                         </Link>
