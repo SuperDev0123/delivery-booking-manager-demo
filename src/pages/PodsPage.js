@@ -84,7 +84,7 @@ class PodsPage extends React.Component {
                     <td>{booking.b_dateBookedDate ? moment(booking.b_dateBookedDate).format('ddd DD MMM YYYY'): ''}</td>
                     <td>{booking.puPickUpAvailFrom_Date ? moment(booking.puPickUpAvailFrom_Date).format('ddd DD MMM YYYY'): ''}</td>
                     <td>{booking.pu_Address_State}</td>
-                    <td>{booking.business_group}</td>
+                    {/* <td>{booking.business_group}</td> */}
                     <td>{booking.deToCompanyName}</td>
                     <td>{booking.de_To_Address_Suburb}</td>
                     <td>{booking.de_To_Address_State}</td>
@@ -149,7 +149,7 @@ class PodsPage extends React.Component {
                                 <th>b_dateBookedDate</th>
                                 <th>puPickUpAvailFrom_Date</th>
                                 <th>pu_Address_State</th>
-                                <th>business_group</th>
+                                {/* <th>business_group</th> */}
                                 <th>deToCompanyName</th>
                                 <th>de_To_Address_Suburb</th>
                                 <th>de_To_Address_State</th>
