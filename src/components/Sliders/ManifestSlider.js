@@ -45,7 +45,7 @@ class ManifestSlider extends React.Component {
         const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
         const summaryList = [];
 
-        if (clientname === 'Jason L') {
+        if (clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') {
             notBookedCnt = 0;
             bookedCnt = selectedBookings.length;
         }
