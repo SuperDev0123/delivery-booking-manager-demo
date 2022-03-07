@@ -173,6 +173,7 @@ class AllBookingsPage extends React.Component {
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
         allBookingStatus: PropTypes.array,
+        clientname: PropTypes.string,
     };
 
     componentDidMount() {
@@ -1490,12 +1491,18 @@ class AllBookingsPage extends React.Component {
 
     onClickMANI() {
         const {selectedBookingIds} = this.state;
+        const {clientname} = this.props;
 
         if (selectedBookingIds.length === 0) {
             this.notify('Please select bookings to create Order!');
         } else {
             this.props.getBookingLinesCnt(selectedBookingIds);
-            this.toggleOrderModal();
+
+            if (clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') {
+                this.toggleManifestSlider();
+            } else {
+                this.toggleOrderModal();
+            }
         }
     }
 

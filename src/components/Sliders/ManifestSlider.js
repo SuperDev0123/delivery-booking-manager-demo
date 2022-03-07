@@ -24,7 +24,6 @@ class ManifestSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         onCreateOrder: PropTypes.func.isRequired,
         getManifestSummary: PropTypes.func.isRequired,
-        clientname: PropTypes.string,
         manifestSummary: PropTypes.object,
         selectedBookings: PropTypes.array,
     };
@@ -38,17 +37,10 @@ class ManifestSlider extends React.Component {
     }
 
     render() {
-        const {isOpen, selectedBookings, clientname, manifestSummary} = this.props;
+        const {isOpen, selectedBookings, manifestSummary} = this.props;
         const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
-        let bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
-        let notBookedCnt = selectedBookings.length - bookedCnt;
         const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
         const summaryList = [];
-
-        if (clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') {
-            notBookedCnt = 0;
-            bookedCnt = selectedBookings.length;
-        }
 
         if (manifestSummary) {
             let index = 0;
@@ -88,12 +80,7 @@ class ManifestSlider extends React.Component {
                     </span><br />
                     <span className={puAvailFromDateCnt > 1 ? 'red' : ''}>
                         # There are {puAvailFromDateCnt} `Pick Up Available From Date`;
-                    </span><br />
-                    {clientname !== 'Jason L' &&
-                        <span className={notBookedCnt > 0 ? 'red' : ''}>
-                            # Not booked Count: {notBookedCnt}
-                        </span>
-                    }
+                    </span>
                 </label>
                 <hr />
                 {summaryList}
