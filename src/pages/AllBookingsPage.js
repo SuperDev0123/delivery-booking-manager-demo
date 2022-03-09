@@ -1564,20 +1564,20 @@ class AllBookingsPage extends React.Component {
         this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
     }
 
-    onClickChangeStatusButton() {
-        const {selectedStatusValue, selectedBookingIds} = this.state;
+    // onClickChangeStatusButton() {
+    //     const {selectedStatusValue, selectedBookingIds} = this.state;
 
-        if (!selectedStatusValue) {
-            this.notify('Please select a status.');
-        } else if (selectedBookingIds.length === 0) {
-            this.notify('Please select at least one booking.');
-        } else if (selectedBookingIds.length > 25) {
-            this.notify('You can change 25 bookings status at a time.');
-        } else {
-            this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
-            this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
-        }
-    }
+    //     if (!selectedStatusValue) {
+    //         this.notify('Please select a status.');
+    //     } else if (selectedBookingIds.length === 0) {
+    //         this.notify('Please select at least one booking.');
+    //     } else if (selectedBookingIds.length > 25) {
+    //         this.notify('You can change 25 bookings status at a time.');
+    //     } else {
+    //         this.props.changeBookingsStatus(selectedStatusValue, selectedBookingIds);
+    //         this.setState({loading: true, selectedBookingIds: [], allCheckStatus: 'None'});
+    //     }
+    // }
 
     onClickCalcCollected(type) {
         const {selectedBookingIds} = this.state;
@@ -1672,6 +1672,15 @@ class AllBookingsPage extends React.Component {
         if (field === 'flag') {
             this.props.changeBookingsFlagStatus(value, bookingIds);
         } else if (field === 'status') {
+            let lockedBookingsCnt = 0;
+            this.props.bookings.map(booking => {
+                if (booking['z_lock_status'])
+                    lockedBookingsCnt++;
+            });
+
+            if (lockedBookingsCnt)
+                this.notify(`${lockedBookingsCnt} LOCKED bookings won't be updated. Please unlock it for chainging status.`);
+
             this.props.changeBookingsStatus(value, bookingIds, optionalValue);
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
