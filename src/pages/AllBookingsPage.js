@@ -418,6 +418,7 @@ class AllBookingsPage extends React.Component {
             });
 
             this.props.getBookings(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName);
+            this.props.getAllProjectNames();
         }
     }
 
