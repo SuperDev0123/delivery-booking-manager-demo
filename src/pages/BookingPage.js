@@ -5471,25 +5471,23 @@ class BookingPage extends Component {
                                                             Create
                                                         </button>
                                                     </div>}
-                                                    {parseInt(curViewMode) === 0 && <div className="text-center mt-2 fixed-height form-view-btns">
-                                                        <button className="btn btn-theme custom-theme disabled" disabled>Update</button>
-                                                        <button className="btn btn-theme custom-theme disabled" disabled>Cancel</button>
-                                                    </div>}
-                                                    {parseInt(curViewMode) === 2 && <div className="text-center mt-2 fixed-height form-view-btns">
-                                                        <button
-                                                            className={isBookingModified ? 'btn btn-theme custom-theme btn-primary' : 'btn btn-theme custom-theme'}
-                                                            onClick={() => this.onClickUpdateBooking()}
-                                                            disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
-                                                        >
-                                                            Update
-                                                        </button>
-                                                        <button
-                                                            className={isBookingModified ? 'btn btn-theme custom-theme btn-danger' : 'btn btn-theme custom-theme'}
-                                                            onClick={() => this.onClickCancelUpdate()}
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </div>}
+                                                    {(parseInt(curViewMode) === 2 && isBookingModified) &&
+                                                        <div className="text-center mt-2 fixed-height form-view-btns">
+                                                            <button
+                                                                className={'btn btn-theme custom-theme btn-primary'}
+                                                                onClick={() => this.onClickUpdateBooking()}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
+                                                            >
+                                                                Update
+                                                            </button>
+                                                            <button
+                                                                className={'btn btn-theme custom-theme btn-danger'}
+                                                                onClick={() => this.onClickCancelUpdate()}
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    }
                                                     <div className="text-center mt-2 fixed-height pricing-btns">
                                                         <button
                                                             className="btn btn-theme custom-theme"
