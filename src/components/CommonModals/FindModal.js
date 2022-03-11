@@ -95,7 +95,7 @@ class FindModal extends Component {
             this.setState({errorMessage: 'Please input search keywords!'});
         } else if (selectedFieldName !== 'postal_code_pair' && selectedFieldName !== 'postal_code_type') {
             // Replace ',' with '\n'
-            valueSet = valueSet.replace(',', '\n');
+            valueSet = valueSet.replaceAll(',', '\n');
 
             // Delete all empty lines and duplicated lines
             valueSet = valueSet.split('\n');
