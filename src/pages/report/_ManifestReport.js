@@ -1,10 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 // Libs
 import axios from 'axios';
 import moment from 'moment-timezone';
 import LoadingOverlay from 'react-loading-overlay';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // Services
 import { getManifestReport } from '../../state/services/bookingService';
 // Constants
@@ -37,6 +41,8 @@ class ManifestReport extends React.Component {
         }
     }
 
+    notify = (text) => toast(text);
+
     onClickDownload(report) {
         this.setState({loading: true});
         const token = localStorage.getItem('token');
@@ -45,7 +51,7 @@ class ManifestReport extends React.Component {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
             headers: {'Authorization': 'JWT ' + token},
-            data: {z_manifest_url: report.z_manifest_url, downloadOption: 'manifest',},
+            data: {z_manifest_url: report.z_manifest_url, downloadOption: 'manifest'},
             responseType: 'blob', // important
         };
 
@@ -58,6 +64,11 @@ class ManifestReport extends React.Component {
             link.click();
             this.setState({loading: false});
         });
+    }
+
+    onClickCopy(report) {
+        navigator.clipboard.writeText(report['b_bookingID_Visuals']);
+        this.notify('Booking IDs are copied on clipboard');
     }
 
     render() {
@@ -79,6 +90,12 @@ class ManifestReport extends React.Component {
                                 onClick={() => this.onClickDownload(report)}
                             >
                                 Download
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => this.onClickCopy(report)}
+                            >
+                                Copy Booking IDs
                             </button>
                         </td>
                     </tr>
@@ -108,6 +125,8 @@ class ManifestReport extends React.Component {
                         </tbody>
                     </table>
                 </div>
+
+                <ToastContainer />
             </LoadingOverlay>
         );
     }
