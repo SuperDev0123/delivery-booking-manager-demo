@@ -5569,7 +5569,7 @@ class BookingPage extends Component {
                                                             className="btn btn-theme custom-theme"
                                                             onClick={() => this.onClickCancelBook()}
                                                         >
-                                                            Cancel Request
+                                                            {isBookedBooking ? 'Cancel Request' : 'Cancel Booking'}
                                                         </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height">
