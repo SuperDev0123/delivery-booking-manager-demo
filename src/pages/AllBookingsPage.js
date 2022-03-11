@@ -346,7 +346,14 @@ class AllBookingsPage extends React.Component {
         }
 
         if (projectNames) {
-            this.setState({projectNames});
+
+            let newProjectNames = [...projectNames];
+            newProjectNames.sort(function(a, b) {
+                const nameA = a.toUpperCase();
+                const nameB = b.toUpperCase();
+                return (nameA < nameB) ? -1 : (nameA > nameB) ? 1 : 0;
+            });
+            this.setState({projectNames: newProjectNames});
         }
 
         if (pricingAnalyses) {
