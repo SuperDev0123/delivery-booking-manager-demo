@@ -10,7 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Services
-import { getManifestReport } from '../../state/services/bookingService';
+import { getManifestReport, setAllGetBookingsFilter } from '../../state/services/bookingService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -25,7 +25,9 @@ class ManifestReport extends React.Component {
     }
 
     static propTypes = {
+        history: PropTypes.object.isRequired,
         getManifestReport: PropTypes.func.isRequired,
+        setAllGetBookingsFilter: PropTypes.func.isRequired,
         reports: PropTypes.array.isRequired,
     };
 
@@ -71,6 +73,12 @@ class ManifestReport extends React.Component {
         this.notify('Booking IDs are copied on clipboard');
     }
 
+    onClickViewOnAllBookingsTab(report) {
+        const today = moment().format('YYYY-MM-DD');
+        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, 100, 0, '-id', {}, 0, '', 'label', '', 'b_bookingID_Visual', report['b_bookingID_Visuals'].join(', '));
+        this.props.history.push('/allbookings');
+    }
+
     render() {
         const { reports } = this.props;
         const { loading } = this.state;
@@ -90,6 +98,12 @@ class ManifestReport extends React.Component {
                                 onClick={() => this.onClickDownload(report)}
                             >
                                 Download
+                            </button>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => this.onClickViewOnAllBookingsTab(report)}
+                            >
+                                View on Allbookings tab
                             </button>
                             <button
                                 className="btn btn-primary"
@@ -117,7 +131,7 @@ class ManifestReport extends React.Component {
                                 <th>Date</th>
                                 <th>Warehouse</th>
                                 <th>Count</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -141,6 +155,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getManifestReport: () => dispatch(getManifestReport()),
+        setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
     };
 };
 

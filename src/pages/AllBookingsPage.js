@@ -22,7 +22,12 @@ import { API_HOST, STATIC_HOST, HTTP_PROTOCOL } from '../config';
 // Actions
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getWarehouses } from '../state/services/warehouseService';
-import { getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel, allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState, fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected, clearErrorMessage, fpOrderSummary } from '../state/services/bookingService';
+import {
+    getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel,
+    allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState,
+    fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected,
+    clearErrorMessage, fpOrderSummary
+} from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
 import { getAllBookingStatus, getAllFPs, getAllProjectNames, getBookingSets, createBookingSet, updateBookingSet } from '../state/services/extraService';
@@ -174,10 +179,11 @@ class AllBookingsPage extends React.Component {
         bookings: PropTypes.array,
         allBookingStatus: PropTypes.array,
         clientname: PropTypes.string,
+        startDate: PropTypes.string,
     };
 
     componentDidMount() {
-        const { bookings } = this.props;
+        const { startDate, bookings } = this.props;
         const token = localStorage.getItem('token');
 
         if (token && token.length > 0) {
@@ -190,13 +196,18 @@ class AllBookingsPage extends React.Component {
 
         if (!bookings || (bookings && (_.isEmpty(bookings) || _.isUndefined(bookings)))) {
             // Set initial date range filter values
-            const startDate = moment().toDate();
-            const dateParam = moment().format('YYYY-MM-DD');
+            let newStartDate = moment().format('YYYY-MM-DD');
+
+            if (startDate === '*') {
+                newStartDate = null;
+                this.props.setGetBookingsFilter('date', {startDate: '*', endDate: newStartDate});
+            } else {
+                this.props.setGetBookingsFilter('date', {startDate: newStartDate, endDate: newStartDate});
+            }
+
+            this.setState({startDate: newStartDate, endDate: newStartDate});
+
             const that = this;
-
-            this.setState({startDate: startDate, endDate: startDate});
-            this.props.setGetBookingsFilter('date', {startDate: dateParam, endDate: dateParam});
-
             setTimeout(() => {
                 that.props.getDMEClients();
                 that.props.getWarehouses();
@@ -1762,15 +1773,6 @@ class AllBookingsPage extends React.Component {
         this.setState({loading: true, isShowBulkUpdateSlider: false});
     }
 
-    setFooBarRef(ref) {
-        console.log('@0- ', ref);
-        // console.log('@0- ', ref.refs);
-        // console.log('@0- ', ref.cx());
-        // console.log('@1- ', ref.current);
-        // this.drRef = ref;
-        // console.log('@2 - ', this.drRef.current);
-    }
-
     copyText(text) {
         console.log(text);
         if (text) {
@@ -3212,7 +3214,6 @@ class AllBookingsPage extends React.Component {
                                                                 />
                                                                 {this.state.isShowpuPickUpAvailFrom_DateRange && (
                                                                     <DateRangePicker
-                                                                        ref={this.setFooBarRef}
                                                                         value={this.state.puPickUpAvailFrom_DateRange}
                                                                         onSelect={(e) => this.onSelectDateRange(e, 'puPickUpAvailFrom_Date')}
                                                                         singleDateRange={true}

@@ -92,7 +92,11 @@ class ReportPage extends React.Component {
                             </select>
                         </label>
                         <hr />
-                        {selectedReportType === 'manifest' && <ManifestReport />}
+                        {selectedReportType === 'manifest' &&
+                            <ManifestReport
+                                history={this.props.history}
+                            />
+                        }
                     </div>
                 </div>
             </div>
