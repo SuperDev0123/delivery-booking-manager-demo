@@ -484,16 +484,16 @@ class BookingPage extends Component {
                 result['picked_up_timestamp'] = bookingLine.picked_up_timestamp;
                 result['sscc'] = bookingLine.sscc;
                 result['packed_status'] = bookingLine.packed_status;
-
+                result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter;
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
-                result['e_1_Total_dimCubicMeter'] = getCubicMeter(
-                    bookingLine.e_qty,
-                    bookingLine.e_dimUOM,
-                    bookingLine.e_dimLength,
-                    bookingLine.e_dimWidth,
-                    bookingLine.e_dimHeight
-                );
+                // result['e_1_Total_dimCubicMeter'] = getCubicMeter(
+                //     bookingLine.e_qty,
+                //     bookingLine.e_dimUOM,
+                //     bookingLine.e_dimLength,
+                //     bookingLine.e_dimWidth,
+                //     bookingLine.e_dimHeight
+                // );
                 result['total_2_cubic_mass_factor_calc'] = Math.ceil(result['e_1_Total_dimCubicMeter'] * m3ToKgFactor);
                 result['e_1_Total_dimCubicMeter'] = result['e_1_Total_dimCubicMeter'].toFixed(3);
 
