@@ -68,7 +68,7 @@ import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../co
 // Constants
 import { timeDiff, BOOKING_IMPORTANT_FIELDS } from '../commons/constants';
 // Helpers
-import { getM3ToKgFactor, getCubicMeter } from '../commons/helpers';
+import { getM3ToKgFactor } from '../commons/helpers';
 
 // Images
 import user from '../public/images/user.png';
@@ -487,13 +487,6 @@ class BookingPage extends Component {
                 result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter;
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
-                // result['e_1_Total_dimCubicMeter'] = getCubicMeter(
-                //     bookingLine.e_qty,
-                //     bookingLine.e_dimUOM,
-                //     bookingLine.e_dimLength,
-                //     bookingLine.e_dimWidth,
-                //     bookingLine.e_dimHeight
-                // );
                 result['total_2_cubic_mass_factor_calc'] = Math.ceil(result['e_1_Total_dimCubicMeter'] * m3ToKgFactor);
                 result['e_1_Total_dimCubicMeter'] = result['e_1_Total_dimCubicMeter'].toFixed(3);
 
