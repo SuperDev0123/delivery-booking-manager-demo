@@ -102,6 +102,8 @@ class BookingPage extends Component {
             loadingZohoDepartments: false,
             loadingZohoTicketSummaries: false,
             loadingComm: false,
+            loadingPricingInfos: false,
+            loadingStatusHistories: false,
             products: [],
             bookingLinesListProduct: [],
             bookingLineDetailsProduct: [],
@@ -880,7 +882,10 @@ class BookingPage extends Component {
             this.setState({pricingInfos, loadingPricingInfos: false});
         }
 
-        if (errors) {
+        if (booking && statusHistories) {
+            this.setState({statusHistories, loadingStatusHistories: false});
+        }
+        if (errors && errors.length != 0) {
             this.setState({errors, loadingPricingInfos: false});
         }
 
@@ -2651,6 +2656,8 @@ class BookingPage extends Component {
         e.preventDefault();
 
         if (type === 'dme-status-history') {
+            this.props.getBookingStatusHistory(this.state.booking.pk_booking_id);
+            this.setState({loadingStatusHistories: true });
             this.toggleStatusHistorySlider();
         } else if (type === 'fp-status-history') {
             this.toggleScansSlider();
@@ -5956,6 +5963,7 @@ class BookingPage extends Component {
                 <StatusHistorySlider
                     isOpen={isShowStatusHistorySlider}
                     statusHistories={statusHistories}
+                    isLoading = {this.state.loadingStatusHistories}
                     booking={booking}
                     toggleStatusHistorySlider={this.toggleStatusHistorySlider}
                     allBookingStatus={allBookingStatus}
