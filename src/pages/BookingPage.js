@@ -68,7 +68,6 @@ import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../co
 // Constants
 import { timeDiff, BOOKING_IMPORTANT_FIELDS } from '../commons/constants';
 // Helpers
-import { getM3ToKgFactor } from '../commons/helpers';
 
 // Images
 import user from '../public/images/user.png';
@@ -450,15 +449,6 @@ class BookingPage extends Component {
             this.setState({bookingLines: calcedbookingLines});
             let bookingLinesListProduct = [];
             bookingLinesListProduct = calcedbookingLines.map((bookingLine, index) => {
-                const m3ToKgFactor = getM3ToKgFactor(
-                    this.state.booking.vx_freight_provider,
-                    bookingLine.e_dimLength,
-                    bookingLine.e_dimWidth,
-                    bookingLine.e_dimHeight,
-                    bookingLine.e_weightPerEach,
-                    bookingLine.e_dimUOM,
-                    bookingLine.e_weightUOM
-                );
                 let result = {};
                 result['index'] = index + 1;
                 result['pk_lines_id'] = bookingLine.pk_lines_id ? bookingLine.pk_lines_id : '';
@@ -487,9 +477,9 @@ class BookingPage extends Component {
                 result['sscc'] = bookingLine.sscc;
                 result['packed_status'] = bookingLine.packed_status;
                 result['e_1_Total_dimCubicMeter'] = bookingLine.e_1_Total_dimCubicMeter;
+                result['total_2_cubic_mass_factor_calc'] = bookingLine.total_2_cubic_mass_factor_calc;
                 // Calc
                 result['e_qty_adjusted_delivered'] = result['e_qty_delivered'] - result['e_qty_damaged'] - result['e_qty_returned'] - result['e_qty_shortages'];
-                result['total_2_cubic_mass_factor_calc'] = Math.ceil(result['e_1_Total_dimCubicMeter'] * m3ToKgFactor);
                 result['e_1_Total_dimCubicMeter'] = result['e_1_Total_dimCubicMeter'].toFixed(3);
 
                 return result;
