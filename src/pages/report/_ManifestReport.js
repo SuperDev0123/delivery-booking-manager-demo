@@ -52,9 +52,9 @@ class ManifestReport extends React.Component {
         if (isLoggedIn && token && token.length > 0)
             this.props.getUser(token);
 
-        this.props.getManifestReport();
         this.props.getAllClients();
         this.props.getAllFPs();
+        this.props.getManifestReport();
         
     }
 
