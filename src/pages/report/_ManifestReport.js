@@ -181,14 +181,14 @@ class ManifestReport extends React.Component {
                     <label>Client:
                         <select value={fpFilter} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
                             <option value="" selected>All</option>
-                            {fpFilterOpts}
+                            {clientsOpts}
                         </select>
                     </label>&nbsp;&nbsp;
                     {clientname == 'dme' &&
                         <label>Freight Provider:
                             <select value={clientFilter} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
                                 <option value="" selected>All</option>
-                                {clientsOpts}
+                                {fpFilterOpts}
                             </select>
                         </label>                                  
                     }
