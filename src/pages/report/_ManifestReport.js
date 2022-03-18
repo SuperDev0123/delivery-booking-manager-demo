@@ -26,6 +26,8 @@ class ManifestReport extends React.Component {
             loading: true,
             fpFilter: '',
             clientFilter: '',
+            fpFilterOpts: [],
+            clientsOpts: [],
             reportList: [],
             fpOptions: [],
             clients: [],
@@ -59,11 +61,25 @@ class ManifestReport extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { reports } = newProps;
+        const { reports, allFPs, clients } = newProps;
 
-        if (reports) {
+        if (reports != this.props.reports) {
             this.setState({loading: false, reports});
             this.onFind(reports);
+        }
+
+        if (allFPs != this.props.allFPs) {
+            const fpFilterOpts = allFPs.map((fp, index) => {
+                return <option value={fp.fp_company_name} key={index}>{fp.fp_company_name}</option>;
+            });
+            this.setState({fpFilterOpts});
+        }
+        
+        if (clients != this.props.clients) {
+            const clientsOpts = clients.map((client, index) => {
+                return <option value={client.dme_account_num} key={index}>{client.company_name}</option>;
+            });
+            this.setState({clientsOpts});
         }
     }
 
@@ -107,6 +123,7 @@ class ManifestReport extends React.Component {
         this.setState({[filterType]: e.target.value});
     }
     
+    
     onFind = (reports) => {
         const { clientname } = this.props;
         const { fpFilter, clientFilter } = this.state;
@@ -148,29 +165,15 @@ class ManifestReport extends React.Component {
                         </tr>
                     );
                 });
-                this.setState({ reportList: reportList});
+                return reportList;
             }
         }
 
     }
-
     render() {
-        const { clientname, allFPs, clients } = this.props;
-        const { loading, fpFilter, clientFilter } = this.state;
-        let fpFilterOpts = [];
-        let clientsOpts = [];
-        if (allFPs) {
-            fpFilterOpts = allFPs.map((fp, index) => {
-                return <option value={fp.fp_company_name} key={index}>{fp.fp_company_name}</option>;
-            });
-        }
-
-        if (clients) {
-            clientsOpts = clients.map((client, index) => {
-                return <option value={client.dme_account_num} key={index}>{client.company_name}</option>;
-            });
-        }
-
+        const { clientname, reports } = this.props;
+        const { loading, fpFilter, clientFilter, fpFilterOpts, clientsOpts } = this.state;
+        let reportList = this.onFind(reports);
         return (
             <LoadingOverlay
                 active={loading}
@@ -178,21 +181,20 @@ class ManifestReport extends React.Component {
                 text='Loading...'
             >
                 <div>
-                    <label>Client:
-                        <select value={fpFilter} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
-                            <option value="" selected>All</option>
-                            {clientsOpts}
-                        </select>
-                    </label>&nbsp;&nbsp;
                     {clientname == 'dme' &&
-                        <label>Freight Provider:
+                        <label>Client:
                             <select value={clientFilter} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
                                 <option value="" selected>All</option>
-                                {fpFilterOpts}
+                                {clientsOpts}
                             </select>
-                        </label>                                  
+                        </label>
                     }
-                    <button type="button" onClick={() => this.onFind(this.props.reports)} className="btn btn-sm btn-success pull-right">Find</button>
+                    <label>Freight Provider:
+                        <select value={fpFilter} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
+                            <option value="" selected>All</option>
+                            {fpFilterOpts}
+                        </select>
+                    </label>                                  
                     <hr />
                 </div>
                 <div className="manifest">
@@ -208,7 +210,7 @@ class ManifestReport extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {this.state.reportList}
+                            {reportList}
                         </tbody>
                     </table>
                 </div>
