@@ -177,37 +177,40 @@ class ManifestReport extends React.Component {
                 spinner
                 text='Loading...'
             >
-                <div className="manifest">
-                    <div className="py-2">
+                <div>
+                    <label>Client:
                         <select value={fpFilter} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
                             <option value="" selected>All</option>
                             {fpFilterOpts}
-                        </select>&nbsp;&nbsp;
-                        {clientname == 'dme' &&
+                        </select>
+                    </label>&nbsp;&nbsp;
+                    {clientname == 'dme' &&
+                        <label>Freight Provider:
                             <select value={clientFilter} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
                                 <option value="" selected>All</option>
                                 {clientsOpts}
                             </select>
-                        }
-                        <button type="button" onClick={() => this.onFind(this.props.reports)} className="btn btn-sm btn-success pull-right">Find</button>
-                    </div>
-                    <div className="py-2">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Date</th>
-                                    <th>Warehouse</th>
-                                    <th>Freight Provider</th>
-                                    <th>Count</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.state.reportList}
-                            </tbody>
-                        </table>
-                    </div>
+                        </label>                                  
+                    }
+                    <button type="button" onClick={() => this.onFind(this.props.reports)} className="btn btn-sm btn-success pull-right">Find</button>
+                    <hr />
+                </div>
+                <div className="manifest">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Date</th>
+                                <th>Warehouse</th>
+                                <th>Freight Provider</th>
+                                <th>Count</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {this.state.reportList}
+                        </tbody>
+                    </table>
                 </div>
 
                 <ToastContainer />
