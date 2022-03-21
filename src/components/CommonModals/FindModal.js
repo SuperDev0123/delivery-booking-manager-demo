@@ -35,7 +35,7 @@ class FindModal extends Component {
                 foundValueSet = intersection(valueSet, foundValueSet);
             } else if (selectedFieldName === 'gap_ra') {
                 bookings.map(booking => {
-                    foundValueSet = concat(foundValueSet, booking['gap_ras'].split(', '));
+                    foundValueSet = concat(foundValueSet, booking['gapRas'].split(', '));
                     return true;
                 });
                 foundValueSet = intersection(valueSet, foundValueSet);
