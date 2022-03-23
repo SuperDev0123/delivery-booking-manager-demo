@@ -13,8 +13,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { getManifestReport, setAllGetBookingsFilter } from '../../state/services/bookingService';
 // Constants
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
-import { getAllClients } from '../../state/services/clientService';
-import { getAllFPs } from '../../state/services/extraService';
 import { getUser } from '../../state/services/authService';
 
 class ManifestReport extends React.Component {
@@ -54,8 +52,6 @@ class ManifestReport extends React.Component {
         if (isLoggedIn && token && token.length > 0)
             this.props.getUser(token);
 
-        this.props.getAllClients();
-        this.props.getAllFPs();
         this.props.getManifestReport();
         
     }
@@ -70,7 +66,7 @@ class ManifestReport extends React.Component {
 
         if (allFPs != this.props.allFPs) {
             const fpFilterOpts = allFPs.map((fp, index) => {
-                return <option value={fp.fp_company_name} key={index}>{fp.fp_company_name}</option>;
+                return <option value={fp} key={index}>{fp}</option>;
             });
             this.setState({fpFilterOpts});
         }
@@ -128,11 +124,14 @@ class ManifestReport extends React.Component {
         const { clientname } = this.props;
         const { fpFilter, clientFilter } = this.state;
         if (reports) {
-            const filteredReports = reports.filter(report => 
-                report.freight_provider.includes(fpFilter) &&
-                clientname == 'dme' &&
-                report.kf_client_id.includes(clientFilter)
-            );
+            const filteredReports = reports.filter(report => {
+                const fp = report.freight_provider.toLowerCase();
+                return (
+                    fp.includes(fpFilter.toLowerCase()) &&
+                    clientname == 'dme' &&
+                    report.kf_client_id.includes(clientFilter)
+                );
+            });
             if (filteredReports) {
                 let reportList = filteredReports.map((report, index) => {
                     return (
@@ -225,8 +224,8 @@ const mapStateToProps = (state) => {
     return {
         reports: state.booking.manifestReports,
         clientname: state.auth.clientname,
-        clients: state.client.clients,
-        allFPs: state.extra.allFPs,
+        clients: state.booking.report_clients,
+        allFPs: state.booking.report_fps,
     };
 };
 
@@ -234,8 +233,6 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getUser: (token) => dispatch(getUser(token)),
         getManifestReport: () => dispatch(getManifestReport()),
-        getAllClients: () => dispatch(getAllClients()),
-        getAllFPs: () => dispatch(getAllFPs()),
         setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
     };
 };

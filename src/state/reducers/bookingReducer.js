@@ -553,6 +553,8 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 manifestReports: payload['results'],
+                report_fps: payload['report_fps'],
+                report_clients: payload['report_clients'],
             };
         case BOOK_EDIT_SUCCESS:
         case BOOK_CANCEL_SUCCESS:
