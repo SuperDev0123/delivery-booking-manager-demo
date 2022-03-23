@@ -126,11 +126,11 @@ class ManifestReport extends React.Component {
         if (reports) {
             const filteredReports = reports.filter(report => {
                 const fp = report.freight_provider.toLowerCase();
-                return (
-                    fp.includes(fpFilter.toLowerCase()) &&
-                    clientname == 'dme' &&
-                    report.kf_client_id.includes(clientFilter)
-                );
+
+                if (clientname === 'dme')
+                    return fp.includes(fpFilter.toLowerCase()) && report.kf_client_id.includes(clientFilter);
+                else
+                    return fp.includes(fpFilter.toLowerCase());
             });
             if (filteredReports) {
                 let reportList = filteredReports.map((report, index) => {
@@ -180,7 +180,7 @@ class ManifestReport extends React.Component {
                 text='Loading...'
             >
                 <div>
-                    {clientname == 'dme' &&
+                    {clientname === 'dme' &&
                         <label>Client:
                             <select value={clientFilter} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
                                 <option value="" selected>All</option>
