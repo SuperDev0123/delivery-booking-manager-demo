@@ -365,7 +365,7 @@ class LineAndLineDetailSlider extends React.Component {
                                 <div className="line-section">
                                     <h3><strong>Lines</strong></h3>
                                     <Button color="primary new-btn" onClick={() => this.onClickNew(1, 1)}>+</Button>
-                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                    <table className="table table-hover table-bordered table-striped sortable fixed_headers">
                                         <tr>
                                             <th className="" scope="col" nowrap>
                                                 <p>No.</p>

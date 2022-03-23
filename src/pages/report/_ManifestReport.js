@@ -198,7 +198,7 @@ class ManifestReport extends React.Component {
                     <hr />
                 </div>
                 <div className="manifest">
-                    <table>
+                    <table className='table table-hover table-bordered table-striped'>
                         <thead>
                             <tr>
                                 <th>No</th>

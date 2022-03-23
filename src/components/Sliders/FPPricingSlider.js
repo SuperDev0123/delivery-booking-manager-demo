@@ -277,7 +277,7 @@ class FPPricingSlider extends React.Component {
                                 )
                             }
                             {currentTab === 1 ?
-                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                <table className="table table-hover table-bordered table-striped sortable fixed_headers">
                                     <tr>
                                         <th className="" scope="col" nowrap><p>No</p></th>
                                         <th className="" scope="col" nowrap><p>Freight Provider</p></th>
