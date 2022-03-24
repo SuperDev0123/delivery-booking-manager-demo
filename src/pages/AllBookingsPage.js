@@ -427,6 +427,7 @@ class AllBookingsPage extends React.Component {
                 selectedWarehouseId: warehouseId,
                 selectedFPId: fpId,
                 filterInputs: columnFilters,
+                columnFilters: columnFilters,
                 simpleSearchKeyword,
                 dmeStatus,
                 projectName,
@@ -574,7 +575,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickFind() {
-        const { startDate, endDate, projectName, clientPK, selectedWarehouseId, selectedFPId, pageItemCnt, pageInd, sortField, sortDirection, activeTabInd, dmeStatus } = this.state;
+        const { startDate, endDate, projectName, clientPK, selectedWarehouseId, selectedFPId, pageItemCnt, pageInd, sortField, sortDirection, activeTabInd, dmeStatus, columnFilters } = this.state;
         let _startDate = startDate;
         let _sortField = sortField;
 
@@ -584,8 +585,8 @@ class AllBookingsPage extends React.Component {
         if (sortDirection === -1)
             _sortField = '-' + _sortField;
 
-        this.props.setAllGetBookingsFilter(_startDate, endDate, clientPK, selectedWarehouseId, selectedFPId, pageItemCnt, pageInd, _sortField, {}, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
-        this.setState({selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
+        this.props.setAllGetBookingsFilter(_startDate, endDate, clientPK, selectedWarehouseId, selectedFPId, pageItemCnt, pageInd, _sortField, columnFilters, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
+        this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
     onSelected(e, src) {
