@@ -180,6 +180,7 @@ class AllBookingsPage extends React.Component {
         allBookingStatus: PropTypes.array,
         clientname: PropTypes.string,
         startDate: PropTypes.string,
+        filteredBookingIds: PropTypes.number,
     };
 
     componentDidMount() {
@@ -1788,8 +1789,8 @@ class AllBookingsPage extends React.Component {
             showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
             isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets, allBookingStatus } = this.props;
-
+        const { bookings, bookingsets, allBookingStatus, filteredBookingIds } = this.props;
+        console.log('@! - ',filteredBookingIds);
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2524,8 +2525,15 @@ class AllBookingsPage extends React.Component {
                                                 <option value="flagged">Flagged</option>
                                             </select>
                                             <div className="tbl-pagination">
+                                                <button
+                                                    className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
+                                                    disabled={filteredBookingIds.length === 0}
+                                                    onClick={() => this.onClickFind()}
+                                                >
+                                                    <i className="fa fa-sync"></i> Sync
+                                                </button>
                                                 <label>
-                                                    Item Count per page:&nbsp;
+                                                    Per page:&nbsp;
                                                 </label>
                                                 <select value={this.state.pageItemCnt} onChange={(e) => this.onPageItemCntChange(e)}>
                                                     <option value="10">10</option>

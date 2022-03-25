@@ -115,6 +115,12 @@ table.booking-lines {
       margin-top: 11px;
     }
 
+    button {
+      vertical-align: top;
+      padding: 3px 10px;
+      font-size: 20px;
+    }
+
     nav {
       display: inline-block !important;
       margin-top: 3px;
@@ -807,10 +813,6 @@ p.status {
       margin-left: 5px;
     }
   }
-}
-
-.right-50px {
-  margin-right: 50px;
 }
 
 .show {
