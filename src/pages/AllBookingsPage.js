@@ -62,7 +62,6 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
-            filteredBookingIds: [],
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
             linkPopoverOpens: [],
@@ -231,7 +230,7 @@ class AllBookingsPage extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { bookings, filteredBookingIds, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField,
+        const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField,
             redirect, username, needUpdateBookings, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField,
             columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK,
             allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt,
@@ -257,7 +256,7 @@ class AllBookingsPage extends React.Component {
         }
 
         if (!_.isNull(bookingsCnt)) {
-            this.setState({ filteredBookingIds, bookingsCnt, activeTabInd, loading: false });
+            this.setState({ bookingsCnt, activeTabInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
                 this.setState({
@@ -588,6 +587,10 @@ class AllBookingsPage extends React.Component {
 
         this.props.setAllGetBookingsFilter(_startDate, endDate, clientPK, selectedWarehouseId, selectedFPId, pageItemCnt, pageInd, _sortField, columnFilters, activeTabInd, '', 'label', dmeStatus, null, null, projectName);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
+    }
+
+    onClickSync(bookingIds) {
+        this.onMultiFind('id', _.join(bookingIds, ', '));
     }
 
     onSelected(e, src) {
@@ -1138,10 +1141,10 @@ class AllBookingsPage extends React.Component {
     }
 
     onMultiFind(fieldNameToFind, valueSet) {
-        const { clientPK, warehouseId, fpId, pageItemCnt, activeTabInd, filterInputs } = this.state;
+        const { clientPK, warehouseId, fpId, pageItemCnt, filterInputs } = this.state;
         const today = moment().format('YYYY-MM-DD');
 
-        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, fpId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, fpId, pageItemCnt, 0, '-id', filterInputs, 7, '', 'label', '', fieldNameToFind, valueSet);
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
@@ -1183,7 +1186,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onCheck(e, id) {
-        const { filteredBookingIds } = this.state;
+        const { filteredBookingIds } = this.props;
         let selectedBookingIds = this.state.selectedBookingIds;
         let allCheckStatus = '';
 
@@ -1205,7 +1208,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onCheckAll() {
-        const { filteredBookingIds } = this.state;
+        const { filteredBookingIds } = this.props;
         let selectedBookingIds = this.state.selectedBookingIds;
         let allCheckStatus = this.state.allCheckStatus;
 
@@ -1776,10 +1779,9 @@ class AllBookingsPage extends React.Component {
     }
 
     copyText(text) {
-        console.log(text);
         if (text) {
             navigator.clipboard.writeText(text);
-            this.notify('Text copied!');
+            this.notify('Copied on clipboard!');
         }
     }
 
@@ -1790,7 +1792,7 @@ class AllBookingsPage extends React.Component {
             isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
         const { bookings, bookingsets, allBookingStatus, filteredBookingIds } = this.props;
-        console.log('@! - ',filteredBookingIds);
+
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
         const tblContentWidth = {width: tblContentWidthVal};
@@ -2528,7 +2530,7 @@ class AllBookingsPage extends React.Component {
                                                 <button
                                                     className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
                                                     disabled={filteredBookingIds.length === 0}
-                                                    onClick={() => this.onClickFind()}
+                                                    onClick={() => this.onClickSync(filteredBookingIds)}
                                                 >
                                                     <i className="fa fa-sync"></i> Sync
                                                 </button>
