@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { uniqBy } from 'lodash';
+
 
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
@@ -34,10 +35,10 @@ class OrderModal extends Component {
     render() {
         const {isOpen, selectedBookingIds, selectedBookingLinesCnt, clientname} = this.props;
         const selectedBookings = this.props.bookings.filter(booking => selectedBookingIds.includes(booking.id));
-        const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
+        const puAvailFromDateCnt = uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
         let bookedCnt = selectedBookings.filter(booking => booking.b_status==='Booked').length;
         let notBookedCnt = selectedBookingIds.length - bookedCnt;
-        const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
+        const fpCnt = uniqBy(selectedBookings, 'vx_freight_provider').length;
 
         if (clientname === 'Jason L') {
             notBookedCnt = 0;

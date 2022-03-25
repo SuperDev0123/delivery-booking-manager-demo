@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 // Libs
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import {isEmpty, isUndefined, join, union,  difference, isNull, clone, indexOf, size} from 'lodash';
 import axios from 'axios';
 import { Button, Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import DatePicker from 'react-datepicker';
@@ -194,7 +194,7 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        if (!bookings || (bookings && (_.isEmpty(bookings) || _.isUndefined(bookings)))) {
+        if (!bookings || (bookings && (isEmpty(bookings) || isUndefined(bookings)))) {
             // Set initial date range filter values
             let newStartDate = moment().format('YYYY-MM-DD');
 
@@ -245,7 +245,7 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        if (!_.isEmpty(bookingErrorMessage)) {
+        if (!isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
 
@@ -255,7 +255,7 @@ class AllBookingsPage extends React.Component {
             }
         }
 
-        if (!_.isNull(bookingsCnt)) {
+        if (!isNull(bookingsCnt)) {
             this.setState({ bookingsCnt, activeTabInd, loading: false });
 
             if (bookings.length > 0 && !needUpdateBookings) {
@@ -375,7 +375,7 @@ class AllBookingsPage extends React.Component {
             this.setState({loading: true});
 
             // startDate
-            if (_.isEmpty(startDate)) {
+            if (isEmpty(startDate)) {
                 const startDate = moment().toDate();
                 const dateParam = moment().format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: dateParam});
@@ -388,7 +388,7 @@ class AllBookingsPage extends React.Component {
             }
 
             // endDate
-            if (startDate !== '*' && _.isEmpty(endDate)) {
+            if (startDate !== '*' && isEmpty(endDate)) {
                 const endDate = startDate;
                 const dateParam = moment(startDate).format('YYYY-MM-DD');
                 this.props.setGetBookingsFilter('date', {startDate: startDate, endDate: dateParam});
@@ -401,7 +401,7 @@ class AllBookingsPage extends React.Component {
             }
 
             // sortField
-            if (!_.isEmpty(sortField)) {
+            if (!isEmpty(sortField)) {
                 if (sortField[0] === '-') {
                     this.setState({sortDirection: -1, sortField: sortField.substring(1)});
                 } else {
@@ -540,7 +540,7 @@ class AllBookingsPage extends React.Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 // startDate = moment().toDate();
                 this.setState({startDate: null});
                 return;
@@ -557,7 +557,7 @@ class AllBookingsPage extends React.Component {
                 this.setState({startDate: moment(startDate).format('YYYY-MM-DD')});
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = moment().toDate();
             } else {
                 endDate = date;
@@ -579,7 +579,7 @@ class AllBookingsPage extends React.Component {
         let _startDate = startDate;
         let _sortField = sortField;
 
-        if (_.isNull(startDate))
+        if (isNull(startDate))
             _startDate = '*';
 
         if (sortDirection === -1)
@@ -590,7 +590,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickSync(bookingIds) {
-        this.onMultiFind('id', _.join(bookingIds, ', '));
+        this.onMultiFind('id', join(bookingIds, ', '));
     }
 
     onSelected(e, src) {
@@ -1191,9 +1191,9 @@ class AllBookingsPage extends React.Component {
         let allCheckStatus = '';
 
         if (!e.target.checked) {
-            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = difference(this.state.selectedBookingIds, [id]);
         } else {
-            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = union(this.state.selectedBookingIds, [id]);
         }
 
         if (selectedBookingIds.length === filteredBookingIds.length) {
@@ -1219,7 +1219,7 @@ class AllBookingsPage extends React.Component {
             selectedBookingIds = [];
             allCheckStatus = 'None';
         } else if (selectedBookingIds.length === 0) { // If selected `None`
-            selectedBookingIds = _.clone(filteredBookingIds);
+            selectedBookingIds = clone(filteredBookingIds);
             allCheckStatus = 'All';
         }
 
@@ -1244,7 +1244,7 @@ class AllBookingsPage extends React.Component {
                     for (let j = 0; j < selectedBookingIds.length; j++) {
                         if (bookings[i].id === selectedBookingIds[j]) {
                             if (bookings[i].z_manifest_url) {
-                                manifestedBookingVisualIds += _.isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
+                                manifestedBookingVisualIds += isNull(manifestedBookingVisualIds) ? bookings[i].b_bookingID_Visual : ', ' + bookings[i].b_bookingID_Visual;
                             } else {
                                 bookingIds.push(bookings[i].id);
                             }
@@ -1252,7 +1252,7 @@ class AllBookingsPage extends React.Component {
                     }
                 }
 
-                if (!_.isNull(manifestedBookingVisualIds)) {
+                if (!isNull(manifestedBookingVisualIds)) {
                     this.notify('There are bookings which have already `Manifest`:' + manifestedBookingVisualIds);
                 } else {
                     this.setState({loadingDownload: true});
@@ -1321,11 +1321,11 @@ class AllBookingsPage extends React.Component {
                     if (bookings[i].id === selectedBookingIds[j]) {
                         if (!bookings[i].vx_freight_provider) {
                             noFPBookings.push(bookings[i].b_bookingID_Visual);
-                        } else if (_.indexOf(fps, bookings[i].vx_freight_provider) == -1) {
+                        } else if (indexOf(fps, bookings[i].vx_freight_provider) == -1) {
                             fps.push(bookings[i].vx_freight_provider);
                         }
 
-                        if (!_.isNull(bookings[i].b_dateBookedDate)) {
+                        if (!isNull(bookings[i].b_dateBookedDate)) {
                             bookedBookings.push(bookings[i].b_bookingID_Visual);
                         }
 
@@ -1350,7 +1350,7 @@ class AllBookingsPage extends React.Component {
                             const freight_provider = selectedBookings[i].vx_freight_provider.toLowerCase();
 
                             if (
-                                !_.isNull(dmeClients[j].current_freight_provider) &&
+                                !isNull(dmeClients[j].current_freight_provider) &&
                                 dmeClients[j].current_freight_provider.toLowerCase() === freight_provider
                             ) {
                                 if (freight_provider === 'cope' || freight_provider === 'dhl') {
@@ -1668,7 +1668,7 @@ class AllBookingsPage extends React.Component {
         } else {
             if (clientname === 'Jason L') {
                 const bookings = this.getBookingsFromIds(selectedBookingIds);
-                const bookedBookings = bookings.filter(booking => !_.isNull(booking.b_dateBookedDate));
+                const bookedBookings = bookings.filter(booking => !isNull(booking.b_dateBookedDate));
 
                 if (bookedBookings.length > 0) {
                     this.notify('Booked bookings are selected!');
@@ -1753,7 +1753,7 @@ class AllBookingsPage extends React.Component {
         let bookedBookingsCnt = 0;
 
         for (let i = 0; i < bookings.length; i++)
-            if (!_.isNull(bookings[i].b_dateBookedDate))
+            if (!isNull(bookings[i].b_dateBookedDate))
                 bookedBookingsCnt += 1;
 
         if (selectedBookingIds.length === 0) {
@@ -1883,10 +1883,10 @@ class AllBookingsPage extends React.Component {
             return (
                 <tr 
                     key={index} 
-                    className={(activeBookingId === booking.id || _.indexOf(selectedBookingIds, booking.id) !== -1) ? 'active' : 'inactive'}
+                    className={(activeBookingId === booking.id || indexOf(selectedBookingIds, booking.id) !== -1) ? 'active' : 'inactive'}
                     onClick={() => this.onClickRow(booking)}
                 >
-                    <td name='checkbox'><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
+                    <td name='checkbox'><input type="checkbox" checked={indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td name='lines_info' id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
                     </td>
@@ -1913,15 +1913,15 @@ class AllBookingsPage extends React.Component {
                                     <tbody>
                                         <tr>
                                             <td>Lines</td>
-                                            <td>{_.size(bookingLines)}</td>
-                                            <td>{_.size(bookingLines)===0?'X':total_qty}</td>
-                                            <td>{_.size(bookingLines)===0?'X':total_kgs}</td>
-                                            <td>{_.size(bookingLines)===0?'X':total_cubic_meter}</td>
+                                            <td>{size(bookingLines)}</td>
+                                            <td>{size(bookingLines)===0?'X':total_qty}</td>
+                                            <td>{size(bookingLines)===0?'X':total_kgs}</td>
+                                            <td>{size(bookingLines)===0?'X':total_cubic_meter}</td>
                                         </tr>
                                         <tr>
                                             <td>Line Details</td>
-                                            <td>{_.size(bookingLineDetails)}</td>
-                                            <td>{_.size(bookingLineDetails)===0?'X':bookingLineDetailsQtyTotal}</td>
+                                            <td>{size(bookingLineDetails)}</td>
+                                            <td>{size(bookingLineDetails)===0?'X':bookingLineDetailsQtyTotal}</td>
                                             <td>X</td>
                                             <td>X</td>
                                         </tr>
@@ -1982,44 +1982,44 @@ class AllBookingsPage extends React.Component {
                             <div className="location-info disp-inline-block">
                                 <span>PU Info</span><br />
                                 <span>Pickup Location:</span><br />
-                                <span className={(_.isEmpty(booking.pu_Address_street_1)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.pu_Address_street_1)) ? ' none' :  ''}>
                                     {booking.pu_Address_street_1}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.pu_Address_street_2)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.pu_Address_street_2)) ? ' none' :  ''}>
                                     {booking.pu_Address_street_2}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.pu_Address_Suburb)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.pu_Address_Suburb)) ? ' none' :  ''}>
                                     {booking.pu_Address_Suburb}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.pu_Address_City)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.pu_Address_City)) ? ' none' :  ''}>
                                     {booking.pu_Address_City}<br />
                                 </span>
-                                <span className={((_.isEmpty(booking.pu_Address_State)) && (_.isEmpty(booking.pu_Address_PostalCode))) ? ' none' :  ''}>
+                                <span className={((isEmpty(booking.pu_Address_State)) && (isEmpty(booking.pu_Address_PostalCode))) ? ' none' :  ''}>
                                     {booking.pu_Address_State} {booking.pu_Address_PostalCode}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.pu_Address_Country)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.pu_Address_Country)) ? ' none' :  ''}>
                                     {booking.pu_Address_Country}<br />
                                 </span>
                             </div>
                             <div className="location-info disp-inline-block">
                                 <span>Delivery Info</span><br />
                                 <span>Delivery Location:</span><br />
-                                <span className={(_.isEmpty(booking.de_To_Address_street_1)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.de_To_Address_street_1)) ? ' none' :  ''}>
                                     {booking.de_To_Address_street_1}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.de_To_Address_street_2)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.de_To_Address_street_2)) ? ' none' :  ''}>
                                     {booking.de_To_Address_street_2}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.de_To_Address_Suburb)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.de_To_Address_Suburb)) ? ' none' :  ''}>
                                     {booking.de_To_Address_Suburb}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.de_To_Address_City)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.de_To_Address_City)) ? ' none' :  ''}>
                                     {booking.de_To_Address_City}<br />
                                 </span>
-                                <span className={((_.isEmpty(booking.de_To_Address_State)) && (_.isEmpty(booking.de_To_Address_PostalCode))) ? ' none' :  ''}>
+                                <span className={((isEmpty(booking.de_To_Address_State)) && (isEmpty(booking.de_To_Address_PostalCode))) ? ' none' :  ''}>
                                     {booking.de_To_Address_State} {booking.de_To_Address_PostalCode}<br />
                                 </span>
-                                <span className={(_.isEmpty(booking.de_To_Address_Country)) ? ' none' :  ''}>
+                                <span className={(isEmpty(booking.de_To_Address_Country)) ? ' none' :  ''}>
                                     {booking.de_To_Address_Country}<br />
                                 </span>
                             </div>
@@ -2061,7 +2061,7 @@ class AllBookingsPage extends React.Component {
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
                     <td name='b_status' className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
-                        {!_.isEmpty(booking.b_status) &&
+                        {!isEmpty(booking.b_status) &&
                             <TooltipItem object={booking} fields={['b_status']} />
                         }
                     </td>
@@ -2096,13 +2096,13 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td name='z_pod_url' className={
-                        (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
-                            (!_.isEmpty(booking.z_downloaded_pod_timestamp)) ? 'bg-yellow' : 'dark-blue'
+                        (!isEmpty(booking.z_pod_url) || !isEmpty(booking.z_pod_signed_url)) ?
+                            (!isEmpty(booking.z_downloaded_pod_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
                         {
-                            (!_.isEmpty(booking.z_pod_url) || !_.isEmpty(booking.z_pod_signed_url)) ?
+                            (!isEmpty(booking.z_pod_url) || !isEmpty(booking.z_pod_signed_url)) ?
                                 <div className="pod-status">
                                     <i className="icon icon-image"></i>
                                 </div>
@@ -2164,13 +2164,13 @@ class AllBookingsPage extends React.Component {
                     <td name='b_client_name' className={(sortField === 'b_client_name') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name}</td>
                     <td name='b_client_name_sub' className={(sortField === 'b_client_name_sub') ? 'current nowrap' : ' nowrap'}>{booking.b_client_name_sub}</td>
                     <td name='z_connote_url' className={
-                        !_.isEmpty(booking.z_connote_url) ?
-                            (!_.isEmpty(booking.z_downloaded_connote_timestamp)) ? 'bg-yellow' : 'dark-blue'
+                        !isEmpty(booking.z_connote_url) ?
+                            (!isEmpty(booking.z_downloaded_connote_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
                         {
-                            !_.isEmpty(booking.z_connote_url) ?
+                            !isEmpty(booking.z_connote_url) ?
                                 <div className="pod-status">
                                     <i className="icon icon-image"></i>
                                 </div>
@@ -2180,7 +2180,7 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td name='z_manifest_url' className={
                         booking.z_manifest_url ?
-                            (!_.isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
+                            (!isNull(booking.manifest_timestamp)) ? 'bg-yellow' : 'dark-blue'
                             :
                             null
                     }>
@@ -2209,7 +2209,7 @@ class AllBookingsPage extends React.Component {
                     </td>
                     <td name='b_status_category' className={(sortField === 'b_status_category') ? 'current' : ''} id={'booking-' + 'b_status_category' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status_category}</p>
-                        {!_.isEmpty(booking.b_status_category) &&
+                        {!isEmpty(booking.b_status_category) &&
                             <TooltipItem object={booking} fields={['b_status_category']} />
                         }
                     </td>
@@ -2243,7 +2243,7 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_detail') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.dme_status_detail}
-                        {!_.isEmpty(booking.dme_status_detail) &&
+                        {!isEmpty(booking.dme_status_detail) &&
                             <TooltipItem object={booking} fields={['dme_status_detail']} />
                         }
                     </td>
@@ -2253,7 +2253,7 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'dme_status_action') ? 'current' : ''}
                     >
                         {booking.dme_status_action}
-                        {!_.isEmpty(booking.dme_status_action) &&
+                        {!isEmpty(booking.dme_status_action) &&
                             <TooltipItem object={booking} fields={['dme_status_action']} />
                         }
                     </td>
@@ -2266,7 +2266,7 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.de_to_PickUp_Instructions_Address}
-                        {!_.isEmpty(booking.de_to_PickUp_Instructions_Address) &&
+                        {!isEmpty(booking.de_to_PickUp_Instructions_Address) &&
                             <TooltipItem object={booking} fields={['de_to_PickUp_Instructions_Address']} />
                         }
                     </td>
@@ -2276,7 +2276,7 @@ class AllBookingsPage extends React.Component {
                         className={(sortField === 'b_booking_project') ? 'current nowrap' : 'nowrap'}
                     >
                         {booking.b_booking_project}
-                        {!_.isEmpty(booking.b_booking_project) &&
+                        {!isEmpty(booking.b_booking_project) &&
                             <TooltipItem object={booking} fields={['b_booking_project']} />
                         }
                     </td>
@@ -3408,7 +3408,7 @@ class AllBookingsPage extends React.Component {
 
                 <ToastContainer />
                 {/* <ReactstrapModal 
-                    isOpen={!_.isEmpty(this.state.mapData)} 
+                    isOpen={!isEmpty(this.state.mapData)} 
                     className="bookingset-modal"
                     style={{
                         width: 800,

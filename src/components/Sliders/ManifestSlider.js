@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import _ from 'lodash';
+import { uniqBy } from 'lodash';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -38,8 +38,8 @@ class ManifestSlider extends React.Component {
 
     render() {
         const {isOpen, selectedBookings, manifestSummary} = this.props;
-        const puAvailFromDateCnt = _.uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
-        const fpCnt = _.uniqBy(selectedBookings, 'vx_freight_provider').length;
+        const puAvailFromDateCnt = uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
+        const fpCnt = uniqBy(selectedBookings, 'vx_freight_provider').length;
         const summaryList = [];
 
         if (manifestSummary) {

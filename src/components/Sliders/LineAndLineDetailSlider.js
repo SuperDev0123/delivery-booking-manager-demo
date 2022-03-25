@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 // React Components
-import _ from 'lodash';
+import {uniq, intersection} from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import LoadingOverlay from 'react-loading-overlay';
@@ -123,7 +123,7 @@ class LineAndLineDetailSlider extends React.Component {
                     selectedLineDetails.splice(index, 1);
             }
 
-            this.setState({selectedLineDetails: _.uniq(selectedLineDetails)});
+            this.setState({selectedLineDetails: uniq(selectedLineDetails)});
         } else if (lineOrLineDetail === 1) {
             let lineFormInputs = this.state.lineFormInputs;
             lineFormInputs[name] = value;
@@ -131,7 +131,7 @@ class LineAndLineDetailSlider extends React.Component {
             lineFormInputs['e_Total_KG_weight'] = getWeight(lineFormInputs['e_qty'], lineFormInputs['e_weightUOM'], lineFormInputs['e_weightPerEach']);
             lineFormInputs['total_2_cubic_mass_factor_calc'] = (Number.parseFloat(lineFormInputs['e_1_Total_dimCubicMeter']).toFixed(4) * 250).toFixed(2);
             updatedFields.push(name);
-            updatedFields = _.uniq(updatedFields);
+            updatedFields = uniq(updatedFields);
             this.setState({lineFormInputs, updatedFields});
         } else if (lineOrLineDetail === 2) {
             let lineDetailFormInputs = this.state.lineDetailFormInputs;
@@ -162,7 +162,7 @@ class LineAndLineDetailSlider extends React.Component {
             }
         } else if (editMode === 2) {
             if (lineOrLineDetail === 1) {
-                if (_.intersection(updatedFields, LINE_IMPORTANT_FIELDS)) {
+                if (intersection(updatedFields, LINE_IMPORTANT_FIELDS)) {
                     this.props.toggleUpdateBookingModal();
                 }
 
@@ -222,7 +222,7 @@ class LineAndLineDetailSlider extends React.Component {
                 selectedLineDetails.splice(index, 1);
         }
 
-        this.setState({selectedLineDetails: _.uniq(selectedLineDetails)});
+        this.setState({selectedLineDetails: uniq(selectedLineDetails)});
     }
 
     onClickMoveIn(line) {

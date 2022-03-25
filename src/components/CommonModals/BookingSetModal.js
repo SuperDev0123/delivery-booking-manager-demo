@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { isNull, union, join } from 'lodash';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -55,7 +55,7 @@ class BookingSetModal extends Component {
     onDateChange(date) {
         let lineHaulDate = '';
 
-        if (_.isNull(date)) {
+        if (isNull(date)) {
             lineHaulDate = moment().toDate();
         } else {
             lineHaulDate = date;
@@ -90,8 +90,8 @@ class BookingSetModal extends Component {
                 this.props.notify('Please select a BookingSet to add selected bookings');
             } else {
                 const exitingBookingIds = selectedBookingSet.booking_ids.split(', ');
-                const union = _.union(exitingBookingIds, this.props.bookingIds.map(id => id.toString()));
-                const joinStr = _.join(union, ', ');
+                const unions = union(exitingBookingIds, this.props.bookingIds.map(id => id.toString()));
+                const joinStr = join(unions, ', ');
                 selectedBookingSet.booking_ids = joinStr;
 
                 this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);

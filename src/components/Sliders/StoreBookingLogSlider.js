@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import moment from 'moment-timezone';
 
 import SlidingPane from 'react-sliding-pane';
@@ -31,9 +31,9 @@ class StoreBookingLogSlider extends React.Component {
             return (
                 <tr key={index}>
                     <td>{index + 1}</td>
-                    <td>{(storeBookingLog.delivery_booking && !_.isEmpty(storeBookingLog.delivery_booking)) ? moment(storeBookingLog.delivery_booking).format('DD MMM YYYY') : null}</td>
-                    <td>{(storeBookingLog.fp_store_event_date && !_.isEmpty(storeBookingLog.fp_store_event_date)) ? moment(storeBookingLog.fp_store_event_date).format('DD MMM YYYY') : null}</td>
-                    <td>{(storeBookingLog.fp_store_event_time && !_.isEmpty(storeBookingLog.fp_store_event_time)) ? storeBookingLog.fp_store_event_time : null}</td>
+                    <td>{(storeBookingLog.delivery_booking && !isEmpty(storeBookingLog.delivery_booking)) ? moment(storeBookingLog.delivery_booking).format('DD MMM YYYY') : null}</td>
+                    <td>{(storeBookingLog.fp_store_event_date && !isEmpty(storeBookingLog.fp_store_event_date)) ? moment(storeBookingLog.fp_store_event_date).format('DD MMM YYYY') : null}</td>
+                    <td>{(storeBookingLog.fp_store_event_time && !isEmpty(storeBookingLog.fp_store_event_time)) ? storeBookingLog.fp_store_event_time : null}</td>
                     <td>{storeBookingLog.fp_store_event_desc}</td>
                     <td></td>
                 </tr>

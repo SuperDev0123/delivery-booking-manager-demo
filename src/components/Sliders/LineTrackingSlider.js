@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { indexOf } from 'lodash';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -230,7 +230,7 @@ class LineTrackingSlider extends React.Component {
         const rowClasses = (row) => {
             let classes = '';
 
-            if (_.indexOf(selected, parseInt(row.fk_booking_line_id)) !== -1) {
+            if (indexOf(selected, parseInt(row.fk_booking_line_id)) !== -1) {
                 classes = 'selected';
             }
 

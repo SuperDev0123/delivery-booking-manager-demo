@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import {isNull} from 'lodash';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Button, Popover, PopoverBody,} from 'reactstrap';
@@ -70,7 +70,7 @@ class EditablePopover extends React.Component {
     onDateChange(date) {
         let selectedDate = null;
 
-        if (_.isNull(date)) {
+        if (isNull(date)) {
             selectedDate = moment().tz('Australia/Sydney').format('YYYY-MM-DD');
             this.setState({selectedDate});
         } else {
@@ -92,7 +92,7 @@ class EditablePopover extends React.Component {
                 className='edit-cell-popover'
             >
                 <PopoverBody>
-                    {(inputType === 'datepicker' && !_.isNull(selectedDate)) &&
+                    {(inputType === 'datepicker' && !isNull(selectedDate)) &&
                         <DatePicker
                             selected={new Date(selectedDate)}
                             onChange={(e) => this.onDateChange(e)}

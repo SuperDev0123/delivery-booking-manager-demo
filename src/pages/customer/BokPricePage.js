@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 // Components
-import _ from 'lodash';
+import { sortBy } from 'lodash';
 import moment from 'moment-timezone';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
@@ -352,13 +352,13 @@ class BokPricePage extends Component {
         }
 
         if (bokWithPricings && sortedBy === 'lowest') {
-            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['sell']);
+            sortedPricings = sortBy(bokWithPricings['pricings'], ['sell']);
         } else if (bokWithPricings && sortedBy === 'fastest') {
-            sortedPricings = _.sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
+            sortedPricings = sortBy(bokWithPricings['pricings'], ['eta_in_hour']);
         }
 
         if (bokWithPricings && bokWithPricings['pricings']) {
-            const _pricings = _.sortBy(bokWithPricings['pricings'], ['sell']);
+            const _pricings = sortBy(bokWithPricings['pricings'], ['sell']);
 
             if (_pricings.length > 0) {
                 const lowest_price = _pricings[0];
