@@ -2531,8 +2531,9 @@ class AllBookingsPage extends React.Component {
                                                     className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
                                                     disabled={filteredBookingIds.length === 0}
                                                     onClick={() => this.onClickSync(filteredBookingIds)}
+                                                    title="Sync bookings"
                                                 >
-                                                    <i className="fa fa-sync"></i> Sync
+                                                    <i className="fa fa-sync"></i>
                                                 </button>
                                                 <label>
                                                     Per page:&nbsp;
