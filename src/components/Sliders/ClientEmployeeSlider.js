@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { clone, isEmpty } from 'lodash';
 import moment from 'moment-timezone';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -85,7 +85,7 @@ class ClientEmployeeSlider extends React.Component {
     onClickEditButton(pk_id_client_emp) {
         const index = this.props.allClientEmployees.findIndex((element)=> element.pk_id_client_emp == pk_id_client_emp);
         if(index >= 0) {
-            const formInputs = _.clone(this.props.allClientEmployees[index]);
+            const formInputs = clone(this.props.allClientEmployees[index]);
             this.setState({formInputs, viewMode: 1, saveMode: 1});
         }
     }
@@ -294,7 +294,7 @@ class ClientEmployeeSlider extends React.Component {
                                         </select>
                                     </div>
                                     {
-                                        _.isEmpty(errorMessage) ?
+                                        isEmpty(errorMessage) ?
                                             <label></label>
                                             :
                                             <label>

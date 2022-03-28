@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import _ from 'lodash';
+import { isUndefined } from 'lodash';
 import LoadingOverlay from 'react-loading-overlay';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
@@ -74,7 +74,7 @@ class Users extends Component {
         }
 
         if (needUpdateUsers) {
-            if (clientPK !== 0 || _.isUndefined(clientPK)) {
+            if (clientPK !== 0 || isUndefined(clientPK)) {
                 this.setState({ clientPK });
             }
 

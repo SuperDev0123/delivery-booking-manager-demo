@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 // Libs
-import _ from 'lodash';
+import { isEmpty, isNull, orderBy } from 'lodash';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -45,7 +45,7 @@ class StatusInfoSlider extends React.Component {
     componentDidMount() {
         const { startDate, endDate } = this.props;
 
-        if (_.isEmpty(startDate)) {
+        if (isEmpty(startDate)) {
             this.setState({startDate: new Date(), endDate: new Date()});
             this.props.setStatusInfoFilter(
                 moment().format('YYYY-MM-DD'),
@@ -83,7 +83,7 @@ class StatusInfoSlider extends React.Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 startDate = new Date();
             } else {
                 startDate = moment(date).toDate();
@@ -96,7 +96,7 @@ class StatusInfoSlider extends React.Component {
                 this.setState({startDate});
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = new Date();
             } else {
                 endDate = moment(date).toDate();
@@ -141,7 +141,7 @@ class StatusInfoSlider extends React.Component {
             return (<option key={index} value={client.pk_id_dme_client}>{client.company_name}</option>);
         });
 
-        const statusInfoList = _.orderBy(statusInfo, ['count'], ['desc']).map((eachItem, index) => {
+        const statusInfoList = orderBy(statusInfo, ['count'], ['desc']).map((eachItem, index) => {
             return (
                 <tr key={index}>
                     <td>{eachItem.dme_delivery_status}</td>

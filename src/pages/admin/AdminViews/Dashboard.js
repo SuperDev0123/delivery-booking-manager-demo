@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { isNull } from 'lodash';
 import { getNumBookingsPerFp } from '../../../state/services/chartService';
 
   
@@ -57,7 +57,7 @@ class Dashboard extends Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 startDate = moment().toDate();
             } else {
                 startDate = date;
@@ -77,7 +77,7 @@ class Dashboard extends Component {
                 } );
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = moment().toDate();
             } else {
                 endDate = date;

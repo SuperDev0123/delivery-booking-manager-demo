@@ -4,7 +4,7 @@ import {
 } from 'recharts';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import { orderBy } from 'lodash';
 import { getNumActiveBookingsPerClient } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -45,7 +45,7 @@ class ActiveBookings extends Component {
         let { num_active_bookings_per_client } = newProps;
 
         if (num_active_bookings_per_client) {
-            num_active_bookings_per_client = _.orderBy(num_active_bookings_per_client, 'inprogress', 'desc');
+            num_active_bookings_per_client = orderBy(num_active_bookings_per_client, 'inprogress', 'desc');
             const chart_data = num_active_bookings_per_client.slice(0, TABLE_PAGINATION_SIZE);
             this.setState({ chart_data, num_active_bookings_per_client });
         }

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
 
@@ -153,7 +153,7 @@ class ProjectDataSlider extends React.Component {
                             </label>
 
                             {
-                                _.isEmpty(errorMessage) ?
+                                isEmpty(errorMessage) ?
                                     null
                                     :
                                     <label>

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import {isEmpty, isNull, isUndefined} from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Button, Modal as ReactstrapModal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -47,9 +47,9 @@ class DuplicateBookingModal extends Component {
         const {switchInfo, dupLineAndLineDetail, is4Child, qtys4Children} = this.state;
 
         // Is Booked Booking?
-        if (!_.isNull(booking.b_dateBookedDate) &&
-            !_.isUndefined(booking.b_dateBookedDate) &&
-            !_.isEmpty(booking.b_dateBookedDate) &&
+        if (!isNull(booking.b_dateBookedDate) &&
+            !isUndefined(booking.b_dateBookedDate) &&
+            !isEmpty(booking.b_dateBookedDate) &&
             is4Child
         ) {
             this.notify('This booking is BOOKED booking, you can NOT create child from this.');

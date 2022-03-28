@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import  { isNull, isUndefined } from 'lodash';
 import DateTimePicker from 'react-datetime-picker';
 import LoadingOverlay from 'react-loading-overlay';
 import { withRouter } from 'react-router-dom';
@@ -162,9 +162,9 @@ class CronOptions extends Component {
                             :
                             <DateTimePicker
                                 onChange={(date) => this.onChangeDateTime(date, option, 'arg2')}
-                                value={(!_.isNull(option) &&
-                                    !_.isNull(option.arg2) &&
-                                    !_.isUndefined(option.arg2)) &&
+                                value={(!isNull(option) &&
+                                    !isNull(option.arg2) &&
+                                    !isUndefined(option.arg2)) &&
                                     new Date(moment(option.arg2).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
                                 }
                                 format={'dd/MM/yyyy HH:mm'}

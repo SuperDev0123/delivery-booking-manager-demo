@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 // Libs
 import moment from 'moment';
-import _ from 'lodash';
+import { isEmpty, difference, union, isNull, map, join, indexOf } from 'lodash';
 // Components
 import { Button } from 'reactstrap';
 import { ToastContainer, toast } from 'react-toastify';
@@ -145,7 +145,7 @@ class BookingSetList extends React.Component {
             }
         }
 
-        if (this.state.loadingBookings && !_.isNull(bookingsCnt) && !_.isEmpty(bookings)) {
+        if (this.state.loadingBookings && !isNull(bookingsCnt) && !isEmpty(bookings)) {
             this.setState({ bookings, filteredBookingIds, bookingsCnt, loadingBookings: false });
         }
 
@@ -157,7 +157,7 @@ class BookingSetList extends React.Component {
             this.setState({loadingBookings: true});
 
             // sortField
-            if (!_.isEmpty(sortField)) {
+            if (!isEmpty(sortField)) {
                 if (sortField[0] === '-') {
                     this.setState({sortDirection: -1, sortField: sortField.substring(1)});
                 } else {
@@ -301,9 +301,9 @@ class BookingSetList extends React.Component {
         let allCheckStatus = '';
 
         if (!e.target.checked) {
-            selectedBookingIds = _.difference(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = difference(this.state.selectedBookingIds, [id]);
         } else {
-            selectedBookingIds = _.union(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = union(this.state.selectedBookingIds, [id]);
         }
 
         if (selectedBookingIds.length === bookings.length) {
@@ -327,7 +327,7 @@ class BookingSetList extends React.Component {
             selectedBookingIds = [];
             allCheckStatus = 'None';
         } else if (selectedBookingIds.length === 0) { // If selected `None`
-            selectedBookingIds = _.map(bookings, 'id');
+            selectedBookingIds = map(bookings, 'id');
             allCheckStatus = 'All';
         }
 
@@ -371,9 +371,9 @@ class BookingSetList extends React.Component {
 
     onConfirmDrop() {
         const {selectedBookingSet, selectedBookingIds, bookings} = this.state;
-        const bookingIds = _.map(bookings, 'id');
-        const remainingBookingIds = _.difference(bookingIds, selectedBookingIds);
-        const joinStr = _.join(remainingBookingIds, ', ');
+        const bookingIds = map(bookings, 'id');
+        const remainingBookingIds = difference(bookingIds, selectedBookingIds);
+        const joinStr = join(remainingBookingIds, ', ');
 
         selectedBookingSet['booking_ids'] = joinStr;
         this.props.updateBookingSet(selectedBookingSet.id, selectedBookingSet);
@@ -398,11 +398,11 @@ class BookingSetList extends React.Component {
                     <td>{bookingSet.name}</td>
                     <td id={'booking-set-' + 'note' + '-tooltip-' + bookingSet.id}>
                         {bookingSet.note}
-                        {!_.isEmpty(bookingSet.note) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true}  name={'booking-set'} fields={['note']} />}
+                        {!isEmpty(bookingSet.note) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true}  name={'booking-set'} fields={['note']} />}
                     </td>
                     <td id={'booking-set-' + 'status' + '-tooltip-' + bookingSet.id}>
                         {bookingSet.status}
-                        {!_.isEmpty(bookingSet.status) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true} name={'booking-set'} fields={['status']} />}
+                        {!isEmpty(bookingSet.status) && <TooltipItem object={bookingSet} placement={'top'} hideArrow={true} name={'booking-set'} fields={['status']} />}
                     </td>
                     <td>{bookingSet.z_createdByAccount}</td>
                     <td>{moment(bookingSet.z_createdTimestamp).format('ddd DD MMM YYYY hh:mm a')}</td>
@@ -461,7 +461,7 @@ class BookingSetList extends React.Component {
                     className={(activeBookingId === booking.id) ? 'active' : 'inactive'}
                     onClick={() => this.onClickRow(booking)}
                 >
-                    <td><input type="checkbox" checked={_.indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
+                    <td><input type="checkbox" checked={indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
                     <td onClick={() => this.onClickOpenPricingSlider(booking)} className="bg-gray cur-pointer"><strong>$</strong></td>
                     <td 
                         id={'link-popover-' + booking.id} 
@@ -505,7 +505,7 @@ class BookingSetList extends React.Component {
                     <td className={(sortField === 'vx_serviceName') ? 'current' : ''}>{booking.vx_serviceName}</td>
                     <td className={(sortField === 'b_status') ? 'current' : ''} id={'booking-' + 'b_status' + '-tooltip-' + booking.id}>
                         <p className="status">{booking.b_status}</p>
-                        {!_.isEmpty(booking.b_status) &&
+                        {!isEmpty(booking.b_status) &&
                             <TooltipItem object={booking} fields={['b_status']} />
                         }
                     </td>
@@ -517,7 +517,7 @@ class BookingSetList extends React.Component {
                         className={(sortField === 'de_to_PickUp_Instructions_Address') ? 'current nowrap="true"' : 'nowrap="true"'}
                     >
                         {booking.de_to_PickUp_Instructions_Address}
-                        {!_.isEmpty(booking.de_to_PickUp_Instructions_Address) &&
+                        {!isEmpty(booking.de_to_PickUp_Instructions_Address) &&
                             <TooltipItem object={booking} fields={['de_to_PickUp_Instructions_Address']} />
                         }
                     </td>
@@ -526,7 +526,7 @@ class BookingSetList extends React.Component {
                         className={(sortField === 'b_booking_project') ? 'current nowrap="true"' : 'nowrap="true"'}
                     >
                         {booking.b_booking_project}
-                        {!_.isEmpty(booking.b_booking_project) &&
+                        {!isEmpty(booking.b_booking_project) &&
                             <TooltipItem object={booking} fields={['b_booking_project']} />
                         }
                     </td>

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 
 import moment from 'moment-timezone';
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
 
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 // Constants
@@ -95,8 +95,8 @@ class PodsPage extends React.Component {
                     <td>{booking.b_status}</td>
                     <td>{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('ddd DD MMM YYYY'): ''}</td>
                     <td>
-                        {((booking.z_pod_url && !_.isEmpty(booking.z_pod_url)) ||
-                        (booking.z_pod_signed_url && !_.isEmpty(booking.z_pod_signed_url))) ?
+                        {((booking.z_pod_url && !isEmpty(booking.z_pod_url)) ||
+                        (booking.z_pod_signed_url && !isEmpty(booking.z_pod_signed_url))) ?
                             <span>Y</span> : <span>N</span>
                         }
                     </td>

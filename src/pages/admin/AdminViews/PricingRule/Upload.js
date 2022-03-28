@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import DropzoneComponent from 'react-dropzone-component';
-import _ from 'lodash';
+import { filter } from 'lodash';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // Services
@@ -113,7 +113,7 @@ class Upload extends Component {
 
     onSelected(e, src) {
         if (src === 'ruleType') {
-            const filteredRuleTypes = _.filter(this.state.ruleTypes, (ruleType) => ruleType.name === e.target.value);
+            const filteredRuleTypes = filter(this.state.ruleTypes, (ruleType) => ruleType.name === e.target.value);
 
             if (filteredRuleTypes.length > 0) {
                 this.setState({selectedRuleType: filteredRuleTypes[0]});

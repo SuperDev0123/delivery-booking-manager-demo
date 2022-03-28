@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import _ from 'lodash';
+import { isNull, orderBy } from 'lodash';
 import { getDMEClients } from '../../../../state/services/authService';
 import { getNumBookingsPerClient, getNumBookingsPerStatus } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -60,14 +60,14 @@ class ByClient extends Component {
         let { num_bookings_fp, num_bookings_status } = newProps;
 
         if (num_bookings_fp) {
-            num_bookings_fp = _.orderBy(num_bookings_fp, 'client_name', 'asc');
+            num_bookings_fp = orderBy(num_bookings_fp, 'client_name', 'asc');
             this.setState({ num_bookings_fp });
             const chart_data = num_bookings_fp.slice(0, TABLE_PAGINATION_SIZE);
             this.setState({ chart_data });
         }
 
         if (num_bookings_status) {
-            num_bookings_status = _.orderBy(num_bookings_status, 'status', 'asc');
+            num_bookings_status = orderBy(num_bookings_status, 'status', 'asc');
             this.setState({ num_bookings_status });
         }
     }
@@ -87,7 +87,7 @@ class ByClient extends Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 startDate = moment().toDate();
             } else {
                 startDate = date;
@@ -107,7 +107,7 @@ class ByClient extends Component {
                 });
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = moment().toDate();
             } else {
                 endDate = date;

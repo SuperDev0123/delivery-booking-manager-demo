@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import _ from 'lodash';
+import {isNull} from 'lodash';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -57,7 +57,7 @@ class XLSModal extends Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 startDate = moment().toDate();
             } else {
                 startDate = moment(date).toDate();
@@ -70,7 +70,7 @@ class XLSModal extends Component {
                 this.setState({startDate});
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = moment().toDate();
             } else {
                 endDate = moment(date).toDate();

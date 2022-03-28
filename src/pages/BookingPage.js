@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 
 import Clock from 'react-live-clock';
-import _ from 'lodash';
+import { isEmpty, isNull, isUndefined, clone, intersection} from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment-timezone';
@@ -548,7 +548,7 @@ class BookingPage extends Component {
         }
 
 
-        if (!_.isEmpty(bookingErrorMessage)) {
+        if (!isEmpty(bookingErrorMessage)) {
             this.notify(bookingErrorMessage);
             this.props.clearErrorMessage();
             this.setState({loading: false, loadingBookingSave: false, loadingBookingUpdate: false});
@@ -556,7 +556,7 @@ class BookingPage extends Component {
             if (this.state.booking
                 && !isBookedBooking
                 && this.state.booking.vx_freight_provider
-                && !_.isUndefined(this.state.booking.vx_freight_provider)
+                && !isUndefined(this.state.booking.vx_freight_provider)
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'hunter'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'capital'
                 && this.state.booking.vx_freight_provider.toLowerCase() !== 'dhl')
@@ -590,7 +590,7 @@ class BookingPage extends Component {
                 }
 
                 if (booking && booking.pu_Address_State) {
-                    let states = _.clone(puStates);
+                    let states = clone(puStates);
                     let bHas = false;
 
                     for (let i = 0; i < states.length; i++ ){
@@ -617,7 +617,7 @@ class BookingPage extends Component {
 
             if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
                 if (booking && booking.pu_Address_PostalCode) {
-                    let postalcodes = _.clone(puPostalCodes);
+                    let postalcodes = clone(puPostalCodes);
                     let bHas = false;
 
                     for (let i = 0; i < postalcodes.length; i++ ){
@@ -642,7 +642,7 @@ class BookingPage extends Component {
                     this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
                 } else if (puSuburbs.length > 1) {
                     if (booking && booking.pu_Address_Suburb) {
-                        let suburbs = _.clone(puSuburbs);
+                        let suburbs = clone(puSuburbs);
                         let bHas = false;
 
                         for (let i = 0; i < suburbs.length; i++){
@@ -669,7 +669,7 @@ class BookingPage extends Component {
                 }
 
                 if (booking && booking.de_To_Address_State) {
-                    let states = _.clone(deToStates);
+                    let states = clone(deToStates);
                     let bHas = false;
 
                     for (let i = 0; i < states.length; i++ ){
@@ -696,7 +696,7 @@ class BookingPage extends Component {
 
             if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
                 if (booking && booking.de_To_Address_PostalCode) {
-                    let postalcode = _.clone(deToPostalCodes);
+                    let postalcode = clone(deToPostalCodes);
                     let bHas = false;
 
                     for (let i = 0; i < postalcode.length; i++ ){
@@ -721,7 +721,7 @@ class BookingPage extends Component {
                     this.setState({deToSuburb: deToSuburbs[0]});
                 } else if (deToSuburbs.length > 1) {
                     if (booking && booking.de_To_Address_Suburb) {
-                        let suburbs = _.clone(deToSuburbs);
+                        let suburbs = clone(deToSuburbs);
                         let bHas = false;
 
                         for (let i = 0; i < suburbs.length; i++ ){
@@ -753,16 +753,16 @@ class BookingPage extends Component {
             || (booking && this.state.loadingBookingUpdate && parseInt(this.state.curViewMode) === 2)
         ) {
             if (booking.b_bookingID_Visual) {
-                if (this.state.loadingBookingSave && _.isEmpty(bookingErrorMessage)) {
+                if (this.state.loadingBookingSave && isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is saved!');
-                } else if (this.state.loadingBookingUpdate && _.isEmpty(bookingErrorMessage)) {
+                } else if (this.state.loadingBookingUpdate && isEmpty(bookingErrorMessage)) {
                     this.notify('Booking(' + booking.b_bookingID_Visual + ') is updated!');
                 }
                 
                 // Is Booked Booking?
-                if (!_.isNull(booking.b_dateBookedDate) &&
-                    !_.isUndefined(booking.b_dateBookedDate) &&
-                    !_.isEmpty(booking.b_dateBookedDate)) 
+                if (!isNull(booking.b_dateBookedDate) &&
+                    !isUndefined(booking.b_dateBookedDate) &&
+                    !isEmpty(booking.b_dateBookedDate)) 
                 {
                     this.setState({isBookedBooking: true});
                 } else {
@@ -859,7 +859,7 @@ class BookingPage extends Component {
                 this.setState({ booking, AdditionalServices, formInputs, nextBookingId, prevBookingId, isBookingSelected: true });
             } else {
                 this.setState({ formInputs: {}, loading: false, isBookingSelected: false });
-                if (!_.isNull(this.state.findKeyword)) this.notify('There is no such booking with that DME/CON number.');
+                if (!isNull(this.state.findKeyword)) this.notify('There is no such booking with that DME/CON number.');
             }
         }
 
@@ -1003,30 +1003,30 @@ class BookingPage extends Component {
 
         if (booking.puPickUpAvailFrom_Date) formInputs['puPickUpAvailFrom_Date'] = booking.puPickUpAvailFrom_Date;
         else formInputs['puPickUpAvailFrom_Date'] = null;
-        if (!_.isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
+        if (!isNull(booking.pu_PickUp_Avail_Time_Hours)) formInputs['pu_PickUp_Avail_Time_Hours'] = booking.pu_PickUp_Avail_Time_Hours;
         else formInputs['pu_PickUp_Avail_Time_Hours'] = null;
-        if (!_.isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
+        if (!isNull(booking.pu_PickUp_Avail_Time_Minutes)) formInputs['pu_PickUp_Avail_Time_Minutes'] = (booking.pu_PickUp_Avail_Time_Minutes);
         else formInputs['pu_PickUp_Avail_Time_Minutes'] = null;
         if (booking.pu_PickUp_By_Date) formInputs['pu_PickUp_By_Date'] = booking.pu_PickUp_By_Date;
         else formInputs['pu_PickUp_By_Date'] = null;
-        if (!_.isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
+        if (!isNull(booking.pu_PickUp_By_Time_Hours)) formInputs['pu_PickUp_By_Time_Hours'] = (booking.pu_PickUp_By_Time_Hours);
         else formInputs['pu_PickUp_By_Time_Hours'] = null;
-        if (!_.isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
+        if (!isNull(booking.pu_PickUp_By_Time_Minutes)) formInputs['pu_PickUp_By_Time_Minutes'] = (booking.pu_PickUp_By_Time_Minutes);
         else formInputs['pu_PickUp_By_Time_Minutes'] = null;
 
         if (booking.de_Deliver_From_Date) formInputs['de_Deliver_From_Date'] = booking.de_Deliver_From_Date;
         else formInputs['de_Deliver_From_Date'] = null;
-        if (!_.isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
+        if (!isNull(booking.de_Deliver_From_Hours)) formInputs['de_Deliver_From_Hours'] = (booking.de_Deliver_From_Hours);
         else formInputs['de_Deliver_From_Hours'] = null;
-        if (!_.isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
+        if (!isNull(booking.de_Deliver_From_Minutes)) formInputs['de_Deliver_From_Minutes'] = (booking.de_Deliver_From_Minutes);
         else formInputs['de_Deliver_From_Minutes'] = null;
         if (booking.de_Deliver_By_Date) formInputs['de_Deliver_By_Date'] = booking.de_Deliver_By_Date;
         else formInputs['de_Deliver_By_Date'] = null;
-        if (!_.isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
+        if (!isNull(booking.de_Deliver_By_Hours)) formInputs['de_Deliver_By_Hours'] = (booking.de_Deliver_By_Hours);
         else formInputs['de_Deliver_By_Hours'] = null;
-        if (!_.isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
+        if (!isNull(booking.de_Deliver_By_Minutes)) formInputs['de_Deliver_By_Minutes'] = (booking.de_Deliver_By_Minutes);
         else formInputs['de_Deliver_By_Minutes'] = null;
-        if (!_.isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
+        if (!isNull(booking.s_02_Booking_Cutoff_Time)) formInputs['s_02_Booking_Cutoff_Time'] = booking.s_02_Booking_Cutoff_Time;
         else formInputs['s_02_Booking_Cutoff_Time'] = null;
 
         if (booking.b_project_due_date) formInputs['b_project_due_date'] = booking.b_project_due_date;
@@ -1041,49 +1041,49 @@ class BookingPage extends Component {
         else formInputs['b_given_to_transport_date_time'] = null;
 
         // Added new main fields
-        if (!_.isNull(booking.v_FPBookingNumber)) formInputs['v_FPBookingNumber'] = booking.v_FPBookingNumber;
+        if (!isNull(booking.v_FPBookingNumber)) formInputs['v_FPBookingNumber'] = booking.v_FPBookingNumber;
         else formInputs['v_FPBookingNumber'] = '';
-        if (!_.isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
+        if (!isNull(booking.vx_freight_provider)) formInputs['vx_freight_provider'] = booking.vx_freight_provider;
         else formInputs['vx_freight_provider'] = '';
         formInputs['vx_serviceName'] = booking.vx_serviceName;
         formInputs['vx_account_code'] = booking.vx_account_code;
         formInputs['v_service_Type'] = booking.v_service_Type;
         formInputs['fk_fp_pickup_id'] = booking.fk_fp_pickup_id;
         formInputs['v_vehicle_Type'] = booking.v_vehicle_Type;
-        if (!_.isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
+        if (!isNull(booking.inv_billing_status)) formInputs['inv_billing_status'] = booking.inv_billing_status;
         else formInputs['inv_billing_status'] = '';
-        if (!_.isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
+        if (!isNull(booking.inv_billing_status_note)) formInputs['inv_billing_status_note'] = booking.inv_billing_status_note;
         else formInputs['inv_billing_status_note'] = '';
-        if (!_.isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
+        if (!isNull(booking.b_client_sales_inv_num)) formInputs['b_client_sales_inv_num'] = booking.b_client_sales_inv_num;
         else formInputs['b_client_sales_inv_num'] = '';
-        if (!_.isNull(booking.b_client_order_num)) formInputs['b_client_order_num'] = booking.b_client_order_num;
+        if (!isNull(booking.b_client_order_num)) formInputs['b_client_order_num'] = booking.b_client_order_num;
         else formInputs['b_client_order_num'] = '';
-        if (!_.isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
+        if (!isNull(booking.b_client_name_sub)) formInputs['b_client_name_sub'] = booking.b_client_name_sub;
         else formInputs['b_client_name_sub'] = '';
-        if (!_.isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
+        if (!isNull(booking.inv_dme_invoice_no)) formInputs['inv_dme_invoice_no'] = booking.inv_dme_invoice_no;
         else formInputs['inv_dme_invoice_no'] = '';
-        if (!_.isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
+        if (!isNull(booking.fp_invoice_no)) formInputs['fp_invoice_no'] = booking.fp_invoice_no;
         else formInputs['fp_invoice_no'] = '';
-        if (!_.isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
+        if (!isNull(booking.inv_cost_quoted)) formInputs['inv_cost_quoted'] = parseFloat(booking.inv_cost_quoted).toFixed(2);
         else formInputs['inv_cost_quoted'] = null;
-        if (!_.isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
+        if (!isNull(booking.inv_cost_actual)) formInputs['inv_cost_actual'] = parseFloat(booking.inv_cost_actual).toFixed(2);
         else formInputs['inv_cost_actual'] = null;
-        if (!_.isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
+        if (!isNull(booking.inv_sell_quoted)) formInputs['inv_sell_quoted'] = parseFloat(booking.inv_sell_quoted).toFixed(2);
         else formInputs['inv_sell_quoted'] = null;
-        if (!_.isNull(booking.inv_sell_quoted_override)) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
+        if (!isNull(booking.inv_sell_quoted_override)) formInputs['inv_sell_quoted_override'] = parseFloat(booking.inv_sell_quoted_override).toFixed(2);
         else formInputs['inv_sell_quoted_override'] = null;
-        if (!_.isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
+        if (!isNull(booking.inv_sell_actual)) formInputs['inv_sell_actual'] = parseFloat(booking.inv_sell_actual).toFixed(2);
         else formInputs['inv_sell_actual'] = null;
-        if (!_.isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
+        if (!isNull(booking.customer_cost)) formInputs['customer_cost'] = parseFloat(booking.customer_cost).toFixed(2);
         else formInputs['customer_cost'] = null;
-        if (!_.isNull(booking.inv_booked_quoted)) formInputs['inv_booked_quoted'] = parseFloat(booking.inv_booked_quoted).toFixed(2);
+        if (!isNull(booking.inv_booked_quoted)) formInputs['inv_booked_quoted'] = parseFloat(booking.inv_booked_quoted).toFixed(2);
         else formInputs['inv_booked_quoted'] = null;
-        if (!_.isNull(booking.vx_futile_Booking_Notes) && !_.isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
+        if (!isNull(booking.vx_futile_Booking_Notes) && !isNull(booking.vx_futile_Booking_Notes)) formInputs['vx_futile_Booking_Notes'] = booking.vx_futile_Booking_Notes;
         else formInputs['vx_futile_Booking_Notes'] = null;
-        if (!_.isNull(booking.b_handling_Instructions) && !_.isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
+        if (!isNull(booking.b_handling_Instructions) && !isNull(booking.b_handling_Instructions)) formInputs['b_handling_Instructions'] = booking.b_handling_Instructions;
         else formInputs['b_handling_Instructions'] = null;
         formInputs['x_manual_booked_flag'] = booking.x_manual_booked_flag;
-        formInputs['booking_type'] = !_.isNull(booking.booking_type) ? booking.booking_type : null;
+        formInputs['booking_type'] = !isNull(booking.booking_type) ? booking.booking_type : null;
 
         // Freight Options
         formInputs['pu_Address_Type'] = booking.pu_Address_Type;
@@ -1737,12 +1737,12 @@ class BookingPage extends Component {
             }
 
             let canUpdateField = true;
-            if (!_.isEmpty(e.target.value)) {
+            if (!isEmpty(e.target.value)) {
                 if (e.target.name === 'pu_PickUp_Avail_Time_Hours' ||
                     e.target.name === 'pu_PickUp_By_Time_Hours' ||
                     e.target.name === 'de_Deliver_From_Hours' ||
                     e.target.name === 'de_Deliver_By_Hours') {
-                    if (_.isNaN(parseInt(e.target.value))) {
+                    if (isNaN(parseInt(e.target.value))) {
                         this.notify('Please input correct hour!');
                         canUpdateField = false;
                     } else if (parseInt(e.target.value) > 23) {
@@ -1756,7 +1756,7 @@ class BookingPage extends Component {
                     e.target.name === 'de_Deliver_From_Minutes' ||
                     e.target.name === 'de_Deliver_By_Minutes'
                 ) {
-                    if (_.isNaN(parseInt(e.target.value))) {
+                    if (isNaN(parseInt(e.target.value))) {
                         this.notify('Please input correct minutes!');
                         canUpdateField = false;
                     } else if (parseInt(e.target.value) > 59) {
@@ -1817,7 +1817,7 @@ class BookingPage extends Component {
 
             if (value == '' || value == null) {
                 formInputs[e.target.name] = null;
-            // } else if (value && _.isNaN(parseFloat(value))) {
+            // } else if (value && isNaN(parseFloat(value))) {
                 // this.notify('Please input float number!');
             } else {
                 formInputs[e.target.name] = parseFloat(value).toFixed(2);
@@ -2018,11 +2018,11 @@ class BookingPage extends Component {
         const {clientId} = this.props;
 
         if (isShowStatusDetailInput && 
-            (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail']))) 
+            (isNull(formInputs['new_dme_status_detail']) || isEmpty(formInputs['new_dme_status_detail']))) 
         {
             this.notify('Please select or input Status Detail');
         } else if (isShowStatusActionInput && 
-            (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action']))) 
+            (isNull(formInputs['new_dme_status_action']) || isEmpty(formInputs['new_dme_status_action']))) 
         {
             this.notify('Please select or input Status Action');
         } else if (parseInt(this.state.curViewMode) === 1) {
@@ -2091,9 +2091,9 @@ class BookingPage extends Component {
             this.notify('Booking is already Booked!');
         } else if (
             clientname.toLowerCase() === 'biopak' &&
-            !_.isNull(booking.manifest_timestamp) &&
-            !_.isUndefined(booking.manifest_timestamp) &&
-            !_.isEmpty(booking.manifest_timestamp)
+            !isNull(booking.manifest_timestamp) &&
+            !isUndefined(booking.manifest_timestamp) &&
+            !isEmpty(booking.manifest_timestamp)
         ) {
             this.notify('Booking is already Manifested!');
         } else {
@@ -2104,11 +2104,11 @@ class BookingPage extends Component {
             });
 
             if (isShowStatusDetailInput && 
-                (_.isNull(formInputs['new_dme_status_detail']) || _.isEmpty(formInputs['new_dme_status_detail'])))
+                (isNull(formInputs['new_dme_status_detail']) || isEmpty(formInputs['new_dme_status_detail'])))
             {
                 this.notify('Please select or input Status Detail');
             } else if (isShowStatusActionInput && 
-                (_.isNull(formInputs['new_dme_status_action']) || _.isEmpty(formInputs['new_dme_status_action'])))
+                (isNull(formInputs['new_dme_status_action']) || isEmpty(formInputs['new_dme_status_action'])))
             {
                 this.notify('Please select or input Status Action');
             } else if (parseInt(this.state.curViewMode) === 2) {
@@ -2151,7 +2151,7 @@ class BookingPage extends Component {
                 Object.keys(formInputs).forEach((key) => {bookingToUpdate[key] = formInputs[key];});
                 const res = isFormValid('booking', bookingToUpdate);
                 if (res === 'valid') {
-                    if (_.intersection(updatedFields, BOOKING_IMPORTANT_FIELDS).length > 0) {
+                    if (intersection(updatedFields, BOOKING_IMPORTANT_FIELDS).length > 0) {
                         this.toggleUpdateBookingModal();
                     }
 
@@ -2827,7 +2827,7 @@ class BookingPage extends Component {
             if (currentPackedStatus !== 'original')
                 return product['packed_status'] === currentPackedStatus;
             else
-                return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+                return isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
         });
 
         if (filteredProducts.length === 0) {
@@ -2883,10 +2883,10 @@ class BookingPage extends Component {
         }
     }
 
-    onCopyToClipboard(e, text) {
+    onCopyToClipboard(e, text, notification) {
         e.preventDefault();
         navigator.clipboard.writeText(text);
-        this.notify('Copied to clipboard!');
+        this.notify(notification);
     }
 
     render() {
@@ -2905,7 +2905,7 @@ class BookingPage extends Component {
                 if (currentPackedStatus !== 'original')
                     return product['packed_status'] === currentPackedStatus;
                 else
-                    return _.isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+                    return isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
             })
             .map((line, index) => {
                 line['index'] = index + 1;
@@ -2976,7 +2976,7 @@ class BookingPage extends Component {
         let pickedUpProducts = [];
         if (booking && booking.b_status === 'Entered' && booking.b_client_name === 'Plum Products Australia Ltd') {
             pickedUpProducts = products
-                .filter(product => !_.isNull(product['picked_up_timestamp']))
+                .filter(product => !isNull(product['picked_up_timestamp']))
                 .map(product => product['pk_lines_id']);
         }
 
@@ -3395,9 +3395,9 @@ class BookingPage extends Component {
                                             :
                                             <DateTimePicker
                                                 onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
-                                                value={(!_.isNull(booking) &&
-                                                    !_.isNull(booking.b_dateBookedDate) &&
-                                                    !_.isUndefined(booking.b_dateBookedDate)) &&
+                                                value={(!isNull(booking) &&
+                                                    !isNull(booking.b_dateBookedDate) &&
+                                                    !isUndefined(booking.b_dateBookedDate)) &&
                                                     new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
                                                 }
                                                 format={'dd/MM/yyyy HH:mm'}
@@ -3416,7 +3416,12 @@ class BookingPage extends Component {
                                             >
                                                 <i className="fa fa-caret-left"></i>
                                             </button>
-                                            <p className="text-white disp-inline-block dme-id">DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}</p>
+                                            <p 
+                                                className="text-white disp-inline-block dme-id" 
+                                                onClick={(e) => isBookingSelected && this.onCopyToClipboard(e, this.state.booking.b_bookingID_Visual, 'Copied on clipboard!')}
+                                            >
+                                                DME ID: {isBookingSelected ? this.state.booking.b_bookingID_Visual : ''}
+                                            </p>
                                             <button
                                                 onClick={(e) => this.onClickNext(e)}
                                                 disabled={this.state.nextBookingId === 0 || curViewMode === 1 ? 'disabled' : null}
@@ -3483,7 +3488,7 @@ class BookingPage extends Component {
                                                 >
                                                     <i className="fa fa-truck"></i>
                                                     {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_status_API']} /> */}
-                                                    {!_.isEmpty(booking.b_status_API) &&
+                                                    {!isEmpty(booking.b_status_API) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_status_API']} />
                                                     }
                                                 </p>
@@ -3494,7 +3499,7 @@ class BookingPage extends Component {
                                                 >
                                                     <i className="fa fa-exclamation-triangle"></i>
                                                     {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_error_Capture']} /> */}
-                                                    {!_.isEmpty(booking.b_error_Capture) &&
+                                                    {!isEmpty(booking.b_error_Capture) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_error_Capture']} />
                                                     }
                                                 </p>
@@ -3505,7 +3510,7 @@ class BookingPage extends Component {
                                                 >
                                                     <i className="fa fa-sticky-note"></i>
                                                     {/* <TooltipItem object={tooltipText} placement='bottom' fields={['b_booking_Notes']} /> */}
-                                                    {!_.isEmpty(booking.b_booking_Notes) &&
+                                                    {!isEmpty(booking.b_booking_Notes) &&
                                                         <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                                     }
                                                 </p>
@@ -3585,7 +3590,7 @@ class BookingPage extends Component {
                                                         {formInputs['dme_status_detail']}
                                                     </p>
                                             }
-                                            {!_.isEmpty(formInputs['dme_status_detail']) &&
+                                            {!isEmpty(formInputs['dme_status_detail']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_detail']} />
                                             }
                                         </div>
@@ -3632,7 +3637,7 @@ class BookingPage extends Component {
                                                             {formInputs['dme_status_action']}
                                                         </p>
                                             }
-                                            {!_.isEmpty(formInputs['dme_status_action']) &&
+                                            {!isEmpty(formInputs['dme_status_action']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_action']} />
                                             }
                                         </div>
@@ -3762,7 +3767,7 @@ class BookingPage extends Component {
                                                     value={formInputs['dme_status_linked_reference_from_fp'] ? formInputs['dme_status_linked_reference_from_fp'] : ''} 
                                                     onChange={(e) => this.onHandleInput(e)}/>
                                             }
-                                            {!_.isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
+                                            {!isEmpty(formInputs['dme_status_linked_reference_from_fp']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['dme_status_linked_reference_from_fp']} />
                                             }
                                         </div>
@@ -3965,7 +3970,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_cost_quoted"
-                                                            value = {!_.isNull(formInputs['inv_cost_quoted']) ? `$${formInputs['inv_cost_quoted']}` : ''}
+                                                            value = {!isNull(formInputs['inv_cost_quoted']) ? `$${formInputs['inv_cost_quoted']}` : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -3985,7 +3990,7 @@ class BookingPage extends Component {
                                                                 className="form-control"
                                                                 type="text"
                                                                 name="inv_cost_actual"
-                                                                value = {!_.isNull(formInputs['inv_cost_actual']) ? `$${formInputs['inv_cost_actual']}` : ''}
+                                                                value = {!isNull(formInputs['inv_cost_actual']) ? `$${formInputs['inv_cost_actual']}` : ''}
                                                                 onChange={(e) => this.onHandleInput(e)}
                                                                 onBlur={(e) => this.onHandleInputBlur(e)}
                                                             />
@@ -4005,7 +4010,7 @@ class BookingPage extends Component {
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_sell_quoted"
-                                                        value = {!_.isNull(formInputs['inv_sell_quoted']) ? `$${formInputs['inv_sell_quoted']}` : ''}
+                                                        value = {!isNull(formInputs['inv_sell_quoted']) ? `$${formInputs['inv_sell_quoted']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -4022,7 +4027,7 @@ class BookingPage extends Component {
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_booked_quoted"
-                                                        value = {!_.isNull(formInputs['inv_booked_quoted']) ? `$${formInputs['inv_booked_quoted']}` : ''}
+                                                        value = {!isNull(formInputs['inv_booked_quoted']) ? `$${formInputs['inv_booked_quoted']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -4039,7 +4044,7 @@ class BookingPage extends Component {
                                                         className="form-control"
                                                         type="text"
                                                         name="inv_sell_quoted_override"
-                                                        value = {!_.isNull(formInputs['inv_sell_quoted_override']) ? `$${formInputs['inv_sell_quoted_override']}` : ''}
+                                                        value = {!isNull(formInputs['inv_sell_quoted_override']) ? `$${formInputs['inv_sell_quoted_override']}` : ''}
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         onBlur={(e) => this.onHandleInputBlur(e)}
                                                     />
@@ -4057,7 +4062,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="inv_sell_actual"
-                                                            value = {!_.isNull(formInputs['inv_sell_actual']) ? `$${formInputs['inv_sell_actual']}` : ''}
+                                                            value = {!isNull(formInputs['inv_sell_actual']) ? `$${formInputs['inv_sell_actual']}` : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             onBlur={(e) => this.onHandleInputBlur(e)}
                                                         />
@@ -4077,7 +4082,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             disabled="disabled"
-                                                            value = {!_.isNull(formInputs['customer_cost']) ? `$${formInputs['customer_cost']}` : ''}
+                                                            value = {!isNull(formInputs['customer_cost']) ? `$${formInputs['customer_cost']}` : ''}
                                                         />
                                                     }
                                                 </div>
@@ -4145,7 +4150,7 @@ class BookingPage extends Component {
                                                 rows="6"
                                                 cols="83"
                                             />
-                                            {!_.isEmpty(formInputs['inv_billing_status_note']) &&
+                                            {!isEmpty(formInputs['inv_billing_status_note']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
                                             }
                                         </div>
@@ -4184,7 +4189,7 @@ class BookingPage extends Component {
                                                             cols="83"
                                                         />
                                             }
-                                            {!_.isEmpty(formInputs['b_booking_Notes']) &&
+                                            {!isEmpty(formInputs['b_booking_Notes']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['b_booking_Notes']} />
                                             }
                                         </div>
@@ -4506,7 +4511,7 @@ class BookingPage extends Component {
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
-                                                                        value={(!_.isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !_.isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) &&
+                                                                        value={(!isNull(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']) && !isUndefined(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])) &&
                                                                         new Date(moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -4527,7 +4532,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
-                                                                            value={(!_.isNull(formInputs['b_given_to_transport_date_time']) && !_.isUndefined(formInputs['b_given_to_transport_date_time'])) &&
+                                                                            value={(!isNull(formInputs['b_given_to_transport_date_time']) && !isUndefined(formInputs['b_given_to_transport_date_time'])) &&
                                                                             new Date(moment(formInputs['b_given_to_transport_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -4548,7 +4553,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
-                                                                            value={(!_.isNull(formInputs['fp_received_date_time']) && !_.isUndefined(formInputs['fp_received_date_time'])) &&
+                                                                            value={(!isNull(formInputs['fp_received_date_time']) && !isUndefined(formInputs['fp_received_date_time'])) &&
                                                                             new Date(moment(formInputs['fp_received_date_time']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -4568,7 +4573,7 @@ class BookingPage extends Component {
                                                                 (clientname === 'dme') ?
                                                                     <DateTimePicker
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
-                                                                        value={(!_.isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !_.isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) &&
+                                                                        value={(!isNull(formInputs['s_20_Actual_Pickup_TimeStamp']) && !isUndefined(formInputs['s_20_Actual_Pickup_TimeStamp'])) &&
                                                                         new Date(moment(formInputs['s_20_Actual_Pickup_TimeStamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -5019,7 +5024,7 @@ class BookingPage extends Component {
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
-                                                                            value={(!_.isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !_.isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) &&
+                                                                            value={(!isNull(formInputs['s_21_Actual_Delivery_TimeStamp']) && !isUndefined(formInputs['s_21_Actual_Delivery_TimeStamp'])) &&
                                                                             new Date(moment(formInputs['s_21_Actual_Delivery_TimeStamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))}
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -5167,10 +5172,10 @@ class BookingPage extends Component {
                                                         <li
                                                             className='project-name'
                                                             id={'booking-' + 'b_booking_project' + '-tooltip-' + booking.id}
-                                                            onClick={(e) => this.onCopyToClipboard(e, booking.b_booking_project)}
+                                                            onClick={(e) => this.onCopyToClipboard(e, booking.b_booking_project, 'Copied to clipboard!')}
                                                         >
                                                             Project: {booking.b_booking_project}
-                                                            {!_.isEmpty(booking.b_booking_project) &&
+                                                            {!isEmpty(booking.b_booking_project) &&
                                                                 <TooltipItem object={booking} placement='top' fields={['b_booking_project']} />
                                                             }
                                                         </li>
@@ -5232,14 +5237,14 @@ class BookingPage extends Component {
                                                                     <p className="date disp-inline-block">
                                                                         {formInputs['puPickUpAvailFrom_Date'] ? moment(formInputs['puPickUpAvailFrom_Date']).format('DD/MM/YYYY') : ''}
                                                                     </p>
-                                                                    {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) &&
+                                                                    {!isNull(formInputs['pu_PickUp_Avail_Time_Hours']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Hours']) < 10 ?
                                                                                 `0${formInputs['pu_PickUp_Avail_Time_Hours']}:` : `${formInputs['pu_PickUp_Avail_Time_Hours']}:`
                                                                             }
                                                                         </p>
                                                                     }
-                                                                    {!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) && !_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) &&
+                                                                    {!isNull(formInputs['pu_PickUp_Avail_Time_Hours']) && !isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_Avail_Time_Minutes']) < 10 ?
                                                                                 `0${formInputs['pu_PickUp_Avail_Time_Minutes']}` : `${formInputs['pu_PickUp_Avail_Time_Minutes']}`
@@ -5258,14 +5263,14 @@ class BookingPage extends Component {
                                                                     <input
                                                                         className="hour"
                                                                         name='pu_PickUp_Avail_Time_Hours'
-                                                                        value={!_.isNull(formInputs['pu_PickUp_Avail_Time_Hours']) ? formInputs['pu_PickUp_Avail_Time_Hours'] : ''}
+                                                                        value={!isNull(formInputs['pu_PickUp_Avail_Time_Hours']) ? formInputs['pu_PickUp_Avail_Time_Hours'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                     {':'}
                                                                     <input
                                                                         className="time"
                                                                         name='pu_PickUp_Avail_Time_Minutes'
-                                                                        value={!_.isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) ? formInputs['pu_PickUp_Avail_Time_Minutes'] : ''}
+                                                                        value={!isNull(formInputs['pu_PickUp_Avail_Time_Minutes']) ? formInputs['pu_PickUp_Avail_Time_Minutes'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                 </div>
@@ -5280,14 +5285,14 @@ class BookingPage extends Component {
                                                                     <p className="date disp-inline-block">
                                                                         {formInputs['pu_PickUp_By_Date'] ? moment(formInputs['pu_PickUp_By_Date']).format('DD/MM/YYYY') : ''}
                                                                     </p>
-                                                                    {!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) &&
+                                                                    {!isNull(formInputs['pu_PickUp_By_Time_Hours']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['pu_PickUp_By_Time_Hours']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Hours']) < 10 ?
                                                                                 `0${formInputs['pu_PickUp_By_Time_Hours']}:` : `${formInputs['pu_PickUp_By_Time_Hours']}:`
                                                                             }
                                                                         </p>
                                                                     }
-                                                                    {!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) && !_.isNull(formInputs['pu_PickUp_By_Time_Minutes']) &&
+                                                                    {!isNull(formInputs['pu_PickUp_By_Time_Hours']) && !isNull(formInputs['pu_PickUp_By_Time_Minutes']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['pu_PickUp_By_Time_Minutes']) > -1 && parseInt(formInputs['pu_PickUp_By_Time_Minutes']) < 10 ?
                                                                                 `0${formInputs['pu_PickUp_By_Time_Minutes']}` : `${formInputs['pu_PickUp_By_Time_Minutes']}`
@@ -5306,14 +5311,14 @@ class BookingPage extends Component {
                                                                     <input
                                                                         className="hour"
                                                                         name='pu_PickUp_By_Time_Hours'
-                                                                        value={!_.isNull(formInputs['pu_PickUp_By_Time_Hours']) ? formInputs['pu_PickUp_By_Time_Hours'] : ''}
+                                                                        value={!isNull(formInputs['pu_PickUp_By_Time_Hours']) ? formInputs['pu_PickUp_By_Time_Hours'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                     {':'}
                                                                     <input
                                                                         className="time"
                                                                         name='pu_PickUp_By_Time_Minutes'
-                                                                        value={!_.isNull(formInputs['pu_PickUp_By_Time_Minutes']) ? formInputs['pu_PickUp_By_Time_Minutes'] : ''}
+                                                                        value={!isNull(formInputs['pu_PickUp_By_Time_Minutes']) ? formInputs['pu_PickUp_By_Time_Minutes'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                 </div>
@@ -5328,14 +5333,14 @@ class BookingPage extends Component {
                                                                     <p className="date disp-inline-block">
                                                                         {formInputs['de_Deliver_From_Date'] ? moment(formInputs['de_Deliver_From_Date']).format('DD/MM/YYYY') : ''}
                                                                     </p>
-                                                                    {!_.isNull(formInputs['de_Deliver_From_Hours']) &&
+                                                                    {!isNull(formInputs['de_Deliver_From_Hours']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['de_Deliver_From_Hours']) > -1 && parseInt(formInputs['de_Deliver_From_Hours']) < 10 ?
                                                                                 `0${formInputs['de_Deliver_From_Hours']}:` : `${formInputs['de_Deliver_From_Hours']}:`
                                                                             }
                                                                         </p>
                                                                     }
-                                                                    {!_.isNull(formInputs['de_Deliver_From_Hours']) && !_.isNull(formInputs['de_Deliver_From_Minutes']) &&
+                                                                    {!isNull(formInputs['de_Deliver_From_Hours']) && !isNull(formInputs['de_Deliver_From_Minutes']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['de_Deliver_From_Minutes']) > -1 && parseInt(formInputs['de_Deliver_From_Minutes']) < 10 ?
                                                                                 `0${formInputs['de_Deliver_From_Minutes']}` : `${formInputs['de_Deliver_From_Minutes']}`
@@ -5354,14 +5359,14 @@ class BookingPage extends Component {
                                                                     <input
                                                                         className="hour"
                                                                         name='de_Deliver_From_Hours'
-                                                                        value={!_.isNull(formInputs['de_Deliver_From_Hours']) ? formInputs['de_Deliver_From_Hours'] : ''}
+                                                                        value={!isNull(formInputs['de_Deliver_From_Hours']) ? formInputs['de_Deliver_From_Hours'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                     {':'}
                                                                     <input
                                                                         className="time"
                                                                         name='de_Deliver_From_Minutes'
-                                                                        value={!_.isNull(formInputs['de_Deliver_From_Minutes']) ? formInputs['de_Deliver_From_Minutes'] : ''}
+                                                                        value={!isNull(formInputs['de_Deliver_From_Minutes']) ? formInputs['de_Deliver_From_Minutes'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                 </div>
@@ -5376,14 +5381,14 @@ class BookingPage extends Component {
                                                                     <p className="date disp-inline-block">
                                                                         {formInputs['de_Deliver_By_Date'] ? moment(formInputs['de_Deliver_By_Date']).format('DD/MM/YYYY') : ''}
                                                                     </p>
-                                                                    {!_.isNull(formInputs['de_Deliver_By_Hours']) &&
+                                                                    {!isNull(formInputs['de_Deliver_By_Hours']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['de_Deliver_By_Hours']) > -1 && parseInt(formInputs['de_Deliver_By_Hours']) < 10 ?
                                                                                 `0${formInputs['de_Deliver_By_Hours']}:` : `${formInputs['de_Deliver_By_Hours']}:`
                                                                             }
                                                                         </p>
                                                                     }
-                                                                    {!_.isNull(formInputs['de_Deliver_By_Hours']) && !_.isNull(formInputs['de_Deliver_By_Minutes']) &&
+                                                                    {!isNull(formInputs['de_Deliver_By_Hours']) && !isNull(formInputs['de_Deliver_By_Minutes']) &&
                                                                         <p className="time disp-inline-block">
                                                                             {parseInt(formInputs['de_Deliver_By_Minutes']) > -1 && parseInt(formInputs['de_Deliver_By_Minutes']) < 10 ?
                                                                                 `0${formInputs['de_Deliver_By_Minutes']}` : `${formInputs['de_Deliver_By_Minutes']}`
@@ -5402,14 +5407,14 @@ class BookingPage extends Component {
                                                                     <input
                                                                         className="hour"
                                                                         name='de_Deliver_By_Hours'
-                                                                        value={!_.isNull(formInputs['de_Deliver_By_Hours']) ? formInputs['de_Deliver_By_Hours'] : ''}
+                                                                        value={!isNull(formInputs['de_Deliver_By_Hours']) ? formInputs['de_Deliver_By_Hours'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                     {':'}
                                                                     <input
                                                                         className="time"
                                                                         name='de_Deliver_By_Minutes'
-                                                                        value={!_.isNull(formInputs['de_Deliver_By_Minutes']) ? formInputs['de_Deliver_By_Minutes'] : ''}
+                                                                        value={!isNull(formInputs['de_Deliver_By_Minutes']) ? formInputs['de_Deliver_By_Minutes'] : ''}
                                                                         onChange={(e) => this.onHandleInput(e)}
                                                                     />
                                                                 </div>
@@ -5797,7 +5802,7 @@ class BookingPage extends Component {
                                                         {
                                                             props => (
                                                                 <div>
-                                                                    {!_.isEmpty(zohoDepartments) && !_.isEmpty(zohoTickets) && <BootstrapTable id="zohoTickets"
+                                                                    {!isEmpty(zohoDepartments) && !isEmpty(zohoTickets) && <BootstrapTable id="zohoTickets"
                                                                         {...props.baseProps}
                                                                         cellEdit={cellEditFactory({ 
                                                                             mode: 'click', 

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 // Libs
 import moment from 'moment';
-import _ from 'lodash';
+import { isNull } from 'lodash';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -48,7 +48,7 @@ class VehicleSlider extends React.Component {
     onDateChange(date) {
         let lineHaulDate = '';
 
-        if (_.isNull(date)) {
+        if (isNull(date)) {
             lineHaulDate = moment().toDate();
         } else {
             lineHaulDate = date;

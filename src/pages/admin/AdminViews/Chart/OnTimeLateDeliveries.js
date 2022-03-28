@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import _ from 'lodash';
+import { orderBy, isNull } from 'lodash';
 import { getNumBookingsPerFp } from '../../../../state/services/chartService';
 import BootstrapTable from 'react-bootstrap-table-next';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -51,7 +51,7 @@ class OnTimeLateDeliveries extends Component {
         let { num_bookings_fp } = newProps;
 
         if (num_bookings_fp) {
-            num_bookings_fp = _.orderBy(num_bookings_fp, 'deliveries', 'desc');
+            num_bookings_fp = orderBy(num_bookings_fp, 'deliveries', 'desc');
             this.setState({ num_bookings_fp });
             const chart_data = num_bookings_fp.slice(0, TABLE_PAGINATION_SIZE);
             this.setState({ chart_data });
@@ -69,7 +69,7 @@ class OnTimeLateDeliveries extends Component {
         let endDate = '';
 
         if (dateType === 'startDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 startDate = moment().toDate();
             } else {
                 startDate = date;
@@ -89,7 +89,7 @@ class OnTimeLateDeliveries extends Component {
                 });
             }
         } else if (dateType === 'endDate') {
-            if (_.isNull(date)) {
+            if (isNull(date)) {
                 endDate = moment().toDate();
             } else {
                 endDate = date;
