@@ -148,6 +148,9 @@ $table_body_height: 100%;
 $checkbox_width: 30px;
 $lines_info_width: 20px;
 $additional_info_width: 20px;
+$lines_count: 40px;
+$total_kgs: 40px;
+$total_cbm: 40px;
 $b_bookingID_Visual_width: 90px;
 $b_booking_Priority_width: 90px;
 $b_client_name_width: 110px;
@@ -218,6 +221,9 @@ $b_project_due_date_width: 130px;
   td[name=checkbox], th[name=checkbox] { width: $checkbox_width; }
   td[name=lines_info], th[name=lines_info] { width: $lines_info_width; }
   td[name=additional_info], th[name=additional_info] { width: $additional_info_width; }
+  td[name=lines_count], th[name=lines_count] { width: $lines_count; }
+  td[name=total_kgs], th[name=total_kgs] { width: $total_kgs; }
+  td[name=total_cbm], th[name=total_cbm] { width: $total_cbm; }
   td[name=b_bookingID_Visual], th[name=b_bookingID_Visual] { width: $b_bookingID_Visual_width; }
   td[name=b_bookingID_Visual] p, th[name=b_bookingID_Visual] p { width: 70px; }
   td[name=b_booking_Priority], th[name=b_booking_Priority] { width: $b_booking_Priority_width; }

@@ -2045,6 +2045,9 @@ class AllBookingsPage extends React.Component {
                             </React.Fragment>
                         }
                     </td>
+                    <td name='lines_count' className={'text-center'} title='Lines count'>{booking.lines_count}</td>
+                    <td name='total_kgs' className={'text-center'} title='Total KGs'>{booking.total_kgs}</td>
+                    <td name='total_cbm' className={'text-center'} title='Total Cubic'>{booking.total_cbm}</td>
                     <td name='b_bookingID_Visual' 
                         id={'link-popover-' + booking.id} 
                         onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}
@@ -2576,6 +2579,9 @@ class AllBookingsPage extends React.Component {
                                                                 <i className="fa fa-exclamation-triangle"></i>
                                                                 <SimpleTooltipComponent text={'Error'} />
                                                             </th>
+                                                            <th name='lines_count' title='Lines count'>Cnt</th>
+                                                            <th name='total_kgs' title='Total KGs'>KGs</th>
+                                                            <th name='total_cbm' title='Total Cubic Meter'>CBM</th>
                                                             <th
                                                                 name="b_bookingID_Visual"
                                                                 className={(sortField === 'b_bookingID_Visual') ? 'current' : ''}
@@ -3199,6 +3205,9 @@ class AllBookingsPage extends React.Component {
                                                             <th name="lines_info"><i className="icon icon-th-list"></i></th>
                                                             <th name="additional_info"><i className="icon icon-plus"></i></th>
                                                             <th name="b_error_Capture"></th>
+                                                            <td name='lines_count' className={'text-center'}></td>
+                                                            <td name='total_kgs' className={'text-center'}></td>
+                                                            <td name='total_cbm' className={'text-center'}></td>
                                                             <th name="b_bookingID_Visual" scope="col"><input type="text" name="b_bookingID_Visual" value={filterInputs['b_bookingID_Visual'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="vx_freight_provider" scope="col"><input type="text" name="vx_freight_provider" value={filterInputs['vx_freight_provider'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="v_FPBookingNumber" scope="col"><input type="text" name="v_FPBookingNumber" value={filterInputs['v_FPBookingNumber'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
