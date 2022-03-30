@@ -140,7 +140,7 @@ class FPPricingSlider extends React.Component {
                     );
                 });
             const pricingTable = pricingList.length > 0 ? (
-                <table className="table table-hover table-bordered sortable fixed_headers">
+                <table className="table table-hover table-bordered table-striped sortable fixed_headers">
                     <tr>
                         <th className="nowrap" scope="col" nowrap><p>No</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
@@ -162,7 +162,9 @@ class FPPricingSlider extends React.Component {
                         <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Action</p></th>
                     </tr>
-                    { pricingList }
+                    <tbody>
+                        {pricingList }
+                    </tbody>
                 </table>
             ) : 'No results';
             pricingTables.push(pricingTable);
