@@ -99,6 +99,20 @@ table.booking-lines {
     margin-top: 7px;
   }
 
+  .tbl-stats {
+    display: inline-block;
+
+    select {
+      width: 75px;
+      margin-right: 10px;
+    }
+
+    label {
+      margin-top: 5px;
+      font-weight: lighter;
+    }
+  }
+
   .tbl-pagination {
     float: right;
     display: inline-block;

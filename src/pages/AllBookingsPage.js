@@ -2526,26 +2526,28 @@ class AllBookingsPage extends React.Component {
                                         </div>
                                         <hr />
                                         <div>
-                                            <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)} className="download-select">
-                                                <option value="label">Label</option>
-                                                <option value="new_label">New Label</option>
-                                                <option value="pod">POD</option>
-                                                <option value="new_pod">New POD</option>
-                                                <option value="pod_sog">POD SOG</option>
-                                                <option value="new_pod_sog">New POD SOG</option>
-                                                <option value="connote">Connote</option>
-                                                <option value="new_connote">New Connote</option>
-                                                <option value="label_and_connote">Label & Connote</option>
-                                                <option value="check_pod">Check POD</option>
-                                                <option value="flagged">Flagged</option>
-                                            </select>
+                                            <div className="tbl-stats">
+                                                <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)} className="download-select">
+                                                    <option value="label">Label</option>
+                                                    <option value="new_label">New Label</option>
+                                                    <option value="pod">POD</option>
+                                                    <option value="new_pod">New POD</option>
+                                                    <option value="pod_sog">POD SOG</option>
+                                                    <option value="new_pod_sog">New POD SOG</option>
+                                                    <option value="connote">Connote</option>
+                                                    <option value="new_connote">New Connote</option>
+                                                    <option value="label_and_connote">Label & Connote</option>
+                                                    <option value="check_pod">Check POD</option>
+                                                    <option value="flagged">Flagged</option>
+                                                </select>
+                                                <label className='left-30px right-10px'>
+                                                    Total KG: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_kgs.toFixed(2)).toLocaleString('en')} KG` : '*'}</strong>
+                                                </label>
+                                                <label className='right-10px'>
+                                                    Total Cubic: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_cbm.toFixed(2)).toLocaleString('en')} m3` : '*'}</strong>
+                                                </label>
+                                            </div>
                                             <div className="tbl-pagination">
-                                                <label className='right-10px'>
-                                                    Total KG: <strong>{bookingsSummary ? `${(bookingsSummary.total_kgs).toFixed(2)} KG` : '*'}</strong>
-                                                </label>
-                                                <label className='right-10px'>
-                                                    Total Cubic: <strong>{bookingsSummary ? `${(bookingsSummary.total_cbm).toFixed(2)} m3` : '*'}</strong>
-                                                </label>
                                                 <button
                                                     className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
                                                     disabled={filteredBookingIds.length === 0}
