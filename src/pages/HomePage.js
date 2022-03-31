@@ -118,6 +118,7 @@ class HomePage extends Component {
                             type="text"
                             value={findKeyword}
                             onChange={this.onChangeText.bind(this)} 
+                            onKeyPress={(e) => this.onKeyPress(e)}
                             style={{width: '300px', textAlign: 'center'}}
                             placeholder="Enter Consignment : Click Track Button"
                             disabled={this.state.isFindingBooking ? 'disabled' : ''}
