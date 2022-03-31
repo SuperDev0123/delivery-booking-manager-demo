@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { getUser, logout } from '../../state/services/authService';
 import { getStatusPageUrl } from '../../state/services/bookingService';
-import { openTab } from '../../commons/browser';
+// import { openTab } from '../../commons/browser';
 
 import logo from '../../public/images/logo-2.png';
 
@@ -39,7 +39,7 @@ class Header extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { username, clientname, isLoggedIn, statusPageUrl } = newProps;
+        const { username, clientname, isLoggedIn } = newProps;
 
         if (username)
             this.setState({username});
@@ -47,15 +47,15 @@ class Header extends Component {
         if (clientname)
             this.setState({clientname});
 
-        if (statusPageUrl) {
-            console.log('@1 - ', statusPageUrl);
-            if (statusPageUrl === 'not_found')
-                this.notify('Not found with "' + this.state.findKeyword + '"');
-            else
-                openTab(statusPageUrl);
+        // if (statusPageUrl) {
+        //     console.log('@1 - ', statusPageUrl);
+        //     if (statusPageUrl === 'not_found')
+        //         this.notify('Not found with "' + this.state.findKeyword + '"');
+        //     else
+        //         openTab(statusPageUrl);
 
-            this.setState({isFindingBooking: false});
-        }
+        //     this.setState({isFindingBooking: false});
+        // }
 
         this.setState({isLoggedIn});
     }
@@ -90,7 +90,7 @@ class Header extends Component {
     }
 
     render() {
-        const { username, clientname, findKeyword } = this.state;
+        const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -134,20 +134,8 @@ class Header extends Component {
                         <a href="/" className="navbar-brand mr-sm-0">
                             <img src={logo} className="head-logo" alt="logo" />
                         </a>
-
+                        <h5 style={{fontWeight: 'bold'}}>Tel: (02) 8311 1500</h5>
                         <ul className="navbar-nav flex-row ml-auto d-md-flex">
-                            <li className="nav-item mar-right-20 track">
-                                <label>Track:&nbsp;&nbsp;</label>
-                                <input 
-                                    className="form-control"
-                                    type="text"
-                                    value={findKeyword}
-                                    onChange={this.onChangeText.bind(this)} 
-                                    onKeyPress={(e) => this.onKeyPress(e)} 
-                                    placeholder="Consignment Number & Enter"
-                                    disabled={this.state.isFindingBooking ? 'disabled' : ''}
-                                />
-                            </li>
                             {clientname && isLoggedIn === 'true' ?
                                 <li className="nav-item dropdown show">
                                     <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
