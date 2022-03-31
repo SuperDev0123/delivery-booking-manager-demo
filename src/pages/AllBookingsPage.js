@@ -26,7 +26,7 @@ import {
     getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel,
     allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState,
     fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected,
-    clearErrorMessage, fpOrderSummary
+    clearErrorMessage, fpOrderSummary, getSummaryOfBookings
 } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
@@ -139,6 +139,7 @@ class AllBookingsPage extends React.Component {
     }
 
     static propTypes = {
+        // Prop funcs
         verifyToken: PropTypes.func.isRequired,
         getBookings: PropTypes.func.isRequired,
         updateBooking: PropTypes.func.isRequired,
@@ -152,9 +153,6 @@ class AllBookingsPage extends React.Component {
         fpOrder: PropTypes.func.isRequired,
         fpOrderSummary: PropTypes.bool.isRequired,
         getAlliedLabel: PropTypes.func.isRequired,
-        history: PropTypes.object.isRequired,
-        redirect: PropTypes.bool.isRequired,
-        location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         setGetBookingsFilter: PropTypes.func.isRequired,
         setAllGetBookingsFilter: PropTypes.func.isRequired,
@@ -167,19 +165,26 @@ class AllBookingsPage extends React.Component {
         getAllBookingStatus: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
-        clearErrorMessage: PropTypes.bool.isRequired,
         getBookingLinesCnt: PropTypes.func.isRequired,
         getAllProjectNames: PropTypes.func.isRequired,
         getPricingAnalysis: PropTypes.func.isRequired,
         getBookingSets: PropTypes.func.isRequired,
         createBookingSet: PropTypes.func.isRequired,
         updateBookingSet: PropTypes.func.isRequired,
+        getSummaryOfBookings: PropTypes.func.isRequired,
+
+        // Prop vars
+        history: PropTypes.object.isRequired,
+        redirect: PropTypes.bool.isRequired,
+        location: PropTypes.object.isRequired,
         bookingsets: PropTypes.array,
         bookings: PropTypes.array,
         allBookingStatus: PropTypes.array,
         clientname: PropTypes.string,
         startDate: PropTypes.string,
         filteredBookingIds: PropTypes.number,
+        clearErrorMessage: PropTypes.bool.isRequired,
+        bookingsSummary: PropTypes.object,
     };
 
     componentDidMount() {
@@ -238,6 +243,11 @@ class AllBookingsPage extends React.Component {
         } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
         const currentRoute = this.props.location.pathname;
+
+        if (bookings && bookings !== this.props.bookings) {
+            const bookingIds = bookings.map(booking => booking.id);
+            this.props.getSummaryOfBookings(bookingIds, 'allbookings');
+        }
 
         if (redirect && currentRoute != '/') {
             localStorage.setItem('isLoggedIn', 'false');
@@ -357,8 +367,8 @@ class AllBookingsPage extends React.Component {
         }
 
         if (projectNames) {
-
             let newProjectNames = [...projectNames];
+
             newProjectNames.sort(function(a, b) {
                 const nameA = a.toUpperCase();
                 const nameB = b.toUpperCase();
@@ -1791,7 +1801,7 @@ class AllBookingsPage extends React.Component {
             showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
             isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets, allBookingStatus, filteredBookingIds } = this.props;
+        const { bookings, bookingsets, allBookingStatus, filteredBookingIds, bookingsSummary } = this.props;
 
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -2530,6 +2540,12 @@ class AllBookingsPage extends React.Component {
                                                 <option value="flagged">Flagged</option>
                                             </select>
                                             <div className="tbl-pagination">
+                                                <label className='right-10px'>
+                                                    Total KG: <strong>{bookingsSummary ? `${(bookingsSummary.total_kgs).toFixed(2)} KG` : '*'}</strong>
+                                                </label>
+                                                <label className='right-10px'>
+                                                    Total Cubic: <strong>{bookingsSummary ? `${(bookingsSummary.total_cbm).toFixed(2)} m3` : '*'}</strong>
+                                                </label>
                                                 <button
                                                     className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
                                                     disabled={filteredBookingIds.length === 0}
@@ -2540,13 +2556,13 @@ class AllBookingsPage extends React.Component {
                                                 </button>
                                                 <label>
                                                     Per page:&nbsp;
+                                                    <select value={this.state.pageItemCnt} onChange={(e) => this.onPageItemCntChange(e)}>
+                                                        <option value="10">10</option>
+                                                        <option value="50">50</option>
+                                                        <option value="100">100</option>
+                                                        <option value="200">200</option>
+                                                    </select>
                                                 </label>
-                                                <select value={this.state.pageItemCnt} onChange={(e) => this.onPageItemCntChange(e)}>
-                                                    <option value="10">10</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                    <option value="200">200</option>
-                                                </select>
                                                 <CustomPagination 
                                                     onClickPagination={(type) => this.onClickPagination(type)}
                                                     pageCnt={this.state.pageCnt}
@@ -3482,6 +3498,7 @@ const mapStateToProps = (state) => {
         projectName: state.booking.projectName,
         pricingAnalyses: state.booking.pricingAnalyses,
         bookingsets: state.extra.bookingsets,
+        bookingsSummary: state.booking.bookingsSummary,
     };
 };
 
@@ -3519,6 +3536,7 @@ const mapDispatchToProps = (dispatch) => {
         getBookingSets: () => dispatch(getBookingSets()),
         createBookingSet: (bookingIds, name, note, auto_select_type, lineHaulDate) => dispatch(createBookingSet(bookingIds, name, note, auto_select_type, lineHaulDate)),
         updateBookingSet: (bookingIds, id) => dispatch(updateBookingSet(bookingIds, id)),
+        getSummaryOfBookings: (bookingIds, from) => dispatch(getSummaryOfBookings(bookingIds, from)),
     };
 };
 

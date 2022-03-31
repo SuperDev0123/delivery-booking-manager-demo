@@ -8,14 +8,13 @@ import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import { Button } from 'reactstrap';
 
-import { getManifestSummary } from '../../state/services/bookingService';
+import { getSummaryOfBookings } from '../../state/services/bookingService';
 
 class ManifestSlider extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            bookingIds: []
         };
     }
 
@@ -23,16 +22,16 @@ class ManifestSlider extends React.Component {
         isOpen: PropTypes.bool.isRequired,
         toggleSlider: PropTypes.func.isRequired,
         onCreateOrder: PropTypes.func.isRequired,
-        getManifestSummary: PropTypes.func.isRequired,
+        getSummaryOfBookings: PropTypes.func.isRequired,
         manifestSummary: PropTypes.object,
         selectedBookings: PropTypes.array,
+        bookingIds: PropTypes.array,
     };
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        if (!this.props.isOpen && newProps.isOpen) { // After Slider is opened
+        if (!this.props.isOpen && newProps.isOpen) { // Every time Slider is opened
             const bookingIds = newProps.selectedBookings.map(booking => booking.id);
-            this.props.getManifestSummary(bookingIds);
-            this.setState({bookingIds});
+            this.props.getSummaryOfBookings(bookingIds, 'manifest');
         }
     }
 
@@ -44,18 +43,18 @@ class ManifestSlider extends React.Component {
 
         if (manifestSummary) {
             let index = 0;
-            for (const fpSummary in manifestSummary) {
+            for (const fp in manifestSummary.fps) {
                 index += 1;
 
                 summaryList.push(
                     <div>
                         <label>
                             <h5>#{index}</h5>
-                            <strong>Freight Provider name:</strong> {fpSummary}<br />
-                            <strong>Order Count:</strong> {manifestSummary[fpSummary]['orderCnt']}<br />
-                            <strong>Total Quantity:</strong> {manifestSummary[fpSummary]['totalQty']}<br />
-                            <strong>Total KGs:</strong> {manifestSummary[fpSummary]['totalKgs']} (KG)<br />
-                            <strong>Total Cubic Meter:</strong> {manifestSummary[fpSummary]['totalCubicMeter'].toFixed(2)} (m3)
+                            <strong>Freight Provider name:</strong> {fp}<br />
+                            <strong>Order Count:</strong> {manifestSummary.fps[fp]['orderCnt']}<br />
+                            <strong>Total Quantity:</strong> {manifestSummary.fps[fp]['totalQty']}<br />
+                            <strong>Total KGs:</strong> {manifestSummary.fps[fp]['totalKgs'].toFixed(3)} (KG)<br />
+                            <strong>Total Cubic Meter:</strong> {manifestSummary.fps[fp]['totalCubicMeter'].toFixed(3)} (m3)
                         </label>
                         <hr />
                     </div>
@@ -86,7 +85,7 @@ class ManifestSlider extends React.Component {
                 {summaryList}
                 <Button
                     color="primary"
-                    onClick={() => this.props.onCreateOrder(this.state.bookingIds)}
+                    onClick={() => this.props.onCreateOrder(this.props.bookingIds)}
                 >
                     Create Manifest
                 </Button>
@@ -104,7 +103,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        getManifestSummary: (bookingIds) => dispatch(getManifestSummary(bookingIds)),
+        getSummaryOfBookings: (bookingIds, from) => dispatch(getSummaryOfBookings(bookingIds, from)),
     };
 };
 

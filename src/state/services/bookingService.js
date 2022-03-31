@@ -85,9 +85,9 @@ import {
     failedGetLabelsInfo, // Customer Label Page
     successUpdateAugment,
     failedUpdateAugment,
-    resetManifestSummary,
-    successGetManifestSummary,
-    failedGetManifestSummary,
+    resetSummaryOfBookings,
+    successGetSummaryOfBookings,
+    failedGetSummaryOfBookings,
     successRepack,
     failedRepack,
     successDMECancelBook,
@@ -834,19 +834,20 @@ export const getLabels4Booking = (identifer) => {
     };
 };
 
-export const getManifestSummary = (bookingIds) => {
+export const getSummaryOfBookings = (bookingIds, from) => {
+    // from: manifest | allbookings
     const token = localStorage.getItem('token');
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token  },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_summary/`,
-        data: {bookingIds}
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_bookings_summary/`,
+        data: {bookingIds, from}
     };
     return dispatch => {
-        dispatch(resetManifestSummary());
+        dispatch(resetSummaryOfBookings(from));
         axios(options)
-            .then(({ data }) => dispatch(successGetManifestSummary(data)))
-            .catch((error) => dispatch(failedGetManifestSummary(error)));
+            .then(({ data }) => dispatch(successGetSummaryOfBookings(data, from)))
+            .catch((error) => dispatch(failedGetSummaryOfBookings(error)));
     };
 };
 

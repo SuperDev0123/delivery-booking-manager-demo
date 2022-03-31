@@ -96,9 +96,9 @@ import {
     FAILED_GET_LABELS_INFO,
     SUCCESS_UPDATE_AUGMENT,
     FAILED_UPDATE_AUGMENT,
-    RESET_MANIFEST_SUMMARY,
-    SUCCESS_GET_MANIFEST_SUMMARY,
-    FAILED_GET_MANIFEST_SUMMARY,
+    RESET_SUMMARY_OF_BOOKINGS,
+    SUCCESS_GET_SUMMARY_OF_BOOKINGS,
+    FAILED_GET_SUMMARY_OF_BOOKINGS,
     SUCCESS_GET_DME_LABEL,
     FAILED_GET_DME_LABEL,
     SUCCESS_REPACK,
@@ -924,23 +924,23 @@ export function failedGetLabelsInfo(error) {
     };
 }
 
-export function resetManifestSummary(data) {
+export function resetSummaryOfBookings(from) {
     return {
-        type: RESET_MANIFEST_SUMMARY,
-        payload: data,
+        type: RESET_SUMMARY_OF_BOOKINGS,
+        payload: from,
     };
 }
 
-export function successGetManifestSummary(data) {
+export function successGetSummaryOfBookings(data, from) {
     return {
-        type: SUCCESS_GET_MANIFEST_SUMMARY,
-        payload: data,
+        type: SUCCESS_GET_SUMMARY_OF_BOOKINGS,
+        payload: {data, from},
     };
 }
 
-export function failedGetManifestSummary(error) {
+export function failedGetSummaryOfBookings(error) {
     return {
-        type: FAILED_GET_MANIFEST_SUMMARY,
+        type: FAILED_GET_SUMMARY_OF_BOOKINGS,
         errorMessage: error.response.data.message
     };
 }

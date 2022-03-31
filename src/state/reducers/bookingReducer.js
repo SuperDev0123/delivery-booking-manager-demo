@@ -92,9 +92,9 @@ import {
     FAILED_GET_CLIENT_PROCESS,
     SUCCESS_GET_LABELS_INFO,
     FAILED_GET_LABELS_INFO,
-    RESET_MANIFEST_SUMMARY,
-    SUCCESS_GET_MANIFEST_SUMMARY,
-    FAILED_GET_MANIFEST_SUMMARY,
+    RESET_SUMMARY_OF_BOOKINGS,
+    SUCCESS_GET_SUMMARY_OF_BOOKINGS,
+    FAILED_GET_SUMMARY_OF_BOOKINGS,
     SUCCESS_GET_DME_LABEL,
     FAILED_GET_DME_LABEL,
     SUCCESS_REPACK,
@@ -145,6 +145,7 @@ const defaultState = {
     clientprocess: {},
     bookingLabels: null,
     manifestSummary: null,
+    bookingsSummary: null,
     statusPageUrl: null,
 };
 
@@ -246,11 +247,11 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 isAutoSelected: false
             };
-        case RESET_MANIFEST_SUMMARY:
-            return {
-                ...state,
-                manifestSummary: null
-            };
+        case RESET_SUMMARY_OF_BOOKINGS:
+            if (payload === 'manifest')
+                return {...state, manifestSummary: null};
+            else
+                return {...state, bookingsSummary: null};
         case SET_BOOKINGS:
             return {
                 ...state,
@@ -621,11 +622,11 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 bookingLabels: payload
             };
-        case SUCCESS_GET_MANIFEST_SUMMARY:
-            return {
-                ...state,
-                manifestSummary: payload
-            };
+        case SUCCESS_GET_SUMMARY_OF_BOOKINGS:
+            if (payload.from === 'manifest')
+                return {...state, manifestSummary: payload.data};
+            else
+                return {...state, bookingsSummary: payload.data};
         case SUCCESS_GET_STATUS_PAGE_URL:
             return {
                 ...state,
@@ -654,7 +655,7 @@ export const BookingReducer = (state = defaultState, {
         case FAILED_SEND_EMAIL:
         case FAILED_PRICING_ANALYSIS:
         case FAILED_GET_LABELS_INFO:
-        case FAILED_GET_MANIFEST_SUMMARY:
+        case FAILED_GET_SUMMARY_OF_BOOKINGS:
         case FAILED_REPACK:
             return {
                 ...state,
