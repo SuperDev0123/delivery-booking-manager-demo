@@ -25,7 +25,6 @@ class ManifestSlider extends React.Component {
         getSummaryOfBookings: PropTypes.func.isRequired,
         manifestSummary: PropTypes.object,
         selectedBookings: PropTypes.array,
-        bookingIds: PropTypes.array,
     };
 
     UNSAFE_componentWillReceiveProps(newProps) {
@@ -39,6 +38,7 @@ class ManifestSlider extends React.Component {
         const {isOpen, selectedBookings, manifestSummary} = this.props;
         const puAvailFromDateCnt = uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
         const fpCnt = uniqBy(selectedBookings, 'vx_freight_provider').length;
+        const bookingIds = selectedBookings.map(booking => booking.id);
         const summaryList = [];
 
         if (manifestSummary) {
@@ -85,7 +85,7 @@ class ManifestSlider extends React.Component {
                 {summaryList}
                 <Button
                     color="primary"
-                    onClick={() => this.props.onCreateOrder(this.props.bookingIds)}
+                    onClick={() => this.props.onCreateOrder(bookingIds)}
                 >
                     Create Manifest
                 </Button>
