@@ -136,7 +136,7 @@ class ManifestReport extends React.Component {
                 let reportList = filteredReports.map((report, index) => {
                     return (
                         <tr key={index}>
-                            <td>{index + 1}</td>
+                            <td>{report.manifest_id}</td>
                             <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
                             <td>{report.warehouse_name}</td>
                             <td>{report.freight_provider}</td>
