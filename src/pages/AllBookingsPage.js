@@ -190,6 +190,7 @@ class AllBookingsPage extends React.Component {
     componentDidMount() {
         const { startDate, bookings } = this.props;
         const token = localStorage.getItem('token');
+        const b_bookingID_Visuals_4_report = localStorage.getItem('report:b_bookingID_Visuals');
 
         if (token && token.length > 0) {
             this.props.verifyToken();
@@ -199,7 +200,24 @@ class AllBookingsPage extends React.Component {
             this.props.history.push('/');
         }
 
-        if (!bookings || (bookings && (isEmpty(bookings) || isUndefined(bookings)))) {
+        const delayedFuncs = () => {
+            const that = this;
+            setTimeout(() => {
+                that.props.getDMEClients();
+                that.props.getWarehouses();
+                that.props.getUserDateFilterField();
+                that.props.getAllBookingStatus();
+                that.props.getAllFPs();
+                that.props.getAllProjectNames();
+            }, 2000);
+        };
+
+        if (b_bookingID_Visuals_4_report) {
+            const today = moment().format('YYYY-MM-DD');
+            this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, 100, 0, '-id', {}, 0, '', 'label', '', 'b_bookingID_Visual', b_bookingID_Visuals_4_report);
+            localStorage.removeItem('report:b_bookingID_Visuals');
+            delayedFuncs();
+        } else if (!bookings || (bookings && (isEmpty(bookings) || isUndefined(bookings)))) {
             // Set initial date range filter values
             let newStartDate = moment().format('YYYY-MM-DD');
 
@@ -211,16 +229,7 @@ class AllBookingsPage extends React.Component {
             }
 
             this.setState({startDate: newStartDate, endDate: newStartDate});
-
-            const that = this;
-            setTimeout(() => {
-                that.props.getDMEClients();
-                that.props.getWarehouses();
-                that.props.getUserDateFilterField();
-                that.props.getAllBookingStatus();
-                that.props.getAllFPs();
-                that.props.getAllProjectNames();
-            }, 2000);
+            delayedFuncs();
         }
     }
 

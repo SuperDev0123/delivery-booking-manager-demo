@@ -110,9 +110,9 @@ class ManifestReport extends React.Component {
     }
 
     onClickViewOnAllBookingsTab(report) {
-        const today = moment().format('YYYY-MM-DD');
-        this.props.setAllGetBookingsFilter('*', today, 0, 0, 0, 100, 0, '-id', {}, 0, '', 'label', '', 'b_bookingID_Visual', report['b_bookingID_Visuals'].join(', '));
-        this.props.history.push('/allbookings');
+        // Open new tab with bookings in report
+        localStorage.setItem('report:b_bookingID_Visuals', report['b_bookingID_Visuals'].join(', '));
+        window.open('/allbookings', '_blank');
     }
 
     onChangeFilterType = (e, filterType) => {
