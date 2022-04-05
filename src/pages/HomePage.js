@@ -12,6 +12,7 @@ import img3 from '../public/images/3.png';
 
 import { verifyToken, getUser, cleanRedirectState } from '../state/services/authService';
 import { getStatusPageUrl } from '../state/services/bookingService';
+import { resetStatusPageUrl } from '../state/actions/bookingActions';
 
 class HomePage extends Component {
     constructor(props) {
@@ -30,6 +31,7 @@ class HomePage extends Component {
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getStatusPageUrl: PropTypes.func.isRequired,
+        resetStatusPageUrl: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -75,7 +77,7 @@ class HomePage extends Component {
 
         if (e.key === 'Enter' && !this.state.loading) {
             e.preventDefault();
-
+            this.props.resetStatusPageUrl();
             if ((findKeyword == undefined) || (findKeyword == '')) {
                 this.notify('Value is required!');
                 return;
@@ -90,6 +92,7 @@ class HomePage extends Component {
 
     onClickConsignment() {
         const { findKeyword } = this.state;
+        this.props.resetStatusPageUrl();
         this.props.getStatusPageUrl(findKeyword);
         this.setState({isFindingBooking: true});
     }
@@ -184,6 +187,7 @@ const mapDispatchToProps = (dispatch) => {
         getUser: (token) => dispatch(getUser(token)),
         cleanRedirectState: () => dispatch(cleanRedirectState()),
         getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
+        resetStatusPageUrl: () => dispatch(resetStatusPageUrl()),
     };
 };
 
