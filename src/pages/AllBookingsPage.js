@@ -2019,6 +2019,9 @@ class AllBookingsPage extends React.Component {
                                 <span className={(isEmpty(booking.pu_Address_Country)) ? ' none' :  ''}>
                                     {booking.pu_Address_Country}<br />
                                 </span>
+                                <span className={(isEmpty(booking.pu_address_type)) ? ' none' :  ''}>
+                                    {booking.pu_address_type}<br />
+                                </span>
                             </div>
                             <div className="location-info disp-inline-block">
                                 <span>Delivery Info</span><br />
@@ -2040,6 +2043,9 @@ class AllBookingsPage extends React.Component {
                                 </span>
                                 <span className={(isEmpty(booking.de_To_Address_Country)) ? ' none' :  ''}>
                                     {booking.de_To_Address_Country}<br />
+                                </span>
+                                <span className={(isEmpty(booking.de_To_AddressType)) ? ' none' :  ''}>
+                                    {booking.de_To_AddressType}<br />
                                 </span>
                             </div>
                             <div className="location-info disp-inline-block">
