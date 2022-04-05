@@ -166,6 +166,9 @@ class BulkUpdateSlider extends React.Component {
                             <option value="" selected disabled hidden>--- Select a field ---</option>
                             {clientname === 'dme' && <option value="flag">Flag</option>}
                             {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
+                                <option value="puPickUpAvailFrom_Date">Pickup From Date</option>
+                            }
+                            {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
                                 <option value="vx_freight_provider">Freight Provider</option>
                             }
                             {clientname === 'dme' && <option value="b_client_name" disabled>Client</option>}
@@ -187,7 +190,6 @@ class BulkUpdateSlider extends React.Component {
                             {clientname === 'dme' && <option value="pu_Phone_Main">Pickup Tel</option>}
                             {clientname === 'dme' && <option value="pu_Phone_Mobile">Pickup Mobile</option>}
                             {clientname === 'dme' && <option value="pu_Email">Pickup Email</option>}
-                            {clientname === 'dme' && <option value="puPickUpAvailFrom_Date">Pickup From</option>}
                             {clientname === 'dme' && <option value="pu_PickUp_By_Date_DME">Pickup By</option>}
                             {clientname === 'dme' && <option value="pu_pickup_instructions_address">Pickup Instructions</option>}
 
