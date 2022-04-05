@@ -2019,8 +2019,8 @@ class AllBookingsPage extends React.Component {
                                 <span className={(isEmpty(booking.pu_Address_Country)) ? ' none' :  ''}>
                                     {booking.pu_Address_Country}<br />
                                 </span>
-                                <span className={(isEmpty(booking.pu_address_type)) ? ' none' :  ''}>
-                                    {booking.pu_address_type}<br />
+                                <span className={(isEmpty(booking.pu_Address_Type)) ? ' none' :  ''}>
+                                    {booking.pu_Address_Type}<br />
                                 </span>
                             </div>
                             <div className="location-info disp-inline-block">
