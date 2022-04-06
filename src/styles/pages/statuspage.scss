@@ -179,6 +179,27 @@ section.status {
             }
         }
 
+        .ships-details {
+            display: flex;
+            flex-direction: column;
+            margin: 0px 0px 10px;
+
+            .ships-details-title {
+                border-radius: 0.25rem;
+                background-color: lightgray;
+                font-size: 18px;
+                font-weight: bold;
+                cursor: pointer;
+                padding-top: 8px;
+                padding-left: 5px;
+                padding-bottom: 5px;
+            }
+
+            .ships-details-title:hover {
+                background-color: rgb(228, 228, 228);
+            }
+        }
+
         .order-details {
             display: flex;
             flex-direction: column;
@@ -190,8 +211,18 @@ section.status {
             }
 
             .order-details-title {
+                border-radius: 0.25rem;
+                background-color: lightgray;
                 font-size: 18px;
                 font-weight: bold;
+                cursor: pointer;
+                padding-top: 8px;
+                padding-left: 5px;
+                padding-bottom: 5px;
+            }
+
+            .order-details-title:hover {
+                background-color: rgb(228, 228, 228);
             }
         }
     }

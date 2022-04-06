@@ -14,7 +14,9 @@ class BokStatusPage extends Component {
         this.state = {
             identifier: null,
             errorMessage: null,
-            showScans: true
+            showScans: true,
+            showShips: true,
+            showOrders: true
         };
     }
 
@@ -54,12 +56,12 @@ class BokStatusPage extends Component {
         }
     }
 
-    onScans() {
-        this.setState({showScans: !this.state.showScans});
+    onToggle(stateName) {
+        this.setState({[stateName]: !this.state[stateName]});
     }
 
     render() {
-        const { showScans } = this.state;
+        const { showScans, showShips, showOrders } = this.state;
         const {status, step, lastUpdated, quote, booking, lines, scans, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
         const steps = [
             'Processing',
@@ -121,6 +123,42 @@ class BokStatusPage extends Component {
             }, {
                 dataField: 'desc',
                 text: 'Description'
+            }
+        ];
+        
+        const shippedColumns = [
+            {
+                dataField: 'packaging',
+                text: 'Packaging Unit'
+            },
+            {
+                dataField: 'l_002_qty',
+                text: 'Quantity',
+                // hidden: true,
+                style: {
+                    paddingRight: '5px'
+                }
+            }, {
+                dataField: 'e_dimUOM',
+                text: 'DIMS unit of Measure',
+                style: {
+                    paddingRight: '5px'
+                }
+            }, {
+                dataField: 'e_dimLength',
+                text: 'Length(ea)'
+            },
+            {
+                dataField: 'e_dimWidth',
+                text: 'Width(ea)'
+            },
+            {
+                dataField: 'e_dimHeight',
+                text: 'Height(ea)'
+            },
+            {
+                dataField: 'e_total_KG_weight',
+                text: 'Mass KG(ea)'
             }
         ];
 
@@ -268,7 +306,7 @@ class BokStatusPage extends Component {
                                 ))}
                             </div>
                             <div className="scans-details row">
-                                <div className="scans-details-title" onClick={() => this.onScans()}>
+                                <div className="scans-details-title" onClick={() => this.onToggle('showScans')}>
                                     <span>
                                         &nbsp;<i className={showScans ? 'fa fa-minus' : 'fa fa-plus'} ></i>
                                         &nbsp;FREIGHT PROVIDER SCANS
@@ -282,12 +320,34 @@ class BokStatusPage extends Component {
                                     bordered={ false }
                                 />}
                             </div>
-                            <div className="order-details row">
-                                <div className="order-details-title">
-                                    ORDER DETAILS
+                            
+                            <div className="ships-details row">
+                                <div className="ships-details-title" onClick={() => this.onToggle('showShips')}>
+                                    <span>
+                                        &nbsp;<i className={showShips ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                        &nbsp;SHIPPED ITEMS
+                                    </span>
                                 </div>
                                 <div className="lines-data">
-                                    {lines && <BootstrapTable
+                                    {lines && showShips && <BootstrapTable
+                                        keyField="pk_lines_id"
+                                        data={ lines }
+                                        columns={ shippedColumns }
+                                        bootstrap4={ true }
+                                        bordered={ false }
+                                    />}
+                                </div>
+                            </div>
+
+                            <div className="order-details row">
+                                <div className="order-details-title" onClick={() => this.onToggle('showOrders')}>
+                                    <span>
+                                        &nbsp;<i className={showOrders ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                        &nbsp;ORDER DETAILS
+                                    </span>
+                                </div>
+                                <div className="lines-data">
+                                    {lines && showOrders && <BootstrapTable
                                         keyField="pk_lines_id"
                                         data={ lines }
                                         columns={ bookingLineDetailsColumns }
