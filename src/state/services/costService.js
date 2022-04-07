@@ -47,7 +47,7 @@ export const updateSurcharge = (surcharge) => {
     const options = {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/?bookingId=${surcharge.booking}`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/`,
         data: surcharge,
     };
     
@@ -62,7 +62,7 @@ export const deleteSurcharge = (surcharge) => {
     const options = {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/?bookingId=${surcharge.booking}`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/surcharge/${surcharge.id}/`,
         data: surcharge,
     };
     

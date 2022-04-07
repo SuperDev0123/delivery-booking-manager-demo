@@ -84,6 +84,12 @@ import {
     FAILED_CREATE_PALLET,
     SUCCESS_GET_SCANS,
     FAILED_GET_SCANS,
+    SUCCESS_CREATE_SCAN,
+    FAILED_CREATE_SCAN,
+    SUCCESS_UPDATE_SCAN,
+    FAILED_UPDATE_SCAN,
+    SUCCESS_DELETE_SCAN,
+    FAILED_DELETE_SCAN,
     SUCCESS_GET_LOGS,
     FAILED_GET_LOGS,
     SUCCESS_FIND_BOOKING,
@@ -693,17 +699,60 @@ export function successGetScans(data) {
     };
 }
 
-export function successGetLogs(data) {
-    return {
-        type: SUCCESS_GET_LOGS,
-        payload: data
-    };
-}
-
 export function failedGetScans() {
     return {
         type: FAILED_GET_SCANS,
         errorMessage: 'Failed to get scans data',
+    };
+}
+
+export function successCreateScan(data) {
+    return {
+        type: SUCCESS_CREATE_SCAN,
+        payload: data,
+    };
+}
+
+export function failedCreateScan(error) {
+    return {
+        type: FAILED_CREATE_SCAN,
+        payload: 'Unable to create FP Scan. Error:' + error,
+    };
+}
+
+export function successUpdateScan(data) {
+    return {
+        type: SUCCESS_UPDATE_SCAN,
+        payload: data,
+    };
+}
+
+export function failedUpdateScan(error) {
+    return {
+        type: FAILED_UPDATE_SCAN,
+        payload: 'Unable to update FP Scan. Error:' + error,
+    };
+}
+
+export function successDeleteScan(data) {
+    return {
+        type: SUCCESS_DELETE_SCAN,
+        payload: data,
+    };
+}
+
+export function failedDeleteScan(error) {
+    return {
+        type: FAILED_DELETE_SCAN,
+        payload: 'Unable to delete FP Scan. Error:' + error,
+    };
+}
+
+
+export function successGetLogs(data) {
+    return {
+        type: SUCCESS_GET_LOGS,
+        payload: data
     };
 }
 

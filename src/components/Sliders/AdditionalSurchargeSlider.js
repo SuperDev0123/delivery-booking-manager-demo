@@ -3,11 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import moment from 'moment';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import moment from 'moment';
-
 import { Button } from 'reactstrap';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -42,7 +40,7 @@ class AdditionalSurchargeSlider extends React.Component {
         toggleSlider: PropTypes.func.isRequired,
         booking: PropTypes.object.isRequired,
         clientname: PropTypes.string,
-        fps: PropTypes.array, 
+        fps: PropTypes.array,
         surcharges: PropTypes.array.isRequired,
         getSurcharges: PropTypes.func.isRequired,
         createSurcharge: PropTypes.func.isRequired,

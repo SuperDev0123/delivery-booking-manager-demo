@@ -83,6 +83,12 @@ import {
     FAILED_CREATE_PALLET,
     SUCCESS_GET_SCANS,
     FAILED_GET_SCANS,
+    SUCCESS_CREATE_SCAN,
+    FAILED_CREATE_SCAN,
+    SUCCESS_UPDATE_SCAN,
+    FAILED_UPDATE_SCAN,
+    SUCCESS_DELETE_SCAN,
+    FAILED_DELETE_SCAN,
     SUCCESS_GET_LOGS,
     FAILED_GET_LOGS,
     SUCCESS_FIND_BOOKING,
@@ -445,6 +451,31 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 scans: payload
             };
+        case SUCCESS_CREATE_SCAN:
+            return {
+                ...state,
+                scans: [...state.scans, payload],
+            };
+        case SUCCESS_UPDATE_SCAN: {
+            const index = state.scans.findIndex(scan => scan.id === payload.id);
+            const _scans = [...state.scans];
+            _scans[index] = payload;
+
+            return {
+                ...state,
+                scans: _scans,
+            };
+        }
+        case SUCCESS_DELETE_SCAN: {
+            const index = state.scans.findIndex(scan => scan.id === payload.id);
+            const _scans = [...state.scans];
+            _scans.splice(index, 1);
+
+            return {
+                ...state,
+                scans: _scans,
+            };
+        }
         case SUCCESS_GET_LOGS:
             return {
                 ...state,
@@ -559,6 +590,9 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_GET_CLIENT_EMPLOYEE:
         case FAILED_GET_PALLETS:
         case FAILED_GET_SCANS:
+        case FAILED_CREATE_SCAN:
+        case FAILED_UPDATE_SCAN:
+        case FAILED_DELETE_SCAN:
         case FAILED_CREATE_PALLET:
         case FAILED_GET_LOGS:
         case FAILED_FIND_BOOKING:

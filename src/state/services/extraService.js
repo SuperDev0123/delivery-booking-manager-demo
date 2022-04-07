@@ -85,6 +85,12 @@ import {
     failedCreatePallet, // Pallet end
     successGetScans,
     failedGetScans,
+    successCreateScan,
+    failedCreateScan,
+    successUpdateScan,
+    failedUpdateScan,
+    successDeleteScan,
+    failedDeleteScan,
     successGetLogs,
     failedGetLogs,
     successFindBooking,
@@ -770,18 +776,58 @@ export const getScans = (bookingId) => {
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/get_scans_from_booking_id`,
-        params: {
-            bookingId
-        }
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/?bookingId=${bookingId}`,
     };
 
     return dispatch =>
         axios(options)
-            .then(({ data }) => dispatch(successGetScans(data.scans)))
+            .then(({ data }) => dispatch(successGetScans(data)))
             .catch((error) => dispatch(failedGetScans(error)));
 };
 
+export const createScan = (scan) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/`,
+        data: scan,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successCreateScan(data)))
+            .catch((error) => dispatch(failedCreateScan(error)));
+};
+
+export const updateScan = (scan) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/${scan.id}/?bookingId=${scan.booking}`,
+        data: scan,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(({ data }) => dispatch(successUpdateScan(data)))
+            .catch((error) => dispatch(failedUpdateScan(error)));
+};
+
+export const deleteScan = (scan) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/scans/${scan.id}/?bookingId=${scan.booking}`,
+    };
+    
+    return dispatch =>
+        axios(options)
+            .then(() => dispatch(successDeleteScan(scan)))
+            .catch((error) => dispatch(failedDeleteScan(error)));
+};
 export const getLogs = () => {
     const token = localStorage.getItem('token');
     const options = {

@@ -5,7 +5,10 @@
         button {
             font-size: 30px;
             padding: 0px 10px;
-            margin-bottom: 20px;
+
+            i { font-size: 20px }
+
+            &.new { margin-bottom: 20px }
         }
 
         .list {
@@ -56,6 +59,15 @@
           text-align: left;
           margin-top: 10px;
           margin-bottom: 10px;
+
+          >span {
+            width: 20%;
+            display: inline-block;
+
+            &.red {
+                width: 100%;
+            }
+          }
 
           p {
             width: 100px;
