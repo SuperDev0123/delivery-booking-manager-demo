@@ -46,7 +46,10 @@ const defaultState = {
     selectPricingSuccess: null,
     repackSuccess: null,
     lineOperationSuccess: null,
-    lastUpdated: null
+    lastUpdated: null,
+    originalLines: [],
+    packedLines: [],
+    scans: [],
 };
 
 export const BokReducer = (state = defaultState, { type, payload }) => {
@@ -99,7 +102,8 @@ export const BokReducer = (state = defaultState, { type, payload }) => {
                 quote: payload.quote,
                 booking: payload.booking,
                 lastUpdated: payload.last_updated,
-                lines: payload.lines,
+                originalLines: payload.original_lines,
+                packedLines: payload.packed_lines,
                 etaDate: payload.eta_date,
                 lastMilestone: payload.last_milestone,
                 timestamps: payload.timestamps,

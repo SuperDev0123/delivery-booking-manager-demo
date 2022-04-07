@@ -28,7 +28,8 @@ class BokStatusPage extends Component {
         lastUpdated: PropTypes.string,
         quote: PropTypes.object,
         booking: PropTypes.object,
-        lines: PropTypes.array,
+        originalLines: PropTypes.array,
+        packedLines: PropTypes.array,
         scans: PropTypes.array,
         etaDate: PropTypes.string,
         lastMilestone: PropTypes.string,
@@ -62,7 +63,7 @@ class BokStatusPage extends Component {
 
     render() {
         const { showScans, showShips, showOrders } = this.state;
-        const {status, step, lastUpdated, quote, booking, lines, scans, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
+        const {status, step, lastUpdated, quote, booking, originalLines, packedLines, scans, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
         const steps = [
             'Processing',
             'Ready for Dispatch',
@@ -126,15 +127,14 @@ class BokStatusPage extends Component {
             }
         ];
         
-        const shippedColumns = [
+        const packedLineColumns = [
             {
-                dataField: 'packaging',
+                dataField: 'e_type_of_packaging',
                 text: 'Packaging Unit'
             },
             {
-                dataField: 'l_002_qty',
+                dataField: 'e_qty',
                 text: 'Quantity',
-                // hidden: true,
                 style: {
                     paddingRight: '5px'
                 }
@@ -162,7 +162,7 @@ class BokStatusPage extends Component {
             }
         ];
 
-        const bookingLineDetailsColumns = [
+        const originalLineColumns = [
             {
                 dataField: 'product',
                 text: 'Product'
@@ -329,10 +329,10 @@ class BokStatusPage extends Component {
                                     </span>
                                 </div>
                                 <div className="lines-data">
-                                    {lines && showShips && <BootstrapTable
+                                    {packedLines && showShips && <BootstrapTable
                                         keyField="pk_lines_id"
-                                        data={ lines }
-                                        columns={ shippedColumns }
+                                        data={ packedLines }
+                                        columns={ packedLineColumns }
                                         bootstrap4={ true }
                                         bordered={ false }
                                     />}
@@ -347,10 +347,10 @@ class BokStatusPage extends Component {
                                     </span>
                                 </div>
                                 <div className="lines-data">
-                                    {lines && showOrders && <BootstrapTable
+                                    {originalLines && showOrders && <BootstrapTable
                                         keyField="pk_lines_id"
-                                        data={ lines }
-                                        columns={ bookingLineDetailsColumns }
+                                        data={ originalLines }
+                                        columns={ originalLineColumns }
                                         bootstrap4={ true }
                                         bordered={ false }
                                     />}
@@ -376,7 +376,8 @@ const mapStateToProps = (state) => {
         step: state.bok.deliveryStep,
         quote: state.bok.quote,
         booking: state.bok.booking,
-        lines: state.bok.lines,
+        originalLines: state.bok.originalLines,
+        packedLines: state.bok.packedLines,
         scans: state.bok.scans,
         etaDate: state.bok.etaDate,
         lastUpdated: state.bok.lastUpdated,
