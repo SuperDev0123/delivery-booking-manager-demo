@@ -107,6 +107,7 @@ import {
     FAILED_DME_CANCEL_BOOK,
     SUCCESS_GET_STATUS_PAGE_URL,
     FAILED_GET_STATUS_PAGE_URL,
+    RESET_STATUS_PAGE_URL
 } from '../constants/bookingConstants';
 
 export function successGetBookings(data) {
@@ -971,5 +972,11 @@ export function failedGetStatusPageUrl(error) {
     return {
         type: FAILED_GET_STATUS_PAGE_URL,
         errorMessage: error.response.data.message
+    };
+}
+
+export function resetStatusPageUrl() {
+    return {
+        type: RESET_STATUS_PAGE_URL,
     };
 }

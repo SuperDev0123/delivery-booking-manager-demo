@@ -103,6 +103,7 @@ import {
     FAILED_DME_CANCEL_BOOK,
     SUCCESS_GET_STATUS_PAGE_URL,
     FAILED_GET_STATUS_PAGE_URL,
+    RESET_STATUS_PAGE_URL,
 } from '../constants/bookingConstants';
 
 const defaultState = {
@@ -636,6 +637,11 @@ export const BookingReducer = (state = defaultState, {
             return {
                 ...state,
                 statusPageUrl: 'not_found'
+            };
+        case RESET_STATUS_PAGE_URL:
+            return {
+                ...state,
+                statusPageUrl: ''
             };
         case FAILED_DME_CANCEL_BOOK:
         case FAILED_AUTO_AUGMENT:
