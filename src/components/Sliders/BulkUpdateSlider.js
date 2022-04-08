@@ -21,6 +21,7 @@ class BulkUpdateSlider extends React.Component {
             selectedValue: null,
             optionalValue: null,
             errorMsg: null,
+            formInputs: {},
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -43,13 +44,22 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onClickUpdateBtn() {
-        const {selectedValue, selectedField, optionalValue} = this.state;
-        const {selectedBookingIds} = this.props;
+        const {selectedValue, selectedField, optionalValue, formInputs} = this.state;
+        const {selectedBookingIds, fps} = this.props;
 
         if (selectedField === 'status' && !optionalValue) {
             this.setState({errorMsg: 'Event Date Time is required!'});
         } else {
-            this.props.onUpdate(selectedField, selectedValue, selectedBookingIds, optionalValue);
+            const value = selectedField === 'fp_scan' ? formInputs: selectedValue;
+
+            if (selectedField === 'fp_scan') {
+                const selectedFP = fps.find((fp) => fp.fp_company_name === formInputs['fp']);
+
+                if (selectedFP)
+                    value['fp'] = selectedFP.id;
+            }
+
+            this.props.onUpdate(selectedField, value, selectedBookingIds, optionalValue);
             this.setState({selectedValue: null, selectedField: null, optionalValue: null, errorMsg: null});
         }
     }
@@ -78,7 +88,20 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onHandleInput(e) {
-        this.setState({selectedValue: e.target.value, errorMsg: null});
+        const { formInputs, selectedField } = this.state;
+
+        console.log('@! - ');
+        if (selectedField === 'fp_scan') {
+            const target = event.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+
+            formInputs[name] = value;
+            console.log('@2 - ', name, value);
+            this.setState({formInputs});
+        } else {
+            this.setState({selectedValue: e.target.value, errorMsg: null});
+        }
     }
 
     onChangeDate(date, valueType) {
@@ -94,23 +117,29 @@ class BulkUpdateSlider extends React.Component {
     }
 
     onChangeDateTime(dateTime, valueType=null) {
+        const { formInputs, selectedField } = this.state;
         let conveted_date = moment(dateTime).add(this.tzOffset, 'h');   // Current -> UTC
         conveted_date = conveted_date.add(timeDiff, 'h');               // UTC -> Sydney
 
-        if (dateTime) {
-            if (valueType === 'optionalValue') {
-                this.setState({optionalValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
-            } else {
-                this.setState({selectedValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
+        if (selectedField === 'fp_scan') {
+            formInputs['event_timestamp'] = conveted_date;
+            this.setState({formInputs, selectedValue: 'fake-value'});
+        } else {
+            if (dateTime) {
+                if (valueType === 'optionalValue') {
+                    this.setState({optionalValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
+                } else {
+                    this.setState({selectedValue: moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ')});
+                }
             }
-
-            this.setState({errorMsg: null});
         }
+
+        this.setState({errorMsg: null});
     }
 
     render() {
         const { isOpen, allBookingStatus, clientname, fps } = this.props;
-        const { selectedField, selectedValue, optionalValue, errorMsg } = this.state;
+        const { selectedField, selectedValue, optionalValue, errorMsg, formInputs } = this.state;
         const bookingStatusList = sortBy(allBookingStatus, ['sort_order']).map((bookingStatus, key) => {
             if (bookingStatus.dme_delivery_status === 'On Hold') {
                 return [
@@ -218,13 +247,12 @@ class BulkUpdateSlider extends React.Component {
                             {clientname === 'dme' && <option value="b_project_due_date">Project Due Date</option>}
                             {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
                             {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
+                            {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}
                         </select>
                     </label>
                     <br />
                     <div className="value">
-                        {
-                            selectedField ? <label className="value">Value: </label> : null
-                        }
+                        {(selectedField && selectedField !== 'fp_scan') ? <label className="value">Value: </label> : null}
                         {
                             selectedField === 'flag' ?
                                 <select onChange={(e) => this.onSelected(e, 'value')}>
@@ -326,6 +354,55 @@ class BulkUpdateSlider extends React.Component {
                                 <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
                                 {fpOptions}
                             </select>
+                        }
+                        {selectedField && (selectedField === 'fp_scan') &&
+                            <div className="form-view">
+                                <h2>{'Create a new FP Scan for selected Bookings'}</h2>
+                                <form>
+                                    <label>
+                                        <span className="text-left">Status*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="status"
+                                            value={formInputs['status']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Description*</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="desc"
+                                            value={formInputs['desc']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Select a Freight Provider*</span>
+                                        <select 
+                                            required
+                                            name='fp'
+                                            onChange={(e) => this.onHandleInput(e)}
+                                            value={formInputs['fp']}
+                                        >
+                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            {fpOptions}
+                                        </select>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Scan timestamp*</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'event_timestamp')}
+                                            value={formInputs['event_timestamp'] ?
+                                                new Date(moment(formInputs['event_timestamp']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label>
+                                </form>
+                            </div>
                         }
                     </div>
                     <br />
