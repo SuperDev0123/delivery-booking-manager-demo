@@ -90,14 +90,12 @@ class BulkUpdateSlider extends React.Component {
     onHandleInput(e) {
         const { formInputs, selectedField } = this.state;
 
-        console.log('@! - ');
         if (selectedField === 'fp_scan') {
             const target = event.target;
             const value = target.type === 'checkbox' ? target.checked : target.value;
             const name = target.name;
 
             formInputs[name] = value;
-            console.log('@2 - ', name, value);
             this.setState({formInputs});
         } else {
             this.setState({selectedValue: e.target.value, errorMsg: null});
