@@ -140,6 +140,7 @@ class ManifestReport extends React.Component {
                             <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
                             <td>{report.warehouse_name}</td>
                             <td>{report.freight_provider}</td>
+                            <td>{report.vehicle_info}</td>
                             <td>{report.count}</td>
                             <td>
                                 <button
@@ -204,6 +205,7 @@ class ManifestReport extends React.Component {
                                 <th>Date</th>
                                 <th>Warehouse</th>
                                 <th>Freight Provider</th>
+                                <th>Vehicle Info</th>
                                 <th>Count</th>
                                 <th>Actions</th>
                             </tr>
