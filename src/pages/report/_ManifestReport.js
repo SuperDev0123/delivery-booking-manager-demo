@@ -125,22 +125,28 @@ class ManifestReport extends React.Component {
         const { fpFilter, clientFilter } = this.state;
         if (reports) {
             const filteredReports = reports.filter(report => {
-                const fp = report.freight_provider.toLowerCase();
+                const hasFP = (fpFilter) => !fpFilter || report.freight_providers.includes(fpFilter);
 
                 if (clientname === 'dme')
-                    return fp.includes(fpFilter.toLowerCase()) && report.kf_client_id.includes(clientFilter);
+                    return hasFP(fpFilter) && report.kf_client_id.includes(clientFilter);
                 else
-                    return fp.includes(fpFilter.toLowerCase());
+                    return hasFP(fpFilter);
             });
+
             if (filteredReports) {
                 let reportList = filteredReports.map((report, index) => {
+                    const freight_providers = report.freight_providers
+                        .map((fp, index1) => (<span key={index1}><strong>{fp}</strong> ({report.cnt_4_each_fp[fp]})<br /></span>));
+                    const vehicles = report.vehicles
+                        .map((vehicle, index2) => (<span key={index2}>{vehicle}<br /></span>));
+
                     return (
                         <tr key={index}>
                             <td>{report.manifest_id}</td>
                             <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
                             <td>{report.warehouse_name}</td>
-                            <td>{report.freight_provider}</td>
-                            <td>{report.vehicle_info}</td>
+                            <td>{freight_providers}</td>
+                            <td>{vehicles}</td>
                             <td>{report.count}</td>
                             <td>
                                 <button
