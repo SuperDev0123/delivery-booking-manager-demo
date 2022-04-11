@@ -2556,6 +2556,9 @@ class AllBookingsPage extends React.Component {
                                                     <option value="flagged">Flagged</option>
                                                 </select>
                                                 <label className='left-30px right-10px'>
+                                                    Total Cnt: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_qty.toFixed(2)).toLocaleString('en')}` : '*'}</strong>
+                                                </label>
+                                                <label className='right-10px'>
                                                     Total KG: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_kgs.toFixed(2)).toLocaleString('en')} KG` : '*'}</strong>
                                                 </label>
                                                 <label className='right-10px'>
