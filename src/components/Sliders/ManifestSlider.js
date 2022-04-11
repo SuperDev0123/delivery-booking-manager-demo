@@ -75,7 +75,7 @@ class ManifestSlider extends React.Component {
                 <hr />
                 <label>
                     <span className={fpCnt > 1 ? 'red' : ''}>
-                        # {fpCnt} `Freight Provider(s)`;
+                        # {fpCnt} `Freight Provider(s)`; {fpCnt !== 1 ? 'DME does not support multi-FP manifest' : ''}
                     </span><br />
                     <span className={puAvailFromDateCnt > 1 ? 'red' : ''}>
                         # There are {puAvailFromDateCnt} `Pick Up Available From Date`;
@@ -85,6 +85,8 @@ class ManifestSlider extends React.Component {
                 {summaryList}
                 <Button
                     color="primary"
+                    disabled={fpCnt !== 1 ? 'disabled' : ''}
+                    title={fpCnt !== 1 ? 'DME does not support multi-FP manifest' : 'Create manifest'}
                     onClick={() => this.props.onCreateOrder(bookingIds)}
                 >
                     Create Manifest
