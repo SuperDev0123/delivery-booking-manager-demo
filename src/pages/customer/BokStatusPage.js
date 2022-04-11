@@ -157,7 +157,7 @@ class BokStatusPage extends Component {
                 text: 'Height(ea)'
             },
             {
-                dataField: 'e_total_KG_weight',
+                dataField: 'e_Total_KG_weight',
                 text: 'Mass KG(ea)'
             }
         ];
