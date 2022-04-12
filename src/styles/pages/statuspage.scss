@@ -1,292 +1,185 @@
-section.status {
-    height: calc(100% - 96px);
-    overflow-y: auto;
+.status-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Open Sans', 'Helvetica', 'Arial', 'sans-serif';
+    border-radius: 10px;
+    border-color: #8a8282;
+    overflow: auto;
+    margin: 0 50px;
+    .status-main {
+        .status-stepper {
+            margin-bottom: 20px;
+            color: lightgrey;
+            
+            li {
+                list-style-type: none;
+                width: 140px;
+                font-size: 16px;
+                margin-left: 80px;
+                float: left;
+                position: relative;
+                background-color: transparent !important;
+                text-align: center;
+            }
 
-    .status-head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-height: 120px;
-        margin: 0px 10%;
+            p {
+                padding: 0 4px;
+            }
 
-        .navbar-brand {
+            li:first-child {
+                margin-left: 0px !important;
+            }
+
+            li:before {
+                width: 50px;
+                height: 50px;
+                line-height: 45px;
+                display: block;
+                font-size: 22px;
+                color: #8a8282;
+                background: white;
+                border-radius: 50%;
+                border: lightgreen solid 2px;
+                margin: 0 auto 12px auto;
+                padding: 2px;
+            }
+
+            li:not(:last-child):after {
+                content: '';
+                width: 140%;
+                height: 10px;
+                background: transparent;
+                border: none;
+                border-top: rgb(142, 142, 142) solid 5px;
+                border-top-style: dotted;
+                position: absolute;
+                left: 80px;
+                top: 25px;
+                z-index: -1;
+            }
+
+            li.passed:not(:last-child):after {
+                content: '';
+                width: 140%;
+                height: 10px;
+                background: transparent;
+                border: none;
+                border-top: rgb(11, 156, 204) solid 2px;
+                position: absolute;
+                left: 80px;
+                top: 25px;
+                z-index: -1;
+            }
+
+            .passed:before {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                display: block;
+                font-size: 16px;
+                color: #8a8282;
+                background: rgb(11, 156, 204);
+                border-radius: 50%;
+                border: 0px;
+                margin: 14px auto 20px auto;
+                padding-top: 0px;
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                content: "\f00c";
+                color: white;
+            }
+
+            .collect:before {
+                color: rgb(11, 156, 204);
+                border-color: rgb(11, 156, 204);
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                content: '\f023';
+            }
+
+            .intransit:before {
+                color: rgb(11, 156, 204);
+                border-color: rgb(11, 156, 204);
+                font-family: "Font Awesome 5 Free";
+                content: "\f0d1";
+                font-weight: 900;
+                
+            }
+
+            .delivering:before {
+                color: rgb(11, 156, 204);
+                border-color: rgb(11, 156, 204);
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                content: "\f0d1";
+            }
+
+            .delivered:before {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                display: block;
+                font-size: 16px;
+                color: #8a8282;
+                background: rgb(11, 156, 204);
+                border-radius: 50%;
+                border: 0px;
+                margin: 14px auto 20px auto;
+                padding-top: 0px;
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                content: "\f00c";
+                color: white;
+            }
+
+            .collect, .intransit, .delivering, .delivered {
+                p {
+                    background-color: rgb(11, 156, 204);
+                    border-radius: 10%;
+                    color: white;
+                    font-size: 12px;
+                    margin: 0 20px;
+                }
+            }
+
+            .pending:before {
+                width: 25px;
+                height: 25px;
+                line-height: 25px;
+                display: block;
+                font-size: 16px;
+                color: #8a8282;
+                background: white;
+                border-radius: 50%;
+                border: #8a8282 solid 2px;
+                margin: 14px auto 20px auto;
+                padding-top: 0px;
+                font-family: "Font Awesome 5 Free";
+                font-weight: 900;
+                content: "\f00c";
+                color: white;
+            }
+
+        }
+
+        a {
+            color: blue;
             padding: 0px;
         }
-
-        .logo-desc {
-            font-size: 15.3px;
-            font-weight: bold;
-        }
-
-        .head-logo {
-            max-height: 100px;
-        }
+    }
+    .status-info {
+        padding: 20px;
+    }
+    .accordion .card-header {
+        background: rgb(11, 156, 204);
     }
 
-    p.error {
-        color: red;
+    .modal-header {
         font-size: 20px;
-        text-align: center;
+        color: white;
     }
-
-    .main-info {
-        width: 60%;
-        margin-left: 20%;
-        margin-right: 20%;
-        margin-bottom: 50px;
-
-        >div {
-            width: 50%;
-
-            label {
-                color: deepskyblue;
-                font-size: 18px;
-            }
-
-            &.de-info {
-                text-align: end;
-            }
-        }
-    }
-
-    .status-content {
-        padding: 20px 10%;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-
-        .status-summary {
-            display: flex;
-            justify-content: space-between;
-            margin: 0px -15px 10px;
-        }
-
-        .status-summary-title {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .status-summary-desc {
-            font-size: 16px;
-            color: rgb(0, 117, 225);
-        }
-
-        .status-summary-updated {
-            font-size: 16px;
-            color: black;
-        }
-
-        .status-chart-sm {
-            display: none;
-        }
-
-        .status-chart-bar {
-            display: flex;
-            align-items: center;
-            margin: 30px 0px;
-        }
-
-        input {
-            width: 30px;
-            height: 30px;
-            margin: 0px;
-        }
-
-        .status-chart-bar-bar {
-            flex-grow: 1;
-            height: 10px;
-            background-color: rgb(0, 117, 225);
-        }
-
-        .status-chart-desc {
-            display: flex;
-            justify-content: space-between;
-            gap: 5px;
-        }
-
-        .status-chart-desc-item {
-            height: 60px; 
-        }
-
-        .status-chart-desc-item-title {
-            font-weight: bold;
-            flex-grow: 1;
-        }
-
-        .status-chart-desc-item-desc {
-            font-size: 10px;
-        }
-        
-        .status-chart-item-sm {
-            display: flex; 
-            flex-direction: row;
-            gap: 5px;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .blurb {
-            .blurb-text {
-                font-size: 13px;
-            }
-        }
-
-        .status-details {
-            display: flex;
-            justify-content: space-around;
-            margin: 0px;
-
-            .status-details-item {
-                padding: 16px 0px;
-
-                .status-details-item-title {
-                    font-size: 18px;
-                    font-weight: bold;
-                    height: 36px;
-                }
-
-                .status-details-item-subtitle {
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-
-                .status-details-item-subdesc {
-                    line-height: 1.5em;
-                    font-size: 16px;
-                    color: #4a4a4a;
-                }
-            }
-        }
-
-        .scans-details {
-            display: flex;
-            flex-direction: column;
-            margin: 0px 0px 10px;
-
-            .scans-details-title {
-                border-radius: 0.25rem;
-                background-color: lightgray;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                padding-top: 8px;
-                padding-left: 5px;
-                padding-bottom: 5px;
-            }
-
-            .scans-details-title:hover {
-                background-color: rgb(228, 228, 228);
-            }
-        }
-
-        .ships-details {
-            display: flex;
-            flex-direction: column;
-            margin: 0px 0px 10px;
-
-            .ships-details-title {
-                border-radius: 0.25rem;
-                background-color: lightgray;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                padding-top: 8px;
-                padding-left: 5px;
-                padding-bottom: 5px;
-            }
-
-            .ships-details-title:hover {
-                background-color: rgb(228, 228, 228);
-            }
-        }
-
-        .order-details {
-            display: flex;
-            flex-direction: column;
-            margin: 0px 0px 10px;
-
-            .lines-data {
-                overflow: auto;
-                width: 100%;
-            }
-
-            .order-details-title {
-                border-radius: 0.25rem;
-                background-color: lightgray;
-                font-size: 18px;
-                font-weight: bold;
-                cursor: pointer;
-                padding-top: 8px;
-                padding-left: 5px;
-                padding-bottom: 5px;
-            }
-
-            .order-details-title:hover {
-                background-color: rgb(228, 228, 228);
-            }
-        }
-    }
-
-    .table > thead > tr > th, .table > tbody > tr > td {
-        padding: 5px 0px;
-        font-family: "Open Sans", "Helvetica", "Arial", "sans-serif"!important;
-        font-size: 14px;
-        font-weight: normal;
-    }
-
-    .table > thead > tr > th {
-        font-weight: bold;
-    }
-
-    .no-status {
-        margin-top: 30px;
-        padding: 30px;
-        font-size: 20px;
-        text-align: center;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .status-chart {
-        display: none;
-    }
-    .status-chart-desc-item-title {
-        font-size: 12px;
-    }
-    .status-chart-desc-item {
-        max-width: 60px;
-    }
-    section.status .status-content .status-chart-sm {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-    }
-    section.status .status-content .status-chart-desc-item-title {
-        font-size: 11px;
-    }
-    section.status .status-content .status-chart-desc-item-desc {
-        font-size: 11px;
-    }
-    section.status .status-content input {
-        width: 20px;
-        height: 20px;
-        margin: 0px;
-    }
-    section.status .status-head {
-        min-height: 50px;
-        margin: 10px 10%;
-    }
-    section.status .status-head .head-logo {
-        max-height: 36px;
-        margin-top: 20px;
-    }
-    section.status .status-head .logo-desc {
-        display: none;
-    }
-    section.status .status-head .navbar-brand {
-        margin: 0px;
-    }
-    section.status .table > thead > tr > th, section.status .table > tbody > tr > td {
-        padding: 5px 5px 5px 0px;
+    .modal-body {
+        font-size: 16px;
     }
 }
