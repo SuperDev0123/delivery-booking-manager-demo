@@ -68,9 +68,9 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {scans, originalLines, packedLines, step, booking, quote, etaDate } = this.props;
+        const {scans, originalLines, packedLines, step, status, booking, quote, etaDate } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
-        const status = step;
+        const step_no = step;
         const updateDate =  booking && booking.timestamps && booking.timestamps.slice(-1);
         const steps = [
             {className: 'collect', statusName: 'processing'},
@@ -79,10 +79,25 @@ class BokStatusPage extends Component {
             {className: 'delivered', statusName: 'delivered'}
         ];
 
+        const misDeliveries = [
+            'Lost In Transit',
+            'Damaged',
+            'Returning',
+            'Returned',
+            'Closed',
+            'Cancelled',
+            'On Hold',
+            'Cancel Requested',
+        ];
+
         const stepEl = steps.map((step, index) => {
-            if (index < status) {
+            
+            if (index < step_no) {
                 return <Step statusClass="passed" statusName={step.statusName} />;
-            } else if (index == status) {
+            } else if (index == step_no) {
+                if (index == 3 && misDeliveries.includes(status)) {
+                    return <Step statusClass={step.className} statusName={status} />;
+                }
                 return <Step statusClass={step.className} statusName={step.statusName} />;
             } else {
                 return <Step statusClass="pending" statusName={step.statusName} />;
@@ -147,22 +162,28 @@ class BokStatusPage extends Component {
             }
         ];
 
-        const originalLineColumns = [
-            {
-                dataField: 'product',
-                text: 'Product'
-            },
-            {
-                dataField: 'e_item_type',
-                text: 'Item Number',
-                style: {
-                    paddingRight: '5px'
-                }
-            }, {
-                dataField: 'e_qty',
-                text: 'Quantity'
-            }
-        ];
+        // const originalLineColumns = [
+        //     {
+        //         dataField: 'product',
+        //         text: 'Product'
+        //     },
+        //     {
+        //         dataField: 'e_item_type',
+        //         text: 'Item Number',
+        //         style: {
+        //             paddingRight: '5px'
+        //         }
+        //     }, {
+        //         dataField: 'l_003_item',
+        //         text: 'Item Description',
+        //         style: {
+        //             paddingRight: '5px'
+        //         }
+        //     }, {
+        //         dataField: 'l_002_qty',
+        //         text: 'Quantity'
+        //     }
+        // ];
 
         return (
             <LoadingOverlay
@@ -174,7 +195,10 @@ class BokStatusPage extends Component {
                     <div className="border border-1 my-5 py-2">
                         <div className="status-main d-flex justify-content-around border-bottom">
                             <div className="left-side mt-4">
-                                <img src={dmeLogo} alt="logo" />
+                                <div className="row">
+                                    <img src={dmeLogo} alt="logo" />
+                                    <h5 className="tel-number">Tel: (02) 8311 1500</h5>
+                                </div>
                                 <div className="status-stepper text-center align-content-center mt-3 pt-5">
                                     <ul className="status-stepper d-flex justify-content-around">
                                         {stepEl}
@@ -237,7 +261,7 @@ class BokStatusPage extends Component {
                                                     columns={ scansColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'}
                                             </div>
                                         </div>
                                     </div>
@@ -256,7 +280,7 @@ class BokStatusPage extends Component {
                                                     columns={ packedLineColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'}
                                             </div>
                                         </div>
                                     </div>
@@ -269,13 +293,14 @@ class BokStatusPage extends Component {
                                         </div>
                                         <div id="collapseThree" className="collapse">
                                             <div className="card-body">
-                                                {originalLines.length != 0 ? <BootstrapTable
+                                                {'No item information was provided to report here'}
+                                                {/* {originalLines.length != 0 ? <BootstrapTable
                                                     keyField="pk_lines_id"
                                                     data={ originalLines }
                                                     columns={ originalLineColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'} */}
                                             </div>
                                         </div>
                                     </div>
