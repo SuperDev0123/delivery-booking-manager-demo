@@ -1,22 +1,25 @@
-import React, { Component, Fragment } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
-
-import BootstrapTable from 'react-bootstrap-table-next';
 import { getDeliveryStatus } from '../../state/services/bokService';
+import { connect } from 'react-redux';
+import moment from 'moment';
+import BootstrapTable from 'react-bootstrap-table-next';
+
 import dmeLogo from '../../public/images/logos/dme.png';
+import Step from './Step';
+import LoadingOverlay from 'react-loading-overlay';
 
 class BokStatusPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            isLoading: true,
             identifier: null,
             errorMessage: null,
-            showScans: true,
-            showShips: true,
-            showOrders: true
+            showScans: false,
+            showShips: false,
+            showOrders: false,
         };
     }
 
@@ -36,7 +39,7 @@ class BokStatusPage extends Component {
         timestamps: PropTypes.array,
         clientLogoUrl: PropTypes.string,
         match: PropTypes.object,
-    };
+    }
 
     componentDidMount() {
         const identifier = this.props.match.params.id;
@@ -50,10 +53,13 @@ class BokStatusPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {errorMessage} = newProps;
-
+        const {errorMessage, booking } = newProps;
+        if (booking) {
+            this.setState({isLoading: false});
+        }
         if (errorMessage) {
             this.setState({errorMessage});
+            this.setState({isLoading: false});
         }
     }
 
@@ -62,47 +68,26 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const { showScans, showShips, showOrders } = this.state;
-        const {status, step, lastUpdated, quote, booking, originalLines, packedLines, scans, lastMilestone, timestamps, etaDate, clientLogoUrl} = this.props;
+        const {scans, originalLines, packedLines, step, booking, quote, etaDate } = this.props;
+        const { showScans, showShips, showOrders, isLoading } = this.state;
+        const status = step;
+        const updateDate =  booking && booking.timestamps && booking.timestamps.slice(-1);
         const steps = [
-            'Processing',
-            'Ready for Dispatch',
-            'Picked up by Delivery Partner',
-            'Out for Delivery',
-            lastMilestone ? lastMilestone : 'Delivered'
+            {className: 'collect', statusName: 'processing'},
+            {className: 'intransit', statusName: 'in transit'}, 
+            {className: 'delivering', statusName: 'Out for Delivery'},
+            {className: 'delivered', statusName: 'delivered'}
         ];
-        const details = [
-            {
-                title: 'CUSTOMER DETAILS',
-                content: [
-                    {
-                        subtitle: 'Customer name',
-                        subdesc: booking ? booking.b_061_b_del_contact_full_name : ''
-                    },
-                    {
-                        subtitle: 'Order number',
-                        subdesc: booking ? booking.b_client_order_num : ''
-                    }
-                ]
-            },
-            {
-                title: 'DELIVERY DETAILS',
-                content: [
-                    {
-                        subtitle: 'Tracking Number',
-                        subdesc: booking ? booking.b_000_3_consignment_number : ''
-                    },
-                    {
-                        subtitle: 'DME Number',
-                        subdesc: booking ? booking.b_bookingID_Visual : ''
-                    },
-                    {
-                        subtitle: 'Delivery ETA',
-                        subdesc: quote ? `${etaDate}(${quote.eta})` : ''
-                    }
-                ]
+
+        const stepEl = steps.map((step, index) => {
+            if (index < status) {
+                return <Step statusClass="passed" statusName={step.statusName} />;
+            } else if (index == status) {
+                return <Step statusClass={step.className} statusName={step.statusName} />;
+            } else {
+                return <Step statusClass="pending" statusName={step.statusName} />;
             }
-        ];
+        });
 
         const scansColumns = [
             {
@@ -170,201 +155,160 @@ class BokStatusPage extends Component {
             {
                 dataField: 'e_item_type',
                 text: 'Item Number',
-                // hidden: true,
                 style: {
                     paddingRight: '5px'
                 }
             }, {
-                dataField: 'l_003_item',
-                text: 'Item Description',
-                style: {
-                    paddingRight: '5px'
-                }
-            }, {
-                dataField: 'l_002_qty',
+                dataField: 'e_qty',
                 text: 'Quantity'
             }
         ];
 
         return (
-            <section className="status">
-                <nav className="status-head mt-md-5">
-                    <a href="/" className="navbar-brand mr-sm-0">
-                        <img src={dmeLogo} className="head-logo" alt="logo" />
-                        <span className="logo-desc">Your shipment powered by Deliver Me</span>
-                    </a>
-                    {clientLogoUrl && <a href="#" className="navbar-brand mr-sm-0 pull-right">
-                        <img src={require(`../../public/images/logos/${clientLogoUrl}`)} className="head-logo" alt="logo" />
-                    </a>}
-                </nav>
-                {this.state.errorMessage ?
-                    <p className="error">{this.state.errorMessage}</p>
-                    : lastUpdated !== '' ? <Fragment>
-                        {booking && <div className="status-content">
-                            <div className="status-summary row">
-                                <div className="col-md-3 col-sm-12">
-                                    <p className="status-summary-title">
-                                        STATUS
-                                    </p>
-                                    <p className="status-summary-desc">
-                                        {status}
-                                    </p>
-                                </div>
-                                <div className="col-md-4 col-sm-12">
-                                    <p className="status-summary-title">
-                                        DELIVERY PARTNER
-                                    </p>
-                                    <p className="status-summary-desc">
-                                        {(booking && booking['vx_freight_provider']) ? booking['vx_freight_provider'] : ''}
-                                    </p>
-                                </div>
-                                <div className="col-md-5 col-sm-12">
-                                    <p className="status-summary-title">
-                                        SHIP TO
-                                    </p>
-                                    <p className="status-summary-desc">
-                                        {booking.b_061_b_del_contact_full_name}
-                                        <br />
-                                        {booking.b_055_b_del_address_street_1}&nbsp;
-                                        {booking.b_055_b_del_address_street_2 && `${booking.b_055_b_del_address_street_2} `}
-                                        {booking.b_058_b_del_address_suburb}&nbsp;
-                                        {booking.b_057_b_del_address_state}&nbsp;
-                                        {booking.b_060_b_del_address_country}&nbsp;
-                                        {booking.b_059_b_del_address_postalcode}
-                                    </p>
+            <LoadingOverlay
+                active={isLoading}
+                spinner
+                text='Get Delivery Status...'
+            >
+                <section className="status-page">
+                    <div className="border border-1 my-5 py-2">
+                        <div className="status-main d-flex justify-content-around border-bottom">
+                            <div className="left-side mt-4">
+                                <img src={dmeLogo} alt="logo" />
+                                <div className="status-stepper text-center align-content-center mt-3 pt-5">
+                                    <ul className="status-stepper d-flex justify-content-around">
+                                        {stepEl}
+                                    </ul>
                                 </div>
                             </div>
-                            <div>
-                                <span className="status-summary-title">Updated: </span>
-                                <span className="status-summary-updated">{lastUpdated}</span>
-                            </div>
-                            {!(step === 5 && status === 'Delivered') && <div className='c-red'>
-                                <p>Dear Customer, please note that freight providers are experiencing significant delivery delays beyond standard service levels. There is a high chance that this will impact the estimated `deliver by date`.</p>
-                                <p>To keep you up to date a SMS and email will be sent out no later than the ‘deliver by date’ of an impending delay. We understand the frustration with the potential delays and having to call customer care for updates. To save you that time, we will provide ALL information via SMS or email as and when updates are possible.</p>
-                            </div>}
-                            <div className="status-chart">
-                                <div className="status-chart-bar">
-                                    {[0, 1, 2, 3, 4].map((index) => (
-                                        <React.Fragment key={index}>
-                                            <input type="checkbox" checked={index < step} readOnly></input>
-                                            {index !== 4 && <div className="status-chart-bar-bar"></div>}
-                                        </React.Fragment>
-                                    ))}
+                            <div className="status-info border-left">
+                                <table className="table table-bordered table-hover table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td>Freight Provider</td>
+                                            <td>{booking ? booking.vx_freight_provider : ''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Consignment Number</td>
+                                            <td>{booking ? booking.b_000_3_consignment_number : '' }</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Your Sales Order</td>
+                                            <td>{booking ? booking.b_client_sales_inv_num : ''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Delivery ETA</td>
+                                            <td>{quote ? `${etaDate}(${quote.eta})` : '' }</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Deliver To</td>
+                                            <td>{booking ? booking.b_054_b_del_company : ''}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Service</td>
+                                            <td>{booking ? booking.vx_serviceName : ''}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                {/* <a href={`${POD_URL}/imgs/${booking.z_pod_url}`}>Sign by Pete</a> */}
+                                <br/>
+                                <br/>
+                                <div className="date">
+                                    Updated: {updateDate}
                                 </div>
-                                <div className="status-chart-desc">
-                                    {steps.map((step, index) => (
-                                        <div className="status-chart-desc-item" key={index}>
-                                            <div className="status-chart-desc-item-title">
-                                                {step}
+                            </div>
+                        </div>
+                        <div className="status-detail pt-3 px-5 border-bottom pb-3">
+                            <h5 className="ml-4">View details:</h5>
+                            <div className="detail-content ps-2">
+                                <div className="accordion" id="accordion">
+                                    <div className="card">
+                                        <div className="card-header p-0">
+                                            <a className="btn text-white d-block text-left" data-toggle="collapse" href="#collapseOne" onClick={() => this.onToggle('showScans')}>
+                                                &nbsp;<i className={showScans ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                                &nbsp; View Tracking History
+                                            </a>
+                                        </div>
+                                        <div id="collapseOne" className="collapse">
+                                            <div className="card-body">
+                                                {scans.length != 0  ? <BootstrapTable
+                                                    keyField="id"
+                                                    data={ scans }
+                                                    columns={ scansColumns }
+                                                    bootstrap4={ true }
+                                                    bordered={ false }
+                                                /> : ''}
                                             </div>
-                                            {timestamps && <div className="status-chart-desc-item-desc">
-                                                {timestamps[index]}
-                                            </div>}
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="status-chart-sm">
-                                {[0, 1, 2, 3, 4].map((index) => (
-                                    <div className="status-chart-item-sm" key={index}>
-                                        <input type="checkbox" checked={index < step} readOnly></input>
-                                        <div className="status-chart-desc-item-title">
-                                            {steps[index]}
-                                        </div>
-                                        {timestamps && <div className="status-chart-desc-item-desc">
-                                            {timestamps[index]}
-                                        </div>}
                                     </div>
-                                ))}
-                            </div>
-                            <div className="row blurb">
-                                <p className="blurb-text">
-                                    Please note that your order may arrive in multiple deliveries due to the way that &apos;big and bulky&apos; items are sorted and scanned. Rest assured that the rest of your order will arrive soon.
-                                </p>
-                                <p className="blurb-text">
-                                    If the order status says &apos;Delivered&apos; and there are still undelivered items in your order, you may submit an inquiry in the chat window on this page. Our Customer Service team will check with our delivery partner and get back to you as soon as possible.
-                                </p>
-                            </div>
-                            <div className="status-details row">
-                                {details.map((item, index) => (
-                                    <div className="status-details-item col-md-6 col-sm-12" key={index}>
-                                        <div className="status-details-item-title">
-                                            {item.title}
+                                    <div className="card">
+                                        <div className="card-header p-0">
+                                            <a className="collapsed btn text-white d-block text-left" data-toggle="collapse" href="#collapseTwo" onClick={() => this.onToggle('showShips')}>
+                                                &nbsp;<i className={showShips ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                                &nbsp; View Packages Shipped
+                                            </a>
                                         </div>
-                                        {item.content.map((itm, idx) => (
-                                            <React.Fragment key={idx}>
-                                                <span className="status-details-item-subtitle">
-                                                    {itm.subtitle}:&nbsp; 
-                                                </span>
-                                                <span className="status-details-item-subdesc">
-                                                    {itm.subdesc}
-                                                </span>
-                                                <br />
-                                            </React.Fragment>
-                                        ))}
+                                        <div id="collapseTwo" className="collapse">
+                                            <div className="card-body">
+                                                {packedLines.length != 0 ? <BootstrapTable
+                                                    keyField="pk_lines_id"
+                                                    data={ packedLines }
+                                                    columns={ packedLineColumns }
+                                                    bootstrap4={ true }
+                                                    bordered={ false }
+                                                /> : ''}
+                                            </div>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                            <div className="scans-details row">
-                                <div className="scans-details-title" onClick={() => this.onToggle('showScans')}>
-                                    <span>
-                                        &nbsp;<i className={showScans ? 'fa fa-minus' : 'fa fa-plus'} ></i>
-                                        &nbsp;FREIGHT PROVIDER SCANS
-                                    </span>
-                                </div>
-                                {scans && showScans && <BootstrapTable
-                                    keyField="id"
-                                    data={ scans }
-                                    columns={ scansColumns }
-                                    bootstrap4={ true }
-                                    bordered={ false }
-                                />}
-                            </div>
-                            
-                            <div className="ships-details row">
-                                <div className="ships-details-title" onClick={() => this.onToggle('showShips')}>
-                                    <span>
-                                        &nbsp;<i className={showShips ? 'fa fa-minus' : 'fa fa-plus'} ></i>
-                                        &nbsp;SHIPPED ITEMS
-                                    </span>
-                                </div>
-                                <div className="lines-data">
-                                    {packedLines && showShips && <BootstrapTable
-                                        keyField="pk_lines_id"
-                                        data={ packedLines }
-                                        columns={ packedLineColumns }
-                                        bootstrap4={ true }
-                                        bordered={ false }
-                                    />}
+                                    <div className="card">
+                                        <div className="card-header p-0">
+                                            <a className="collapsed btn text-white d-block text-left" data-toggle="collapse" href={originalLines && '#collapseThree'} onClick={() => this.onToggle('showOrders')}>
+                                                &nbsp;<i className={showOrders ? 'fa fa-minus' : 'fa fa-plus'} ></i>
+                                                &nbsp; View a list of items in your packages
+                                            </a>
+                                        </div>
+                                        <div id="collapseThree" className="collapse">
+                                            <div className="card-body">
+                                                {originalLines.length != 0 ? <BootstrapTable
+                                                    keyField="pk_lines_id"
+                                                    data={ originalLines }
+                                                    columns={ originalLineColumns }
+                                                    bootstrap4={ true }
+                                                    bordered={ false }
+                                                /> : ''}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className="order-details row">
-                                <div className="order-details-title" onClick={() => this.onToggle('showOrders')}>
-                                    <span>
-                                        &nbsp;<i className={showOrders ? 'fa fa-minus' : 'fa fa-plus'} ></i>
-                                        &nbsp;ORDER DETAILS
-                                    </span>
-                                </div>
-                                <div className="lines-data">
-                                    {originalLines && showOrders && <BootstrapTable
-                                        keyField="pk_lines_id"
-                                        data={ originalLines }
-                                        columns={ originalLineColumns }
-                                        bootstrap4={ true }
-                                        bordered={ false }
-                                    />}
+                        </div>
+                        <div className="status-footer row ps-4 pt-2">
+                            <a className="col-12 text-center" data-toggle="modal" data-target="#myModal" style={{color: 'red'}} href="#">Important Information re Freight Delays</a>
+                            <div className="modal" id="myModal">
+                                <div className="modal-dialog modal-lg">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h4 className="modal-title text-left">Freight Delivery and Potential Delay Updates</h4>
+                                            <button type="button" className="close px-2 py-0" data-dismiss="modal">&times;</button>
+                                        </div>
+                                
+                                        <div className="modal-body">
+                                            <p>Dear Customer, please note that freight providers are experiencing significant delivery delays beyond standard service levels. There is a high chance that this will impact the estimated `deliver by date`.</p>
+                                            <p>To keep you up to date a SMS and email will be sent out no later than the ‘deliver by date’ of an impending delay. We understand the frustration with the potential delays and having to call customer care for updates. To save you that time, we will provide ALL information via SMS or email as and when updates are possible.</p>
+                                            <p className="blurb-text">
+                                                Please note that your order may arrive in multiple deliveries due to the way that &apos;big and bulky&apos; items are sorted and scanned. Rest assured that the rest of your order will arrive soon.
+                                            </p>
+                                            <p className="blurb-text">
+                                                If the order status says &apos;Delivered&apos; and there are still undelivered items in your order, you may submit an inquiry in the chat window on this page. Our Customer Service team will check with our delivery partner and get back to you as soon as possible.
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>}
-                    </Fragment> : (<div className="no-status">
-                        Your order has been received and is currently being processed.
-                        <br />
-                        <br />
-                        Once you receive a Shipping Confirmation email, please check back to see the delivery status.
-                    </div>)
-                }
-            </section>
+                        </div>
+                    </div>
+                </section>
+            </LoadingOverlay>
         );
     }
 }
