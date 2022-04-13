@@ -104,7 +104,7 @@ class ProjectDataSlider extends React.Component {
                     {
                         <div className="form-view">
                             <label>
-                                <p>Project Name</p>
+                                <p>Vehicle Loaded</p>
                                 <textarea
                                     name="b_booking_project"
                                     value={b_booking_project}
@@ -144,7 +144,7 @@ class ProjectDataSlider extends React.Component {
                                 />
                             </label>
                             <label>
-                                <p>Project Due Date</p>
+                                <p>Vehicle Departure Date</p>
                                 <DatePicker
                                     selected={b_project_due_date ? new Date(b_project_due_date) : null}
                                     onChange={(date) => this.onChangeDate(date, 'b_project_due_date')}

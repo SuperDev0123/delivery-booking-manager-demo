@@ -241,8 +241,8 @@ class BulkUpdateSlider extends React.Component {
                             {clientname === 'dme' && <option value="inv_dme_invoice_no">DME Invoice No</option>}
                             {clientname === 'dme' && <option value="b_client_sales_inv_num">Your Invoice No</option>}
 
-                            {clientname === 'dme' && <option value="b_booking_project">Project Name</option>}
-                            {clientname === 'dme' && <option value="b_project_due_date">Project Due Date</option>}
+                            {clientname === 'dme' && <option value="b_booking_project">Vehicle Loaded</option>}
+                            {clientname === 'dme' && <option value="b_project_due_date">Vehicle Departure Date</option>}
                             {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
                             {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
                             {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}

@@ -2377,7 +2377,7 @@ class AllBookingsPage extends React.Component {
                                                 className="btn btn-primary" 
                                                 onClick={() => this.onClickSetProjectsName()}
                                             >
-                                                Set Project Name
+                                                Set Vehicle Loaded
                                             </button>
                                         </div>
                                     </div>
@@ -2470,14 +2470,14 @@ class AllBookingsPage extends React.Component {
                                                 </select>
                                             </label>
                                             <label className="right-10px">
-                                                Project Name: 
+                                                Vehicle Loaded: 
                                                 <select 
                                                     id="project-name-select" 
                                                     required 
                                                     onChange={(e) => this.onSelected(e, 'projectName')} 
                                                     value={projectName}
                                                 >
-                                                    <option value="" selected disabled hidden>Select a project name</option>
+                                                    <option value="" selected disabled hidden>Select a Vehicle Loaded</option>
                                                     { projectNameOptions }
                                                 </select>
                                             </label>
@@ -3204,7 +3204,7 @@ class AllBookingsPage extends React.Component {
                                                                 scope="col" 
                                                                 nowrap
                                                             >
-                                                                <p>Project Name</p>
+                                                                <p>Vehicle Loaded</p>
                                                                 {(sortField === 'b_booking_project') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-up"></i>
@@ -3219,7 +3219,7 @@ class AllBookingsPage extends React.Component {
                                                                 scope="col" 
                                                                 nowrap
                                                             >
-                                                                <p>Project Due Date</p>
+                                                                <p>Vehicle Departure Date</p>
                                                                 {(sortField === 'b_project_due_date') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-up"></i>

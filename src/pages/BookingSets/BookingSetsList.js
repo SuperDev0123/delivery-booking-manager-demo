@@ -900,7 +900,7 @@ class BookingSetList extends React.Component {
                                                     scope="col" 
                                                     nowrap="true"
                                                 >
-                                                    <p>Project Name</p>
+                                                    <p>Vehicle Loaded</p>
                                                     {
                                                         (sortField === 'b_booking_project') ?
                                                             (sortDirection > 0) ?
@@ -915,7 +915,7 @@ class BookingSetList extends React.Component {
                                                     scope="col" 
                                                     nowrap="true"
                                                 >
-                                                    <p>Project Due Date</p>
+                                                    <p>Vehicle Departure Date</p>
                                                     {
                                                         (sortField === 'b_project_due_date') ?
                                                             (sortDirection > 0) ?

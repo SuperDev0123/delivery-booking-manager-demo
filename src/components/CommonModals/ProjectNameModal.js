@@ -40,10 +40,10 @@ class ProjectNameModal extends Component {
 
         return (
             <ReactstrapModal isOpen={isShowProjectNameModal} toggle={() => this.props.toggleProjectNameModal()} className="status-note-modal">
-                <ModalHeader toggle={() => this.props.toggleProjectNameModal()}>Set Project Name</ModalHeader>
+                <ModalHeader toggle={() => this.props.toggleProjectNameModal()}>Set Vehicle Loaded</ModalHeader>
                 <ModalBody>
                     <label>
-                        <p>Project Name: </p>
+                        <p>Vehicle Loaded: </p>
                         <textarea
                             className="form-control"
                             value={name}

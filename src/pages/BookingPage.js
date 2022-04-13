@@ -4997,7 +4997,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Project Due Date</label>
+                                                            <label className="" htmlFor="">Vehicle Departure Date</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             <p className="show-mode">{formInputs['b_project_due_date'] ? moment(formInputs['b_project_due_date']).format('DD/MM/YYYY') : ''}</p>
