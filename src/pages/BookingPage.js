@@ -5219,10 +5219,10 @@ class BookingPage extends Component {
                                                 </div>
                                                 <div className="pu-de-dates">
                                                     <div className="row mt-1">
-                                                        <div className="col-sm-3">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">PU From</label>
                                                         </div>
-                                                        <div className="col-sm-9">
+                                                        <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 <label className="show-mode">
                                                                     <p className="date disp-inline-block">
@@ -5267,10 +5267,10 @@ class BookingPage extends Component {
                                                                 </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3">
-                                                            <label className="" htmlFor="">PU By</label>
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Pickup / Manifest</label>
                                                         </div>
-                                                        <div className="col-sm-9">
+                                                        <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 <label className="show-mode">
                                                                     <p className="date disp-inline-block">
@@ -5315,10 +5315,10 @@ class BookingPage extends Component {
                                                                 </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">DE from</label>
                                                         </div>
-                                                        <div className="col-sm-9">
+                                                        <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 <label className="show-mode">
                                                                     <p className="date disp-inline-block">
@@ -5363,10 +5363,10 @@ class BookingPage extends Component {
                                                                 </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">DE By</label>
                                                         </div>
-                                                        <div className="col-sm-9">
+                                                        <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 <label className="show-mode">
                                                                     <p className="date disp-inline-block">
@@ -5411,10 +5411,10 @@ class BookingPage extends Component {
                                                                 </div>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">Cutoff</label>
                                                         </div>
-                                                        <div className="col-sm-9 mb-2">
+                                                        <div className="col-sm-8 mb-2">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 <p className="show-mode">
                                                                     {booking ? booking.s_02_Booking_Cutoff_Time : ''}
@@ -5431,10 +5431,10 @@ class BookingPage extends Component {
                                                                     </p>
                                                             }
                                                         </div>
-                                                        <div className="col-sm-3">
+                                                        <div className="col-sm-4">
                                                             <label className="" htmlFor="">POD Email</label>
                                                         </div>
-                                                        <div className="col-sm-9">
+                                                        <div className="col-sm-8">
                                                             {isBookingSelected &&
                                                                 <input
                                                                     className="checkbox"
