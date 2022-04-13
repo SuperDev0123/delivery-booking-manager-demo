@@ -182,4 +182,16 @@
     .modal-body {
         font-size: 16px;
     }
+
+    .tel-number {
+        display: flex;
+        align-items: center;
+        padding-left: 24px;
+        font-weight: bold;
+    }
+
+    .title-fail {
+        color: rgb(11, 156, 204) !important;
+        font-weight: bolder;
+    }
 }

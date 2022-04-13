@@ -68,10 +68,9 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {scans, originalLines, packedLines, step, booking, quote, etaDate } = this.props;
+        const {scans, originalLines, packedLines, step, status, booking, quote, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
-        const status = step;
-        const updateDate =  booking && booking.timestamps && booking.timestamps.slice(-1);
+        const step_no = step;
         const steps = [
             {className: 'collect', statusName: 'processing'},
             {className: 'intransit', statusName: 'in transit'}, 
@@ -79,15 +78,38 @@ class BokStatusPage extends Component {
             {className: 'delivered', statusName: 'delivered'}
         ];
 
-        const stepEl = steps.map((step, index) => {
-            if (index < status) {
-                return <Step statusClass="passed" statusName={step.statusName} />;
-            } else if (index == status) {
-                return <Step statusClass={step.className} statusName={step.statusName} />;
-            } else {
-                return <Step statusClass="pending" statusName={step.statusName} />;
-            }
-        });
+        const misDeliveries = [
+            'Lost In Transit',
+            'Damaged',
+            'Returning',
+            'Returned',
+            'Closed',
+            'Cancelled',
+            'On Hold',
+            'Cancel Requested',
+        ];
+        
+        let stepEl = [];
+        if (!misDeliveries.includes(status)) {
+            stepEl = steps.map((step, index) => {
+                if (index < step_no) {
+                    return <Step statusClass="passed" statusName={step.statusName} />;
+                } else if (index == step_no) {
+                    return <Step statusClass={step.className} statusName={step.statusName} />;
+                } else {
+                    return <Step statusClass="pending" statusName={step.statusName} />;
+                }
+            });
+        }
+
+        let dateOfETA;
+        
+        if (!misDeliveries.includes(status)) {
+            dateOfETA = quote ? `${etaDate}(${quote.eta})` : '';
+        }
+        else {
+            dateOfETA = 'N/A';
+        }
 
         const scansColumns = [
             {
@@ -147,22 +169,28 @@ class BokStatusPage extends Component {
             }
         ];
 
-        const originalLineColumns = [
-            {
-                dataField: 'product',
-                text: 'Product'
-            },
-            {
-                dataField: 'e_item_type',
-                text: 'Item Number',
-                style: {
-                    paddingRight: '5px'
-                }
-            }, {
-                dataField: 'e_qty',
-                text: 'Quantity'
-            }
-        ];
+        // const originalLineColumns = [
+        //     {
+        //         dataField: 'product',
+        //         text: 'Product'
+        //     },
+        //     {
+        //         dataField: 'e_item_type',
+        //         text: 'Item Number',
+        //         style: {
+        //             paddingRight: '5px'
+        //         }
+        //     }, {
+        //         dataField: 'l_003_item',
+        //         text: 'Item Description',
+        //         style: {
+        //             paddingRight: '5px'
+        //         }
+        //     }, {
+        //         dataField: 'l_002_qty',
+        //         text: 'Quantity'
+        //     }
+        // ];
 
         return (
             <LoadingOverlay
@@ -174,11 +202,17 @@ class BokStatusPage extends Component {
                     <div className="border border-1 my-5 py-2">
                         <div className="status-main d-flex justify-content-around border-bottom">
                             <div className="left-side mt-4">
-                                <img src={dmeLogo} alt="logo" />
+                                <div className="row">
+                                    <img src={dmeLogo} alt="logo" />
+                                    <h5 className="tel-number">Tel: (02) 8311 1500</h5>
+                                </div>
                                 <div className="status-stepper text-center align-content-center mt-3 pt-5">
-                                    <ul className="status-stepper d-flex justify-content-around">
-                                        {stepEl}
-                                    </ul>
+                                    {misDeliveries.includes(status) ? 
+                                        <h2 className="title-fail mt-4 pt-5" style={{color: 'blue'}}>Booking {status}</h2> :
+                                        <ul className="status-stepper d-flex justify-content-around">
+                                            {stepEl}
+                                        </ul>
+                                    }
                                 </div>
                             </div>
                             <div className="status-info border-left">
@@ -189,7 +223,7 @@ class BokStatusPage extends Component {
                                             <td>{booking ? booking.vx_freight_provider : ''}</td>
                                         </tr>
                                         <tr>
-                                            <td>Consignment Number</td>
+                                            <td>Consignment</td>
                                             <td>{booking ? booking.b_000_3_consignment_number : '' }</td>
                                         </tr>
                                         <tr>
@@ -198,11 +232,11 @@ class BokStatusPage extends Component {
                                         </tr>
                                         <tr>
                                             <td>Delivery ETA</td>
-                                            <td>{quote ? `${etaDate}(${quote.eta})` : '' }</td>
+                                            <td>{dateOfETA}</td>
                                         </tr>
                                         <tr>
-                                            <td>Deliver To</td>
-                                            <td>{booking ? booking.b_054_b_del_company : ''}</td>
+                                            <td>Delivering To</td>
+                                            <td>{booking ? `${booking.b_057_b_del_address_state} ${booking.b_059_b_del_address_postalcode}` : ''}</td>
                                         </tr>
                                         <tr>
                                             <td>Service</td>
@@ -214,7 +248,7 @@ class BokStatusPage extends Component {
                                 <br/>
                                 <br/>
                                 <div className="date">
-                                    Updated: {updateDate}
+                                    Updated: {lastUpdated}
                                 </div>
                             </div>
                         </div>
@@ -237,7 +271,7 @@ class BokStatusPage extends Component {
                                                     columns={ scansColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'}
                                             </div>
                                         </div>
                                     </div>
@@ -256,7 +290,7 @@ class BokStatusPage extends Component {
                                                     columns={ packedLineColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'}
                                             </div>
                                         </div>
                                     </div>
@@ -269,13 +303,14 @@ class BokStatusPage extends Component {
                                         </div>
                                         <div id="collapseThree" className="collapse">
                                             <div className="card-body">
-                                                {originalLines.length != 0 ? <BootstrapTable
+                                                {'No item information was provided to report here'}
+                                                {/* {originalLines.length != 0 ? <BootstrapTable
                                                     keyField="pk_lines_id"
                                                     data={ originalLines }
                                                     columns={ originalLineColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : ''}
+                                                /> : 'No item information was provided to report here'} */}
                                             </div>
                                         </div>
                                     </div>
