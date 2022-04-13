@@ -68,10 +68,9 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {scans, originalLines, packedLines, step, status, booking, quote, etaDate } = this.props;
+        const {scans, originalLines, packedLines, step, status, booking, quote, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
         const step_no = step;
-        const updateDate =  booking && booking.timestamps && booking.timestamps.slice(-1);
         const steps = [
             {className: 'collect', statusName: 'processing'},
             {className: 'intransit', statusName: 'in transit'}, 
@@ -89,20 +88,28 @@ class BokStatusPage extends Component {
             'On Hold',
             'Cancel Requested',
         ];
-
-        const stepEl = steps.map((step, index) => {
-            
-            if (index < step_no) {
-                return <Step statusClass="passed" statusName={step.statusName} />;
-            } else if (index == step_no) {
-                if (index == 3 && misDeliveries.includes(status)) {
-                    return <Step statusClass={step.className} statusName={status} />;
+        
+        let stepEl = [];
+        if (!misDeliveries.includes(status)) {
+            stepEl = steps.map((step, index) => {
+                if (index < step_no) {
+                    return <Step statusClass="passed" statusName={step.statusName} />;
+                } else if (index == step_no) {
+                    return <Step statusClass={step.className} statusName={step.statusName} />;
+                } else {
+                    return <Step statusClass="pending" statusName={step.statusName} />;
                 }
-                return <Step statusClass={step.className} statusName={step.statusName} />;
-            } else {
-                return <Step statusClass="pending" statusName={step.statusName} />;
-            }
-        });
+            });
+        }
+
+        let dateOfETA;
+        
+        if (!misDeliveries.includes(status)) {
+            dateOfETA = quote ? `${etaDate}(${quote.eta})` : '';
+        }
+        else {
+            dateOfETA = 'N/A';
+        }
 
         const scansColumns = [
             {
@@ -200,9 +207,12 @@ class BokStatusPage extends Component {
                                     <h5 className="tel-number">Tel: (02) 8311 1500</h5>
                                 </div>
                                 <div className="status-stepper text-center align-content-center mt-3 pt-5">
-                                    <ul className="status-stepper d-flex justify-content-around">
-                                        {stepEl}
-                                    </ul>
+                                    {misDeliveries.includes(status) ? 
+                                        <h2 className="title-fail mt-4 pt-5" style={{color: 'blue'}}>Booking {status}</h2> :
+                                        <ul className="status-stepper d-flex justify-content-around">
+                                            {stepEl}
+                                        </ul>
+                                    }
                                 </div>
                             </div>
                             <div className="status-info border-left">
@@ -213,7 +223,7 @@ class BokStatusPage extends Component {
                                             <td>{booking ? booking.vx_freight_provider : ''}</td>
                                         </tr>
                                         <tr>
-                                            <td>Consignment Number</td>
+                                            <td>Consignment</td>
                                             <td>{booking ? booking.b_000_3_consignment_number : '' }</td>
                                         </tr>
                                         <tr>
@@ -222,11 +232,11 @@ class BokStatusPage extends Component {
                                         </tr>
                                         <tr>
                                             <td>Delivery ETA</td>
-                                            <td>{quote ? `${etaDate}(${quote.eta})` : '' }</td>
+                                            <td>{dateOfETA}</td>
                                         </tr>
                                         <tr>
-                                            <td>Deliver To</td>
-                                            <td>{booking ? booking.b_054_b_del_company : ''}</td>
+                                            <td>Delivering To</td>
+                                            <td>{booking ? `${booking.b_057_b_del_address_state} ${booking.b_059_b_del_address_postalcode}` : ''}</td>
                                         </tr>
                                         <tr>
                                             <td>Service</td>
@@ -238,7 +248,7 @@ class BokStatusPage extends Component {
                                 <br/>
                                 <br/>
                                 <div className="date">
-                                    Updated: {updateDate}
+                                    Updated: {lastUpdated}
                                 </div>
                             </div>
                         </div>
