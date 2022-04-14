@@ -55,7 +55,7 @@ export const timeSelectOptions = [
     {value: '05:30', label: '05:30'},
 ];
 
-export const specialFPs = ['Deliver-ME Direct', 'Customer Pickup', 'Customer Collect', 'In House Fleet'];
+export const specialFPs = ['Deliver-ME', 'Customer Pickup', 'Customer Collect', 'In House Fleet'];
 
 export const BOOKING_IMPORTANT_FIELDS = [
     'pu_Address_State',
