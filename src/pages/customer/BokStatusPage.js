@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import BootstrapTable from 'react-bootstrap-table-next';
 
+import { STATIC_HOST } from '../../config';
 import dmeLogo from '../../public/images/logos/dme.png';
 import Step from './Step';
 import LoadingOverlay from 'react-loading-overlay';
@@ -31,6 +32,7 @@ class BokStatusPage extends Component {
         lastUpdated: PropTypes.string,
         quote: PropTypes.object,
         booking: PropTypes.object,
+        lines: PropTypes.array,
         originalLines: PropTypes.array,
         packedLines: PropTypes.array,
         scans: PropTypes.array,
@@ -70,6 +72,20 @@ class BokStatusPage extends Component {
     render() {
         const {scans, originalLines, packedLines, step, status, booking, quote, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
+
+        console.log(scans);
+        console.log(originalLines);
+        console.log(packedLines);
+
+        let pod_url = null;
+        if (booking) {
+            if (booking.z_pod_signed_url) {
+                pod_url = booking.z_pod_signed_url;
+            } else if (booking.z_pod_url) {
+                pod_url = booking.z_pod_url;
+            }
+        }
+        
         const step_no = step;
         const steps = [
             {className: 'collect', statusName: 'processing'},
@@ -138,6 +154,12 @@ class BokStatusPage extends Component {
             {
                 dataField: 'e_type_of_packaging',
                 text: 'Packaging Unit'
+            },{
+                dataField: 'e_item',
+                text: 'Item Description',
+                style: {
+                    paddingRight: '5px'
+                }
             },
             {
                 dataField: 'e_qty',
@@ -169,28 +191,28 @@ class BokStatusPage extends Component {
             }
         ];
 
-        // const originalLineColumns = [
-        //     {
-        //         dataField: 'product',
-        //         text: 'Product'
-        //     },
-        //     {
-        //         dataField: 'e_item_type',
-        //         text: 'Item Number',
-        //         style: {
-        //             paddingRight: '5px'
-        //         }
-        //     }, {
-        //         dataField: 'l_003_item',
-        //         text: 'Item Description',
-        //         style: {
-        //             paddingRight: '5px'
-        //         }
-        //     }, {
-        //         dataField: 'l_002_qty',
-        //         text: 'Quantity'
-        //     }
-        // ];
+        const originalLineColumns = [
+            {
+                dataField: 'product',
+                text: 'Product'
+            },
+            {
+                dataField: 'e_type_of_packaging',
+                text: 'Item Number',
+                style: {
+                    paddingRight: '5px'
+                }
+            }, {
+                dataField: 'e_item',
+                text: 'Item Description',
+                style: {
+                    paddingRight: '5px'
+                }
+            }, {
+                dataField: 'e_qty',
+                text: 'Quantity'
+            }
+        ];
 
         return (
             <LoadingOverlay
@@ -244,7 +266,7 @@ class BokStatusPage extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
-                                {/* <a href={`${POD_URL}/imgs/${booking.z_pod_url}`}>Sign by Pete</a> */}
+                                {pod_url && <a href={`${STATIC_HOST}/imgs/${pod_url}`}>Proof_of_Delivery</a>}
                                 <br/>
                                 <br/>
                                 <div className="date">
@@ -265,7 +287,7 @@ class BokStatusPage extends Component {
                                         </div>
                                         <div id="collapseOne" className="collapse">
                                             <div className="card-body">
-                                                {scans.length != 0  ? <BootstrapTable
+                                                {(scans && scans.length != 0)  ? <BootstrapTable
                                                     keyField="id"
                                                     data={ scans }
                                                     columns={ scansColumns }
@@ -284,7 +306,7 @@ class BokStatusPage extends Component {
                                         </div>
                                         <div id="collapseTwo" className="collapse">
                                             <div className="card-body">
-                                                {packedLines.length != 0 ? <BootstrapTable
+                                                {packedLines && packedLines.length != 0 ? <BootstrapTable
                                                     keyField="pk_lines_id"
                                                     data={ packedLines }
                                                     columns={ packedLineColumns }
@@ -296,21 +318,20 @@ class BokStatusPage extends Component {
                                     </div>
                                     <div className="card">
                                         <div className="card-header p-0">
-                                            <a className="collapsed btn text-white d-block text-left" data-toggle="collapse" href={originalLines && '#collapseThree'} onClick={() => this.onToggle('showOrders')}>
+                                            <a className="collapsed btn text-white d-block text-left" data-toggle="collapse" href="#collapseThree" onClick={() => this.onToggle('showOrders')}>
                                                 &nbsp;<i className={showOrders ? 'fa fa-minus' : 'fa fa-plus'} ></i>
                                                 &nbsp; View a list of items in your packages
                                             </a>
                                         </div>
                                         <div id="collapseThree" className="collapse">
                                             <div className="card-body">
-                                                {'No item information was provided to report here'}
-                                                {/* {originalLines.length != 0 ? <BootstrapTable
+                                                {(originalLines && originalLines.length != 0) ? <BootstrapTable
                                                     keyField="pk_lines_id"
                                                     data={ originalLines }
                                                     columns={ originalLineColumns }
                                                     bootstrap4={ true }
                                                     bordered={ false }
-                                                /> : 'No item information was provided to report here'} */}
+                                                /> : 'No item information was provided to report here'}
                                             </div>
                                         </div>
                                     </div>
@@ -355,6 +376,7 @@ const mapStateToProps = (state) => {
         step: state.bok.deliveryStep,
         quote: state.bok.quote,
         booking: state.bok.booking,
+        lines: state.bok.lines,
         originalLines: state.bok.originalLines,
         packedLines: state.bok.packedLines,
         scans: state.bok.scans,
