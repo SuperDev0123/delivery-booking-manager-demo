@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 import BootstrapTable from 'react-bootstrap-table-next';
 
-import { STATIC_HOST } from '../../config';
+import { STATIC_HOST, HTTP_PROTOCOL } from '../../config';
 import dmeLogo from '../../public/images/logos/dme.png';
 import Step from './Step';
 import LoadingOverlay from 'react-loading-overlay';
@@ -67,6 +67,11 @@ class BokStatusPage extends Component {
 
     onToggle(stateName) {
         this.setState({[stateName]: !this.state[stateName]});
+    }
+
+    onClickPOD(pod_url) {
+        const win = window.open(HTTP_PROTOCOL + '://' + STATIC_HOST + '/imgs/' + pod_url, '_blank');
+        win.focus();
     }
 
     render() {
@@ -266,7 +271,7 @@ class BokStatusPage extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
-                                {pod_url && <a href={`${STATIC_HOST}/imgs/${pod_url}`}>Proof_of_Delivery</a>}
+                                {pod_url && <a onClick={() => this.onClickPOD(pod_url)}>Proof_of_Delivery</a>}
                                 <br/>
                                 <br/>
                                 <div className="date">
