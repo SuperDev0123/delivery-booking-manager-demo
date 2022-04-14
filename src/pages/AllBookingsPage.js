@@ -1728,7 +1728,7 @@ class AllBookingsPage extends React.Component {
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
-                    this.onClickFind();
+                    this.onMultiFind('id', join(this.props.filteredBookingIds, ', '));  // Sync bookings
                 })
                 .catch((err) => {
                     this.notify(err.response.data.message);
