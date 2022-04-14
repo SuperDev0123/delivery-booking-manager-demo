@@ -5220,7 +5220,7 @@ class BookingPage extends Component {
                                                 <div className="pu-de-dates">
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">PU From</label>
+                                                            <label className="" htmlFor="">Pickup / Manifest</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
@@ -5268,7 +5268,7 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Pickup / Manifest</label>
+                                                            <label className="" htmlFor="">PU By</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
