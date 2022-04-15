@@ -78,10 +78,6 @@ class BokStatusPage extends Component {
         const {scans, originalLines, packedLines, step, status, booking, quote, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
 
-        console.log(scans);
-        console.log(originalLines);
-        console.log(packedLines);
-
         let pod_url = null;
         if (booking) {
             if (booking.z_pod_signed_url) {
@@ -242,7 +238,7 @@ class BokStatusPage extends Component {
                                     }
                                 </div>
                             </div>
-                            <div className="status-info border-left">
+                            <div className="status-info-right border-left">
                                 <table className="table table-bordered table-hover table-sm">
                                     <tbody>
                                         <tr>
@@ -271,7 +267,7 @@ class BokStatusPage extends Component {
                                         </tr>
                                     </tbody>
                                 </table>
-                                {pod_url && <a onClick={() => this.onClickPOD(pod_url)}>Proof_of_Delivery</a>}
+                                {pod_url && <a href="#" onClick={() => this.onClickPOD(pod_url)}>Proof Of Delivery</a>}
                                 <br/>
                                 <br/>
                                 <div className="date">
