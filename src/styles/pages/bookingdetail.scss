@@ -538,6 +538,7 @@ p.status-icon {
     span {
         font-size: 9px;
         color: gray;
+        width: 100%;
     }
 }
 
@@ -586,6 +587,22 @@ p.status-icon {
             .col-sm-3, .col-sm-2 {
                 padding: 0px !important;
             }
+        }
+    }
+
+    .eta {
+        height: 30px;
+
+        input {
+            width: 30px;
+            display: inline-block;
+        }
+
+        p {
+            display: inline-block;
+            padding-top: 10px !important;
+            margin-left: 5px;
+            margin-right: 10px;
         }
     }
 
