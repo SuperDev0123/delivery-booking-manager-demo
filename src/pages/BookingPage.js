@@ -4192,7 +4192,7 @@ class BookingPage extends Component {
                                     }
                                     {(eta.days || eta.hours) ?
                                         <div className="row col-sm-2 booking-form-01">
-                                            <span>ETA</span><br />
+                                            <span>Transit Time</span><br />
                                             {(parseInt(curViewMode) === 0) ?
                                                 <p className="show-mode">{eta.days}d {eta.hours}h</p>
                                                 :
@@ -5057,7 +5057,7 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">ETA Delivery</label>
+                                                            <label className="" htmlFor="">Calculated Delivery ETA</label>
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
@@ -5078,6 +5078,29 @@ class BookingPage extends Component {
                                                                     />
                                                                     :
                                                                     <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Updated Delivery ETA</label>
+                                                        </div>
+                                                        <div className="col-sm-8">
+                                                            {(parseInt(curViewMode) === 0) ?
+                                                                <p className="show-mode">{booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                :
+                                                                (clientname === 'dme') ?
+                                                                    <DateTimePicker
+                                                                        onChange={(date) => this.onChangeDateTime(date, 's_06_Latest_Delivery_Date_Time_Override')}
+                                                                        value={(!isNull(booking) &&
+                                                                            !isNull(booking.s_06_Latest_Delivery_Date_Time_Override) &&
+                                                                            !isUndefined(booking.s_06_Latest_Delivery_Date_Time_Override)) &&
+                                                                            new Date(moment(booking.s_06_Latest_Delivery_Date_Time_Override).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                        }
+                                                                        format={'dd/MM/yyyy HH:mm'}
+                                                                    />
+                                                                    :
+                                                                    <p className="show-mode">{formInputs['s_06_Latest_Delivery_Date_Time_Override'] ? moment(formInputs['s_06_Latest_Delivery_Date_Time_Override']).format('DD/MM/YYYY'): ''}</p>
                                                             }
                                                         </div>
                                                     </div>
