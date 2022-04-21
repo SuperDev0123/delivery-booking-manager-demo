@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { getDeliveryStatus } from '../../state/services/bokService';
 import { connect } from 'react-redux';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import BootstrapTable from 'react-bootstrap-table-next';
 
 import { STATIC_HOST, HTTP_PROTOCOL } from '../../config';
@@ -22,6 +22,8 @@ class BokStatusPage extends Component {
             showShips: false,
             showOrders: false,
         };
+
+        moment.tz.setDefault('Australia/Sydney');
     }
 
     static propTypes = {
