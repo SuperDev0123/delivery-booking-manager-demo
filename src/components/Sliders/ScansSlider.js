@@ -83,7 +83,7 @@ class ScansSlider extends React.Component {
         formInputs['status'] = scan.status;
         formInputs['desc'] = scan.desc;
         formInputs['event_timestamp'] = scan.event_timestamp;
-        formInputs['fp'] = fp;
+        formInputs['fp'] = fp.id;
 
         if (scan.booking) {
             formInputs['booking'] = scan.booking;
