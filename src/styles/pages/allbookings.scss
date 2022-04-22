@@ -210,7 +210,7 @@ $fp_received_date_time_width: 130px;
 $s_21_Actual_Delivery_TimeStamp_width: 100px;
 $dme_status_detail_width: 100px;
 $dme_status_action_width: 130px;
-$z_calculated_ETA_width: 130px;
+$s_06_Latest_Delivery_Date_TimeSet_width: 130px;
 
 $de_to_PickUp_Instructions_Address_width: 130px;
 $b_booking_project_width: 130px;
@@ -325,8 +325,8 @@ $b_project_due_date_width: 130px;
   td[name=dme_status_detail] p, th[name=dme_status_detail] p { width: 80px }
   td[name=dme_status_action], th[name=dme_status_action] { width: $dme_status_action_width; }
   td[name=dme_status_action] p, th[name=dme_status_action] p { width: 80px }
-  td[name=z_calculated_ETA], th[name=z_calculated_ETA] { width: $z_calculated_ETA_width; }
-  td[name=z_calculated_ETA] p, th[name=z_calculated_ETA] p { width: 110px }
+  td[name=s_06_Latest_Delivery_Date_TimeSet], th[name=s_06_Latest_Delivery_Date_TimeSet] { width: $s_06_Latest_Delivery_Date_TimeSet_width; }
+  td[name=s_06_Latest_Delivery_Date_TimeSet] p, th[name=s_06_Latest_Delivery_Date_TimeSet] p { width: 110px }
 
   td[name=de_to_PickUp_Instructions_Address], th[name=de_to_PickUp_Instructions_Address] { width: $de_to_PickUp_Instructions_Address_width; }
   td[name=de_to_PickUp_Instructions_Address] p, th[name=de_to_PickUp_Instructions_Address] p { width: 110px }
