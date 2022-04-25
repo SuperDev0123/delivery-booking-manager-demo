@@ -3437,8 +3437,8 @@ class BookingPage extends Component {
                                         </div>
                                     }
                                     {(booking && booking.z_ModifiedTimestamp) &&
-                                        <div className="manifest-date">
-                                            <span>Manifest At:&nbsp;&nbsp;</span>
+                                        <div className="modified-timestamp">
+                                            <span>Modified At:&nbsp;&nbsp;</span>
                                             <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
                                         </div>
                                     }
