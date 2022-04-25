@@ -3519,7 +3519,7 @@ class BookingPage extends Component {
                                         </div>
                                         <div className="col-sm-6">
                                             <a id={'booking-' + 'cs_note' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'cs-note')} className="open-slide ml-6 mr-0" title={tooltipText.cs_note}>
-                                                <i className="fa fa-user-plus" style={{fontSize: '18px', paddingTop: '0px'}} aria-hidden="true"></i>
+                                                <i className={booking.cs_notes_cnt > 0 ? 'fa fa-user-plus c-yellow' : 'fa fa-user-plus'} style={{fontSize: '18px', paddingTop: '0px'}} aria-hidden="true"></i>
                                                 {/* <TooltipItem object={tooltipText} placement='bottom' fields={['cs_note']} /> */}
                                             </a>
                                             <a id={'booking-' + 'fp_status_history' + '-tooltip-' + booking.id} onClick={(e) => this.onClickOpenSlider(e, 'fp-status-history')} className="open-slide ml-6 mr-0" title={tooltipText.fp_status_history}>
