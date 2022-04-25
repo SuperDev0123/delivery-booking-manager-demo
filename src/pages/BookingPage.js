@@ -3430,14 +3430,26 @@ class BookingPage extends Component {
                                     Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} />
                                 </div>
                                 <div className="booking-date disp-inline-block">
+                                    {(booking && booking.z_CreatedTimestamp) &&
+                                        <div className="created-timestamp">
+                                            <span>Created At:&nbsp;&nbsp;</span>
+                                            <span className="show-mode">{booking && booking.z_CreatedTimestamp && moment(booking.z_CreatedTimestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                        </div>
+                                    }
+                                    {(booking && booking.z_ModifiedTimestamp) &&
+                                        <div className="manifest-date">
+                                            <span>Manifest At:&nbsp;&nbsp;</span>
+                                            <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                        </div>
+                                    }
                                     {(booking && booking.manifest_timestamp) &&
                                         <div className="manifest-date">
-                                            <span>Manifest Date:&nbsp;&nbsp;</span>
+                                            <span>Manifest At:&nbsp;&nbsp;</span>
                                             <span className="show-mode">{booking && booking.manifest_timestamp && moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
                                         </div>
                                     }
                                     <div className="booked-date">
-                                        <span>Booked Date:&nbsp;&nbsp;</span>
+                                        <span>Booked At:&nbsp;&nbsp;</span>
                                         {(parseInt(curViewMode) === 0) ?
                                             <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</span>
                                             :
