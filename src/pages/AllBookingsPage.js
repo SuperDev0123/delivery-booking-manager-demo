@@ -2285,8 +2285,11 @@ class AllBookingsPage extends React.Component {
                             <TooltipItem object={booking} fields={['dme_status_action']} />
                         }
                     </td>
-                    <td name='z_calculated_ETA' className={(sortField === 'z_calculated_ETA') ? 'current' : ''}>
-                        {booking.z_calculated_ETA ? moment(booking.z_calculated_ETA).format('DD/MM/YYYY HH:mm:ss') : ''}
+                    <td name='s_06_Latest_Delivery_Date_TimeSet' className={(sortField === 's_06_Latest_Delivery_Date_TimeSet') ? 'current' : ''}>
+                        {booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm:ss') : ''}
+                    </td>
+                    <td name='s_06_Latest_Delivery_Date_Time_Override' className={(sortField === 's_06_Latest_Delivery_Date_Time_Override') ? 'current' : ''}>
+                        {booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm:ss') : ''}
                     </td>
                     <td 
                         name='de_to_PickUp_Instructions_Address'
@@ -3168,14 +3171,29 @@ class AllBookingsPage extends React.Component {
                                                                 }
                                                             </th>
                                                             <th 
-                                                                name="z_calculated_ETA"
-                                                                className={(sortField === 'z_calculated_ETA') ? 'current' : ''}
-                                                                onClick={() => this.onChangeSortField('z_calculated_ETA')}
+                                                                name="s_06_Latest_Delivery_Date_TimeSet"
+                                                                className={(sortField === 's_06_Latest_Delivery_Date_TimeSet') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('s_06_Latest_Delivery_Date_TimeSet')}
                                                                 scope="col" 
                                                                 nowrap
                                                             >
-                                                                <p>ETA Delivery</p>
-                                                                {(sortField === 'z_calculated_ETA') ?
+                                                                <p>Calculated DE ETA</p>
+                                                                {(sortField === 's_06_Latest_Delivery_Date_TimeSet') ?
+                                                                    (sortDirection > 0) ?
+                                                                        <i className="fa fa-sort-up"></i>
+                                                                        : <i className="fa fa-sort-down"></i>
+                                                                    : <i className="fa fa-sort"></i>
+                                                                }
+                                                            </th>
+                                                            <th 
+                                                                name="s_06_Latest_Delivery_Date_Time_Override"
+                                                                className={(sortField === 's_06_Latest_Delivery_Date_Time_Override') ? 'current' : ''}
+                                                                onClick={() => this.onChangeSortField('s_06_Latest_Delivery_Date_Time_Override')}
+                                                                scope="col" 
+                                                                nowrap
+                                                            >
+                                                                <p>Updated DE ETA</p>
+                                                                {(sortField === 's_06_Latest_Delivery_Date_Time_Override') ?
                                                                     (sortDirection > 0) ?
                                                                         <i className="fa fa-sort-up"></i>
                                                                         : <i className="fa fa-sort-down"></i>
@@ -3341,7 +3359,8 @@ class AllBookingsPage extends React.Component {
                                                             <th name="s_21_Actual_Delivery_TimeStamp" scope="col"><input type="text" name="s_21_Actual_Delivery_TimeStamp" value={filterInputs['s_21_Actual_Delivery_TimeStamp'] || ''} placeholder="20xx-xx-xx hh:mm" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="dme_status_detail" scope="col"><input type="text" name="dme_status_detail" value={filterInputs['dme_status_detail'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="dme_status_action" scope="col"><input type="text" name="dme_status_action" value={filterInputs['dme_status_action'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
-                                                            <th name="z_calculated_ETA" scope="col"><input type="text" name="z_calculated_ETA" value={filterInputs['z_calculated_ETA'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="s_06_Latest_Delivery_Date_TimeSet" scope="col"><input type="text" name="s_06_Latest_Delivery_Date_TimeSet" value={filterInputs['s_06_Latest_Delivery_Date_TimeSet'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
+                                                            <th name="s_06_Latest_Delivery_Date_Time_Override" scope="col"><input type="text" name="s_06_Latest_Delivery_Date_Time_Override" value={filterInputs['s_06_Latest_Delivery_Date_Time_Override'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="de_to_PickUp_Instructions_Address" scope="col"><input type="text" name="de_to_PickUp_Instructions_Address" value={filterInputs['de_to_PickUp_Instructions_Address'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_booking_project" scope="col"><input type="text" name="b_booking_project" value={filterInputs['b_booking_project'] || ''} onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
                                                             <th name="b_project_due_date" scope="col"><input type="text" name="b_project_due_date" value={filterInputs['b_project_due_date'] || ''} placeholder="20xx-xx-xx" onChange={(e) => this.onChangeFilterInput(e)} onKeyPress={(e) => this.onKeyPress(e)} /></th>
