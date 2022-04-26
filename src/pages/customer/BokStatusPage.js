@@ -77,7 +77,7 @@ class BokStatusPage extends Component {
     }
 
     render() {
-        const {scans, originalLines, packedLines, step, status, booking, quote, etaDate, lastUpdated } = this.props;
+        const {scans, originalLines, packedLines, step, status, booking, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
 
         let pod_url = null;
@@ -124,7 +124,7 @@ class BokStatusPage extends Component {
         let dateOfETA;
         
         if (!misDeliveries.includes(status)) {
-            dateOfETA = quote ? `${etaDate}(${quote.eta})` : '';
+            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY hh:mm a') : ''}`;
         }
         else {
             dateOfETA = 'N/A';
