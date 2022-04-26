@@ -1245,7 +1245,7 @@ class AllBookingsPage extends React.Component {
         this.setState({allCheckStatus, selectedBookingIds});
     }
 
-    onCreateOrder(selectedBookingIds, vx_freight_provider='') {
+    onCreateOrder(selectedBookingIds, vx_freight_provider='', needTruck=false) {
         const { username } = this.state;
         const { bookings } = this.props;
         const _vx_freight_provider = vx_freight_provider.toLowerCase();
@@ -1276,7 +1276,7 @@ class AllBookingsPage extends React.Component {
                 } else {
                     this.setState({loadingDownload: true});
                     
-                    this.buildMANIFEST(bookingIds, _vx_freight_provider, username)
+                    this.buildMANIFEST(bookingIds, _vx_freight_provider, username, needTruck)
                         .then(() => {
                             if (_vx_freight_provider.toUpperCase() === 'TASFR') {
                                 this.buildXML(bookingIds, 'TASFR')
@@ -1504,14 +1504,14 @@ class AllBookingsPage extends React.Component {
             });
     }
 
-    buildMANIFEST(bookingIds, vx_freight_provider, username) {
+    buildMANIFEST(bookingIds, vx_freight_provider, username, needTruck) {
         return new Promise((resolve, reject) => {
             const token = localStorage.getItem('token');
             const options = {
                 method: 'post',
                 url: HTTP_PROTOCOL + '://' + API_HOST + '/get-manifest/',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-                data: {bookingIds, vx_freight_provider, username},
+                data: {bookingIds, vx_freight_provider, username, needTruck: needTruck ? 1 : 0},
                 responseType: 'blob', // important
             };
 
@@ -3441,7 +3441,7 @@ class AllBookingsPage extends React.Component {
                     toggleSlider={this.toggleManifestSlider}
                     selectedBookings={selectedBookings}
                     clientname={clientname}
-                    onCreateOrder={(bookingIds, vx_freight_provider) => this.onCreateOrder(bookingIds, vx_freight_provider)}
+                    onCreateOrder={(bookingIds, vx_freight_provider, needTruck) => this.onCreateOrder(bookingIds, vx_freight_provider, needTruck)}
                 />
 
                 <BulkUpdateSlider

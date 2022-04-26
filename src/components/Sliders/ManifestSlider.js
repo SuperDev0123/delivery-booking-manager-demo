@@ -15,6 +15,7 @@ class ManifestSlider extends React.Component {
         super(props);
 
         this.state = {
+            needTruck: false,
         };
     }
 
@@ -34,12 +35,25 @@ class ManifestSlider extends React.Component {
         }
     }
 
+    onInputChange(event) {
+        const target = event.target;
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+
+        this.setState({needTruck: value});
+    }
+
     render() {
         const {isOpen, selectedBookings, manifestSummary} = this.props;
+        const {needTruck} = this.state;
+
         const puAvailFromDateCnt = uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
         const fpCnt = uniqBy(selectedBookings, 'vx_freight_provider').length;
         const bookingIds = selectedBookings.map(booking => booking.id);
         const summaryList = [];
+        let firstFP = 0;
+
+        if (bookingIds.length > 0)
+            firstFP = selectedBookings[0].vx_freight_provider;
 
         if (manifestSummary) {
             let index = 0;
@@ -83,11 +97,24 @@ class ManifestSlider extends React.Component {
                 </label>
                 <hr />
                 {summaryList}
+                {firstFP === 'TNT' &&
+                    <label>
+                        <p className='need-truck'>Need Truck?</p>
+                        <input
+                            type="checkbox"
+                            name="needTruck"
+                            className="checkbox"
+                            checked={needTruck}
+                            onChange={(e) => this.onInputChange(e)}
+                        />
+                    </label>
+                }
+                <hr />
                 <Button
                     color="primary"
                     disabled={fpCnt !== 1 ? 'disabled' : ''}
                     title={fpCnt !== 1 ? 'DME does not support multi-FP manifest' : 'Create manifest'}
-                    onClick={() => this.props.onCreateOrder(bookingIds)}
+                    onClick={() => this.props.onCreateOrder(bookingIds, firstFP, this.state.needTruck)}
                 >
                     Create Manifest
                 </Button>
