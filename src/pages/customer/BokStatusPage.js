@@ -124,7 +124,7 @@ class BokStatusPage extends Component {
         let dateOfETA;
         
         if (!misDeliveries.includes(status)) {
-            dateOfETA = quote ? `${etaDate}(${quote.eta})` : '';
+            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY hh:mm a') : ''} ${quote ? quote.eta : ''}`;
         }
         else {
             dateOfETA = 'N/A';
