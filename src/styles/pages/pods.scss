@@ -15,11 +15,12 @@
   .tab-pane {
     height: 100%;
   }
-
+  
   .table-responsive {
-    height: calc(100% - 50px);
+    height: calc(100vh - 150px);
     width: 100%;
     padding: 20px;
+    overflow: auto;
   }
 }
 
