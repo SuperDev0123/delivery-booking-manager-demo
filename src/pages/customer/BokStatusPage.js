@@ -79,7 +79,6 @@ class BokStatusPage extends Component {
     render() {
         const {scans, originalLines, packedLines, step, status, booking, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
-        console.log(booking);
         let pod_url = null;
         if (booking) {
             if (booking.z_pod_signed_url) {
