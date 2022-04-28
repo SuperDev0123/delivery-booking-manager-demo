@@ -8,7 +8,7 @@ import moment from 'moment-timezone';
 import LoadingOverlay from 'react-loading-overlay';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { isNull } from 'lodash';
 // Services
 import { getManifestReport, setAllGetBookingsFilter } from '../../state/services/bookingService';
 // Constants
@@ -26,9 +26,11 @@ class ManifestReport extends React.Component {
             clientFilter: '',
             fpFilterOpts: [],
             clientsOpts: [],
+            reportStore: [],
             reportList: [],
             fpOptions: [],
-            clients: [],
+            clientOptions: [],
+            page_index: 0,
         };
     }
 
@@ -52,30 +54,75 @@ class ManifestReport extends React.Component {
         if (isLoggedIn && token && token.length > 0)
             this.props.getUser(token);
 
-        this.props.getManifestReport();
+        this.props.getManifestReport(0);
         
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { reports, allFPs, clients } = newProps;
-
-        if (reports != this.props.reports) {
-            this.setState({loading: false, reports});
-            this.onFind(reports);
+        const { reportStore } = this.state;
+        if (reports) {
+            if (isNull(this.props.reports)) {
+                const newReportStore = [...reportStore, ...reports];
+                // const reportList = this.onFind(newReportStore);
+                this.setState({
+                    // reportList,
+                    reportStore: newReportStore
+                });
+            } else {
+                console.log(this.props.reports);
+                if (!this.compareArray(this.props.reports, reports)) {
+                    const newReportStore = [...reportStore, ...reports];
+                    // const reportList = this.onFind(newReportStore);
+                    this.setState({
+                        // reportList,
+                        reportStore: newReportStore
+                    });
+                }
+            }
+            this.setState({loading: false});
         }
 
         if (allFPs != this.props.allFPs) {
-            const fpFilterOpts = allFPs.map((fp, index) => {
+            const { fpOptions } = this.state;
+            let newOpts = [];
+            allFPs.map((fp) => {
+                if (!fpOptions.includes(fp)) {
+                    newOpts.push(fp);
+                }
+            });
+            const totalFps = [...fpOptions, ...newOpts];
+            const fpFilterOpts = totalFps.map((fp, index) => {
                 return <option value={fp} key={index}>{fp}</option>;
             });
-            this.setState({fpFilterOpts});
+
+            this.setState({
+                fpFilterOpts,
+                fpOptions: totalFps,
+            });
         }
         
         if (clients != this.props.clients) {
-            const clientsOpts = clients.map((client, index) => {
+            const { clientOptions } = this.state;
+            let newClientOps = [];
+            clients.map((client) => {
+                const isNotContain = clientOptions.every((clientOption) => {
+                    return clientOption.dme_account_num != client.dme_account_num;
+                });
+
+                if (isNotContain) {
+                    newClientOps.push(client);
+                }
+            });
+
+            const totalClients = [...clientOptions, ...newClientOps];
+            const clientsOpts = totalClients.map((client, index) => {
                 return <option value={client.dme_account_num} key={index}>{client.company_name}</option>;
             });
-            this.setState({clientsOpts});
+            this.setState({
+                clientsOpts,
+                clientOptions: totalClients
+            });
         }
     }
 
@@ -134,14 +181,14 @@ class ManifestReport extends React.Component {
             });
 
             if (filteredReports) {
-                let reportList = filteredReports.map((report, index) => {
+                const reportList = filteredReports.map((report, index) => {
                     const freight_providers = report.freight_providers
                         .map((fp, index1) => (<span key={index1}><strong>{fp}</strong> ({report.cnt_4_each_fp[fp]})<br /></span>));
                     const vehicles = report.vehicles
                         .map((vehicle, index2) => (<span key={index2}>{vehicle}<br /></span>));
 
                     return (
-                        <tr key={index}>
+                        <tr key={`${this.state.page_index} + ${index}`}>
                             <td>{report.manifest_id}</td>
                             <td>{moment(report.manifest_date).format('DD MMM YYYY')}</td>
                             <td>{report.warehouse_name}</td>
@@ -176,10 +223,37 @@ class ManifestReport extends React.Component {
         }
 
     }
+
+    onHandleScroll = (e) => {
+        const { loading } = this.state;
+        const height = e.target.scrollHeight;
+        const scrollTop = e.target.scrollTop;
+        const offsetHeight = e.target.offsetHeight;
+        const { page_index } = this.state;
+        if (!loading && (scrollTop + offsetHeight > height - 100)) {
+            console.log(height);
+            console.log(e.target.offsetHeight);
+            console.log(scrollTop);
+            this.setState({loading: true, page_index: page_index + 1});
+            this.props.getManifestReport(page_index + 1);
+        }
+    }
+
+    compareArray = (arr1, arr2) => {
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < arr1.length; i++) {
+            if (JSON.stringify(arr1[i]) !== JSON.stringify(arr2[i])) return false;
+        }
+        return true;
+    }
+    
     render() {
-        const { clientname, reports } = this.props;
-        const { loading, fpFilter, clientFilter, fpFilterOpts, clientsOpts } = this.state;
-        let reportList = this.onFind(reports);
+        const { clientname } = this.props;
+        const { loading, fpFilter, clientFilter, fpFilterOpts, clientsOpts, reportStore } = this.state;
+        const reportList = reportStore? this.onFind(reportStore) : '';
         return (
             <LoadingOverlay
                 active={loading}
@@ -203,7 +277,7 @@ class ManifestReport extends React.Component {
                     </label>                                  
                     <hr />
                 </div>
-                <div className="manifest">
+                <div className="manifest" onScroll={(e) => this.onHandleScroll(e)}>
                     <table className='table table-hover table-bordered table-striped'>
                         <thead>
                             <tr>
@@ -240,7 +314,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getUser: (token) => dispatch(getUser(token)),
-        getManifestReport: () => dispatch(getManifestReport()),
+        getManifestReport: (index) => dispatch(getManifestReport(index)),
         setAllGetBookingsFilter: (startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName) => dispatch(setAllGetBookingsFilter(startDate, endDate, clientPK, warehouseId, fpId, pageItemCnt, pageInd, sortField, columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeStatus, multiFindField, multiFindValues, projectName)),
     };
 };
