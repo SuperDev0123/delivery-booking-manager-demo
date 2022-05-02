@@ -50,9 +50,11 @@ class BulkUpdateSlider extends React.Component {
         if (selectedField === 'status' && !optionalValue) {
             this.setState({errorMsg: 'Event Date Time is required!'});
         } else {
-            const value = selectedField === 'fp_scan' ? formInputs: selectedValue;
+            const value = (selectedField === 'fp_scan' || selectedField === 'additional_surcharge')
+                ? formInputs
+                : selectedValue;
 
-            if (selectedField === 'fp_scan') {
+            if (selectedField === 'fp_scan' || selectedField === 'additional_surcharge') {
                 const selectedFP = fps.find((fp) => fp.fp_company_name === formInputs['fp']);
 
                 if (selectedFP)
@@ -90,7 +92,7 @@ class BulkUpdateSlider extends React.Component {
     onHandleInput(e) {
         const { formInputs, selectedField } = this.state;
 
-        if (selectedField === 'fp_scan') {
+        if (selectedField === 'fp_scan' || selectedField === 'additional_surcharge') {
             const target = event.target;
             const value = target.type === 'checkbox' ? target.checked : target.value;
             const name = target.name;
@@ -121,6 +123,9 @@ class BulkUpdateSlider extends React.Component {
 
         if (selectedField === 'fp_scan') {
             formInputs['event_timestamp'] = conveted_date;
+            this.setState({formInputs, selectedValue: 'fake-value'});
+        } else if (selectedField === 'additional_surcharge') {
+            formInputs['applied_at'] = conveted_date;
             this.setState({formInputs, selectedValue: 'fake-value'});
         } else {
             if (dateTime) {
@@ -245,12 +250,20 @@ class BulkUpdateSlider extends React.Component {
                             {clientname === 'dme' && <option value="b_project_due_date">Vehicle Departure Date</option>}
                             {clientname === 'dme' && <option value="fp_received_date_time">Transport Received</option>}
                             {clientname === 'dme' && <option value="b_given_to_transport_date_time">Given to Transport</option>}
+
+
                             {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}
+                            {clientname === 'dme' && <option value="additional_surcharge">Additional Surcharge</option>}
                         </select>
                     </label>
                     <br />
                     <div className="value">
-                        {(selectedField && selectedField !== 'fp_scan') ? <label className="value">Value: </label> : null}
+                        {(selectedField && selectedField !== 'fp_scan' ||
+                            selectedField && selectedField !== 'additional_surcharge'
+                        )
+                            ? <label className="value">Value: </label>
+                            : null
+                        }
                         {
                             selectedField === 'flag' ?
                                 <select onChange={(e) => this.onSelected(e, 'value')}>
@@ -399,6 +412,91 @@ class BulkUpdateSlider extends React.Component {
                                             format={'dd/MM/yyyy HH:mm'}
                                         />
                                     </label>
+                                </form>
+                            </div>
+                        }
+                        {selectedField && (selectedField === 'additional_surcharge') &&
+                            <div className="form-view">
+                                <h2>{'Create a new Additional Surcharge'}</h2>
+                                <form>
+                                    <label>
+                                        <span className="text-left">Name / Description</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="name"
+                                            value={formInputs['name']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Visible to customer</span>
+                                        <div>
+                                            <input
+                                                className="checkbox"
+                                                name="visible"
+                                                type="checkbox"
+                                                checked={formInputs['visible']}
+                                                onChange={(e) => this.onHandleInput(e)}
+                                            />
+                                        </div>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Applied at</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'applied_at')}
+                                            value={formInputs['applied_at'] ?
+                                                new Date(moment(formInputs['applied_at']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Select a Freight Provider</span>
+                                        <select 
+                                            required
+                                            name='fp'
+                                            onChange={(e) => this.onHandleInput(e)}
+                                            value={formInputs['fp']}
+                                        >
+                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            {fpOptions}
+                                        </select>
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Connote / Reference</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="connote_or_reference"
+                                            value={formInputs['connote_or_reference']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Amount ($)</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            type="number"
+                                            step="0.01"
+                                            name="amount"
+                                            value={formInputs['amount']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Quantity</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            type="number"
+                                            step="1"
+                                            name="qty"
+                                            value={formInputs['qty']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
                                 </form>
                             </div>
                         }
