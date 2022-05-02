@@ -25,7 +25,7 @@
 
 		.manifest {
 			height: calc(100% - 30px);
-			overflow: auto;
+			overflow-y: scroll;
 
 			table {
 				border-collapse: collapse;
