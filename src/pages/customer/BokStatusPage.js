@@ -79,7 +79,6 @@ class BokStatusPage extends Component {
     render() {
         const {scans, originalLines, packedLines, step, status, booking, etaDate, lastUpdated } = this.props;
         const { showScans, showShips, showOrders, isLoading } = this.state;
-
         let pod_url = null;
         if (booking) {
             if (booking.z_pod_signed_url) {
@@ -124,7 +123,7 @@ class BokStatusPage extends Component {
         let dateOfETA;
         
         if (!misDeliveries.includes(status)) {
-            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY hh:mm a') : ''}`;
+            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY') : ''}`;
         }
         else {
             dateOfETA = 'N/A';
@@ -257,7 +256,11 @@ class BokStatusPage extends Component {
                                         </tr>
                                         <tr>
                                             <td>Delivery ETA</td>
-                                            <td>{dateOfETA}</td>
+                                            <td>{moment(dateOfETA).format('DD MMM YYYY')}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Updated ETA</td>
+                                            <td>{booking && booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD MMM YYYY') : ''}</td>
                                         </tr>
                                         <tr>
                                             <td>Delivering To</td>

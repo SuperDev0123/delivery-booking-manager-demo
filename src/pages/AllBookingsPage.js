@@ -2540,11 +2540,10 @@ class AllBookingsPage extends React.Component {
                                                     More {this.state.dmeStatus && ' (' + this.state.dmeStatus + ')'}
                                                 </a>
                                             </div>
-                                            <p className="font-24px float-right">Selected / Found: {selectedBookingIds.length}/{bookingsCnt ? bookingsCnt : '*'}</p>
                                         </div>
                                         <hr />
-                                        <div>
-                                            <div className="tbl-stats">
+                                        <div className='row'>
+                                            <div className="col-sm-6 tbl-stats">
                                                 <select value={downloadOption} onChange={(e) => this.onDownloadOptionChange(e)} className="download-select">
                                                     <option value="label">Label</option>
                                                     <option value="new_label">New Label</option>
@@ -2568,7 +2567,7 @@ class AllBookingsPage extends React.Component {
                                                     Total Cubic: <strong>{bookingsSummary ? `${parseFloat(bookingsSummary.total_cbm.toFixed(2)).toLocaleString('en')} m3` : '*'}</strong>
                                                 </label>
                                             </div>
-                                            <div className="tbl-pagination">
+                                            <div className="col-sm-6 tbl-pagination">
                                                 <button
                                                     className={filteredBookingIds.length > 0 ? 'btn btn-success right-20px' : 'btn btn-gray right-20px'}
                                                     disabled={filteredBookingIds.length === 0}
@@ -2591,6 +2590,9 @@ class AllBookingsPage extends React.Component {
                                                     pageCnt={this.state.pageCnt}
                                                     pageInd={this.state.pageInd}
                                                 />
+                                                <label className="float-right">
+                                                    Selected / Found: <strong>{selectedBookingIds.length}/{bookingsCnt ? bookingsCnt : '*'}</strong>
+                                                </label>
                                             </div>
                                         </div>
                                         <LoadingOverlay

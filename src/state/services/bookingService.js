@@ -770,12 +770,12 @@ export const clearErrorMessage = () => {
     return dispatch => dispatch(clearErrorMessageAction());
 };
 
-export const getManifestReport = () => {
+export const getManifestReport = (index) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_report/`,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/bookings/get_manifest_report?index=${index}`,
     };
 
     return dispatch => {
