@@ -114,8 +114,8 @@ table.booking-lines {
   }
 
   .tbl-pagination {
-    float: right;
     display: inline-block;
+    text-align: right;
 
     select {
       width: 75px;

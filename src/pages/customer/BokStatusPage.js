@@ -123,7 +123,7 @@ class BokStatusPage extends Component {
         let dateOfETA;
         
         if (!misDeliveries.includes(status)) {
-            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY hh:mm a') : ''}`;
+            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY') : ''}`;
         }
         else {
             dateOfETA = 'N/A';
@@ -256,11 +256,11 @@ class BokStatusPage extends Component {
                                         </tr>
                                         <tr>
                                             <td>Delivery ETA</td>
-                                            <td>{moment(dateOfETA).format('DD MMM YYYY h:mm:ss A')}</td>
+                                            <td>{moment(dateOfETA).format('DD MMM YYYY')}</td>
                                         </tr>
                                         <tr>
                                             <td>Updated ETA</td>
-                                            <td>{booking && booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD MMM YYYY hh:mm a') : ''}</td>
+                                            <td>{booking && booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD MMM YYYY') : ''}</td>
                                         </tr>
                                         <tr>
                                             <td>Delivering To</td>
