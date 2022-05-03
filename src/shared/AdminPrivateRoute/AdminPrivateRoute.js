@@ -32,7 +32,7 @@ export function AdminPrivateRoute({ component: Component, ...rest }) {
 
 AdminPrivateRoute.propTypes = {
     location: PropTypes.object,
-    component: PropTypes.object.isRequired,
+    component: PropTypes.func.isRequired,
 };
 
 const isLogged = () => {

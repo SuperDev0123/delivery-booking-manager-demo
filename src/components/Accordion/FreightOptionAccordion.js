@@ -11,7 +11,7 @@ class FreightOptionAccordion extends Component {
     }
 
     static propTypes = {
-        formInputs: PropTypes.array.isRequired,
+        formInputs: PropTypes.object.isRequired,
         onHandleInput: PropTypes.func.isRequired,
     }
 
@@ -42,9 +42,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_Address_Type"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_Address_Type']}
+                                    value={formInputs['pu_Address_Type'] ? formInputs['pu_Address_Type'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select address type ---</option>
+                                    <option value="" disabled hidden>--- Select address type ---</option>
                                     <option value='business'>Business</option>
                                     <option value='residential'>Residential</option>
                                 </select>
@@ -54,7 +54,7 @@ class FreightOptionAccordion extends Component {
                                 <input
                                     name="b_booking_tail_lift_pickup"
                                     type="checkbox"
-                                    checked={formInputs['b_booking_tail_lift_pickup']}
+                                    value={formInputs['b_booking_tail_lift_pickup']}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
                             </label>
@@ -63,9 +63,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_no_of_assists"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_no_of_assists']}
+                                    value={formInputs['pu_no_of_assists'] ? formInputs['pu_no_of_assists'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
+                                    <option value="" disabled hidden>--- Select number of men to assist ---</option>
                                     <option value='0'>0</option>
                                     <option value='1000'>1 & Customer will assist load</option>
                                     <option value='2'>2</option>
@@ -79,9 +79,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_location"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_location']}
+                                    value={formInputs['pu_location'] ? formInputs['pu_location'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select pickup location ---</option>
+                                    <option value="" disabled hidden>--- Select pickup location ---</option>
                                     <option value="Pickup at Door / Warehouse Dock">Pickup at Door / Warehouse Dock</option>
                                     <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
                                     <option value='Room of Choice'>Room of Choice</option>
@@ -92,9 +92,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_access"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_access']}
+                                    value={formInputs['pu_access'] ? formInputs['pu_access'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select pickup access ---</option>
+                                    <option value="" disabled hidden>--- Select pickup access ---</option>
                                     <option value='Level Driveway'>Level Driveway</option>
                                     <option value='Steep Driveway'>Steep Driveway</option>
                                     <option value='Street'>Street</option>
@@ -107,9 +107,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_floor_number"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_floor_number']}
+                                    value={formInputs['pu_floor_number'] ? formInputs['pu_floor_number'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery level ---</option>
+                                    <option value="" disabled hidden>--- Select delivery level ---</option>
                                     <option value='-5'>-5</option>
                                     <option value='-4'>-4</option>
                                     <option value='-3'>-3</option>
@@ -129,9 +129,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_floor_access_by"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_floor_access_by']}
+                                    value={formInputs['pu_floor_access_by'] ? formInputs['pu_floor_access_by'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select level access ---</option>
+                                    <option value="" disabled hidden>--- Select level access ---</option>
                                     <option value='Elevator'>Elevator</option>
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
@@ -145,9 +145,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="pu_service"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['pu_service']}
+                                    value={formInputs['pu_service'] ? formInputs['pu_service'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select service ---</option>
+                                    <option value="" disabled hidden>--- Select service ---</option>
                                     <option value='Unpack'>Unpack</option>
                                     <option value='Install'>Install</option>
                                     <option value='NONE'>Not required</option>
@@ -161,9 +161,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_To_AddressType"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_To_AddressType']}
+                                    value={formInputs['de_To_AddressType'] ? formInputs['de_To_AddressType'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select address type ---</option>
+                                    <option value="" disabled hidden>--- Select address type ---</option>
                                     <option value='business'>Business</option>
                                     <option value='residential'>Residential</option>
                                 </select>
@@ -173,7 +173,7 @@ class FreightOptionAccordion extends Component {
                                 <input
                                     name="b_booking_tail_lift_deliver"
                                     type="checkbox"
-                                    checked={formInputs['b_booking_tail_lift_deliver']}
+                                    value={formInputs['b_booking_tail_lift_deliver']}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
                             </label>
@@ -182,9 +182,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_no_of_assists"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_no_of_assists']}
+                                    value={formInputs['de_no_of_assists'] ? formInputs['de_no_of_assists'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
+                                    <option value="" disabled hidden>--- Select number of men to assist ---</option>
                                     <option value='0'>0</option>
                                     <option value='1000'>1 & Customer will assist load</option>
                                     <option value='2'>2</option>
@@ -198,9 +198,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_to_location"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_to_location']}
+                                    value={formInputs['de_to_location'] ? formInputs['de_to_location'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery location ---</option>
+                                    <option value="" disabled hidden>--- Select delivery location ---</option>
                                     <option value='Drop at Door / Warehouse Dock'>Drop at Door / Warehouse Dock</option>
                                     <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
                                     <option value='Room of Choice'>Room of Choice</option>
@@ -211,9 +211,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_access"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_access']}
+                                    value={formInputs['de_access'] ? formInputs['de_access'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery access ---</option>
+                                    <option value="" disabled hidden>--- Select delivery access ---</option>
                                     <option value='Level Driveway'>Level Driveway</option>
                                     <option value='Steep Driveway'>Steep Driveway</option>
                                     <option value='Street'>Street</option>
@@ -226,9 +226,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_floor_number"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_floor_number']}
+                                    value={formInputs['de_floor_number'] ? formInputs['de_floor_number'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select delivery level ---</option>
+                                    <option value="" disabled hidden>--- Select delivery level ---</option>
                                     <option value='-5'>-5</option>
                                     <option value='-4'>-4</option>
                                     <option value='-3'>-3</option>
@@ -248,9 +248,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_to_floor_access_by"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_to_floor_access_by']}
+                                    value={formInputs['de_to_floor_access_by'] ? formInputs['de_to_floor_access_by'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select level access ---</option>
+                                    <option value="" disabled hidden>--- Select level access ---</option>
                                     <option value='Elevator'>Elevator</option>
                                     <option value='Escalator'>Escalator</option>
                                     <option value='Stairs'>Stairs</option>
@@ -263,9 +263,9 @@ class FreightOptionAccordion extends Component {
                                 <select
                                     name="de_service"
                                     onChange={(e) => this.props.onHandleInput(e)}
-                                    value={formInputs['de_service']}
+                                    value={formInputs['de_service'] ? formInputs['de_service'] : ''}
                                 >
-                                    <option value="" selected disabled hidden>--- Select service ---</option>
+                                    <option value="" disabled hidden>--- Select service ---</option>
                                     <option value='Unpack'>Unpack</option>
                                     <option value='Install'>Install</option>
                                     <option value='NONE'>Not required</option>

@@ -136,7 +136,7 @@ class BookingPage extends Component {
             selectionChanged: 0,
             AdditionalServices: [],
             isShowDuplicateBookingOptionsModal: false,
-            clientname: null,
+            clientname: '',
             isBookingSelected: false,
             isShowSwitchClientModal: false,
             statusHistories: [],
@@ -159,6 +159,7 @@ class BookingPage extends Component {
             isShowStatusActionInput: false,
             isShowStatusNoteModal: false,
             isShowDeleteFileConfirmModal: false,
+            isShowUpdateCreatedForEmailConfirmModal: false,
             isShowEmailLogSlider: false,
             isShowAdditionalSurchargeSlider: false,
             isShowAugmentInfoPopup: false,
@@ -288,8 +289,8 @@ class BookingPage extends Component {
         createStatusDetail: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
         getApiBCLs: PropTypes.func.isRequired,
-        setFetchGeoInfoFlag: PropTypes.bool.isRequired,
-        clearErrorMessage: PropTypes.bool.isRequired,
+        setFetchGeoInfoFlag: PropTypes.func.isRequired,
+        clearErrorMessage: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
         getEmailLogs: PropTypes.func.isRequired,
@@ -3460,8 +3461,8 @@ class BookingPage extends Component {
                                                     onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
                                                     value={(!isNull(booking) &&
                                                         !isNull(booking.b_dateBookedDate) &&
-                                                        !isUndefined(booking.b_dateBookedDate)) &&
-                                                        new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                        !isUndefined(booking.b_dateBookedDate)) ?
+                                                        new Date(moment(booking.b_dateBookedDate).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                     }
                                                     format={'dd/MM/yyyy HH:mm'}
                                                 />
@@ -3642,7 +3643,7 @@ class BookingPage extends Component {
                                                         onChange={(e) => this.onHandleInput(e)}
                                                         value = {formInputs['dme_status_detail'] ? formInputs['dme_status_detail'] : ''}
                                                     >
-                                                        <option value="" selected disabled hidden>Select a status detail</option>
+                                                        <option value="" disabled hidden>Select a status detail</option>
                                                         {statusDetailOptions}
                                                         <option value={'other'}>Other</option>
                                                     </select>
@@ -3689,7 +3690,7 @@ class BookingPage extends Component {
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             value = {formInputs['dme_status_action'] ? formInputs['dme_status_action'] : ''}
                                                         >
-                                                            <option value="" selected disabled hidden>Select a status action</option>
+                                                            <option value="" disabled hidden>Select a status action</option>
                                                             {statusActionOptions}
                                                             <option value={'other'}>Other</option>
                                                         </select>
@@ -3753,7 +3754,7 @@ class BookingPage extends Component {
                                             <Button
                                                 className="custom-button edit-lld-btn btn-primary"
                                                 onClick={() => this.toggleUpdateCreatedForEmailConfirmModal()} 
-                                                disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? 'disabled' : ''}
+                                                disabled={parseInt(curViewMode) === 0 || !formInputs['booking_Created_For_Email'] ? true : false}
                                             >
                                                 <i className="fa fa-save" aria-hidden="true"></i>
                                             </Button>
@@ -4192,7 +4193,7 @@ class BookingPage extends Component {
                                                             onChange={(e) => this.onHandleInput(e)}
                                                             value = {formInputs['booking_type'] ? formInputs['booking_type'] : ''}
                                                         >
-                                                            <option value="" selected disabled hidden>Select a Shipping type</option>
+                                                            <option value="" disabled hidden>Select a Shipping type</option>
                                                             <option value='DMEA'>DMEA</option>
                                                             <option value='DMEM'>DMEM</option>
                                                             <option value='DMEP'>DMEP</option>
@@ -4248,6 +4249,7 @@ class BookingPage extends Component {
                                                 onClick={() => this.toggleStatusNoteModal('inv_billing_status_note')}
                                                 rows="6"
                                                 cols="83"
+                                                readOnly
                                             />
                                             {!isEmpty(formInputs['inv_billing_status_note']) &&
                                                 <TooltipItem object={booking} placement='top' fields={['inv_billing_status_note']} />
@@ -4265,6 +4267,7 @@ class BookingPage extends Component {
                                                         disabled='disabled'
                                                         rows="6"
                                                         cols="83"
+                                                        readOnly
                                                     />
                                                     :
                                                     clientname === 'dme' ?
@@ -4276,6 +4279,7 @@ class BookingPage extends Component {
                                                             onClick={() => this.toggleStatusNoteModal('b_booking_Notes')}
                                                             rows="6"
                                                             cols="83"
+                                                            readOnly
                                                         />
                                                         :
                                                         <textarea 
@@ -4286,6 +4290,7 @@ class BookingPage extends Component {
                                                             disabled='disabled'
                                                             rows="6"
                                                             cols="83"
+                                                            readOnly
                                                         />
                                             }
                                             {!isEmpty(formInputs['b_booking_Notes']) &&
@@ -4563,7 +4568,7 @@ class BookingPage extends Component {
                                                                                 name="b_pu_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="Email"
-                                                                                checked={puCommunicates.indexOf('Email') > -1}
+                                                                                value={puCommunicates.indexOf('Email') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;Email
@@ -4573,7 +4578,7 @@ class BookingPage extends Component {
                                                                                 name="b_pu_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="SMS"
-                                                                                checked={puCommunicates.indexOf('SMS') > -1}
+                                                                                value={puCommunicates.indexOf('SMS') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;SMS
@@ -4583,7 +4588,7 @@ class BookingPage extends Component {
                                                                                 name="b_pu_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="Call"
-                                                                                checked={puCommunicates.indexOf('Call') > -1}
+                                                                                value={puCommunicates.indexOf('Call') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;Call
@@ -4612,8 +4617,8 @@ class BookingPage extends Component {
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_05_Latest_Pick_Up_Date_TimeSet')}
                                                                         value={(!isNull(booking) &&
                                                                             !isNull(booking.s_05_Latest_Pick_Up_Date_TimeSet) &&
-                                                                            !isUndefined(booking.s_05_Latest_Pick_Up_Date_TimeSet)) &&
-                                                                            new Date(moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                            !isUndefined(booking.s_05_Latest_Pick_Up_Date_TimeSet)) ?
+                                                                            new Date(moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                         }
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -4636,8 +4641,8 @@ class BookingPage extends Component {
                                                                             onChange={(date) => this.onChangeDateTime(date, 'b_given_to_transport_date_time')}
                                                                             value={(!isNull(booking) &&
                                                                                 !isNull(booking.b_given_to_transport_date_time) &&
-                                                                                !isUndefined(booking.b_given_to_transport_date_time)) &&
-                                                                                new Date(moment(booking.b_given_to_transport_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                                !isUndefined(booking.b_given_to_transport_date_time)) ?
+                                                                                new Date(moment(booking.b_given_to_transport_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                             }
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -4660,8 +4665,8 @@ class BookingPage extends Component {
                                                                             onChange={(date) => this.onChangeDateTime(date, 'fp_received_date_time')}
                                                                             value={(!isNull(booking) &&
                                                                                 !isNull(booking.fp_received_date_time) &&
-                                                                                !isUndefined(booking.fp_received_date_time)) &&
-                                                                                new Date(moment(booking.fp_received_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                                !isUndefined(booking.fp_received_date_time)) ?
+                                                                                new Date(moment(booking.fp_received_date_time).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                             }
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -4683,8 +4688,8 @@ class BookingPage extends Component {
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_20_Actual_Pickup_TimeStamp')}
                                                                         value={(!isNull(booking) &&
                                                                             !isNull(booking.s_20_Actual_Pickup_TimeStamp) &&
-                                                                            !isUndefined(booking.s_20_Actual_Pickup_TimeStamp)) &&
-                                                                            new Date(moment(booking.s_20_Actual_Pickup_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                            !isUndefined(booking.s_20_Actual_Pickup_TimeStamp)) ?
+                                                                            new Date(moment(booking.s_20_Actual_Pickup_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                         }
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -5038,7 +5043,7 @@ class BookingPage extends Component {
                                                                                 name="b_de_To_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="Email"
-                                                                                checked={deCommunicates.indexOf('Email') > -1}
+                                                                                value={deCommunicates.indexOf('Email') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;Email
@@ -5048,7 +5053,7 @@ class BookingPage extends Component {
                                                                                 name="b_de_To_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="SMS"
-                                                                                checked={deCommunicates.indexOf('SMS') > -1}
+                                                                                value={deCommunicates.indexOf('SMS') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;SMS
@@ -5058,7 +5063,7 @@ class BookingPage extends Component {
                                                                                 name="b_de_To_communicate"
                                                                                 type="checkbox"
                                                                                 data-method="Call"
-                                                                                checked={deCommunicates.indexOf('Call') > -1}
+                                                                                value={deCommunicates.indexOf('Call') > -1}
                                                                                 onChange={(e) => this.handleInputChange(e)}
                                                                             />
                                                                             &nbsp;Call
@@ -5087,8 +5092,8 @@ class BookingPage extends Component {
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_06_Latest_Delivery_Date_TimeSet')}
                                                                         value={(!isNull(booking) &&
                                                                             !isNull(booking.s_06_Latest_Delivery_Date_TimeSet) &&
-                                                                            !isUndefined(booking.s_06_Latest_Delivery_Date_TimeSet)) &&
-                                                                            new Date(moment(booking.s_06_Latest_Delivery_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                            !isUndefined(booking.s_06_Latest_Delivery_Date_TimeSet)) ?
+                                                                            new Date(moment(booking.s_06_Latest_Delivery_Date_TimeSet).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                         }
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -5110,8 +5115,8 @@ class BookingPage extends Component {
                                                                         onChange={(date) => this.onChangeDateTime(date, 's_06_Latest_Delivery_Date_Time_Override')}
                                                                         value={(!isNull(booking) &&
                                                                             !isNull(booking.s_06_Latest_Delivery_Date_Time_Override) &&
-                                                                            !isUndefined(booking.s_06_Latest_Delivery_Date_Time_Override)) &&
-                                                                            new Date(moment(booking.s_06_Latest_Delivery_Date_Time_Override).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                            !isUndefined(booking.s_06_Latest_Delivery_Date_Time_Override)) ?
+                                                                            new Date(moment(booking.s_06_Latest_Delivery_Date_Time_Override).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                         }
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
@@ -5163,8 +5168,8 @@ class BookingPage extends Component {
                                                                             onChange={(date) => this.onChangeDateTime(date, 's_21_Actual_Delivery_TimeStamp')}
                                                                             value={(!isNull(booking) &&
                                                                                 !isNull(booking.s_21_Actual_Delivery_TimeStamp) &&
-                                                                                !isUndefined(booking.s_21_Actual_Delivery_TimeStamp)) &&
-                                                                                new Date(moment(booking.s_21_Actual_Delivery_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                                                !isUndefined(booking.s_21_Actual_Delivery_TimeStamp)) ?
+                                                                                new Date(moment(booking.s_21_Actual_Delivery_TimeStamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null
                                                                             }
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
@@ -5589,7 +5594,7 @@ class BookingPage extends Component {
                                                                     className="checkbox"
                                                                     name="b_send_POD_eMail"
                                                                     type="checkbox"
-                                                                    checked={booking.b_send_POD_eMail}
+                                                                    value={booking.b_send_POD_eMail}
                                                                     onChange={(e) => this.handleInputChange(e)}
                                                                     disabled={(clientname !== 'dme') || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
@@ -5684,7 +5689,7 @@ class BookingPage extends Component {
                                                             className="checkbox"
                                                             name="tickManualBook"
                                                             type="checkbox"
-                                                            checked={formInputs['x_manual_booked_flag']}
+                                                            value={formInputs['x_manual_booked_flag']}
                                                             onChange={(e) => this.handleInputChange(e)}
                                                             disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                         />
@@ -5866,7 +5871,7 @@ class BookingPage extends Component {
                                                         className='float-r'
                                                         color='danger'
                                                         onClick={() => this.onChangePackedStatus('reset')}
-                                                        disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? '' : 'disabled'}
+                                                        disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? false : true}
                                                         title="Reset all lines and LineDetails."
                                                     >
                                                         Reset

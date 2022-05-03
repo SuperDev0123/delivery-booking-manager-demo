@@ -272,7 +272,7 @@ class LineAndLineDetailSlider extends React.Component {
                         <Button
                             color="success"
                             title="Move selected LineDetails into this Line."
-                            disabled={selectedLineDetails.length > 0 ? null : 'desabled'}
+                            disabled={ selectedLineDetails.length > 0 }
                             onClick={() => this.onClickMoveIn(line)}
                         >
                             Move in

@@ -289,13 +289,13 @@ class LineTrackingSlider extends React.Component {
                             <label>
                                 <Button 
                                     onClick={() => this.handleBtnClick('Calc')} 
-                                    disabled={(this.state.selected.length === 0) ? 'disabled' : ''}
+                                    disabled={this.state.selected.length === 0}
                                 >
                                     Set Collected Qty
                                 </Button>
                                 <Button 
                                     onClick={() => this.handleBtnClick('Clear')}
-                                    disabled={(this.state.selected.length === 0) ? 'disabled' : ''}
+                                    disabled={this.state.selected.length === 0}
                                 >
                                     Set Collected 0
                                 </Button>

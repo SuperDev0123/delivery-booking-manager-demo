@@ -24,13 +24,13 @@ class DuplicateBookingModal extends Component {
     }
 
     static propTypes = {
-        isOpen: PropTypes.bool.required,
-        toggleModal: PropTypes.func.required,
-        onClickDuplicate: PropTypes.func.required,
+        isOpen: PropTypes.bool.isRequired,
+        toggleModal: PropTypes.func.isRequired,
+        onClickDuplicate: PropTypes.func.isRequired,
         booking: PropTypes.object,
         lines: PropTypes.array.isRequired,
         lineDetails: PropTypes.array.isRequired,
-        childBookings: PropTypes.array.isRequired,
+        childBookings: PropTypes.array,
     };
 
     static defaultProps = {

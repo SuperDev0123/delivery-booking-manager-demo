@@ -130,7 +130,7 @@ class FPPricingSlider extends React.Component {
                             <td className="select">
                                 <Button
                                     color="primary"
-                                    disabled={(api_booking_quote_id === pricingInfo.id || (isBooked && clientname !== 'dme')) && 'disabled'}
+                                    disabled={(api_booking_quote_id === pricingInfo.id || (isBooked && clientname !== 'dme'))}
                                     onClick={() => this.onClickSelect(pricingInfo)}
                                 >
                                     Select
@@ -247,7 +247,7 @@ class FPPricingSlider extends React.Component {
                                 <Button
                                     className="lowest"
                                     color="primary"
-                                    disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
+                                    disabled={(pricingInfos.length === 0 || isBooked)}
                                     onClick={() => this.onSelectLowest('lowest')}
                                 >
                                     Select lowest price
@@ -259,7 +259,7 @@ class FPPricingSlider extends React.Component {
                                 <Button
                                     className="fastest"
                                     color="primary"
-                                    disabled={(pricingInfos.length === 0 || isBooked) && 'disabled'}
+                                    disabled={(pricingInfos.length === 0 || isBooked)}
                                     onClick={() => this.onSelectFastest('fastest')}
                                 >
                                     Select fastest price

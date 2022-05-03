@@ -14,11 +14,11 @@ class StatusNoteModal extends Component {
     static propTypes = {
         isShowStatusNoteModal: PropTypes.bool,
         toggleStatusNoteModal: PropTypes.func,
-        onUpdate: PropTypes.func.required,
-        onClear: PropTypes.func.required,
-        note: PropTypes.string.required,
+        onUpdate: PropTypes.func.isRequired,
+        onClear: PropTypes.func.isRequired,
+        note: PropTypes.string,
         isEditable: PropTypes.bool,
-        fieldName: PropTypes.string.required,
+        fieldName: PropTypes.string,
     };
 
     static defaultProps = {
