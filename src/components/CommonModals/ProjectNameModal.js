@@ -14,8 +14,8 @@ class ProjectNameModal extends Component {
     static propTypes = {
         isShowProjectNameModal: PropTypes.bool,
         toggleProjectNameModal: PropTypes.func,
-        onUpdate: PropTypes.func.required,
-        name: PropTypes.string.required,
+        onUpdate: PropTypes.func.isRequired,
+        name: PropTypes.string.isRequired,
     };
 
     static defaultProps = {

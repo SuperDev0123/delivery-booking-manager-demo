@@ -96,7 +96,7 @@ class AllBookingsPage extends React.Component {
             pageItemCnt: 100,
             pageInd: 0,
             pageCnt: 0,
-            selectedOneBooking: null,
+            selectedOneBooking: {},
             activeBookingId: null,
             dmeStatus: null,
             selectedWarehouseId: 0,
@@ -151,7 +151,7 @@ class AllBookingsPage extends React.Component {
         alliedBooking: PropTypes.func.isRequired,
         fpLabel: PropTypes.func.isRequired,
         fpOrder: PropTypes.func.isRequired,
-        fpOrderSummary: PropTypes.bool.isRequired,
+        fpOrderSummary: PropTypes.func.isRequired,
         getAlliedLabel: PropTypes.func.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
         setGetBookingsFilter: PropTypes.func.isRequired,
@@ -182,8 +182,8 @@ class AllBookingsPage extends React.Component {
         allBookingStatus: PropTypes.array,
         clientname: PropTypes.string,
         startDate: PropTypes.string,
-        filteredBookingIds: PropTypes.number,
-        clearErrorMessage: PropTypes.bool.isRequired,
+        filteredBookingIds: PropTypes.array,
+        clearErrorMessage: PropTypes.func.isRequired,
         bookingsSummary: PropTypes.object,
     };
 
