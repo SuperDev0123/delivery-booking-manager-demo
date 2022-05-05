@@ -256,7 +256,7 @@ class BokStatusPage extends Component {
                                         </tr>
                                         <tr>
                                             <td>Delivery ETA</td>
-                                            <td>{moment(dateOfETA, 'DD/MM/YYYY HH:mm').format('DD MMM YYYY')}</td>
+                                            <td>{dateOfETA}</td>
                                         </tr>
                                         <tr>
                                             <td>Updated ETA</td>
