@@ -3,12 +3,16 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { uniqBy } from 'lodash';
+import DateTimePicker from 'react-datetime-picker';
+import moment from 'moment-timezone';
 
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
 import { Button } from 'reactstrap';
 
 import { getSummaryOfBookings } from '../../state/services/bookingService';
+// Constants
+import { timeDiff } from '../../commons/constants';
 
 class ManifestSlider extends React.Component {
     constructor(props) {
@@ -16,7 +20,11 @@ class ManifestSlider extends React.Component {
 
         this.state = {
             needTruck: false,
+            manifest_timestamp: null
         };
+
+        moment.tz.setDefault('Australia/Sydney');
+        this.tzOffset = new Date().getTimezoneOffset() === 0 ? 0 : -1 * new Date().getTimezoneOffset() / 60;
     }
 
     static propTypes = {
@@ -32,6 +40,9 @@ class ManifestSlider extends React.Component {
         if (!this.props.isOpen && newProps.isOpen) { // Every time Slider is opened
             const bookingIds = newProps.selectedBookings.map(booking => booking.id);
             this.props.getSummaryOfBookings(bookingIds, 'manifest');
+
+            // Set initial manifest
+            this.setState({manifest_timestamp: moment()});
         }
     }
 
@@ -42,9 +53,18 @@ class ManifestSlider extends React.Component {
         this.setState({needTruck: value});
     }
 
+    onChangeDateTime(date, fieldName) {
+        let conveted_date = moment(date).add(this.tzOffset, 'h');           // Current -> UTC
+        conveted_date = conveted_date.add(timeDiff, 'h');                   // UTC -> Sydney
+
+        if (fieldName === 'manifest_timestamp') {
+            this.setState({manifest_timestamp: conveted_date});
+        }
+    }
+
     render() {
         const {isOpen, selectedBookings, manifestSummary} = this.props;
-        const {needTruck} = this.state;
+        const {needTruck, manifest_timestamp} = this.state;
 
         const puAvailFromDateCnt = uniqBy(selectedBookings, 'puPickUpAvailFrom_Date').length;
         const fpCnt = uniqBy(selectedBookings, 'vx_freight_provider').length;
@@ -109,12 +129,21 @@ class ManifestSlider extends React.Component {
                         />
                     </label>
                 }
+                {firstFP === 'TNT' && <hr />}
+                <label>
+                    <p className='manifest-timestamp'>Manifest datetime (Sydney time):</p>
+                    <DateTimePicker
+                        onChange={(date) => this.onChangeDateTime(date, 'manifest_timestamp')}
+                        value={manifest_timestamp ? new Date(moment(manifest_timestamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                        format={'dd/MM/yyyy HH:mm'}
+                    />
+                </label>
                 <hr />
                 <Button
                     color="primary"
                     disabled={fpCnt !== 1 ? 'disabled' : ''}
                     title={fpCnt !== 1 ? 'DME does not support multi-FP manifest' : 'Create manifest'}
-                    onClick={() => this.props.onCreateOrder(bookingIds, firstFP, this.state.needTruck)}
+                    onClick={() => this.props.onCreateOrder(bookingIds, firstFP, this.state.needTruck, manifest_timestamp)}
                 >
                     Create Manifest
                 </Button>
