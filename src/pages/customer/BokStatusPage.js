@@ -123,7 +123,7 @@ class BokStatusPage extends Component {
         let dateOfETA;
         
         if (!misDeliveries.includes(status)) {
-            dateOfETA = `${etaDate ? moment(etaDate).format('DD MMM YYYY') : ''}`;
+            dateOfETA = `${etaDate ? moment(etaDate, 'DD/MM/YYYY HH:mm').format('DD MMM YYYY') : ''}`;
         }
         else {
             dateOfETA = 'N/A';
