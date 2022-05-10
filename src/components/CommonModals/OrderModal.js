@@ -71,7 +71,7 @@ class OrderModal extends Component {
                     <Button
                         color="primary"
                         onClick={() => this.onClickCreate(selectedBookings, selectedBookingIds)}
-                        disabled={puAvailFromDateCnt > 1 || (selectedBookingIds.length - bookedCnt > 0) || fpCnt > 1 ? 'disabled' : ''}
+                        disabled={puAvailFromDateCnt > 1 || (selectedBookingIds.length - bookedCnt > 0) || fpCnt > 1 ? true : false }
                     >
                         Create
                     </Button>

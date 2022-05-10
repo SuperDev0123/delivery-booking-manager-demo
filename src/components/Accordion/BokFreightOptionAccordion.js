@@ -91,7 +91,7 @@ class BokFreightOptionAccordion extends Component {
                     <Button
                         color="primary"
                         onClick={(e) => this.onClickSave(e)}
-                        disabled={needToUpdate ? null : 'disabled'}
+                        disabled={needToUpdate ? true : false}
                     >
                         Save
                     </Button>

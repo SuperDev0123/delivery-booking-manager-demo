@@ -516,7 +516,7 @@ class BulkUpdateSlider extends React.Component {
                     {errorMsg ? <p className="red">{errorMsg}<br /></p> : null}
                     <Button
                         color="primary"
-                        disabled={!selectedField || !selectedValue ? 'disabled' : ''}
+                        disabled={!selectedField || !selectedValue ? true : false }
                         onClick={() => this.onClickUpdateBtn()}
                     >
                         Update

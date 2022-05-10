@@ -141,7 +141,7 @@ class ManifestSlider extends React.Component {
                 <hr />
                 <Button
                     color="primary"
-                    disabled={fpCnt !== 1 ? 'disabled' : ''}
+                    disabled={fpCnt !== 1 ? true : false}
                     title={fpCnt !== 1 ? 'DME does not support multi-FP manifest' : 'Create manifest'}
                     onClick={() => this.props.onCreateOrder(bookingIds, firstFP, this.state.needTruck, manifest_timestamp)}
                 >
