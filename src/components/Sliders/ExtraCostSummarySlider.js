@@ -18,7 +18,7 @@ class ExtraCostSummarySlider extends React.Component {
     render() {
         const { isOpen, toggleSlider, selectedPrice, bok_2s } = this.props;
         const surchargeList = (selectedPrice.surcharges || []).map((surcharge, index) => {
-            if (surcharge['qty'])
+            if (!surcharge['qty'])
                 return;
 
             let lines = null;
