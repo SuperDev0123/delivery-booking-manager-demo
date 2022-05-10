@@ -6034,7 +6034,7 @@ class BookingPage extends Component {
                                                         </form>
                                                         {(booking.z_pod_url || booking.z_pod_signed_url) &&
                                                             <div>
-                                                                <p>POD: {booking.z_pod_url}</p>
+                                                                <p>POD: {booking.z_pod_url || booking.z_pod_signed_url}</p>
                                                                 <button
                                                                     className="btn btn-primary"
                                                                     onClick={() => this.onClickDownloadFile('pod')}

@@ -85,7 +85,6 @@ class StatusHistorySlider extends React.Component {
                 statusHistory['fk_booking_id'] = booking.pk_booking_id;
                 statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mm:ssZ') : null;
                 this.props.OnUpdateStatusHistory(statusHistory);
-
                 this.setState({
                     viewMode: 0,
                     saveMode: 0, 
@@ -124,9 +123,8 @@ class StatusHistorySlider extends React.Component {
 
     onClickEditButton(index) {
         const formInputs = clone(this.props.statusHistories[index]);
-
-        formInputs['event_time_stamp'] = formInputs['event_time_stamp'] ? moment(formInputs['event_time_stamp']).toDate() : null;
-        this.setState({formInputs, viewMode: 1, saveMode: 1});
+        const event_time_stamp = formInputs['event_time_stamp'] ? moment(formInputs['event_time_stamp']).toDate() : null;
+        this.setState({formInputs, event_time_stamp, viewMode: 1, saveMode: 1});
     }
 
     render() {
