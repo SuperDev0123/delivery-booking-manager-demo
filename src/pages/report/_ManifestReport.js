@@ -61,21 +61,16 @@ class ManifestReport extends React.Component {
     UNSAFE_componentWillReceiveProps(newProps) {
         const { reports, allFPs, clients } = newProps;
         const { reportStore } = this.state;
-        if (reports) {
+        if (reports && reports.length !== 0) {
             if (isNull(this.props.reports)) {
                 const newReportStore = [...reportStore, ...reports];
-                // const reportList = this.onFind(newReportStore);
                 this.setState({
-                    // reportList,
                     reportStore: newReportStore
                 });
             } else {
-                console.log(this.props.reports);
                 if (!this.compareArray(this.props.reports, reports)) {
                     const newReportStore = [...reportStore, ...reports];
-                    // const reportList = this.onFind(newReportStore);
                     this.setState({
-                        // reportList,
                         reportStore: newReportStore
                     });
                 }
@@ -231,9 +226,6 @@ class ManifestReport extends React.Component {
         const offsetHeight = e.target.offsetHeight;
         const { page_index } = this.state;
         if (!loading && (scrollTop + offsetHeight > height - 100)) {
-            console.log(height);
-            console.log(e.target.offsetHeight);
-            console.log(scrollTop);
             this.setState({loading: true, page_index: page_index + 1});
             this.props.getManifestReport(page_index + 1);
         }
