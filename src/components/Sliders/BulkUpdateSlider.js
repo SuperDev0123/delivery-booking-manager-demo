@@ -125,7 +125,7 @@ class BulkUpdateSlider extends React.Component {
             formInputs['event_timestamp'] = conveted_date;
             this.setState({formInputs, selectedValue: 'fake-value'});
         } else if (selectedField === 'additional_surcharge') {
-            formInputs['applied_at'] = conveted_date;
+            formInputs[valueType] = conveted_date;
             this.setState({formInputs, selectedValue: 'fake-value'});
         } else {
             if (dateTime) {
@@ -420,16 +420,6 @@ class BulkUpdateSlider extends React.Component {
                                 <h2>{'Create a new Additional Surcharge'}</h2>
                                 <form>
                                     <label>
-                                        <span className="text-left">Name / Description</span>
-                                        <input
-                                            className="form-control"
-                                            required
-                                            name="name"
-                                            value={formInputs['name']}
-                                            onChange={(e) => this.onHandleInput(e)}
-                                        />
-                                    </label><br />
-                                    <label>
                                         <span className="text-left">Visible to customer</span>
                                         <div>
                                             <input
@@ -440,16 +430,6 @@ class BulkUpdateSlider extends React.Component {
                                                 onChange={(e) => this.onHandleInput(e)}
                                             />
                                         </div>
-                                    </label><br />
-                                    <label>
-                                        <span className="text-left">Applied at</span>
-                                        <DateTimePicker
-                                            onChange={(date) => this.onChangeDateTime(date, 'applied_at')}
-                                            value={formInputs['applied_at'] ?
-                                                new Date(moment(formInputs['applied_at']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                                : null}
-                                            format={'dd/MM/yyyy HH:mm'}
-                                        />
                                     </label><br />
                                     <label>
                                         <span className="text-left">Select a Freight Provider</span>
@@ -464,6 +444,16 @@ class BulkUpdateSlider extends React.Component {
                                         </select>
                                     </label><br />
                                     <label>
+                                        <span className="text-left">Service Name</span>
+                                        <input
+                                            className="form-control"
+                                            required
+                                            name="name"
+                                            value={formInputs['name']}
+                                            onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
                                         <span className="text-left">Connote / Reference</span>
                                         <input
                                             className="form-control"
@@ -471,6 +461,56 @@ class BulkUpdateSlider extends React.Component {
                                             name="connote_or_reference"
                                             value={formInputs['connote_or_reference']}
                                             onChange={(e) => this.onHandleInput(e)}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Booked Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
+                                            value={formInputs['booked_date'] ?
+                                                new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Estimated Pickup Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
+                                            value={formInputs['eta_pu_date'] ?
+                                                new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Estimated Delivery Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
+                                            value={formInputs['eta_de_date'] ?
+                                                new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Actual Pickup Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
+                                            value={formInputs['actual_pu_date'] ?
+                                                new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label><br />
+                                    <label>
+                                        <span className="text-left">Actual Delivery Date</span>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
+                                            value={formInputs['actual_de_date'] ?
+                                                new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                                : null}
+                                            format={'dd/MM/yyyy HH:mm'}
                                         />
                                     </label><br />
                                     <label>

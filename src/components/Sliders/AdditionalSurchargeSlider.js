@@ -68,7 +68,7 @@ class AdditionalSurchargeSlider extends React.Component {
         const formInputs = {
             'qty': 1,
             'is_manually_entered': true,
-            'applied_at': conveted_date
+            'booked_date': conveted_date
         };
         this.setState({viewMode: 1, saveMode: 0, formInputs});
     }
@@ -86,7 +86,11 @@ class AdditionalSurchargeSlider extends React.Component {
         formInputs['name'] = surcharge.name;
         formInputs['visible'] = surcharge.visible;
         formInputs['is_manually_entered'] = surcharge.is_manually_entered;
-        formInputs['applied_at'] = surcharge.applied_at;
+        formInputs['booked_date'] = surcharge.booked_date;
+        formInputs['eta_pu_date'] = surcharge.eta_pu_date;
+        formInputs['eta_de_date'] = surcharge.eta_de_date;
+        formInputs['actual_pu_date'] = surcharge.actual_pu_date;
+        formInputs['actual_de_date'] = surcharge.actual_de_date;
         formInputs['fp'] = surcharge.fp;
         formInputs['connote_or_reference'] = surcharge.connote_or_reference;
         formInputs['qty'] = surcharge.qty;
@@ -175,10 +179,14 @@ class AdditionalSurchargeSlider extends React.Component {
                         <td>{surcharge.name}</td>
                         {clientname === 'dme' && <td>{surcharge.visible ? 'Yes' : 'No'}</td>}
                         <td>{surcharge.is_manually_entered ? 'Yes, manually' : 'No'}</td>
-                        <td>{surcharge.applied_at && moment(surcharge.applied_at).format('DD/MM/YYYY HH:mm:ss')}</td>
                         <td>{fp.fp_company_name}</td>
                         <td>{surcharge.connote_or_reference}</td>
                         <td>{surcharge.description ? surcharge.description : surcharge.name}</td>
+                        <td>{surcharge.booked_date && moment(surcharge.booked_date).format('DD/MM/YYYY HH:mm')}</td>
+                        <td>{surcharge.eta_pu_date && moment(surcharge.eta_pu_date).format('DD/MM/YYYY HH:mm')}</td>
+                        <td>{surcharge.eta_de_date && moment(surcharge.eta_de_date).format('DD/MM/YYYY HH:mm')}</td>
+                        <td>{surcharge.actual_pu_date && moment(surcharge.actual_pu_date).format('DD/MM/YYYY HH:mm')}</td>
+                        <td>{surcharge.actual_de_date && moment(surcharge.actual_de_date).format('DD/MM/YYYY HH:mm')}</td>
                         <td>{parseFloat(surcharge.qty).toFixed(2)}</td>
                         <td>{parseFloat(formInputs['markup_percentage'] * 100).toFixed(2) + '%'}</td>
                         {clientname === 'dme' && <td>${parseFloat(surcharge.amount).toFixed(2)}</td>}
@@ -218,16 +226,6 @@ class AdditionalSurchargeSlider extends React.Component {
                             <h2>{saveMode === 0 ? 'Create a new Surcharge' : 'Update Surcharge'}</h2>
                             <form onSubmit={this.submitHandler}>
                                 <label>
-                                    <span className="text-left">Name / Description</span>
-                                    <input
-                                        className="form-control"
-                                        required
-                                        name="name"
-                                        value={formInputs['name']}
-                                        onChange={(e) => this.onInputChange(e)}
-                                    />
-                                </label><br />
-                                <label>
                                     <span className="text-left">Visible to customer</span>
                                     <div>
                                         <input
@@ -238,16 +236,6 @@ class AdditionalSurchargeSlider extends React.Component {
                                             onChange={(e) => this.onInputChange(e)}
                                         />
                                     </div>
-                                </label><br />
-                                <label>
-                                    <span className="text-left">Applied at</span>
-                                    <DateTimePicker
-                                        onChange={(date) => this.onChangeDateTime(date, 'applied_at')}
-                                        value={formInputs['applied_at'] ?
-                                            new Date(moment(formInputs['applied_at']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
-                                            : null}
-                                        format={'dd/MM/yyyy HH:mm'}
-                                    />
                                 </label><br />
                                 <label>
                                     <span className="text-left">Select a Freight Provider</span>
@@ -262,6 +250,16 @@ class AdditionalSurchargeSlider extends React.Component {
                                     </select>
                                 </label><br />
                                 <label>
+                                    <span className="text-left">Service Name</span>
+                                    <input
+                                        className="form-control"
+                                        required
+                                        name="name"
+                                        value={formInputs['name']}
+                                        onChange={(e) => this.onInputChange(e)}
+                                    />
+                                </label><br />
+                                <label>
                                     <span className="text-left">Connote / Reference</span>
                                     <input
                                         className="form-control"
@@ -269,6 +267,56 @@ class AdditionalSurchargeSlider extends React.Component {
                                         name="connote_or_reference"
                                         value={formInputs['connote_or_reference']}
                                         onChange={(e) => this.onInputChange(e)}
+                                    />
+                                </label><br />
+                                <label>
+                                    <span className="text-left">Booked Date</span>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
+                                        value={formInputs['booked_date'] ?
+                                            new Date(moment(formInputs['booked_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                            : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label><br />
+                                <label>
+                                    <span className="text-left">Estimated Pickup Date</span>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
+                                        value={formInputs['eta_pu_date'] ?
+                                            new Date(moment(formInputs['eta_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                            : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label><br />
+                                <label>
+                                    <span className="text-left">Estimated Delivery Date</span>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
+                                        value={formInputs['eta_de_date'] ?
+                                            new Date(moment(formInputs['eta_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                            : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label><br />
+                                <label>
+                                    <span className="text-left">Actual Pickup Date</span>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
+                                        value={formInputs['actual_pu_date'] ?
+                                            new Date(moment(formInputs['actual_pu_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                            : null}
+                                        format={'dd/MM/yyyy HH:mm'}
+                                    />
+                                </label><br />
+                                <label>
+                                    <span className="text-left">Actual Delivery Date</span>
+                                    <DateTimePicker
+                                        onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
+                                        value={formInputs['actual_de_date'] ?
+                                            new Date(moment(formInputs['actual_de_date']).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'}))
+                                            : null}
+                                        format={'dd/MM/yyyy HH:mm'}
                                     />
                                 </label><br />
                                 <label>
@@ -346,11 +394,15 @@ class AdditionalSurchargeSlider extends React.Component {
                                     <table className="table table-hover table-bordered sortable fixed_headers">
                                         <tr>
                                             <th className="" scope="col" nowrap><p>No</p></th>
-                                            <th className="" scope="col" nowrap><p>Name / Desc</p></th>
                                             {clientname === 'dme' && <th className="" scope="col" nowrap><p>Visible to Customer</p></th>}
                                             <th className="" scope="col" nowrap><p>Is Manually Entered?</p></th>
-                                            <th className="" scope="col" nowrap><p>Applied at</p></th>
+                                            <th className="" scope="col" nowrap><p>Booked Date</p></th>
+                                            <th className="" scope="col" nowrap><p>ETA Pickup Date</p></th>
+                                            <th className="" scope="col" nowrap><p>ETA Delivery Date</p></th>
+                                            <th className="" scope="col" nowrap><p>Actual Pickup Date</p></th>
+                                            <th className="" scope="col" nowrap><p>Actual Delivery Date</p></th>
                                             <th className="" scope="col" nowrap><p>Freight Provider or Supplier</p></th>
+                                            <th className="" scope="col" nowrap><p>Service Name</p></th>
                                             <th className="" scope="col" nowrap><p>Connote or Reference</p></th>
                                             <th className="" scope="col" nowrap><p>Service / Surcharge Description</p></th>
                                             <th className="" scope="col" nowrap><p>Quantity</p></th>
