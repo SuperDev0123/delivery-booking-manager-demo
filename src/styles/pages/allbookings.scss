@@ -217,7 +217,7 @@ $de_to_PickUp_Instructions_Address_width: 130px;
 $b_booking_project_width: 130px;
 $b_project_due_date_width: 130px;
 
-#all_booking .fixed_headers{
+#all_booking .fixed_headers {
   table-layout: fixed;
 
   th { text-decoration: none; }
@@ -355,11 +355,6 @@ $b_project_due_date_width: 130px;
       display: block;
       position: relative;
     }
-  }
-  tbody {
-    display: block;
-    overflow: auto;
-    height: $table_body_height;
   }
 
   td.current,
