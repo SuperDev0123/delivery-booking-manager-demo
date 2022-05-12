@@ -223,7 +223,7 @@ class AdditionalSurchargeSlider extends React.Component {
                 <div className="slider-content">
                     {viewMode === 1 &&
                         <div className="form-view">
-                            <h2>{saveMode === 0 ? 'Create a new Surcharge' : 'Update Surcharge'}</h2>
+                            <h2>{saveMode === 0 ? 'Create a new Service' : 'Update Service'}</h2>
                             <form onSubmit={this.submitHandler}>
                                 <label>
                                     <span className="text-left">Visible to customer</span>

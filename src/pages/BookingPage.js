@@ -4155,7 +4155,7 @@ class BookingPage extends Component {
                                         }
                                         <div className="col-sm-1 form-group">
                                             <div>
-                                                <span>Misc surcharges</span><br />
+                                                <span>Linked Services</span><br />
                                                 <Button
                                                     className={cntAdditionalSurcharges ? 'custom-button btn-primary' : 'custom-button btn-secondary'}
                                                     onClick={() => this.toggleAdditionalSurchargeSlider()}
