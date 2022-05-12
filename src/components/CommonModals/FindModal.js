@@ -29,13 +29,13 @@ class FindModal extends Component {
 
             if (selectedFieldName === 'clientRefNumber') {
                 bookings.map(booking => {
-                    foundValueSet = concat(foundValueSet, booking['clientRefNumbers'].split(', '));
+                    foundValueSet = concat(foundValueSet, (booking['clientRefNumbers'] || '').split(', '));
                     return true;
                 });
                 foundValueSet = intersection(valueSet, foundValueSet);
             } else if (selectedFieldName === 'gap_ra') {
                 bookings.map(booking => {
-                    foundValueSet = concat(foundValueSet, booking['gapRas'].split(', '));
+                    foundValueSet = concat(foundValueSet, (booking['gapRas'] || '').split(', '));
                     return true;
                 });
                 foundValueSet = intersection(valueSet, foundValueSet);

@@ -194,7 +194,7 @@ $b_client_sales_inv_num_width: 95px;
 $vx_freight_provider_width: 120px;
 $vx_serviceName_width: 120px;
 $cheapest_freight_provider_width: 120px;
-$v_FPBookingNumber_width: 90px;
+$v_FPBookingNumber_width: 120px;
 $z_lock_status_width: 30px;
 $b_status_category_width: 120px;
 $b_status_width: 130px;
@@ -222,6 +222,7 @@ $b_project_due_date_width: 130px;
 
   th { text-decoration: none; }
   th, td {
+    font-size: 12px;
     font-weight: lighter;
     padding: 3px;
     text-align: left;
