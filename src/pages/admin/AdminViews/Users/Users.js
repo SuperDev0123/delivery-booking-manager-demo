@@ -182,7 +182,7 @@ class Users extends Component {
         const datetimeFormatter = (cell) => {
             if (cell)
                 return (
-                    moment(cell).format('DD/MM/YYYY HH:mm:ss')
+                    moment(cell).format('DD/MM/YYYY HH:mm')
                 );
         };
 

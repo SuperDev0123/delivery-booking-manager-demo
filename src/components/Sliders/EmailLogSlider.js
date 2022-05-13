@@ -45,7 +45,7 @@ class EmailLogSlider extends React.Component {
                     <td>{index + 1}</td>
                     <td>{emailLog['emailName']}</td>
                     <td>{emailLog['z_createdByAccount']}</td>
-                    <td>{emailLog['z_createdTimeStamp'] && moment(emailLog['z_createdTimeStamp']).format('DD/MM/YYYY HH:mm:ss')}</td>
+                    <td>{emailLog['z_createdTimeStamp'] && moment(emailLog['z_createdTimeStamp']).format('DD/MM/YYYY HH:mm')}</td>
                 </tr>
             );
         });

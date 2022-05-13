@@ -1321,7 +1321,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'label_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'label_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -1338,7 +1338,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'pod_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'pod_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -1355,7 +1355,7 @@ class BookingPage extends Component {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'pod_signed_1_' + moment().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                link.setAttribute('download', 'pod_signed_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
                 document.body.appendChild(link);
                 link.click();
             });
@@ -1804,7 +1804,7 @@ class BookingPage extends Component {
 
                     // Calc `ETA Delivery`
                     const s_06_Latest_Delivery_Date_TimeSet = moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])
-                        .add(newEta.days, 'd').add(newEta.hours, 'h').format('YYYY-MM-DD HH:mm:ssZ');
+                        .add(newEta.days, 'd').add(newEta.hours, 'h').format('YYYY-MM-DD HH:mm');
                     booking.s_06_Latest_Delivery_Date_TimeSet = s_06_Latest_Delivery_Date_TimeSet;
 
                     this.setState({eta: newEta, formInputs, isBookingModified: true});
@@ -1962,7 +1962,7 @@ class BookingPage extends Component {
         if (fieldName === 'b_given_to_transport_date_time') {
             if (conveted_date) {
                 formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
             } else {
                 formInputs[fieldName] = null;
 
@@ -1979,13 +1979,13 @@ class BookingPage extends Component {
                 formInputs[fieldName] = null;
             } else if (conveted_date && !booking.b_given_to_transport_date_time) {
                 formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
             } else {
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
             }
             this.setState({formInputs});
         } else {
-            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm:ssZ');
+            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
 
             if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || fieldName === 's_06_Latest_Delivery_Date_TimeSet') {
                 this.calcEta(booking);
@@ -2751,7 +2751,7 @@ class BookingPage extends Component {
         }
 
         booking.z_lock_status = !booking.z_lock_status;
-        booking.z_locked_status_time = moment().format('YYYY-MM-DD HH:mm:ss');
+        booking.z_locked_status_time = moment().format('YYYY-MM-DD HH:mm');
 
         if (!booking.z_lock_status) {
             booking.b_status_API = 'status update ' + moment().format('DD_MM_YYYY');
@@ -3435,13 +3435,13 @@ class BookingPage extends Component {
                                         {(booking && booking.z_CreatedTimestamp) &&
                                             <div className="created-timestamp disp-inline-block">
                                                 <span>Created At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.z_CreatedTimestamp && moment(booking.z_CreatedTimestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                <span className="show-mode">{booking && booking.z_CreatedTimestamp && moment(booking.z_CreatedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
                                             </div>
                                         }
                                         {(booking && booking.z_ModifiedTimestamp) &&
                                             <div className="modified-timestamp disp-inline-block">
                                                 <span>Modified At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                <span className="show-mode">{booking && booking.z_ModifiedTimestamp && moment(booking.z_ModifiedTimestamp).format('DD/MM/YYYY HH:mm')}</span>
                                             </div>
                                         }
                                     </div>
@@ -3449,13 +3449,13 @@ class BookingPage extends Component {
                                         {(booking && booking.manifest_timestamp) &&
                                             <div className="manifest-date">
                                                 <span>Manifest At:&nbsp;&nbsp;</span>
-                                                <span className="show-mode">{booking && booking.manifest_timestamp && moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                <span className="show-mode">{booking && booking.manifest_timestamp && moment(booking.manifest_timestamp).format('DD/MM/YYYY HH:mm')}</span>
                                             </div>
                                         }
                                         <div className="booked-date">
                                             <span>Booked At:&nbsp;&nbsp;</span>
                                             {(parseInt(curViewMode) === 0) ?
-                                                <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm:ss')}</span>
+                                                <span className="show-mode">{booking && booking.b_dateBookedDate && moment(booking.b_dateBookedDate).format('DD/MM/YYYY HH:mm')}</span>
                                                 :
                                                 <DateTimePicker
                                                     onChange={(date) => this.onChangeDateTime(date, 'b_dateBookedDate')}
@@ -4608,9 +4608,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ?
-                                                                    <p className="show-mode">{booking.s_05_Latest_Pick_Up_Date_TimeSet ? moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_05_Latest_Pick_Up_Date_TimeSet ? moment(booking.s_05_Latest_Pick_Up_Date_TimeSet).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -4623,7 +4623,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_pu_by'] ? moment(formInputs['eta_pu_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4634,7 +4634,7 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
@@ -4647,7 +4647,7 @@ class BookingPage extends Component {
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm:ss') : null}</p>
+                                                                        <p className="show-mode">{booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm') : null}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -4681,7 +4681,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
-                                                                <p className="show-mode">{booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                <p className="show-mode">{booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme') ?
                                                                     <DateTimePicker
@@ -4694,7 +4694,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_20_Actual_Pickup_TimeStamp ? moment(booking.s_20_Actual_Pickup_TimeStamp).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -5083,9 +5083,9 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
                                                                 (isBookedBooking) ? 
-                                                                    <p className="show-mode">{booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme' && isBookedBooking) ?
                                                                     <DateTimePicker
@@ -5098,7 +5098,7 @@ class BookingPage extends Component {
                                                                         format={'dd/MM/yyyy HH:mm'}
                                                                     />
                                                                     :
-                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{formInputs['eta_de_by'] ? moment(formInputs['eta_de_by']).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>
@@ -5108,7 +5108,7 @@ class BookingPage extends Component {
                                                         </div>
                                                         <div className="col-sm-8">
                                                             {(parseInt(curViewMode) === 0) ?
-                                                                <p className="show-mode">{booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                <p className="show-mode">{booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                 :
                                                                 (clientname === 'dme') ?
                                                                     <DateTimePicker
@@ -5161,7 +5161,7 @@ class BookingPage extends Component {
                                                         <div className="col-sm-8">
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                    <p className="show-mode">{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                                     :
                                                                     (clientname === 'dme') ?
                                                                         <DateTimePicker
@@ -5174,7 +5174,7 @@ class BookingPage extends Component {
                                                                             format={'dd/MM/yyyy HH:mm'}
                                                                         />
                                                                         :
-                                                                        <p className="show-mode">{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}</p>
+                                                                        <p className="show-mode">{booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm') : ''}</p>
                                                             }
                                                         </div>
                                                     </div>

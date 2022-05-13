@@ -130,7 +130,7 @@ class CSNoteSlider extends React.Component {
             return (
                 <tr key={index}>
                     <td>{eachItem.note}</td>
-                    <td>{moment(eachItem.z_createdTimestamp).format('DD/MM/YYYY HH:mm:ss')}</td>
+                    <td>{moment(eachItem.z_createdTimestamp).format('DD/MM/YYYY HH:mm')}</td>
                     <td>{eachItem.z_createdByAccount}</td>
                     {(clientname === 'dme') &&
                     <td>

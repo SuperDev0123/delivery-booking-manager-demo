@@ -134,7 +134,7 @@ class BokStatusPage extends Component {
                 dataField: 'event_timestamp',
                 text: 'Scan Date',
                 formatter: (cell) => {
-                    return moment(cell).format('DD/MM/YYYY HH:mm:SS');
+                    return moment(cell).format('DD/MM/YYYY HH:mm');
                 },
                 style: {
                     paddingRight: '5px'
