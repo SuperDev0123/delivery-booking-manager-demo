@@ -264,7 +264,7 @@ class BulkUpdateSlider extends React.Component {
 
 
                             {clientname === 'dme' && <option value="fp_scan">FP Scan</option>}
-                            {clientname === 'dme' && <option value="additional_surcharge">Additional Surcharge</option>}
+                            {clientname === 'dme' && <option value="additional_surcharge">Linked Service</option>}
                         </select>
                     </label>
                     <br />
@@ -428,7 +428,7 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {selectedField && (selectedField === 'additional_surcharge') &&
                             <div className="form-view">
-                                <h2>{'Create a new Additional Surcharge'}</h2>
+                                <h2>{'Create a new Linked Service'}</h2>
                                 <form>
                                     <label>
                                         <span className="text-left">Visible to customer</span>
