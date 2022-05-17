@@ -47,6 +47,7 @@ import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
 import ManifestSlider from '../components/Sliders/ManifestSlider';
+import AdditionalSurchargeSlider from '../components/Sliders/AdditionalSurchargeSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -62,6 +63,7 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
+            selectedBookingId: '',
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
             linkPopoverOpens: [],
@@ -90,7 +92,6 @@ class AllBookingsPage extends React.Component {
             scrollLeft: 0,
             selectedStatusValue: null,
             selectedname: 'All',
-            allFPs: [],
             pricingAnalyses: [],
             isShowStatusLockModal: false,
             pageItemCnt: 100,
@@ -136,6 +137,7 @@ class AllBookingsPage extends React.Component {
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
         this.toggleManifestSlider = this.toggleManifestSlider.bind(this);
+        this.toggleAdditionalSurchargeSlider = this.toggleAdditionalSurchargeSlider.bind(this);
     }
 
     static propTypes = {
@@ -185,6 +187,7 @@ class AllBookingsPage extends React.Component {
         filteredBookingIds: PropTypes.array,
         clearErrorMessage: PropTypes.func.isRequired,
         bookingsSummary: PropTypes.object,
+        allFPs: PropTypes.array,
     };
 
     componentDidMount() {
@@ -247,7 +250,7 @@ class AllBookingsPage extends React.Component {
         const { bookings, bookingsCnt, bookingLines, bookingLineDetails, warehouses, userDateFilterField,
             redirect, username, needUpdateBookings, startDate, endDate, warehouseId, fpId, pageItemCnt, pageInd, sortField,
             columnFilters, activeTabInd, simpleSearchKeyword, downloadOption, dmeClients, clientname, clientPK,
-            allFPs, pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt,
+            pageCnt, dmeStatus, multiFindField, multiFindValues, bookingErrorMessage, selectedBookingLinesCnt,
             projectNames, projectName, pricingAnalyses
         } = newProps;
         let {successSearchFilterOptions, hasSuccessSearchAndFilterOptions} = this.state;
@@ -343,10 +346,6 @@ class AllBookingsPage extends React.Component {
 
         if (userDateFilterField) {
             this.setState({ userDateFilterField });
-        }
-
-        if (allFPs) {
-            this.setState({ allFPs });
         }
 
         if (pageCnt) {
@@ -794,6 +793,10 @@ class AllBookingsPage extends React.Component {
 
     toggleManifestSlider() {
         this.setState(prevState => ({isShowManifestSlider: !prevState.isShowManifestSlider}));
+    }
+
+    toggleAdditionalSurchargeSlider() {
+        this.setState(prevState => ({isShowAdditionalSurchargeSlider: !prevState.isShowAdditionalSurchargeSlider}));
     }
 
     onClickAllTrigger() {
@@ -1594,17 +1597,22 @@ class AllBookingsPage extends React.Component {
         this.props.updateBooking(booking.id, booking);
     }
 
-    onClickEditCell(bookingId) {
-        let editCellPopoverOpens = this.state.editCellPopoverOpens;
-        let flag = editCellPopoverOpens['edit-cell-popover-' + bookingId];
-        editCellPopoverOpens = [];
+    onClickPencil(type, booking) {
+        if (type === 'manifest_timestamp' || type === 'b_dateBookedDate') {
+            let editCellPopoverOpens = this.state.editCellPopoverOpens;
+            let flag = editCellPopoverOpens['edit-cell-popover-' + booking.id];
+            editCellPopoverOpens = [];
 
-        if (flag)
-            editCellPopoverOpens['edit-cell-popover-' + bookingId] = false;
-        else
-            editCellPopoverOpens['edit-cell-popover-' + bookingId] = true;
+            if (flag)
+                editCellPopoverOpens['edit-cell-popover-' + booking.id] = false;
+            else
+                editCellPopoverOpens['edit-cell-popover-' + booking.id] = true;
 
-        this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
+            this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
+        } else if (type === 'b_bookingID_Visual') {
+            this.setState({selectedBooking: booking});
+            this.toggleAdditionalSurchargeSlider();
+        }
     }
 
     // onClickChangeStatusButton() {
@@ -1808,9 +1816,9 @@ class AllBookingsPage extends React.Component {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses,
             filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
             showSimpleSearchBox, selectedBookingIds, loading, activeTabInd, loadingDownload, downloadOption, dmeClients, clientPK, scrollLeft,
-            isShowXLSModal, isShowProjectNameModal, allFPs, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
+            isShowXLSModal, isShowProjectNameModal, clientname, isShowStatusLockModal, selectedOneBooking, activeBookingId,
             projectNames, projectName, allCheckStatus } = this.state;
-        const { bookings, bookingsets, allBookingStatus, filteredBookingIds, bookingsSummary } = this.props;
+        const { bookings, bookingsets, allBookingStatus, filteredBookingIds, bookingsSummary, allFPs } = this.props;
 
         // Table width
         const tblContentWidthVal = 'calc(100% + ' + scrollLeft + 'px)';
@@ -2075,15 +2083,17 @@ class AllBookingsPage extends React.Component {
                     <td name='total_cbm' className={'text-center'} title='Total Cubic'>{booking.total_cbm}</td>
                     <td name='b_bookingID_Visual' 
                         id={'link-popover-' + booking.id} 
-                        onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}
                         className={(sortField === 'b_bookingID_Visual') ? 'visualID-box current' : 'visualID-box'}
                     >
-
-                        <span className={
-                            booking.b_error_Capture ? 'c-red bold' : booking.b_status === 'Closed' ? 'c-black bold' : 'c-dme bold'}
+                        <span
+                            className={booking.b_error_Capture
+                                ? 'c-red bold'
+                                : booking.b_status === 'Closed' ? 'c-black bold' : 'c-dme bold'}
+                            onClick={() => this.onClickLink(0, booking.b_bookingID_Visual)}
                         >
                             {booking.b_bookingID_Visual}
                         </span>
+                        <i className="fa fa-columns" title='Linked Services Slider' onClick={() => this.onClickPencil('b_bookingID_Visual', booking)}></i>
                     </td>
                     <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${booking.cost_dollar})` : ''}</td>
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
@@ -2161,12 +2171,12 @@ class AllBookingsPage extends React.Component {
                                 booking.manifest_timestamp ?
                                     null
                                     :
-                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
+                                    <i className="icon icon-pencil" onClick={() => this.onClickPencil('manifest_timestamp', booking)}></i>
                                 :
                                 booking.b_dateBookedDate ?
                                     null
                                     :
-                                    <i className="icon icon-pencil" onClick={() => this.onClickEditCell(booking.id)}></i>
+                                    <i className="icon icon-pencil" onClick={() => this.onClickPencil('b_dateBookedDate', booking)}></i>
                         }
                     </td>
                     <EditablePopover 
@@ -3477,7 +3487,16 @@ class AllBookingsPage extends React.Component {
                     updateBookingSet={this.props.updateBookingSet}
                 />
 
+                <AdditionalSurchargeSlider
+                    isOpen={this.state.isShowAdditionalSurchargeSlider}
+                    toggleSlider={this.toggleAdditionalSurchargeSlider}
+                    booking={this.state.selectedBooking}
+                    clientname={clientname}
+                    fps={this.props.allFPs}
+                />
+
                 <ToastContainer />
+
                 {/* <ReactstrapModal 
                     isOpen={!isEmpty(this.state.mapData)} 
                     className="bookingset-modal"

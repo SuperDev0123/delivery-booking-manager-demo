@@ -540,6 +540,18 @@ p.status-icon {
         color: gray;
         width: 100%;
     }
+
+    .surcharges-table {
+        max-height: 135px;
+        width: 100%;
+        overflow-y: scroll;
+
+        table p {
+            height: 20px !important;
+            margin-bottom: 0 !important;
+            font-size: 11px;
+        }
+    }
 }
 
 .booking-form-02 > .col-sm-6 {

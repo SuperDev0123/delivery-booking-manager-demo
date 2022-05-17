@@ -27,6 +27,7 @@ class AdditionalSurchargeSlider extends React.Component {
             errorMessage: null,
             selectedSurcharge: null,
             isShowDeleteConfirmModal: false,
+            bookingId: '',
         };
 
         moment.tz.setDefault('Australia/Sydney');
@@ -41,6 +42,7 @@ class AdditionalSurchargeSlider extends React.Component {
         booking: PropTypes.object.isRequired,
         clientname: PropTypes.string,
         fps: PropTypes.array,
+        bookingId: PropTypes.string,
         surcharges: PropTypes.array.isRequired,
         getSurcharges: PropTypes.func.isRequired,
         createSurcharge: PropTypes.func.isRequired,
@@ -49,10 +51,12 @@ class AdditionalSurchargeSlider extends React.Component {
     };
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        const { isOpen } = nextProps;
-
-        if (!this.props.isOpen && isOpen) {
-            this.props.getSurcharges(this.props.booking.id);
+        if (nextProps.isOpen) {
+            if (nextProps.fps.length > 0 && nextProps.booking.id)
+                if (nextProps.booking.id !== this.state.bookingId) {
+                    this.setState({bookingId: nextProps.booking.id});
+                    this.props.getSurcharges(nextProps.booking.id);
+                }
         }
     }
 
@@ -176,10 +180,10 @@ class AdditionalSurchargeSlider extends React.Component {
                 return (
                     <tr key={index}>
                         <td>{index + 1}</td>
-                        <td>{surcharge.name}</td>
                         {clientname === 'dme' && <td>{surcharge.visible ? 'Yes' : 'No'}</td>}
                         <td>{surcharge.is_manually_entered ? 'Yes, manually' : 'No'}</td>
                         <td>{fp.fp_company_name}</td>
+                        <td>{surcharge.name}</td>
                         <td>{surcharge.connote_or_reference}</td>
                         <td>{surcharge.description ? surcharge.description : surcharge.name}</td>
                         <td>{surcharge.booked_date && moment(surcharge.booked_date).format('DD/MM/YYYY HH:mm')}</td>
@@ -216,7 +220,7 @@ class AdditionalSurchargeSlider extends React.Component {
                 className='additional-surcharge-slider'
                 overlayClassName='additional-surcharge-slider-overlay'
                 isOpen={isOpen}
-                title='Additional Services Slider'
+                title='Linked Services Slider'
                 subtitle={viewMode === 0 ? 'List View' : 'Form View'}
                 onRequestClose={this.props.toggleSlider}
             >
@@ -397,14 +401,14 @@ class AdditionalSurchargeSlider extends React.Component {
                                             {clientname === 'dme' && <th className="" scope="col" nowrap><p>Visible to Customer</p></th>}
                                             <th className="" scope="col" nowrap><p>Is Manually Entered?</p></th>
                                             <th className="" scope="col" nowrap><p>Booked Date</p></th>
-                                            <th className="" scope="col" nowrap><p>ETA Pickup Date</p></th>
-                                            <th className="" scope="col" nowrap><p>ETA Delivery Date</p></th>
-                                            <th className="" scope="col" nowrap><p>Actual Pickup Date</p></th>
-                                            <th className="" scope="col" nowrap><p>Actual Delivery Date</p></th>
                                             <th className="" scope="col" nowrap><p>Freight Provider or Supplier</p></th>
                                             <th className="" scope="col" nowrap><p>Service Name</p></th>
                                             <th className="" scope="col" nowrap><p>Connote or Reference</p></th>
                                             <th className="" scope="col" nowrap><p>Service / Surcharge Description</p></th>
+                                            <th className="" scope="col" nowrap><p>ETA Pickup Date</p></th>
+                                            <th className="" scope="col" nowrap><p>ETA Delivery Date</p></th>
+                                            <th className="" scope="col" nowrap><p>Actual Pickup Date</p></th>
+                                            <th className="" scope="col" nowrap><p>Actual Delivery Date</p></th>
                                             <th className="" scope="col" nowrap><p>Quantity</p></th>
                                             <th className="" scope="col" nowrap><p>Markup %</p></th>
                                             {clientname === 'dme' && <th className="" scope="col" nowrap><p>Unit Cost Amount to Deliver-ME Ex GST</p></th>}

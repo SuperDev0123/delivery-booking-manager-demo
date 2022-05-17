@@ -43,6 +43,8 @@ import AdditionalSurchargeSlider from '../components/Sliders/AdditionalSurcharge
 import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
 import CSNoteSlider from '../components/Sliders/CSNoteSlider';
 import Children from '../components/Modules/Children';
+// Custom Tables
+import SurchargeTable from '../components/Tables/SurchargeTable';
 // Services
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
@@ -4238,6 +4240,13 @@ class BookingPage extends Component {
                                             }
                                         </div> : null
                                     }
+                                    <div className='row col-sm-12 booking-form-02'>
+                                        <SurchargeTable
+                                            clientname={clientname}
+                                            bookingId={booking ? booking.id : null}
+                                            fps={this.props.allFPs}
+                                        />
+                                    </div>
                                     <div className='row col-sm-12 booking-form-02'>
                                         <div className={clientname === 'dme' ? 'col-sm-6 form-group' : 'none'}>
                                             <span>Invoice Billing Status Note</span>
