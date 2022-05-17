@@ -72,7 +72,8 @@ class AdditionalSurchargeSlider extends React.Component {
         const formInputs = {
             'qty': 1,
             'is_manually_entered': true,
-            'booked_date': conveted_date
+            'booked_date': conveted_date,
+            'amount': 0
         };
         this.setState({viewMode: 1, saveMode: 0, formInputs});
     }
@@ -242,7 +243,7 @@ class AdditionalSurchargeSlider extends React.Component {
                                     </div>
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Select a Freight Provider</span>
+                                    <span className="text-left">Select a Freight Provider*</span>
                                     <select 
                                         required
                                         name='fp'
@@ -254,7 +255,7 @@ class AdditionalSurchargeSlider extends React.Component {
                                     </select>
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Service Name</span>
+                                    <span className="text-left">Service Name*</span>
                                     <input
                                         className="form-control"
                                         required
@@ -267,7 +268,6 @@ class AdditionalSurchargeSlider extends React.Component {
                                     <span className="text-left">Connote / Reference</span>
                                     <input
                                         className="form-control"
-                                        required
                                         name="connote_or_reference"
                                         value={formInputs['connote_or_reference']}
                                         onChange={(e) => this.onInputChange(e)}
@@ -324,7 +324,7 @@ class AdditionalSurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Amount ($)</span>
+                                    <span className="text-left">Amount ($)*</span>
                                     <input
                                         className="form-control"
                                         required
@@ -336,7 +336,7 @@ class AdditionalSurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Quantity</span>
+                                    <span className="text-left">Quantity*</span>
                                     <input
                                         className="form-control"
                                         required

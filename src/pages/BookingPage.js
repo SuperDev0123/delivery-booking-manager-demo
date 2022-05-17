@@ -4155,18 +4155,6 @@ class BookingPage extends Component {
                                                 </div>
                                             </div>
                                         }
-                                        <div className="col-sm-1 form-group">
-                                            <div>
-                                                <span>Linked Services</span><br />
-                                                <Button
-                                                    className={cntAdditionalSurcharges ? 'custom-button btn-primary' : 'custom-button btn-secondary'}
-                                                    onClick={() => this.toggleAdditionalSurchargeSlider()}
-                                                    disabled={!isBookingSelected || !this.props.allFPs}
-                                                >
-                                                    <i className="fa fa-columns"></i>
-                                                </Button>
-                                            </div>
-                                        </div>
                                         <div className="col-sm-2 form-group">
                                             <div>
                                                 <span>DME Invoice No</span>
@@ -4205,10 +4193,18 @@ class BookingPage extends Component {
                                             </div>
                                         }
                                     </div>
-                                    {(eta.days || eta.hours) ?
-                                        <div className="row col-sm-10 booking-form-01">
-                                        </div> : null
-                                    }
+                                    <div className="row col-sm-10 booking-form-01">
+                                        <div>
+                                            <span>Linked Services</span><br />
+                                            <Button
+                                                className={cntAdditionalSurcharges ? 'custom-button btn-primary' : 'custom-button btn-secondary'}
+                                                onClick={() => this.toggleAdditionalSurchargeSlider()}
+                                                disabled={!isBookingSelected || !this.props.allFPs}
+                                            >
+                                                <i className="fa fa-columns"></i>
+                                            </Button>
+                                        </div>
+                                    </div>
                                     {(eta.days || eta.hours) ?
                                         <div className="row col-sm-2 booking-form-01">
                                             <span>Transit Time</span><br />

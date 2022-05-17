@@ -85,7 +85,18 @@ class BulkUpdateSlider extends React.Component {
         if (src === 'value') {
             this.setState({selectedValue: e.target.value, errorMsg});
         } else if (src === 'field') {
-            this.setState({selectedField: e.target.value, selectedValue: null, errorMsg});
+            let formInputs = {};
+            if (e.target.value === 'additional_surcharge') {
+                let conveted_date = moment().add(this.tzOffset, 'h');               // Current -> UTC
+                conveted_date = conveted_date.add(timeDiff, 'h');                   // UTC -> Sydney
+                formInputs['amount'] = 0;
+                formInputs['qty'] = 1;
+                formInputs['amount'] = 0;
+                formInputs['is_manually_entered'] = true;
+                formInputs['booked_date'] = conveted_date;
+            }
+
+            this.setState({selectedField: e.target.value, selectedValue: null, formInputs, errorMsg});
         }
     }
 
@@ -432,7 +443,7 @@ class BulkUpdateSlider extends React.Component {
                                         </div>
                                     </label><br />
                                     <label>
-                                        <span className="text-left">Select a Freight Provider</span>
+                                        <span className="text-left">Select a Freight Provider*</span>
                                         <select 
                                             required
                                             name='fp'
@@ -444,7 +455,7 @@ class BulkUpdateSlider extends React.Component {
                                         </select>
                                     </label><br />
                                     <label>
-                                        <span className="text-left">Service Name</span>
+                                        <span className="text-left">Service Name*</span>
                                         <input
                                             className="form-control"
                                             required
@@ -457,7 +468,6 @@ class BulkUpdateSlider extends React.Component {
                                         <span className="text-left">Connote / Reference</span>
                                         <input
                                             className="form-control"
-                                            required
                                             name="connote_or_reference"
                                             value={formInputs['connote_or_reference']}
                                             onChange={(e) => this.onHandleInput(e)}
@@ -514,7 +524,7 @@ class BulkUpdateSlider extends React.Component {
                                         />
                                     </label><br />
                                     <label>
-                                        <span className="text-left">Amount ($)</span>
+                                        <span className="text-left">Amount ($)*</span>
                                         <input
                                             className="form-control"
                                             required
@@ -526,7 +536,7 @@ class BulkUpdateSlider extends React.Component {
                                         />
                                     </label><br />
                                     <label>
-                                        <span className="text-left">Quantity</span>
+                                        <span className="text-left">Quantity*</span>
                                         <input
                                             className="form-control"
                                             required
