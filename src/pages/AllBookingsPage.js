@@ -2093,7 +2093,11 @@ class AllBookingsPage extends React.Component {
                         >
                             {booking.b_bookingID_Visual}
                         </span>
-                        <i className="fa fa-columns" title='Linked Services Slider' onClick={() => this.onClickPencil('b_bookingID_Visual', booking)}></i>
+                        <i
+                            className={booking.surcharge_cnt === 0 ? 'fa fa-columns c-gray' : 'fa fa-columns'}
+                            title='Linked Services Slider'
+                            onClick={() => this.onClickPencil('b_bookingID_Visual', booking)}>
+                        </i>
                     </td>
                     <td name='vx_freight_provider' className={(sortField === 'vx_freight_provider') ? 'current' : ''}>{booking.vx_freight_provider} {booking.cost_dollar ? `($${booking.cost_dollar})` : ''}</td>
                     <td name='v_FPBookingNumber' className={(sortField === 'v_FPBookingNumber') ? 'current' : ''}>{booking.v_FPBookingNumber}</td>
