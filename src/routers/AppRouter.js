@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { BrowserRouter, Route, Switch,Redirect } from 'react-router-dom';
+import { Router, Route, Switch,Redirect } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 
 // Routes
@@ -84,7 +84,7 @@ import ClientRas from '../pages/admin/CustomerViews/ClientRas';
 import ClientRasAction from '../pages/admin/CustomerViews/ClientRas/ClientRasAction';
 import ActiveBookings from '../pages/admin/AdminViews/Chart/ActiveBookings';
 export const AppRouter = () => (
-    <BrowserRouter history={createBrowserHistory()}>
+    <Router history={createBrowserHistory()}>
         <Fragment>
             <Header />
             <Switch>
@@ -177,5 +177,5 @@ export const AppRouter = () => (
             </Switch>
             <Footer />
         </Fragment>
-    </BrowserRouter>
+    </Router>
 );
