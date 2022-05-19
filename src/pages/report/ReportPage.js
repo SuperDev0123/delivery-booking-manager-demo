@@ -22,7 +22,7 @@ class ReportPage extends React.Component {
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         cleanRedirectState: PropTypes.func.isRequired,
-        clientname: PropTypes.string.isRequired,
+        clientname: PropTypes.string,
     };
 
     componentDidMount() {

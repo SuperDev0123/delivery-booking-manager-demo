@@ -38,13 +38,13 @@ class ManifestReport extends React.Component {
         history: PropTypes.object.isRequired,
         getUser: PropTypes.func.isRequired,
         getManifestReport: PropTypes.func.isRequired,
-        getAllClients: PropTypes.func.isRequired,
-        getAllFPs: PropTypes.func.isRequired,
+        getAllClients: PropTypes.func,
+        getAllFPs: PropTypes.func,
         setAllGetBookingsFilter: PropTypes.func.isRequired,
-        reports: PropTypes.array.isRequired,
-        clientname: PropTypes.string.isRequired,
-        allFPs: PropTypes.array.isRequired,
-        clients: PropTypes.array.isRequired,
+        reports: PropTypes.array,
+        clientname: PropTypes.string,
+        allFPs: PropTypes.array,
+        clients: PropTypes.array,
     };
 
     componentDidMount() {
@@ -255,15 +255,15 @@ class ManifestReport extends React.Component {
                 <div>
                     {clientname === 'dme' &&
                         <label>Client:
-                            <select value={clientFilter} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
-                                <option value="" selected>All</option>
+                            <select value={clientFilter ? clientFilter : ''} onChange={(e) => this.onChangeFilterType(e, 'clientFilter')} >
+                                <option value="">All</option>
                                 {clientsOpts}
                             </select>
                         </label>
                     }
                     <label>Freight Provider:
-                        <select value={fpFilter} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
-                            <option value="" selected>All</option>
+                        <select value={fpFilter ? fpFilter : ''} onChange={(e) => this.onChangeFilterType(e, 'fpFilter')} >
+                            <option value="">All</option>
                             {fpFilterOpts}
                         </select>
                     </label>                                  

@@ -819,7 +819,7 @@ class BookingPage extends Component {
                 tempAdditionalServices.Invoiced = '';
                 
                 let AdditionalServices = [];
-                AdditionalServices.push(tempAdditionalServices);
+                AdditionalServices = [...tempAdditionalServices];
 
                 this.setState({
                     puPostalCode: {
@@ -4020,7 +4020,7 @@ class BookingPage extends Component {
                                                             className="form-control"
                                                             type="text"
                                                             name="fp_invoice_no"
-                                                            value = {formInputs['fp_invoice_no']}
+                                                            value = {formInputs['fp_invoice_no'] ? formInputs['fp_invoice_no'] : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                 }
@@ -4217,7 +4217,7 @@ class BookingPage extends Component {
                                                             className="form-control days disp-inline-block"
                                                             type="number"
                                                             name="eta.days"
-                                                            value = {eta.days}
+                                                            value = {eta.days ? eta.days : ''}
                                                             onChange={(e) => this.onHandleInput(e)}
                                                         />
                                                         <p>Days</p>
@@ -5263,21 +5263,21 @@ class BookingPage extends Component {
                                                     <label>
                                                         <h5 className="bold">PU Entity<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany'] ? clientprocess['origin_puCompany'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_puCompany']}</span>
                                                         }
                                                     </label>
                                                     <label>
                                                         <h5 className="bold">PU Street 1<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1'] ? clientprocess['origin_pu_Address_Street_1'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_pu_Address_Street_1']}</span>
                                                         }
                                                     </label>
                                                     <label>
                                                         <h5 className="bold">PU Street 2: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2'] ? clientprocess['origin_pu_Address_Street_2'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_pu_Address_Street_2']}</span>
                                                         }
                                                     </label>
@@ -5287,21 +5287,21 @@ class BookingPage extends Component {
                                                     <label>
                                                         <h5 className="bold">DE Entity<span className='c-red'>*</span>: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName'] ? clientprocess['origin_deToCompanyName'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_deToCompanyName']}</span>
                                                         }
                                                     </label>
                                                     <label>
                                                         <h5 className="bold">DE Instrunction: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address'] ? clientprocess['origin_pu_pickup_instructions_address'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_pu_pickup_instructions_address']}</span>
                                                         }
                                                     </label>
                                                     <label>
                                                         <h5 className="bold">DE Group Emails: </h5>
                                                         {isAugmentEditable ?
-                                                            <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails']} onChange={(e) => this.onInputChange(e)} />
+                                                            <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails'] ? clientprocess['origin_de_Email_Group_Emails'] : ''} onChange={(e) => this.onInputChange(e)} />
                                                             : <span>{clientprocess['origin_de_Email_Group_Emails']}</span>
                                                         }
                                                     </label>
@@ -5599,7 +5599,7 @@ class BookingPage extends Component {
                                                                     className="checkbox"
                                                                     name="b_send_POD_eMail"
                                                                     type="checkbox"
-                                                                    value={booking.b_send_POD_eMail}
+                                                                    value={booking.b_send_POD_eMail ? booking.b_send_POD_eMail : ''}
                                                                     onChange={(e) => this.handleInputChange(e)}
                                                                     disabled={(clientname !== 'dme') || (curViewMode === 1) ? 'disabled' : ''}
                                                                 />
@@ -5694,7 +5694,7 @@ class BookingPage extends Component {
                                                             className="checkbox"
                                                             name="tickManualBook"
                                                             type="checkbox"
-                                                            value={formInputs['x_manual_booked_flag']}
+                                                            value={formInputs['x_manual_booked_flag'] ? formInputs['x_manual_booked_flag'] : ''}
                                                             onChange={(e) => this.handleInputChange(e)}
                                                             disabled={(booking && isBookedBooking && isLockedBooking) || (curViewMode === 1) ? 'disabled' : ''}
                                                         />

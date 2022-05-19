@@ -51,7 +51,7 @@ class CustomPagination extends Component {
 
         for (let i = startInd; i <= endInd; i++) {
             paginationItems.push(
-                <PaginationItem>
+                <PaginationItem key={i}>
                     <PaginationLink 
                         href='#' 
                         onClick={(event) => { 
