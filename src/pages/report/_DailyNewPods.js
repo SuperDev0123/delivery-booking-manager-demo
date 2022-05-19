@@ -53,10 +53,10 @@ class DailyNewPods extends React.Component {
                         </p>
                         <p className="">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <span>Created At: {moment(report.z_createdTimeStamp).format('DD MMM YYYY HH:mm:ss')}</span>
+                            <span>Created At: {moment(report.z_createdTimeStamp).format('DD MMM YYYY HH:mm')}</span>
                             {
                                 (report.z_downloadedTimeStamp) &&
-                                    <span>&nbsp;&nbsp;Downloaded At: {moment(report.z_downloadedTimeStamp).format('DD MMM YYYY HH:mm:ss')}</span>
+                                    <span>&nbsp;&nbsp;Downloaded At: {moment(report.z_downloadedTimeStamp).format('DD MMM YYYY HH:mm')}</span>
                             }
                         </p>
                     </div>
@@ -72,7 +72,7 @@ class DailyNewPods extends React.Component {
         return (
             <div className="tab-pane fade in active">
                 <div className="content">
-                    <span className="right">Sydney AU: <Clock format={'DD MMM YYYY h:mm:ss A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} /></span>
+                    <span className="right">Sydney AU: <Clock format={'DD MMM YYYY h:mm A'} disabled={true} ticking={true} timezone={'Australia/Sydney'} /></span>
                     {reportsList}
                 </div>
             </div>

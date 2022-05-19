@@ -75,7 +75,7 @@ class FilesPage extends Component {
 
     datetimeFormatter(cell, row) {
         if (row.z_createdTimeStamp)
-            return (<span>{moment(row.z_createdTimeStamp).format('DD/MM/YYYY hh:mm:ss')}</span>);
+            return (<span>{moment(row.z_createdTimeStamp).format('DD/MM/YYYY HH:mm')}</span>);
 
         return (<span></span>);
     }

@@ -155,7 +155,7 @@ class ScansSlider extends React.Component {
                         <td>{fp.fp_company_name}</td>
                         <td>{scan.status}</td>
                         <td>{scan.desc}</td>
-                        <td>{scan.event_timestamp && moment(scan.event_timestamp).format('DD/MM/YYYY HH:mm:ss')}</td>
+                        <td>{scan.event_timestamp && moment(scan.event_timestamp).format('DD/MM/YYYY HH:mm')}</td>
                         {clientname === 'dme' &&
                             <td>
                                 <Button color="primary" onClick={() => this.onClickEditBtn(scan)}>

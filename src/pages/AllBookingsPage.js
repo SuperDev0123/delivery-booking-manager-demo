@@ -859,7 +859,7 @@ class AllBookingsPage extends React.Component {
                     const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
-                    link.setAttribute('download', 'labels_' + selectedname + '_' + selectedBookingIds.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                    link.setAttribute('download', 'labels_' + selectedname + '_' + selectedBookingIds.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                     document.body.appendChild(link);
                     link.click();
                     this.props.setNeedUpdateBookingsState(true);
@@ -895,7 +895,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_' + selectedname + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_' + selectedname + '_' + downloadOption === 'pod' ? selectedBookingIds.length : bookingIdsWithNewPOD.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -935,7 +935,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'pod_signed' + selectedname + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'pod_signed' + selectedname + '_' + downloadOption === 'pod_sog' ? selectedBookingIds.length : bookingIdsWithNewPODSOG.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -975,7 +975,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedname + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedname + '_' + downloadOption === 'connote' ? selectedBookingIds.length : bookingIdsWithNewConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -1021,7 +1021,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'connote_' + selectedname + '_' + bookingIdsWithConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'connote_' + selectedname + '_' + bookingIdsWithConnote.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -1045,7 +1045,7 @@ class AllBookingsPage extends React.Component {
                         const url = window.URL.createObjectURL(new Blob([response.data]));
                         const link = document.createElement('a');
                         link.href = url;
-                        link.setAttribute('download', 'label_' + selectedname + '_' + bookingIdsWithLabel.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm:ss') + '.zip');
+                        link.setAttribute('download', 'label_' + selectedname + '_' + bookingIdsWithLabel.length + '_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
                         document.body.appendChild(link);
                         link.click();
                         this.props.setGetBookingsFilter('date', {startDate, endDate});
@@ -1588,7 +1588,7 @@ class AllBookingsPage extends React.Component {
         }
 
         booking.z_lock_status = !booking.z_lock_status;
-        booking.z_locked_status_time = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+        booking.z_locked_status_time = moment().utc().format('YYYY-MM-DD HH:mm');
 
         if (!booking.z_lock_status) {
             booking.b_status_API = 'status update ' + moment().utc().format('DD_MM_YYYY');
@@ -2271,13 +2271,13 @@ class AllBookingsPage extends React.Component {
                         <p>{booking.fp_store_event_date ? moment(booking.fp_store_event_date).format('DD/MM/YYYY') : null}</p>
                     </td>
                     <td name='b_given_to_transport_date_time' className={(sortField === 'b_given_to_transport_date_time') ? 'current' : ''}>
-                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.b_given_to_transport_date_time ? moment(booking.b_given_to_transport_date_time).format('DD/MM/YYYY HH:mm') : ''}
                     </td>
                     <td name='fp_received_date_time' className={(sortField === 'fp_received_date_time') ? 'current' : ''}>
-                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.fp_received_date_time ? moment(booking.fp_received_date_time).format('DD/MM/YYYY HH:mm') : ''}
                     </td>
                     <td name='s_21_Actual_Delivery_TimeStamp' className={(sortField === 's_21_Actual_Delivery_TimeStamp') ? 'current' : ''}>
-                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.s_21_Actual_Delivery_TimeStamp ? moment(booking.s_21_Actual_Delivery_TimeStamp).format('DD/MM/YYYY HH:mm') : ''}
                     </td>
                     <td
                         name='dme_status_detail' 
@@ -2300,10 +2300,10 @@ class AllBookingsPage extends React.Component {
                         }
                     </td>
                     <td name='s_06_Latest_Delivery_Date_TimeSet' className={(sortField === 's_06_Latest_Delivery_Date_TimeSet') ? 'current' : ''}>
-                        {booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.s_06_Latest_Delivery_Date_TimeSet ? moment(booking.s_06_Latest_Delivery_Date_TimeSet).format('DD/MM/YYYY HH:mm') : ''}
                     </td>
                     <td name='s_06_Latest_Delivery_Date_Time_Override' className={(sortField === 's_06_Latest_Delivery_Date_Time_Override') ? 'current' : ''}>
-                        {booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm:ss') : ''}
+                        {booking.s_06_Latest_Delivery_Date_Time_Override ? moment(booking.s_06_Latest_Delivery_Date_Time_Override).format('DD/MM/YYYY HH:mm') : ''}
                     </td>
                     <td 
                         name='de_to_PickUp_Instructions_Address'
