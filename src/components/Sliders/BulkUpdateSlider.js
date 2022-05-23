@@ -151,6 +151,12 @@ class BulkUpdateSlider extends React.Component {
         this.setState({errorMsg: null});
     }
 
+    onClickAutoGen() {
+        const { formInputs } = this.state;
+        formInputs['connote_or_reference'] = 'Will be automatically generated *(Delete text to reset)*';
+        this.setState({formInputs, selectedValue: 'fake-value'});
+    }
+
     render() {
         const { isOpen, allBookingStatus, clientname, fps } = this.props;
         const { selectedField, selectedValue, optionalValue, errorMsg, formInputs } = this.state;
@@ -469,9 +475,8 @@ class BulkUpdateSlider extends React.Component {
                                             Connote / Reference
                                             <Button
                                                 className="auto-gen-connote btn btn-success"
-                                                // onClick={() => this.onClickAutoGen()}
+                                                onClick={() => this.onClickAutoGen()}
                                                 title="Auto generate connote number based on Freight Provider and Booking info"
-                                                disabled='disabled'
                                             >
                                                 Auto Gen
                                             </Button>
