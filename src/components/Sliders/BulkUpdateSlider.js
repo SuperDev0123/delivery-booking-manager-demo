@@ -465,7 +465,17 @@ class BulkUpdateSlider extends React.Component {
                                         />
                                     </label><br />
                                     <label>
-                                        <span className="text-left">Connote / Reference</span>
+                                        <span className="text-left">
+                                            Connote / Reference
+                                            <Button
+                                                className="auto-gen-connote btn btn-success"
+                                                // onClick={() => this.onClickAutoGen()}
+                                                title="Auto generate connote number based on Freight Provider and Booking info"
+                                                disabled='disabled'
+                                            >
+                                                Auto Gen
+                                            </Button>
+                                        </span>
                                         <input
                                             className="form-control"
                                             name="connote_or_reference"

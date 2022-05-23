@@ -15,6 +15,7 @@ import ConfirmModal from '../CommonModals/ConfirmModal';
 import { getSurcharges, createSurcharge, updateSurcharge, deleteSurcharge } from '../../state/services/costService';
 // Constants
 import { timeDiff } from '../../commons/constants';
+import { fillZero } from '../../commons/helpers';
 
 class AdditionalSurchargeSlider extends React.Component {
     constructor(props) {
@@ -167,6 +168,27 @@ class AdditionalSurchargeSlider extends React.Component {
         this.setState({formInputs});
     }
 
+    onClickAutoGen() {
+        // const connote = `{}`;
+        const { booking } = this.props;
+        const { formInputs } = this.state;
+
+        if (!formInputs['fp']) {
+            this.notify('Please select a Freight Provider');
+            return;
+        }
+
+        if (booking.v_FPBookingNumber) {
+            formInputs['connote_or_reference'] = fillZero(formInputs['fp'], 4);
+            formInputs['connote_or_reference'] += `-${booking.v_FPBookingNumber.toString()}`;
+        } else {
+            formInputs['connote_or_reference'] = fillZero(formInputs['fp'], 4);
+            formInputs['connote_or_reference'] += `-DME${booking.b_bookingID_Visual.toString()}`;
+        }
+
+        this.setState({formInputs});
+    }
+
     render() {
         const { isOpen, surcharges, clientname, fps } = this.props;
         const { viewMode, formInputs, saveMode } = this.state;
@@ -265,7 +287,16 @@ class AdditionalSurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Connote / Reference</span>
+                                    <span className="text-left">
+                                        Connote / Reference
+                                        <Button
+                                            className="auto-gen-connote btn btn-success"
+                                            onClick={() => this.onClickAutoGen()}
+                                            title="Auto generate connote number based on Freight Provider and Booking info"
+                                        >
+                                            Auto Gen
+                                        </Button>
+                                    </span>
                                     <input
                                         className="form-control"
                                         name="connote_or_reference"

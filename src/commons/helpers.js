@@ -111,6 +111,12 @@ function getM3ToKgFactor(freight_provider, length, width, height, weight, dimUOM
     return 250;
 }
 
+// Filling 0
+function fillZero (str, max) {
+    str = str.toString();
+    return str.length < max ? fillZero('0' + str, max) : str;
+}
+
 // https://stackoverflow.com/questions/34077449/fastest-way-to-cast-a-float-to-an-int-in-javascript
 const milliseconds2Days = (milliseconds) => ~~(milliseconds / (1000*60*60*24));
 const milliseconds2Hours = (milliseconds) => ~~(milliseconds / (1000*60*60));
@@ -126,4 +132,5 @@ module.exports = {
     getM3ToKgFactor,
     milliseconds2Days,
     milliseconds2Hours,
+    fillZero,
 };
