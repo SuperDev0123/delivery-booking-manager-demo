@@ -47,7 +47,7 @@ import BulkUpdateSlider from '../components/Sliders/BulkUpdateSlider';
 import PricingAnalyseSlider from '../components/Sliders/PricingAnalyseSlider';
 import BookingSetModal from '../components/CommonModals/BookingSetModal';
 import ManifestSlider from '../components/Sliders/ManifestSlider';
-import AdditionalSurchargeSlider from '../components/Sliders/AdditionalSurchargeSlider';
+import SurchargeSlider from '../components/Sliders/SurchargeSlider';
 
 class AllBookingsPage extends React.Component {
     constructor(props) {
@@ -137,7 +137,7 @@ class AllBookingsPage extends React.Component {
         this.togglePricingAnalyseSlider = this.togglePricingAnalyseSlider.bind(this);
         this.toggleBookingSetModal = this.toggleBookingSetModal.bind(this);
         this.toggleManifestSlider = this.toggleManifestSlider.bind(this);
-        this.toggleAdditionalSurchargeSlider = this.toggleAdditionalSurchargeSlider.bind(this);
+        this.toggleSurchargeSlider = this.toggleSurchargeSlider.bind(this);
     }
 
     static propTypes = {
@@ -795,8 +795,8 @@ class AllBookingsPage extends React.Component {
         this.setState(prevState => ({isShowManifestSlider: !prevState.isShowManifestSlider}));
     }
 
-    toggleAdditionalSurchargeSlider() {
-        this.setState(prevState => ({isShowAdditionalSurchargeSlider: !prevState.isShowAdditionalSurchargeSlider}));
+    toggleSurchargeSlider() {
+        this.setState(prevState => ({isShowSurchargeSlider: !prevState.isShowSurchargeSlider}));
     }
 
     onClickAllTrigger() {
@@ -1611,7 +1611,7 @@ class AllBookingsPage extends React.Component {
             this.setState({ additionalInfoOpens: [], bookingLinesInfoOpens: [], bookingLineDetails: [], linkPopoverOpens: [], editCellPopoverOpens });
         } else if (type === 'b_bookingID_Visual') {
             this.setState({selectedBooking: booking});
-            this.toggleAdditionalSurchargeSlider();
+            this.toggleSurchargeSlider();
         }
     }
 
@@ -3491,9 +3491,9 @@ class AllBookingsPage extends React.Component {
                     updateBookingSet={this.props.updateBookingSet}
                 />
 
-                <AdditionalSurchargeSlider
-                    isOpen={this.state.isShowAdditionalSurchargeSlider}
-                    toggleSlider={this.toggleAdditionalSurchargeSlider}
+                <SurchargeSlider
+                    isOpen={this.state.isShowSurchargeSlider}
+                    toggleSlider={this.toggleSurchargeSlider}
                     booking={this.state.selectedBooking}
                     clientname={clientname}
                     fps={this.props.allFPs}

@@ -39,7 +39,7 @@ import TooltipItem from '../components/Tooltip/TooltipComponent';
 import ConfirmModal from '../components/CommonModals/ConfirmModal';
 import FPPricingSlider from '../components/Sliders/FPPricingSlider';
 import EmailLogSlider from '../components/Sliders/EmailLogSlider';
-import AdditionalSurchargeSlider from '../components/Sliders/AdditionalSurchargeSlider';
+import SurchargeSlider from '../components/Sliders/SurchargeSlider';
 import FreightOptionAccordion from '../components/Accordion/FreightOptionAccordion';
 import CSNoteSlider from '../components/Sliders/CSNoteSlider';
 import Children from '../components/Modules/Children';
@@ -163,7 +163,7 @@ class BookingPage extends Component {
             isShowDeleteFileConfirmModal: false,
             isShowUpdateCreatedForEmailConfirmModal: false,
             isShowEmailLogSlider: false,
-            isShowAdditionalSurchargeSlider: false,
+            isShowSurchargeSlider: false,
             isShowAugmentInfoPopup: false,
             isAugmentEditable: false,
             isShowManualRepackModal: false,
@@ -230,7 +230,7 @@ class BookingPage extends Component {
         this.toggleUpdateCreatedForEmailConfirmModal = this.toggleUpdateCreatedForEmailConfirmModal.bind(this);
         this.toggleFPPricingSlider = this.toggleFPPricingSlider.bind(this);
         this.toggleEmailLogSlider = this.toggleEmailLogSlider.bind(this);
-        this.toggleAdditionalSurchargeSlider = this.toggleAdditionalSurchargeSlider.bind(this);
+        this.toggleSurchargeSlider = this.toggleSurchargeSlider.bind(this);
         this.onLoadPricingErrors = this.onLoadPricingErrors.bind(this);
         this.toggleManualRepackModal = this.toggleManualRepackModal.bind(this);
         this.toggleCSNoteSlider = this.toggleCSNoteSlider.bind(this);
@@ -2511,17 +2511,17 @@ class BookingPage extends Component {
         this.setState(prevState => ({isShowCSNoteSlider: !prevState.isShowCSNoteSlider}));
     }
 
-    toggleAdditionalSurchargeSlider() {
+    toggleSurchargeSlider() {
         if (!this.state.booking.vx_freight_provider) {
             this.notify('Freight Provider is required to open this slider.');
             return;
         }
 
-        if (this.state.isShowAdditionalSurchargeSlider) {
+        if (this.state.isShowSurchargeSlider) {
             this.refreshBooking(this.state.booking);
         }
 
-        this.setState(prevState => ({isShowAdditionalSurchargeSlider: !prevState.isShowAdditionalSurchargeSlider}));
+        this.setState(prevState => ({isShowSurchargeSlider: !prevState.isShowSurchargeSlider}));
     }
 
     toggleManualRepackModal() {
@@ -4198,7 +4198,7 @@ class BookingPage extends Component {
                                             <span>Linked Services</span><br />
                                             <Button
                                                 className={cntAdditionalSurcharges ? 'custom-button btn-primary' : 'custom-button btn-secondary'}
-                                                onClick={() => this.toggleAdditionalSurchargeSlider()}
+                                                onClick={() => this.toggleSurchargeSlider()}
                                                 disabled={!isBookingSelected || !this.props.allFPs}
                                             >
                                                 <i className="fa fa-columns"></i>
@@ -6202,9 +6202,9 @@ class BookingPage extends Component {
                     emailLogs={emailLogs}
                 />
 
-                <AdditionalSurchargeSlider
-                    isOpen={this.state.isShowAdditionalSurchargeSlider}
-                    toggleSlider={this.toggleAdditionalSurchargeSlider}
+                <SurchargeSlider
+                    isOpen={this.state.isShowSurchargeSlider}
+                    toggleSlider={this.toggleSurchargeSlider}
                     booking={booking}
                     clientname={clientname}
                     fps={this.props.allFPs}

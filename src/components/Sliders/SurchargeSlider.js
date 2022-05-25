@@ -17,7 +17,7 @@ import { getSurcharges, createSurcharge, updateSurcharge, deleteSurcharge } from
 import { timeDiff } from '../../commons/constants';
 import { fillZero } from '../../commons/helpers';
 
-class AdditionalSurchargeSlider extends React.Component {
+class SurchargeSlider extends React.Component {
     constructor(props) {
         super(props);
 
@@ -102,6 +102,7 @@ class AdditionalSurchargeSlider extends React.Component {
         formInputs['qty'] = surcharge.qty;
         formInputs['amount'] = surcharge.amount;
         formInputs['markup_percentage'] = fp.fp_markupfuel_levy_percent;
+        formInputs['bulk_update'] = false;
 
         if (surcharge.booking) {
             formInputs['booking'] = surcharge.booking;
@@ -252,6 +253,20 @@ class AdditionalSurchargeSlider extends React.Component {
                         <div className="form-view">
                             <h2>{saveMode === 0 ? 'Create a new Service' : 'Update Service'}</h2>
                             <form onSubmit={this.submitHandler}>
+                                {saveMode === 1 &&
+                                    <label>
+                                        <span className="text-left">Bulk Update</span>
+                                        <div>
+                                            <input
+                                                className="checkbox"
+                                                name="bulk_update"
+                                                type="checkbox"
+                                                checked={formInputs['bulk_update']}
+                                                onChange={(e) => this.onInputChange(e)}
+                                            />
+                                        </div>
+                                    </label>
+                                }
                                 <label>
                                     <span className="text-left">Visible to customer</span>
                                     <div>
@@ -431,11 +446,11 @@ class AdditionalSurchargeSlider extends React.Component {
                                             <th className="" scope="col" nowrap><p>No</p></th>
                                             {clientname === 'dme' && <th className="" scope="col" nowrap><p>Visible to Customer</p></th>}
                                             <th className="" scope="col" nowrap><p>Is Manually Entered?</p></th>
-                                            <th className="" scope="col" nowrap><p>Booked Date</p></th>
                                             <th className="" scope="col" nowrap><p>Freight Provider or Supplier</p></th>
                                             <th className="" scope="col" nowrap><p>Service Name</p></th>
                                             <th className="" scope="col" nowrap><p>Connote or Reference</p></th>
                                             <th className="" scope="col" nowrap><p>Service / Surcharge Description</p></th>
+                                            <th className="" scope="col" nowrap><p>Booked Date</p></th>
                                             <th className="" scope="col" nowrap><p>ETA Pickup Date</p></th>
                                             <th className="" scope="col" nowrap><p>ETA Delivery Date</p></th>
                                             <th className="" scope="col" nowrap><p>Actual Pickup Date</p></th>
@@ -487,4 +502,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(AdditionalSurchargeSlider));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SurchargeSlider));
