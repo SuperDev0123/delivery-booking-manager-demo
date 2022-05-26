@@ -108,6 +108,17 @@ class SurchargeSlider extends React.Component {
         formInputs['amount'] = surcharge.amount;
         formInputs['markup_percentage'] = fp.fp_markupfuel_levy_percent;
         formInputs['bulk_update'] = false;
+        formInputs['update_visible_field'] = false;
+        formInputs['update_fp_field'] = false;
+        formInputs['update_service_name_field'] = false;
+        formInputs['update_connote_or_reference_field'] = false;
+        formInputs['update_booked_date_field'] = false;
+        formInputs['update_estimated_pickup_date_field'] = false;
+        formInputs['update_estimated_delivery_date_field'] = false;
+        formInputs['update_actual_pickup_date_field'] = false;
+        formInputs['update_actual_delivery_date_field'] = false;
+        formInputs['update_amount_field'] = false;
+        formInputs['update_quantity_field'] = false;
 
         if (surcharge.booking) {
             formInputs['booking'] = surcharge.booking;
@@ -125,9 +136,9 @@ class SurchargeSlider extends React.Component {
         this.setState({selectedSurcharge: surcharge});
     }
 
-    onClickConfirmBtn() {
+    onClickConfirmBtn(type) {
         const { selectedSurcharge } = this.state;
-        this.props.deleteSurcharge(selectedSurcharge);
+        this.props.deleteSurcharge(selectedSurcharge, type);
         this.toggleDeleteConfirmModal();
     }
 
@@ -558,11 +569,13 @@ class SurchargeSlider extends React.Component {
 
                 <ConfirmModal
                     isOpen={this.state.isShowDeleteConfirmModal}
-                    onOk={() => this.onClickConfirmBtn('delete')}
+                    onOk={() => this.onClickConfirmBtn('single-delete')}
+                    onOk2={() => this.onClickConfirmBtn('bulk-delete')}
                     onCancel={this.toggleDeleteConfirmModal}
                     title={'Delete Cost Option'}
                     text={'Are you sure you want to delete this cost?'}
                     okBtnName={'Delete'}
+                    ok2BtnName={'Delete in BULK'}
                 />
 
                 <ToastContainer />
@@ -583,7 +596,7 @@ const mapDispatchToProps = (dispatch) => {
         getSurcharges: (bookingId) => dispatch(getSurcharges(bookingId)),
         createSurcharge: (surcharge) => dispatch(createSurcharge(surcharge)),
         updateSurcharge: (surcharge) => dispatch(updateSurcharge(surcharge)),
-        deleteSurcharge: (surcharge) => dispatch(deleteSurcharge(surcharge)),
+        deleteSurcharge: (surcharge, type) => dispatch(deleteSurcharge(surcharge, type)),
     };
 };
 
