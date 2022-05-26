@@ -45,6 +45,7 @@ class SurchargeSlider extends React.Component {
         fps: PropTypes.array,
         bookingId: PropTypes.string,
         surcharges: PropTypes.array.isRequired,
+        needToUpdateSurcharges: PropTypes.bool,
         getSurcharges: PropTypes.func.isRequired,
         createSurcharge: PropTypes.func.isRequired,
         updateSurcharge: PropTypes.func.isRequired,
@@ -58,6 +59,10 @@ class SurchargeSlider extends React.Component {
                     this.setState({bookingId: nextProps.booking.id});
                     this.props.getSurcharges(nextProps.booking.id);
                 }
+        }
+
+        if (nextProps.needToUpdateSurcharges) {
+            this.props.getSurcharges(nextProps.booking.id);
         }
     }
 
@@ -241,8 +246,8 @@ class SurchargeSlider extends React.Component {
 
         return (
             <SlidingPane
-                className='additional-surcharge-slider'
-                overlayClassName='additional-surcharge-slider-overlay'
+                className='surcharge-slider'
+                overlayClassName='surcharge-slider-overlay'
                 isOpen={isOpen}
                 title='Linked Services Slider'
                 subtitle={viewMode === 0 ? 'List View' : 'Form View'}
@@ -255,7 +260,7 @@ class SurchargeSlider extends React.Component {
                             <form onSubmit={this.submitHandler}>
                                 {saveMode === 1 &&
                                     <label>
-                                        <span className="text-left">Bulk Update</span>
+                                        <div><span className="text-left">Bulk Update</span></div>
                                         <div>
                                             <input
                                                 className="checkbox"
@@ -268,7 +273,15 @@ class SurchargeSlider extends React.Component {
                                     </label>
                                 }
                                 <label>
-                                    <span className="text-left">Visible to customer</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_visible_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_visible_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Visible to customer</p>
+                                    </div>
                                     <div>
                                         <input
                                             className="checkbox"
@@ -280,7 +293,15 @@ class SurchargeSlider extends React.Component {
                                     </div>
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Select a Freight Provider*</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_fp_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_fp_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Select a Freight Provider*</p>
+                                    </div>
                                     <select 
                                         required
                                         name='fp'
@@ -292,7 +313,15 @@ class SurchargeSlider extends React.Component {
                                     </select>
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Service Name*</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_service_name_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_service_name_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Service Name*</p>
+                                    </div>
                                     <input
                                         className="form-control"
                                         required
@@ -302,16 +331,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">
-                                        Connote / Reference
-                                        <Button
-                                            className="auto-gen-connote btn btn-success"
-                                            onClick={() => this.onClickAutoGen()}
-                                            title="Auto generate connote number based on Freight Provider and Booking info"
-                                        >
-                                            Auto Gen
-                                        </Button>
-                                    </span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_connote_or_reference_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_connote_or_reference_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Connote / Reference</p>
+                                    </div>
                                     <input
                                         className="form-control"
                                         name="connote_or_reference"
@@ -320,7 +348,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Booked Date</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_booked_date_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_booked_date_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Booked Date</p>
+                                    </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'booked_date')}
                                         value={formInputs['booked_date'] ?
@@ -330,7 +366,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Estimated Pickup Date</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_estimated_pickup_date_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_estimated_pickup_date_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Booked Date</p>
+                                    </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
                                         value={formInputs['eta_pu_date'] ?
@@ -340,7 +384,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Estimated Delivery Date</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_estimated_delivery_date_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_estimated_delivery_date_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Estimated Delivery Date</p>
+                                    </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'eta_de_date')}
                                         value={formInputs['eta_de_date'] ?
@@ -350,7 +402,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Actual Pickup Date</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_actual_pickup_date_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_actual_pickup_date_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Actual Pickup Date</p>
+                                    </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'actual_pu_date')}
                                         value={formInputs['actual_pu_date'] ?
@@ -360,7 +420,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Actual Delivery Date</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_actual_delivery_date_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_actual_delivery_date_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Actual Delivery Date</p>
+                                    </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'actual_de_date')}
                                         value={formInputs['actual_de_date'] ?
@@ -370,7 +438,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Amount ($)*</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_amount_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_amount_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Amount ($)*</p>
+                                    </div>
                                     <input
                                         className="form-control"
                                         required
@@ -382,7 +458,15 @@ class SurchargeSlider extends React.Component {
                                     />
                                 </label><br />
                                 <label>
-                                    <span className="text-left">Quantity*</span>
+                                    <div>
+                                        <input
+                                            className={formInputs['bulk_update'] ? 'checkbox' : 'none'}
+                                            name="update_quantity_field"
+                                            type="checkbox"
+                                            checked={formInputs['update_quantity_field']}
+                                            onChange={(e) => this.onInputChange(e)}
+                                        /> <p className="text-left">Quantity*</p>
+                                    </div>
                                     <input
                                         className="form-control"
                                         required
@@ -490,6 +574,7 @@ class SurchargeSlider extends React.Component {
 const mapStateToProps = (state) => {
     return {
         surcharges: state.cost.surcharges,
+        needToUpdateSurcharges: state.cost.needToUpdateSurcharges,
     };
 };
 

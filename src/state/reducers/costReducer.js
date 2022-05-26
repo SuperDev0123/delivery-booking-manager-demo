@@ -11,6 +11,7 @@ import {
 
 const defaultState = {
     surcharges: [],
+    needToUpdateSurcharges: false,
     errorMessage: '',
 };
 
@@ -20,6 +21,7 @@ export const CostReducer = (state = defaultState, { type, payload }) => {
             return {
                 ...state,
                 surcharges: payload,
+                needToUpdateSurcharges: false,
             };
         case SUCCESS_CREATE_SURCHARGE:
             return {
@@ -27,6 +29,13 @@ export const CostReducer = (state = defaultState, { type, payload }) => {
                 surcharges: [...state.surcharges, payload],
             };
         case SUCCESS_UPDATE_SURCHARGE: {
+            if (payload.hasOwnProperty('is_bulk_update')) {
+                return {
+                    ...state,
+                    needToUpdateSurcharges: true,
+                };
+            }
+
             const index = state.surcharges.findIndex(surcharge => surcharge.id === payload.id);
             const _surcharges = [...state.surcharges];
             _surcharges[index] = payload;
