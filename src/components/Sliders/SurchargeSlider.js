@@ -373,7 +373,7 @@ class SurchargeSlider extends React.Component {
                                             type="checkbox"
                                             checked={formInputs['update_estimated_pickup_date_field']}
                                             onChange={(e) => this.onInputChange(e)}
-                                        /> <p className="text-left">Booked Date</p>
+                                        /> <p className="text-left">Estimated Pickup Date</p>
                                     </div>
                                     <DateTimePicker
                                         onChange={(date) => this.onChangeDateTime(date, 'eta_pu_date')}
