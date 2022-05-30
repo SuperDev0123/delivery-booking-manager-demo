@@ -1806,7 +1806,7 @@ class BookingPage extends Component {
 
                     // Calc `ETA Delivery`
                     const s_06_Latest_Delivery_Date_TimeSet = moment(formInputs['s_05_Latest_Pick_Up_Date_TimeSet'])
-                        .add(newEta.days, 'd').add(newEta.hours, 'h').format('YYYY-MM-DD HH:mm');
+                        .add(newEta.days, 'd').add(newEta.hours, 'h').format('YYYY-MM-DD HH:mmZ');
                     booking.s_06_Latest_Delivery_Date_TimeSet = s_06_Latest_Delivery_Date_TimeSet;
 
                     this.setState({eta: newEta, formInputs, isBookingModified: true});
@@ -1964,7 +1964,7 @@ class BookingPage extends Component {
         if (fieldName === 'b_given_to_transport_date_time') {
             if (conveted_date) {
                 formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
             } else {
                 formInputs[fieldName] = null;
 
@@ -1981,13 +1981,13 @@ class BookingPage extends Component {
                 formInputs[fieldName] = null;
             } else if (conveted_date && !booking.b_given_to_transport_date_time) {
                 formInputs['z_calculated_ETA'] = moment(conveted_date).add(booking.delivery_kpi_days, 'd').format('YYYY-MM-DD');
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
             } else {
-                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
+                formInputs[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
             }
             this.setState({formInputs});
         } else {
-            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mm');
+            booking[fieldName] = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
 
             if (fieldName === 's_05_Latest_Pick_Up_Date_TimeSet' || fieldName === 's_06_Latest_Delivery_Date_TimeSet') {
                 this.calcEta(booking);

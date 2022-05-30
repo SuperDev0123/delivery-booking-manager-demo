@@ -113,7 +113,7 @@ class CronOptions extends Component {
         if (fieldName === 'arg2' && conveted_date) {
             allCronOptions.map(cronOption => {
                 if (cronOption.id === option.id) {
-                    cronOption.arg2 = moment(conveted_date).format('YYYY-MM-DD HH:mm');
+                    cronOption.arg2 = moment(conveted_date).format('YYYY-MM-DD HH:mmZ');
                 }
             });
             this.setState({allCronOptions});

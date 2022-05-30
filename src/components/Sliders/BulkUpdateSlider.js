@@ -141,9 +141,9 @@ class BulkUpdateSlider extends React.Component {
         } else {
             if (dateTime) {
                 if (valueType === 'optionalValue') {
-                    this.setState({optionalValue: moment(conveted_date).format('YYYY-MM-DD HH:mm')});
+                    this.setState({optionalValue: moment(conveted_date).format('YYYY-MM-DD HH:mmZ')});
                 } else {
-                    this.setState({selectedValue: moment(conveted_date).format('YYYY-MM-DD HH:mm')});
+                    this.setState({selectedValue: moment(conveted_date).format('YYYY-MM-DD HH:mmZ')});
                 }
             }
         }
