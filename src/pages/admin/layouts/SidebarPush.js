@@ -31,7 +31,8 @@ class SidebarPush extends React.Component {
                 pricingOnlyCollapsed: true,
                 pricingRuleCollapsed: true,
                 logsCollapsed: true,
-                augmentCollapsed: true
+                augmentCollapsed: true,
+                reportCollapsed: true,
             },
             baseUrl:baseUrl
         };
@@ -112,7 +113,7 @@ class SidebarPush extends React.Component {
 
 
     render() {
-        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl, augmentCollapsed, logsCollapsed } = this.state;
+        const { dropdownOpen, providersCollapsed, pricingOnlyCollapsed, pricingRuleCollapsed, clientProductsCollapsed, baseUrl, augmentCollapsed, logsCollapsed, reportCollapsed } = this.state;
 
         return (
             <aside className="sidebar sidebar-left">
@@ -384,6 +385,19 @@ class SidebarPush extends React.Component {
                                     <li>
                                         <Link title="Download log files" to="/admin/logs/download" className={this.activeRoute(['logs/download']) ? 'active' : ''}>
                                             <span className="submenu-title">Download</span>
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li style={{ 'color': '#B3B8C3' }} className={this.activeRoute('reports/quote') || this.activeRoute('reports/quote') ? 'active' : ''}>
+                                <a onClick={() => this.setState({ reportCollapsed: !reportCollapsed })}>
+                                    <i className="fa fa-bars fa-fw"></i>
+                                    <span className="menu-title">Reports</span>
+                                </a>
+                                <ul className={classNames({ 'nav-sub': true, 'collapse': !reportCollapsed })}>
+                                    <li>
+                                        <Link title="Quote" to="/admin/reports/quote" className={this.activeRoute(['reports/quote']) ? 'active' : ''}>
+                                            <span className="submenu-title">Quote report</span>
                                         </Link>
                                     </li>
                                 </ul>

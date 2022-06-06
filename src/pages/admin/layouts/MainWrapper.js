@@ -14,7 +14,7 @@ class MainWrapper extends Component {
     }
 
     static propTypes = {
-        children: PropTypes.object.isRequired,
+        children: PropTypes.array.isRequired,
     };
 
     componentDidMount() {

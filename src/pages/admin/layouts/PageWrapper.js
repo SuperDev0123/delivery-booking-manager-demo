@@ -5,7 +5,7 @@ class PageWrapper extends Component {
     static propTypes = {};
 
     static propTypes = {
-        children: PropTypes.object.isRequired,
+        children: PropTypes.array.isRequired,
     };
 
     render() {

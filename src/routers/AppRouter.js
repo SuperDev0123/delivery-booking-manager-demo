@@ -70,6 +70,7 @@ import AddClientEmployee from '../pages/admin/AdminViews/ClientEmployees/AddClie
 import EditClientEmployee from '../pages/admin/AdminViews/ClientEmployees/EditClientEmployee';
 import QuickViewLogs from '../pages/admin/AdminViews/Logs/QuickView';
 import DownloadLogs from '../pages/admin/AdminViews/Logs/Download';
+import QuoteReport from '../pages/admin/AdminViews/Reports/QuoteReport';
 
 import CustomerClientEmployees from '../pages/admin/CustomerViews/ClientEmployees/ClientEmployees';
 import CustomerAddClientEmployee from '../pages/admin/CustomerViews/ClientEmployees/AddClientEmployee';
@@ -159,6 +160,8 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/admin/logs/quickview' component={QuickViewLogs} />
                     <AdminPrivateRoute exact path='/admin/logs/download' component={DownloadLogs} />
 
+                    <AdminPrivateRoute exact path='/admin/reports/quote' component={QuoteReport} />
+
                     <Route exact path='/customerdashboard' component={ CustomerLogin } />
                     <Route exact path='/customerdashboard/login' component={ CustomerLogin} />
                     <AdminPrivateRoute exact path='/customerdashboard/dashboard' component={CustomerDashboard} />
@@ -171,6 +174,7 @@ export const AppRouter = () => (
                     <AdminPrivateRoute exact path='/customerdashboard/clientemployees/edit/:id' component={CustomerEditClientEmployee} />
                     <AdminPrivateRoute exact path='/customerdashboard/clientproducts' component={CustomerClientProductList} />
                     <AdminPrivateRoute exact path='/customerdashboard/clientproducts/import' component={CustomerClientProductImport} />
+
                 </Main>
 
                 <Redirect to='/' />

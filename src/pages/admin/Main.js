@@ -21,7 +21,7 @@ class Main extends Component {
         verifyToken: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
         redirect: PropTypes.bool.isRequired,
-        children: PropTypes.object.isRequired,
+        children: PropTypes.array.isRequired,
     }
 
     componentDidMount() {
