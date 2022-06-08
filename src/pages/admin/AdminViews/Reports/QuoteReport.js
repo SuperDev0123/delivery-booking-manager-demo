@@ -8,6 +8,9 @@ import DatePicker from 'react-datepicker';
 import LoadingOverlay from 'react-loading-overlay';
 import axios from 'axios';
 import moment from 'moment';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 import { HTTP_PROTOCOL, API_HOST } from '../../../../config';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../../../../state/services/authService';
@@ -21,7 +24,7 @@ class QuoteReport extends Component {
             id: 0,
             loading: false,
             clients: [],
-            selectedClients: [],
+            kfClientIds: [],
             multi: true,
             separator: true,
             startDate: backDate,
@@ -69,12 +72,14 @@ class QuoteReport extends Component {
         }
 
         if (clients && clients.length) {
-            const clientOpts = clients.map((client, index) => {
-                return { label: client.company_name, value: index};
+            const clientOpts = clients.map((client) => {
+                return { label: client.company_name, value: client.dme_account_num};
             });
             this.setState({clientOpts, loading: false});
         }
     }
+
+    notify = (text) => toast(text);
 
     onInputChange(event) {
         const { fpDetails } = this.state;
@@ -84,26 +89,36 @@ class QuoteReport extends Component {
     }
 
     onMultiSelect(clients) {
-        this.setState({selectedClients: clients});
+        const kfClientIds = clients.map((client) => client.value);
+        this.setState({kfClientIds});
     }
 
     onSubmit(event) {
+        event.preventDefault();
         this.setState({ loading: true });
         this.setState({ loading: false });
         this.props.history.push('/admin/reports');
-        event.preventDefault();
     }
 
     onClickDownload(e) {
         e.preventDefault();
-        const {startDate, endDate, selectedClients } = this.state;
+        let {startDate, endDate, kfClientIds } = this.state;
+
+        if (moment(endDate).diff(moment(startDate), 'days') > 100) {
+            this.notify('You selected 3+ months range, it can take 5 mins to build report.');
+        }
 
         const token = localStorage.getItem('token');
         const options = {
             method: 'post',
             url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
             headers: {'Authorization': 'JWT ' + token},
-            data: { selectedClients, startDate, endDate, downloadOption: 'quote-download'},
+            data: {
+                kfClientIds,
+                startDate: moment(startDate).format('YYYY-MM-DD'),
+                endDate: moment(endDate).format('YYYY-MM-DD'),
+                downloadOption: 'quote-report'
+            },
             responseType: 'blob', // important
         };
 
@@ -111,10 +126,9 @@ class QuoteReport extends Component {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'Quote_Report_' + moment().utc().format('YYYY-MM-DD HH:mm') + '.zip');
+            link.setAttribute('download', 'Quote_Report_' + moment().utc().format('YYYY-MM-DD_HH:mm') + '.zip');
             document.body.appendChild(link);
             link.click();
-
         });
     }
 
@@ -123,6 +137,8 @@ class QuoteReport extends Component {
 
         return (
             <div>
+                <ToastContainer />
+
                 <div className="pageheader">
                     <h1>Quote Report</h1>
                     <div className="breadcrumb-wrapper hidden-xs">
@@ -152,9 +168,13 @@ class QuoteReport extends Component {
                                         <div className="form-group">
                                             <label htmlFor="exampleInputEmail1">Clients: </label>
                                             <Select 
-                                                options={clientOpts} onChange={(clients) => this.onMultiSelect(clients)}
-                                                multi={true} separator={true} clearable={true}
+                                                options={clientOpts}
+                                                onChange={(clients) => this.onMultiSelect(clients)}
+                                                multi={true}
+                                                separator={true}
+                                                clearable={true}
                                             />
+                                            <span>* If none is selected, it will get report for all clients.</span>
                                         </div>
                                         <div className="form-group">
                                             <label htmlFor="exampleInputPassword1">Start Date: </label>
@@ -164,7 +184,7 @@ class QuoteReport extends Component {
                                                     selected={this.state.startDate}
                                                     onSelect={(date) => this.setState({startDate: date})}
                                                     onChange={(date) => this.setState({startDate: date})}
-                                                    dateFormat="Pp"
+                                                    dateFormat="dd MMM yyyy"
                                                 />
                                             </div>
                                         </div>
@@ -176,7 +196,7 @@ class QuoteReport extends Component {
                                                     selected={this.state.endDate}
                                                     onSelect={(date) => this.setState({endDate: date})}
                                                     onChange={(date) => this.setState({endDate: date})}
-                                                    dateFormat="Pp"
+                                                    dateFormat="dd MMM yyyy"
                                                 />
                                             </div>
                                         </div>
