@@ -121,7 +121,7 @@ class QuoteReport extends Component {
             },
             responseType: 'blob', // important
         };
-
+        this.setState({loading: true});
         axios(options).then((response) => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -129,6 +129,7 @@ class QuoteReport extends Component {
             link.setAttribute('download', 'Quote_Report_' + moment().utc().format('YYYY-MM-DD_HH:mm') + '.zip');
             document.body.appendChild(link);
             link.click();
+            this.setState({loading: false});
         });
     }
 
@@ -155,61 +156,62 @@ class QuoteReport extends Component {
                     active={this.state.loading}
                     spinner
                     text='Loading...'
-                />
-                <section id="main-content" className="animated fadeInUp">
-                    <div className="row">
-                        <div className="col-md-12 col-12">
-                            <div className="card panel-default">
-                                <div className="card-header">
-                                    <h3 className="panel-title">Quote Report</h3>
-                                </div>
-                                <div className="card-body">
-                                    <form onSubmit={(e) => this.onClickDownload(e)} role="form">
-                                        <div className="form-group">
-                                            <label htmlFor="exampleInputEmail1">Clients: </label>
-                                            <Select 
-                                                options={clientOpts}
-                                                onChange={(clients) => this.onMultiSelect(clients)}
-                                                multi={true}
-                                                separator={true}
-                                                clearable={true}
-                                            />
-                                            <span>* If none is selected, it will get report for all clients.</span>
-                                        </div>
-                                        <div className="form-group">
-                                            <label htmlFor="exampleInputPassword1">Start Date: </label>
-                                            <div>
-                                                <DatePicker
-                                                    className="date-picker"
-                                                    selected={this.state.startDate}
-                                                    onSelect={(date) => this.setState({startDate: date})}
-                                                    onChange={(date) => this.setState({startDate: date})}
-                                                    dateFormat="dd MMM yyyy"
+                >
+                    <section id="main-content" className="animated fadeInUp">
+                        <div className="row">
+                            <div className="col-md-12 col-12">
+                                <div className="card panel-default">
+                                    <div className="card-header">
+                                        <h3 className="panel-title">Quote Report</h3>
+                                    </div>
+                                    <div className="card-body">
+                                        <form onSubmit={(e) => this.onClickDownload(e)} role="form">
+                                            <div className="form-group">
+                                                <label htmlFor="exampleInputEmail1">Clients: </label>
+                                                <Select 
+                                                    options={clientOpts}
+                                                    onChange={(clients) => this.onMultiSelect(clients)}
+                                                    multi={true}
+                                                    separator={true}
+                                                    clearable={true}
                                                 />
+                                                <span>* If none is selected, it will get report for all clients.</span>
                                             </div>
-                                        </div>
-                                        <div className="form-group">
-                                            <label htmlFor="exampleInputPassword1">End Date: </label>
-                                            <div>
-                                                <DatePicker
-                                                    className="date-picker"
-                                                    selected={this.state.endDate}
-                                                    onSelect={(date) => this.setState({endDate: date})}
-                                                    onChange={(date) => this.setState({endDate: date})}
-                                                    dateFormat="dd MMM yyyy"
-                                                />
+                                            <div className="form-group">
+                                                <label htmlFor="exampleInputPassword1">Start Date: </label>
+                                                <div>
+                                                    <DatePicker
+                                                        className="date-picker"
+                                                        selected={this.state.startDate}
+                                                        onSelect={(date) => this.setState({startDate: date})}
+                                                        onChange={(date) => this.setState({startDate: date})}
+                                                        dateFormat="dd MMM yyyy"
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="form-group mt-2">
-                                            <button type="submit" className="btn btn-primary">Download</button>
-                                        </div>
+                                            <div className="form-group">
+                                                <label htmlFor="exampleInputPassword1">End Date: </label>
+                                                <div>
+                                                    <DatePicker
+                                                        className="date-picker"
+                                                        selected={this.state.endDate}
+                                                        onSelect={(date) => this.setState({endDate: date})}
+                                                        onChange={(date) => this.setState({endDate: date})}
+                                                        dateFormat="dd MMM yyyy"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="form-group mt-2">
+                                                <button type="submit" className="btn btn-primary">Download</button>
+                                            </div>
 
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </LoadingOverlay>
             </div>
         );
     }
