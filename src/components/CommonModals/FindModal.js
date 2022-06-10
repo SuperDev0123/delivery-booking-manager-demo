@@ -16,6 +16,7 @@ class FindModal extends Component {
             postalCode: null,
             valueSet: '',
             errorMessage: null,
+            queryMode: null,
         };
     }
 
@@ -84,6 +85,8 @@ class FindModal extends Component {
             this.setState({postalCodeMax: e.target.value, errorMessage: ''});
         } else if (type === 'postalCode') {
             this.setState({postalCode: e.target.value, errorMessage: ''});
+        } else if (type === 'queryMode') {
+            this.setState({queryMode: e.target.value, errorMessage: ''});
         }
     }
 
@@ -138,12 +141,19 @@ class FindModal extends Component {
 
     render() {
         const {isOpen} = this.props;
-        const {errorMessage, selectedFieldName, postalCodeMin, postalCodeMax, postalCode} = this.state;
+        const {errorMessage, selectedFieldName, postalCodeMin, postalCodeMax, postalCode, queryMode} = this.state;
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
                 <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
                 <ModalBody>
+                    <label>
+                        <p>Query Mode: </p>
+                        <select value={queryMode} onChange={(e) => this.onInputChange(e, 'queryMode')}>
+                            <option value="entire" selected="selected">Query for entire scope</option>
+                            <option value="current_tab">Query for current tab</option>
+                        </select>
+                    </label>
                     <label>
                         <p>Select field to be searched: </p>
                         <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
