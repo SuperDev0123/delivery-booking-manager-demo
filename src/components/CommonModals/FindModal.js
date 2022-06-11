@@ -16,7 +16,7 @@ class FindModal extends Component {
             postalCode: null,
             valueSet: '',
             errorMessage: null,
-            queryMode: null,
+            findMode: 'entire', // enum: entire, currentTab
         };
     }
 
@@ -85,13 +85,13 @@ class FindModal extends Component {
             this.setState({postalCodeMax: e.target.value, errorMessage: ''});
         } else if (type === 'postalCode') {
             this.setState({postalCode: e.target.value, errorMessage: ''});
-        } else if (type === 'queryMode') {
-            this.setState({queryMode: e.target.value, errorMessage: ''});
+        } else if (type === 'findMode') {
+            this.setState({findMode: e.target.value, errorMessage: ''});
         }
     }
 
     onSubmit() {
-        const {selectedFieldName, postalCodeMin, postalCodeMax, postalCode} = this.state;
+        const {selectedFieldName, postalCodeMin, postalCodeMax, postalCode, findMode} = this.state;
         let valueSet = this.state.valueSet;
 
         if (!valueSet && !postalCodeMin && !postalCodeMax && postalCode === 0) {
@@ -118,40 +118,40 @@ class FindModal extends Component {
                     this.setState({errorMessage: 'DME Booking numbers should be integers.'});
                 } else {
                     valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
-                    this.props.onFind(selectedFieldName, valueSet);
+                    this.props.onFind(findMode, selectedFieldName, valueSet);
                 }
             } else {
                 valueSet = valueSet.map(value => value.replace(/\s/g,'')).join(', ');
-                this.props.onFind(selectedFieldName, valueSet);
+                this.props.onFind(findMode, selectedFieldName, valueSet);
             }
         } else if (selectedFieldName === 'postal_code_pair') {
             if (postalCodeMin > postalCodeMax) {
                 this.setState({errorMessage: 'Min postal code should be less than Max postal code.'});
             } else {
-                this.props.onFind(selectedFieldName, postalCodeMin + ', ' + postalCodeMax);
+                this.props.onFind(findMode, selectedFieldName, postalCodeMin + ', ' + postalCodeMax);
             }
         } else if (selectedFieldName === 'postal_code_type') {
             if (!postalCode) {
                 this.setState({errorMessage: 'Please select an option.'});
             } else {
-                this.props.onFind(selectedFieldName, postalCode);
+                this.props.onFind(findMode, selectedFieldName, postalCode);
             }
         }
     }
 
     render() {
         const {isOpen} = this.props;
-        const {errorMessage, selectedFieldName, postalCodeMin, postalCodeMax, postalCode, queryMode} = this.state;
+        const {errorMessage, selectedFieldName, postalCodeMin, postalCodeMax, postalCode, findMode} = this.state;
 
         return (
             <ReactstrapModal isOpen={isOpen} className="find-modal">
                 <ModalHeader toggle={this.props.toggleFindModal}>Find (Multiple) Modal</ModalHeader>
                 <ModalBody>
                     <label>
-                        <p>Query Mode: </p>
-                        <select value={queryMode} onChange={(e) => this.onInputChange(e, 'queryMode')}>
-                            <option value="entire" selected="selected">Query for entire scope</option>
-                            <option value="current_tab">Query for current tab</option>
+                        <p>Find Mode: </p>
+                        <select value={findMode} onChange={(e) => this.onInputChange(e, 'findMode')}>
+                            <option value="entire" selected="selected">Entire scope</option>
+                            <option value="currentTab">Current tab</option>
                         </select>
                     </label>
                     <label>

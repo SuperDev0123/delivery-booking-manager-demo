@@ -608,7 +608,7 @@ class AllBookingsPage extends React.Component {
     }
 
     onClickSync(bookingIds) {
-        this.onMultiFind('id', join(bookingIds, ', '));
+        this.onMultiFind('currentTab', 'id', join(bookingIds, ', '));
     }
 
     onSelected(e, src) {
@@ -1162,11 +1162,16 @@ class AllBookingsPage extends React.Component {
         }
     }
 
-    onMultiFind(fieldNameToFind, valueSet) {
-        const { clientPK, warehouseId, fpId, pageItemCnt, filterInputs } = this.state;
+    onMultiFind(findMode, fieldNameToFind, valueSet) {
+        const { clientPK, warehouseId, fpId, pageItemCnt, filterInputs, activeTabInd } = this.state;
         const today = moment().format('YYYY-MM-DD');
 
-        this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, fpId, pageItemCnt, 0, '-id', filterInputs, 7, '', 'label', '', fieldNameToFind, valueSet);
+        if (findMode === 'entire') {
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, fpId, pageItemCnt, 0, '-id', filterInputs, 7, '', 'label', '', fieldNameToFind, valueSet);
+        } else if (findMode === 'currentTab') {
+            this.props.setAllGetBookingsFilter('*', today, clientPK, warehouseId, fpId, pageItemCnt, 0, '-id', filterInputs, activeTabInd, '', 'label', '', fieldNameToFind, valueSet);
+        }
+
         this.setState({selectedBookingIds: [], allCheckStatus: 'None'});
     }
 
@@ -1736,7 +1741,7 @@ class AllBookingsPage extends React.Component {
         } else {
             this.bulkBookingUpdate(bookingIds, field, value)
                 .then(() => {
-                    this.onMultiFind('id', join(this.props.filteredBookingIds, ', '));  // Sync bookings
+                    this.onMultiFind('currentTab', 'id', join(this.props.filteredBookingIds, ', '));  // Sync bookings
                 })
                 .catch((err) => {
                     this.notify(err.response.data.message);
@@ -3442,7 +3447,7 @@ class AllBookingsPage extends React.Component {
                 <FindModal
                     isOpen={this.state.isShowFindModal}
                     toggleFindModal={this.toggleFindModal}
-                    onFind={(selectedFieldName, valueSet) => this.onMultiFind(selectedFieldName, valueSet)}
+                    onFind={(findMode, selectedFieldName, valueSet) => this.onMultiFind(findMode, selectedFieldName, valueSet)}
                     bookings={bookings}
                 />
 
