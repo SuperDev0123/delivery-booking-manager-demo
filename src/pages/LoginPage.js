@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import LoadingOverlay from 'react-loading-overlay';
 
-import { getToken, getUser } from '../state/services/authService';
+import { getToken, getUser, resetErrorMsg } from '../state/services/authService';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -13,19 +13,22 @@ class LoginPage extends Component {
             username: '',
             password: '',
             loading: false,
+            errorMessage: '',
         };
     }
 
     static propTypes = {
         getToken: PropTypes.func.isRequired,
         getUser: PropTypes.func.isRequired,
+        resetErrorMsg: PropTypes.func.isRequired,
         history: PropTypes.object.isRequired,
+        token: PropTypes.string
     };
 
     UNSAFE_componentWillReceiveProps(newProps) {
         const { token, username, errorMessage } = newProps;
 
-        if (token) {
+        if (token != this.props.token) {
             this.props.getUser(token);
         }
 
@@ -34,8 +37,10 @@ class LoginPage extends Component {
             this.setState({loading: false});
         }
 
-        if (errorMessage)
+
+        if (errorMessage) {
             this.setState({errorMessage, loading: false});
+        }
     }
 
     onInputChange(event) {
@@ -43,10 +48,11 @@ class LoginPage extends Component {
     }
 
     onSubmit(event) {
-        const { username, password } = this.state;
-        this.props.getToken(username, password);
-        this.setState({loading: true});
         event.preventDefault();
+        const { username, password } = this.state;
+        this.props.resetErrorMsg();
+        this.props.getToken(username, password);
+        this.setState({errorMessage: null, loading: true });
     }
 
     render() {
@@ -114,6 +120,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getToken: (username, password) => dispatch(getToken(username, password)),
         getUser: (token) => dispatch(getUser(token)),
+        resetErrorMsg: () => dispatch(resetErrorMsg()),
     };
 };
 

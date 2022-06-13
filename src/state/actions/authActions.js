@@ -13,6 +13,7 @@ import {
     SUCCESS_RESET_PASSWORD_CONFIRM,
     FAILED_RESET_PASSWORD_CONFIRM,
     LOGOUT,
+    RESET_ERROR_MESSAGE,
 } from '../constants/authConstants';
 
 export function setToken(token) {
@@ -150,5 +151,11 @@ export function setCurrentClientPK(clientPK) {
 export function logoutUser() {
     return {
         type: LOGOUT,
+    };
+}
+
+export function resetErrorMessage() {
+    return {
+        type: RESET_ERROR_MESSAGE,
     };
 }

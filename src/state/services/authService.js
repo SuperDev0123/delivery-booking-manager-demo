@@ -16,6 +16,7 @@ import {
     successResetPasswordConfirm,
     failedResetPasswordConfirm,
     logoutUser,
+    resetErrorMessage,
 } from '../actions/authActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -122,4 +123,8 @@ export const logout = () => {
     localStorage.setItem('token', '');
     localStorage.setItem('zohotoken', '');
     return dispatch => dispatch(logoutUser());
+};
+
+export const resetErrorMsg = () => {
+    return dispatch => dispatch(resetErrorMessage());
 };

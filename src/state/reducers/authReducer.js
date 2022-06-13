@@ -12,7 +12,8 @@ import {
     FAILED_RESET_PASSWORD,
     SUCCESS_RESET_PASSWORD_CONFIRM,
     FAILED_RESET_PASSWORD_CONFIRM,
-    LOGOUT
+    LOGOUT,
+    RESET_ERROR_MESSAGE,
 } from '../constants/authConstants';
 
 const defaultState = {
@@ -120,7 +121,13 @@ export const AuthReducer = (state = defaultState, {
                 ...state,
                 clientPK: clientPK,
             };
+        case RESET_ERROR_MESSAGE:
+            return {
+                ...state,
+                errorMessage: null,
+            };
         default:
             return state;
+        
     }
 };
