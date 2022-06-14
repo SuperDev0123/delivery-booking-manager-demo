@@ -1539,7 +1539,7 @@ class BookingPage extends Component {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix('puAddress', prefix || 'syd');
             } else if (src === 'deToSuburb') {
-                this.props.getAddressesWithPrefix('deAddress', prefix || 'syd');
+                this.props.getAddressesWithPrefix('deToAddress', prefix || 'syd');
             }
         }
     };
@@ -1551,7 +1551,7 @@ class BookingPage extends Component {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix('puAddress', formInputs['pu_Address_Suburb'] || 'syd');
             } else if (src === 'deToSuburb') {
-                this.props.getAddressesWithPrefix('deAddress', formInputs['de_To_Address_Suburb'] || 'syd');
+                this.props.getAddressesWithPrefix('deToAddress', formInputs['de_To_Address_Suburb'] || 'syd');
             }
         }
     };
