@@ -1465,7 +1465,12 @@ class BookingPage extends Component {
             e.preventDefault();
 
             if (selected === 'dme') {
-                findKeyword = findKeyword.replace(/dme/i, '');
+                try {
+                    findKeyword = parseInt(findKeyword.replace(/dme/i, ''));
+                } catch (e) {
+                    this.notify('Please input correct keyword.');
+                    return;
+                }
             }
 
             e.target.value = findKeyword;
