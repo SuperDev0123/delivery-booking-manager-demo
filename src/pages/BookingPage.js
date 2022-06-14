@@ -4741,8 +4741,8 @@ class BookingPage extends Component {
                                                                     <Select
                                                                         value={deToSuburb}
                                                                         onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
-                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
-                                                                        focus={() => this.handleFocusSuburb('puSuburb')}
+                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
+                                                                        focus={() => this.handleFocusSuburb('deToSuburb')}
                                                                         options={deToAddressOptions}
                                                                         placeholder='select your suburb'
                                                                         noOptionsMessage={() => this.displayNoOptionsMessage()}
