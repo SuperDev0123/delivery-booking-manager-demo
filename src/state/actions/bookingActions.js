@@ -3,15 +3,7 @@ import {
     RESET_BOOKING,
     SET_ATTACHMENTS,
     FAILED_GET_ATTACHMENTS,
-    SET_POSTALCODE_DE,
-    SET_SUBURB_DE,
-    SET_STATE_DE,
-    FAILED_GET_SUBURBS_DE,
     SET_BOOKING_WITH_FILTER,
-    SET_SUBURB,
-    SET_POSTALCODE,
-    SET_STATE,
-    FAILED_GET_SUBURBS,
     SET_BOOKINGS,
     FAILED_GET_BOOKINGS,
     SET_BOOKING,
@@ -307,34 +299,6 @@ export function successDuplicateBooking(data) {
     };
 }
 
-export function successGetSuburbs(data) {
-    if (data['type'] == 'state') {
-        return {
-            type: SET_STATE,
-            puStates: data['suburbs'],
-        };
-    } else if ( data['type'] == 'postalcode' ) {
-        return {
-            type: SET_POSTALCODE,
-            puPostalCodes: data['suburbs'],
-        };
-    } else if ( data['type'] == 'suburb' ) {
-        return {
-            type: SET_SUBURB,
-            puSuburbs: data['suburbs'],
-        };
-    }
-}
-
-export function failedGetSuburbs(error) {
-    console.log('Error: ', error);
-    return {
-        type: FAILED_GET_SUBURBS,
-        errorMessage: 'Unable to fetch suburbs.',
-        bBooking: false
-    };
-}
-
 export function successGetAttachments(data) {
     return {
         type: SET_ATTACHMENTS,
@@ -347,34 +311,6 @@ export function failedGetAttachments(error) {
     return {
         type: FAILED_GET_ATTACHMENTS,
         errorMessage: 'Unable to get attachments.',
-    };
-}
-
-export function successDeliveryGetSuburbs(data) {
-    if (data['type'] == 'state') {
-        return {
-            type: SET_STATE_DE,
-            deToStates: data['suburbs'],
-        };
-    } else if ( data['type'] == 'postalcode' ) {
-        return {
-            type: SET_POSTALCODE_DE,
-            deToPostalCodes: data['suburbs'],
-        };
-    } else if ( data['type'] == 'suburb' ) {
-        return {
-            type: SET_SUBURB_DE,
-            deToSuburbs: data['suburbs'],
-        };
-    }
-}
-
-export function failedDeliveryGetSuburbs(error) {
-    console.log('Error: ', error);
-    return {
-        type: FAILED_GET_SUBURBS_DE,
-        errorMessage: 'Unable to fetch suburbs.',
-        bBooking: false
     };
 }
 
