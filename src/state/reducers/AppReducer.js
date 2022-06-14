@@ -25,6 +25,7 @@ import { ClientRasReducer } from './clientRasReducer';
 import { AugmentAddressReducer } from './augmentAddressReducer';
 import { ClientReducer } from './clientReducer';
 import { RoleReducer } from './roleReducer';
+import { ElasticsearchReducer } from './elasticsearchReducer';
 
 export const AppReducer = combineReducers({
     auth: AuthReducer,
@@ -52,4 +53,5 @@ export const AppReducer = combineReducers({
     augment: AugmentAddressReducer,
     client: ClientReducer,
     role: RoleReducer,
+    elasticsearch: ElasticsearchReducer,
 });

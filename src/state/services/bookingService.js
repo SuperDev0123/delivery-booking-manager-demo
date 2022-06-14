@@ -7,10 +7,6 @@ import {
     failedGetAttachments,
     successGetBookings,
     failedGetBookings,
-    successGetSuburbs,
-    failedGetSuburbs,
-    successDeliveryGetSuburbs,
-    failedDeliveryGetSuburbs,
     successGetBooking,
     failedUpdateBooking,
     setMappedBok1ToBooking,
@@ -263,19 +259,6 @@ export const tickManualBook = (id) => {
     };
 };
 
-export const getSuburbStrings = (type, name) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/suburb/?type=` + type + '&name=' + name,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successGetSuburbs(data)))
-            .catch((error) => dispatch(failedGetSuburbs(error)));
-};
-
 export const getAttachmentHistory = (fk_booking_id) => {
     const token = localStorage.getItem('token');
     const options = {
@@ -289,19 +272,6 @@ export const getAttachmentHistory = (fk_booking_id) => {
             .then(({ data }) => dispatch(successGetAttachments(data)))
             .catch((error) => dispatch(failedGetAttachments(error)));
     };
-};
-
-export const getDeliverySuburbStrings = (type, name) => {
-    const token = localStorage.getItem('token');
-    const options = {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/suburb/?type=` + type + '&name=' + name,
-    };
-    return dispatch =>
-        axios(options)
-            .then(({ data }) => dispatch(successDeliveryGetSuburbs(data)))
-            .catch((error) => dispatch(failedDeliveryGetSuburbs(error)));
 };
 
 export const updateBooking = (id, updateBooking) => {

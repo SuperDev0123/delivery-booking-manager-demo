@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 
 import Clock from 'react-live-clock';
-import { isEmpty, isNull, isUndefined, clone, intersection} from 'lodash';
+import { isEmpty, isNull, isUndefined, intersection} from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment-timezone';
@@ -49,7 +49,7 @@ import SurchargeTable from '../components/Tables/SurchargeTable';
 import { verifyToken, cleanRedirectState, getDMEClients } from '../state/services/authService';
 import { getCreatedForInfos } from '../state/services/userService';
 import {
-    getBooking, getAttachmentHistory, getSuburbStrings, getDeliverySuburbStrings, saveBooking, updateBooking, duplicateBooking, setFetchGeoInfoFlag, clearErrorMessage, 
+    getBooking, getAttachmentHistory, saveBooking, updateBooking, duplicateBooking, clearErrorMessage, 
     tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, 
     updateAugment, repack
 } from '../state/services/bookingService';
@@ -65,12 +65,14 @@ import {
     createStatusAction, getApiBCLs, getAllFPs, getEmailLogs, saveStatusHistoryPuInfo, updateClientEmployee, getZohoTicketsWithBookingId, getAllErrors, updateZohoTicket,
     getZohoTicketSummaries, moveZohoTicket, getCSNotes
 } from '../state/services/extraService';
+import { getAddressesWithPrefix } from '../state/services/elasticsearchService';
 // Validation
 import { isFormValid, isValid4Label, isValid4Book, isValid4Pricing } from '../commons/validations';
 // Constants
 import { timeDiff, BOOKING_IMPORTANT_FIELDS } from '../commons/constants';
 // Helpers
 import { milliseconds2Days, milliseconds2Hours } from '../commons/helpers';
+import { debounce } from '../commons/browser';
 
 // Images
 import user from '../public/images/user.png';
@@ -94,8 +96,6 @@ class BookingPage extends Component {
             nextBookingId: 0,
             prevBookingId: 0,
             loading: false,
-            loadingGeoPU: false,
-            loadingGeoDeTo: false,
             loadingBookingLine: false,
             loadingBookingLineDetail: false,
             loadingBookingSave: false,
@@ -114,22 +114,12 @@ class BookingPage extends Component {
             isGoing: false,
             checkBoxStatus: [],
             selectedOption: null,
-            puStates: [],
-            puPostalCodes: [],
-            puSuburbs: [],
             loadedPostal: false,
             loadedSuburb: false,
-            deToStates: [],
-            deToPostalCodes: [],
-            deToSuburbs: [],
             deLoadedPostal: false,
             deLoadedSuburb: false,
-            puState: {value: ''},
             puSuburb: {value: ''},
-            puPostalCode: {value: ''},
-            deToState: {value: ''},
             deToSuburb: {value: ''},
-            deToPostalCode: {value: ''},
             isBookedBooking: false,
             isLockedBooking: false,
             puTimeZone: null,
@@ -138,7 +128,6 @@ class BookingPage extends Component {
             selectionChanged: 0,
             AdditionalServices: [],
             isShowDuplicateBookingOptionsModal: false,
-            clientname: '',
             isBookingSelected: false,
             isShowSwitchClientModal: false,
             statusHistories: [],
@@ -259,8 +248,6 @@ class BookingPage extends Component {
         redirect: PropTypes.bool.isRequired,
         location: PropTypes.object.isRequired,
         getBooking: PropTypes.func.isRequired,
-        getSuburbStrings: PropTypes.func.isRequired,
-        getDeliverySuburbStrings: PropTypes.func.isRequired,
         getBookingLines: PropTypes.func.isRequired,
         getBookingLineDetails: PropTypes.func.isRequired,
         fpBook: PropTypes.func.isRequired,
@@ -291,7 +278,6 @@ class BookingPage extends Component {
         createStatusDetail: PropTypes.func.isRequired,
         calcCollected: PropTypes.func.isRequired,
         getApiBCLs: PropTypes.func.isRequired,
-        setFetchGeoInfoFlag: PropTypes.func.isRequired,
         clearErrorMessage: PropTypes.func.isRequired,
         getAllFPs: PropTypes.func.isRequired,
         sendEmail: PropTypes.func.isRequired,
@@ -309,8 +295,10 @@ class BookingPage extends Component {
         updateAugment: PropTypes.func.isRequired,
         repack: PropTypes.func.isRequired,
         getCSNotes: PropTypes.func.isRequired,
+        getAddressesWithPrefix: PropTypes.func.isRequired,
 
         // Data
+        clientname: PropTypes.string.isRequired,
         allFPs: PropTypes.array.isRequired,
         dmeClients: PropTypes.array.isRequired,
         warehouses: PropTypes.array.isRequired,
@@ -318,6 +306,8 @@ class BookingPage extends Component {
         clientId: PropTypes.string,
         bookingLines: PropTypes.array,
         cntAdditionalSurcharges: PropTypes.number,
+        puAddresses: PropTypes.array,
+        deToAddresses: PropTypes.array,
     };
 
     componentDidMount() {
@@ -341,8 +331,6 @@ class BookingPage extends Component {
         } else {
             this.props.getBooking();
             this.setState({loading: true, curViewMode: 0});
-            // this.props.getSuburbStrings('state', undefined);
-            // this.props.getDeliverySuburbStrings('state', undefined);
         }
 
         let that = this;
@@ -364,7 +352,7 @@ class BookingPage extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const {attachments, puSuburbs, puPostalCodes, puStates, deToSuburbs, deToPostalCodes, deToStates, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, clientname, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, needToFetchGeoInfo, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
+        const {attachments, redirect, booking, bookingLines, bookingLineDetails, bBooking, nextBookingId, prevBookingId, needUpdateBooking, needUpdateBookingLines, needUpdateBookingLineDetails, noBooking, packageTypes, statusHistories, allBookingStatus, needUpdateStatusHistories, statusDetails, statusActions, needUpdateStatusActions, needUpdateStatusDetails, username, apiBCLs, bookingErrorMessage, qtyTotal, cntAttachments, pricingInfos, createdForInfos, zohoTickets, zohoDepartments, zohoTicketSummaries, loadingZohoDepartments, loadingZohoTickets, loadingZohoTicketSummaries, errors, clientprocess} = newProps;
         const {isBookedBooking} = this.state;
         const currentRoute = this.props.location.pathname;
 
@@ -372,10 +360,6 @@ class BookingPage extends Component {
             localStorage.setItem('isLoggedIn', 'false');
             this.props.cleanRedirectState();
             this.props.history.push('/');
-        }
-
-        if (clientname) {
-            this.setState({clientname});
         }
 
         if (username) {
@@ -583,171 +567,6 @@ class BookingPage extends Component {
                 this.props.getEmailLogs(booking.id);
             }
         }
-
-        if (needToFetchGeoInfo || this.state.loadingGeoPU || this.state.loadingGeoDeTo) {
-            if (puStates && puStates.length > 0) {
-                if ( !this.state.loadedPostal ) {
-                    if (puPostalCodes == '' || puPostalCodes == null)
-                        this.props.getSuburbStrings('postalcode', puStates[0].label);
-                }
-
-                if (booking && booking.pu_Address_State) {
-                    let states = clone(puStates);
-                    let bHas = false;
-
-                    for (let i = 0; i < states.length; i++ ){
-                        if (states[i].label == booking.pu_Address_State) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-
-                    if (bHas == false) {
-                        states.push({'value':booking.pu_Address_State, 'label': booking.pu_Address_State});
-                    }
-
-                    this.setState({puStates: states});        
-                } else {
-                    this.setState({puStates});             
-                }
-
-                this.setState({puStates, loadedPostal: true, loadingGeoPU: false});
-            } else if (this.state.loading || needToFetchGeoInfo) {
-                this.setState({loadingGeoPU: true});
-                this.props.getSuburbStrings('state', undefined);
-            }
-
-            if (puPostalCodes && puPostalCodes.length > 0 && this.state.selectionChanged === 1) {
-                if (booking && booking.pu_Address_PostalCode) {
-                    let postalcodes = clone(puPostalCodes);
-                    let bHas = false;
-
-                    for (let i = 0; i < postalcodes.length; i++ ){
-                        if (postalcodes[i].label == booking.pu_Address_PostalCode) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-
-                    if (bHas == false) {
-                        postalcodes.push({'value':booking.pu_Address_PostalCode, 'label': booking.pu_Address_PostalCode});
-                    }
-
-                    this.setState({puPostalCodes: postalcodes, loadingGeoPU: false});        
-                } else {
-                    this.setState({puPostalCodes, loadingGeoPU: false});
-                }
-            }
-
-            if (puSuburbs && puSuburbs.length > 0 && this.state.selectionChanged === 1) {
-                if (puSuburbs.length == 1) {
-                    this.setState({puSuburb: puSuburbs[0], loadingGeoPU: false});
-                } else if (puSuburbs.length > 1) {
-                    if (booking && booking.pu_Address_Suburb) {
-                        let suburbs = clone(puSuburbs);
-                        let bHas = false;
-
-                        for (let i = 0; i < suburbs.length; i++){
-                            if (suburbs[i].label == booking.pu_Address_Suburb) {
-                                bHas = true;
-                                break;
-                            }
-                        }
-
-                        if (bHas == false) {
-                            suburbs.push({'value':booking.pu_Address_Suburb, 'label': booking.pu_Address_Suburb});
-                        }
-
-                        this.setState({puSuburbs: suburbs, loadingGeoPU: false});
-                    } else {
-                        this.setState({puSuburbs, loadingGeoPU: false});
-                    }
-                }
-            }
-
-            if (deToStates && deToStates.length > 0) {
-                if ( !this.state.deLoadedPostal ) {
-                    this.props.getDeliverySuburbStrings('postalcode', deToStates[0].label);
-                }
-
-                if (booking && booking.de_To_Address_State) {
-                    let states = clone(deToStates);
-                    let bHas = false;
-
-                    for (let i = 0; i < states.length; i++ ){
-                        if (states[i].label == booking.de_To_Address_State) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-
-                    if (bHas == false) {
-                        states.push({'value': booking.de_To_Address_State, 'label': booking.de_To_Address_State});
-                    }
-
-                    this.setState({deToStates: states});        
-                } else {
-                    this.setState({deToStates});                    
-                }
-
-                this.setState({deToStates, deLoadedPostal: true, loadingGeoDeTo: false});
-            } else if (this.state.loading || needToFetchGeoInfo) {
-                this.props.getDeliverySuburbStrings('state', undefined);
-                this.setState({loadingGeoDeTo: true});
-            }
-
-            if (deToPostalCodes && deToPostalCodes.length > 0 && this.state.selectionChanged === 2) {
-                if (booking && booking.de_To_Address_PostalCode) {
-                    let postalcode = clone(deToPostalCodes);
-                    let bHas = false;
-
-                    for (let i = 0; i < postalcode.length; i++ ){
-                        if (postalcode[i].label == booking.de_To_Address_PostalCode) {
-                            bHas = true;
-                            break;
-                        }
-                    }
-
-                    if (bHas == false) {
-                        postalcode.push({'value':booking.de_To_Address_PostalCode, 'label': booking.de_To_Address_PostalCode});
-                    }
-
-                    this.setState({deToPostalCodes: postalcode, loadingGeoDeTo: false});        
-                } else {
-                    this.setState({deToPostalCodes, loadingGeoDeTo: false});             
-                }
-            }
-
-            if (deToSuburbs && deToSuburbs.length > 0 && this.state.selectionChanged === 2) {
-                if (deToSuburbs.length == 1) {
-                    this.setState({deToSuburb: deToSuburbs[0]});
-                } else if (deToSuburbs.length > 1) {
-                    if (booking && booking.de_To_Address_Suburb) {
-                        let suburbs = clone(deToSuburbs);
-                        let bHas = false;
-
-                        for (let i = 0; i < suburbs.length; i++ ){
-                            if (suburbs[i].label == booking.de_To_Address_Suburb) {
-                                bHas = true;
-                                break;
-                            }
-                        }
-
-                        if (bHas == false) {
-                            suburbs.push({'value':booking.de_To_Address_Suburb, 'label': booking.de_To_Address_Suburb});
-                        }
-
-                        this.setState({deToSuburbs: suburbs});        
-                    } else {
-                        this.setState({deToSuburbs});             
-                    }
-                }
-                this.setState({deToSuburbs, loadingGeoDeTo: false});
-            }
-
-            this.setState({selectionChanged: 0});
-            this.props.setFetchGeoInfoFlag(false);
-        }
      
         if (
             (booking && this.state.loading && parseInt(this.state.curViewMode) === 0)
@@ -822,31 +641,15 @@ class BookingPage extends Component {
                 AdditionalServices = [...tempAdditionalServices];
 
                 this.setState({
-                    puPostalCode: {
-                        'value': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null, 
-                        'label': booking.pu_Address_PostalCode ? booking.pu_Address_PostalCode : null,
-                    },
+                    curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                     puSuburb: {
                         'value': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null, 
                         'label': booking.pu_Address_Suburb ? booking.pu_Address_Suburb : null
-                    },
-                    puState: {
-                        'value': booking.pu_Address_State ? booking.pu_Address_State : null, 
-                        'label': booking.pu_Address_State ? booking.pu_Address_State : null,
-                    },
-                    deToPostalCode: {
-                        'value': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null, 
-                        'label': booking.de_To_Address_PostalCode ? booking.de_To_Address_PostalCode : null,
                     },
                     deToSuburb: {
                         'value': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null, 
                         'label': booking.de_To_Address_Suburb ? booking.de_To_Address_Suburb : null
                     },
-                    deToState: {
-                        'value': booking.de_To_Address_State ? booking.de_To_Address_State : null, 
-                        'label': booking.de_To_Address_State ? booking.de_To_Address_State : null,
-                    },
-                    curViewMode: booking.b_dateBookedDate && booking.b_dateBookedDate.length > 0 ? 0 : 2,
                 });
 
                 // Dropzone files reset
@@ -1112,20 +915,15 @@ class BookingPage extends Component {
     }
 
     afterSetState(type, data) {
-        if (type === 0) {
-            this.props.getBookingLines(data.pk_booking_id);
-            this.props.getBookingLineDetails(data.pk_booking_id);
-            this.props.getBookingStatusHistory(data.pk_booking_id);
-            this.props.getApiBCLs(data.id);
-            this.props.setFetchGeoInfoFlag(true);
-            this.props.getAttachmentHistory(data.pk_booking_id);
-            this.props.getEmailLogs(data.id);
-            this.props.getClientProcessMgr(data.id);
-            this.props.getZohoTicketsWithBookingId(data.b_bookingID_Visual);
-            this.props.getZohoTicketSummaries();
-        } else if (type === 1) {
-            this.props.setFetchGeoInfoFlag(true);
-        }
+        this.props.getBookingLines(data.pk_booking_id);
+        this.props.getBookingLineDetails(data.pk_booking_id);
+        this.props.getBookingStatusHistory(data.pk_booking_id);
+        this.props.getApiBCLs(data.id);
+        this.props.getAttachmentHistory(data.pk_booking_id);
+        this.props.getEmailLogs(data.id);
+        this.props.getClientProcessMgr(data.id);
+        this.props.getZohoTicketsWithBookingId(data.b_bookingID_Visual);
+        this.props.getZohoTicketSummaries();
     }
 
     refreshBooking(booking) {
@@ -1518,7 +1316,8 @@ class BookingPage extends Component {
     }
 
     onClickBook() {
-        const { booking, isBookedBooking, clientname, isBookingModified, products } = this.state;
+        const { clientname } = this.props;
+        const { booking, isBookedBooking, isBookingModified, products } = this.state;
 
         if (isBookingModified) {
             this.notify('You can lose modified booking info. Please update it');
@@ -1682,7 +1481,12 @@ class BookingPage extends Component {
             e.preventDefault();
 
             if (selected === 'dme') {
-                findKeyword = findKeyword.replace(/dme/i, '');
+                try {
+                    findKeyword = parseInt(findKeyword.replace(/dme/i, ''));
+                } catch (e) {
+                    this.notify('Please input correct keyword.');
+                    return;
+                }
             }
 
             e.target.value = findKeyword;
@@ -1707,48 +1511,70 @@ class BookingPage extends Component {
         this.setState({findKeyword: e.target.value});
     }
 
-    handleChangeState = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
-            if (num === 0) {
-                this.props.getSuburbStrings('postalcode', selectedOption.label);
-                this.setState({puState: selectedOption, puPostalCode: null, puSuburb: null, selectionChanged: 1, loadingGeoPU: true});
-            } else if (num === 1) {
-                this.props.getDeliverySuburbStrings('postalcode', selectedOption.label);
-                this.setState({deToState: selectedOption, deToPostalCode: null, deToSuburb: null, selectionChanged: 2, loadingGeoDeTo: true});
+    /*
+     * @param {array<object>} addresses - address array from es(elasticsearch)
+     * @param {string} mixedAddress - mixed address
+     * @return {object} address - found address object
+     */
+    _findAddress = (addresses, mixedAddress) => {
+        return addresses.find(address => {
+            const fullAddress = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+            return fullAddress === mixedAddress;
+        });
+    };
+
+    handleChangeSuburb = (selectedOption, src) => {
+        const {formInputs, isBookedBooking} = this.state;
+        const {puAddresses, deToAddresses} = this.props;
+
+        if (isBookedBooking == false) {
+            if (src === 'puSuburb') {
+                const address = this._findAddress(puAddresses, selectedOption.value);
+                formInputs['pu_Address_State'] = address._source.state;
+                formInputs['pu_Address_PostalCode'] = address._source.postal_code;
+                formInputs['pu_Address_Suburb'] = address._source.suburb;
+                const puSuburb = {label: address._source.suburb, value:address._source.suburb};
+                this.setState({ puSuburb, formInputs });
+            } else if (src === 'deToSuburb') {
+                const address = this._findAddress(deToAddresses, selectedOption.value);
+                formInputs['de_To_Address_State'] = address._source.state;
+                formInputs['de_To_Address_PostalCode'] = address._source.postal_code;
+                formInputs['de_To_Address_Suburb'] = address._source.suburb;
+                const deToSuburb = {label: address._source.suburb, value:address._source.suburb};
+                this.setState({ deToSuburb, formInputs });
             }
 
             this.setState({isBookingModified: true});
         }
     };
 
-    handleChangePostalCode = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
-            if (num === 0) {
-                this.props.getSuburbStrings('suburb', selectedOption.label);
-                this.setState({puPostalCode: selectedOption, puSuburb: null, puSuburbs: [], selectionChanged: 1, loadingGeoPU: true});
-            } else if (num === 1) {
-                this.props.getDeliverySuburbStrings('suburb', selectedOption.label);
-                this.setState({deToPostalCode: selectedOption, deToSuburb: null, deToSuburbs: [], selectionChanged: 2, loadingGeoDeTo: true});
-            }
+    handleInputChangeSuburb = (prefix, src) => {
+        const {isBookedBooking} = this.state;
 
-            this.setState({isBookingModified: true});
+        if (isBookedBooking == false) {
+            if (src === 'puSuburb') {
+                this.props.getAddressesWithPrefix('puAddress', prefix || 'syd');
+            } else if (src === 'deToSuburb') {
+                this.props.getAddressesWithPrefix('deAddress', prefix || 'syd');
+            }
         }
     };
 
-    handleChangeSuburb = (num, selectedOption) => {
-        if (this.state.isBookedBooking == false || this.state.clientname === 'dme') {
-            if (num === 0) {
-                this.setState({ puSuburb: selectedOption});    
-            } else if (num === 1) {
-                this.setState({ deToSuburb: selectedOption});
-            }
+    handleFocusSuburb = (src) => {
+        const {isBookedBooking, formInputs} = this.state;
 
-            this.setState({isBookingModified: true});
+        if (isBookedBooking == false) {
+            if (src === 'puSuburb') {
+                this.props.getAddressesWithPrefix('puAddress', formInputs['pu_Address_Suburb'] || 'syd');
+            } else if (src === 'deToSuburb') {
+                this.props.getAddressesWithPrefix('deAddress', formInputs['de_To_Address_Suburb'] || 'syd');
+            }
         }
     };
 
     onHandleInput(e) {
-        const {isBookedBooking, clientname, formInputs, booking, eta} = this.state;
+        const {clientname} = this.props;
+        const {isBookedBooking, formInputs, booking, eta} = this.state;
 
         if (clientname === 'dme' ||
             isBookedBooking === false || 
@@ -1905,8 +1731,8 @@ class BookingPage extends Component {
             formInputs['puCompany'] = selectedWarehouse.name;
             formInputs['pu_Address_Street_1'] = selectedWarehouse.address1;
             formInputs['pu_Address_street_2'] = selectedWarehouse.address2;
-            const puState = {'value': selectedWarehouse.state, 'label': selectedWarehouse.state};
-            const puPostalCode = {'value': selectedWarehouse.postal_code, 'label': selectedWarehouse.postal_code};
+            formInputs['pu_Address_State'] = selectedWarehouse.state;
+            formInputs['pu_Address_PostalCode'] = selectedWarehouse.postal_code;
             const puSuburb = {'value': selectedWarehouse.suburb, 'label': selectedWarehouse.suburb};
             formInputs['pu_Address_Country'] = 'Australia';
             formInputs['pu_Contact_F_L_Name'] = selectedWarehouse.contact_name;
@@ -1924,7 +1750,7 @@ class BookingPage extends Component {
                 formInputs['pu_PickUp_Avail_Time_Minutes'] = 0;
             }
 
-            this.setState({puState, puPostalCode, puSuburb});
+            this.setState({puSuburb});
         } else if (fieldName === 'b_client_name') {
             formInputs['b_client_name'] = selectedOption.value;
 
@@ -2019,7 +1845,8 @@ class BookingPage extends Component {
         const name = target.name;
         
         if (name === 'tickManualBook') {
-            const {booking, clientname} = this.state;
+            const {booking} = this.state;
+            const {clientname} = this.props;
 
             if (clientname === 'dme') {
                 this.props.tickManualBook(booking.id);
@@ -2073,8 +1900,8 @@ class BookingPage extends Component {
     }
 
     onClickCreateBooking() {
-        const {formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
-        const {clientId} = this.props;
+        const {formInputs, isShowStatusDetailInput, isShowStatusActionInput} = this.state;
+        const {clientname, clientId} = this.props;
 
         if (isShowStatusDetailInput && 
             (isNull(formInputs['new_dme_status_detail']) || isEmpty(formInputs['new_dme_status_detail']))) 
@@ -2114,12 +1941,12 @@ class BookingPage extends Component {
                 formInputs['fk_client_warehouse'] = this.getSelectedWarehouseInfoFromCode(formInputs['b_client_warehouse_code'], 'id');
             }
 
-            formInputs['pu_Address_State'] = puState ? puState.label : '';
-            formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
-            formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
-            formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
-            formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
-            formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
+            // formInputs['pu_Address_State'] = puState ? puState.label : '';
+            // formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : '';
+            // formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : '';
+            // formInputs['de_To_Address_State'] = deToState ? deToState.label : '';
+            // formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : '';
+            // formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label : '';
             formInputs['b_booking_Category'] = formInputs['b_booking_Category'] ? formInputs['b_booking_Category']['value'] : '';
             formInputs['b_booking_Priority'] = formInputs['b_booking_Priority'] ? formInputs['b_booking_Priority']['value'] : '';
             formInputs['booking_Created_For'] = formInputs['booking_Created_For'] ? formInputs['booking_Created_For']['label'] : '';
@@ -2137,11 +1964,8 @@ class BookingPage extends Component {
     }
 
     onClickUpdateBooking() {
-        const {
-            isBookedBooking, formInputs, clientname, puState, puSuburb, puPostalCode, deToState, deToSuburb, deToPostalCode, isShowStatusDetailInput, 
-            isShowStatusActionInput, booking
-        } = this.state;
-        const {clientId} = this.props;
+        const {isBookedBooking, formInputs, isShowStatusDetailInput, isShowStatusActionInput, booking} = this.state;
+        const {clientname, clientId} = this.props;
 
         if (isBookedBooking &&
             clientname.toLowerCase() !== 'dme' &&
@@ -2181,12 +2005,12 @@ class BookingPage extends Component {
                     this.props.createStatusAction(formInputs['new_dme_status_action']);
                 }
 
-                formInputs['pu_Address_State'] = puState ? puState.label : null;
-                formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : null;
-                formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : null;
-                formInputs['de_To_Address_State'] = deToState ? deToState.label : null;
-                formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : null;
-                formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label :null;
+                // formInputs['pu_Address_State'] = puState ? puState.label : null;
+                // formInputs['pu_Address_Suburb'] = puSuburb ? puSuburb.label : null;
+                // formInputs['pu_Address_PostalCode'] = puPostalCode ? puPostalCode.label : null;
+                // formInputs['de_To_Address_State'] = deToState ? deToState.label : null;
+                // formInputs['de_To_Address_Suburb'] = deToSuburb ? deToSuburb.label : null;
+                // formInputs['de_To_Address_PostalCode'] = deToPostalCode ? deToPostalCode.label :null;
                 formInputs['b_booking_Category'] = formInputs['b_booking_Category']['value'];
                 formInputs['b_booking_Priority'] = formInputs['b_booking_Priority']['value'];
                 formInputs['booking_Created_For'] = formInputs['booking_Created_For']['label'];
@@ -2658,29 +2482,30 @@ class BookingPage extends Component {
             this.setState({
                 curViewMode: newViewMode,
                 isBookingModified: false
-            }, () => this.afterSetState(1)); // Reload GEO info
+            });
         } else if (curViewMode === 1 && newViewMode === 0) { // Create -> View
             this.props.getBooking();
             this.setState({
                 curViewMode: newViewMode,
                 isBookingModified: false,
                 loading: true
-            }, () => this.afterSetState(1)); // Reload GEO info
+            });
         } else if (curViewMode === 0 && newViewMode === 2) { // View -> Update
             this.setState({
                 curViewMode: newViewMode,
                 isBookingModified: false
-            }, () => this.afterSetState(1)); // Reload GEO info
+            });
         } else if (curViewMode === 2 && newViewMode === 0) { // Update -> View
             this.setState({
                 curViewMode: newViewMode,
                 isBookingModified: false
-            }); // Reload GEO info
+            });
         }
     }
 
     showCreateView() {
-        const {isBookingSelected, clientname, booking} = this.state;
+        const {isBookingSelected, booking} = this.state;
+        const {clientname} = this.props;
 
         if (isBookingSelected) {
             let formInputs = {};
@@ -2698,12 +2523,8 @@ class BookingPage extends Component {
                 isBookingSelected: false, 
                 products: [], 
                 bookingLineDetailsProduct: [],
-                puState: null,
                 puSuburb: null,
-                puPostalCode: null,
-                deToState: null,
                 deToSuburb: null,
-                deToPostalCode: null,
                 formInputs,
             });
         }
@@ -2750,7 +2571,7 @@ class BookingPage extends Component {
     }
 
     onClickStatusLock(booking) {
-        const { clientname } = this.state;
+        const { clientname } = this.props;
 
         if (clientname === 'dme') {
             if (booking.b_status_API === 'POD Delivered') {
@@ -2959,13 +2780,12 @@ class BookingPage extends Component {
     render() {
         const {
             isBookingModified, isBookedBooking, isLockedBooking, attachmentsHistory, booking, products, AdditionalServices, bookingLineDetailsProduct,
-            formInputs, puState, puStates, puPostalCode, puPostalCodes, puSuburb, puSuburbs, deToState, deToStates, deToPostalCode, deToPostalCodes,
-            deToSuburb, deToSuburbs, clientname, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider,
+            formInputs, isShowLineSlider, curViewMode, isBookingSelected,  statusHistories, isShowStatusHistorySlider,
             isShowScansSlider, allBookingStatus, isShowLineTrackingSlider, activeTabInd, statusActions, statusDetails, isShowStatusLockModal,
             isShowStatusDetailInput, isShowStatusActionInput, currentNoteModalField, qtyTotal, cntAttachments, zohoTickets, clientprocess, puCommunicates,
-            deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries, eta
+            deCommunicates, isAugmentEditable, currentPackedStatus, zohoDepartments, zohoTicketSummaries, eta, puSuburb, deToSuburb
         } = this.state;
-        const {warehouses, emailLogs, bookingLines, cntAdditionalSurcharges} = this.props;
+        const {clientname, warehouses, emailLogs, bookingLines, cntAdditionalSurcharges} = this.props;
 
         const filteredProducts = products
             .filter(product => {
@@ -3347,6 +3167,28 @@ class BookingPage extends Component {
                 </option>
             ));
 
+        // Populate puAddresses and deToAddresses
+        let puAddressOptions = [];
+        let deToAddressOptions = [];
+        if (formInputs['pu_Address_Suburb'] && this.props.puAddresses.length === 0) {
+            const value = `${formInputs['pu_Address_Suburb']}`;
+            puAddressOptions = [{value: value, label: value}];
+        } else if (this.props.puAddresses.length > 0) {
+            puAddressOptions = this.props.puAddresses.map(address => {
+                const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+                return {value: value, label: value};
+            });
+        }
+        if (formInputs['de_To_Address_Suburb'] && this.props.deToAddresses.length === 0) {
+            const value = `${formInputs['de_To_Address_Suburb']}`;
+            deToAddressOptions = [{value: value, label: value}];
+        } else if (this.props.deToAddresses.length > 0) {
+            deToAddressOptions = this.props.deToAddresses.map(address => {
+                const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+                return {value: value, label: value};
+            });
+        }
+
         return (
             <div className="qbootstrap-nav header">
                 <div id="headr" className="col-md-12">
@@ -3418,7 +3260,7 @@ class BookingPage extends Component {
                                         onChange={this.onChangeText.bind(this)} 
                                         onKeyPress={(e) => this.onKeyPress(e)} 
                                         placeholder="Enter Number(Enter)"
-                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU) ? 'disabled' : ''}
+                                        disabled={(this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading) ? 'disabled' : ''}
                                     />
                                 </div>
                                 <div className="float-r disp-inline-block mar-right-20">
@@ -4392,76 +4234,71 @@ class BookingPage extends Component {
                                                                         name="pu_Address_street_2"
                                                                         className="form-control"
                                                                         value = {formInputs['pu_Address_street_2'] ? formInputs['pu_Address_street_2'] : ''} 
-                                                                        onChange={(e) => this.onHandleInput(e)} />
+                                                                        onChange={(e) => this.onHandleInput(e)}
+                                                                    />
                                                             }
                                                         </div>
                                                     </div>
-                                                    <LoadingOverlay
-                                                        active={this.state.loadingGeoPU}
-                                                        spinner
-                                                        text='Loading...'
-                                                    >
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">State<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puState ? puState.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={puState}
-                                                                            onChange={(e) => this.handleChangeState(0, e)}
-                                                                            options={puStates}
-                                                                            placeholder='select your state'
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick={isBookedBooking ? false : true}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                         </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puPostalCode ? puPostalCode.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={puPostalCode}
-                                                                            onChange={(e) => this.handleChangePostalCode(0, e)}
-                                                                            options={puPostalCodes}
-                                                                            placeholder='select your postal code'
-                                                                            openMenuOnClick = {isBookedBooking ? false : true}
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Address_State']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="pu_Address_State"
+                                                                        className="form-control"
+                                                                        value={formInputs['pu_Address_State'] ? formInputs['pu_Address_State'] : ''} 
+                                                                        disabled="disabled"
+                                                                    />
+                                                            }
                                                         </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{puSuburb ? puSuburb.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={puSuburb}
-                                                                            onChange={(e) => this.handleChangeSuburb(0, e)}
-                                                                            options={puSuburbs}
-                                                                            placeholder='select your suburb'
-                                                                            openMenuOnClick = {isBookedBooking ? false : true}
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
                                                         </div>
-                                                    </LoadingOverlay>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['pu_Address_PostalCode']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="pu_Address_PostalCode"
+                                                                        className="form-control"
+                                                                        value={formInputs['pu_Address_PostalCode'] ? formInputs['pu_Address_PostalCode'] : ''} 
+                                                                        disabled="disabled"
+                                                                    />
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{puSuburb ? puSuburb.value : ''}</p>
+                                                                    :
+                                                                    <Select
+                                                                        value={puSuburb}
+                                                                        onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
+                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
+                                                                        onFocus={() => this.handleFocusSuburb('puSuburb')}
+                                                                        options={puAddressOptions}
+                                                                        placeholder='select your suburb'
+                                                                        openMenuOnClick = {isBookedBooking ? false : true}
+                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    />
+                                                            }
+                                                        </div>
+                                                    </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Country<span className='c-red'>*</span></label>
@@ -4870,72 +4707,66 @@ class BookingPage extends Component {
                                                             }
                                                         </div>
                                                     </div>
-                                                    <LoadingOverlay
-                                                        active={this.state.loadingGeoDeTo}
-                                                        spinner
-                                                        text='Loading...'
-                                                    >
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">State<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToState ? deToState.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={deToState}
-                                                                            onChange={(e) => this.handleChangeState(1, e)}
-                                                                            options={deToStates}
-                                                                            placeholder='select your state'
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {isBookedBooking ? false : true}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                         </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToPostalCode ? deToPostalCode.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={deToPostalCode}
-                                                                            onChange={(e) => this.handleChangePostalCode(1, e)}
-                                                                            options={deToPostalCodes}
-                                                                            placeholder='select your postal code'
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {isBookedBooking ? false : true}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_To_Address_State']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="de_To_Address_State"
+                                                                        className="form-control"
+                                                                        value={formInputs['de_To_Address_State'] ? formInputs['de_To_Address_State'] : ''} 
+                                                                        disabled="disabled"
+                                                                    />
+                                                            }
                                                         </div>
-                                                        <div className="row mt-1">
-                                                            <div className="col-sm-4">
-                                                                <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
-                                                            </div>
-                                                            <div className='col-sm-8 select-margin'>
-                                                                {
-                                                                    (parseInt(curViewMode) === 0) ?
-                                                                        <p className="show-mode">{deToSuburb ? deToSuburb.value : ''}</p>
-                                                                        :
-                                                                        <Select
-                                                                            value={deToSuburb}
-                                                                            onChange={(e) => this.handleChangeSuburb(1, e)}
-                                                                            options={deToSuburbs}
-                                                                            placeholder='select your suburb'
-                                                                            noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                            openMenuOnClick = {isBookedBooking ? false : true}
-                                                                        />
-                                                                }
-                                                            </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
                                                         </div>
-                                                    </LoadingOverlay>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{formInputs['de_To_Address_PostalCode']}</p>
+                                                                    :
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="de_To_Address_PostalCode"
+                                                                        className="form-control"
+                                                                        value={formInputs['de_To_Address_PostalCode'] ? formInputs['de_To_Address_PostalCode'] : ''} 
+                                                                        disabled="disabled"
+                                                                    />
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div className="row mt-1">
+                                                        <div className="col-sm-4">
+                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
+                                                        </div>
+                                                        <div className='col-sm-8 select-margin'>
+                                                            {
+                                                                (parseInt(curViewMode) === 0) ?
+                                                                    <p className="show-mode">{deToSuburb ? deToSuburb.value : ''}</p>
+                                                                    :
+                                                                    <Select
+                                                                        value={deToSuburb}
+                                                                        onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
+                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
+                                                                        focus={() => this.handleFocusSuburb('puSuburb')}
+                                                                        options={deToAddressOptions}
+                                                                        placeholder='select your suburb'
+                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                        openMenuOnClick = {isBookedBooking ? false : true}
+                                                                    />
+                                                            }
+                                                        </div>
+                                                    </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Country<span className='c-red'>*</span></label>
@@ -5349,7 +5180,7 @@ class BookingPage extends Component {
                                                             {(clientname === 'dme' && booking && !booking.is_auto_augmented) ?
                                                                 <button
                                                                     className='btn btn-theme btn-autoaugment'
-                                                                    disabled={this.state.loading || this.state.loadingGeoPU || isBookedBooking}
+                                                                    disabled={this.state.loading || isBookedBooking}
                                                                     onClick={() => this.onClickAutoAugment()}
                                                                 >
                                                                     AA
@@ -5637,7 +5468,7 @@ class BookingPage extends Component {
                                                             <button
                                                                 className={'btn btn-theme custom-theme btn-primary'}
                                                                 onClick={() => this.onClickUpdateBooking()}
-                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading || this.state.loadingGeoPU ? 'disabled' : ''}
+                                                                disabled={this.state.loadingBookingLine || this.state.loadingBookingLineDetail || this.state.loading ? 'disabled' : ''}
                                                             >
                                                                 Update
                                                             </button>
@@ -6287,12 +6118,6 @@ const mapStateToProps = (state) => {
         bookingLines: state.bookingLine.bookingLines,
         bookingLineDetails: state.bookingLineDetail.bookingLineDetails,
         bBooking: state.booking.bBooking,
-        puStates: state.booking.puStates,
-        puPostalCodes: state.booking.puPostalCodes,
-        puSuburbs: state.booking.puSuburbs,
-        deToStates: state.booking.deToStates,
-        deToPostalCodes: state.booking.deToPostalCodes,
-        deToSuburbs: state.booking.deToSuburbs,
         attachments: state.booking.attachments,
         needUpdateBooking: state.booking.needUpdateBooking,
         needUpdateBookingLines: state.bookingLine.needUpdateBookingLines,
@@ -6315,7 +6140,6 @@ const mapStateToProps = (state) => {
         allFPs: state.extra.allFPs,
         needUpdateStatusActions: state.extra.needUpdateStatusActions,
         needUpdateStatusDetails: state.extra.needUpdateStatusDetails,
-        needToFetchGeoInfo: state.booking.needToFetchGeoInfo,
         isTickedManualBook: state.booking.isTickedManualBook,
         pricingInfos: state.booking.pricingInfos,
         emailLogs: state.extra.emailLogs,
@@ -6328,6 +6152,8 @@ const mapStateToProps = (state) => {
         loadingZohoTickets: state.extra.loadingZohoTickets,
         loadingZohoDepartments: state.extra.loadingZohoDepartments,
         loadingZohoTicketSummaries: state.extra.loadingZohoTicketSummaries,
+        puAddresses: state.elasticsearch.puAddresses,
+        deToAddresses: state.elasticsearch.deToAddresses,
         errors: state.extra.errors,
     };
 };
@@ -6343,9 +6169,7 @@ const mapDispatchToProps = (dispatch) => {
         getBooking: (id, filter) => dispatch(getBooking(id, filter)),
         manualBook: (id) => dispatch(manualBook(id)),
         tickManualBook: (id) => dispatch(tickManualBook(id)),
-        getSuburbStrings: (type, name) => dispatch(getSuburbStrings(type, name)),
         getAttachmentHistory: (pk_booking_id) => dispatch(getAttachmentHistory(pk_booking_id)),
-        getDeliverySuburbStrings: (type, name) => dispatch(getDeliverySuburbStrings(type, name)),
         getBookingLines: (bookingId) => dispatch(getBookingLines(bookingId)),
         createBookingLine: (bookingLine) => dispatch(createBookingLine(bookingLine)),
         duplicateBookingLine: (bookingLine) => dispatch(duplicateBookingLine(bookingLine)),
@@ -6382,7 +6206,6 @@ const mapDispatchToProps = (dispatch) => {
         createStatusAction: (newStatusAction) => dispatch(createStatusAction(newStatusAction)),
         createStatusDetail: (newStatusDetail) => dispatch(createStatusDetail(newStatusDetail)),
         getApiBCLs: (bookingId) => dispatch(getApiBCLs(bookingId)),
-        setFetchGeoInfoFlag: (boolFlag) => dispatch(setFetchGeoInfoFlag(boolFlag)),
         clearErrorMessage: (boolFlag) => dispatch(clearErrorMessage(boolFlag)),
         getAllFPs: () => dispatch(getAllFPs()),
         getPricingInfos: (pk_booking_id) => dispatch(getPricingInfos(pk_booking_id)),
@@ -6402,6 +6225,7 @@ const mapDispatchToProps = (dispatch) => {
         moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
         repack: (bookingId, repackStatus) => dispatch(repack(bookingId, repackStatus)),
         getCSNotes: (bookingId) => dispatch(getCSNotes(bookingId)),
+        getAddressesWithPrefix: (src, prefix) => dispatch(getAddressesWithPrefix(src, prefix)),
     };
 };
 

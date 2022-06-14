@@ -5,13 +5,7 @@ import {
     RESET_BOOKING,
     SET_ATTACHMENTS,
     FAILED_GET_ATTACHMENTS,
-    SET_POSTALCODE_DE,
-    SET_SUBURB_DE,
-    SET_STATE_DE,
     SET_BOOKING_WITH_FILTER,
-    SET_SUBURB,
-    SET_POSTALCODE,
-    SET_STATE,
     SET_BOOKINGS,
     FAILED_GET_BOOKINGS,
     SET_BOOKING,
@@ -174,12 +168,6 @@ export const BookingReducer = (state = defaultState, {
     activeTabInd,
     simpleSearchKeyword,
     needUpdateBookings,
-    puStates,
-    puPostalCodes,
-    puSuburbs,
-    deToStates,
-    deToPostalCodes,
-    deToSuburbs,
     downloadOption,
     clientPK,
     qtyTotal,
@@ -264,36 +252,6 @@ export const BookingReducer = (state = defaultState, {
                 pageCnt: pageCnt,
                 needUpdateBookings: false,
                 needUpdateBookingLines: false,
-            };
-        case SET_STATE:
-            return {
-                ...state,
-                puStates: puStates
-            };
-        case SET_POSTALCODE:
-            return {
-                ...state,
-                puPostalCodes: puPostalCodes
-            };
-        case SET_SUBURB:
-            return {
-                ...state,
-                puSuburbs: puSuburbs
-            };
-        case SET_STATE_DE:
-            return {
-                ...state,
-                deToStates: deToStates
-            };
-        case SET_POSTALCODE_DE:
-            return {
-                ...state,
-                deToPostalCodes: deToPostalCodes
-            };
-        case SET_SUBURB_DE:
-            return {
-                ...state,
-                deToSuburbs: deToSuburbs
             };
         case SET_MAPPEDBOOKINGS:
             return {

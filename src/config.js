@@ -1,4 +1,11 @@
-//-- Local --
+//--- Common ---
+// ElasticSearch
+export const ES_URL = 'https://search-deliver-me-kts7eem5abkhyvqvhvaq223pim.ap-southeast-2.es.amazonaws.com';
+export const ES_USERNAME = 'read_only';
+export const ES_PASSWORD = 'ZXnRyv4f#.RZj{4a';
+
+
+//--- Local ---
 export const HTTP_PROTOCOL = 'http';
 export const API_HOST = 'localhost:8000/api';       										// Local Api
 export const STATIC_HOST = 'localhost:8000/static'; 										// Local Static
@@ -10,7 +17,7 @@ export const ZOHO_CLIENT_SECRET = 'cfb889f8347f36c3f7c4a130fb3e82a4ae53006ff6';
 export const ZOHO_ORG_ID = '7000200810';
 
 
-//-- DEV --
+//--- DEV ---
 // export const HTTP_PROTOCOL = 'https';
 // export const API_HOST = 'dev.api.deliver-me.com.au/api';                 				// Dev Api
 // export const S3_URL = 'dme-dev-api-static-public.s3-ap-southeast-2.amazonaws.com';
@@ -23,7 +30,7 @@ export const ZOHO_ORG_ID = '7000200810';
 // export const ZOHO_ORG_ID = '7000200810';
 
 
-//-- PROD --
+//--- PROD ---
 // export const HTTP_PROTOCOL = 'https';
 // export const API_HOST = 'prod.api.deliver-me.com.au/api';              					// Prod Api
 // export const S3_URL = 'dme-pod-api-static.s3-ap-southeast-2.amazonaws.com';
