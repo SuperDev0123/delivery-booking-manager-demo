@@ -1590,6 +1590,22 @@ class BookingPage extends Component {
         this.setState({ loading: true, curViewMode: 0});
     }
 
+    onClickSendEDI() {
+        const { booking } = this.state;
+        const token = localStorage.getItem('token');
+
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/fp-api/send-edi/',
+            headers: {'Authorization': 'JWT ' + token},
+            data: {id: booking.id, freight_provider: booking.vx_freight_provider},
+        };
+
+        axios(options).then((response) => {
+            console.log(response);
+        });
+    }
+
     onSavePuInfo () {
         const { booking } = this.state;
         this.props.saveStatusHistoryPuInfo(booking.id);
@@ -5688,6 +5704,14 @@ class BookingPage extends Component {
                                                                 Book
                                                             </button>
                                                         }
+                                                    </div>
+                                                    <div className="text-center mt-2 fixed-height">
+                                                        <button
+                                                            className="btn btn-theme custom-theme"
+                                                            onClick={() => this.onClickSendEDI()}
+                                                        >
+                                                            Send EDI
+                                                        </button>
                                                     </div>
                                                     <div className="text-center mt-2 fixed-height manual-book">
                                                         <input
