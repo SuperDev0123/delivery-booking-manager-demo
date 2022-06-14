@@ -4225,23 +4225,27 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
+                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className='col-sm-8 select-margin'>
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['pu_Address_State']}</p>
+                                                                    <p className="show-mode">{puSuburb ? puSuburb.value : ''}</p>
                                                                     :
-                                                                    <input 
-                                                                        type="text"
-                                                                        name="pu_Address_State"
-                                                                        className="form-control"
-                                                                        value={formInputs['pu_Address_State'] ? formInputs['pu_Address_State'] : ''} 
-                                                                        disabled="disabled"
+                                                                    <Select
+                                                                        value={puSuburb}
+                                                                        onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
+                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
+                                                                        onFocus={() => this.handleFocusSuburb('puSuburb')}
+                                                                        options={puAddressOptions}
+                                                                        placeholder='select your suburb'
+                                                                        openMenuOnClick = {isBookedBooking ? false : true}
+                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                                     />
                                                             }
                                                         </div>
                                                     </div>
+                                                    
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
                                                             <label className="" htmlFor="">Postal Code<span className='c-red'>*</span></label>
@@ -4263,22 +4267,19 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
+                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className='col-sm-8 select-margin'>
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{puSuburb ? puSuburb.value : ''}</p>
+                                                                    <p className="show-mode">{formInputs['pu_Address_State']}</p>
                                                                     :
-                                                                    <Select
-                                                                        value={puSuburb}
-                                                                        onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
-                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
-                                                                        onFocus={() => this.handleFocusSuburb('puSuburb')}
-                                                                        options={puAddressOptions}
-                                                                        placeholder='select your suburb'
-                                                                        openMenuOnClick = {isBookedBooking ? false : true}
-                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="pu_Address_State"
+                                                                        className="form-control"
+                                                                        value={formInputs['pu_Address_State'] ? formInputs['pu_Address_State'] : ''} 
+                                                                        disabled="disabled"
                                                                     />
                                                             }
                                                         </div>
@@ -4693,19 +4694,22 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
+                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className='col-sm-8 select-margin'>
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{formInputs['de_To_Address_State']}</p>
+                                                                    <p className="show-mode">{deToSuburb ? deToSuburb.value : ''}</p>
                                                                     :
-                                                                    <input 
-                                                                        type="text"
-                                                                        name="de_To_Address_State"
-                                                                        className="form-control"
-                                                                        value={formInputs['de_To_Address_State'] ? formInputs['de_To_Address_State'] : ''} 
-                                                                        disabled="disabled"
+                                                                    <Select
+                                                                        value={deToSuburb}
+                                                                        onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
+                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
+                                                                        focus={() => this.handleFocusSuburb('deToSuburb')}
+                                                                        options={deToAddressOptions}
+                                                                        placeholder='select your suburb'
+                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                        openMenuOnClick = {isBookedBooking ? false : true}
                                                                     />
                                                             }
                                                         </div>
@@ -4731,22 +4735,19 @@ class BookingPage extends Component {
                                                     </div>
                                                     <div className="row mt-1">
                                                         <div className="col-sm-4">
-                                                            <label className="" htmlFor="">Suburb<span className='c-red'>*</span></label>
+                                                            <label className="" htmlFor="">State<span className='c-red'>*</span></label>
                                                         </div>
                                                         <div className='col-sm-8 select-margin'>
                                                             {
                                                                 (parseInt(curViewMode) === 0) ?
-                                                                    <p className="show-mode">{deToSuburb ? deToSuburb.value : ''}</p>
+                                                                    <p className="show-mode">{formInputs['de_To_Address_State']}</p>
                                                                     :
-                                                                    <Select
-                                                                        value={deToSuburb}
-                                                                        onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
-                                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
-                                                                        focus={() => this.handleFocusSuburb('deToSuburb')}
-                                                                        options={deToAddressOptions}
-                                                                        placeholder='select your suburb'
-                                                                        noOptionsMessage={() => this.displayNoOptionsMessage()}
-                                                                        openMenuOnClick = {isBookedBooking ? false : true}
+                                                                    <input 
+                                                                        type="text"
+                                                                        name="de_To_Address_State"
+                                                                        className="form-control"
+                                                                        value={formInputs['de_To_Address_State'] ? formInputs['de_To_Address_State'] : ''} 
+                                                                        disabled="disabled"
                                                                     />
                                                             }
                                                         </div>
@@ -5077,74 +5078,78 @@ class BookingPage extends Component {
                                             </div>
                                         </div>
 
-                                        <Popover
-                                            isOpen={this.state.isShowAugmentInfoPopup}
-                                            target={'augment-info-popup'}
-                                            placement="left"
-                                            hideArrow={true}
-                                            className="aa-modal"
-                                        >
-                                            <PopoverHeader>
-                                                <a onClick={this.onShowEditAugment}><i className="icon icon-pencil float-left"></i></a>
-                                                Auto Augment Info
-                                                <a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a>
-                                            </PopoverHeader>
-                                            <PopoverBody>
-                                                <div>
-                                                    <label>
-                                                        <h5 className="bold">PU Entity<span className='c-red'>*</span>: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany'] ? clientprocess['origin_puCompany'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_puCompany']}</span>
-                                                        }
-                                                    </label>
-                                                    <label>
-                                                        <h5 className="bold">PU Street 1<span className='c-red'>*</span>: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1'] ? clientprocess['origin_pu_Address_Street_1'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_pu_Address_Street_1']}</span>
-                                                        }
-                                                    </label>
-                                                    <label>
-                                                        <h5 className="bold">PU Street 2: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2'] ? clientprocess['origin_pu_Address_Street_2'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_pu_Address_Street_2']}</span>
-                                                        }
-                                                    </label>
-                                                </div>
-                                                <hr />
-                                                <div>
-                                                    <label>
-                                                        <h5 className="bold">DE Entity<span className='c-red'>*</span>: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName'] ? clientprocess['origin_deToCompanyName'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_deToCompanyName']}</span>
-                                                        }
-                                                    </label>
-                                                    <label>
-                                                        <h5 className="bold">DE Instrunction: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address'] ? clientprocess['origin_pu_pickup_instructions_address'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_pu_pickup_instructions_address']}</span>
-                                                        }
-                                                    </label>
-                                                    <label>
-                                                        <h5 className="bold">DE Group Emails: </h5>
-                                                        {isAugmentEditable ?
-                                                            <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails'] ? clientprocess['origin_de_Email_Group_Emails'] : ''} onChange={(e) => this.onInputChange(e)} />
-                                                            : <span>{clientprocess['origin_de_Email_Group_Emails']}</span>
-                                                        }
-                                                    </label>
-                                                </div>
-                                                {isAugmentEditable &&
-                                                    <div className="btns">
-                                                        <button className="btn btn-danger" onClick={this.onHideEditAugment}>Cancel</button>
-                                                        <button className="btn btn-primary" onClick={this.onUpdateAugment}>Update</button>
+                                        {(clientname === 'dme' && booking && !booking.is_auto_augmented) ?
+                                            null
+                                            :
+                                            <Popover
+                                                isOpen={this.state.isShowAugmentInfoPopup}
+                                                target={'augment-info-popup'}
+                                                placement="left"
+                                                hideArrow={true}
+                                                className="aa-modal"
+                                            >
+                                                <PopoverHeader>
+                                                    <a onClick={this.onShowEditAugment}><i className="icon icon-pencil float-left"></i></a>
+                                                    Auto Augment Info
+                                                    <a className="close-popover" onClick={this.onToggleAugmentInfoPopup}>x</a>
+                                                </PopoverHeader>
+                                                <PopoverBody>
+                                                    <div>
+                                                        <label>
+                                                            <h5 className="bold">PU Entity<span className='c-red'>*</span>: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_puCompany" type="text" placeholder="Enter origin puCompany" value={clientprocess['origin_puCompany'] ? clientprocess['origin_puCompany'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_puCompany']}</span>
+                                                            }
+                                                        </label>
+                                                        <label>
+                                                            <h5 className="bold">PU Street 1<span className='c-red'>*</span>: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_Address_Street_1" type="text" placeholder="Enter origin puStreet1" value={clientprocess['origin_pu_Address_Street_1'] ? clientprocess['origin_pu_Address_Street_1'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_pu_Address_Street_1']}</span>
+                                                            }
+                                                        </label>
+                                                        <label>
+                                                            <h5 className="bold">PU Street 2: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_Address_Street_2" type="text" placeholder="Enter origin puStreet2" value={clientprocess['origin_pu_Address_Street_2'] ? clientprocess['origin_pu_Address_Street_2'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_pu_Address_Street_2']}</span>
+                                                            }
+                                                        </label>
                                                     </div>
-                                                }
-                                            </PopoverBody>
-                                        </Popover>
+                                                    <hr />
+                                                    <div>
+                                                        <label>
+                                                            <h5 className="bold">DE Entity<span className='c-red'>*</span>: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_deToCompanyName" type="text" placeholder="Enter dest ToCompanyName" value={clientprocess['origin_deToCompanyName'] ? clientprocess['origin_deToCompanyName'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_deToCompanyName']}</span>
+                                                            }
+                                                        </label>
+                                                        <label>
+                                                            <h5 className="bold">DE Instrunction: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_pu_pickup_instructions_address" type="text" placeholder="Enter origin pu pickup instructions address" value={clientprocess['origin_pu_pickup_instructions_address'] ? clientprocess['origin_pu_pickup_instructions_address'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_pu_pickup_instructions_address']}</span>
+                                                            }
+                                                        </label>
+                                                        <label>
+                                                            <h5 className="bold">DE Group Emails: </h5>
+                                                            {isAugmentEditable ?
+                                                                <input name="origin_de_Email_Group_Emails" type="text" placeholder="Enter dest Email Group Emails" value={clientprocess['origin_de_Email_Group_Emails'] ? clientprocess['origin_de_Email_Group_Emails'] : ''} onChange={(e) => this.onInputChange(e)} />
+                                                                : <span>{clientprocess['origin_de_Email_Group_Emails']}</span>
+                                                            }
+                                                        </label>
+                                                    </div>
+                                                    {isAugmentEditable &&
+                                                        <div className="btns">
+                                                            <button className="btn btn-danger" onClick={this.onHideEditAugment}>Cancel</button>
+                                                            <button className="btn btn-primary" onClick={this.onUpdateAugment}>Update</button>
+                                                        </div>
+                                                    }
+                                                </PopoverBody>
+                                            </Popover>
+                                        }
 
                                         <div className="col-sm-4">
                                             <div className="pickup-detail">
