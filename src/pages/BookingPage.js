@@ -51,7 +51,7 @@ import { getCreatedForInfos } from '../state/services/userService';
 import {
     getBooking, getAttachmentHistory, saveBooking, updateBooking, duplicateBooking, clearErrorMessage, 
     tickManualBook, manualBook, fpPricing, getPricingInfos, sendEmail, autoAugmentBooking, revertAugmentBooking, augmentPuDate, resetNoBooking, getClientProcessMgr, 
-    updateAugment, repack
+    updateAugment, repack, downloadFile, bulkBookingUpdateService, buildCSVService, buildXMLService
 } from '../state/services/bookingService';
 // FP Services
 import { fpBook, fpEditBook, fpRebook, fpLabel, fpCancelBook, fpPod, fpReprint, fpTracking, dmeLabel, dmeCancelBook } from '../state/services/bookingService';
@@ -1104,61 +1104,15 @@ class BookingPage extends Component {
     }
 
     onClickDownloadFile(fileOption) {
-        const token = localStorage.getItem('token');
         const { booking } = this.state;
         const selectedBookingIds = [booking.id];
 
         if (fileOption === 'label') {
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
-                headers: {'Authorization': 'JWT ' + token},
-                data: {ids: selectedBookingIds, downloadOption: fileOption},
-                responseType: 'blob', // important
-            };
-
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'label_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
-                document.body.appendChild(link);
-                link.click();
-            });
+            downloadFile(selectedBookingIds, fileOption, 'label_1_');
         } else if (fileOption === 'pod') {
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
-                headers: {'Authorization': 'JWT ' + token},
-                data: {ids: selectedBookingIds, downloadOption: fileOption},
-                responseType: 'blob', // important
-            };
-
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'pod_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
-                document.body.appendChild(link);
-                link.click();
-            });
+            downloadFile(selectedBookingIds, fileOption, 'pod_1_');
         } else if (fileOption === 'pod_sog') {
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
-                headers: {'Authorization': 'JWT ' + token},
-                data: {ids: selectedBookingIds, downloadOption: fileOption},
-                responseType: 'blob', // important
-            };
-
-            axios(options).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', 'pod_signed_1_' + moment().format('YYYY-MM-DD HH:mm') + '.zip');
-                document.body.appendChild(link);
-                link.click();
-            });
+            downloadFile(selectedBookingIds, fileOption, 'pod_signed_1_');
         }
     }
 
@@ -1395,66 +1349,15 @@ class BookingPage extends Component {
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            const options = {
-                method: 'post',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
-                data: {bookingIds, fieldName, fieldContent},
-            };
-
-            axios(options)
-                .then(() => {
-                    resolve();
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return bulkBookingUpdateService(bookingIds, fieldName, fieldContent);
     }
 
     buildCSV(bookingIds, vx_freight_provider) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
-                data: {bookingIds, vx_freight_provider},
-                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
-            };
-
-            axios(options)
-                .then((response) => {
-                    console.log('get-csv response: ', response);
-                    this.notify('Successfully booked via CSV');
-                    this.refreshBooking(this.state.booking);
-                    resolve();
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return buildCSVService(bookingIds, vx_freight_provider);
     }
 
     buildXML(bookingIds, vx_freight_provider) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            let options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
-                headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
-                data: {bookingIds, vx_freight_provider},
-            };
-
-            axios(options)
-                .then((response) => {
-                    resolve(response);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return buildXMLService(bookingIds, vx_freight_provider);
     }
 
     onKeyPress(e) {

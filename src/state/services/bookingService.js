@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 import {
     resetAttachments,
@@ -848,5 +849,90 @@ export const getStatusPageUrl = (v_FPBookingNumber) => {
             .catch((error) => dispatch(failedGetStatusPageUrl(error)));
     };
 };
+
+export const downloadFile = (selectedBookingIds, fileOption, filenamePrefix) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        url: HTTP_PROTOCOL + '://' + API_HOST + '/download/',
+        headers: {'Authorization': 'JWT ' + token},
+        data: {ids: selectedBookingIds, downloadOption: fileOption},
+        responseType: 'blob', // important
+    };
+
+    axios(options).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filenamePrefix + moment().format('YYYY-MM-DD HH:mm') + '.zip');
+        document.body.appendChild(link);
+        link.click();
+    });
+ 
+};
+
+export const bulkBookingUpdateService = (bookingIds, fieldName, fieldContent) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
+            data: {bookingIds, fieldName, fieldContent},
+        };
+
+        axios(options)
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+};
+
+export const buildCSVService = (bookingIds, vx_freight_provider) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem('token');
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-csv/',
+            data: {bookingIds, vx_freight_provider},
+            headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
+        };
+
+        axios(options)
+            .then((response) => {
+                console.log('get-csv response: ', response);
+                this.notify('Successfully booked via CSV');
+                this.refreshBooking(this.state.booking);
+                resolve();
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+};
+
+export const buildXMLService = (bookingIds, vx_freight_provider) => {
+    return new Promise((resolve, reject) => {
+        const token = localStorage.getItem('token');
+        let options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+            headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
+            data: {bookingIds, vx_freight_provider},
+        };
+
+        axios(options)
+            .then((response) => {
+                resolve(response);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+};
+
 
 
