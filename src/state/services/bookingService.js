@@ -915,17 +915,49 @@ export const buildCSVService = (bookingIds, vx_freight_provider) => {
 };
 
 export const buildXMLService = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    let options = {
+        method: 'post',
+        url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
+        headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
+        data: {bookingIds, vx_freight_provider},
+    };
+
+    return axios(options);
+};
+
+export const buildPDFService = (bookingIds, vx_freight_provider) => {
+    const token = localStorage.getItem('token');
+    const options = {
+        method: 'post',
+        url: HTTP_PROTOCOL + '://' + API_HOST + '/get-pdf/',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+        data: {bookingIds, vx_freight_provider},
+    };
+
+    return axios(options);
+};
+
+export const buildMANIFESTService = (bookingIds, vx_freight_provider, username, needTruck, timestamp) => {
     return new Promise((resolve, reject) => {
         const token = localStorage.getItem('token');
-        let options = {
+        const options = {
             method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
-            headers: {'Content-Type': 'application/json', 'Authorization': 'JWT ' + token},
-            data: {bookingIds, vx_freight_provider},
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-manifest/',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
+            data: {bookingIds, vx_freight_provider, username, needTruck: needTruck ? 1 : 0, timestamp},
+            responseType: 'blob', // important
         };
 
         axios(options)
             .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', 'Manifests.zip');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
                 resolve(response);
             })
             .catch((err) => {
@@ -934,5 +966,6 @@ export const buildXMLService = (bookingIds, vx_freight_provider) => {
     });
 };
 
+        
 
 

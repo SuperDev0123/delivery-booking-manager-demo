@@ -26,7 +26,7 @@ import {
     getBookings, getPricingAnalysis, getUserDateFilterField, alliedBooking, fpLabel, getAlliedLabel,
     allTrigger, updateBooking, setGetBookingsFilter, setAllGetBookingsFilter, setNeedUpdateBookingsState,
     fpOrder, getExcel, generateXLS, changeBookingsStatus, changeBookingsFlagStatus, calcCollected,
-    clearErrorMessage, fpOrderSummary, getSummaryOfBookings
+    clearErrorMessage, fpOrderSummary, getSummaryOfBookings, bulkBookingUpdateService, buildXMLService, buildPDFService, buildMANIFESTService
 } from '../state/services/bookingService';
 import { getBookingLines, getBookingLinesCnt } from '../state/services/bookingLinesService';
 import { getBookingLineDetails } from '../state/services/bookingLineDetailsService';
@@ -1442,15 +1442,7 @@ class AllBookingsPage extends React.Component {
     }
 
     bulkBookingUpdate(bookingIds, fieldName, fieldContent) {
-        const token = localStorage.getItem('token');
-        const options = {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/bookings/bulk_booking_update/',
-            data: {bookingIds, fieldName, fieldContent},
-        };
-
-        return axios(options);
+        return bulkBookingUpdateService(bookingIds, fieldName, fieldContent);
     }
 
     buildCSV(bookingIds, vx_freight_provider) {
@@ -1476,27 +1468,11 @@ class AllBookingsPage extends React.Component {
     }
 
     buildXML(bookingIds, vx_freight_provider) {
-        const token = localStorage.getItem('token');
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-xml/',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-            data: {bookingIds, vx_freight_provider},
-        };
-
-        return axios(options);
+        return buildXMLService(bookingIds, vx_freight_provider);
     }
 
     buildPDF(bookingIds, vx_freight_provider) {
-        const token = localStorage.getItem('token');
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-pdf/',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-            data: {bookingIds, vx_freight_provider},
-        };
-
-        axios(options)
+        buildPDFService(bookingIds, vx_freight_provider)
             .then((response) => {
                 if (response.data.success && response.data.success === 'success') {
                     this.notify('Label(.pdf) have been generated successfully.');
@@ -1513,31 +1489,7 @@ class AllBookingsPage extends React.Component {
     }
 
     buildMANIFEST(bookingIds, vx_freight_provider, username, needTruck, timestamp) {
-        return new Promise((resolve, reject) => {
-            const token = localStorage.getItem('token');
-            const options = {
-                method: 'post',
-                url: HTTP_PROTOCOL + '://' + API_HOST + '/get-manifest/',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-                data: {bookingIds, vx_freight_provider, username, needTruck: needTruck ? 1 : 0, timestamp},
-                responseType: 'blob', // important
-            };
-
-            axios(options)
-                .then((response) => {
-                    const url = window.URL.createObjectURL(new Blob([response.data]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'Manifests.zip');
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    resolve(response);
-                })
-                .catch((err) => {
-                    reject(err);
-                });
-        });
+        return buildMANIFESTService(bookingIds, vx_freight_provider, username, needTruck, timestamp);
     }
 
     onClickMANI() {
