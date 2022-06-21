@@ -63,6 +63,7 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
+            selectedBookingConsignments: [],
             selectedBookingId: '',
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
@@ -78,6 +79,7 @@ class AllBookingsPage extends React.Component {
             activeTabInd: 7,
             allCheckStatus: 'None',
             showGearMenu: false,
+            showCopyMenu: false,
             currentBookInd: 0,
             downloadOption: 'label',
             total_qty: 0,
@@ -469,7 +471,7 @@ class AllBookingsPage extends React.Component {
 
     handleClickOutside(event) {
         if (this.wrapperRef && !this.wrapperRef.contains(event.target))
-            this.setState({showSimpleSearchBox: false, showGearMenu: false});
+            this.setState({showSimpleSearchBox: false, showGearMenu: false, showCopyMenu: false});
     }
 
     handleScroll(event) {
@@ -1142,6 +1144,8 @@ class AllBookingsPage extends React.Component {
             this.setState({showSimpleSearchBox: true});
         } else if (num === 1) {
             this.setState({showGearMenu: true});
+        } else if (num === 2) {
+            this.setState({showCopyMenu: true});
         }
     }
 
@@ -1212,15 +1216,18 @@ class AllBookingsPage extends React.Component {
         this.setState({activeTabInd, selectedBookingIds: [], allCheckStatus: 'None', filterInputs: {}});
     }
 
-    onCheck(e, id) {
+    onCheck(e, booking) {
         const { filteredBookingIds } = this.props;
         let selectedBookingIds = this.state.selectedBookingIds;
+        let selectedBookingConsignments = this.state.selectedBookingConsignments;
         let allCheckStatus = '';
 
         if (!e.target.checked) {
-            selectedBookingIds = difference(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = difference(this.state.selectedBookingIds, [booking.id]);
+            selectedBookingConsignments = difference(this.state.selectedBookingConsignments, [booking.v_FPBookingNumber]);
         } else {
-            selectedBookingIds = union(this.state.selectedBookingIds, [id]);
+            selectedBookingIds = union(this.state.selectedBookingIds, [booking.id]);
+            selectedBookingConsignments = union(this.state.selectedBookingConsignments, [booking.v_FPBookingNumber]);
         }
 
         if (selectedBookingIds.length === filteredBookingIds.length) {
@@ -1231,7 +1238,7 @@ class AllBookingsPage extends React.Component {
             allCheckStatus = 'Some';
         }
 
-        this.setState({selectedBookingIds, allCheckStatus});
+        this.setState({selectedBookingIds, allCheckStatus, selectedBookingConsignments});
     }
 
     onCheckAll() {
@@ -1817,6 +1824,12 @@ class AllBookingsPage extends React.Component {
         }
     }
 
+    onCopyToClipboard(e, text, notification) {
+        e.preventDefault();
+        navigator.clipboard.writeText(text);
+        this.notify(notification);
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses,
             filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
@@ -1918,7 +1931,7 @@ class AllBookingsPage extends React.Component {
                     className={(activeBookingId === booking.id || indexOf(selectedBookingIds, booking.id) !== -1) ? 'active' : 'inactive'}
                     onClick={() => this.onClickRow(booking)}
                 >
-                    <td name='checkbox'><input type="checkbox" checked={indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking.id)} /></td>
+                    <td name='checkbox'><input type="checkbox" checked={indexOf(selectedBookingIds, booking.id) > -1 ? 'checked' : ''} onChange={(e) => this.onCheck(e, booking)} /></td>
                     <td name='lines_info' id={'booking-lines-info-popup-' + booking.id} className={this.state.bookingLinesInfoOpens['booking-lines-info-popup-' + booking.id] ? 'booking-lines-info active' : 'booking-lines-info'} onClick={() => this.showBookingLinesInfo(booking.id)}>
                         <i className="icon icon-th-list"></i>
                     </td>
@@ -2594,6 +2607,29 @@ class AllBookingsPage extends React.Component {
                                                     title="Sync bookings"
                                                 >
                                                     <i className="fa fa-sync"></i>
+                                                </button>
+                                                <button className={selectedBookingIds.length > 0 ? 'position-relative btn btn-success right-20px' : 'position-relative btn btn-gray right-20px'} onClick={() => this.onClickSimpleSearch(2)}>
+                                                    <i className="fa fa-copy"></i>
+                                                    {this.state.showCopyMenu &&
+                                                        <div ref={this.setWrapperRef}>
+                                                            <div className="copy-popup">
+                                                                <button 
+                                                                    className="btn btn-primary" 
+                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingIds, 'Copied booking ids on clipboard!')}
+                                                                    disabled={(selectedBookingIds.length > 0) ? '' : true}
+                                                                >
+                                                                    Booking IDs
+                                                                </button>
+                                                                <button 
+                                                                    className="btn btn-primary" 
+                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingConsignments, 'Copied Consignments on clipboard!')}
+                                                                    disabled={(selectedBookingIds.length > 0) ? '' : true}
+                                                                >
+                                                                    Consignments
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </button>
                                                 <label>
                                                     Per page:&nbsp;

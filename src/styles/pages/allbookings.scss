@@ -882,3 +882,28 @@ a.help {
     font-size: 19px;
   }
 }
+
+.copy-popup {
+  width: 120px;
+  background-color: #f4f5f6;
+  color: black;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 150%;
+  left: 50%;
+  margin-left: -42px;
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex-direction: column;
+
+  button {
+    width: 100%;
+    padding: 2px;
+    margin-bottom: 5px;
+    font-size: 14px !important;
+  }
+}
