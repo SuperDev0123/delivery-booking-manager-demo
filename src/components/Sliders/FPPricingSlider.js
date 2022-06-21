@@ -117,7 +117,7 @@ class FPPricingSlider extends React.Component {
                             <td className="text-right">{(pricingInfo.mu_percentage_fuel_levy * 100).toFixed(2)}%</td>
                             <td className="text-right">${pricingInfo.fuel_levy_base_cl.toFixed(2)}</td>
                             <td className="text-right nowrap">
-                                {pricingInfo.surcharge_total_cl ? '$' + (pricingInfo.surcharge_total_cl.toFixed(2) : null}
+                                {pricingInfo.surcharge_total_cl ? ('$' + pricingInfo.surcharge_total_cl.toFixed(2)) : null}
                                 &nbsp;&nbsp;&nbsp;
                                 {pricingInfo.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
                             </td>
