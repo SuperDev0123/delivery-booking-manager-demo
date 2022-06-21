@@ -1019,8 +1019,11 @@
 .icon-cog2:before {
   content: "\e07b";
 }
+.icon-copy:before {
+  content: "\e07b";
+}
 .icon-heart3:before {
-  content: "\e07c";
+  content: "\f0c5";
 }
 .icon-paragraph:before {
   content: "\e07d";
