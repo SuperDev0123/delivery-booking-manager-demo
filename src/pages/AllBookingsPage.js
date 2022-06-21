@@ -2608,7 +2608,12 @@ class AllBookingsPage extends React.Component {
                                                 >
                                                     <i className="fa fa-sync"></i>
                                                 </button>
-                                                <button className={selectedBookingIds.length > 0 ? 'position-relative btn btn-success right-20px' : 'position-relative btn btn-gray right-20px'} onClick={() => this.onClickSimpleSearch(2)}>
+                                                <button 
+                                                    className={selectedBookingIds.length > 0 ? 'position-relative btn btn-success right-20px' : 'position-relative btn btn-gray right-20px'} 
+                                                    disabled={selectedBookingIds.length === 0}
+                                                    onClick={() => this.onClickSimpleSearch(2)}
+                                                    title="Copy button"
+                                                >
                                                     <i className="fa fa-copy"></i>
                                                     {this.state.showCopyMenu &&
                                                         <div ref={this.setWrapperRef}>
