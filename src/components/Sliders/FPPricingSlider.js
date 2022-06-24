@@ -121,10 +121,7 @@ class FPPricingSlider extends React.Component {
                                 &nbsp;&nbsp;&nbsp;
                                 {pricingInfo.surcharge_total_cl ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(pricingInfo)}></i> : null}
                             </td>
-                            {pricingInfo.freight_provider === 'Deliver-ME'
-                                ? <td className="text-right">${pricingInfo.fee.toFixed(2)}</td>
-                                : <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
-                            }
+                            <td className="text-right">${pricingInfo.client_mu_1_minimum_values.toFixed(2)}</td>
                             <td className="text-right">{(pricingInfo.client_customer_mark_up * 100).toFixed(2)}%</td>
                             <td className="text-right">${(pricingInfo.client_mu_1_minimum_values  * (1 + pricingInfo.client_customer_mark_up)).toFixed(2)}</td>
                             <td className={pricingInfo.is_deliverable ? 'text-right bg-lightgreen' : 'text-right'}>
@@ -155,13 +152,13 @@ class FPPricingSlider extends React.Component {
                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
                         {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>DME Client Markup %</p></th>}
-                        <th className="nowrap" scope="col" nowrap><p>Cost $</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Cust Cost $</p></th>
                         <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>
                         <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Extra $</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Client Customer Markup %</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Sell $</p></th>
+                        <th className="nowrap" scope="col" nowrap><p>Cust Sell $</p></th>
                         <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
                         <th className="nowrap" scope="col" nowrap><p>Action</p></th>
                     </tr>
