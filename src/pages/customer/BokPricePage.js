@@ -398,7 +398,7 @@ class BokPricePage extends Component {
                     totalCubicMeter += bok_2['pallet_cubic_meter'];
 
                     let packedCubicMeter = 0;
-                    let isUnknownLine = bok_2['l_003_item'].indexOf('(Ignored)') > -1;
+                    let isUnknownLine = bok_2['l_003_item'].indexOf('(ZERO Dims') > -1;
 
                     if (!hasUnknownItems && isUnknownLine)
                         hasUnknownItems = true;

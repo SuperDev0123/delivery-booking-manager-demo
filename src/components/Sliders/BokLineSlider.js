@@ -47,7 +47,7 @@ class BokLineSlider extends React.Component {
                     'l_001_type_of_packaging': line['l_001_type_of_packaging'],
                     'zbl_131_decimal_1': line['zbl_131_decimal_1'],
                     'e_item_type': line['e_item_type'],
-                    'e_item': line['l_003_item'].indexOf('(Ignored)') > -1 ? line['l_003_item'].substring(0, line['l_003_item'].indexOf('(Ignored)')) : line['l_003_item'],
+                    'e_item': line['l_003_item'].indexOf('(ZERO Dims') > -1 ? line['l_003_item'].substring(0, line['l_003_item'].indexOf('(ZERO Dims')) : line['l_003_item'],
                     'e_weightUOM': line['l_008_weight_UOM'].toUpperCase(),
                     'e_weightPerEach': line['l_009_weight_per_each'],
                     'e_dimUOM': line['l_004_dim_UOM'].toUpperCase(),
@@ -55,7 +55,7 @@ class BokLineSlider extends React.Component {
                     'e_dimWidth': line['l_006_dim_width'],
                     'e_dimHeight': line['l_007_dim_height'],
                     'e_qty': line['l_002_qty'],
-                    'is_ignored': line['l_003_item'].indexOf('(Ignored)') > -1
+                    'is_ignored': line['l_003_item'].indexOf('(ZERO Dims') > -1
                 };
 
             this.setState({formInputs});

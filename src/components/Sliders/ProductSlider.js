@@ -31,14 +31,14 @@ class ProductSlider extends React.Component {
         if (!this.props.isOpen && isOpen && line) {
             const formInputs = {
                 'e_item_type': line['e_item_type'],
-                'e_item': line['l_003_item'].indexOf('(Ignored)') > -1 ? line['l_003_item'].substring(0, line['l_003_item'].indexOf('(Ignored)')) : line['l_003_item'],
+                'e_item': line['l_003_item'].indexOf('(ZERO Dims') > -1 ? line['l_003_item'].substring(0, line['l_003_item'].indexOf('(ZERO Dims')) : line['l_003_item'],
                 'e_weightUOM': line['l_008_weight_UOM'].toUpperCase(),
                 'e_weightPerEach': line['l_009_weight_per_each'],
                 'e_dimUOM': line['l_004_dim_UOM'].toUpperCase(),
                 'e_dimLength': line['l_005_dim_length'],
                 'e_dimWidth': line['l_006_dim_width'],
                 'e_dimHeight': line['l_007_dim_height'],
-                'is_ignored': line['l_003_item'].indexOf('(Ignored)') > -1
+                'is_ignored': line['l_003_item'].indexOf('(ZERO Dims') > -1
             };
 
             this.setState({formInputs});
