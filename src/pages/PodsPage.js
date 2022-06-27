@@ -145,23 +145,25 @@ class PodsPage extends React.Component {
                     <div className="table-responsive">
                         <table className="table table-hover table-bordered sortable">
                             <thead>
-                                <th>b_bookingID_Visual</th>
-                                <th>b_dateBookedDate</th>
-                                <th>puPickUpAvailFrom_Date</th>
-                                <th>pu_Address_State</th>
-                                {/* <th>business_group</th> */}
-                                <th>deToCompanyName</th>
-                                <th>de_To_Address_Suburb</th>
-                                <th>de_To_Address_State</th>
-                                <th>de_To_Address_PostalCode</th>
-                                <th>b_client_sales_inv_num</th>
-                                <th>b_client_order_num</th>
-                                <th>v_FPBookingNumber</th>
-                                <th>b_status</th>
-                                <th>s_21_Actual_Delivery_TimeStamp</th>
-                                <th>zc_pod_or_no_pod</th>
-                                <th>z_pod_url</th>
-                                <th>z_pod_signed_url</th>
+                                <tr>
+                                    <th>b_bookingID_Visual</th>
+                                    <th>b_dateBookedDate</th>
+                                    <th>puPickUpAvailFrom_Date</th>
+                                    <th>pu_Address_State</th>
+                                    {/* <th>business_group</th> */}
+                                    <th>deToCompanyName</th>
+                                    <th>de_To_Address_Suburb</th>
+                                    <th>de_To_Address_State</th>
+                                    <th>de_To_Address_PostalCode</th>
+                                    <th>b_client_sales_inv_num</th>
+                                    <th>b_client_order_num</th>
+                                    <th>v_FPBookingNumber</th>
+                                    <th>b_status</th>
+                                    <th>s_21_Actual_Delivery_TimeStamp</th>
+                                    <th>zc_pod_or_no_pod</th>
+                                    <th>z_pod_url</th>
+                                    <th>z_pod_signed_url</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 { bookingsList }

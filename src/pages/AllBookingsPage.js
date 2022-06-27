@@ -65,6 +65,7 @@ class AllBookingsPage extends React.Component {
             selectedBookingIds: [],
             selectedBookingConsignments: [],
             selectedBookingId: '',
+            selectedBooking: {},
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
             linkPopoverOpens: [],
@@ -119,6 +120,7 @@ class AllBookingsPage extends React.Component {
             isShowPricingAnalyseSlider: false,
             isShowBookingSetModal: false,
             isShowManifestSlider: false,
+            isShowSurchargeSlider: false,
         };
 
         moment.tz.setDefault('Australia/Sydney');
