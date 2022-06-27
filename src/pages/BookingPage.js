@@ -1717,6 +1717,7 @@ class BookingPage extends Component {
             formInputs['pu_Address_street_2'] = selectedWarehouse.address2;
             formInputs['pu_Address_State'] = selectedWarehouse.state;
             formInputs['pu_Address_PostalCode'] = selectedWarehouse.postal_code;
+            formInputs['pu_Address_Suburb'] = selectedWarehouse.suburb;
             const puSuburb = {'value': selectedWarehouse.suburb, 'label': selectedWarehouse.suburb};
             formInputs['pu_Address_Country'] = 'Australia';
             formInputs['pu_Contact_F_L_Name'] = selectedWarehouse.contact_name;
