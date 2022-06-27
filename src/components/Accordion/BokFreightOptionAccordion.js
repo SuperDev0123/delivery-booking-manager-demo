@@ -150,7 +150,7 @@ class BokFreightOptionAccordion extends Component {
                                 >
                                     <option value="" selected disabled hidden>--- Select number of men to assist ---</option>
                                     <option value='0'>0</option>
-                                    <option value='1000'>1 & Customer will assist load</option>
+                                    <option value='1'>1 & Customer will assist load</option>
                                     <option value='2'>2</option>
                                     <option value='3'>3</option>
                                     <option value='4'>4</option>
