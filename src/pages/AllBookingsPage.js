@@ -1830,6 +1830,14 @@ class AllBookingsPage extends React.Component {
         this.notify(notification);
     }
 
+    onCopyToClipboardNewLine(e, items, notification) {
+        let txt = '';
+        e.preventDefault();
+        items.forEach((item) => txt += item + '\n');
+        navigator.clipboard.writeText(txt);
+        this.notify(notification);
+    }
+
     render() {
         const { bookingsCnt, bookingLines, bookingLineDetails, startDate, endDate, selectedWarehouseId, selectedFPId, warehouses,
             filterInputs, total_qty, total_kgs, total_cubic_meter, bookingLineDetailsQtyTotal, sortField, sortDirection, simpleSearchKeyword,
@@ -2620,14 +2628,14 @@ class AllBookingsPage extends React.Component {
                                                             <div className="copy-popup">
                                                                 <button 
                                                                     className="btn btn-primary" 
-                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingIds, 'Copied booking ids on clipboard!')}
+                                                                    onClick={(e) => this.onCopyToClipboardNewLine(e, this.state.selectedBookingIds, 'Copied booking ids on clipboard!')}
                                                                     disabled={(selectedBookingIds.length > 0) ? '' : true}
                                                                 >
                                                                     Booking IDs
                                                                 </button>
                                                                 <button 
                                                                     className="btn btn-primary" 
-                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingConsignments, 'Copied Consignments on clipboard!')}
+                                                                    onClick={(e) => this.onCopyToClipboardNewLine(e, this.state.selectedBookingConsignments, 'Copied Consignments on clipboard!')}
                                                                     disabled={(selectedBookingIds.length > 0) ? '' : true}
                                                                 >
                                                                     Consignments
