@@ -366,66 +366,70 @@ class LineAndLineDetailSlider extends React.Component {
                                     <h3><strong>Lines</strong></h3>
                                     <Button color="primary new-btn" onClick={() => this.onClickNew(1, 1)}>+</Button>
                                     <table className="table table-hover table-bordered table-striped sortable fixed_headers">
-                                        <tr>
-                                            <th className="" scope="col" nowrap>
-                                                <p>No.</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Packaging</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Item Description</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Qty</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Wgt UOM</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Wgt Each</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Total Kgs</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Dim UOM</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Length</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Width</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Height</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Cubic Meter</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Cubic KG</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>SSCC</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Show Only</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Move</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Edit</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Duplicate</p>
-                                            </th>
-                                            <th className="" scope="col" nowrap>
-                                                <p>Delete</p>
-                                            </th>
-                                        </tr>
-                                        { lineList }
+                                        <thead>
+                                            <tr>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>No.</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Packaging</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Item Description</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Qty</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Wgt UOM</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Wgt Each</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Total Kgs</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Dim UOM</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Length</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Width</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Height</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Cubic Meter</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Cubic KG</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>SSCC</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Show Only</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Move</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Edit</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Duplicate</p>
+                                                </th>
+                                                <th className="" scope="col" nowrap="true">
+                                                    <p>Delete</p>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            { lineList }
+                                        </tbody>
                                     </table>
                                 </div>
                             </LoadingOverlay>
@@ -440,43 +444,47 @@ class LineAndLineDetailSlider extends React.Component {
                                         <h3><strong>Line Details</strong></h3>
                                         {!isShowAllLineDetails && <Button color="primary new-btn" onClick={() => this.onClickNew(1, 2)}>+</Button>}
                                         <table className="table table-hover table-bordered sortable fixed_headers">
-                                            <tr>
-                                                <th className="" scope="col" nowrap></th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Line No.</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Model</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Item Description</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Qty</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Fault Description</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Insurance Value</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Gap / RA</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Client Reference #</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Edit</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Duplicate</p>
-                                                </th>
-                                                <th className="" scope="col" nowrap>
-                                                    <p>Delete</p>
-                                                </th>
-                                            </tr>
-                                            { lineDetailList }
+                                            <thead>
+                                                <tr>
+                                                    <th className="" scope="col" nowrap="true"></th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Line No.</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Model</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Item Description</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Qty</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Fault Description</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Insurance Value</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Gap / RA</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Client Reference #</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Edit</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Duplicate</p>
+                                                    </th>
+                                                    <th className="" scope="col" nowrap="true">
+                                                        <p>Delete</p>
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                { lineDetailList }
+                                            </tbody>
                                         </table>
                                     </div>
                                 </LoadingOverlay>
@@ -505,7 +513,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="e_item" 
-                                                    value={lineFormInputs['e_item']} 
+                                                    value={lineFormInputs['e_item'] ? lineFormInputs['e_item'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -517,7 +525,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_qty"
-                                                    value={lineFormInputs['e_qty']} 
+                                                    value={lineFormInputs['e_qty'] ? lineFormInputs['e_qty'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -540,7 +548,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_weightPerEach" 
-                                                    value={lineFormInputs['e_weightPerEach']} 
+                                                    value={lineFormInputs['e_weightPerEach'] ? lineFormInputs['e_weightPerEach'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -553,7 +561,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     min="0"
                                                     disabled="disabled"
                                                     name="e_Total_KG_weight" 
-                                                    value={lineFormInputs['e_Total_KG_weight']} 
+                                                    value={lineFormInputs['e_Total_KG_weight'] ? lineFormInputs['e_Total_KG_weight'] : 0} 
                                                 />
                                             </label>
                                             <label>
@@ -575,7 +583,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimLength" 
-                                                    value={lineFormInputs['e_dimLength']} 
+                                                    value={lineFormInputs['e_dimLength'] ? lineFormInputs['e_dimLength'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -587,7 +595,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimWidth" 
-                                                    value={lineFormInputs['e_dimWidth']} 
+                                                    value={lineFormInputs['e_dimWidth'] ? lineFormInputs['e_dimWidth'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -599,7 +607,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="e_dimHeight" 
-                                                    value={lineFormInputs['e_dimHeight']} 
+                                                    value={lineFormInputs['e_dimHeight'] ? lineFormInputs['e_dimHeight'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -612,7 +620,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     min="0"
                                                     disabled="disabled"
                                                     name="e_1_Total_dimCubicMeter" 
-                                                    value={lineFormInputs['e_1_Total_dimCubicMeter']} 
+                                                    value={lineFormInputs['e_1_Total_dimCubicMeter'] ? lineFormInputs['e_1_Total_dimCubicMeter'] : 0} 
                                                 />
                                             </label>
                                             <label>
@@ -622,7 +630,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     type="number" 
                                                     disabled="disabled"
                                                     name="total_2_cubic_mass_factor_calc" 
-                                                    value={lineFormInputs['total_2_cubic_mass_factor_calc']} 
+                                                    value={lineFormInputs['total_2_cubic_mass_factor_calc'] ? lineFormInputs['total_2_cubic_mass_factor_calc'] : ''} 
                                                 />
                                             </label>
                                             <label>
@@ -631,7 +639,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text"
                                                     name="sscc" 
-                                                    value={lineFormInputs['sscc']} 
+                                                    value={lineFormInputs['sscc'] ? lineFormInputs['sscc'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -650,7 +658,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="modelNumber" 
-                                                    value={lineDetailFormInputs['modelNumber']} 
+                                                    value={lineDetailFormInputs['modelNumber'] ? lineDetailFormInputs['modelNumber'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -660,7 +668,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="itemDescription" 
-                                                    value={lineDetailFormInputs['itemDescription']} 
+                                                    value={lineDetailFormInputs['itemDescription'] ? lineDetailFormInputs['itemDescription'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -672,7 +680,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     step="0.01"
                                                     min="0"
                                                     name="quantity" 
-                                                    value={lineDetailFormInputs['quantity']} 
+                                                    value={lineDetailFormInputs['quantity'] ? lineDetailFormInputs['quantity'] : 0} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -682,7 +690,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="itemFaultDescription" 
-                                                    value={lineDetailFormInputs['itemFaultDescription']} 
+                                                    value={lineDetailFormInputs['itemFaultDescription'] ? lineDetailFormInputs['itemFaultDescription'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -692,7 +700,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="insuranceValueEach" 
-                                                    value={lineDetailFormInputs['insuranceValueEach']} 
+                                                    value={lineDetailFormInputs['insuranceValueEach'] ? lineDetailFormInputs['insuranceValueEach'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -702,7 +710,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="gap_ra" 
-                                                    value={lineDetailFormInputs['gap_ra']} 
+                                                    value={lineDetailFormInputs['gap_ra'] ? lineDetailFormInputs['gap_ra'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>
@@ -712,7 +720,7 @@ class LineAndLineDetailSlider extends React.Component {
                                                     className="form-control" 
                                                     type="text" 
                                                     name="clientRefNumber" 
-                                                    value={lineDetailFormInputs['clientRefNumber']} 
+                                                    value={lineDetailFormInputs['clientRefNumber'] ? lineDetailFormInputs['clientRefNumber'] : ''} 
                                                     onChange={(e) => this.onInputChange(e)}
                                                 />
                                             </label>

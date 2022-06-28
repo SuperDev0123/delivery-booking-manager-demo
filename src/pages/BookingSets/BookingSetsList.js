@@ -410,7 +410,7 @@ class BookingSetList extends React.Component {
                         <Button
                             color="primary"
                             onClick={() => this.onClickLineHaul(bookingSet)}
-                            disabled={bookingSet.line_haul_date ? '' : 'disabled'}
+                            disabled={bookingSet.line_haul_date ? true : false}
                         >
                             Set LineHaul
                         </Button>
@@ -427,7 +427,7 @@ class BookingSetList extends React.Component {
                         <Button
                             color="primary"
                             onClick={() => this.onClickPricingBtn(bookingSet)}
-                            disabled={bookingSet.status.indexOf('In Progress') > -1 && 'disabled'}
+                            disabled={bookingSet.status.indexOf('In Progress') > -1}
                         >
                             Pricing ({bookingSet.auto_select_type ? 'Lowest' : 'Fastest'})
                         </Button>
@@ -436,7 +436,7 @@ class BookingSetList extends React.Component {
                         <Button
                             color="primary"
                             onClick={() => this.onClickBookBtn(bookingSet)}
-                            disabled={bookingSet.status.indexOf('Completed(Pricing)') === -1 && 'disabled'}
+                            disabled={bookingSet.status.indexOf('Completed(Pricing)') === -1}
                         >
                             BOOK
                         </Button>
@@ -445,7 +445,7 @@ class BookingSetList extends React.Component {
                         <Button
                             color="danger"
                             onClick={() => this.onClickDeleteBtn(bookingSet)}
-                            disabled={bookingSet.status.indexOf('In Progress') > -1 && 'disabled'}
+                            disabled={bookingSet.status.indexOf('In Progress') > -1}
                         >
                             Delete
                         </Button>
@@ -577,17 +577,19 @@ class BookingSetList extends React.Component {
                                 <div className="bookingsets-table">
                                     <table className="table table-hover table-bordered sortable">
                                         <thead>
-                                            <th>No</th>
-                                            <th>Name</th>
-                                            <th>Note</th>
-                                            <th>Status</th>
-                                            <th>Created By</th>
-                                            <th>Created At</th>
-                                            <th>LineHaul</th>
-                                            <th>Show Bookings</th>
-                                            <th>Pricing</th>
-                                            <th>BOOK</th>
-                                            <th>Delete</th>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Name</th>
+                                                <th>Note</th>
+                                                <th>Status</th>
+                                                <th>Created By</th>
+                                                <th>Created At</th>
+                                                <th>LineHaul</th>
+                                                <th>Show Bookings</th>
+                                                <th>Pricing</th>
+                                                <th>BOOK</th>
+                                                <th>Delete</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
                                             { bookingSetsList }
@@ -601,7 +603,7 @@ class BookingSetList extends React.Component {
                                     <Button className="btn btn-primary" onClick={() => this.setState({viewMode: 0})}>Back to List</Button>
                                     <Button
                                         className="btn btn-danger float-right" onClick={() => this.toggleDropConfirmModal()}
-                                        disabled={selectedBookingIds.length === 0 && 'disabled'}
+                                        disabled={selectedBookingIds.length === 0}
                                     >
                                         Drop from SET
                                     </Button>

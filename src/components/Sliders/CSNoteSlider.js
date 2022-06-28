@@ -157,13 +157,17 @@ class CSNoteSlider extends React.Component {
                             <Button color="primary" onClick={() => this.onClickNewBtn()}>+</Button>
                         }
                         <table className="table table-hover table-bordered sortable fixed_headers">
-                            <tr>
-                                <th className="" scope="col" nowrap><p>Note</p></th>
-                                <th className="" scope="col" nowrap><p>Written At</p></th>
-                                <th className="" scope="col" nowrap><p>Author</p></th>
-                                <th className="" scope="col" nowrap><p>Action</p></th>
-                            </tr>
-                            { csNoteList }
+                            <thead>
+                                <tr>
+                                    <th className="" scope="col" nowrap="true"><p>Note</p></th>
+                                    <th className="" scope="col" nowrap="true"><p>Written At</p></th>
+                                    <th className="" scope="col" nowrap="true"><p>Author</p></th>
+                                    <th className="" scope="col" nowrap="true"><p>Action</p></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { csNoteList }
+                            </tbody>
                         </table>
                     </div>
                 }
