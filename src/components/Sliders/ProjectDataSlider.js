@@ -107,7 +107,7 @@ class ProjectDataSlider extends React.Component {
                                 <p>Vehicle Loaded</p>
                                 <textarea
                                     name="b_booking_project"
-                                    value={b_booking_project}
+                                    value={b_booking_project ? b_booking_project : ''}
                                     onChange={(e) => this.onInputChange(e)}
                                 />
                             </label>
