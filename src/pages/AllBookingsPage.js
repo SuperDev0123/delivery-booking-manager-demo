@@ -1823,10 +1823,11 @@ class AllBookingsPage extends React.Component {
             if (type === 'text') {
                 finalData = data;
             } else if (type === 'bookingIds') {
+                // Data is selected bookingIDs
                 data.forEach((item) => finalData += item + '\n');
             } else if (type === 'consignments') {
                 const {filteredBookingIds, filteredConsignments} = this.props;
-
+                // Data is selected bookingIDs
                 data.forEach((item) => {
                     const consignment = filteredConsignments[filteredBookingIds.findIndex(bookingId => bookingId == item)];
                     finalData += consignment + '\n';
