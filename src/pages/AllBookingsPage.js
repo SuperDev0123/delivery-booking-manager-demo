@@ -63,7 +63,6 @@ class AllBookingsPage extends React.Component {
             userDateFilterField: '',
             filterInputs: {},
             selectedBookingIds: [],
-            selectedBookingConsignments: [],
             selectedBookingId: '',
             additionalInfoOpens: [],
             bookingLinesInfoOpens: [],
@@ -187,6 +186,7 @@ class AllBookingsPage extends React.Component {
         clientname: PropTypes.string,
         startDate: PropTypes.any,
         filteredBookingIds: PropTypes.array,
+        filteredConsignments: PropTypes.array,
         clearErrorMessage: PropTypes.func.isRequired,
         bookingsSummary: PropTypes.object,
         allFPs: PropTypes.array,
@@ -1219,15 +1219,12 @@ class AllBookingsPage extends React.Component {
     onCheck(e, booking) {
         const { filteredBookingIds } = this.props;
         let selectedBookingIds = this.state.selectedBookingIds;
-        let selectedBookingConsignments = this.state.selectedBookingConsignments;
         let allCheckStatus = '';
 
         if (!e.target.checked) {
             selectedBookingIds = difference(this.state.selectedBookingIds, [booking.id]);
-            selectedBookingConsignments = difference(this.state.selectedBookingConsignments, [booking.v_FPBookingNumber]);
         } else {
             selectedBookingIds = union(this.state.selectedBookingIds, [booking.id]);
-            selectedBookingConsignments = union(this.state.selectedBookingConsignments, [booking.v_FPBookingNumber]);
         }
 
         if (selectedBookingIds.length === filteredBookingIds.length) {
@@ -1238,7 +1235,7 @@ class AllBookingsPage extends React.Component {
             allCheckStatus = 'Some';
         }
 
-        this.setState({selectedBookingIds, allCheckStatus, selectedBookingConsignments});
+        this.setState({selectedBookingIds, allCheckStatus});
     }
 
     onCheckAll() {
@@ -1817,25 +1814,28 @@ class AllBookingsPage extends React.Component {
         this.setState({loading: true, isShowBulkUpdateSlider: false});
     }
 
-    copyText(text) {
-        if (text) {
-            navigator.clipboard.writeText(text);
+    onCopyToClipboard(e, data, type) {
+        e.preventDefault();
+
+        if (data) {
+            let finalData = '';
+
+            if (type === 'text') {
+                finalData = data;
+            } else if (type === 'bookingIds') {
+                data.forEach((item) => finalData += item + '\n');
+            } else if (type === 'consignments') {
+                const {filteredBookingIds, filteredConsignments} = this.props;
+
+                data.forEach((item) => {
+                    const consignment = filteredConsignments[filteredBookingIds.findIndex(bookingId => bookingId == item)];
+                    finalData += consignment + '\n';
+                });
+            }
+
+            navigator.clipboard.writeText(finalData);
             this.notify('Copied on clipboard!');
         }
-    }
-
-    onCopyToClipboard(e, text, notification) {
-        e.preventDefault();
-        navigator.clipboard.writeText(text);
-        this.notify(notification);
-    }
-
-    onCopyToClipboardNewLine(e, items, notification) {
-        let txt = '';
-        e.preventDefault();
-        items.forEach((item) => txt += item + '\n');
-        navigator.clipboard.writeText(txt);
-        this.notify(notification);
     }
 
     render() {
@@ -2140,7 +2140,7 @@ class AllBookingsPage extends React.Component {
                         <td
                             name='b_clientReference_RA_Numbers'
                             className={(sortField === 'b_clientReference_RA_Numbers') ? 'current' : ''}
-                            onClick={() => this.copyText(booking.b_clientReference_RA_Numbers)}
+                            onClick={(e) => this.onCopyToClipboard(e, booking.b_clientReference_RA_Numbers, 'text')}
                         >
                             {booking.b_clientReference_RA_Numbers}
                         </td>
@@ -2628,14 +2628,14 @@ class AllBookingsPage extends React.Component {
                                                             <div className="copy-popup">
                                                                 <button 
                                                                     className="btn btn-primary" 
-                                                                    onClick={(e) => this.onCopyToClipboardNewLine(e, this.state.selectedBookingIds, 'Copied booking ids on clipboard!')}
+                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingIds, 'bookingIds')}
                                                                     disabled={(selectedBookingIds.length > 0) ? '' : true}
                                                                 >
                                                                     Booking IDs
                                                                 </button>
                                                                 <button 
                                                                     className="btn btn-primary" 
-                                                                    onClick={(e) => this.onCopyToClipboardNewLine(e, this.state.selectedBookingConsignments, 'Copied Consignments on clipboard!')}
+                                                                    onClick={(e) => this.onCopyToClipboard(e, this.state.selectedBookingIds, 'consignments')}
                                                                     disabled={(selectedBookingIds.length > 0) ? '' : true}
                                                                 >
                                                                     Consignments
@@ -3587,6 +3587,7 @@ const mapStateToProps = (state) => {
     return {
         bookings: state.booking.bookings,
         filteredBookingIds: state.booking.filteredBookingIds,
+        filteredConsignments: state.booking.filteredConsignments,
         bookingsCnt: state.booking.bookingsCnt,
         needUpdateBookings: state.booking.needUpdateBookings,
         bookingLines: state.bookingLine.bookingLines,

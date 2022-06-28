@@ -104,6 +104,7 @@ const defaultState = {
     booking: null,
     bookings: [],
     filteredBookingIds: [],
+    filteredConsignments: [],
     bookingsCnt: 0,
     pod: {},
     userDateFilterField: '',
@@ -182,6 +183,7 @@ export const BookingReducer = (state = defaultState, {
     pageInd,
     pageCnt,
     filteredBookingIds,
+    filteredConsignments,
     isAutoSelected,
 }) => {
     switch (type) {
@@ -246,6 +248,7 @@ export const BookingReducer = (state = defaultState, {
                 ...state,
                 bookings: bookings,
                 filteredBookingIds: filteredBookingIds,
+                filteredConsignments: filteredConsignments,
                 bookingsCnt: bookingsCnt,
                 pageInd: pageInd,
                 pageItemCnt: pageItemCnt,
