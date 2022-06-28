@@ -206,9 +206,9 @@ class StatusHistorySlider extends React.Component {
                                     <select
                                         name="status_last"
                                         onChange={(e) => this.onInputChange(e)}
-                                        value = {formInputs['status_last']}
+                                        value = {formInputs['status_last'] ? formInputs['status_last'] : ''}
                                     >
-                                        <option value="" selected disabled hidden>Select a status</option>
+                                        <option value="" disabled hidden>Select a status</option>
                                         {statusOptions}
                                     </select>
                                 </label>
@@ -232,7 +232,7 @@ class StatusHistorySlider extends React.Component {
                                     <p>Status Detail</p>
                                     <input
                                         className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_detail : formInputs['dme_status_detail']}
+                                        value={(saveMode === 0) ? booking.dme_status_detail || '' : formInputs['dme_status_detail'] || ''}
                                         disabled='disabled'
                                     />
                                 </label>
@@ -240,7 +240,7 @@ class StatusHistorySlider extends React.Component {
                                     <p>Status Action</p>
                                     <input
                                         className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_action : formInputs['dme_status_action']}
+                                        value={(saveMode === 0) ? booking.dme_status_action || '' : formInputs['dme_status_action'] || ''}
                                         disabled='disabled'
                                     />
                                 </label>
@@ -248,7 +248,7 @@ class StatusHistorySlider extends React.Component {
                                     <p>Linked Reference</p>
                                     <input
                                         className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_linked_reference_from_fp : formInputs['dme_status_linked_reference_from_fp']}
+                                        value={(saveMode === 0) ? booking.dme_status_linked_reference_from_fp || '' : formInputs['dme_status_linked_reference_from_fp'] || ''}
                                         disabled='disabled'
                                     />
                                 </label>

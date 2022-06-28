@@ -21,7 +21,7 @@ const defaultState = {
     successMessage: null,
     errorMessage: null,
     username: '',
-    clientname: null,
+    clientname: '',
     clientId: null,
     isLoggedIn: false,
     redirect: false,

@@ -102,7 +102,7 @@ class FPPricingSlider extends React.Component {
                 .filter(pricingInfo => pricingInfo.packed_status === packed_status)
                 .map((pricingInfo, index) => {
                     return (
-                        <tr key={index} className={api_booking_quote_id === pricingInfo.id && 'selected'}>
+                        <tr key={index} className={api_booking_quote_id === pricingInfo.id ? 'selected' : '' }>
                             <td>{index + 1}</td>
                             <td>{pricingInfo.freight_provider}({pricingInfo.account_code})</td>
                             <td>{pricingInfo.vehicle_name ? `${pricingInfo.service_name} (${pricingInfo.vehicle_name})` : pricingInfo.service_name}</td>
@@ -141,27 +141,29 @@ class FPPricingSlider extends React.Component {
                 });
             const pricingTable = pricingList.length > 0 ? (
                 <table className="table table-hover table-bordered table-striped sortable fixed_headers">
-                    <tr>
-                        <th className="nowrap" scope="col" nowrap><p>No</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Transporter</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Service (Vehicle)</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Transport Days (working)</p></th>
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Cost (Ex GST)</p></th>}
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Extra`s (Ex GST)</p></th>}
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>}
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>}
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>FP Total Cost (Ex GST)</p></th>}
-                        {clientname === 'dme' && <th className="nowrap" scope="col" nowrap><p>DME Client Markup %</p></th>}
-                        <th className="nowrap" scope="col" nowrap><p>Cust Cost $</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy %</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>FP Fuel Levy Amount</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Extra $</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Total $ (Ex. GST)</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Client Customer Markup %</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Cust Sell $</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>ETA</p></th>
-                        <th className="nowrap" scope="col" nowrap><p>Action</p></th>
-                    </tr>
+                    <thead>
+                        <tr>
+                            <th className="nowrap" scope="col" nowrap="true"><p>No</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Transporter</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Service (Vehicle)</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Transport Days (working)</p></th>
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>FP Cost (Ex GST)</p></th>}
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>FP Extra`s (Ex GST)</p></th>}
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>FP Fuel Levy %</p></th>}
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>FP Fuel Levy Amount</p></th>}
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>FP Total Cost (Ex GST)</p></th>}
+                            {clientname === 'dme' && <th className="nowrap" scope="col" nowrap="true"><p>DME Client Markup %</p></th>}
+                            <th className="nowrap" scope="col" nowrap="true"><p>Cust Cost $</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>FP Fuel Levy %</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>FP Fuel Levy Amount</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Extra $</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Total $ (Ex. GST)</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Client Customer Markup %</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Cust Sell $</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>ETA</p></th>
+                            <th className="nowrap" scope="col" nowrap="true"><p>Action</p></th>
+                        </tr>
+                    </thead>
                     <tbody>
                         {pricingList }
                     </tbody>
@@ -280,14 +282,18 @@ class FPPricingSlider extends React.Component {
                             }
                             {currentTab === 1 ?
                                 <table className="table table-hover table-bordered table-striped sortable fixed_headers">
-                                    <tr>
-                                        <th className="" scope="col" nowrap><p>No</p></th>
-                                        <th className="" scope="col" nowrap><p>Freight Provider</p></th>
-                                        <th className="" scope="col" nowrap><p>Account Code</p></th>
-                                        <th className="" scope="col" nowrap><p>Error Code</p></th>
-                                        <th className="" scope="col" nowrap><p>Error Description</p></th>
-                                    </tr>
-                                    { errorsList }
+                                    <thead>
+                                        <tr>
+                                            <th className="" scope="col" nowrap="true"><p>No</p></th>
+                                            <th className="" scope="col" nowrap="true"><p>Freight Provider</p></th>
+                                            <th className="" scope="col" nowrap="true"><p>Account Code</p></th>
+                                            <th className="" scope="col" nowrap="true"><p>Error Code</p></th>
+                                            <th className="" scope="col" nowrap="true"><p>Error Description</p></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        { errorsList }
+                                    </tbody>
                                 </table>
                                 :
                                 null

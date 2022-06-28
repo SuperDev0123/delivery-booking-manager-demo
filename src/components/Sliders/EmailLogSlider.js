@@ -103,21 +103,25 @@ class EmailLogSlider extends React.Component {
                             </div>
                         </div>
                         <table className="table table-hover table-bordered sortable fixed_headers">
-                            <tr>
-                                <th className="" scope="col" nowrap>
-                                    <p>No</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>EmailName</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Sender</p>
-                                </th>
-                                <th className="" scope="col" nowrap>
-                                    <p>Date Time</p>
-                                </th>
-                            </tr>
-                            { emailLogsList }
+                            <thead>
+                                <tr>
+                                    <th className="" scope="col" nowrap="true">
+                                        <p>No</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap="true">
+                                        <p>EmailName</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap="true">
+                                        <p>Sender</p>
+                                    </th>
+                                    <th className="" scope="col" nowrap="true">
+                                        <p>Date Time</p>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { emailLogsList }
+                            </tbody>
                         </table>
                     </div>
                 </div>

@@ -214,9 +214,9 @@ class ScansSlider extends React.Component {
                                         required
                                         name='fp'
                                         onChange={(e) => this.onInputChange(e)}
-                                        value={formInputs['fp']}
+                                        value={formInputs['fp'] ? formInputs['fp'] : saveMode === 0 && ''}
                                     >
-                                        <option key={0} value="" disabled selected={saveMode === 0 && 'selected'}>Select a FP</option>
+                                        <option key={0} value="" disabled>Select a FP</option>
                                         {fpOptions}
                                     </select>
                                 </label><br />

@@ -120,7 +120,7 @@ const defaultState = {
     emailLogs: [],
     bookingset: null,
     bookingsets: null,
-    allTickets: null,
+    allTickets: [],
     zohoDepartments: [],
     zohoTickets: [],
     zohoTicketSummaries: [],
