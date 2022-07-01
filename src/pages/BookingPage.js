@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
 
 import Clock from 'react-live-clock';
-import { isEmpty, isNull, isUndefined, intersection} from 'lodash';
+import { isEmpty, isNull, isUndefined, intersection, join } from 'lodash';
 import axios from 'axios';
 import Select from 'react-select';
 import moment from 'moment-timezone';
@@ -1532,15 +1532,35 @@ class BookingPage extends Component {
         }
     };
 
-    handleInputChangeSuburb = (prefix, src) => {
+    handleInputChangeSuburb = (query, src) => {
         const {isBookedBooking} = this.state;
 
-        if (isBookedBooking == false) {
+        let postalCodePrefix = null;
+        let suburbPrefixes = [];
+        const iters = query.split(' ');
+        iters.map((iter) => {
+            if (!isNaN(iter))
+                postalCodePrefix = iter;
+            else
+                suburbPrefixes.push(iter);
+        });
+
+        if (isBookedBooking == false && (postalCodePrefix || suburbPrefixes.length > 0)) {
             if (src === 'puSuburb') {
-                this.props.getAddressesWithPrefix('puAddress', prefix || 'syd');
+                this.props.getAddressesWithPrefix(
+                    'puAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
             } else if (src === 'deToSuburb') {
-                this.props.getAddressesWithPrefix('deToAddress', prefix || 'syd');
+                this.props.getAddressesWithPrefix(
+                    'deToAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
             }
+
+            this.setState({suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix});
         }
     };
 
@@ -1549,9 +1569,17 @@ class BookingPage extends Component {
 
         if (isBookedBooking == false) {
             if (src === 'puSuburb') {
-                this.props.getAddressesWithPrefix('puAddress', formInputs['pu_Address_Suburb'] || 'syd');
+                this.props.getAddressesWithPrefix(
+                    'puAddress',
+                    formInputs['pu_Address_Suburb'] || 'syd',
+                    null
+                );
             } else if (src === 'deToSuburb') {
-                this.props.getAddressesWithPrefix('deToAddress', formInputs['de_To_Address_Suburb'] || 'syd');
+                this.props.getAddressesWithPrefix(
+                    'deToAddress',
+                    formInputs['de_To_Address_Suburb'] || 'syd',
+                    null
+                );
             }
         }
     };
@@ -4242,6 +4270,10 @@ class BookingPage extends Component {
                                                                         placeholder='select your suburb'
                                                                         openMenuOnClick = {isBookedBooking ? false : true}
                                                                         noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                                                        filterOption={(options) => {
+                                                                            // Do no filtering, just return all options
+                                                                            return options;
+                                                                        }}
                                                                     />
                                                             }
                                                         </div>
@@ -4711,6 +4743,10 @@ class BookingPage extends Component {
                                                                         placeholder='select your suburb'
                                                                         noOptionsMessage={() => this.displayNoOptionsMessage()}
                                                                         openMenuOnClick = {isBookedBooking ? false : true}
+                                                                        filterOption={(options) => {
+                                                                            // Do no filtering, just return all options
+                                                                            return options;
+                                                                        }}
                                                                     />
                                                             }
                                                         </div>
@@ -6207,7 +6243,7 @@ const mapDispatchToProps = (dispatch) => {
         moveLineDetails: (lineId, lineDetailIds) => dispatch(moveLineDetails(lineId, lineDetailIds)),
         repack: (bookingId, repackStatus) => dispatch(repack(bookingId, repackStatus)),
         getCSNotes: (bookingId) => dispatch(getCSNotes(bookingId)),
-        getAddressesWithPrefix: (src, prefix) => dispatch(getAddressesWithPrefix(src, prefix)),
+        getAddressesWithPrefix: (src, suburbPrefix, postalCodePrefix) => dispatch(getAddressesWithPrefix(src, suburbPrefix, postalCodePrefix)),
     };
 };
 
