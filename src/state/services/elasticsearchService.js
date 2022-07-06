@@ -6,8 +6,57 @@ import {
 } from '../actions/elasticsearchActions';
 import { ES_URL, ES_USERNAME, ES_PASSWORD } from '../../config';
 
-export const getAddressesWithPrefix = (src, prefix) => {
+export const getAddressesWithPrefix = (src, suburbPrefix, postalCodePrefix) => {
     const indexName = 'address';
+
+    let data;
+    if (suburbPrefix && !postalCodePrefix) {
+        data = {
+            'query': {
+                'match_phrase_prefix': {
+                    'suburb': {
+                        'query': suburbPrefix,
+                        'slop': 3
+                    }
+                }
+            }
+        };
+    } else if (!suburbPrefix && postalCodePrefix) {
+        data = {
+            'query': {
+                'match_phrase_prefix': {
+                    'postal_code': {
+                        'query': postalCodePrefix
+                    }
+                }
+            }
+        };
+    } else if (suburbPrefix && postalCodePrefix) {
+        data = {
+            'query': {
+                'bool': {
+                    'must': [
+                        {
+                            'match_phrase_prefix': {
+                                'suburb': {
+                                    'query': suburbPrefix,
+                                    'slop': 3
+                                }
+                            }
+                        },
+                        {
+                            'match_phrase_prefix': {
+                                'postal_code': {
+                                    'query': postalCodePrefix
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        };
+    }
+
     const options = {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
@@ -16,16 +65,7 @@ export const getAddressesWithPrefix = (src, prefix) => {
             password: ES_PASSWORD
         },
         url: `${ES_URL}/${indexName}/_search`,
-        data: {
-            'query': {
-                'match_phrase_prefix': {
-                    'suburb': {
-                        'query': prefix,
-                        'slop': 3
-                    }
-                }
-            }
-        }
+        data: data
     };
 
     return dispatch => {
