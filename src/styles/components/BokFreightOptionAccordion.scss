@@ -1,4 +1,5 @@
 .freight-option-accordion {
+	display: flow-root;
 	margin-bottom: 20px;
 
 	.header {
@@ -26,49 +27,18 @@
 	.body {
 		padding: 20px;
 
-		>div {
-			width: 50%;
-
-			&.special {
-				width: 100%;
-				margin-bottom: 10px;
-
-				label {
-					border: 1px solid gray;
-					width: 400px;
-					padding-top: 5px;
-					padding-bottom: 5px;
-
-					p {
-						width: 300px;
-						margin-right: 70px;
-					}
-				}
+		div {
+			width: 100%;
+			padding-top: 8px;
+			select {
+				width: 60%;
+				padding-top: 4px;
 			}
-
-			h4 {
-				color: deepskyblue;
-				font-weight: bold;
-			}
-
-			label {
-				width: 100%;
-				margin-bottom: 2px;
-				margin-top: 2px;
-
-				p {
-					font-size: 14px;
-					font-weight: lighter;
-					width: 200px;
-					margin-bottom: 0;
-					margin-right: 5%;
-					display: inline-block;
-					vertical-align: top;
-				}
-				select, textarea, input[type='text'] {
-					width: 50%;
-					font-weight: lighter;
-				}
+	
+			p {
+				width: 40%;
+				font-size: medium;
+				padding-top: 4px;
 			}
 		}
 	}

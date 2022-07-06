@@ -22,6 +22,12 @@ class FreightOptionAccordion extends Component {
         }
     }
 
+    displayNoOptionsMessage() {
+        if (this.state.isBookedBooking == true) {
+            return 'No Editable';
+        }
+    }
+
     render() {
         const {isOpen} = this.state;
         const {formInputs} = this.props;
@@ -35,11 +41,12 @@ class FreightOptionAccordion extends Component {
                 </div>
                 {isOpen &&
                     <div className="body">
-                        <div className="at-pu disp-inline-block">
+                        <div className="at-pu col-sm-12 col-lg-6">
                             <h4>At Pickup:</h4>
-                            <label>
+                            <div className="d-flex">
                                 <p><strong>Address Type: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_Address_Type"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_Address_Type'] ? formInputs['pu_Address_Type'] : ''}
@@ -48,8 +55,20 @@ class FreightOptionAccordion extends Component {
                                     <option value='business'>Business</option>
                                     <option value='residential'>Residential</option>
                                 </select>
-                            </label>
-                            <label>
+                                {/* <Select
+                                    value={formInputs['pu_Address_Type'] ? formInputs['pu_Address_Type'] : ''}
+                                    onChange={(e) => this.props.onHandleInput(e)}
+                                    options={
+                                        [
+                                            {value: 'business', label: 'Business'},
+                                            {value: 'residential', label: 'Residential'},
+                                        ]
+                                    }
+                                    placeholder='--- Select address type ---'
+                                    noOptionsMessage={() => this.displayNoOptionsMessage()}
+                                /> */}
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Tail Lift Required?: </strong></p>
                                 <input
                                     name="b_booking_tail_lift_pickup"
@@ -57,10 +76,11 @@ class FreightOptionAccordion extends Component {
                                     value={formInputs['b_booking_tail_lift_pickup']}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>No of men to assist: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_no_of_assists"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_no_of_assists'] ? formInputs['pu_no_of_assists'] : ''}
@@ -73,10 +93,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='4'>4</option>
                                     <option value='5'>5</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Pickup Location: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_location"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_location'] ? formInputs['pu_location'] : ''}
@@ -86,10 +107,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
                                     <option value='Room of Choice'>Room of Choice</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Pickup Access: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_access"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_access'] ? formInputs['pu_access'] : ''}
@@ -101,10 +123,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Street with Curb'>Street with Curb</option>
                                     <option value='Tree lined Street'>Tree lined Street</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Delivery Level: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_floor_number"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_floor_number'] ? formInputs['pu_floor_number'] : ''}
@@ -123,10 +146,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='4'>4</option>
                                     <option value='5'>5</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Level Access: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_floor_access_by"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_floor_access_by'] ? formInputs['pu_floor_access_by'] : ''}
@@ -139,10 +163,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Folklift'>Folklift</option>
                                     <option value='NONE'>Not required</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Service: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="pu_service"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['pu_service'] ? formInputs['pu_service'] : ''}
@@ -152,13 +177,14 @@ class FreightOptionAccordion extends Component {
                                     <option value='Install'>Install</option>
                                     <option value='NONE'>Not required</option>
                                 </select>
-                            </label>
+                            </div>
                         </div>
-                        <div className="at-de disp-inline-block">
+                        <div className="at-de col-sm-12 col-lg-6">
                             <h4>At Delivery:</h4>
-                            <label>
+                            <div className="d-flex">
                                 <p><strong>Address Type: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_To_AddressType"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_To_AddressType'] ? formInputs['de_To_AddressType'] : ''}
@@ -167,8 +193,8 @@ class FreightOptionAccordion extends Component {
                                     <option value='business'>Business</option>
                                     <option value='residential'>Residential</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Tail Lift Required?: </strong></p>
                                 <input
                                     name="b_booking_tail_lift_deliver"
@@ -176,10 +202,11 @@ class FreightOptionAccordion extends Component {
                                     value={formInputs['b_booking_tail_lift_deliver']}
                                     onChange={(e) => this.props.onHandleInput(e)}
                                 />
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>No of men to assist: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_no_of_assists"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_no_of_assists'] ? formInputs['de_no_of_assists'] : ''}
@@ -192,10 +219,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='4'>4</option>
                                     <option value='5'>5</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Delivery Location: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_to_location"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_to_location'] ? formInputs['de_to_location'] : ''}
@@ -205,10 +233,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Drop in Door / Warehouse'>Drop in Door / Warehouse</option>
                                     <option value='Room of Choice'>Room of Choice</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Delivery Access: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_access"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_access'] ? formInputs['de_access'] : ''}
@@ -220,10 +249,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Street with Curb'>Street with Curb</option>
                                     <option value='Tree lined Street'>Tree lined Street</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Delivery Level: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_floor_number"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_floor_number'] ? formInputs['de_floor_number'] : ''}
@@ -242,10 +272,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='4'>4</option>
                                     <option value='5'>5</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Level Access: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_to_floor_access_by"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_to_floor_access_by'] ? formInputs['de_to_floor_access_by'] : ''}
@@ -257,10 +288,11 @@ class FreightOptionAccordion extends Component {
                                     <option value='Ramp'>Ramp</option>
                                     <option value='NONE'>Not required</option>
                                 </select>
-                            </label>
-                            <label>
+                            </div>
+                            <div className="d-flex">
                                 <p><strong>Service: </strong></p>
                                 <select
+                                    className="form-control"
                                     name="de_service"
                                     onChange={(e) => this.props.onHandleInput(e)}
                                     value={formInputs['de_service'] ? formInputs['de_service'] : ''}
@@ -270,7 +302,7 @@ class FreightOptionAccordion extends Component {
                                     <option value='Install'>Install</option>
                                     <option value='NONE'>Not required</option>
                                 </select>
-                            </label>
+                            </div>
                         </div>
                     </div>
                 }
