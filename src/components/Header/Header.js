@@ -146,7 +146,9 @@ class Header extends Component {
         this.setState({lines: newlines});
     }
 
-    getQuote() {
+    getQuote(e) {
+        console.log(e);
+        // e.preventDefault();
         // const { }
         // this.props.getAddressesWithPrefix()
         const options = {
@@ -214,7 +216,7 @@ class Header extends Component {
                             <h5 style={{fontWeight: 'bold'}}>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
-                            <button id="Popover" className="btn btn-default btn-sm" onClick={() => this.onOpenQuickQuote()}>Quick Quote</button>
+                            <a id="Popover" className="btn btn-outline-light my-2 my-lg-0 login" onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
                             <Popover
                                 className="quick-quote"
                                 isOpen={this.state.isOpenQuickQuote}
@@ -253,7 +255,7 @@ class Header extends Component {
                                                     <p>Type of Package</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className='row' key={'packType' + index}>
+                                                            <div className='row p-1' key={'packType' + index}>
                                                                 <select
                                                                     name={'packType' + index}
                                                                     onChange={(e) => this.onInputChange(e, index, 'packType')}
@@ -274,7 +276,9 @@ class Header extends Component {
                                                     <p>Quantity</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                            <div className="row p-1" key={'quantity' + index}>
+                                                                <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
@@ -284,16 +288,18 @@ class Header extends Component {
                                                     <p>DimUOM</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <select
-                                                                name={'dimUOM' + index}
-                                                                onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
-                                                                value={line.dimUOM}
-                                                                key={'dimUOM' + index}
-                                                                required
-                                                            >
-                                                                <option>M</option>
-                                                                <option>mm</option>
-                                                            </select>                                                                    
+                                                            <div className="row p-1" key={'dimUOM' + index}>
+                                                                <select
+                                                                    name={'dimUOM' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
+                                                                    value={line.dimUOM}
+                                                                    key={'dimUOM' + index}
+                                                                    required
+                                                                >
+                                                                    <option>M</option>
+                                                                    <option>mm</option>
+                                                                </select>
+                                                            </div>                                                            
                                                         ))
                                                     }
                                                 </label>
@@ -303,7 +309,9 @@ class Header extends Component {
                                                     <p>length</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                            <div className="row p-1" key={'length' + index}>
+                                                                <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
@@ -313,17 +321,21 @@ class Header extends Component {
                                                     <p>width</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                            <div className="row p-1" key={'width' + index}>
+                                                                <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'width')} required />
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
-                                            <div className=" form-group px-1">
+                                            <div className="form-group px-1">
                                                 <label htmlFor="height">
                                                     <p>height</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                            <div className="row p-1" key={'height' + index}>
+                                                                <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
@@ -333,16 +345,18 @@ class Header extends Component {
                                                     <p>WeightUOM</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <select
-                                                                name={'weightUOM' + index}
-                                                                onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
-                                                                value={line.weightUOM}
-                                                                key={'weightUOM' + index}
-                                                                required
-                                                            >
-                                                                <option>M</option>
-                                                                <option>mm</option>
-                                                            </select>                                                                    
+                                                            <div className="row p-1" key={'weightUOM' + index}>
+                                                                <select
+                                                                    name={'weightUOM' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
+                                                                    value={line.weightUOM}
+                                                                    key={'weightUOM' + index}
+                                                                    required
+                                                                >
+                                                                    <option>M</option>
+                                                                    <option>mm</option>
+                                                                </select>                                                                    
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
@@ -352,16 +366,18 @@ class Header extends Component {
                                                     <p>Weight</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                            <div className="row p-1" key={'weight' + index}>
+                                                                <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                            </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
-                                            <div className="">
+                                            <div className="deselect">
                                                 {
                                                     this.state.lines.map((line, index) => (
                                                         <div onClick={() => this.onCancel(index)} key={'cancel' + index}>
-                                                            <i className="fa fa-times-circle deselect p-2"></i>
+                                                            <i className="fa fa-times-circle p-2"></i>
                                                         </div>
                                                     ))
                                                 }
@@ -372,7 +388,7 @@ class Header extends Component {
                                         </div>
 
                                         <div className="row m-2 float-r">
-                                            <button className="btn btn-primary btn-sm" type="button" onClick={() => this.getQuote()}>Get Quote</button>
+                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.getQuote(e)}>Get Quote</button>
                                         </div>
                                     </form>
                                 </PopoverBody>
