@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
+import LoadingOverlay from 'react-loading-overlay';
 import { join } from 'lodash';
 import moment from 'moment-timezone';
 
@@ -77,13 +78,16 @@ class Header extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { username, clientname, isLoggedIn } = newProps;
+        const { username, clientname, isLoggedIn, quickPricings } = newProps;
 
         if (username)
             this.setState({username});
 
         if (clientname)
             this.setState({clientname});
+
+        if (quickPricings)
+            this.setState({isGettingQuickQuote: false});
 
         // if (statusPageUrl) {
         //     console.log('@1 - ', statusPageUrl);
@@ -226,7 +230,7 @@ class Header extends Component {
     onClickAddPackage() {
         const { lines } = this.state;
         const newlines = [...lines];
-        newlines.push({
+        newlines.unshift({
             quantity: '',
             dimUOM: 'm',
             length: '',
@@ -246,15 +250,16 @@ class Header extends Component {
         this.setState({lines: newlines});
     }
 
-    onClickGetQuote(e) {
-        e.preventDefault();
+    onClickGetQuote() {
+        this.setState({isGettingQuickQuote: true });
+        // console.log(e);
+        // e.preventDefault();
 
         const data = {
             'booking': this.state.formInputs,
             'booking_lines': this.state.lines
         };
         this.props.getQuickPricing(data);
-        this.setState({isGettingQuickQuote: true});
     }
 
     copyToClipBoard = async text => {
@@ -377,217 +382,231 @@ class Header extends Component {
                                 placement="bottom"
                                 hideArrow={false} >
                                 <PopoverBody>
-                                    <form className="quick-quote-form">
-                                        <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
-                                            <i className="fa fa-times-circle p-2"></i>
-                                        </div>
+                                    <LoadingOverlay
+                                        active={this.state.isGettingQuickQuote}
+                                        spinner
+                                        text='Loading...'
+                                    >
+                                        <form className="quick-quote-form">
+                                            <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
+                                                <i className="fa fa-times-circle p-2"></i>
+                                            </div>
 
-                                        <div className="d-flex justify-content-around">
-                                            <div className="m-2">
-                                                <p>Pickup suburb or postal code: </p>
-                                                <Select
-                                                    value={puSuburb}
-                                                    onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
-                                                    onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
-                                                    onFocus={() => this.handleFocusSuburb('puSuburb')}
-                                                    options={puAddressOptions}
-                                                    placeholder='select your suburb'
-                                                    openMenuOnClick = {true}
-                                                    filterOption={(options) => {
-                                                        // Do no filtering, just return all options
-                                                        return options;
-                                                    }}
-                                                />
+                                            <div className="d-flex justify-content-around">
+                                                <div className="m-2">
+                                                    <span><b>Pickup suburb or postal code </b></span>
+                                                    <Select
+                                                        value={puSuburb}
+                                                        onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
+                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
+                                                        onFocus={() => this.handleFocusSuburb('puSuburb')}
+                                                        options={puAddressOptions}
+                                                        placeholder='select your suburb'
+                                                        openMenuOnClick = {true}
+                                                        filterOption={(options) => {
+                                                            // Do no filtering, just return all options
+                                                            return options;
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className="m-2">
+                                                    <span><b>Delivery suburb or postal code</b></span>
+                                                    <Select
+                                                        value={deToSuburb}
+                                                        onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
+                                                        onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
+                                                        focus={() => this.handleFocusSuburb('deToSuburb')}
+                                                        options={deToAddressOptions}
+                                                        placeholder='select your suburb'
+                                                        openMenuOnClick = {true}
+                                                        filterOption={(options) => {
+                                                            // Do no filtering, just return all options
+                                                            return options;
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="m-2">
-                                                <p>Delivery suburb or postal code: </p>
-                                                <Select
-                                                    value={deToSuburb}
-                                                    onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
-                                                    onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
-                                                    focus={() => this.handleFocusSuburb('deToSuburb')}
-                                                    options={deToAddressOptions}
-                                                    placeholder='select your suburb'
-                                                    openMenuOnClick = {true}
-                                                    filterOption={(options) => {
-                                                        // Do no filtering, just return all options
-                                                        return options;
-                                                    }}
-                                                />
-                                            </div>
-                                        </div>
 
-                                        <hr />
-                                        <div className="row quote-detail-infos overflow-auto">
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="packType">
-                                                    <p>Type of Package</p>
+                                            <hr />
+                                            <div className="row quote-detail-infos overflow-auto">
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="packType">
+                                                        <p>Type of Package</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className='row p-1' key={'packType' + index}>
+                                                                    <select
+                                                                        name={'packType' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'packType')}
+                                                                        value={line.packType}
+                                                                        key={'packType' + index}
+                                                                        required
+                                                                    >
+                                                                        <option>Carton</option>
+                                                                        <option>Pallet</option>
+                                                                    </select>                                                                    
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className="form-group px-1">
+                                                    <label htmlFor="quantity">
+                                                        <p>Quantity</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'quantity' + index}>
+                                                                    <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="dimUOM">
+                                                        <p>DimUOM</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'dimUOM' + index}>
+                                                                    <select
+                                                                        name={'dimUOM' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
+                                                                        value={line.dimUOM}
+                                                                        key={'dimUOM' + index}
+                                                                        required
+                                                                    >
+                                                                        <option>m</option>
+                                                                        <option>cm</option>
+                                                                        <option>mm</option>
+                                                                    </select>
+                                                                </div>                                                            
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="length">
+                                                        <p>length</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'length' + index}>
+                                                                    <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="width">
+                                                        <p>width</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'width' + index}>
+                                                                    <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'width')} required />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className="form-group px-1">
+                                                    <label htmlFor="height">
+                                                        <p>height</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'height' + index}>
+                                                                    <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="weightUOM">
+                                                        <p>WeightUOM</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'weightUOM' + index}>
+                                                                    <select
+                                                                        name={'weightUOM' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
+                                                                        value={line.weightUOM}
+                                                                        key={'weightUOM' + index}
+                                                                        required
+                                                                    >
+                                                                        <option>kg</option>
+                                                                        <option>gram</option>
+                                                                    </select>                                                                    
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className=" form-group px-1">
+                                                    <label htmlFor="weight">
+                                                        <p>Weight</p>
+                                                        {
+                                                            this.state.lines.map((line, index) => (
+                                                                <div className="row p-1" key={'weight' + index}>
+                                                                    <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </label>
+                                                </div>
+                                                <div className="deselect">
                                                     {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className='row p-1' key={'packType' + index}>
-                                                                <select
-                                                                    name={'packType' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'packType')}
-                                                                    value={line.packType}
-                                                                    key={'packType' + index}
-                                                                    required
-                                                                >
-                                                                    <option>Carton</option>
-                                                                    <option>Pallet</option>
-                                                                </select>                                                                    
-                                                            </div>
-                                                        ))
+                                                        this.state.lines.map((line, index) => {
+                                                            if (index == 0) {
+                                                                return (
+                                                                    <div className="row invisible" key={'cancel' + index}>
+                                                                        <i className="fa fa-times-circle p-2"></i>
+                                                                    </div>
+                                                                );
+                                                            } else {
+                                                                return (
+                                                                    <div onClick={() => this.onCancel(index)} key={'cancel' + index}>
+                                                                        <i className="fa fa-times-circle p-2"></i>
+                                                                    </div>
+                                                                );
+                                                            }
+                                                        })
                                                     }
-                                                </label>
+                                                </div>
                                             </div>
-                                            <div className="form-group px-1">
-                                                <label htmlFor="quantity">
-                                                    <p>Quantity</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'quantity' + index}>
-                                                                <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
+                                            <div className="row m-2">
+                                                <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()}>
+                                                    +Add Package
+                                                </button>
                                             </div>
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="dimUOM">
-                                                    <p>DimUOM</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'dimUOM' + index}>
-                                                                <select
-                                                                    name={'dimUOM' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
-                                                                    value={line.dimUOM}
-                                                                    key={'dimUOM' + index}
-                                                                    required
-                                                                >
-                                                                    <option>m</option>
-                                                                    <option>cm</option>
-                                                                    <option>mm</option>
-                                                                </select>
-                                                            </div>                                                            
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="length">
-                                                    <p>length</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'length' + index}>
-                                                                <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="width">
-                                                    <p>width</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'width' + index}>
-                                                                <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'width')} required />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className="form-group px-1">
-                                                <label htmlFor="height">
-                                                    <p>height</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'height' + index}>
-                                                                <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="weightUOM">
-                                                    <p>WeightUOM</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'weightUOM' + index}>
-                                                                <select
-                                                                    name={'weightUOM' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
-                                                                    value={line.weightUOM}
-                                                                    key={'weightUOM' + index}
-                                                                    required
-                                                                >
-                                                                    <option>kg</option>
-                                                                    <option>gram</option>
-                                                                </select>                                                                    
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className=" form-group px-1">
-                                                <label htmlFor="weight">
-                                                    <p>Weight</p>
-                                                    {
-                                                        this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'weight' + index}>
-                                                                <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
-                                                            </div>
-                                                        ))
-                                                    }
-                                                </label>
-                                            </div>
-                                            <div className="deselect">
-                                                {
-                                                    this.state.lines.map((line, index) => (
-                                                        <div onClick={() => this.onCancel(index)} key={'cancel' + index}>
-                                                            <i className="fa fa-times-circle p-2"></i>
-                                                        </div>
-                                                    ))
-                                                }
-                                            </div>
-                                        </div>
+                                            {quickPricings.length > 0 ? <hr /> : null}
+                                            {quickPricings.length > 0 ?
+                                                <table className="table table-hover table-bordered sortable fixed_headers">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Freight Provider</th>
+                                                            <th>Service (Vehicle)</th>
+                                                            <th>Cost $</th>
+                                                            <th>Fuel Levy %</th>
+                                                            <th>Fuel Levy $</th>
+                                                            <th>Extra $</th>
+                                                            <th>Total $</th>
+                                                            <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {pricings}
+                                                    </tbody>
+                                                </table>
+                                                : null
+                                            }
 
-                                        {quickPricings.length > 0 ? <hr /> : null}
-                                        {quickPricings.length > 0 ?
-                                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Freight Provider</th>
-                                                        <th>Service (Vehicle)</th>
-                                                        <th>Cost $</th>
-                                                        <th>Fuel Levy %</th>
-                                                        <th>Fuel Levy $</th>
-                                                        <th>Extra $</th>
-                                                        <th>Total $</th>
-                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {pricings}
-                                                </tbody>
-                                            </table>
-                                            : null
-                                        }
-
-                                        <div className="row m-2">
-                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()}>
-                                                +Add Package
-                                            </button>
-                                        </div>
-
-                                        <div className="row m-2 float-r">
-                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.onClickGetQuote(e)}>
-                                                Get Quote
-                                            </button>
-                                        </div>
-                                    </form>
+                                            <div className="row my-2 float-r">
+                                                <button className="btn btn-primary btn-sm" type="submit" onClick={() => this.onClickGetQuote()}>
+                                                    Get Quote
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </LoadingOverlay>
                                 </PopoverBody>
                             </Popover>
                             <ul className="navbar-nav flex-row ml-auto d-md-flex">
