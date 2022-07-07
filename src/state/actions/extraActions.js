@@ -103,6 +103,8 @@ import {
     FAILED_UPDATE_CS_NOTE,      // "
     SUCCESS_DELETE_CS_NOTE,     // "
     FAILED_DELETE_CS_NOTE,      // CS Note
+    SUCCESS_GET_QUICK_PRICING,
+    FAILED_GET_QUICK_PRICING,
 } from '../constants/extraConstants';
 
 export function successGetPackageTypes(data) {
@@ -836,5 +838,19 @@ export function failedDeleteCSNote(error) {
     return {
         type: FAILED_DELETE_CS_NOTE,
         errorMessage: 'Unable to delete CS Note. Error:' + error,
+    };
+}
+
+export function successGetQuickPricing(data) {
+    return {
+        type: SUCCESS_GET_QUICK_PRICING,
+        payload: data,
+    };
+}
+
+export function failedGetQuickPricing(error) {
+    return {
+        type: FAILED_GET_QUICK_PRICING,
+        errorMessage: 'Unable to get quick pricing. Error:' + error,
     };
 }

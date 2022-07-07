@@ -102,6 +102,8 @@ import {
     FAILED_UPDATE_CS_NOTE,      // "
     SUCCESS_DELETE_CS_NOTE,     // "
     FAILED_DELETE_CS_NOTE,      // CS Note
+    SUCCESS_GET_QUICK_PRICING,
+    FAILED_GET_QUICK_PRICING,
 } from '../constants/extraConstants';
 
 const defaultState = {
@@ -560,6 +562,11 @@ export const ExtraReducer = (state = defaultState, {
                 ...state,
                 csNotes
             };
+        case SUCCESS_GET_QUICK_PRICING:
+            return {
+                ...state,
+                quickPricings: payload,
+            };
         case FAILED_CREATE_STATUS_ACTION:
         case FAILED_CREATE_STATUS_DETAIL:
         case FAILED_GET_STATUS_DETAILS:
@@ -596,6 +603,7 @@ export const ExtraReducer = (state = defaultState, {
         case FAILED_CREATE_PALLET:
         case FAILED_GET_LOGS:
         case FAILED_FIND_BOOKING:
+        case FAILED_GET_QUICK_PRICING:
             return {
                 ...state,
                 errorMessage: errorMessage,

@@ -57,6 +57,7 @@ class Header extends Component {
         history: PropTypes.object.isRequired,
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
+        quickPricings: PropTypes.array,
 
         // Functions
         getUser: PropTypes.func.isRequired,
@@ -567,6 +568,7 @@ const mapStateToProps = (state) => {
         statusPageUrl: state.booking.statusPageUrl,
         puAddresses: state.elasticsearch.puAddresses,
         deToAddresses: state.elasticsearch.deToAddresses,
+        quickPricings: state.extra.quickPricings,
     };
 };
 

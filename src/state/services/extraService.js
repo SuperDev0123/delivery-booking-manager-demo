@@ -104,6 +104,8 @@ import {
     failedUpdateCSNote,     // "
     successDeleteCSNote,    // "
     failedDeleteCSNote,     // CS NOTE
+    successGetQuickPricing,
+    failedGetQuickPricing,
 } from '../actions/extraActions';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 
@@ -913,5 +915,19 @@ export const deleteCSNote = (id) => {
         axios(options)
             .then(({ data }) => dispatch(successDeleteCSNote(data)))
             .catch((error) => dispatch(failedDeleteCSNote(error)));
+    };
+};
+
+export const getQuickPricing = (data) => {
+    const options = {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        url: `${HTTP_PROTOCOL}://${API_HOST}/get-quick-pricing/`,
+        data: data
+    };
+    return dispatch => {
+        axios(options)
+            .then(({ data }) => dispatch(successGetQuickPricing(data)))
+            .catch((error) => dispatch(failedGetQuickPricing(error)));
     };
 };
