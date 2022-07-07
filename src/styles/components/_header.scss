@@ -34,3 +34,28 @@
     padding: 0px !important;
   }
 }
+
+.quote-detail-infos {
+  input {
+    width: 80px;
+    height: 24px;
+  }
+
+  select {
+    height: 24px;
+    width: 80px;
+  }
+}
+
+.deselect {
+  font-size: 20px;
+  margin-top: 30px;
+  color: red;
+}
+
+.popover-close {
+  font-size: 24px;
+  position: absolute;
+  top: -15px;
+  right: -15px;
+}

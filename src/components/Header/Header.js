@@ -10,6 +10,10 @@ import { getStatusPageUrl } from '../../state/services/bookingService';
 // import { openTab } from '../../commons/browser';
 
 import logo from '../../public/images/logo-2.png';
+import { Popover, PopoverBody } from 'reactstrap';
+import { API_HOST, HTTP_PROTOCOL } from '../../config';
+import axios from 'axios';
+import { getAddressesWithPrefix } from '../../state/services/elasticsearchService';
 
 class Header extends Component {
     constructor(props) {
@@ -19,6 +23,21 @@ class Header extends Component {
             username: '',
             clientname: '',
             findKeyword: '',
+            isOpenQuickQuote: false,
+            pu_code: '',
+            de_code: '',
+            lines: [
+                {
+                    quantity: '',
+                    dimUOM: '',
+                    length: '',
+                    width: '',
+                    height: '',
+                    weightUOM: '',
+                    weight: '',
+                    packType: '',
+                }
+            ],
         };
     }
 
@@ -89,6 +108,63 @@ class Header extends Component {
         this.setState({findKeyword});
     }
 
+    onInputChange(e, index, field) {
+        const { lines } = this.state;
+        const newlines = [...lines];
+        newlines[index][field] = e.target.value;
+        this.setState({lines: newlines});
+    }
+
+    onOpenQuickQuote() {
+        this.setState({isOpenQuickQuote: !this.state.isOpenQuickQuote});
+    }
+
+    onCloseQuickQuote() {
+        this.setState({isOpenQuickQuote: false});
+    }
+
+    addPackage() {
+        const { lines } = this.state;
+        const newlines = [...lines];
+        newlines.push({
+            quantity: '',
+            dimUOM: '',
+            length: '',
+            width: '',
+            height: '',
+            weightUOM: '',
+            weight: '',
+            packType: '',
+        });
+        this.setState({lines: newlines});
+    }
+
+    onCancel(index) {
+        const { lines } = this.state;
+        const newlines = [...lines];
+        newlines.splice(index, 1);
+        this.setState({lines: newlines});
+    }
+
+    getQuote() {
+        // const { }
+        // this.props.getAddressesWithPrefix()
+        const options = {
+            method: 'post',
+            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-quick-pricing/',
+            data: {
+                'booking': {
+
+                },
+                'booking_lines': this.state.lines
+            },
+        };
+
+        axios(options).then((response) => {
+            console.log(response);
+        });
+    }
+
     render() {
         const { username, clientname } = this.state;
         const currentRoute = this.props.location.pathname;
@@ -131,49 +207,216 @@ class Header extends Component {
                     </nav>
                     :
                     <nav className="navbar navbar-expand bg-nav pl-md-5 ml-md-0">
-                        <a href="/" className="navbar-brand mr-sm-0">
-                            <img src={logo} className="head-logo" alt="logo" />
-                        </a>
-                        <h5 style={{fontWeight: 'bold'}}>Tel: (02) 8311 1500</h5>
-                        <ul className="navbar-nav flex-row ml-auto d-md-flex">
-                            {clientname && isLoggedIn === 'true' ?
-                                <li className="nav-item dropdown show">
-                                    <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                                        <i className="fa fa-user" aria-hidden="true"></i>
-                                    </a>
-                                    <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-                                        <a className="dropdown-item cut-user-name">
-                                            <i>Logged in as {username}</i>
+                        <div className="col-sm-6">
+                            <a href="/" className="navbar-brand mr-sm-0">
+                                <img src={logo} className="head-logo" alt="logo" />
+                            </a>
+                            <h5 style={{fontWeight: 'bold'}}>Tel: (02) 8311 1500</h5>
+                        </div>
+                        <div className="col-sm-6 d-flex justify-content-between" >
+                            <button id="Popover" className="btn btn-default btn-sm" onClick={() => this.onOpenQuickQuote()}>Quick Quote</button>
+                            <Popover
+                                className="quick-quote"
+                                isOpen={this.state.isOpenQuickQuote}
+                                target="Popover"
+                                placement="bottom"
+                                hideArrow={false} >
+                                <PopoverBody>
+                                    <form className="quick-quote-form">
+                                        <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
+                                            <i className="fa fa-times-circle p-2"></i>
+                                        </div>
+
+                                        <div className="d-flex justify-content-around">
+                                            <div className="m-2">
+                                                <span>Pickup suburb or postal code: </span>
+                                                
+                                                <input 
+                                                    type="text"
+                                                    value={this.state.pu_code}
+                                                    onChange={this.onChangeText.bind(this)} 
+                                                />
+                                            </div>
+                                            <div className="m-2">
+                                                <span>Delivery suburb or postal code: </span>
+                                                <input 
+                                                    type="text"
+                                                    value={this.state.de_code}
+                                                    onChange={this.onChangeText.bind(this)} 
+                                                />
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div className="row quote-detail-infos overflow-auto">
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="packType">
+                                                    <p>Type of Package</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <div className='row' key={'packType' + index}>
+                                                                <select
+                                                                    name={'packType' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'packType')}
+                                                                    value={line.packType}
+                                                                    key={'packType' + index}
+                                                                    required
+                                                                >
+                                                                    <option>Carton</option>
+                                                                    <option>Pallet</option>
+                                                                </select>                                                                    
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className="form-group px-1">
+                                                <label htmlFor="quantity">
+                                                    <p>Quantity</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="dimUOM">
+                                                    <p>DimUOM</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <select
+                                                                name={'dimUOM' + index}
+                                                                onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
+                                                                value={line.dimUOM}
+                                                                key={'dimUOM' + index}
+                                                                required
+                                                            >
+                                                                <option>M</option>
+                                                                <option>mm</option>
+                                                            </select>                                                                    
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="length">
+                                                    <p>length</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="width">
+                                                    <p>width</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="height">
+                                                    <p>height</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="weightUOM">
+                                                    <p>WeightUOM</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <select
+                                                                name={'weightUOM' + index}
+                                                                onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
+                                                                value={line.weightUOM}
+                                                                key={'weightUOM' + index}
+                                                                required
+                                                            >
+                                                                <option>M</option>
+                                                                <option>mm</option>
+                                                            </select>                                                                    
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className=" form-group px-1">
+                                                <label htmlFor="weight">
+                                                    <p>Weight</p>
+                                                    {
+                                                        this.state.lines.map((line, index) => (
+                                                            <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                        ))
+                                                    }
+                                                </label>
+                                            </div>
+                                            <div className="">
+                                                {
+                                                    this.state.lines.map((line, index) => (
+                                                        <div onClick={() => this.onCancel(index)} key={'cancel' + index}>
+                                                            <i className="fa fa-times-circle deselect p-2"></i>
+                                                        </div>
+                                                    ))
+                                                }
+                                            </div>
+                                        </div>
+                                        <div className="row m-2">
+                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.addPackage()}>+Add Package</button>
+                                        </div>
+
+                                        <div className="row m-2 float-r">
+                                            <button className="btn btn-primary btn-sm" type="button" onClick={() => this.getQuote()}>Get Quote</button>
+                                        </div>
+                                    </form>
+                                </PopoverBody>
+                            </Popover>
+                            <ul className="navbar-nav flex-row ml-auto d-md-flex">
+                                {clientname && isLoggedIn === 'true' ?
+                                    <li className="nav-item dropdown show">
+                                        <a className="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <i className="fa fa-user" aria-hidden="true"></i>
                                         </a>
-                                        {clientname === 'dme' && <div className='dropdown-divider'></div>}
-                                        {clientname === 'dme' && <a className='dropdown-item' href="/admin">DME Admin</a>}
-                                        {clientname != 'dme' && <a className='dropdown-item' href="/customerdashboard">Admin</a>}
-                                        {clientname === 'dme' && <div className="dropdown-divider"></div>}
-                                        {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
-                                        {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
-                                        {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/bok">Find Order</a>
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/booking">Booking</a>
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/allbookings">All Bookings</a>
-                                        {clientname === 'dme' && <div className='dropdown-divider'></div>}
-                                        {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
-                                        <div className="dropdown-divider"></div>
-                                        <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
-                                    </div>
-                                </li>
-                                :
-                                <li className="nav-item">
-                                    {currentRoute.indexOf('/price/') === 0 || currentRoute.indexOf('/status/') === 0 || currentRoute.indexOf('/label/') === 0 ?
-                                        null
-                                        :
-                                        <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
-                                    }
-                                </li>
-                            }
-                        </ul>
+                                        <div className="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
+                                            <a className="dropdown-item cut-user-name">
+                                                <i>Logged in as {username}</i>
+                                            </a>
+                                            {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                            {clientname === 'dme' && <a className='dropdown-item' href="/admin">DME Admin</a>}
+                                            {clientname != 'dme' && <a className='dropdown-item' href="/customerdashboard">Admin</a>}
+                                            {clientname === 'dme' && <div className="dropdown-divider"></div>}
+                                            {clientname === 'dme' && <a className="dropdown-item" href="/upload">Upload Files</a>}
+                                            {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <div className="dropdown-divider"></div>}
+                                            {(clientname === 'dme' || clientname === 'Tempo Pty Ltd') && <a className="dropdown-item" href="/files">Files</a>}
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/bok">Find Order</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/booking">Booking</a>
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/allbookings">All Bookings</a>
+                                            {clientname === 'dme' && <div className='dropdown-divider'></div>}
+                                            {clientname === 'dme' && <a className='dropdown-item' href="/reports">Reports</a>}
+                                            <div className="dropdown-divider"></div>
+                                            <a className="dropdown-item" href="/" onClick={() => this.logout()}>Logout</a>
+                                        </div>
+                                    </li>
+                                    :
+                                    <li className="nav-item">
+                                        {currentRoute.indexOf('/price/') === 0 || currentRoute.indexOf('/status/') === 0 || currentRoute.indexOf('/label/') === 0 ?
+                                            null
+                                            :
+                                            <a href="/login" className="btn btn-outline-light my-2 my-lg-0 login">Login</a>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                     </nav>
                 }
                 <ToastContainer />
@@ -196,6 +439,7 @@ const mapDispatchToProps = (dispatch) => {
         getUser: (token) => dispatch(getUser(token)),
         logout: () => dispatch(logout()),
         getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
+        getAddressesWithPrefix: (src, suburbPrefix, postalCodePrefix) => dispatch(getAddressesWithPrefix(src, suburbPrefix, postalCodePrefix)),
     };
 };
 
