@@ -25,7 +25,6 @@ class Header extends Component {
 
         this.state = {
             username: '',
-            clientname: '',
             findKeyword: '',
             isOpenQuickQuote: false,
             isGettingQuickQuote: false,
@@ -41,14 +40,14 @@ class Header extends Component {
             },
             lines: [
                 {
-                    quantity: '',
-                    dimUOM: 'm',
-                    length: '',
-                    width: '',
-                    height: '',
-                    weightUOM: 'kg',
-                    weight: '',
-                    packType: 'Carton',
+                    e_qty: '',
+                    e_dimUOM: 'm',
+                    e_dimLength: '',
+                    e_dimWidth: '',
+                    e_dimHeight: '',
+                    e_weightUOM: 'kg',
+                    e_weightPerEach: '',
+                    e_type_of_packaging: 'Carton',
                 }
             ],
         };
@@ -57,6 +56,7 @@ class Header extends Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
+        clientname: PropTypes.string,
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
         quickPricings: PropTypes.array,
@@ -272,8 +272,8 @@ class Header extends Component {
     };
 
     render() {
-        const { username, clientname, puSuburb, deToSuburb, formInputs } = this.state;
-        const { quickPricings } = this.props;
+        const { username, puSuburb, deToSuburb, formInputs } = this.state;
+        const { quickPricings, clientname } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -303,7 +303,6 @@ class Header extends Component {
         }
 
         // Build pricing table
-        console.log('@1 - ', quickPricings);
         const pricings = quickPricings
             // .filter(pricing => pricing.packed_status === currentPackedStatus)
             .map((price, index) => {
