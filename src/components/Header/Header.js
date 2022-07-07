@@ -342,7 +342,7 @@ class Header extends Component {
 
                                         <div className="d-flex justify-content-around">
                                             <div className="m-2">
-                                                <span>Pickup suburb or postal code: </span>
+                                                <p>Pickup suburb or postal code: </p>
                                                 <Select
                                                     value={puSuburb}
                                                     onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
@@ -358,7 +358,7 @@ class Header extends Component {
                                                 />
                                             </div>
                                             <div className="m-2">
-                                                <span>Delivery suburb or postal code: </span>
+                                                <p>Delivery suburb or postal code: </p>
                                                 <Select
                                                     value={deToSuburb}
                                                     onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
@@ -510,12 +510,17 @@ class Header extends Component {
                                                 }
                                             </div>
                                         </div>
+
                                         <div className="row m-2">
-                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClikcAddPackage()}>+Add Package</button>
+                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()}>
+                                                +Add Package
+                                            </button>
                                         </div>
 
                                         <div className="row m-2 float-r">
-                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.onClickGetQuote(e)}>Get Quote</button>
+                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.onClickGetQuote(e)}>
+                                                Get Quote
+                                            </button>
                                         </div>
                                     </form>
                                 </PopoverBody>
