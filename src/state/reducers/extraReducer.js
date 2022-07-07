@@ -102,6 +102,7 @@ import {
     FAILED_UPDATE_CS_NOTE,      // "
     SUCCESS_DELETE_CS_NOTE,     // "
     FAILED_DELETE_CS_NOTE,      // CS Note
+    RESET_QUICK_PRICING,
     SUCCESS_GET_QUICK_PRICING,
     FAILED_GET_QUICK_PRICING,
 } from '../constants/extraConstants';
@@ -143,6 +144,7 @@ const defaultState = {
     pricePageUrl: null,
     statusPageUrl: null,
     csNotes: [],
+    quickPricings: [],
 };
 
 export const ExtraReducer = (state = defaultState, {
@@ -163,6 +165,11 @@ export const ExtraReducer = (state = defaultState, {
     statusInfo
 }) => {
     switch (type) {
+        case RESET_QUICK_PRICING:
+            return {
+                ...state,
+                quickPricings: [],
+            };
         case RESET_PAGE_URLS:
             return {
                 ...state,

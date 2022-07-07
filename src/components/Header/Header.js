@@ -13,9 +13,8 @@ import { getStatusPageUrl } from '../../state/services/bookingService';
 
 import logo from '../../public/images/logo-2.png';
 import { Popover, PopoverBody } from 'reactstrap';
-import { API_HOST, HTTP_PROTOCOL } from '../../config';
-import axios from 'axios';
 import { getAddressesWithPrefix } from '../../state/services/elasticsearchService';
+import { getQuickPricing } from '../../state/services/extraService';
 import { debounce } from '../../commons/browser';
 
 class Header extends Component {
@@ -27,6 +26,7 @@ class Header extends Component {
             clientname: '',
             findKeyword: '',
             isOpenQuickQuote: false,
+            isGettingQuickQuote: false,
             puSuburb: {value: ''},
             deToSuburb: {value: ''},
             formInputs: {
@@ -64,6 +64,7 @@ class Header extends Component {
         logout: PropTypes.func.isRequired,
         getStatusPageUrl: PropTypes.func.isRequired,
         getAddressesWithPrefix: PropTypes.func.isRequired,
+        getQuickPricing: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -221,7 +222,7 @@ class Header extends Component {
         this.setState({isOpenQuickQuote: false});
     }
 
-    addPackage() {
+    onClickAddPackage() {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.push({
@@ -244,25 +245,15 @@ class Header extends Component {
         this.setState({lines: newlines});
     }
 
-    getQuote(e) {
-        console.log(e);
-        // e.preventDefault();
-        // const { }
-        // this.props.getAddressesWithPrefix()
-        const options = {
-            method: 'post',
-            url: HTTP_PROTOCOL + '://' + API_HOST + '/get-quick-pricing/',
-            data: {
-                'booking': {
+    onClickGetQuote(e) {
+        e.preventDefault();
 
-                },
-                'booking_lines': this.state.lines
-            },
+        const data = {
+            'booking': this.state.formInputs,
+            'booking_lines': this.state.lines
         };
-
-        axios(options).then((response) => {
-            console.log(response);
-        });
+        this.props.getQuickPricing(data);
+        this.setState({isGettingQuickQuote: true});
     }
 
     render() {
@@ -431,7 +422,8 @@ class Header extends Component {
                                                                     key={'dimUOM' + index}
                                                                     required
                                                                 >
-                                                                    <option>M</option>
+                                                                    <option>m</option>
+                                                                    <option>cm</option>
                                                                     <option>mm</option>
                                                                 </select>
                                                             </div>                                                            
@@ -488,8 +480,8 @@ class Header extends Component {
                                                                     key={'weightUOM' + index}
                                                                     required
                                                                 >
-                                                                    <option>M</option>
-                                                                    <option>mm</option>
+                                                                    <option>kg</option>
+                                                                    <option>gram</option>
                                                                 </select>                                                                    
                                                             </div>
                                                         ))
@@ -519,11 +511,11 @@ class Header extends Component {
                                             </div>
                                         </div>
                                         <div className="row m-2">
-                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.addPackage()}>+Add Package</button>
+                                            <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClikcAddPackage()}>+Add Package</button>
                                         </div>
 
                                         <div className="row m-2 float-r">
-                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.getQuote(e)}>Get Quote</button>
+                                            <button className="btn btn-primary btn-sm" type="submit" onClick={(e) => this.onClickGetQuote(e)}>Get Quote</button>
                                         </div>
                                     </form>
                                 </PopoverBody>
@@ -594,6 +586,7 @@ const mapDispatchToProps = (dispatch) => {
         logout: () => dispatch(logout()),
         getStatusPageUrl: (findKeyword) => dispatch(getStatusPageUrl(findKeyword)),
         getAddressesWithPrefix: (src, suburbPrefix, postalCodePrefix) => dispatch(getAddressesWithPrefix(src, suburbPrefix, postalCodePrefix)),
+        getQuickPricing: (data) => dispatch(getQuickPricing(data)),
     };
 };
 

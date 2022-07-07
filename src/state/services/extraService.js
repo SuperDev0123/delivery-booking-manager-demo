@@ -104,6 +104,7 @@ import {
     failedUpdateCSNote,     // "
     successDeleteCSNote,    // "
     failedDeleteCSNote,     // CS NOTE
+    resetQuickPricings,
     successGetQuickPricing,
     failedGetQuickPricing,
 } from '../actions/extraActions';
@@ -926,6 +927,7 @@ export const getQuickPricing = (data) => {
         data: data
     };
     return dispatch => {
+        dispatch(resetQuickPricings());
         axios(options)
             .then(({ data }) => dispatch(successGetQuickPricing(data)))
             .catch((error) => dispatch(failedGetQuickPricing(error)));

@@ -103,6 +103,7 @@ import {
     FAILED_UPDATE_CS_NOTE,      // "
     SUCCESS_DELETE_CS_NOTE,     // "
     FAILED_DELETE_CS_NOTE,      // CS Note
+    RESET_QUICK_PRICING,
     SUCCESS_GET_QUICK_PRICING,
     FAILED_GET_QUICK_PRICING,
 } from '../constants/extraConstants';
@@ -838,6 +839,12 @@ export function failedDeleteCSNote(error) {
     return {
         type: FAILED_DELETE_CS_NOTE,
         errorMessage: 'Unable to delete CS Note. Error:' + error,
+    };
+}
+
+export function resetQuickPricings() {
+    return {
+        type: RESET_QUICK_PRICING,
     };
 }
 
