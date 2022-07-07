@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Select from 'react-select';
+import { join } from 'lodash';
 
 import { getUser, logout } from '../../state/services/authService';
 import { getStatusPageUrl } from '../../state/services/bookingService';
@@ -14,6 +16,7 @@ import { Popover, PopoverBody } from 'reactstrap';
 import { API_HOST, HTTP_PROTOCOL } from '../../config';
 import axios from 'axios';
 import { getAddressesWithPrefix } from '../../state/services/elasticsearchService';
+import { debounce } from '../../commons/browser';
 
 class Header extends Component {
     constructor(props) {
@@ -24,8 +27,16 @@ class Header extends Component {
             clientname: '',
             findKeyword: '',
             isOpenQuickQuote: false,
-            pu_code: '',
-            de_code: '',
+            puSuburb: {value: ''},
+            deToSuburb: {value: ''},
+            formInputs: {
+                pu_Address_State: '',
+                pu_Address_PostalCode: '',
+                pu_Address_Suburb: '',
+                de_To_Address_State: '',
+                de_To_Address_PostalCode: '',
+                de_To_Address_Suburb: '',
+            },
             lines: [
                 {
                     quantity: '',
@@ -44,9 +55,14 @@ class Header extends Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
+        puAddresses: PropTypes.array,
+        deToAddresses: PropTypes.array,
+
+        // Functions
         getUser: PropTypes.func.isRequired,
         logout: PropTypes.func.isRequired,
         getStatusPageUrl: PropTypes.func.isRequired,
+        getAddressesWithPrefix: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
@@ -115,6 +131,87 @@ class Header extends Component {
         this.setState({lines: newlines});
     }
 
+    /*
+     * @param {array<object>} addresses - address array from es(elasticsearch)
+     * @param {string} mixedAddress - mixed address
+     * @return {object} address - found address object
+     */
+    _findAddress = (addresses, mixedAddress) => {
+        return addresses.find(address => {
+            const fullAddress = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+            return fullAddress === mixedAddress;
+        });
+    };
+
+    handleChangeSuburb = (selectedOption, src) => {
+        const {formInputs} = this.state;
+        const {puAddresses, deToAddresses} = this.props;
+
+        if (src === 'puSuburb') {
+            const address = this._findAddress(puAddresses, selectedOption.value);
+            formInputs['pu_Address_State'] = address._source.state;
+            formInputs['pu_Address_PostalCode'] = address._source.postal_code;
+            formInputs['pu_Address_Suburb'] = address._source.suburb;
+            const puSuburb = {label: address._source.suburb, value:address._source.suburb};
+            this.setState({ puSuburb, formInputs });
+        } else if (src === 'deToSuburb') {
+            const address = this._findAddress(deToAddresses, selectedOption.value);
+            formInputs['de_To_Address_State'] = address._source.state;
+            formInputs['de_To_Address_PostalCode'] = address._source.postal_code;
+            formInputs['de_To_Address_Suburb'] = address._source.suburb;
+            const deToSuburb = {label: address._source.suburb, value:address._source.suburb};
+            this.setState({ deToSuburb, formInputs });
+        }
+    };
+
+    handleInputChangeSuburb = (query, src) => {
+        let postalCodePrefix = null;
+        let suburbPrefixes = [];
+        const iters = query.split(' ');
+        iters.map((iter) => {
+            if (!isNaN(iter))
+                postalCodePrefix = iter;
+            else
+                suburbPrefixes.push(iter);
+        });
+
+        if (postalCodePrefix || suburbPrefixes.length > 0) {
+            if (src === 'puSuburb') {
+                this.props.getAddressesWithPrefix(
+                    'puAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
+            } else if (src === 'deToSuburb') {
+                this.props.getAddressesWithPrefix(
+                    'deToAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
+            }
+
+            this.setState({suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix});
+        }
+    };
+
+    handleFocusSuburb = (src) => {
+        const {formInputs} = this.state;
+
+        if (src === 'puSuburb') {
+            this.props.getAddressesWithPrefix(
+                'puAddress',
+                formInputs['pu_Address_Suburb'] || 'syd',
+                null
+            );
+        } else if (src === 'deToSuburb') {
+            this.props.getAddressesWithPrefix(
+                'deToAddress',
+                formInputs['de_To_Address_Suburb'] || 'syd',
+                null
+            );
+        }
+    };
+
     onOpenQuickQuote() {
         this.setState({isOpenQuickQuote: !this.state.isOpenQuickQuote});
     }
@@ -166,13 +263,35 @@ class Header extends Component {
     }
 
     render() {
-        const { username, clientname } = this.state;
+        const { username, clientname, puSuburb, deToSuburb, formInputs } = this.state;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
         if (currentRoute.indexOf('admin') > -1 || currentRoute.indexOf('customerdashboard') > -1 || currentRoute.indexOf('status') > -1) 
             return null;
         
+        // Populate puAddresses and deToAddresses
+        let puAddressOptions = [];
+        let deToAddressOptions = [];
+        if (formInputs['pu_Address_Suburb'] && this.props.puAddresses.length === 0) {
+            const value = `${formInputs['pu_Address_Suburb']}`;
+            puAddressOptions = [{value: value, label: value}];
+        } else if (this.props.puAddresses.length > 0) {
+            puAddressOptions = this.props.puAddresses.map(address => {
+                const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+                return {value: value, label: value};
+            });
+        }
+        if (formInputs['de_To_Address_Suburb'] && this.props.deToAddresses.length === 0) {
+            const value = `${formInputs['de_To_Address_Suburb']}`;
+            deToAddressOptions = [{value: value, label: value}];
+        } else if (this.props.deToAddresses.length > 0) {
+            deToAddressOptions = this.props.deToAddresses.map(address => {
+                const value = `${address._source.suburb} ${address._source.postal_code} ${address._source.state}`;
+                return {value: value, label: value};
+            });
+        }
+
         return (
             <header>
                 {currentRoute === '/booking' ||
@@ -230,19 +349,34 @@ class Header extends Component {
                                         <div className="d-flex justify-content-around">
                                             <div className="m-2">
                                                 <span>Pickup suburb or postal code: </span>
-                                                
-                                                <input 
-                                                    type="text"
-                                                    value={this.state.pu_code}
-                                                    onChange={this.onChangeText.bind(this)} 
+                                                <Select
+                                                    value={puSuburb}
+                                                    onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
+                                                    onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'puSuburb'), 500)}
+                                                    onFocus={() => this.handleFocusSuburb('puSuburb')}
+                                                    options={puAddressOptions}
+                                                    placeholder='select your suburb'
+                                                    openMenuOnClick = {true}
+                                                    filterOption={(options) => {
+                                                        // Do no filtering, just return all options
+                                                        return options;
+                                                    }}
                                                 />
                                             </div>
                                             <div className="m-2">
                                                 <span>Delivery suburb or postal code: </span>
-                                                <input 
-                                                    type="text"
-                                                    value={this.state.de_code}
-                                                    onChange={this.onChangeText.bind(this)} 
+                                                <Select
+                                                    value={deToSuburb}
+                                                    onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
+                                                    onInputChange={debounce((e) => this.handleInputChangeSuburb(e, 'deToSuburb'), 500)}
+                                                    focus={() => this.handleFocusSuburb('deToSuburb')}
+                                                    options={deToAddressOptions}
+                                                    placeholder='select your suburb'
+                                                    openMenuOnClick = {true}
+                                                    filterOption={(options) => {
+                                                        // Do no filtering, just return all options
+                                                        return options;
+                                                    }}
                                                 />
                                             </div>
                                         </div>
@@ -431,6 +565,8 @@ const mapStateToProps = (state) => {
         clientname: state.auth.clientname,
         isLoggedIn: state.auth.isLoggedIn,
         statusPageUrl: state.booking.statusPageUrl,
+        puAddresses: state.elasticsearch.puAddresses,
+        deToAddresses: state.elasticsearch.deToAddresses,
     };
 };
 
