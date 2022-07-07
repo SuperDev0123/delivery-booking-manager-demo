@@ -6,6 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Select from 'react-select';
 import { join } from 'lodash';
+import moment from 'moment-timezone';
 
 import { getUser, logout } from '../../state/services/authService';
 import { getStatusPageUrl } from '../../state/services/bookingService';
@@ -40,13 +41,13 @@ class Header extends Component {
             lines: [
                 {
                     quantity: '',
-                    dimUOM: '',
+                    dimUOM: 'm',
                     length: '',
                     width: '',
                     height: '',
-                    weightUOM: '',
+                    weightUOM: 'kg',
                     weight: '',
-                    packType: '',
+                    packType: 'Carton',
                 }
             ],
         };
@@ -227,13 +228,13 @@ class Header extends Component {
         const newlines = [...lines];
         newlines.push({
             quantity: '',
-            dimUOM: '',
+            dimUOM: 'm',
             length: '',
             width: '',
             height: '',
-            weightUOM: '',
+            weightUOM: 'kg',
             weight: '',
-            packType: '',
+            packType: 'Carton',
         });
         this.setState({lines: newlines});
     }
@@ -256,8 +257,18 @@ class Header extends Component {
         this.setState({isGettingQuickQuote: true});
     }
 
+    copyToClipBoard = async text => {
+        try {
+            await navigator.clipboard.writeText(text);
+            this.notify('Copied!');
+        } catch (err) {
+            this.notify('Failed to copy!');
+        }
+    };
+
     render() {
         const { username, clientname, puSuburb, deToSuburb, formInputs } = this.state;
+        const { quickPricings } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -285,6 +296,37 @@ class Header extends Component {
                 return {value: value, label: value};
             });
         }
+
+        // Build pricing table
+        console.log('@1 - ', quickPricings);
+        const pricings = quickPricings
+            // .filter(pricing => pricing.packed_status === currentPackedStatus)
+            .map((price, index) => {
+                return (
+                    <tr key={index}>
+                        <td>{price['fp_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>
+                            ${price['cost_dollar'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
+                        </td>
+                        <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
+                        <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
+                        <td>
+                            ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0
+                                ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i>
+                                : ''}
+                        </td>
+                        <td>
+                            ${price['client_mu_1_minimum_values'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
+                        </td>
+                        <td>{moment().add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
+                    </tr>
+                );
+            });
 
         return (
             <header>
@@ -374,6 +416,7 @@ class Header extends Component {
                                                 />
                                             </div>
                                         </div>
+
                                         <hr />
                                         <div className="row quote-detail-infos overflow-auto">
                                             <div className=" form-group px-1">
@@ -510,6 +553,28 @@ class Header extends Component {
                                                 }
                                             </div>
                                         </div>
+
+                                        {quickPricings.length > 0 ? <hr /> : null}
+                                        {quickPricings.length > 0 ?
+                                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Freight Provider</th>
+                                                        <th>Service (Vehicle)</th>
+                                                        <th>Cost $</th>
+                                                        <th>Fuel Levy %</th>
+                                                        <th>Fuel Levy $</th>
+                                                        <th>Extra $</th>
+                                                        <th>Total $</th>
+                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {pricings}
+                                                </tbody>
+                                            </table>
+                                            : null
+                                        }
 
                                         <div className="row m-2">
                                             <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()}>

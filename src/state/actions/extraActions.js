@@ -849,9 +849,10 @@ export function resetQuickPricings() {
 }
 
 export function successGetQuickPricing(data) {
+    console.log('@2 - ', data);
     return {
         type: SUCCESS_GET_QUICK_PRICING,
-        payload: data,
+        payload: data.results,
     };
 }
 
