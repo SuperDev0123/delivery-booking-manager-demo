@@ -1508,10 +1508,10 @@ class BookingPage extends Component {
     };
 
     handleChangeSuburb = (selectedOption, src) => {
-        const {formInputs, isBookedBooking} = this.state;
+        const {formInputs, isBookedBooking, clientname} = this.state;
         const {puAddresses, deToAddresses} = this.props;
 
-        if (isBookedBooking == false) {
+        if (clientname === 'dme' || isBookedBooking == false) {
             if (src === 'puSuburb') {
                 const address = this._findAddress(puAddresses, selectedOption.value);
                 formInputs['pu_Address_State'] = address._source.state;
@@ -1533,7 +1533,7 @@ class BookingPage extends Component {
     };
 
     handleInputChangeSuburb = (query, src) => {
-        const {isBookedBooking} = this.state;
+        const {isBookedBooking, clientname} = this.state;
 
         let postalCodePrefix = null;
         let suburbPrefixes = [];
@@ -1545,7 +1545,10 @@ class BookingPage extends Component {
                 suburbPrefixes.push(iter);
         });
 
-        if (isBookedBooking == false && (postalCodePrefix || suburbPrefixes.length > 0)) {
+        if (
+            (clientname === 'dme' || isBookedBooking == false) &&
+            (postalCodePrefix || suburbPrefixes.length > 0)
+        ) {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix(
                     'puAddress',
@@ -1565,9 +1568,9 @@ class BookingPage extends Component {
     };
 
     handleFocusSuburb = (src) => {
-        const {isBookedBooking, formInputs} = this.state;
+        const {isBookedBooking, formInputs, clientname} = this.state;
 
-        if (isBookedBooking == false) {
+        if (clientname === 'dme' && isBookedBooking == false) {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix(
                     'puAddress',
