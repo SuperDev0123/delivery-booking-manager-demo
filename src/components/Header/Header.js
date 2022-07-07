@@ -24,7 +24,6 @@ class Header extends Component {
 
         this.state = {
             username: '',
-            clientname: '',
             findKeyword: '',
             isOpenQuickQuote: false,
             isGettingQuickQuote: false,
@@ -40,14 +39,14 @@ class Header extends Component {
             },
             lines: [
                 {
-                    quantity: '',
-                    dimUOM: 'm',
-                    length: '',
-                    width: '',
-                    height: '',
-                    weightUOM: 'kg',
-                    weight: '',
-                    packType: 'Carton',
+                    e_qty: '',
+                    e_dimUOM: 'm',
+                    e_dimLength: '',
+                    e_dimWidth: '',
+                    e_dimHeight: '',
+                    e_weightUOM: 'kg',
+                    e_weightPerEach: '',
+                    e_type_of_packaging: 'Carton',
                 }
             ],
         };
@@ -56,6 +55,7 @@ class Header extends Component {
     static propTypes = {
         location: PropTypes.object.isRequired,
         history: PropTypes.object.isRequired,
+        clientname: PropTypes.string,
         puAddresses: PropTypes.array,
         deToAddresses: PropTypes.array,
         quickPricings: PropTypes.array,
@@ -77,13 +77,10 @@ class Header extends Component {
     }
 
     UNSAFE_componentWillReceiveProps(newProps) {
-        const { username, clientname, isLoggedIn } = newProps;
+        const { username, isLoggedIn } = newProps;
 
         if (username)
             this.setState({username});
-
-        if (clientname)
-            this.setState({clientname});
 
         // if (statusPageUrl) {
         //     console.log('@1 - ', statusPageUrl);
@@ -227,14 +224,14 @@ class Header extends Component {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.push({
-            quantity: '',
-            dimUOM: 'm',
-            length: '',
-            width: '',
-            height: '',
-            weightUOM: 'kg',
-            weight: '',
-            packType: 'Carton',
+            e_qty: '',
+            e_dimUOM: 'm',
+            e_dimLength: '',
+            e_dimWidth: '',
+            e_dimHeight: '',
+            e_weightUOM: 'kg',
+            e_weightPerEach: '',
+            e_type_of_packaging: 'Carton',
         });
         this.setState({lines: newlines});
     }
@@ -267,8 +264,8 @@ class Header extends Component {
     };
 
     render() {
-        const { username, clientname, puSuburb, deToSuburb, formInputs } = this.state;
-        const { quickPricings } = this.props;
+        const { username, puSuburb, deToSuburb, formInputs } = this.state;
+        const { quickPricings, clientname } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
 
@@ -298,7 +295,6 @@ class Header extends Component {
         }
 
         // Build pricing table
-        console.log('@1 - ', quickPricings);
         const pricings = quickPricings
             // .filter(pricing => pricing.packed_status === currentPackedStatus)
             .map((price, index) => {
@@ -420,16 +416,16 @@ class Header extends Component {
                                         <hr />
                                         <div className="row quote-detail-infos overflow-auto">
                                             <div className=" form-group px-1">
-                                                <label htmlFor="packType">
+                                                <label htmlFor="e_type_of_packaging">
                                                     <p>Type of Package</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className='row p-1' key={'packType' + index}>
+                                                            <div className='row p-1' key={'e_type_of_packaging' + index}>
                                                                 <select
-                                                                    name={'packType' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'packType')}
-                                                                    value={line.packType}
-                                                                    key={'packType' + index}
+                                                                    name={'e_type_of_packaging' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'e_type_of_packaging')}
+                                                                    value={line.e_type_of_packaging}
+                                                                    key={'e_type_of_packaging' + index}
                                                                     required
                                                                 >
                                                                     <option>Carton</option>
@@ -441,28 +437,28 @@ class Header extends Component {
                                                 </label>
                                             </div>
                                             <div className="form-group px-1">
-                                                <label htmlFor="quantity">
-                                                    <p>Quantity</p>
+                                                <label htmlFor="e_qty">
+                                                    <p>e_qty</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'quantity' + index}>
-                                                                <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                            <div className="row p-1" key={'e_qty' + index}>
+                                                                <input name={'e_qty' + index} type="text" id={'e_qty' + index } placeholder="" value={line.e_qty} key={'e_qty' + index} onChange={(e) => this.onInputChange(e, index, 'e_qty')} required />
                                                             </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
                                             <div className=" form-group px-1">
-                                                <label htmlFor="dimUOM">
-                                                    <p>DimUOM</p>
+                                                <label htmlFor="e_dimUOM">
+                                                    <p>e_dimUOM</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'dimUOM' + index}>
+                                                            <div className="row p-1" key={'e_dimUOM' + index}>
                                                                 <select
-                                                                    name={'dimUOM' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
-                                                                    value={line.dimUOM}
-                                                                    key={'dimUOM' + index}
+                                                                    name={'e_dimUOM' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'e_dimUOM')}
+                                                                    value={line.e_dimUOM}
+                                                                    key={'e_dimUOM' + index}
                                                                     required
                                                                 >
                                                                     <option>m</option>
@@ -475,52 +471,52 @@ class Header extends Component {
                                                 </label>
                                             </div>
                                             <div className=" form-group px-1">
-                                                <label htmlFor="length">
-                                                    <p>length</p>
+                                                <label htmlFor="e_dimLength">
+                                                    <p>e_dimLength</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'length' + index}>
-                                                                <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                            <div className="row p-1" key={'e_dimLength' + index}>
+                                                                <input name={'e_dimLength' + index} type="number" id={'e_dimLength' + index } placeholder="" value={line.length} key={'e_dimLength' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimLength')} required />
                                                             </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
                                             <div className=" form-group px-1">
-                                                <label htmlFor="width">
-                                                    <p>width</p>
+                                                <label htmlFor="e_dimWidth">
+                                                    <p>e_dimWidth</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'width' + index}>
-                                                                <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'width')} required />
+                                                            <div className="row p-1" key={'e_dimWidth' + index}>
+                                                                <input name={'e_dimWidth' + index} type="number" id={'e_dimWidth' + index } placeholder="" value={line.e_dimWidth} key={'e_dimWidth' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimWidth')} required />
                                                             </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
                                             <div className="form-group px-1">
-                                                <label htmlFor="height">
-                                                    <p>height</p>
+                                                <label htmlFor="e_dimHeight">
+                                                    <p>e_dimHeight</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'height' + index}>
-                                                                <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                            <div className="row p-1" key={'e_dimHeight' + index}>
+                                                                <input name={'e_dimHeight' + index} type="number" id={'e_dimHeight' + index } placeholder="" value={line.e_dimHeight} key={'e_dimHeight' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimHeight')} required />
                                                             </div>
                                                         ))
                                                     }
                                                 </label>
                                             </div>
                                             <div className=" form-group px-1">
-                                                <label htmlFor="weightUOM">
-                                                    <p>WeightUOM</p>
+                                                <label htmlFor="e_weightUOM">
+                                                    <p>e_weightUOM</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'weightUOM' + index}>
+                                                            <div className="row p-1" key={'e_weightUOM' + index}>
                                                                 <select
-                                                                    name={'weightUOM' + index}
-                                                                    onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
-                                                                    value={line.weightUOM}
-                                                                    key={'weightUOM' + index}
+                                                                    name={'e_weightUOM' + index}
+                                                                    onChange={(e) => this.onInputChange(e, index, 'e_weightUOM')}
+                                                                    value={line.e_weightUOM}
+                                                                    key={'e_weightUOM' + index}
                                                                     required
                                                                 >
                                                                     <option>kg</option>
@@ -532,12 +528,12 @@ class Header extends Component {
                                                 </label>
                                             </div>
                                             <div className=" form-group px-1">
-                                                <label htmlFor="weight">
-                                                    <p>Weight</p>
+                                                <label htmlFor="e_weightPerEach">
+                                                    <p>e_weightPerEach</p>
                                                     {
                                                         this.state.lines.map((line, index) => (
-                                                            <div className="row p-1" key={'weight' + index}>
-                                                                <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                            <div className="row p-1" key={'e_weightPerEach' + index}>
+                                                                <input name={'e_weightPerEach' + index} type="number" id={'e_weightPerEach' + index } placeholder="" value={line.e_weightPerEach} key={'e_weightPerEach' + index} onChange={(e) => this.onInputChange(e, index, 'e_weightPerEach')} required />
                                                             </div>
                                                         ))
                                                     }
