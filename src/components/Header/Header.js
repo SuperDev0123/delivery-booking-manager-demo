@@ -253,15 +253,17 @@ class Header extends Component {
 
     onClickGetQuote(e) {
         e.preventDefault();
-
+        
         if (!this.state.formInputs.pu_Address_Suburb) {
             this.notify('Please select Pickup address.');
             return;
         } else if (!this.state.formInputs.de_To_Address_Suburb) {
             this.notify('Please select Delivery address.');
             return;
+        } else if (this.state.formInputs.pu_Address_Suburb == this.state.formInputs.de_To_Address_Suburb) {
+            this.notify('Pickup address and Delivery address are same!');
         }
-
+        
         this.props.getQuickPricing({
             'booking': this.state.formInputs,
             'booking_lines': this.state.lines
