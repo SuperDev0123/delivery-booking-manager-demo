@@ -87,7 +87,7 @@ class Header extends Component {
         if (clientname)
             this.setState({clientname});
 
-        if (quickPricings)
+        if (quickPricings.length > 0)
             this.setState({isGettingQuickQuote: false});
 
         // if (statusPageUrl) {
@@ -427,10 +427,10 @@ class Header extends Component {
                                         spinner
                                         text='Loading...'
                                     >
+                                        <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
+                                            <i className="fa fa-times-circle p-2"></i>
+                                        </div>
                                         <form className="quick-quote-form" onSubmit={(e) => this.onClickGetQuote(e)}>
-                                            <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
-                                                <i className="fa fa-times-circle p-2"></i>
-                                            </div>
 
                                             <div className="row">
                                                 <div className="col-md-4">
@@ -647,7 +647,7 @@ class Header extends Component {
 
                                             {quickPricings.length > 0 ?
                                                 <section>
-                                                    <div className="">
+                                                    <div className="quick-quote-tabs">
                                                         <div className="row">
                                                             <div className="col-sm-12">
                                                                 <div className="tabs">
