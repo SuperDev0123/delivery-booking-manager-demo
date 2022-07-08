@@ -35,32 +35,51 @@
   }
 }
 
-.quote-detail-infos {
-  input {
-    width: 80px;
-    height: 24px;
-  }
-
-  select {
-    height: 24px;
-    width: 80px;
-  }
-}
-
-.deselect {
-  font-size: 20px;
-  margin-top: 30px;
-  color: red;
-}
-
-.popover-close {
-  font-size: 24px;
-  position: absolute;
-  top: -15px;
-  right: -15px;
-}
-
 .quick-quote {
-  max-height: 600px;
-  // overflow-y: scroll;
+  hr {
+    margin-top: 10px !important;
+  }
+
+  label {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  .col-md-4, .col-md-2 {
+    padding: 2px !important;
+  }
+
+  .popover-close {
+    font-size: 24px;
+    position: absolute;
+    top: -24px;
+    right: -24px;
+  }
+
+  .quote-detail-infos {
+    input {
+      width: 80px;
+      height: 24px;
+    }
+
+    select {
+      height: 24px;
+      width: 80px;
+    }
+  }
+
+  .deselect {
+    font-size: 20px;
+    margin-top: 30px;
+    color: red;
+  }
+
+  .additional-addr-info {
+    margin-top: 20px !important;
+  }
+
+  .quote-result {
+    max-height: 600px;
+    overflow-y: scroll;
+  }
 }

@@ -45,7 +45,7 @@ class Header extends Component {
                     e_dimLength: '',
                     e_dimWidth: '',
                     e_dimHeight: '',
-                    e_weightUOM: 'kg',
+                    e_e_weightUOM: 'kg',
                     e_weightPerEach: '',
                     e_type_of_packaging: 'Carton',
                 }
@@ -231,14 +231,14 @@ class Header extends Component {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.unshift({
-            quantity: '',
-            dimUOM: 'm',
-            length: '',
-            width: '',
-            height: '',
-            weightUOM: 'kg',
-            weight: '',
-            packType: 'Carton',
+            e_qty: '',
+            e_dimUOM: 'm',
+            e_dimLength: '',
+            e_dimWidth: '',
+            e_dimHeight: '',
+            e_e_weightUOM: 'kg',
+            e_weightPerEach: '',
+            e_type_of_packaging: 'Carton',
         });
         this.setState({lines: newlines});
     }
@@ -250,16 +250,22 @@ class Header extends Component {
         this.setState({lines: newlines});
     }
 
-    onClickGetQuote() {
-        this.setState({isGettingQuickQuote: true });
-        // console.log(e);
-        // e.preventDefault();
+    onClickGetQuote(e) {
+        e.preventDefault();
 
-        const data = {
+        if (!this.state.formInputs.pu_Address_Suburb) {
+            this.notify('Please select Pickup address.');
+            return;
+        } else if (!this.state.formInputs.de_To_Address_Suburb) {
+            this.notify('Please select Delivery address.');
+            return;
+        }
+
+        this.props.getQuickPricing({
             'booking': this.state.formInputs,
             'booking_lines': this.state.lines
-        };
-        this.props.getQuickPricing(data);
+        });
+        this.setState({isGettingQuickQuote: true });
     }
 
     copyToClipBoard = async text => {
@@ -386,14 +392,14 @@ class Header extends Component {
                                         spinner
                                         text='Loading...'
                                     >
-                                        <form className="quick-quote-form">
+                                        <form className="quick-quote-form" onSubmit={(e) => this.onClickGetQuote(e)}>
                                             <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
                                                 <i className="fa fa-times-circle p-2"></i>
                                             </div>
 
-                                            <div className="d-flex justify-content-around">
-                                                <div className="m-2">
-                                                    <span><b>Pickup suburb or postal code </b></span>
+                                            <div className="row">
+                                                <div className="col-md-4">
+                                                    <label><b>Pickup address </b></label>
                                                     <Select
                                                         value={puSuburb}
                                                         onChange={(e) => this.handleChangeSuburb(e, 'puSuburb')}
@@ -406,10 +412,19 @@ class Header extends Component {
                                                             // Do no filtering, just return all options
                                                             return options;
                                                         }}
+                                                        required="required"
                                                     />
                                                 </div>
-                                                <div className="m-2">
-                                                    <span><b>Delivery suburb or postal code</b></span>
+                                                <div className="col-md-2">
+                                                    {formInputs['pu_Address_PostalCode'] ?
+                                                        <div>
+                                                            <label className="additional-addr-info">Postal Code: {formInputs['pu_Address_PostalCode']}</label><br />
+                                                            <label>State: {formInputs['pu_Address_State']}</label>
+                                                        </div> : null
+                                                    }
+                                                </div>
+                                                <div className="col-md-4">
+                                                    <label><b>Delivery address</b></label>
                                                     <Select
                                                         value={deToSuburb}
                                                         onChange={(e) => this.handleChangeSuburb(e, 'deToSuburb')}
@@ -422,24 +437,33 @@ class Header extends Component {
                                                             // Do no filtering, just return all options
                                                             return options;
                                                         }}
+                                                        required="required"
                                                     />
+                                                </div>
+                                                <div className="col-md-2">
+                                                    {formInputs['de_To_Address_PostalCode'] ?
+                                                        <div>
+                                                            <label className="additional-addr-info">Postal Code: {formInputs['de_To_Address_PostalCode']}</label><br />
+                                                            <label>State: {formInputs['de_To_Address_State']}</label>
+                                                        </div> : null
+                                                    }
                                                 </div>
                                             </div>
 
                                             <hr />
                                             <div className="row quote-detail-infos overflow-auto">
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="packType">
+                                                    <label htmlFor="e_type_of_packaging">
                                                         <p>Type of Package</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className='row p-1' key={'packType' + index}>
+                                                                <div className='row p-1' key={'e_type_of_packaging' + index}>
                                                                     <select
-                                                                        name={'packType' + index}
-                                                                        onChange={(e) => this.onInputChange(e, index, 'packType')}
-                                                                        value={line.packType}
-                                                                        key={'packType' + index}
-                                                                        required
+                                                                        name={'e_type_of_packaging' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_type_of_packaging')}
+                                                                        value={line.e_type_of_packaging}
+                                                                        key={'e_type_of_packaging' + index}
+                                                                        required="required"
                                                                     >
                                                                         <option>Carton</option>
                                                                         <option>Pallet</option>
@@ -450,28 +474,36 @@ class Header extends Component {
                                                     </label>
                                                 </div>
                                                 <div className="form-group px-1">
-                                                    <label htmlFor="quantity">
+                                                    <label htmlFor="e_qty">
                                                         <p>Quantity</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'quantity' + index}>
-                                                                    <input name={'quantity' + index} type="text" id={'quantity' + index } placeholder="" value={line.quantity} key={'quantity' + index} onChange={(e) => this.onInputChange(e, index, 'quantity')} required />
+                                                                <div className="row p-1" key={'e_qty' + index}>
+                                                                    <input
+                                                                        name={'e_qty' + index}
+                                                                        type="text"
+                                                                        id={'e_qty' + index }
+                                                                        value={line.e_qty}
+                                                                        key={'e_qty' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_qty')}
+                                                                        required
+                                                                    />
                                                                 </div>
                                                             ))
                                                         }
                                                     </label>
                                                 </div>
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="dimUOM">
+                                                    <label htmlFor="e_dimUOM">
                                                         <p>DimUOM</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'dimUOM' + index}>
+                                                                <div className="row p-1" key={'e_dimUOM' + index}>
                                                                     <select
-                                                                        name={'dimUOM' + index}
-                                                                        onChange={(e) => this.onInputChange(e, index, 'dimUOM')}
-                                                                        value={line.dimUOM}
-                                                                        key={'dimUOM' + index}
+                                                                        name={'e_dimUOM' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_dimUOM')}
+                                                                        value={line.e_dimUOM}
+                                                                        key={'e_dimUOM' + index}
                                                                         required
                                                                     >
                                                                         <option>m</option>
@@ -484,52 +516,52 @@ class Header extends Component {
                                                     </label>
                                                 </div>
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="length">
+                                                    <label htmlFor="e_dimLength">
                                                         <p>length</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'length' + index}>
-                                                                    <input name={'length' + index} type="text" id={'length' + index } placeholder="" value={line.length} key={'length' + index} onChange={(e) => this.onInputChange(e, index, 'length')} required />
+                                                                <div className="row p-1" key={'e_dimLength' + index}>
+                                                                    <input name={'e_dimLength' + index} type="text" id={'e_dimLength' + index } placeholder="" value={line.e_dimLength} key={'e_dimLength' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimLength')} required />
                                                                 </div>
                                                             ))
                                                         }
                                                     </label>
                                                 </div>
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="width">
+                                                    <label htmlFor="e_dimWidth">
                                                         <p>width</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'width' + index}>
-                                                                    <input name={'width' + index} type="text" id={'width' + index } placeholder="" value={line.width} key={'width' + index} onChange={(e) => this.onInputChange(e, index, 'width')} required />
+                                                                <div className="row p-1" key={'e_dimWidth' + index}>
+                                                                    <input name={'e_dimWidth' + index} type="text" id={'e_dimWidth' + index } placeholder="" value={line.width} key={'e_dimWidth' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimWidth')} required />
                                                                 </div>
                                                             ))
                                                         }
                                                     </label>
                                                 </div>
                                                 <div className="form-group px-1">
-                                                    <label htmlFor="height">
-                                                        <p>height</p>
+                                                    <label htmlFor="e_dimHeight">
+                                                        <p>e_dimHeight</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'height' + index}>
-                                                                    <input name={'height' + index} type="text" id={'height' + index } placeholder="" value={line.height} key={'height' + index} onChange={(e) => this.onInputChange(e, index, 'height')} required />
+                                                                <div className="row p-1" key={'e_dimHeight' + index}>
+                                                                    <input name={'e_dimHeight' + index} type="text" id={'e_dimHeight' + index } placeholder="" value={line.e_dimHeight} key={'e_dimHeight' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimHeight')} required />
                                                                 </div>
                                                             ))
                                                         }
                                                     </label>
                                                 </div>
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="weightUOM">
-                                                        <p>WeightUOM</p>
+                                                    <label htmlFor="e_weightUOM">
+                                                        <p>e_weightUOM</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'weightUOM' + index}>
+                                                                <div className="row p-1" key={'e_weightUOM' + index}>
                                                                     <select
-                                                                        name={'weightUOM' + index}
-                                                                        onChange={(e) => this.onInputChange(e, index, 'weightUOM')}
-                                                                        value={line.weightUOM}
-                                                                        key={'weightUOM' + index}
+                                                                        name={'e_weightUOM' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_weightUOM')}
+                                                                        value={line.e_weightUOM}
+                                                                        key={'e_weightUOM' + index}
                                                                         required
                                                                     >
                                                                         <option>kg</option>
@@ -541,12 +573,12 @@ class Header extends Component {
                                                     </label>
                                                 </div>
                                                 <div className=" form-group px-1">
-                                                    <label htmlFor="weight">
+                                                    <label htmlFor="e_weightPerEach">
                                                         <p>Weight</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
-                                                                <div className="row p-1" key={'weight' + index}>
-                                                                    <input name={'weight' + index} type="text" id={'weight' + index } placeholder="" value={line.weight} key={'weight' + index} onChange={(e) => this.onInputChange(e, index, 'weight')} required />
+                                                                <div className="row p-1" key={'e_weightPerEach' + index}>
+                                                                    <input name={'e_weightPerEach' + index} type="text" id={'e_weightPerEach' + index } placeholder="" value={line.e_weightPerEach} key={'e_weightPerEach' + index} onChange={(e) => this.onInputChange(e, index, 'e_weightPerEach')} required />
                                                                 </div>
                                                             ))
                                                         }
@@ -577,30 +609,32 @@ class Header extends Component {
                                                     +Add Package
                                                 </button>
                                             </div>
-                                            {quickPricings.length > 0 ? <hr /> : null}
+
                                             {quickPricings.length > 0 ?
-                                                <table className="table table-hover table-bordered sortable fixed_headers">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Freight Provider</th>
-                                                            <th>Service (Vehicle)</th>
-                                                            <th>Cost $</th>
-                                                            <th>Fuel Levy %</th>
-                                                            <th>Fuel Levy $</th>
-                                                            <th>Extra $</th>
-                                                            <th>Total $</th>
-                                                            <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {pricings}
-                                                    </tbody>
-                                                </table>
+                                                <div className="row quote-result">
+                                                    <table className="table table-hover table-bordered sortable fixed_headers">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Freight Provider</th>
+                                                                <th>Service (Vehicle)</th>
+                                                                <th>Cost $</th>
+                                                                <th>Fuel Levy %</th>
+                                                                <th>Fuel Levy $</th>
+                                                                <th>Extra $</th>
+                                                                <th>Total $</th>
+                                                                <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {pricings}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                                 : null
                                             }
 
                                             <div className="row my-2 float-r">
-                                                <button className="btn btn-primary btn-sm" type="submit" onClick={() => this.onClickGetQuote()}>
+                                                <button className="btn btn-primary btn-sm" type="submit">
                                                     Get Quote
                                                 </button>
                                             </div>
