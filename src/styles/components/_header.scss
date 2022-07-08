@@ -70,7 +70,7 @@
 
   .deselect {
     font-size: 20px;
-    margin-top: 30px;
+    margin-top: 25px;
     color: red;
   }
 
@@ -81,5 +81,41 @@
   .quote-result {
     max-height: 600px;
     overflow-y: scroll;
+  }
+
+  .quick-quote-tabs {
+    .tab-header {
+      .tab-button {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+          display: table-cell;
+          width: 20%;
+
+          a {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            padding: .5em;
+            background: #0189b9;
+            border: 1px solid #ddd;
+            text-align: center;
+            color: #fff;
+            text-decoration: none;
+          }
+        }
+
+        .is-active {
+          border-bottom-color: transparent;
+          background: #fff;
+          color: #333 !important;
+        }
+      }
+    }
   }
 }
