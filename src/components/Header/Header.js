@@ -40,13 +40,13 @@ class Header extends Component {
             },
             lines: [
                 {
-                    e_qty: '',
+                    e_qty: 0,
                     e_dimUOM: 'm',
-                    e_dimLength: '',
-                    e_dimWidth: '',
-                    e_dimHeight: '',
-                    e_e_weightUOM: 'kg',
-                    e_weightPerEach: '',
+                    e_dimLength: 0,
+                    e_dimWidth: 0,
+                    e_dimHeight: 0,
+                    e_weightUOM: 'kg',
+                    e_weightPerEach: 0,
                     e_type_of_packaging: 'Carton',
                 }
             ],
@@ -135,6 +135,9 @@ class Header extends Component {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines[index][field] = e.target.value;
+
+        if (e.target.type === 'number') newlines[index][field] = parseFloat(newlines[index][field]);
+
         this.setState({lines: newlines});
     }
 
@@ -231,13 +234,13 @@ class Header extends Component {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.unshift({
-            e_qty: '',
+            e_qty: 0,
             e_dimUOM: 'm',
-            e_dimLength: '',
-            e_dimWidth: '',
-            e_dimHeight: '',
-            e_e_weightUOM: 'kg',
-            e_weightPerEach: '',
+            e_dimLength: 0,
+            e_dimWidth: 0,
+            e_dimHeight: 0,
+            e_weightUOM: 'kg',
+            e_weightPerEach: 0,
             e_type_of_packaging: 'Carton',
         });
         this.setState({lines: newlines});
@@ -481,12 +484,12 @@ class Header extends Component {
                                                                 <div className="row p-1" key={'e_qty' + index}>
                                                                     <input
                                                                         name={'e_qty' + index}
-                                                                        type="text"
                                                                         id={'e_qty' + index }
                                                                         value={line.e_qty}
                                                                         key={'e_qty' + index}
                                                                         onChange={(e) => this.onInputChange(e, index, 'e_qty')}
                                                                         required
+                                                                        type='number'
                                                                     />
                                                                 </div>
                                                             ))
@@ -521,7 +524,16 @@ class Header extends Component {
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimLength' + index}>
-                                                                    <input name={'e_dimLength' + index} type="text" id={'e_dimLength' + index } placeholder="" value={line.e_dimLength} key={'e_dimLength' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimLength')} required />
+                                                                    <input
+                                                                        name={'e_dimLength' + index}
+                                                                        id={'e_dimLength' + index}
+                                                                        placeholder="" value={line.e_dimLength}
+                                                                        key={'e_dimLength' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_dimLength')}
+                                                                        required
+                                                                        type='number'
+                                                                        step='0.01'
+                                                                    />
                                                                 </div>
                                                             ))
                                                         }
@@ -533,7 +545,17 @@ class Header extends Component {
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimWidth' + index}>
-                                                                    <input name={'e_dimWidth' + index} type="text" id={'e_dimWidth' + index } placeholder="" value={line.width} key={'e_dimWidth' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimWidth')} required />
+                                                                    <input
+                                                                        name={'e_dimWidth' + index}
+                                                                        id={'e_dimWidth' + index}
+                                                                        placeholder=""
+                                                                        value={line.width}
+                                                                        key={'e_dimWidth' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_dimWidth')}
+                                                                        required
+                                                                        type='number'
+                                                                        step='0.01'
+                                                                    />
                                                                 </div>
                                                             ))
                                                         }
@@ -545,7 +567,17 @@ class Header extends Component {
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimHeight' + index}>
-                                                                    <input name={'e_dimHeight' + index} type="text" id={'e_dimHeight' + index } placeholder="" value={line.e_dimHeight} key={'e_dimHeight' + index} onChange={(e) => this.onInputChange(e, index, 'e_dimHeight')} required />
+                                                                    <input
+                                                                        name={'e_dimHeight' + index}
+                                                                        id={'e_dimHeight' + index}
+                                                                        placeholder=""
+                                                                        value={line.e_dimHeight}
+                                                                        key={'e_dimHeight' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_dimHeight')}
+                                                                        required
+                                                                        type='number'
+                                                                        step='0.01'
+                                                                    />
                                                                 </div>
                                                             ))
                                                         }
@@ -563,6 +595,7 @@ class Header extends Component {
                                                                         value={line.e_weightUOM}
                                                                         key={'e_weightUOM' + index}
                                                                         required
+                                                                        type='number'
                                                                     >
                                                                         <option>kg</option>
                                                                         <option>gram</option>
