@@ -28,6 +28,7 @@ class Header extends Component {
             findKeyword: '',
             isOpenQuickQuote: false,
             isGettingQuickQuote: false,
+            activeTabInd: 1,
             puSuburb: {value: ''},
             deToSuburb: {value: ''},
             formInputs: {
@@ -280,8 +281,13 @@ class Header extends Component {
         }
     };
 
+    onSwitchTab(e, activeTabInd) {
+        e.preventDefault();
+        this.setState({activeTabInd});
+    }
+
     render() {
-        const { username, puSuburb, deToSuburb, formInputs } = this.state;
+        const { username, puSuburb, deToSuburb, formInputs, activeTabInd } = this.state;
         const { quickPricings, clientname } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -312,8 +318,8 @@ class Header extends Component {
         }
 
         // Build pricing table
-        const pricings = quickPricings
-            // .filter(pricing => pricing.packed_status === currentPackedStatus)
+        const originalPricings = quickPricings
+            .filter((price) => price.packed_status === 'original')
             .map((price, index) => {
                 return (
                     <tr key={index}>
@@ -340,7 +346,36 @@ class Header extends Component {
                     </tr>
                 );
             });
+    
 
+        const autoPricings = quickPricings
+            .filter(pricing => pricing.packed_status === 'auto')
+            .map((price, index) => {
+                return (
+                    <tr key={index}>
+                        <td>{price['fp_name']}</td>
+                        <td>{price['vehicle_name'] ? `${price['service_name']} (${price['vehicle_name']})` : price['service_name']}</td>
+                        <td>
+                            ${price['cost_dollar'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['cost_dollar'].toFixed(2))}></i>
+                        </td>
+                        <td>{(price['mu_percentage_fuel_levy'] * 100).toFixed(2)}%</td>
+                        <td>${price['fuel_levy_base_cl'].toFixed(2)}</td>
+                        <td>
+                            ${price['surcharge_total_cl'].toFixed(2)} {price['surcharge_total_cl'].toFixed(2) > 0
+                                ? <i className="fa fa-dollar-sign" onClick={() => this.onClickSurcharge(price)}></i>
+                                : ''}
+                        </td>
+                        <td>
+                            ${price['client_mu_1_minimum_values'].toFixed(2)}
+                            &nbsp;&nbsp;&nbsp;
+                            <i className="fa fa-copy" onClick={() => this.copyToClipBoard(price['client_mu_1_minimum_values'].toFixed(2))}></i>
+                        </td>
+                        <td>{moment().add(Math.ceil(price['eta_in_hour'] / 24), 'd').format('YYYY-MM-DD')} ({price['eta']})</td>
+                    </tr>
+                );
+            });
         return (
             <header>
                 {currentRoute === '/booking' ||
@@ -549,7 +584,7 @@ class Header extends Component {
                                                                         name={'e_dimWidth' + index}
                                                                         id={'e_dimWidth' + index}
                                                                         placeholder=""
-                                                                        value={line.width}
+                                                                        value={line.e_dimWidth}
                                                                         key={'e_dimWidth' + index}
                                                                         onChange={(e) => this.onInputChange(e, index, 'e_dimWidth')}
                                                                         required
@@ -595,7 +630,6 @@ class Header extends Component {
                                                                         value={line.e_weightUOM}
                                                                         key={'e_weightUOM' + index}
                                                                         required
-                                                                        type='number'
                                                                     >
                                                                         <option>kg</option>
                                                                         <option>gram</option>
@@ -611,7 +645,16 @@ class Header extends Component {
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_weightPerEach' + index}>
-                                                                    <input name={'e_weightPerEach' + index} type="text" id={'e_weightPerEach' + index } placeholder="" value={line.e_weightPerEach} key={'e_weightPerEach' + index} onChange={(e) => this.onInputChange(e, index, 'e_weightPerEach')} required />
+                                                                    <input
+                                                                        name={'e_weightPerEach' + index}
+                                                                        id={'e_weightPerEach' + index}
+                                                                        placeholder="" value={line.e_weightPerEach}
+                                                                        key={'e_weightPerEach' + index}
+                                                                        onChange={(e) => this.onInputChange(e, index, 'e_weightPerEach')}
+                                                                        required
+                                                                        type='number'
+                                                                        step='0.01'
+                                                                    />
                                                                 </div>
                                                             ))
                                                         }
@@ -644,25 +687,71 @@ class Header extends Component {
                                             </div>
 
                                             {quickPricings.length > 0 ?
-                                                <div className="row quote-result">
-                                                    <table className="table table-hover table-bordered sortable fixed_headers">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Freight Provider</th>
-                                                                <th>Service (Vehicle)</th>
-                                                                <th>Cost $</th>
-                                                                <th>Fuel Levy %</th>
-                                                                <th>Fuel Levy $</th>
-                                                                <th>Extra $</th>
-                                                                <th>Total $</th>
-                                                                <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {pricings}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                                <section>
+                                                    <div className="">
+                                                        <div className="row">
+                                                            <div className="col-sm-12">
+                                                                <div className="tabs">
+                                                                    <div className="tab-button-outer">
+                                                                        <ul id="tab-button">
+                                                                            <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 0)}>Send As Is</a></li>
+                                                                            <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 1)}>Auto Repack</a></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    {/* <div className="tab-select-outer none">
+                                                                        <select id="tab-select">
+                                                                            <option value="#tab01">Original</option>
+                                                                            <option value="#tab02">Auto Repack</option>
+                                                                        </select>
+                                                                    </div> */}
+                                                                    <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
+                                                                        <div className="row quote-result">
+                                                                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Freight Provider</th>
+                                                                                        <th>Service (Vehicle)</th>
+                                                                                        <th>Cost $</th>
+                                                                                        <th>Fuel Levy %</th>
+                                                                                        <th>Fuel Levy $</th>
+                                                                                        <th>Extra $</th>
+                                                                                        <th>Total $</th>
+                                                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {originalPricings}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="tab02" className={activeTabInd === 1 ? 'tab-contents selected' : 'tab-contents none'}>
+                                                                        <div className="row quote-result">
+                                                                            <table className="table table-hover table-bordered sortable fixed_headers">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Freight Provider</th>
+                                                                                        <th>Service (Vehicle)</th>
+                                                                                        <th>Cost $</th>
+                                                                                        <th>Fuel Levy %</th>
+                                                                                        <th>Fuel Levy $</th>
+                                                                                        <th>Extra $</th>
+                                                                                        <th>Total $</th>
+                                                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    {autoPricings}
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </section>
                                                 : null
                                             }
 
