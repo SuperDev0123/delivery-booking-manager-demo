@@ -417,7 +417,7 @@ class Header extends Component {
                             <a href="/" className="navbar-brand mr-sm-0">
                                 <img src={logo} className="head-logo" alt="logo" />
                             </a>
-                            <h5 style={{fontWeight: 'bold'}}>Tel: (02) 8311 1500</h5>
+                            <h5>Tel: (02) 8311 1500</h5>
                         </div>
                         <div className="col-sm-6 d-flex justify-content-between" >
                             <a id="Popover" className="btn btn-outline-light my-2 my-lg-0 login" onClick={() => this.onOpenQuickQuote()}>Quick Quote</a>
