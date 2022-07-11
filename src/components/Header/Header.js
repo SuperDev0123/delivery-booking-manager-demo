@@ -87,7 +87,7 @@ class Header extends Component {
         if (clientname)
             this.setState({clientname});
 
-        if (quickPricings)
+        if (quickPricings.length > 0)
             this.setState({isGettingQuickQuote: false});
 
         // if (statusPageUrl) {
@@ -256,15 +256,17 @@ class Header extends Component {
 
     onClickGetQuote(e) {
         e.preventDefault();
-
+        
         if (!this.state.formInputs.pu_Address_Suburb) {
             this.notify('Please select Pickup address.');
             return;
         } else if (!this.state.formInputs.de_To_Address_Suburb) {
             this.notify('Please select Delivery address.');
             return;
+        } else if (this.state.formInputs.pu_Address_Suburb == this.state.formInputs.de_To_Address_Suburb) {
+            this.notify('Pickup address and Delivery address are same!');
         }
-
+        
         this.props.getQuickPricing({
             'booking': this.state.formInputs,
             'booking_lines': this.state.lines
@@ -430,10 +432,10 @@ class Header extends Component {
                                         spinner
                                         text='Loading...'
                                     >
+                                        <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
+                                            <i className="fa fa-times-circle p-2"></i>
+                                        </div>
                                         <form className="quick-quote-form" onSubmit={(e) => this.onClickGetQuote(e)}>
-                                            <div className="popover-close" onClick={() => this.onOpenQuickQuote()}>
-                                                <i className="fa fa-times-circle p-2"></i>
-                                            </div>
 
                                             <div className="row">
                                                 <div className="col-md-4">
@@ -688,63 +690,61 @@ class Header extends Component {
 
                                             {quickPricings.length > 0 ?
                                                 <section>
-                                                    <div className="">
+                                                    <div className="quick-quote-tabs">
                                                         <div className="row">
-                                                            <div className="col-sm-12">
-                                                                <div className="tabs">
-                                                                    <div className="tab-button-outer">
-                                                                        <ul id="tab-button">
-                                                                            <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 0)}>Send As Is</a></li>
-                                                                            <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 1)}>Auto Repack</a></li>
-                                                                        </ul>
+                                                            <div className="tabs">
+                                                                <div className="tab-button-outer">
+                                                                    <ul id="tab-button">
+                                                                        <li className={activeTabInd === 0 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 0)}>Send As Is</a></li>
+                                                                        <li className={activeTabInd === 1 ? 'selected' : ''}><a onClick={(e) => this.onSwitchTab(e, 1)}>Auto Repack</a></li>
+                                                                    </ul>
+                                                                </div>
+                                                                {/* <div className="tab-select-outer none">
+                                                                    <select id="tab-select">
+                                                                        <option value="#tab01">Original</option>
+                                                                        <option value="#tab02">Auto Repack</option>
+                                                                    </select>
+                                                                </div> */}
+                                                                <div id="tab01" className={activeTabInd === 0 ? 'selected' : 'none'}>
+                                                                    <div className="row quote-result">
+                                                                        <table className="table table-hover table-bordered sortable fixed_headers">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Freight Provider</th>
+                                                                                    <th>Service (Vehicle)</th>
+                                                                                    <th>Cost $</th>
+                                                                                    <th>Fuel Levy %</th>
+                                                                                    <th>Fuel Levy $</th>
+                                                                                    <th>Extra $</th>
+                                                                                    <th>Total $</th>
+                                                                                    <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {originalPricings}
+                                                                            </tbody>
+                                                                        </table>
                                                                     </div>
-                                                                    {/* <div className="tab-select-outer none">
-                                                                        <select id="tab-select">
-                                                                            <option value="#tab01">Original</option>
-                                                                            <option value="#tab02">Auto Repack</option>
-                                                                        </select>
-                                                                    </div> */}
-                                                                    <div id="tab01" className={activeTabInd === 0 ? 'tab-contents selected' : 'tab-contents none'}>
-                                                                        <div className="row quote-result">
-                                                                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th>Freight Provider</th>
-                                                                                        <th>Service (Vehicle)</th>
-                                                                                        <th>Cost $</th>
-                                                                                        <th>Fuel Levy %</th>
-                                                                                        <th>Fuel Levy $</th>
-                                                                                        <th>Extra $</th>
-                                                                                        <th>Total $</th>
-                                                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    {originalPricings}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div id="tab02" className={activeTabInd === 1 ? 'tab-contents selected' : 'tab-contents none'}>
-                                                                        <div className="row quote-result">
-                                                                            <table className="table table-hover table-bordered sortable fixed_headers">
-                                                                                <thead>
-                                                                                    <tr>
-                                                                                        <th>Freight Provider</th>
-                                                                                        <th>Service (Vehicle)</th>
-                                                                                        <th>Cost $</th>
-                                                                                        <th>Fuel Levy %</th>
-                                                                                        <th>Fuel Levy $</th>
-                                                                                        <th>Extra $</th>
-                                                                                        <th>Total $</th>
-                                                                                        <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
-                                                                                    </tr>
-                                                                                </thead>
-                                                                                <tbody>
-                                                                                    {autoPricings}
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </div>
+                                                                </div>
+                                                                <div id="tab02" className={activeTabInd === 1 ? 'selected' : 'none'}>
+                                                                    <div className="row quote-result">
+                                                                        <table className="table table-hover table-bordered sortable fixed_headers">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th>Freight Provider</th>
+                                                                                    <th>Service (Vehicle)</th>
+                                                                                    <th>Cost $</th>
+                                                                                    <th>Fuel Levy %</th>
+                                                                                    <th>Fuel Levy $</th>
+                                                                                    <th>Extra $</th>
+                                                                                    <th>Total $</th>
+                                                                                    <th onClick={() => this.onClickColumn('fastest')}>ETA (click & sort)</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                {autoPricings}
+                                                                            </tbody>
+                                                                        </table>
                                                                     </div>
                                                                 </div>
                                                             </div>
