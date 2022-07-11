@@ -41,13 +41,13 @@ class Header extends Component {
             },
             lines: [
                 {
-                    e_qty: 0,
+                    e_qty: '',
                     e_dimUOM: 'm',
-                    e_dimLength: 0,
-                    e_dimWidth: 0,
-                    e_dimHeight: 0,
+                    e_dimLength: '',
+                    e_dimWidth: '',
+                    e_dimHeight: '',
                     e_weightUOM: 'kg',
-                    e_weightPerEach: 0,
+                    e_weightPerEach: '',
                     e_type_of_packaging: 'Carton',
                 }
             ],
@@ -235,13 +235,13 @@ class Header extends Component {
         const { lines } = this.state;
         const newlines = [...lines];
         newlines.unshift({
-            e_qty: 0,
+            e_qty: '',
             e_dimUOM: 'm',
-            e_dimLength: 0,
-            e_dimWidth: 0,
-            e_dimHeight: 0,
+            e_dimLength: '',
+            e_dimWidth: '',
+            e_dimHeight: '',
             e_weightUOM: 'kg',
-            e_weightPerEach: 0,
+            e_weightPerEach: '',
             e_type_of_packaging: 'Carton',
         });
         this.setState({lines: newlines});
@@ -265,6 +265,7 @@ class Header extends Component {
             return;
         } else if (this.state.formInputs.pu_Address_Suburb == this.state.formInputs.de_To_Address_Suburb) {
             this.notify('Pickup address and Delivery address are same!');
+            return;
         }
         
         this.props.getQuickPricing({
@@ -557,7 +558,7 @@ class Header extends Component {
                                                 </div>
                                                 <div className=" form-group px-1">
                                                     <label htmlFor="e_dimLength">
-                                                        <p>length</p>
+                                                        <p>Length</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimLength' + index}>
@@ -578,7 +579,7 @@ class Header extends Component {
                                                 </div>
                                                 <div className=" form-group px-1">
                                                     <label htmlFor="e_dimWidth">
-                                                        <p>width</p>
+                                                        <p>Width</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimWidth' + index}>
@@ -600,7 +601,7 @@ class Header extends Component {
                                                 </div>
                                                 <div className="form-group px-1">
                                                     <label htmlFor="e_dimHeight">
-                                                        <p>e_dimHeight</p>
+                                                        <p>Height</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimHeight' + index}>
@@ -622,7 +623,7 @@ class Header extends Component {
                                                 </div>
                                                 <div className=" form-group px-1">
                                                     <label htmlFor="e_weightUOM">
-                                                        <p>e_weightUOM</p>
+                                                        <p>WeightUOM</p>
                                                         {
                                                             this.state.lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_weightUOM' + index}>
@@ -755,8 +756,8 @@ class Header extends Component {
                                                 : null
                                             }
 
-                                            <div className="row my-2 float-r">
-                                                <button className="btn btn-primary btn-sm" type="submit">
+                                            <div className="row my-2">
+                                                <button className="btn btn-primary btn-sm submit" type="submit">
                                                     Get Quote
                                                 </button>
                                             </div>
