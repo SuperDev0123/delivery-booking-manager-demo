@@ -332,7 +332,7 @@ class BokPricePage extends Component {
         let hasUnknownItems = false;
         let errorList = [];
         let lowest_price_summary = 'not available';
-        let _currentPackedStatus = 'original';
+        let _currentPackedStatus = currentPackedStatus || 'original';
 
         if (isBooked || isCanceled || (bokWithPricings && Number(bokWithPricings['success']) !== 3) ) {
             canBeChanged = false;
