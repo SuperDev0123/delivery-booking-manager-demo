@@ -290,7 +290,7 @@ class Header extends Component {
     }
 
     render() {
-        const { username, puSuburb, deToSuburb, formInputs, activeTabInd } = this.state;
+        const { username, puSuburb, deToSuburb, formInputs, activeTabInd, lines } = this.state;
         const { quickPricings, clientname } = this.props;
         const currentRoute = this.props.location.pathname;
         const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -454,6 +454,7 @@ class Header extends Component {
                                                             return options;
                                                         }}
                                                         required="required"
+                                                        tabIndex='1'
                                                     />
                                                 </div>
                                                 <div className="col-md-2">
@@ -479,6 +480,7 @@ class Header extends Component {
                                                             return options;
                                                         }}
                                                         required="required"
+                                                        tabIndex='2'
                                                     />
                                                 </div>
                                                 <div className="col-md-2">
@@ -497,7 +499,7 @@ class Header extends Component {
                                                     <label htmlFor="e_type_of_packaging">
                                                         <p>Type of Package</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className='row p-1' key={'e_type_of_packaging' + index}>
                                                                     <select
                                                                         name={'e_type_of_packaging' + index}
@@ -505,10 +507,11 @@ class Header extends Component {
                                                                         value={line.e_type_of_packaging}
                                                                         key={'e_type_of_packaging' + index}
                                                                         required="required"
+                                                                        tabIndex={10 + index * 10 + 0}
                                                                     >
                                                                         <option>Carton</option>
                                                                         <option>Pallet</option>
-                                                                    </select>                                                                    
+                                                                    </select>
                                                                 </div>
                                                             ))
                                                         }
@@ -518,7 +521,7 @@ class Header extends Component {
                                                     <label htmlFor="e_qty">
                                                         <p>Quantity</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_qty' + index}>
                                                                     <input
                                                                         name={'e_qty' + index}
@@ -528,6 +531,7 @@ class Header extends Component {
                                                                         onChange={(e) => this.onInputChange(e, index, 'e_qty')}
                                                                         required
                                                                         type='number'
+                                                                        tabIndex={10 + index * 10 + 1}
                                                                     />
                                                                 </div>
                                                             ))
@@ -538,7 +542,7 @@ class Header extends Component {
                                                     <label htmlFor="e_dimUOM">
                                                         <p>DimUOM</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimUOM' + index}>
                                                                     <select
                                                                         name={'e_dimUOM' + index}
@@ -546,6 +550,7 @@ class Header extends Component {
                                                                         value={line.e_dimUOM}
                                                                         key={'e_dimUOM' + index}
                                                                         required
+                                                                        tabIndex={10 + index * 10 + 2}
                                                                     >
                                                                         <option>m</option>
                                                                         <option>cm</option>
@@ -560,7 +565,7 @@ class Header extends Component {
                                                     <label htmlFor="e_dimLength">
                                                         <p>Length</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimLength' + index}>
                                                                     <input
                                                                         name={'e_dimLength' + index}
@@ -571,6 +576,7 @@ class Header extends Component {
                                                                         required
                                                                         type='number'
                                                                         step='0.01'
+                                                                        tabIndex={10 + index * 10 + 3}
                                                                     />
                                                                 </div>
                                                             ))
@@ -581,7 +587,7 @@ class Header extends Component {
                                                     <label htmlFor="e_dimWidth">
                                                         <p>Width</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimWidth' + index}>
                                                                     <input
                                                                         name={'e_dimWidth' + index}
@@ -593,6 +599,7 @@ class Header extends Component {
                                                                         required
                                                                         type='number'
                                                                         step='0.01'
+                                                                        tabIndex={10 + index * 10 + 4}
                                                                     />
                                                                 </div>
                                                             ))
@@ -603,7 +610,7 @@ class Header extends Component {
                                                     <label htmlFor="e_dimHeight">
                                                         <p>Height</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_dimHeight' + index}>
                                                                     <input
                                                                         name={'e_dimHeight' + index}
@@ -615,6 +622,7 @@ class Header extends Component {
                                                                         required
                                                                         type='number'
                                                                         step='0.01'
+                                                                        tabIndex={10 + index * 10 + 5}
                                                                     />
                                                                 </div>
                                                             ))
@@ -625,7 +633,7 @@ class Header extends Component {
                                                     <label htmlFor="e_weightUOM">
                                                         <p>WeightUOM</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_weightUOM' + index}>
                                                                     <select
                                                                         name={'e_weightUOM' + index}
@@ -633,6 +641,7 @@ class Header extends Component {
                                                                         value={line.e_weightUOM}
                                                                         key={'e_weightUOM' + index}
                                                                         required
+                                                                        tabIndex={10 + index * 10 + 6}
                                                                     >
                                                                         <option>kg</option>
                                                                         <option>gram</option>
@@ -646,7 +655,7 @@ class Header extends Component {
                                                     <label htmlFor="e_weightPerEach">
                                                         <p>Weight</p>
                                                         {
-                                                            this.state.lines.map((line, index) => (
+                                                            lines.map((line, index) => (
                                                                 <div className="row p-1" key={'e_weightPerEach' + index}>
                                                                     <input
                                                                         name={'e_weightPerEach' + index}
@@ -657,6 +666,7 @@ class Header extends Component {
                                                                         required
                                                                         type='number'
                                                                         step='0.01'
+                                                                        tabIndex={10 + index * 10 + 7}
                                                                     />
                                                                 </div>
                                                             ))
@@ -665,16 +675,16 @@ class Header extends Component {
                                                 </div>
                                                 <div className="deselect">
                                                     {
-                                                        this.state.lines.map((line, index) => {
+                                                        lines.map((line, index) => {
                                                             if (index == 0) {
                                                                 return (
-                                                                    <div className="row invisible" key={'cancel' + index}>
+                                                                    <div className="row invisible" key={'cancel' + index} tabIndex={10 + index * 10 + 8}>
                                                                         <i className="fa fa-times-circle p-2"></i>
                                                                     </div>
                                                                 );
                                                             } else {
                                                                 return (
-                                                                    <div onClick={() => this.onCancel(index)} key={'cancel' + index}>
+                                                                    <div onClick={() => this.onCancel(index)} key={'cancel' + index} tabIndex={10 + index * 10 + 8}>
                                                                         <i className="fa fa-times-circle p-2"></i>
                                                                     </div>
                                                                 );
@@ -684,7 +694,7 @@ class Header extends Component {
                                                 </div>
                                             </div>
                                             <div className="row m-2">
-                                                <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()}>
+                                                <button className="btn btn-success btn-xs" type="button" onClick={() => this.onClickAddPackage()} tabIndex={10 + lines.length * 10 + 9}>
                                                     +Add Package
                                                 </button>
                                             </div>
@@ -757,7 +767,7 @@ class Header extends Component {
                                             }
 
                                             <div className="row my-2">
-                                                <button className="btn btn-primary btn-sm submit" type="submit">
+                                                <button className="btn btn-primary btn-sm submit" type="submit" tabIndex={10 + lines.length * 10 + 10}>
                                                     Get Quote
                                                 </button>
                                             </div>
