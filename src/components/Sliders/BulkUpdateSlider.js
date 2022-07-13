@@ -210,9 +210,10 @@ class BulkUpdateSlider extends React.Component {
                     <label className='right-10px'>Field:
                         <select
                             required
+                            value={selectedField ? selectedField : ''}
                             onChange={(e) => this.onSelected(e, 'field')} 
                         >
-                            <option value="" selected disabled hidden>--- Select a field ---</option>
+                            <option value="" disabled hidden>--- Select a field ---</option>
                             {clientname === 'dme' && <option value="flag">Flag</option>}
                             {(clientname === 'dme' || clientname === 'Jason L' || clientname === 'Bathroom Sales Direct') &&
                                 <option value="puPickUpAvailFrom_Date">Pickup From Date</option>
@@ -283,8 +284,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField === 'flag' ?
-                                <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled selected hidden>-------------     Flags    -------------</option>
+                                <select onChange={(e) => this.onSelected(e, 'value')} value={selectedValue ? selectedValue : ''}>
+                                    <option value="" disabled hidden>-------------     Flags    -------------</option>
                                     <option value="flag_add_on_services">Flag - add on services</option>
                                     <option value="unflag_add_on_services">Unflag - add on services</option>
                                 </select>
@@ -292,8 +293,8 @@ class BulkUpdateSlider extends React.Component {
                         }
                         {
                             selectedField === 'status' ?
-                                <select onChange={(e) => this.onSelected(e, 'value')}>
-                                    <option value="" disabled selected hidden>-------------     Booking Status    -------------</option>
+                                <select onChange={(e) => this.onSelected(e, 'value')} value={selectedValue ? selectedValue : ''}>
+                                    <option value="" disabled hidden>-------------     Booking Status    -------------</option>
                                     { bookingStatusList }
                                 </select>
                                 : null
@@ -377,9 +378,10 @@ class BulkUpdateSlider extends React.Component {
                         {selectedField && (selectedField === 'vx_freight_provider') &&
                             <select
                                 required
-                                onChange={(e) => this.onSelected(e, 'value')} 
+                                onChange={(e) => this.onSelected(e, 'value')}
+                                value={ selectedValue ? selectedValue : ''}
                             >
-                                <option value="" selected disabled hidden>--- Select a Freight Provider ---</option>
+                                <option value="" disabled hidden>--- Select a Freight Provider ---</option>
                                 {fpOptions}
                             </select>
                         }
@@ -413,9 +415,9 @@ class BulkUpdateSlider extends React.Component {
                                             required
                                             name='fp'
                                             onChange={(e) => this.onHandleInput(e)}
-                                            value={formInputs['fp']}
+                                            value={formInputs['fp'] ? formInputs['fp'] : ''}
                                         >
-                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            <option key={0} value="" disabled>Select a FP</option>
                                             {fpOptions}
                                         </select>
                                     </label><br />
@@ -454,9 +456,9 @@ class BulkUpdateSlider extends React.Component {
                                             required
                                             name='fp'
                                             onChange={(e) => this.onHandleInput(e)}
-                                            value={formInputs['fp']}
+                                            value={formInputs['fp'] ? formInputs['fp'] : ''}
                                         >
-                                            <option key={0} value="" disabled selected='selected'>Select a FP</option>
+                                            <option key={0} value="" disabled>Select a FP</option>
                                             {fpOptions}
                                         </select>
                                     </label><br />

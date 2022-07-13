@@ -134,20 +134,20 @@ class BookingSetModal extends Component {
                     <p>* {this.props.bookingIds.length} Bookings are selected</p>
                     <label>
                         <p>Action Type:</p>
-                        <select value={actionType} name="actionType" onChange={(e) => this.handleInputChange(e)}>
-                            <option value="create" selected="selected">Create</option>
+                        <select value={actionType ? actionType : 'create'} name="actionType" onChange={(e) => this.handleInputChange(e)}>
+                            <option value="create">Create</option>
                             <option value="add">Add</option>
                         </select>
                     </label><br />
                     <label>
                         <p>Add to:</p>
                         <select
-                            value={selectedBookingSet && selectedBookingSet.id}
+                            value={selectedBookingSet && selectedBookingSet.id ? selectedBookingSet.id : ''}
                             name="addTo"
                             onChange={(e) => this.handleInputChange(e)}
                             disabled={actionType === 'add' ? '' : 'disabled'}
                         >
-                            <option value="" selected disabled hidden>Select a BookingSet</option>
+                            <option value="" disabled hidden>Select a BookingSet</option>
                             {bookingsetsList}
                         </select>
                     </label><br />
@@ -171,7 +171,7 @@ class BookingSetModal extends Component {
                         <input
                             className="form-control"
                             name="name"
-                            value={name}
+                            value={name ? name : ''}
                             onChange={(e) => this.handleInputChange(e)}
                             disabled={actionType === 'add' ? 'disabled': ''}
                         />
@@ -181,7 +181,7 @@ class BookingSetModal extends Component {
                         <textarea
                             className="form-control"
                             name="note"
-                            value={note}
+                            value={note ? note : ''}
                             onChange={(e) => this.handleInputChange(e)}
                             disabled={actionType === 'add' ? 'disabled': ''}
                             col="40"

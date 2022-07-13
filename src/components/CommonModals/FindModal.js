@@ -149,16 +149,16 @@ class FindModal extends Component {
                 <ModalBody>
                     <label>
                         <p>Find Mode: </p>
-                        <select value={findMode} onChange={(e) => this.onInputChange(e, 'findMode')}>
-                            <option value="entire" selected="selected">Entire scope</option>
+                        <select value={findMode ? findMode : 'entire'} onChange={(e) => this.onInputChange(e, 'findMode')}>
+                            <option value="entire">Entire scope</option>
                             <option value="currentTab">Current tab</option>
                         </select>
                     </label>
                     <label>
                         <p>Select field to be searched: </p>
-                        <select value={selectedFieldName} onChange={(e) => this.onInputChange(e, 'fieldName')}>
-                            <option value="b_client_order_num" selected="selected">Your Order Number</option>
-                            <option value="b_client_sales_inv_num" selected="selected">Your Invoice Number</option>
+                        <select value={selectedFieldName ? selectedFieldName : 'b_client_order_num'} onChange={(e) => this.onInputChange(e, 'fieldName')}>
+                            <option value="b_client_order_num">Your Order Number</option>
+                            <option value="b_client_sales_inv_num">Your Invoice Number</option>
                             <option value="clientRefNumber">Client Ref Number</option>
                             <option value="v_FPBookingNumber">Consignment Number</option>
                             <option value="b_bookingID_Visual">DME Booking Number</option>
@@ -189,8 +189,8 @@ class FindModal extends Component {
                     {selectedFieldName === 'postal_code_type' &&
                         <label>
                             <p>Available options: </p>
-                            <select value={postalCode} onChange={(e) => this.onInputChange(e, 'postalCode')}>
-                                <option value="" selected disabled hidden>--- Please select option ---</option>
+                            <select value={postalCode ? postalCode : ''} onChange={(e) => this.onInputChange(e, 'postalCode')}>
+                                <option value="" disabled hidden>--- Please select option ---</option>
                                 <option value="" disabled>--- Metro options ---</option>
                                 <option value="Canberra Metro">Canberra Metro (2600-2620, 2900-2914)</option>
                                 <option value="Sydney Metro">Sydney Metro (1000-2249, 2760-2770)</option>

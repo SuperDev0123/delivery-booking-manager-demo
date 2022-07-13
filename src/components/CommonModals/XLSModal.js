@@ -183,8 +183,8 @@ class XLSModal extends Component {
                             required 
                             name="report_type" 
                             onChange={(e) => this.onInputChange(e, 'report_type')}
-                            value = {report_type} >
-                            <option value="" selected disabled hidden>Select a Report Type</option>
+                            value = {report_type ? report_type : ''} >
+                            <option value="" disabled hidden>Select a Report Type</option>
                             <option value="booking">Booking Report</option>
                             <option value="booking_line">Booking Line Report</option>
                             <option value="booking_with_gaps">Booking w/gaps</option>
@@ -207,8 +207,8 @@ class XLSModal extends Component {
                                 required 
                                 name="b_client_name" 
                                 onChange={(e) => this.onInputChange(e, 'b_client_name')}
-                                value = {b_client_name} >
-                                <option value="" selected disabled hidden>Select a Client</option>
+                                value = {b_client_name ? b_client_name : ''} >
+                                <option value="" disabled hidden>Select a Client</option>
                                 <option value="All">All</option>
                                 {clientList}
                             </select>
@@ -221,8 +221,8 @@ class XLSModal extends Component {
                                 required 
                                 name="vx_freight_provider" 
                                 onChange={(e) => this.onInputChange(e, 'vx_freight_provider')}
-                                value = {vx_freight_provider} >
-                                <option value="" selected disabled hidden>Select a FP</option>
+                                value = {vx_freight_provider ? vx_freight_provider : ''} >
+                                <option value="" disabled hidden>Select a FP</option>
                                 <option value="All">All</option>
                                 {fpList}
                             </select>
