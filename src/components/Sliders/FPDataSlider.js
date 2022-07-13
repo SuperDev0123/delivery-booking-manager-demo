@@ -98,7 +98,8 @@ class FPDataSlider extends React.Component {
         }
     }
 
-    onSubmit() {
+    onSubmit(e) {
+        e.preventDefault();
         const {editMode, lineOrLineDetail, carrierFormInputs, zoneFormInputs } = this.state;
         const { fpDetails } = this.props;
 
@@ -414,161 +415,163 @@ class FPDataSlider extends React.Component {
                         </div>
                     ):(
                         <div className="form-view">
-                            <h2>{(editMode === 1) ? 'Create' : 'Update'} a {(lineOrLineDetail === 1) ?'Carrier':'Zone'}</h2>
-                            {
-                                (lineOrLineDetail === 1) ? (
-                                    <div className="line-form">
-                                        <label>
-                                            <p>Carrier</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="carrier" 
-                                                value={carrierFormInputs['carrier']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Cannote Start Value</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="connote_start_value" 
-                                                value={carrierFormInputs['connote_start_value']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Connote End Value</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="connote_end_value" 
-                                                value={carrierFormInputs['connote_end_value']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Current Value</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="current_value" 
-                                                value={carrierFormInputs['current_value']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Label Start Value</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text"
-                                                name="label_start_value" 
-                                                value={carrierFormInputs['label_start_value']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Label End Value</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="label_end_value" 
-                                                value={carrierFormInputs['label_end_value']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <Button color="primary" onClick={() => this.onSubmit()}>
-                                                {
-                                                    (editMode === 1) ? 'Submit' : 'Update'
-                                                }
-                                            </Button>{' '}
-                                            <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                                        </label>
-                                    </div>
-                                ):(
-                                    <div className="line-form">
-                                        <label>
-                                            <p>Suburb</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="suburb" 
-                                                value={zoneFormInputs['suburb']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>State</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="state" 
-                                                value={zoneFormInputs['state']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Postal Code</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="postal_code" 
-                                                value={zoneFormInputs['postal_code']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Zone</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="zone" 
-                                                value={zoneFormInputs['zone']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Carrier</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text"
-                                                name="carrier" 
-                                                value={zoneFormInputs['carrier']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Service</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="service" 
-                                                value={zoneFormInputs['service']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <p>Sender Code</p>
-                                            <input 
-                                                className="form-control" 
-                                                type="text" 
-                                                name="sender_code" 
-                                                value={zoneFormInputs['sender_code']} 
-                                                onChange={(e) => this.onInputChange(e)}
-                                            />
-                                        </label>
-                                        <label>
-                                            <Button color="primary" onClick={() => this.onSubmit()}>
-                                                {
-                                                    (editMode === 1) ? 'Submit' : 'Update'
-                                                }
-                                            </Button>{' '}
-                                            <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
-                                        </label>
-                                    </div>
-                                )}
+                            <form onSubmit={(e) => this.onSubmit(e)}>
+                                <h2>{(editMode === 1) ? 'Create' : 'Update'} a {(lineOrLineDetail === 1) ?'Carrier':'Zone'}</h2>
+                                {
+                                    (lineOrLineDetail === 1) ? (
+                                        <div className="line-form">
+                                            <label>
+                                                <p>Carrier</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="carrier" 
+                                                    value={carrierFormInputs['carrier']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Cannote Start Value</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="connote_start_value" 
+                                                    value={carrierFormInputs['connote_start_value']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Connote End Value</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="connote_end_value" 
+                                                    value={carrierFormInputs['connote_end_value']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Current Value</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="current_value" 
+                                                    value={carrierFormInputs['current_value']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Label Start Value</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text"
+                                                    name="label_start_value" 
+                                                    value={carrierFormInputs['label_start_value']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Label End Value</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="label_end_value" 
+                                                    value={carrierFormInputs['label_end_value']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <Button color="primary" type="submit">
+                                                    {
+                                                        (editMode === 1) ? 'Submit' : 'Update'
+                                                    }
+                                                </Button>{' '}
+                                                <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                                            </label>
+                                        </div>
+                                    ):(
+                                        <div className="line-form">
+                                            <label>
+                                                <p>Suburb</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="suburb" 
+                                                    value={zoneFormInputs['suburb']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>State</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="state" 
+                                                    value={zoneFormInputs['state']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Postal Code</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="postal_code" 
+                                                    value={zoneFormInputs['postal_code']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Zone</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="zone" 
+                                                    value={zoneFormInputs['zone']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Carrier</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text"
+                                                    name="carrier" 
+                                                    value={zoneFormInputs['carrier']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Service</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="service" 
+                                                    value={zoneFormInputs['service']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <p>Sender Code</p>
+                                                <input 
+                                                    className="form-control" 
+                                                    type="text" 
+                                                    name="sender_code" 
+                                                    value={zoneFormInputs['sender_code']} 
+                                                    onChange={(e) => this.onInputChange(e)}
+                                                />
+                                            </label>
+                                            <label>
+                                                <Button color="primary" type="submit">
+                                                    {
+                                                        (editMode === 1) ? 'Submit' : 'Update'
+                                                    }
+                                                </Button>{' '}
+                                                <Button color="secondary" onClick={() => this.onCancel()}>Cancel</Button>
+                                            </label>
+                                        </div>
+                                    )}
+                            </form>
                         </div>
                     )}
                     
