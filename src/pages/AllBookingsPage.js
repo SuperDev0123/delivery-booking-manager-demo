@@ -2658,7 +2658,7 @@ class AllBookingsPage extends React.Component {
                                                 <CustomPagination 
                                                     onClickPagination={(type) => this.onClickPagination(type)}
                                                     pageCnt={this.state.pageCnt}
-                                                    pageInd={this.state.pageInd}
+                                                    pageInd={parseInt(this.state.pageInd)}
                                                 />
                                                 <label className="float-right">
                                                     Selected / Found: <strong>{selectedBookingIds.length}/{bookingsCnt ? bookingsCnt : '*'}</strong>
