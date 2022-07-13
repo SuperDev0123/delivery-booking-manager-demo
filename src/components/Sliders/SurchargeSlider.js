@@ -291,6 +291,7 @@ class SurchargeSlider extends React.Component {
                                             type="checkbox"
                                             checked={formInputs['update_visible_field']}
                                             onChange={(e) => this.onInputChange(e)}
+                                            required
                                         /> <p className="text-left">Visible to customer</p>
                                     </div>
                                     <div>
@@ -300,6 +301,7 @@ class SurchargeSlider extends React.Component {
                                             type="checkbox"
                                             checked={formInputs['visible']}
                                             onChange={(e) => this.onInputChange(e)}
+                                            required
                                         />
                                     </div>
                                 </label><br />

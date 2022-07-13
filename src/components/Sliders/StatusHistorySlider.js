@@ -54,7 +54,9 @@ class StatusHistorySlider extends React.Component {
         }
     }
 
-    onClickSave() {
+    onClickSave(e) {
+        e.preventDefault();
+        
         const {booking} = this.props;
         const {saveMode, event_time_stamp} = this.state;
         let statusHistory = clone(this.state.formInputs);
@@ -152,7 +154,7 @@ class StatusHistorySlider extends React.Component {
         const statusOptions = sortBy(allBookingStatus, ['sort_order']).map((bookingStatus, key) => {
             if (bookingStatus.dme_delivery_status === 'On Hold') {
                 return [
-                    (<option key={key + 10} value="" disabled>*******************************************************************************</option>),
+                    (<option key={key + 10} value="" disabled>********************************************************</option>),
                     (<option key={key} value={bookingStatus.dme_delivery_status}>{bookingStatus.dme_delivery_status}</option>)
                 ];
             } else {
@@ -198,76 +200,83 @@ class StatusHistorySlider extends React.Component {
                             </div>
                             :
                             <div className="form-view">
-                                <label>
-                                    <h1>{saveMode===0 ? 'New' : 'Edit'} Status History</h1>
-                                </label>
-                                <label>
-                                    <p>Status</p>
-                                    <select
-                                        name="status_last"
-                                        onChange={(e) => this.onInputChange(e)}
-                                        value = {formInputs['status_last'] ? formInputs['status_last'] : ''}
-                                    >
-                                        <option value="" disabled hidden>Select a status</option>
-                                        {statusOptions}
-                                    </select>
-                                </label>
-                                <label>
-                                    <p>DME note</p>
-                                    <textarea
-                                        name="dme_notes"
-                                        value={formInputs['dme_notes']} 
-                                        onChange={(e) => this.onInputChange(e)}
-                                    />
-                                </label>
-                                <label>
-                                    <p>Event time</p>
-                                    <DateTimePicker
-                                        onChange={(date) => this.onChangeDateTime(date, 'event_time_stamp')}
-                                        value={event_time_stamp ? new Date(moment(event_time_stamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
-                                        format={'dd/MM/yyyy HH:mm'}
-                                    />
-                                </label>
-                                <label>
-                                    <p>Status Detail</p>
-                                    <input
-                                        className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_detail || '' : formInputs['dme_status_detail'] || ''}
-                                        disabled='disabled'
-                                    />
-                                </label>
-                                <label>
-                                    <p>Status Action</p>
-                                    <input
-                                        className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_action || '' : formInputs['dme_status_action'] || ''}
-                                        disabled='disabled'
-                                    />
-                                </label>
-                                <label>
-                                    <p>Linked Reference</p>
-                                    <input
-                                        className="form-control"
-                                        value={(saveMode === 0) ? booking.dme_status_linked_reference_from_fp || '' : formInputs['dme_status_linked_reference_from_fp'] || ''}
-                                        disabled='disabled'
-                                    />
-                                </label>
-                                {isEmpty(errorMessage) ?
-                                    <label></label>
-                                    :
+                                <form onSubmit={(e) => this.onClickSave(e)}>
                                     <label>
-                                        <p className='red'>{errorMessage}</p>
+                                        <h1>{saveMode===0 ? 'New' : 'Edit'} Status History</h1>
                                     </label>
-                                }
-                                <Button
-                                    color="primary"
-                                    onClick={() => this.onClickSave()}
-                                >
-                                    {saveMode === 0 ? 'Create' : 'Update'}
-                                </Button>
-                                <Button color="danger" onClick={() => this.onClickCancel()}>
-                                    Cancel
-                                </Button>
+                                    <label>
+                                        <p>Status</p>
+                                        <select
+                                            name="status_last"
+                                            onChange={(e) => this.onInputChange(e)}
+                                            value = {formInputs['status_last'] ? formInputs['status_last'] : ''}
+                                            required
+                                        >
+                                            <option value="" disabled hidden>Select a status</option>
+                                            {statusOptions}
+                                        </select>
+                                    </label>
+                                    <label>
+                                        <p>DME note</p>
+                                        <textarea
+                                            name="dme_notes"
+                                            value={formInputs['dme_notes']} 
+                                            onChange={(e) => this.onInputChange(e)}
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        <p>Event time</p>
+                                        <DateTimePicker
+                                            onChange={(date) => this.onChangeDateTime(date, 'event_time_stamp')}
+                                            value={event_time_stamp ? new Date(moment(event_time_stamp).toDate().toLocaleString('en-US', {timeZone: 'Australia/Sydney'})) : null}
+                                            format={'dd/MM/yyyy HH:mm'}
+                                        />
+                                    </label>
+                                    <label>
+                                        <p>Status Detail</p>
+                                        <input
+                                            className="form-control"
+                                            value={(saveMode === 0) ? booking.dme_status_detail || '' : formInputs['dme_status_detail'] || ''}
+                                            disabled='disabled'
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        <p>Status Action</p>
+                                        <input
+                                            className="form-control"
+                                            value={(saveMode === 0) ? booking.dme_status_action || '' : formInputs['dme_status_action'] || ''}
+                                            disabled='disabled'
+                                            required
+                                        />
+                                    </label>
+                                    <label>
+                                        <p>Linked Reference</p>
+                                        <input
+                                            className="form-control"
+                                            value={(saveMode === 0) ? booking.dme_status_linked_reference_from_fp || '' : formInputs['dme_status_linked_reference_from_fp'] || ''}
+                                            disabled='disabled'
+                                            required
+                                        />
+                                    </label>
+                                    {isEmpty(errorMessage) ?
+                                        <label></label>
+                                        :
+                                        <label>
+                                            <p className='red'>{errorMessage}</p>
+                                        </label>
+                                    }
+                                    <Button
+                                        type='submit'
+                                        color='primary'
+                                    >
+                                        {saveMode === 0 ? 'Create' : 'Update'}
+                                    </Button>
+                                    <Button color="danger" onClick={() => this.onClickCancel()}>
+                                        Cancel
+                                    </Button>
+                                </form>
                             </div>
                         }
                     </LoadingOverlay>

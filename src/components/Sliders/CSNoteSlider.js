@@ -173,33 +173,36 @@ class CSNoteSlider extends React.Component {
                 }
                 {viewMode === FORM &&
                     <div className="form-view">
-                        <label>
-                            <h1>{saveMode===0 ? 'New' : 'Edit'} Note</h1>
-                        </label>
-                        <label>
-                            <p>Note</p>
-                            <textarea
-                                name="note"
-                                value={formInputs['note']} 
-                                onChange={(e) => this.onInputChange(e)}
-                            />
-                        </label>
-                        {isEmpty(errorMessage) ?
-                            <label></label>
-                            :
+                        <form onSubmit={(e) => this.onClickSave(e)}>
                             <label>
-                                <p className='red'>{errorMessage}</p>
+                                <h1>{saveMode===0 ? 'New' : 'Edit'} Note</h1>
                             </label>
-                        }
-                        <Button
-                            color="primary"
-                            onClick={() => this.onClickSave()}
-                        >
-                            {saveMode === 0 ? 'Create' : 'Update'}
-                        </Button>
-                        <Button color="danger" onClick={() => this.onClickCancel()}>
-                            Cancel
-                        </Button>
+                            <label>
+                                <p>Note</p>
+                                <textarea
+                                    name="note"
+                                    value={formInputs['note']} 
+                                    onChange={(e) => this.onInputChange(e)}
+                                    required
+                                />
+                            </label>
+                            {isEmpty(errorMessage) ?
+                                <label></label>
+                                :
+                                <label>
+                                    <p className='red'>{errorMessage}</p>
+                                </label>
+                            }
+                            <Button
+                                color="primary"
+                                type="submit"
+                            >
+                                {saveMode === 0 ? 'Create' : 'Update'}
+                            </Button>
+                            <Button color="danger" onClick={() => this.onClickCancel()}>
+                                Cancel
+                            </Button>
+                        </form>
                     </div>
                 }
                 {viewMode === DELETE &&
