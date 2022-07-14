@@ -71,7 +71,8 @@ class CSNoteSlider extends React.Component {
         this.setState({selectedNoteIndex: index, viewMode: DELETE});
     }
 
-    onClickSave() {
+    onClickSave(e) {
+        e.preventDefault();
         const {booking} = this.props;
         const {saveMode} = this.state;
         const csNote = clone(this.state.formInputs);
