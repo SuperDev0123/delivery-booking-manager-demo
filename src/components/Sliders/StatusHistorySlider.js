@@ -222,7 +222,6 @@ class StatusHistorySlider extends React.Component {
                                             name="dme_notes"
                                             value={formInputs['dme_notes']} 
                                             onChange={(e) => this.onInputChange(e)}
-                                            required
                                         />
                                     </label>
                                     <label>
