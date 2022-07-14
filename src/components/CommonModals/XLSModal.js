@@ -15,7 +15,7 @@ class XLSModal extends Component {
         this.state = {
             startDate: '', 
             endDate: '',
-            emailAddr: '',
+            emailAddr: localStorage.getItem('report_email') || '',
             vx_freight_provider: '',
             b_client_name: '',
             report_type: '',
@@ -99,6 +99,7 @@ class XLSModal extends Component {
                 }
 
                 this.setState({emailAddr: e.target.value, errorMessage});
+                localStorage.setItem('report_email', e.target.value);
             } else {
                 this.setState({emailAddr: e.target.value, errorMessage: 'Please input correct email address.'});
             }
