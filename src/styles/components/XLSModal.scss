@@ -1,37 +1,43 @@
 .xls-modal {
 	top: 200px;
-
+	
 	.modal-header h5 {
 		font-size: 20px !important;
 		font-weight: bold;
 	}
-
+	
 	.modal-footer {
 		display: block;
 	}
-
-	label {
-		width: 70%;
+	
+	.modal-body>div {
+		margin: 10px 0px;
+		width: 100%;
 
 		p {
 			width: 40%;
 			display: inline-block;
 			vertical-align: top;
-			margin-top: 5px;
+			margin-top: 8px;
 		}
 
 		>input, .react-datepicker-wrapper, select {
-			float: right;
-
+			margin-top: 4px;
+			width: 60%;
 			&.checkbox {
 				float: unset !important;
-				margin-left: 24px;
+				width: 20px;
+				margin-left: 0px;
 				display: inline-block;
 			}
 		}
 
+		.react-datepicker-wrapper input {
+			 width: 100%;
+		}
+
 		select {
-			width: 53%;
+			width: 60%;
 		}
 	}
 
