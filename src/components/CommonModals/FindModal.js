@@ -90,7 +90,8 @@ class FindModal extends Component {
         }
     }
 
-    onSubmit() {
+    onSubmit(e) {
+        e.preventDefault();
         const {selectedFieldName, postalCodeMin, postalCodeMax, postalCode, findMode} = this.state;
         let valueSet = this.state.valueSet;
 
