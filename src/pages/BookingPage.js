@@ -510,8 +510,8 @@ class BookingPage extends Component {
             this.props.getClientProcessMgr(booking.id);
         }
 
-        if (needUpdateStatusHistories && booking && booking.pk_booking_id) {
-            this.props.getBookingStatusHistory(booking.pk_booking_id);
+        if (needUpdateStatusHistories && booking && booking.id) {
+            this.props.getBookingStatusHistory(booking.id);
             this.props.getBooking(booking.id, 'id');
             this.setState({loading: true, curViewMode: 0});
         }
@@ -917,7 +917,7 @@ class BookingPage extends Component {
     afterSetState(type, data) {
         this.props.getBookingLines(data.pk_booking_id);
         this.props.getBookingLineDetails(data.pk_booking_id);
-        this.props.getBookingStatusHistory(data.pk_booking_id);
+        this.props.getBookingStatusHistory(data.id);
         this.props.getApiBCLs(data.id);
         this.props.getAttachmentHistory(data.pk_booking_id);
         this.props.getEmailLogs(data.id);
@@ -2547,7 +2547,7 @@ class BookingPage extends Component {
         e.preventDefault();
 
         if (type === 'dme-status-history') {
-            this.props.getBookingStatusHistory(this.state.booking.pk_booking_id);
+            this.props.getBookingStatusHistory(this.state.booking.id);
             this.setState({loadingStatusHistories: true });
             this.toggleStatusHistorySlider();
         } else if (type === 'fp-status-history') {

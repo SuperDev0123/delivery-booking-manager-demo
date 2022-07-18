@@ -34,7 +34,6 @@ class ClientEmployeeSlider extends React.Component {
         booking: PropTypes.object.isRequired,
         allBookingStatus: PropTypes.array.isRequired,
         OnCreateStatusHistory: PropTypes.func.isRequired,
-        OnUpdateStatusHistory: PropTypes.func.isRequired,
         clientname: PropTypes.string.isRequired,
         roles: PropTypes.array.isRequired,
         clients: PropTypes.array.isRequired,

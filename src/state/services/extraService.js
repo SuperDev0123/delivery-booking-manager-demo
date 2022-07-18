@@ -132,12 +132,12 @@ export const getAllBookingStatus = () => {
             .catch((error) => dispatch(failedGetAllBookingStatus(error)));
 };
 
-export const getBookingStatusHistory = (pk_booking_id) => {
+export const getBookingStatusHistory = (bookingId) => {
     const token = localStorage.getItem('token');
     const options = {
         method: 'get',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'JWT ' + token },
-        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/get_all?pk_booking_id=` + pk_booking_id,
+        url: `${HTTP_PROTOCOL}://${API_HOST}/statushistory/get_all?booking_id=` + bookingId,
     };
     return dispatch => {
         dispatch(resetFlagStatusHistory());

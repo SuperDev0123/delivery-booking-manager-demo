@@ -66,7 +66,7 @@ class StatusHistorySlider extends React.Component {
                 this.setState({errorMessage: 'Please select a status'});
             } else {
                 statusHistory['notes'] = booking.b_status + ' ---> ' + statusHistory['status_last'];
-                statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                statusHistory['booking_id'] = booking.id;
                 statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mmZ') : null;
                 this.props.OnCreateStatusHistory(statusHistory);
                 this.setState({
@@ -84,7 +84,7 @@ class StatusHistorySlider extends React.Component {
                 this.setState({errorMessage: 'Please select a status'});
             } else {
                 statusHistory['notes'] = statusHistory['status_old'] + ' ---> ' + statusHistory['status_last'];
-                statusHistory['fk_booking_id'] = booking.pk_booking_id;
+                statusHistory['booking_id'] = booking.id;
                 statusHistory['event_time_stamp'] = event_time_stamp ? moment(event_time_stamp).format('YYYY-MM-DD HH:mmZ') : null;
                 this.props.OnUpdateStatusHistory(statusHistory);
                 this.setState({
@@ -220,7 +220,7 @@ class StatusHistorySlider extends React.Component {
                                         <p>DME note</p>
                                         <textarea
                                             name="dme_notes"
-                                            value={formInputs['dme_notes']} 
+                                            value={formInputs['dme_notes'] ? formInputs['dme_notes'] : ''} 
                                             onChange={(e) => this.onInputChange(e)}
                                         />
                                     </label>

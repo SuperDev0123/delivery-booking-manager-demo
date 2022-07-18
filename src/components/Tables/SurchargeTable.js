@@ -30,7 +30,8 @@ class SurchargeTable extends React.Component {
         if (nextProps.fps.length > 0 && nextProps.bookingId)
             if (nextProps.bookingId !== this.state.bookingId) {
                 this.setState({bookingId: nextProps.bookingId});
-                this.props.getSurcharges(nextProps.bookingId);
+                if (nextProps.bookingId)
+                    this.props.getSurcharges(nextProps.bookingId);
             }
     }
 
