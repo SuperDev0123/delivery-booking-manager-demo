@@ -27,11 +27,10 @@ class SurchargeTable extends React.Component {
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
-        if (nextProps.fps.length > 0 && nextProps.bookingId)
+        if (nextProps.fps.length > 0 && nextProps.bookingId && nextProps.bookingId !== 'undefined')
             if (nextProps.bookingId !== this.state.bookingId) {
                 this.setState({bookingId: nextProps.bookingId});
-                if (nextProps.bookingId)
-                    this.props.getSurcharges(nextProps.bookingId);
+                this.props.getSurcharges(nextProps.bookingId);
             }
     }
 
