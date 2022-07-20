@@ -85,7 +85,7 @@ class AddClientEmployee extends Component {
     onSubmit(event) {
         this.setState({ loading: true });
         const { name_first, name_last, email, phone, job_title, role, fk_id_dme_client, warehouse_id } = this.state;
-        this.props.createClientEmployee({ name_first: name_first, name_last:name_last, email:email, phone:phone, clien_emp_job_title: job_title, role_id:role, fk_id_dme_client_id:fk_id_dme_client, warehouse_id:warehouse_id });
+        this.props.createClientEmployee({ name_first: name_first, name_last:name_last, email:email, phone:phone, clien_emp_job_title: job_title, role_id:role, fk_id_dme_client_id:fk_id_dme_client, warehouse_id: parseInt(warehouse_id) });
         this.setState({ loading: false });
         this.props.history.push('/admin/clientemployees');
         event.preventDefault();
