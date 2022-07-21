@@ -174,7 +174,7 @@ class BookingPage extends Component {
             clientprocess: {},
             puCommunicates: [],
             deCommunicates: [],
-            currentPackedStatus: 'original',
+            currentPackedStatus: '',
             eta: {days: 0, hours: 0},
         };
 
@@ -942,6 +942,12 @@ class BookingPage extends Component {
         let total_kgs = 0;
         let cubic_meter = 0;
 
+        let _currentPackedStatus = this.state.currentPackedStatus;
+        if (!_currentPackedStatus) {
+            const packedLinesCount = bookingLines.filter(product => product['packed_status'] === 'scanned').length;
+            _currentPackedStatus = packedLinesCount > 0 ? 'scanned' : 'original';
+        }
+
         let newBookingLines = bookingLines.map((bookingLine) => {
             if (bookingLine.e_weightUOM) {
                 const e_weightUOM = bookingLine.e_weightUOM.toUpperCase();
@@ -976,8 +982,8 @@ class BookingPage extends Component {
                 bookingLine['cubic_meter'] = 0;
             }
 
-            if (bookingLine.packed_status === this.state.currentPackedStatus ||
-                (this.state.currentPackedStatus === 'original' && !bookingLine.packed_status)) {
+            if (bookingLine.packed_status === _currentPackedStatus ||
+                (_currentPackedStatus === 'original' && !bookingLine.packed_status)) {
                 qty += bookingLine.e_qty;
                 total_kgs += bookingLine['total_kgs'];
                 cubic_meter += bookingLine['cubic_meter'];
@@ -2800,12 +2806,18 @@ class BookingPage extends Component {
         } = this.state;
         const {clientname, warehouses, emailLogs, bookingLines, cntAdditionalSurcharges} = this.props;
 
+        let _currentPackedStatus = currentPackedStatus;
+        if (!_currentPackedStatus) {
+            const packedLinesCount = products.filter(product => product['packed_status'] === 'scanned').length;
+            _currentPackedStatus = packedLinesCount > 0 ? 'scanned' : 'original';
+        }
+
         const filteredProducts = products
             .filter(product => {
-                if (currentPackedStatus !== 'original')
-                    return product['packed_status'] === currentPackedStatus;
+                if (_currentPackedStatus !== 'original')
+                    return product['packed_status'] === _currentPackedStatus;
                 else
-                    return isNull(product['packed_status']) || product['packed_status'] === currentPackedStatus;
+                    return isNull(product['packed_status']) || product['packed_status'] === _currentPackedStatus;
             })
             .map((line, index) => {
                 line['index'] = index + 1;
@@ -5711,7 +5723,7 @@ class BookingPage extends Component {
                                                     <span className=''> | </span>
                                                     <Button
                                                         className=''
-                                                        color={currentPackedStatus === 'original' ? 'success' : 'secondary'}
+                                                        color={_currentPackedStatus === 'original' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('original')}
                                                         disabled={!isBookingSelected}
                                                         title="Lines as sended"
@@ -5720,7 +5732,7 @@ class BookingPage extends Component {
                                                     </Button>
                                                     <Button
                                                         className=''
-                                                        color={currentPackedStatus === 'auto' ? 'success' : 'secondary'}
+                                                        color={_currentPackedStatus === 'auto' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('auto')}
                                                         disabled={!isBookingSelected}
                                                         title="Auto packed lines"
@@ -5729,7 +5741,7 @@ class BookingPage extends Component {
                                                     </Button>
                                                     <Button
                                                         className=''
-                                                        color={currentPackedStatus === 'manual' ? 'success' : 'secondary'}
+                                                        color={_currentPackedStatus === 'manual' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('manual')}
                                                         disabled={!isBookingSelected}
                                                         title="Manual packed lines"
@@ -5738,7 +5750,7 @@ class BookingPage extends Component {
                                                     </Button>
                                                     <Button
                                                         className=''
-                                                        color={currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
+                                                        color={_currentPackedStatus === 'scanned' ? 'success' : 'secondary'}
                                                         onClick={() => this.onChangePackedStatus('scanned')}
                                                         disabled={!isBookingSelected}
                                                         title="Actual Packed / Packing Scans"
@@ -5749,7 +5761,7 @@ class BookingPage extends Component {
                                                         className='float-r'
                                                         color='danger'
                                                         onClick={() => this.onChangePackedStatus('reset')}
-                                                        disabled={(currentPackedStatus === 'auto' || currentPackedStatus === 'manual') ? false : true}
+                                                        disabled={(_currentPackedStatus === 'auto' || _currentPackedStatus === 'manual') ? false : true}
                                                         title="Reset all lines and LineDetails."
                                                     >
                                                         Reset
@@ -5974,7 +5986,7 @@ class BookingPage extends Component {
                     updateBookingLineDetail={(bookingLine) => this.props.updateBookingLineDetail(bookingLine)}
                     moveLineDetails={(lineId, lineDetailIds) => this.props.moveLineDetails(lineId, lineDetailIds)}
                     packageTypes={this.state.packageTypes}
-                    currentPackedStatus={this.state.currentPackedStatus}
+                    currentPackedStatus={_currentPackedStatus}
                     toggleUpdateBookingModal={this.toggleUpdateBookingModal}
                 />
 
