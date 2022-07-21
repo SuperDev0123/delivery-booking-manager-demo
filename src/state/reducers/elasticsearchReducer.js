@@ -15,12 +15,12 @@ export const ElasticsearchReducer = (state = defaultState, { type, payload }) =>
             if (payload.src === 'puAddress') {
                 return {
                     ...state,
-                    puAddresses: payload.addresses,
+                    puAddresses: payload.addresses.filter((address) => (address._source.postal_code < 1000 || address._source.postal_code >= 2000)),
                 };
             } else if (payload.src === 'deToAddress') {
                 return {
                     ...state,
-                    deToAddresses: payload.addresses,
+                    deToAddresses: payload.addresses.filter((address) => (address._source.postal_code < 1000 || address._source.postal_code >= 2000)),
                 };
             } 
             break;
