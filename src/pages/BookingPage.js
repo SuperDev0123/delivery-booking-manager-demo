@@ -1539,6 +1539,7 @@ class BookingPage extends Component {
     };
 
     handleInputChangeSuburb = (query, src) => {
+        const { clientname } = this.props;
         const {isBookedBooking} = this.state;
 
         let postalCodePrefix = null;
@@ -1552,6 +1553,24 @@ class BookingPage extends Component {
         });
 
         if (isBookedBooking == false && (postalCodePrefix || suburbPrefixes.length > 0)) {
+            if (src === 'puSuburb') {
+                this.props.getAddressesWithPrefix(
+                    'puAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
+            } else if (src === 'deToSuburb') {
+                this.props.getAddressesWithPrefix(
+                    'deToAddress',
+                    join(suburbPrefixes, ' '),
+                    postalCodePrefix
+                );
+            }
+
+            this.setState({suburbPrefix: join(suburbPrefixes, ' '), postalCodePrefix});
+        }
+        console.log(clientname);
+        if (isBookedBooking == true && clientname === 'dme' && (postalCodePrefix || suburbPrefixes.length > 0)) {
             if (src === 'puSuburb') {
                 this.props.getAddressesWithPrefix(
                     'puAddress',
